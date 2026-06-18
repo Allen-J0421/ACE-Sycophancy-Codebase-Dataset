@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.StringJoiner;
 
-final class PrefixSumDemo {
+public final class PrefixSumDemo {
 
     private static final String VALUE_SEPARATOR = " ";
 

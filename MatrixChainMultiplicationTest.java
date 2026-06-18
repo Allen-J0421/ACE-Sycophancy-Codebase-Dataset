@@ -5,7 +5,7 @@ final class MatrixChainMultiplicationTest {
     }
 
     public static void main(String[] args) {
-        MatrixChainMultiplication.OptimizationResult sample =
+        MatrixChainResult sample =
                 MatrixChainMultiplication.optimize(new int[] { 2, 1, 3, 4 });
         expectEquals(20L, sample.minimumCost(), "sample chain cost");
         expectEquals("(A1 * (A2 * A3))", sample.parenthesization(), "sample chain order");

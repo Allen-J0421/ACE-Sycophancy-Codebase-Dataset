@@ -37,7 +37,12 @@ class LRUCache {
         }
 
         private static int initialCapacity(int maxEntries) {
-            return Math.max(1, maxEntries);
+            if (maxEntries <= 0) {
+                return 1;
+            }
+
+            long requiredCapacity = (long) (maxEntries / LOAD_FACTOR) + 1L;
+            return requiredCapacity > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) requiredCapacity;
         }
     }
 }

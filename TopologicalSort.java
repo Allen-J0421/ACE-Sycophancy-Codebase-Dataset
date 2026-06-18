@@ -8,7 +8,7 @@ import java.util.Queue;
  * in-degrees). The graph is represented as an adjacency list where index {@code i}
  * holds the list of vertices that vertex {@code i} points to.
  */
-class TopologicalSort {
+public class TopologicalSort {
 
     /**
      * Returns a topological ordering of the graph's vertices.

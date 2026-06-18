@@ -1,5 +1,5 @@
 final class BinarySearchDemo {
-    private static final int[] SAMPLE_VALUES = {2, 3, 4, 10, 40};
+    private static final int[] SORTED_SAMPLE_VALUES = {2, 3, 4, 10, 40};
     private static final int SAMPLE_TARGET = 10;
 
     private BinarySearchDemo() {
@@ -14,7 +14,7 @@ final class BinarySearchDemo {
     }
 
     public static void main(String[] args) {
-        int result = BinarySearch.indexOf(SAMPLE_VALUES, SAMPLE_TARGET);
+        int result = BinarySearch.indexOf(SORTED_SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(describeSearchResult(result));
     }

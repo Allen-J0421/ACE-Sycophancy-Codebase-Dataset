@@ -6,19 +6,19 @@ public final class BinarySearch {
     private BinarySearch() {
     }
 
-    public static int binarySearch(int[] values, int target) {
-        return indexOf(values, target);
+    public static int binarySearch(int[] sortedValues, int target) {
+        return indexOf(sortedValues, target);
     }
 
-    public static int indexOf(int[] values, int target) {
-        Objects.requireNonNull(values, "values");
+    public static int indexOf(int[] sortedValues, int target) {
+        Objects.requireNonNull(sortedValues, "sortedValues");
 
         int left = 0;
-        int right = values.length;
+        int right = sortedValues.length;
 
         while (left < right) {
             int middle = middleIndex(left, right);
-            int candidate = values[middle];
+            int candidate = sortedValues[middle];
 
             if (candidate == target) {
                 return middle;

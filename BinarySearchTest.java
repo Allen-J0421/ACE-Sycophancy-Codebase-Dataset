@@ -11,19 +11,19 @@ public final class BinarySearchTest {
     }
 
     private static void findsExistingValues() {
-        int[] values = {2, 3, 4, 10, 40};
+        int[] sortedValues = {2, 3, 4, 10, 40};
 
-        assertIndex(0, values, 2);
-        assertIndex(2, values, 4);
-        assertIndex(4, values, 40);
+        assertIndex(0, sortedValues, 2);
+        assertIndex(2, sortedValues, 4);
+        assertIndex(4, sortedValues, 40);
     }
 
     private static void returnsNotFoundForMissingValues() {
-        int[] values = {2, 3, 4, 10, 40};
+        int[] sortedValues = {2, 3, 4, 10, 40};
 
-        assertIndex(BinarySearch.NOT_FOUND, values, 1);
-        assertIndex(BinarySearch.NOT_FOUND, values, 5);
-        assertIndex(BinarySearch.NOT_FOUND, values, 41);
+        assertIndex(BinarySearch.NOT_FOUND, sortedValues, 1);
+        assertIndex(BinarySearch.NOT_FOUND, sortedValues, 5);
+        assertIndex(BinarySearch.NOT_FOUND, sortedValues, 41);
     }
 
     private static void handlesEmptyArrays() {
@@ -31,9 +31,9 @@ public final class BinarySearchTest {
     }
 
     private static void preservesLegacyMethodName() {
-        int[] values = {2, 3, 4, 10, 40};
+        int[] sortedValues = {2, 3, 4, 10, 40};
 
-        assertEquals(3, BinarySearch.binarySearch(values, 10));
+        assertEquals(3, BinarySearch.binarySearch(sortedValues, 10));
     }
 
     private static void rejectsNullInput() {
@@ -41,12 +41,12 @@ public final class BinarySearchTest {
             BinarySearch.indexOf(null, 10);
             throw new AssertionError("Expected NullPointerException");
         } catch (NullPointerException expected) {
-            assertEquals("values", expected.getMessage());
+            assertEquals("sortedValues", expected.getMessage());
         }
     }
 
-    private static void assertIndex(int expected, int[] values, int target) {
-        assertEquals(expected, BinarySearch.indexOf(values, target));
+    private static void assertIndex(int expected, int[] sortedValues, int target) {
+        assertEquals(expected, BinarySearch.indexOf(sortedValues, target));
     }
 
     private static void assertEquals(int expected, int actual) {

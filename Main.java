@@ -1,20 +1,31 @@
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
-        UndirectedGraph graph = new UndirectedGraph(6);
-        graph.addEdge(1, 2);
-        graph.addEdge(2, 0);
-        graph.addEdge(0, 3);
-        graph.addEdge(4, 5);
+        System.out.println("=== Undirected Graph with BFS ===");
+        Graph undirectedGraph = GraphBuilder.undirected(6)
+                .addEdge(1, 2)
+                .addEdge(2, 0)
+                .addEdge(0, 3)
+                .addEdge(4, 5)
+                .build();
 
-        BreadthFirstSearch bfs = new BreadthFirstSearch(graph);
-        List<Integer> traversalOrder = bfs.traverse();
+        GraphTraversal bfs = new BreadthFirstSearch();
+        TraversalResult bfsResult = bfs.traverse(undirectedGraph);
+        bfsResult.print();
 
-        System.out.print("BFS Traversal: ");
-        for (int vertex : traversalOrder) {
-            System.out.print(vertex + " ");
-        }
-        System.out.println();
+        System.out.println("\n=== Undirected Graph with DFS ===");
+        GraphTraversal dfs = new DepthFirstSearch();
+        TraversalResult dfsResult = dfs.traverse(undirectedGraph);
+        dfsResult.print();
+
+        System.out.println("\n=== Directed Graph with BFS ===");
+        Graph directedGraph = GraphBuilder.directed(5)
+                .addEdge(0, 1)
+                .addEdge(0, 2)
+                .addEdge(1, 3)
+                .addEdge(2, 4)
+                .build();
+
+        TraversalResult directedBfsResult = bfs.traverse(directedGraph);
+        directedBfsResult.print();
     }
 }

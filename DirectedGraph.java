@@ -2,11 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
-public class UndirectedGraph implements Graph {
+public class DirectedGraph implements Graph {
     private final List<List<Integer>> adjacencyList;
     private final int vertexCount;
 
-    public UndirectedGraph(int vertexCount) {
+    public DirectedGraph(int vertexCount) {
         if (vertexCount <= 0) {
             throw new IllegalArgumentException("Vertex count must be positive");
         }
@@ -23,7 +23,6 @@ public class UndirectedGraph implements Graph {
             throw new IllegalArgumentException("Invalid vertex: u=" + u + ", v=" + v);
         }
         adjacencyList.get(u).add(v);
-        adjacencyList.get(v).add(u);
     }
 
     @Override

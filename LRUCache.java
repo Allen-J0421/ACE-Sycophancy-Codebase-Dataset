@@ -6,8 +6,7 @@ public class LRUCache {
 
     private final int capacity;
     private final Map<Integer, Node> cache;
-    private final Node head;
-    private final Node tail;
+    private final UsageList usageList;
 
     public LRUCache(int capacity) {
         if (capacity <= 0) {
@@ -15,11 +14,8 @@ public class LRUCache {
         }
 
         this.capacity = capacity;
-        this.cache = new HashMap<>();
-        this.head = new Node(0, 0);
-        this.tail = new Node(0, 0);
-        head.next = tail;
-        tail.prev = head;
+        this.cache = new HashMap<>(capacity);
+        this.usageList = new UsageList();
     }
 
     public int get(int key) {
@@ -28,7 +24,7 @@ public class LRUCache {
             return NOT_FOUND;
         }
 
-        moveToFront(node);
+        usageList.moveToFront(node);
         return node.value;
     }
 
@@ -36,13 +32,13 @@ public class LRUCache {
         Node existingNode = cache.get(key);
         if (existingNode != null) {
             existingNode.value = value;
-            moveToFront(existingNode);
+            usageList.moveToFront(existingNode);
             return;
         }
 
         Node newNode = new Node(key, value);
         cache.put(key, newNode);
-        insertAfterHead(newNode);
+        usageList.addFirst(newNode);
 
         if (cache.size() > capacity) {
             evictLeastRecentlyUsed();
@@ -53,36 +49,11 @@ public class LRUCache {
         return cache.size();
     }
 
-    private void moveToFront(Node node) {
-        unlink(node);
-        insertAfterHead(node);
-    }
-
     private void evictLeastRecentlyUsed() {
-        Node leastRecentlyUsed = tail.prev;
-        if (leastRecentlyUsed == head) {
-            return;
+        Node leastRecentlyUsed = usageList.removeLast();
+        if (leastRecentlyUsed != null) {
+            cache.remove(leastRecentlyUsed.key);
         }
-
-        unlink(leastRecentlyUsed);
-        cache.remove(leastRecentlyUsed.key);
-    }
-
-    private void insertAfterHead(Node node) {
-        Node firstEntry = head.next;
-        head.next = node;
-        node.prev = head;
-        node.next = firstEntry;
-        firstEntry.prev = node;
-    }
-
-    private void unlink(Node node) {
-        Node previous = node.prev;
-        Node next = node.next;
-        previous.next = next;
-        next.prev = previous;
-        node.prev = null;
-        node.next = null;
     }
 
     private static final class Node {
@@ -94,6 +65,51 @@ public class LRUCache {
         private Node(int key, int value) {
             this.key = key;
             this.value = value;
+        }
+    }
+
+    private static final class UsageList {
+        private final Node head = new Node(0, 0);
+        private final Node tail = new Node(0, 0);
+
+        private UsageList() {
+            head.next = tail;
+            tail.prev = head;
+        }
+
+        private void addFirst(Node node) {
+            insertBetween(head, node, head.next);
+        }
+
+        private void moveToFront(Node node) {
+            unlink(node);
+            addFirst(node);
+        }
+
+        private Node removeLast() {
+            Node leastRecentlyUsed = tail.prev;
+            if (leastRecentlyUsed == head) {
+                return null;
+            }
+
+            unlink(leastRecentlyUsed);
+            return leastRecentlyUsed;
+        }
+
+        private void insertBetween(Node previous, Node node, Node next) {
+            previous.next = node;
+            node.prev = previous;
+            node.next = next;
+            next.prev = node;
+        }
+
+        private void unlink(Node node) {
+            Node previous = node.prev;
+            Node next = node.next;
+            previous.next = next;
+            next.prev = previous;
+            node.prev = null;
+            node.next = null;
         }
     }
 }

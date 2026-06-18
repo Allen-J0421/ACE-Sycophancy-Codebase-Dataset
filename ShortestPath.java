@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Dijkstra {
+public final class ShortestPath {
     private static final int SAMPLE_SOURCE = 0;
 
-    private Dijkstra() {
+    private ShortestPath() {
         // Utility class.
     }
 

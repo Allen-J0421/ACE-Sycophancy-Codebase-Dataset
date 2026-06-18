@@ -1,19 +1,19 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public final class DijkstraTest {
-    private DijkstraTest() {
+public final class ShortestPathTest {
+    private ShortestPathTest() {
     }
 
     public static void main(String[] args) {
         verifiesSampleGraphDistances();
         verifiesBuilderChainingBuildsGraph();
         verifiesUnreachableVerticesRemainInfinite();
-        System.out.println("All Dijkstra tests passed");
+        System.out.println("All ShortestPath tests passed");
     }
 
     private static void verifiesSampleGraphDistances() {
-        List<Integer> distances = Dijkstra.shortestPaths(SampleGraphs.weightedUndirectedExample(), 0);
+        List<Integer> distances = ShortestPath.shortestPaths(SampleGraphs.weightedUndirectedExample(), 0);
         assertDistances("sample graph", distances, 0, 4, 7, 9, 10);
     }
 
@@ -23,7 +23,7 @@ public final class DijkstraTest {
             .addUndirectedEdge(1, 2, 1)
             .build();
 
-        List<Integer> distances = Dijkstra.shortestPaths(graph, 0);
+        List<Integer> distances = ShortestPath.shortestPaths(graph, 0);
         assertDistances("builder chaining", distances, 0, 2, 3);
     }
 
@@ -32,7 +32,7 @@ public final class DijkstraTest {
             .addUndirectedEdge(0, 1, 5)
             .build();
 
-        List<Integer> distances = Dijkstra.shortestPaths(graph, 0);
+        List<Integer> distances = ShortestPath.shortestPaths(graph, 0);
         assertDistances("unreachable vertex", distances, 0, 5, Integer.MAX_VALUE);
     }
 

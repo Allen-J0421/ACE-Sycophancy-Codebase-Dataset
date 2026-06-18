@@ -50,7 +50,7 @@ final class GraphBuilder {
 
     private static void validateWeight(int weight) {
         if (weight < 0) {
-            throw new IllegalArgumentException("Dijkstra requires non-negative edge weights");
+            throw new IllegalArgumentException("ShortestPath requires non-negative edge weights");
         }
     }
 }

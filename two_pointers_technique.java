@@ -1,4 +1,6 @@
-class TwoPointersTechnique {
+import java.util.Arrays;
+
+final class TwoPointersTechnique {
 
     private TwoPointersTechnique() {
         // Utility class.
@@ -14,7 +16,7 @@ class TwoPointersTechnique {
         }
 
         int[] sortedValues = values.clone();
-        java.util.Arrays.sort(sortedValues);
+        Arrays.sort(sortedValues);
         return hasPairWithSumSorted(sortedValues, target);
     }
 
@@ -30,7 +32,7 @@ class TwoPointersTechnique {
         int right = sortedValues.length - 1;
 
         while (left < right) {
-            int sum = sortedValues[left] + sortedValues[right];
+            long sum = (long) sortedValues[left] + sortedValues[right];
 
             if (sum == target) {
                 return true;
@@ -44,12 +46,5 @@ class TwoPointersTechnique {
         }
 
         return false;
-    }
-
-    public static void main(String[] args) {
-        int[] values = {2, -3, 1, 0, -1};
-        int target = -2;
-
-        System.out.println(hasPairWithSum(values, target));
     }
 }

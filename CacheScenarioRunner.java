@@ -1,5 +1,12 @@
+import java.util.Objects;
+import java.util.Optional;
+
 public final class CacheScenarioRunner {
-    private static final Integer MISSING = -1;
+    private final CacheFactory cacheFactory;
+
+    public CacheScenarioRunner(CacheFactory cacheFactory) {
+        this.cacheFactory = Objects.requireNonNull(cacheFactory, "cacheFactory must not be null");
+    }
 
     public void runAll() {
         runEvictionScenario();
@@ -10,7 +17,7 @@ public final class CacheScenarioRunner {
     }
 
     private void runEvictionScenario() {
-        Cache<Integer, Integer> cache = new LRUCache<>(2);
+        Cache<Integer, Integer> cache = cacheFactory.create(2);
 
         cache.put(1, 1);
         cache.put(2, 2);
@@ -26,7 +33,7 @@ public final class CacheScenarioRunner {
     }
 
     private void runUpdateScenario() {
-        Cache<Integer, Integer> cache = new LRUCache<>(2);
+        Cache<Integer, Integer> cache = cacheFactory.create(2);
 
         cache.put(1, 1);
         cache.put(2, 2);
@@ -39,7 +46,7 @@ public final class CacheScenarioRunner {
     }
 
     private void runSharedCacheApiScenario() {
-        Cache<String, String> cache = new LRUCache<>(3);
+        Cache<String, String> cache = cacheFactory.create(3);
 
         CacheAssertions.assertEquals("exposes configured capacity", 3, cache.capacity());
         CacheAssertions.assertTrue("starts empty", cache.isEmpty());
@@ -63,12 +70,12 @@ public final class CacheScenarioRunner {
         CacheAssertions.assertThrows(
             "zero capacity",
             IllegalArgumentException.class,
-            () -> new LRUCache<>(0)
+            () -> cacheFactory.create(0)
         );
     }
 
     private void runNullValidationScenario() {
-        Cache<Integer, Integer> cache = new LRUCache<>(1);
+        Cache<Integer, Integer> cache = cacheFactory.create(1);
 
         CacheAssertions.assertThrows("null key on put", NullPointerException.class, () -> cache.put(null, 1));
         CacheAssertions.assertThrows("null value on put", NullPointerException.class, () -> cache.put(1, null));
@@ -89,12 +96,12 @@ public final class CacheScenarioRunner {
     ) {
         CacheAssertions.assertEquals(
             description,
-            Integer.valueOf(expectedValue),
-            cache.get(key).orElse(MISSING)
+            Optional.of(expectedValue),
+            cache.get(key)
         );
     }
 
     private void assertMissing(String description, Cache<Integer, Integer> cache, int key) {
-        CacheAssertions.assertFalse(description, cache.get(key).isPresent());
+        CacheAssertions.assertEquals(description, Optional.empty(), cache.get(key));
     }
 }

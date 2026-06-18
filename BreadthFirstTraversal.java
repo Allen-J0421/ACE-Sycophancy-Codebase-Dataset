@@ -7,14 +7,14 @@ final class BreadthFirstTraversal {
     private BreadthFirstTraversal() {
     }
 
-    static List<Integer> traverseFrom(Graph graph, int startVertex) {
+    static TraversalResult traverseFrom(Graph graph, int startVertex) {
         TraversalState traversalState = TraversalState.create(graph);
-        traversalState.validateStartVertex(startVertex);
+        graph.requireVertex(startVertex);
         traversalState.traverseComponent(startVertex);
-        return traversalState.traversalOrder();
+        return traversalState.result();
     }
 
-    static List<Integer> traverseAllComponents(Graph graph) {
+    static TraversalResult traverseAllComponents(Graph graph) {
         TraversalState traversalState = TraversalState.create(graph);
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
@@ -23,7 +23,7 @@ final class BreadthFirstTraversal {
             }
         }
 
-        return traversalState.traversalOrder();
+        return traversalState.result();
     }
 
     private static final class TraversalState {
@@ -48,8 +48,8 @@ final class BreadthFirstTraversal {
             return visited[vertex];
         }
 
-        List<Integer> traversalOrder() {
-            return traversalOrder;
+        TraversalResult result() {
+            return TraversalResult.fromVisitOrder(traversalOrder);
         }
 
         void traverseComponent(int startVertex) {
@@ -67,12 +67,6 @@ final class BreadthFirstTraversal {
                         queue.add(neighbor);
                     }
                 }
-            }
-        }
-
-        void validateStartVertex(int startVertex) {
-            if (startVertex < 0 || startVertex >= graph.vertexCount()) {
-                throw new IllegalArgumentException("Start vertex out of range: " + startVertex);
             }
         }
     }

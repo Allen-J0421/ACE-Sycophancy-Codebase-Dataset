@@ -1,3 +1,8 @@
 interface MutableGraph extends Graph {
-    void addUndirectedEdge(int from, int to);
+    void addDirectedEdge(int from, int to);
+
+    default void addUndirectedEdge(int from, int to) {
+        addDirectedEdge(from, to);
+        addDirectedEdge(to, from);
+    }
 }

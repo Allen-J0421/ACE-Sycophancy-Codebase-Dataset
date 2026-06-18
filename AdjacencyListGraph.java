@@ -26,27 +26,15 @@ final class AdjacencyListGraph implements MutableGraph {
     }
 
     @Override
-    public void addUndirectedEdge(int from, int to) {
-        validateVertex(from);
-        validateVertex(to);
-
-        addDirectedEdge(from, to);
-        addDirectedEdge(to, from);
-    }
-
-    @Override
     public List<Integer> neighborsOf(int vertex) {
-        validateVertex(vertex);
+        requireVertex(vertex);
         return adjacencyViews.get(vertex);
     }
 
-    private void addDirectedEdge(int from, int to) {
+    @Override
+    public void addDirectedEdge(int from, int to) {
+        requireVertex(from);
+        requireVertex(to);
         adjacencyList.get(from).add(to);
-    }
-
-    private void validateVertex(int vertex) {
-        if (vertex < 0 || vertex >= adjacencyList.size()) {
-            throw new IllegalArgumentException("Vertex out of range: " + vertex);
-        }
     }
 }

@@ -2,14 +2,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             Logger.setLevel(Logger.Level.INFO);
-            Logger.info("Starting Enterprise Graph Library - Level 7 Demo");
+            Logger.info("Starting Enterprise Graph Library - Level 8 Demo");
 
-            System.out.println("╔═══════════════════════════════════════════════════╗");
-            System.out.println("║   ENTERPRISE GRAPH LIBRARY - LEVEL 7 DEMO       ║");
-            System.out.println("║  (Configuration + Metrics + Resilience + Plugins)║");
-            System.out.println("╚═══════════════════════════════════════════════════╝");
+            System.out.println("╔════════════════════════════════════════════════════════╗");
+            System.out.println("║   ENTERPRISE GRAPH LIBRARY - LEVEL 8 DEMO            ║");
+            System.out.println("║ (API Contracts + Rate Limiting + Tracing + Audit Log)║");
+            System.out.println("╚════════════════════════════════════════════════════════╝");
 
-            demonstrateLevel7Features();
+            demonstrateLevel8Features();
 
             Graph graph = GraphBuilder.undirected(6)
                     .addEdge(1, 2)
@@ -126,6 +126,98 @@ public class Main {
             Logger.error("Graph error: " + e.getMessage());
             System.err.println("Graph error: " + e.getMessage());
         }
+    }
+
+    private static void demonstrateLevel8Features() {
+        System.out.println("\n--- API Gateway with Request/Response Contracts ---");
+        demonstrateAPIGateway();
+
+        System.out.println("\n--- Rate Limiting ---");
+        demonstrateRateLimiting();
+
+        System.out.println("\n--- Distributed Tracing ---");
+        demonstrateDistributedTracing();
+
+        System.out.println("\n--- Audit Logging ---");
+        demonstrateAuditLogging();
+
+        System.out.println("\n--- Service Statistics ---");
+        demonstrateServiceStatistics();
+    }
+
+    private static void demonstrateAPIGateway() {
+        APIGateway gateway = new APIGateway();
+
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        params.put("graphSize", 10);
+
+        GraphRequest request = new GraphRequest("traverse", params, "client-001");
+        Logger.info("Request: " + request);
+
+        GraphResponse<String> response = gateway.handleRequest(request, req -> {
+            Thread.sleep(50);
+            return "Traversal completed";
+        });
+
+        System.out.println("Response: " + response);
+        System.out.println("Status: " + (response.isSuccess() ? "SUCCESS" : "FAILED"));
+    }
+
+    private static void demonstrateRateLimiting() {
+        RateLimiter limiter = new RateLimiter(5, 1000);
+        String clientId = "test-client";
+
+        System.out.println("Simulating 8 requests with limit of 5 per second:");
+        for (int i = 0; i < 8; i++) {
+            boolean allowed = limiter.allowRequest(clientId);
+            int remaining = limiter.getRemainingRequests(clientId);
+            System.out.println("  Request " + (i + 1) + ": " + (allowed ? "ALLOWED" : "RATE LIMITED") +
+                             " (remaining: " + remaining + ")");
+        }
+    }
+
+    private static void demonstrateDistributedTracing() {
+        DistributedTracer tracer = DistributedTracer.getInstance();
+        String traceId = tracer.startTrace("sample-operation");
+
+        tracer.startSpan("step-1");
+        tracer.recordEvent("processing data");
+        tracer.endSpan();
+
+        tracer.startSpan("step-2");
+        tracer.recordEvent("building result");
+        tracer.endSpan();
+
+        System.out.println("Trace ID: " + traceId);
+        System.out.println("Current Trace: " + tracer.getCurrentTraceId());
+    }
+
+    private static void demonstrateAuditLogging() {
+        AuditLog audit = AuditLog.getInstance();
+        audit.clear();
+
+        audit.logOperation("user-001", "TRAVERSE", "graph-1", "BFS", true);
+        audit.logOperation("user-002", "ANALYZE", "graph-2", "METRICS", true);
+        audit.logOperation("user-001", "SERIALIZE", "graph-1", "JSON", false);
+
+        System.out.println("Total audit entries: " + audit.getEntryCount());
+        System.out.println("Audit trail for user-001:");
+        for (AuditLog.AuditEntry entry : audit.getAuditTrail("user-001")) {
+            System.out.println("  " + entry);
+        }
+    }
+
+    private static void demonstrateServiceStatistics() {
+        ServiceStatistics stats = ServiceStatistics.getInstance();
+        stats.reset();
+
+        stats.recordRequest("TRAVERSE", 50, true);
+        stats.recordRequest("TRAVERSE", 55, true);
+        stats.recordRequest("ANALYZE", 100, true);
+        stats.recordRequest("ANALYZE", 102, false);
+        stats.recordRequest("SERIALIZE", 75, true);
+
+        stats.printStatistics();
     }
 
     private static void demonstrateLevel7Features() {

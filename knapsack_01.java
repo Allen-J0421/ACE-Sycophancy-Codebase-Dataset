@@ -1,24 +1,11 @@
+import java.util.ArrayList;
+
 final class Knapsack {
 
-    private static final class Item {
-        private final int weight;
-        private final int value;
-
-        private Item(int weight, int value) {
-            this.weight = weight;
-            this.value = value;
-        }
+    private record Item(int weight, int value) {
     }
 
-    private static final class Problem {
-        private final int capacity;
-        private final Item[] items;
-
-        private Problem(int capacity, Item[] items) {
-            this.capacity = capacity;
-            this.items = items;
-        }
-
+    private record Problem(int capacity, Item[] items) {
         private static Problem from(int capacity, int[] values, int[] weights) {
             if (capacity < 0) {
                 throw new IllegalArgumentException("capacity must be non-negative");
@@ -30,26 +17,17 @@ final class Knapsack {
                 throw new IllegalArgumentException("values and weights must have the same length");
             }
 
-            int feasibleItemCount = 0;
+            ArrayList<Item> items = new ArrayList<>(values.length);
             for (int index = 0; index < values.length; index++) {
                 int weight = weights[index];
                 if (weight < 0) {
                     throw new IllegalArgumentException("weights must be non-negative");
                 }
                 if (weight <= capacity) {
-                    feasibleItemCount++;
+                    items.add(new Item(weight, values[index]));
                 }
             }
-
-            Item[] items = new Item[feasibleItemCount];
-            int itemIndex = 0;
-            for (int index = 0; index < values.length; index++) {
-                int weight = weights[index];
-                if (weight <= capacity) {
-                    items[itemIndex++] = new Item(weight, values[index]);
-                }
-            }
-            return new Problem(capacity, items);
+            return new Problem(capacity, items.toArray(Item[]::new));
         }
 
         private int solve() {
@@ -59,14 +37,14 @@ final class Knapsack {
                 consider(bestValues, item);
             }
 
-            return bestValues[bestValues.length - 1];
+            return bestValues[capacity];
         }
 
         private static void consider(int[] bestValues, Item item) {
-            for (int currentCapacity = bestValues.length - 1; currentCapacity >= item.weight; currentCapacity--) {
+            for (int currentCapacity = bestValues.length - 1; currentCapacity >= item.weight(); currentCapacity--) {
                 bestValues[currentCapacity] = Math.max(
                     bestValues[currentCapacity],
-                    bestValues[currentCapacity - item.weight] + item.value
+                    bestValues[currentCapacity - item.weight()] + item.value()
                 );
             }
         }

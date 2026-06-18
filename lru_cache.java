@@ -6,16 +6,16 @@ class LRUCache {
 
     private final Map<Integer, Integer> cache;
 
-    LRUCache(int capacity) {
+    public LRUCache(int capacity) {
         this.cache = new BoundedAccessOrderMap<>(requireNonNegativeCapacity(capacity));
     }
 
-    int get(int key) {
+    public int get(int key) {
         Integer value = cache.get(key);
         return value == null ? MISSING_VALUE : value;
     }
 
-    void put(int key, int value) {
+    public void put(int key, int value) {
         cache.put(key, value);
     }
 

@@ -33,7 +33,7 @@ class LinearProbingHashMap implements IntMap {
     }
 
     private int hash(int key) {
-        return (key % table.length + table.length) % table.length;
+        return Math.floorMod(key, table.length);
     }
 
     private int nextIndex(int index) {

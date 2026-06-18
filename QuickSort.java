@@ -1,15 +1,16 @@
-public class QuickSort {
+public class QuickSort implements Sorter {
 
-    public void sort(int[] arr, int low, int high) {
+    @Override
+    public void sort(int[] arr) {
+        sort(arr, 0, arr.length - 1);
+    }
+
+    private void sort(int[] arr, int low, int high) {
         if (low < high) {
             int pi = partition(arr, low, high);
             sort(arr, low, pi - 1);
             sort(arr, pi + 1, high);
         }
-    }
-
-    public void sort(int[] arr) {
-        sort(arr, 0, arr.length - 1);
     }
 
     private int partition(int[] arr, int low, int high) {

@@ -22,6 +22,33 @@ class HashEntry {
     }
 }
 
+class HashStats {
+    int probeDepth;
+    int maxProbeDepth;
+    int collisions;
+
+    void recordProbe(int depth) {
+        probeDepth++;
+        maxProbeDepth = Math.max(maxProbeDepth, depth);
+    }
+
+    void recordCollision() {
+        collisions++;
+    }
+
+    void reset() {
+        probeDepth = 0;
+        maxProbeDepth = 0;
+        collisions = 0;
+    }
+
+    void print() {
+        System.out.println("  Avg Probe Depth: " + (probeDepth > 0 ? probeDepth : 0));
+        System.out.println("  Max Probe Depth: " + maxProbeDepth);
+        System.out.println("  Total Collisions: " + collisions);
+    }
+}
+
 interface IntMap {
     void put(int key, int value);
     int get(int key);
@@ -32,11 +59,66 @@ interface IntMap {
     void clear();
 }
 
-class LinearProbingHashMap implements IntMap {
+interface ResizeStrategy {
+    boolean shouldExpand(int size, int deletedCount, int capacity);
+    boolean shouldShrink(int size, int capacity);
+    int nextCapacity(int currentCapacity, boolean expand);
+}
+
+class DefaultResizeStrategy implements ResizeStrategy {
     private static final int MIN_CAPACITY = 16;
     private static final int MAX_CAPACITY = 1 << 30;
     private static final float UPPER_LOAD_FACTOR = 0.75f;
     private static final float LOWER_LOAD_FACTOR = 0.25f;
+
+    @Override
+    public boolean shouldExpand(int size, int deletedCount, int capacity) {
+        return (size + deletedCount) >= capacity * UPPER_LOAD_FACTOR;
+    }
+
+    @Override
+    public boolean shouldShrink(int size, int capacity) {
+        return capacity > MIN_CAPACITY && size <= capacity * LOWER_LOAD_FACTOR;
+    }
+
+    @Override
+    public int nextCapacity(int currentCapacity, boolean expand) {
+        int newCapacity = expand ? currentCapacity * 2 : currentCapacity / 2;
+        return Math.max(Math.min(newCapacity, MAX_CAPACITY), MIN_CAPACITY);
+    }
+
+    public static int getMinCapacity() {
+        return MIN_CAPACITY;
+    }
+
+    public static int getMaxCapacity() {
+        return MAX_CAPACITY;
+    }
+}
+
+interface HashFunction {
+    int hash(int key, int capacity);
+}
+
+class ModuloHashFunction implements HashFunction {
+    @Override
+    public int hash(int key, int capacity) {
+        return Math.abs(key) % capacity;
+    }
+}
+
+interface ProbeSequence {
+    int nextProbe(int startIndex, int probeCount, int capacity);
+}
+
+class LinearProbeSequence implements ProbeSequence {
+    @Override
+    public int nextProbe(int startIndex, int probeCount, int capacity) {
+        return (startIndex + probeCount) % capacity;
+    }
+}
+
+class LinearProbingHashMap implements IntMap {
     private static final int NOT_FOUND = -1;
 
     private HashEntry[] table;
@@ -44,30 +126,39 @@ class LinearProbingHashMap implements IntMap {
     private int capacity;
     private int deletedCount;
 
+    private ResizeStrategy resizeStrategy;
+    private HashFunction hashFunction;
+    private ProbeSequence probeSequence;
+    private HashStats stats;
+    private boolean trackStats;
+
     public LinearProbingHashMap() {
-        this(MIN_CAPACITY);
+        this(DefaultResizeStrategy.getMinCapacity(), true);
     }
 
-    public LinearProbingHashMap(int initialCapacity) {
-        if (initialCapacity < MIN_CAPACITY) {
-            initialCapacity = MIN_CAPACITY;
-        }
-        if (initialCapacity > MAX_CAPACITY) {
-            throw new IllegalArgumentException("Initial capacity exceeds maximum");
-        }
-        if (!isPowerOfTwo(initialCapacity)) {
-            initialCapacity = nextPowerOfTwo(initialCapacity);
-        }
-        this.capacity = initialCapacity;
+    public LinearProbingHashMap(int initialCapacity, boolean trackStats) {
+        this(initialCapacity, new DefaultResizeStrategy(),
+             new ModuloHashFunction(), new LinearProbeSequence(), trackStats);
+    }
+
+    public LinearProbingHashMap(int initialCapacity, ResizeStrategy strategy,
+                               HashFunction hash, ProbeSequence probe, boolean trackStats) {
+        validateInitialCapacity(initialCapacity);
+        this.capacity = normalizeCapacity(initialCapacity);
         this.size = 0;
         this.deletedCount = 0;
         this.table = new HashEntry[capacity];
+        this.resizeStrategy = strategy;
+        this.hashFunction = hash;
+        this.probeSequence = probe;
+        this.trackStats = trackStats;
+        this.stats = new HashStats();
     }
 
     @Override
     public void put(int key, int value) {
-        if (shouldExpandResize()) {
-            resize(capacity * 2);
+        if (resizeStrategy.shouldExpand(size, deletedCount, capacity)) {
+            resize(resizeStrategy.nextCapacity(capacity, true));
         }
 
         int index = findSlot(key);
@@ -101,8 +192,8 @@ class LinearProbingHashMap implements IntMap {
             size--;
             deletedCount++;
 
-            if (shouldShrinkResize()) {
-                resize(capacity / 2);
+            if (resizeStrategy.shouldShrink(size, capacity)) {
+                resize(resizeStrategy.nextCapacity(capacity, false));
             }
             return value;
         }
@@ -129,6 +220,16 @@ class LinearProbingHashMap implements IntMap {
         size = 0;
         deletedCount = 0;
         table = new HashEntry[capacity];
+        stats.reset();
+    }
+
+    public void printStats() {
+        if (trackStats) {
+            System.out.println("Hash Table Statistics:");
+            System.out.println("  Size: " + size + "/" + capacity);
+            System.out.println("  Load Factor: " + String.format("%.2f", (float) size / capacity));
+            stats.print();
+        }
     }
 
     public void display() {
@@ -147,17 +248,17 @@ class LinearProbingHashMap implements IntMap {
                           ", Deleted: " + deletedCount);
     }
 
-    private int hash(int key) {
-        return Math.abs(key) % capacity;
-    }
-
     private int findSlot(int key) {
-        int index = hash(key);
+        int startIndex = hashFunction.hash(key, capacity);
         int firstDeleted = -1;
 
         for (int i = 0; i < capacity; i++) {
-            int probeIndex = (index + i) % capacity;
+            int probeIndex = probeSequence.nextProbe(startIndex, i, capacity);
             HashEntry entry = table[probeIndex];
+
+            if (trackStats && i > 0) {
+                stats.recordProbe(i);
+            }
 
             if (entry == null) {
                 return firstDeleted >= 0 ? firstDeleted : probeIndex;
@@ -167,17 +268,22 @@ class LinearProbingHashMap implements IntMap {
             }
             if (entry.deleted && firstDeleted < 0) {
                 firstDeleted = probeIndex;
+                if (trackStats) stats.recordCollision();
             }
         }
         return -1;
     }
 
     private int findExisting(int key) {
-        int index = hash(key);
+        int startIndex = hashFunction.hash(key, capacity);
 
         for (int i = 0; i < capacity; i++) {
-            int probeIndex = (index + i) % capacity;
+            int probeIndex = probeSequence.nextProbe(startIndex, i, capacity);
             HashEntry entry = table[probeIndex];
+
+            if (trackStats && i > 0) {
+                stats.recordProbe(i);
+            }
 
             if (entry == null) {
                 return -1;
@@ -189,18 +295,7 @@ class LinearProbingHashMap implements IntMap {
         return -1;
     }
 
-    private boolean shouldExpandResize() {
-        return (size + deletedCount) >= capacity * UPPER_LOAD_FACTOR;
-    }
-
-    private boolean shouldShrinkResize() {
-        return capacity > MIN_CAPACITY && size <= capacity * LOWER_LOAD_FACTOR;
-    }
-
     private void resize(int newCapacity) {
-        newCapacity = Math.max(newCapacity, MIN_CAPACITY);
-        newCapacity = Math.min(newCapacity, MAX_CAPACITY);
-
         if (newCapacity == capacity) {
             return;
         }
@@ -210,6 +305,7 @@ class LinearProbingHashMap implements IntMap {
         table = new HashEntry[capacity];
         size = 0;
         deletedCount = 0;
+        stats.reset();
 
         for (HashEntry entry : oldTable) {
             if (entry != null && entry.isActive()) {
@@ -218,13 +314,36 @@ class LinearProbingHashMap implements IntMap {
         }
     }
 
-    private static boolean isPowerOfTwo(int n) {
+    private void validateInitialCapacity(int capacity) {
+        if (capacity < DefaultResizeStrategy.getMinCapacity()) {
+            throw new IllegalArgumentException("Capacity below minimum: " +
+                DefaultResizeStrategy.getMinCapacity());
+        }
+        if (capacity > DefaultResizeStrategy.getMaxCapacity()) {
+            throw new IllegalArgumentException("Capacity exceeds maximum: " +
+                DefaultResizeStrategy.getMaxCapacity());
+        }
+    }
+
+    private int normalizeCapacity(int capacity) {
+        if (PowerOfTwo.isPowerOfTwo(capacity)) {
+            return capacity;
+        }
+        return PowerOfTwo.nextPowerOfTwo(capacity,
+            DefaultResizeStrategy.getMaxCapacity());
+    }
+}
+
+class PowerOfTwo {
+    private static final int MAX_POWER_OF_TWO = 1 << 30;
+
+    static boolean isPowerOfTwo(int n) {
         return n > 0 && (n & (n - 1)) == 0;
     }
 
-    private static int nextPowerOfTwo(int n) {
+    static int nextPowerOfTwo(int n, int max) {
         int power = 1;
-        while (power < n && power < MAX_CAPACITY) {
+        while (power < n && power < max) {
             power <<= 1;
         }
         return power;
@@ -236,6 +355,8 @@ class Demo {
         testBasicOperations();
         testResizing();
         testContainsAndClear();
+        testCustomStrategies();
+        testStatistics();
     }
 
     private static void testBasicOperations() {
@@ -260,7 +381,7 @@ class Demo {
 
     private static void testResizing() {
         System.out.println("=== Test: Dynamic Resizing ===");
-        LinearProbingHashMap map = new LinearProbingHashMap(8);
+        LinearProbingHashMap map = new LinearProbingHashMap(16, false);
 
         for (int i = 0; i < 15; i++) {
             map.put(i, i * 10);
@@ -284,5 +405,35 @@ class Demo {
         map.clear();
         System.out.println("Size after clear: " + map.size());
         System.out.println("Contains 42 after clear: " + map.containsKey(42));
+        System.out.println();
+    }
+
+    private static void testCustomStrategies() {
+        System.out.println("=== Test: Custom Strategies ===");
+        ResizeStrategy customStrategy = new DefaultResizeStrategy();
+        HashFunction customHash = new ModuloHashFunction();
+        ProbeSequence customProbe = new LinearProbeSequence();
+
+        LinearProbingHashMap map = new LinearProbingHashMap(16, customStrategy,
+                                                           customHash, customProbe, false);
+        for (int i = 0; i < 10; i++) {
+            map.put(i * 7, i * 100);
+        }
+        System.out.println("Inserted 10 items with custom strategies");
+        System.out.println("Size: " + map.size());
+        System.out.println("Get(21): " + map.get(21));
+        System.out.println();
+    }
+
+    private static void testStatistics() {
+        System.out.println("=== Test: Statistics ===");
+        LinearProbingHashMap map = new LinearProbingHashMap(16, true);
+
+        for (int i = 0; i < 12; i++) {
+            map.put(i * 11, i * 100);
+        }
+        System.out.println("After inserting 12 items:");
+        map.printStats();
+        System.out.println();
     }
 }

@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-final class HeapBuildResult {
+public final class HeapBuildResult {
 
     private final int[] inputValues;
     private final int[] heapValues;
@@ -12,23 +12,22 @@ final class HeapBuildResult {
         this.validMaxHeap = validMaxHeap;
     }
 
-    static HeapBuildResult from(int[] values) {
-        int[] inputCopy = Arrays.copyOf(requireValues(values), values.length);
-        int[] heapCopy = BuildHeap.buildHeapCopy(inputCopy);
-        boolean validMaxHeap = BuildHeap.isMaxHeap(heapCopy);
-
-        return new HeapBuildResult(inputCopy, heapCopy, validMaxHeap);
+    static HeapBuildResult of(int[] inputValues, int[] heapValues, boolean validMaxHeap) {
+        return new HeapBuildResult(
+                Arrays.copyOf(requireValues(inputValues), inputValues.length),
+                Arrays.copyOf(requireValues(heapValues), heapValues.length),
+                validMaxHeap);
     }
 
-    int[] inputValues() {
+    public int[] inputValues() {
         return Arrays.copyOf(inputValues, inputValues.length);
     }
 
-    int[] heapValues() {
+    public int[] heapValues() {
         return Arrays.copyOf(heapValues, heapValues.length);
     }
 
-    boolean isValidMaxHeap() {
+    public boolean isValidMaxHeap() {
         return validMaxHeap;
     }
 

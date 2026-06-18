@@ -45,8 +45,22 @@ final class IntArrayHeap {
         return true;
     }
 
+    HeapBuildResult analyze() {
+        IntArrayHeap inputSnapshot = copy();
+        IntArrayHeap heapSnapshot = copy().buildMaxHeap();
+
+        return HeapBuildResult.of(
+                inputSnapshot.toArray(),
+                heapSnapshot.toArray(),
+                heapSnapshot.isMaxHeap());
+    }
+
     int[] toArray() {
         return values;
+    }
+
+    private IntArrayHeap copy() {
+        return new IntArrayHeap(Arrays.copyOf(values, size));
     }
 
     private void siftDown(int parentIndex) {

@@ -15,4 +15,8 @@ public final class BuildHeap {
     public static boolean isMaxHeap(int[] values) {
         return IntArrayHeap.wrap(values).isMaxHeap();
     }
+
+    public static HeapBuildResult analyze(int[] values) {
+        return IntArrayHeap.wrap(values).analyze();
+    }
 }

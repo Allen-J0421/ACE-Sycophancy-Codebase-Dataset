@@ -10,7 +10,7 @@ public final class BuildHeapDemo {
 
     public static void main(String[] args) {
         try {
-            HeapBuildResult result = HeapBuildResult.from(parseValues(args));
+            HeapBuildResult result = BuildHeap.analyze(parseValues(args));
             printResult(result);
         } catch (IllegalArgumentException exception) {
             System.err.println(exception.getMessage());

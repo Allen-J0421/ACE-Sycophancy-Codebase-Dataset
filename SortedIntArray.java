@@ -24,10 +24,6 @@ public final class SortedIntArray {
         return copyOf(values);
     }
 
-    public int size() {
-        return values.length;
-    }
-
     public Optional<PairMatch> findPairWithSum(long target) {
         SearchResult result = search(target);
         if (!result.found()) {

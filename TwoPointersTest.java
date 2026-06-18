@@ -16,6 +16,7 @@ public final class TwoPointersTest {
         shouldHandleIntegerOverflowSafely();
         shouldSupportTargetsBeyondIntegerRange();
         shouldDefensivelyCopyValidatedInput();
+        shouldReuseEmptyInstance();
         shouldRejectNullSortedValueObjects();
         shouldBehaveLikeAValueObject();
     }
@@ -52,13 +53,12 @@ public final class TwoPointersTest {
     }
 
     private static void shouldSupportRawArrayFacadeBooleanChecks() {
-        if (!TwoPointers.hasPairWithSum(new int[] {1, 3, 7, 9}, 10)) {
-            throw new AssertionError("Expected raw array facade to report a matching pair");
-        }
-
-        if (TwoPointers.hasPairWithSum(new int[] {1, 3, 7, 9}, 13)) {
-            throw new AssertionError("Expected raw array facade to report no matching pair");
-        }
+        assertTrue(
+            TwoPointers.hasPairWithSum(new int[] {1, 3, 7, 9}, 10),
+            "Expected raw array facade to report a matching pair");
+        assertFalse(
+            TwoPointers.hasPairWithSum(new int[] {1, 3, 7, 9}, 13),
+            "Expected raw array facade to report no matching pair");
     }
 
     private static void shouldRejectNullRawArrayFacadeInput() {
@@ -103,9 +103,16 @@ public final class TwoPointersTest {
         SortedIntArray sortedValues = SortedIntArray.copyOf(sourceValues);
         sourceValues[3] = -10;
 
-        if (!TwoPointers.hasPairWithSum(sortedValues, 10)) {
-            throw new AssertionError("Expected validated copy to be isolated from caller mutations");
-        }
+        assertTrue(
+            TwoPointers.hasPairWithSum(sortedValues, 10),
+            "Expected validated copy to be isolated from caller mutations");
+    }
+
+    private static void shouldReuseEmptyInstance() {
+        SortedIntArray first = SortedIntArray.of();
+        SortedIntArray second = SortedIntArray.copyOf(new int[0]);
+
+        assertSame(first, second, "Expected empty sorted arrays to reuse the shared instance");
     }
 
     private static void shouldRejectNullSortedValueObjects() {
@@ -119,15 +126,9 @@ public final class TwoPointersTest {
         SortedIntArray first = SortedIntArray.of(1, 2, 3);
         SortedIntArray second = SortedIntArray.copyOf(new int[] {1, 2, 3});
 
-        if (!first.equals(second)) {
-            throw new AssertionError("Expected equal sorted arrays to compare by value");
-        }
-
+        assertTrue(first.equals(second), "Expected equal sorted arrays to compare by value");
         assertEquals(first.hashCode(), second.hashCode(), "hash code");
-
-        if (!"[1, 2, 3]".equals(first.toString())) {
-            throw new AssertionError("Unexpected string representation: " + first);
-        }
+        assertEquals("[1, 2, 3]", first.toString(), "string representation");
     }
 
     private static void assertMatch(
@@ -146,9 +147,7 @@ public final class TwoPointersTest {
     }
 
     private static void assertNoMatch(java.util.Optional<PairMatch> match) {
-        if (match.isPresent()) {
-            throw new AssertionError("Expected no matching pair");
-        }
+        assertFalse(match.isPresent(), "Expected no matching pair");
     }
 
     private static void assertThrowsWithMessage(
@@ -170,6 +169,31 @@ public final class TwoPointersTest {
         if (expected != actual) {
             throw new AssertionError(
                 "Unexpected " + fieldName + ": expected " + expected + ", got " + actual);
+        }
+    }
+
+    private static void assertEquals(String expected, String actual, String fieldName) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError(
+                "Unexpected " + fieldName + ": expected " + expected + ", got " + actual);
+        }
+    }
+
+    private static void assertTrue(boolean condition, String failureMessage) {
+        if (!condition) {
+            throw new AssertionError(failureMessage);
+        }
+    }
+
+    private static void assertFalse(boolean condition, String failureMessage) {
+        if (condition) {
+            throw new AssertionError(failureMessage);
+        }
+    }
+
+    private static void assertSame(Object expected, Object actual, String failureMessage) {
+        if (expected != actual) {
+            throw new AssertionError(failureMessage);
         }
     }
 

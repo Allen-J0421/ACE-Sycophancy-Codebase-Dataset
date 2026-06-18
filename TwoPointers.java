@@ -6,19 +6,19 @@ public final class TwoPointers {
     }
 
     public static Optional<PairMatch> findPairWithSum(int[] sortedValues, long target) {
-        return copySortedValues(sortedValues).findPairWithSum(target);
+        return findPairWithSum(copySortedValues(sortedValues), target);
     }
 
     public static Optional<PairMatch> findPairWithSum(SortedIntArray sortedValues, long target) {
-        return requireSortedValues(sortedValues).findPairWithSum(target);
+        return searchIn(requireSortedValues(sortedValues), target);
     }
 
     public static boolean hasPairWithSum(int[] sortedValues, long target) {
-        return copySortedValues(sortedValues).hasPairWithSum(target);
+        return hasPairWithSum(copySortedValues(sortedValues), target);
     }
 
     public static boolean hasPairWithSum(SortedIntArray sortedValues, long target) {
-        return requireSortedValues(sortedValues).hasPairWithSum(target);
+        return containsIn(requireSortedValues(sortedValues), target);
     }
 
     private static SortedIntArray copySortedValues(int[] sortedValues) {
@@ -31,5 +31,13 @@ public final class TwoPointers {
         }
 
         return sortedValues;
+    }
+
+    private static Optional<PairMatch> searchIn(SortedIntArray sortedValues, long target) {
+        return sortedValues.findPairWithSum(target);
+    }
+
+    private static boolean containsIn(SortedIntArray sortedValues, long target) {
+        return sortedValues.hasPairWithSum(target);
     }
 }

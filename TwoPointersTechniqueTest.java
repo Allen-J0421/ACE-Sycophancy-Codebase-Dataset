@@ -3,19 +3,22 @@ import java.util.function.BooleanSupplier;
 
 public final class TwoPointersTechniqueTest {
 
-    private static final int[] UNSORTED_SAMPLE = {2, -3, 1, 0, -1};
-    private static final int[] SORTED_SAMPLE = {-3, -1, 0, 1, 2};
-
     private TwoPointersTechniqueTest() {
         // Test harness only.
     }
 
     public static void main(String[] args) {
         assertCase("find pair in unsorted input", () ->
-            TwoPointersTechnique.hasPairWithSum(UNSORTED_SAMPLE, -2)
+            TwoPointersTechnique.hasPairWithSum(
+                TwoPointersTechniqueSamples.unsortedSample(),
+                TwoPointersTechniqueSamples.target()
+            )
         );
         assertCase("find pair in sorted input", () ->
-            TwoPointersTechnique.hasPairWithSumSorted(SORTED_SAMPLE, -2)
+            TwoPointersTechnique.hasPairWithSumSorted(
+                TwoPointersTechniqueSamples.sortedSample(),
+                TwoPointersTechniqueSamples.target()
+            )
         );
         assertCase("reject missing pair", () ->
             !TwoPointersTechnique.hasPairWithSum(new int[] {1, 4, 6, 9}, 20)
@@ -39,7 +42,7 @@ public final class TwoPointersTechniqueTest {
     }
 
     private static boolean preservesInputArray() {
-        int[] values = {5, 1, 4};
+        int[] values = TwoPointersTechniqueSamples.unsortedSample();
         int[] snapshot = values.clone();
 
         TwoPointersTechnique.hasPairWithSum(values, 9);

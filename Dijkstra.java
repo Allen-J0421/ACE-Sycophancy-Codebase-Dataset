@@ -8,14 +8,6 @@ public final class Dijkstra {
         // Utility class.
     }
 
-    public static ArrayList<Integer> dijkstra(ArrayList<ArrayList<int[]>> adj, int src) {
-        return shortestPaths(LegacyGraphAdapter.toGraph(adj), src);
-    }
-
-    public static void addEdge(ArrayList<ArrayList<int[]>> adj, int u, int v, int w) {
-        LegacyGraphAdapter.addUndirectedEdge(adj, u, v, w);
-    }
-
     public static ArrayList<Integer> shortestPaths(Graph graph, int source) {
         return ShortestPathSolver.solve(graph, source).toList();
     }

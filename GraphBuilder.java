@@ -1,10 +1,19 @@
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 final class GraphBuilder {
     private final List<List<Edge>> adjacency;
 
     private GraphBuilder(int vertexCount) {
-        this.adjacency = Graph.emptyAdjacency(vertexCount);
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("vertexCount must be non-negative");
+        }
+
+        this.adjacency = new ArrayList<>(vertexCount);
+        for (int i = 0; i < vertexCount; i++) {
+            adjacency.add(new ArrayList<>());
+        }
     }
 
     static GraphBuilder withVertexCount(int vertexCount) {
@@ -26,7 +35,11 @@ final class GraphBuilder {
     }
 
     Graph build() {
-        return new Graph(Graph.freezeAdjacency(adjacency));
+        List<List<Edge>> frozen = new ArrayList<>(adjacency.size());
+        for (List<Edge> neighbors : adjacency) {
+            frozen.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
+        }
+        return new Graph(Collections.unmodifiableList(frozen));
     }
 
     private void validateVertex(int vertex) {

@@ -7,7 +7,7 @@ public final class DijkstraTest {
 
     public static void main(String[] args) {
         verifiesSampleGraphDistances();
-        verifiesLegacyAdapterSupportsShortestPaths();
+        verifiesBuilderChainingBuildsGraph();
         verifiesUnreachableVerticesRemainInfinite();
         System.out.println("All Dijkstra tests passed");
     }
@@ -17,16 +17,14 @@ public final class DijkstraTest {
         assertDistances("sample graph", distances, 0, 4, 7, 9, 10);
     }
 
-    private static void verifiesLegacyAdapterSupportsShortestPaths() {
-        ArrayList<ArrayList<int[]>> legacy = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            legacy.add(new ArrayList<>());
-        }
-        Dijkstra.addEdge(legacy, 0, 1, 2);
-        Dijkstra.addEdge(legacy, 1, 2, 1);
+    private static void verifiesBuilderChainingBuildsGraph() {
+        Graph graph = GraphBuilder.withVertexCount(3)
+            .addUndirectedEdge(0, 1, 2)
+            .addUndirectedEdge(1, 2, 1)
+            .build();
 
-        List<Integer> distances = Dijkstra.dijkstra(legacy, 0);
-        assertDistances("legacy adapter", distances, 0, 2, 3);
+        List<Integer> distances = Dijkstra.shortestPaths(graph, 0);
+        assertDistances("builder chaining", distances, 0, 2, 3);
     }
 
     private static void verifiesUnreachableVerticesRemainInfinite() {

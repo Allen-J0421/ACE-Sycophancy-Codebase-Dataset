@@ -1,73 +1,90 @@
 # Dijkstra's Shortest Path - Refactoring Summary
 
 ## Iteration 1: Type Safety & Naming
-
-### Improvements Made
-
-1. **Introduced Type Safety with Dedicated Classes**
-   - Replaced raw `int[]` arrays with `Edge` and `QueueEntry` classes
-   - Added `Graph` class for structure management
-
-2. **Improved Naming Clarity**
-   - Renamed cryptic variables: `u`, `v`, `w`, `d`, `src`, `V`, `pq`, `adj`
-   - Used descriptive names: `currentNode`, `neighbor`, `weight`, `sourceNode`, `vertexCount`
-
-3. **Separated Concerns**
-   - Graph building, algorithm logic, and display in separate classes
+- Replaced raw `int[]` arrays with dedicated `Edge` and `QueueEntry` classes
+- Renamed cryptic variables for clarity: `u`, `v`, `w`, `d`, `src` → descriptive names
+- Separated concerns: graph building, algorithm logic, and display
 
 ## Iteration 2: Architecture & Extensibility
+- Added `ShortestPathResult` to encapsulate output
+- Implemented input validation for vertices and source nodes
+- Extracted algorithm steps: `processQueueEntry()`, `relaxEdge()`
+- Added `GraphBuilder` with fluent API for readable graph construction
+- Added `toString()` methods for debugging support
 
-### Additional Improvements
+## Iteration 3: Factory Methods, Equality, and Advanced Patterns
 
-1. **Immutability & Robustness**
-   - Made `Edge` fields `final` and added getter methods
-   - Added `ShortestPathResult` class to encapsulate output
-   - Made adjacency lists unmodifiable via `Collections.unmodifiableList()`
+### Factory Methods & Initialization
+1. **Factory Method Pattern**
+   - `Edge.of(destination, weight)` replaces direct constructor
+   - `Graph.create(vertexCount)` provides factory creation
+   - `PriorityQueueEntry.of(distance, node)` standardizes creation
+   - `ShortestPathResult.of(distances, sourceNode)` for result construction
+   - `GraphBuilder.withVertexCount(vertexCount)` for builder initialization
+   - Makes constructors private, enforces consistent creation paths
 
-2. **Input Validation**
-   - Added `validateVertex()` in Graph class to prevent index out of bounds
-   - Added `validateSourceNode()` in solver to catch invalid source nodes
-   - Uses `Objects.requireNonNull()` for null safety
+2. **Streaming & Functional Programming**
+   - Used `IntStream.range()` for initialization loops in Graph
+   - Replaced loop with functional `forEach()` in queue processing
+   - Streams provide cleaner, more declarative code
 
-3. **Better API Design**
-   - Changed `getAdjacencyList()` to `getAdjacencyListFor(vertex)` for clarity
-   - `ShortestPathResult` provides both list and single-node distance access
-   - Clear, type-safe result object instead of raw list
+### Equality & Hashing
+1. **Complete Value Object Implementation**
+   - Added `equals()` and `hashCode()` to all domain classes:
+     - `Edge`: By destination and weight
+     - `ShortestPathResult`: By source node and distances
+     - `Graph`: By vertex count and adjacency list
+     - `PriorityQueueEntry`: By distance and node
+   - Enables proper comparison, collection usage, testing
 
-4. **Method Extraction & Single Responsibility**
-   - Extracted `processQueueEntry()` for queue processing logic
-   - Extracted `relaxEdge()` for edge relaxation (core Dijkstra operation)
-   - Extracted `initializeDistances()` for setup logic
-   - Extracted `validateSourceNode()` for input validation
-   - Each method has one clear purpose
+### Enhanced Validation & Safety
+1. **Domain Constraint Enforcement**
+   - `Edge`: Non-negative weight validation
+   - `Graph`: Non-zero vertex count, no self-loops
+   - `PriorityQueueEntry`: Non-negative distance
+   - All constraint violations throw clear `IllegalArgumentException`
 
-5. **Builder Pattern**
-   - Added `GraphBuilder` for fluent, readable graph construction
-   - Enables chaining: `.addEdge().addEdge().addEdge().build()`
-   - More maintainable than inline edge additions
+2. **Null Safety**
+   - `Objects.requireNonNull()` for critical dependencies
+   - Optional return type for `getDistanceTo(node)` instead of unchecked access
+   - Prevents `NullPointerException` at runtime
 
-6. **Renaming for Clarity**
-   - `QueueEntry` → `PriorityQueueEntry` (more specific)
-   - `ShortestPathSolver` → `DijkstraShortestPathSolver` (algorithm-specific)
-   - Constant `INFINITY` extracted for reuse
+### API Improvements
+1. **Optional for Safe Queries**
+   - `ShortestPathResult.getDistanceTo(node)` returns `Optional<Integer>`
+   - Safely handles out-of-range queries
+   - Added `isReachable(node)` convenience method
 
-7. **Documentation & Debugging**
-   - Added `toString()` methods to all domain classes for debugging
-   - Added `countEdges()` helper for graph introspection
-   - Better error messages with context
+2. **Semantic Method Names**
+   - `isOutdatedEntry()` extracts duplicate check logic
+   - `processQueue()` separates loop from entry processing
+   - `GraphBuilder.withVertexCount()` clarifies intent vs `new GraphBuilder(n)`
 
-8. **Getter Methods**
-   - Edge: `getDestination()`, `getWeight()`
-   - PriorityQueueEntry: `getDistance()`, `getNode()`
-   - ShortestPathResult: `getDistances()`, `getDistanceTo()`, `getSourceNode()`
-   - Follows Java conventions and enables future validation
+3. **Result Formatting Extraction**
+   - New `ResultFormatter` class separates display logic
+   - `printDistances()` and `formatResult()` are independently reusable
+   - Enables future formatting strategies without changing Main
+
+### Code Quality Improvements
+1. **Functional Programming**
+   - `graph.getAdjacencyListFor(currentNode).forEach(...)` replaces explicit loop
+   - More concise, easier to parallelize if needed
+
+2. **Constant & Helper Methods**
+   - Extracted `isOutdatedEntry()` for clarity
+   - Makes algorithm intent more visible
+
+3. **String Formatting**
+   - All `toString()` implementations use `String.format()` consistently
+   - Better for debugging and logging
 
 ## Result
 
 All functionality preserved, output matches original (0 4 7 9 10). The code is now:
-- **Immutable**: Less risk of accidental modification
-- **Validated**: Catches errors at boundaries
-- **Extensible**: Easy to add features (tracking predecessors, finding paths, etc.)
-- **Testable**: Each component can be unit tested independently
-- **Readable**: Builder pattern and small methods make flow crystal clear
-- **Debuggable**: `toString()` methods aid investigation
+- **Production-Ready**: Factory methods, equality, and hashing enable proper use in collections
+- **Type-Safe**: Value objects with complete equals/hashCode implementation
+- **Immutable**: Private constructors force controlled construction
+- **Validated**: Domain constraints enforced at boundaries
+- **Functional**: Stream operations and functional patterns for modern Java
+- **Testable**: Complete equality support enables assertion-based testing
+- **Extensible**: Optional types and functional approaches enable future features

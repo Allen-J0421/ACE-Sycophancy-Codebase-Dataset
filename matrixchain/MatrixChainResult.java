@@ -1,10 +1,10 @@
 package matrixchain;
 
 final class MatrixChainResult {
-    final int minCost;
+    final long minCost;
     final String parenthesization;
 
-    MatrixChainResult(int minCost, String parenthesization) {
+    MatrixChainResult(long minCost, String parenthesization) {
         this.minCost = minCost;
         this.parenthesization = parenthesization;
     }

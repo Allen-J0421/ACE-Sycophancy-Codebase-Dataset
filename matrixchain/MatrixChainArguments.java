@@ -1,10 +1,14 @@
 package matrixchain;
 
 final class MatrixChainArguments {
-    final MatrixDimensions[] matrices;
+    private final MatrixDimensions[] matrices;
 
     private MatrixChainArguments(MatrixDimensions[] matrices) {
         this.matrices = matrices;
+    }
+
+    MatrixDimensions[] matrices() {
+        return matrices.clone();
     }
 
     static MatrixChainArguments parse(String[] args) {

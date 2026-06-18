@@ -19,7 +19,7 @@ public class MatrixChainMultiplicationTest {
         }
     }
 
-    static void assertEquals(int expected, int actual) {
+    static void assertEquals(long expected, long actual) {
         if (expected != actual) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
         }
@@ -29,16 +29,6 @@ public class MatrixChainMultiplicationTest {
         if (!expected.equals(actual)) {
             throw new AssertionError("Expected '" + expected + "' but got '" + actual + "'");
         }
-    }
-
-    static void testBasicCase() {
-        // matrices 2x1, 1x3, 3x4: optimal is A1x(A2xA3) = 12+8 = 20
-        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
-            new MatrixDimensions(2, 1),
-            new MatrixDimensions(1, 3),
-            new MatrixDimensions(3, 4)
-        });
-        assertEquals(20, result.minCost);
     }
 
     static void testSingleMatrix() {
@@ -58,6 +48,17 @@ public class MatrixChainMultiplicationTest {
         assertEquals("(A1 x A2)", result.parenthesization);
     }
 
+    static void testThreeMatrices() {
+        // 2x1, 1x3, 3x4: optimal is A1x(A2xA3) = cost 12+8 = 20
+        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
+            new MatrixDimensions(2, 1),
+            new MatrixDimensions(1, 3),
+            new MatrixDimensions(3, 4)
+        });
+        assertEquals(20, result.minCost);
+        assertEquals("(A1 x (A2 x A3))", result.parenthesization);
+    }
+
     static void testFourMatrices() {
         // Classic example: arr={40,20,30,10,30}, answer=26000
         MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
@@ -69,24 +70,18 @@ public class MatrixChainMultiplicationTest {
         assertEquals(26000, result.minCost);
     }
 
-    static void testParenthesization() {
-        // 2x1, 1x3, 3x4: optimal split at k=1 gives (A1 x (A2 x A3))
-        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
-            new MatrixDimensions(2, 1),
-            new MatrixDimensions(1, 3),
-            new MatrixDimensions(3, 4)
-        });
-        assertEquals("(A1 x (A2 x A3))", result.parenthesization);
-    }
-
-    static void testInvalidDimensions() {
-        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(0, 5));
-        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(5, -1));
+    static void testNullInput() {
+        assertThrows(IllegalArgumentException.class, () -> MatrixChainSolver.solve(null));
     }
 
     static void testEmptyInput() {
         assertThrows(IllegalArgumentException.class,
                 () -> MatrixChainSolver.solve(new MatrixDimensions[0]));
+    }
+
+    static void testInvalidDimensions() {
+        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(0, 5));
+        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(5, -1));
     }
 
     static void testIncompatibleChain() {
@@ -97,12 +92,12 @@ public class MatrixChainMultiplicationTest {
     }
 
     static void testArgumentParsing() {
-        MatrixChainArguments args = MatrixChainArguments.parse(new String[]{"10", "30", "5"});
-        assertEquals(2, args.matrices.length);
-        assertEquals(10, args.matrices[0].rows);
-        assertEquals(30, args.matrices[0].cols);
-        assertEquals(30, args.matrices[1].rows);
-        assertEquals(5, args.matrices[1].cols);
+        MatrixDimensions[] matrices = MatrixChainArguments.parse(new String[]{"10", "30", "5"}).matrices();
+        assertEquals(2, matrices.length);
+        assertEquals(10, matrices[0].rows);
+        assertEquals(30, matrices[0].cols);
+        assertEquals(30, matrices[1].rows);
+        assertEquals(5, matrices[1].cols);
     }
 
     static void testArgumentParsingInvalid() {
@@ -115,13 +110,13 @@ public class MatrixChainMultiplicationTest {
     }
 
     public static void main(String[] args) {
-        testBasicCase();
         testSingleMatrix();
         testTwoMatrices();
+        testThreeMatrices();
         testFourMatrices();
-        testParenthesization();
-        testInvalidDimensions();
+        testNullInput();
         testEmptyInput();
+        testInvalidDimensions();
         testIncompatibleChain();
         testArgumentParsing();
         testArgumentParsingInvalid();

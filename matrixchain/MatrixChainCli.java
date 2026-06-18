@@ -9,7 +9,7 @@ public final class MatrixChainCli {
         }
         try {
             MatrixChainArguments arguments = MatrixChainArguments.parse(args);
-            MatrixChainResult result = MatrixChainSolver.solve(arguments.matrices);
+            MatrixChainResult result = MatrixChainSolver.solve(arguments.matrices());
             System.out.println(result);
         } catch (IllegalArgumentException e) {
             System.err.println("Error: " + e.getMessage());

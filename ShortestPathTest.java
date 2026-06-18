@@ -28,15 +28,22 @@ public final class ShortestPathTest {
     }
 
     private static void assertDistances(String label, List<Integer> actual, int... expected) {
-        List<Integer> expectedDistances = new ArrayList<>(expected.length);
-        for (int value : expected) {
-            expectedDistances.add(value);
-        }
-
-        if (!actual.equals(expectedDistances)) {
+        if (!actual.equals(toList(expected))) {
             throw new AssertionError(
-                label + " distances mismatch. expected=" + expectedDistances + " actual=" + actual
+                label
+                    + " distances mismatch. expected="
+                    + DistanceFormatter.format(expected)
+                    + " actual="
+                    + DistanceFormatter.format(actual)
             );
         }
+    }
+
+    private static List<Integer> toList(int... values) {
+        List<Integer> result = new ArrayList<>(values.length);
+        for (int value : values) {
+            result.add(value);
+        }
+        return result;
     }
 }

@@ -60,9 +60,11 @@ public final class MatrixChainMultiplication {
             CostTable minimumCosts,
             ChainRange range,
             int split) {
-        return minimumCosts.get(range.start(), split)
-                + minimumCosts.get(split, range.end())
-                + dimensions.get(range.start()) * dimensions.get(split) * dimensions.get(range.end());
+        int leftSubchainCost = minimumCosts.get(range.start(), split);
+        int rightSubchainCost = minimumCosts.get(split, range.end());
+        int scalarMultiplicationCost = dimensions.scalarMultiplicationCost(range, split);
+
+        return leftSubchainCost + rightSubchainCost + scalarMultiplicationCost;
     }
 
     private static final class MatrixDimensions {
@@ -104,6 +106,10 @@ public final class MatrixChainMultiplication {
 
         private int lastIndex() {
             return values.length - 1;
+        }
+
+        private int scalarMultiplicationCost(ChainRange range, int split) {
+            return get(range.start()) * get(split) * get(range.end());
         }
     }
 

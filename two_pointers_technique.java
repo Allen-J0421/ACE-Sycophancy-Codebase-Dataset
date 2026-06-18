@@ -4,16 +4,32 @@ import java.util.Objects;
  * Represents a pair of indices and their corresponding values in an array.
  */
 class IndexPair {
-    public final int leftIndex;
-    public final int rightIndex;
-    public final int leftValue;
-    public final int rightValue;
+    private final int leftIndex;
+    private final int rightIndex;
+    private final int leftValue;
+    private final int rightValue;
 
     IndexPair(int leftIndex, int rightIndex, int leftValue, int rightValue) {
         this.leftIndex = leftIndex;
         this.rightIndex = rightIndex;
         this.leftValue = leftValue;
         this.rightValue = rightValue;
+    }
+
+    int getLeftIndex() {
+        return leftIndex;
+    }
+
+    int getRightIndex() {
+        return rightIndex;
+    }
+
+    int getLeftValue() {
+        return leftValue;
+    }
+
+    int getRightValue() {
+        return rightValue;
     }
 
     @Override
@@ -74,12 +90,14 @@ interface ArrayValidator {
 }
 
 /**
- * Default validator for array inputs.
+ * Default validator for array inputs requiring minimum length.
  */
 class DefaultArrayValidator implements ArrayValidator {
+    private static final int MIN_LENGTH = 2;
+
     @Override
     public boolean isValid(int[] array) {
-        return array != null && array.length >= 2;
+        return array != null && array.length >= MIN_LENGTH;
     }
 }
 
@@ -169,30 +187,102 @@ class TwoPointersTechnique implements PairFinder {
             return new SearchResult(null, 0);
         }
 
-        int left = 0;
-        int right = sortedArray.length - 1;
-        IndexPair foundPair = null;
-        int count = 0;
+        SearchState state = new SearchState(sortedArray.length);
+        while (state.canContinue()) {
+            int currentSum = sortedArray[state.left] + sortedArray[state.right];
+            processSum(state, currentSum, targetSum, stopAtFirst, sortedArray);
+        }
 
-        while (left < right) {
-            int currentSum = sortedArray[left] + sortedArray[right];
+        return state.buildResult();
+    }
 
-            if (currentSum == targetSum) {
-                foundPair = new IndexPair(left, right, sortedArray[left], sortedArray[right]);
-                count++;
-                if (stopAtFirst) {
-                    break;
-                }
-                left++;
-                right--;
-            } else if (currentSum < targetSum) {
-                left++;
-            } else {
-                right--;
+    private void processSum(SearchState state, int currentSum, int targetSum, boolean stopAtFirst, int[] array) {
+        if (currentSum == targetSum) {
+            state.recordMatch(array, stopAtFirst);
+        } else if (currentSum < targetSum) {
+            state.moveLeftPointer();
+        } else {
+            state.moveRightPointer();
+        }
+    }
+
+    /**
+     * Encapsulates search state and operations.
+     */
+    private static class SearchState {
+        int left;
+        int right;
+        IndexPair foundPair;
+        int count;
+
+        SearchState(int arrayLength) {
+            this.left = 0;
+            this.right = arrayLength - 1;
+            this.count = 0;
+        }
+
+        boolean canContinue() {
+            return left < right;
+        }
+
+        void moveLeftPointer() {
+            left++;
+        }
+
+        void moveRightPointer() {
+            right--;
+        }
+
+        void recordMatch(int[] array, boolean stopAtFirst) {
+            foundPair = new IndexPair(left, right, array[left], array[right]);
+            count++;
+            if (!stopAtFirst) {
+                moveLeftPointer();
+                moveRightPointer();
             }
         }
 
-        return new SearchResult(foundPair, count);
+        SearchResult buildResult() {
+            return new SearchResult(foundPair, count);
+        }
+    }
+}
+
+/**
+ * Test runner for Two Pointers Technique demonstrations.
+ */
+class TestRunner {
+    private final TwoPointersTechnique technique;
+    private final TestCase[] testCases;
+
+    TestRunner(TwoPointersTechnique technique, TestCase[] testCases) {
+        this.technique = technique;
+        this.testCases = testCases;
+    }
+
+    void runAll() {
+        for (TestCase testCase : testCases) {
+            run(testCase);
+        }
+    }
+
+    private void run(TestCase testCase) {
+        SearchResult result = technique.search(testCase.array, testCase.target, false);
+        System.out.println("\n=== Target: " + testCase.target + " ===");
+        System.out.println(result);
+    }
+}
+
+/**
+ * Represents a single test case with array and target.
+ */
+class TestCase {
+    final int[] array;
+    final int target;
+
+    TestCase(int[] array, int target) {
+        this.array = array;
+        this.target = target;
     }
 }
 
@@ -208,28 +298,7 @@ class TwoPointersTechniqueDemo {
 
     public static void main(String[] args) {
         TwoPointersTechnique technique = TwoPointersTechnique.getInstance();
-        displayDemo(technique);
-    }
-
-    private static void displayDemo(TwoPointersTechnique technique) {
-        for (TestCase testCase : TEST_CASES) {
-            SearchResult result = technique.search(testCase.array, testCase.target, false);
-            displayResult(testCase.target, result);
-        }
-    }
-
-    private static void displayResult(int target, SearchResult result) {
-        System.out.println("\n=== Target: " + target + " ===");
-        System.out.println(result);
-    }
-
-    private static class TestCase {
-        final int[] array;
-        final int target;
-
-        TestCase(int[] array, int target) {
-            this.array = array;
-            this.target = target;
-        }
+        TestRunner runner = new TestRunner(technique, TEST_CASES);
+        runner.runAll();
     }
 }

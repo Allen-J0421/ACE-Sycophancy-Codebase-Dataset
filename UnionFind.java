@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public final class UnionFind {
+public final class UnionFind implements DisjointSet {
     private final int[] parent;
     private final int[] componentSizes;
     private int components;
@@ -27,11 +27,13 @@ public final class UnionFind {
         }
     }
 
+    @Override
     public int find(int element) {
         validateElement(element);
         return rootOf(element);
     }
 
+    @Override
     public boolean union(int first, int second) {
         int firstRoot = find(first);
         int secondRoot = find(second);
@@ -45,18 +47,22 @@ public final class UnionFind {
         return true;
     }
 
+    @Override
     public boolean connected(int first, int second) {
         return find(first) == find(second);
     }
 
+    @Override
     public int size() {
         return parent.length;
     }
 
+    @Override
     public int components() {
         return components;
     }
 
+    @Override
     public int componentSize(int element) {
         return componentSizes[find(element)];
     }

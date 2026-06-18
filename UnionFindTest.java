@@ -16,13 +16,13 @@ public final class UnionFindTest {
     }
 
     private static void testNewElementsStartDisconnected() {
-        UnionFind unionFind = new UnionFind(3);
+        DisjointSet unionFind = new UnionFind(3);
 
         assertFalse(unionFind.connected(0, 1), "new elements should start disconnected");
     }
 
     private static void testUnionConnectsElements() {
-        UnionFind unionFind = new UnionFind(4);
+        DisjointSet unionFind = new UnionFind(4);
 
         unionFind.union(0, 1);
         unionFind.union(2, 3);
@@ -32,14 +32,14 @@ public final class UnionFindTest {
     }
 
     private static void testUnionReturnsWhetherMergeHappened() {
-        UnionFind unionFind = new UnionFind(2);
+        DisjointSet unionFind = new UnionFind(2);
 
         assertTrue(unionFind.union(0, 1), "first union should merge sets");
         assertFalse(unionFind.union(0, 1), "repeated union should not merge sets");
     }
 
     private static void testComponentCountTracksMerges() {
-        UnionFind unionFind = new UnionFind(4);
+        DisjointSet unionFind = new UnionFind(4);
 
         assertEquals(4, unionFind.components(), "initial component count");
         unionFind.union(0, 1);
@@ -50,7 +50,7 @@ public final class UnionFindTest {
     }
 
     private static void testComponentSizeTracksMerges() {
-        UnionFind unionFind = new UnionFind(5);
+        DisjointSet unionFind = new UnionFind(5);
 
         assertEquals(1, unionFind.componentSize(0), "initial component size");
         unionFind.union(0, 1);
@@ -66,8 +66,8 @@ public final class UnionFindTest {
     }
 
     private static void testInvalidElementsAreRejected() {
-        UnionFind unionFind = new UnionFind(1);
-        UnionFind emptyUnionFind = new UnionFind(0);
+        DisjointSet unionFind = new UnionFind(1);
+        DisjointSet emptyUnionFind = new UnionFind(0);
 
         assertThrows(
                 IndexOutOfBoundsException.class,

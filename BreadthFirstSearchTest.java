@@ -10,12 +10,13 @@ public final class BreadthFirstSearchTest {
     public static void main(String[] args) {
         testBfsOverDisconnectedGraph();
         testBfsFromSource();
+        testNeighborsAreReadOnly();
         testInvalidInputs();
         System.out.println("All tests passed.");
     }
 
     private static void testBfsOverDisconnectedGraph() {
-        BreadthFirstSearch.Graph graph = BreadthFirstSearch.Graph.create(6);
+        Graph graph = Graph.create(6);
         graph.addUndirectedEdge(1, 2);
         graph.addUndirectedEdge(2, 0);
         graph.addUndirectedEdge(0, 3);
@@ -25,7 +26,7 @@ public final class BreadthFirstSearchTest {
     }
 
     private static void testBfsFromSource() {
-        BreadthFirstSearch.Graph graph = BreadthFirstSearch.Graph.create(6);
+        Graph graph = Graph.create(6);
         graph.addUndirectedEdge(1, 2);
         graph.addUndirectedEdge(2, 0);
         graph.addUndirectedEdge(0, 3);
@@ -35,12 +36,24 @@ public final class BreadthFirstSearchTest {
     }
 
     private static void testInvalidInputs() {
-        expectIllegalArgument(() -> BreadthFirstSearch.Graph.create(-1));
+        expectIllegalArgument(() -> Graph.create(-1));
 
-        BreadthFirstSearch.Graph graph = BreadthFirstSearch.Graph.create(2);
+        Graph graph = Graph.create(2);
         expectIllegalArgument(() -> graph.addUndirectedEdge(0, 2));
+        expectIllegalArgument(() -> graph.neighbors(2));
         expectIllegalArgument(() -> BreadthFirstSearch.bfsFromSource(graph, -1));
         expectNullPointer(() -> BreadthFirstSearch.bfs(null));
+    }
+
+    private static void testNeighborsAreReadOnly() {
+        Graph graph = Graph.create(2);
+        graph.addUndirectedEdge(0, 1);
+
+        List<Integer> neighbors = graph.neighbors(0);
+        if (!neighbors.equals(Arrays.asList(1))) {
+            throw new AssertionError("neighbors expected [1] but was " + neighbors);
+        }
+        expectUnsupportedOperation(() -> neighbors.add(2));
     }
 
     private static void assertEquals(List<Integer> expected, List<Integer> actual, String label) {
@@ -63,6 +76,15 @@ public final class BreadthFirstSearchTest {
             action.run();
             throw new AssertionError("expected NullPointerException");
         } catch (NullPointerException expected) {
+            // Expected.
+        }
+    }
+
+    private static void expectUnsupportedOperation(Runnable action) {
+        try {
+            action.run();
+            throw new AssertionError("expected UnsupportedOperationException");
+        } catch (UnsupportedOperationException expected) {
             // Expected.
         }
     }

@@ -7,7 +7,9 @@ public final class MergeSortTest {
         test("sorts primitive arrays", MergeSortTest::sortsPrimitiveArrays),
         test("sorts primitive subranges", MergeSortTest::sortsPrimitiveSubranges),
         test("sorts comparable arrays", MergeSortTest::sortsComparableArrays),
+        test("sorts comparable subranges", MergeSortTest::sortsComparableSubranges),
         test("sorts with comparator", MergeSortTest::sortsWithComparator),
+        test("sorts comparator subranges", MergeSortTest::sortsComparatorSubranges),
         test("preserves stability", MergeSortTest::preservesStability),
         test("handles empty and singleton arrays", MergeSortTest::handlesEmptyAndSingletonArrays),
         test("rejects invalid primitive ranges", MergeSortTest::rejectsInvalidPrimitiveRanges),
@@ -62,12 +64,32 @@ public final class MergeSortTest {
         assertArrayEquals(new String[] {"alpha", "bravo", "charlie", "delta"}, values, "comparable sort");
     }
 
+    private static void sortsComparableSubranges() {
+        String[] values = {"z", "delta", "alpha", "charlie", "bravo", "y"};
+
+        MergeSort.sort(values, 1, 5);
+
+        assertArrayEquals(
+            new String[] {"z", "alpha", "bravo", "charlie", "delta", "y"},
+            values,
+            "comparable subrange sort"
+        );
+    }
+
     private static void sortsWithComparator() {
         String[] values = {"bbb", "a", "cccc", "dd"};
 
         MergeSort.sort(values, Comparator.comparingInt(String::length).thenComparing(Comparator.naturalOrder()));
 
         assertArrayEquals(new String[] {"a", "dd", "bbb", "cccc"}, values, "comparator sort");
+    }
+
+    private static void sortsComparatorSubranges() {
+        String[] values = {"xx", "bbb", "a", "cccc", "dd", "z"};
+
+        MergeSort.sort(values, 1, 5, Comparator.comparingInt(String::length).thenComparing(Comparator.naturalOrder()));
+
+        assertArrayEquals(new String[] {"xx", "a", "dd", "bbb", "cccc", "z"}, values, "comparator subrange sort");
     }
 
     private static void preservesStability() {

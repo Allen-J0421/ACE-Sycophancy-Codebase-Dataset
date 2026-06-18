@@ -22,17 +22,33 @@ public final class MergeSort {
     }
 
     public static <T extends Comparable<? super T>> void sort(T[] values) {
-        sort(values, Comparator.naturalOrder());
+        T[] safeValues = requireValues(values);
+        sort(safeValues, 0, safeValues.length);
+    }
+
+    public static <T extends Comparable<? super T>> void sort(T[] values, int fromInclusive, int toExclusive) {
+        sort(values, fromInclusive, toExclusive, Comparator.naturalOrder());
     }
 
     public static <T> void sort(T[] values, Comparator<? super T> comparator) {
         T[] safeValues = requireValues(values);
+        sort(safeValues, 0, safeValues.length, comparator);
+    }
+
+    public static <T> void sort(
+        T[] values,
+        int fromInclusive,
+        int toExclusive,
+        Comparator<? super T> comparator
+    ) {
+        T[] safeValues = requireValues(values);
         Comparator<? super T> safeComparator = requireComparator(comparator);
-        if (safeValues.length < 2) {
+        validateRange(safeValues.length, fromInclusive, toExclusive);
+        if (toExclusive - fromInclusive < 2) {
             return;
         }
 
-        new ObjectMergeSorter<>(safeValues, safeComparator).sort(0, safeValues.length);
+        new ObjectMergeSorter<>(safeValues, safeComparator).sort(fromInclusive, toExclusive);
     }
 
     private static <T> T requireValues(T values) {

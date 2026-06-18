@@ -10,42 +10,33 @@ public final class TwoPointersTest {
         shouldHandleIntegerOverflowSafely();
         shouldSupportTargetsBeyondIntegerRange();
         shouldDefensivelyCopyValidatedInput();
+        shouldRejectNullSortedValueObjects();
     }
 
     private static void shouldFindMatchingPair() {
-        SortedIntArray sortedValues = SortedIntArray.copyOf(new int[] {-3, -1, 0, 1, 2});
-        TwoPointers.PairMatch match = TwoPointers.findPairWithSum(
+        SortedIntArray sortedValues = SortedIntArray.of(-3, -1, 0, 1, 2);
+        PairMatch match = TwoPointers.findPairWithSum(
             sortedValues,
             -2
         ).orElseThrow(() -> new AssertionError("Expected a matching pair"));
 
-        assertEquals(0, match.leftIndex(), "left index");
-        assertEquals(3, match.rightIndex(), "right index");
-        assertEquals(-3, match.leftValue(), "left value");
-        assertEquals(1, match.rightValue(), "right value");
-        assertEquals(-2, match.sum(), "pair sum");
+        assertMatch(match, 0, 3, -3, 1, -2);
     }
 
     private static void shouldReturnEmptyWhenNoPairExists() {
-        if (TwoPointers.findPairWithSum(SortedIntArray.copyOf(new int[] {1, 4, 8}), 6).isPresent()) {
-            throw new AssertionError("Expected no matching pair");
-        }
+        assertNoMatch(TwoPointers.findPairWithSum(SortedIntArray.of(1, 4, 8), 6));
     }
 
     private static void shouldRejectUnsortedInput() {
-        try {
-            SortedIntArray.copyOf(new int[] {3, 1, 2});
-            throw new AssertionError("Expected unsorted input to be rejected");
-        } catch (IllegalArgumentException expected) {
-            if (!expected.getMessage().contains("sorted")) {
-                throw new AssertionError("Unexpected validation message: " + expected.getMessage());
-            }
-        }
+        assertThrowsWithMessage(
+            () -> SortedIntArray.of(3, 1, 2),
+            "sorted",
+            "Expected unsorted input to be rejected");
     }
 
     private static void shouldHandleIntegerOverflowSafely() {
-        TwoPointers.PairMatch match = TwoPointers.findPairWithSum(
-            SortedIntArray.copyOf(new int[] {-1, Integer.MAX_VALUE}),
+        PairMatch match = TwoPointers.findPairWithSum(
+            SortedIntArray.of(-1, Integer.MAX_VALUE),
             Integer.MAX_VALUE - 1
         ).orElseThrow(() -> new AssertionError("Expected overflow-safe matching pair"));
 
@@ -53,8 +44,8 @@ public final class TwoPointersTest {
     }
 
     private static void shouldSupportTargetsBeyondIntegerRange() {
-        TwoPointers.PairMatch match = TwoPointers.findPairWithSum(
-            SortedIntArray.copyOf(new int[] {Integer.MAX_VALUE, Integer.MAX_VALUE}),
+        PairMatch match = TwoPointers.findPairWithSum(
+            SortedIntArray.of(Integer.MAX_VALUE, Integer.MAX_VALUE),
             4_294_967_294L
         ).orElseThrow(() -> new AssertionError("Expected match for large long target"));
 
@@ -71,10 +62,58 @@ public final class TwoPointersTest {
         }
     }
 
+    private static void shouldRejectNullSortedValueObjects() {
+        assertThrowsWithMessage(
+            () -> TwoPointers.findPairWithSum((SortedIntArray) null, 0),
+            "must not be null",
+            "Expected null SortedIntArray to be rejected");
+    }
+
+    private static void assertMatch(
+        PairMatch match,
+        int expectedLeftIndex,
+        int expectedRightIndex,
+        int expectedLeftValue,
+        int expectedRightValue,
+        long expectedSum
+    ) {
+        assertEquals(expectedLeftIndex, match.leftIndex(), "left index");
+        assertEquals(expectedRightIndex, match.rightIndex(), "right index");
+        assertEquals(expectedLeftValue, match.leftValue(), "left value");
+        assertEquals(expectedRightValue, match.rightValue(), "right value");
+        assertEquals(expectedSum, match.sum(), "pair sum");
+    }
+
+    private static void assertNoMatch(java.util.Optional<PairMatch> match) {
+        if (match.isPresent()) {
+            throw new AssertionError("Expected no matching pair");
+        }
+    }
+
+    private static void assertThrowsWithMessage(
+        ThrowingRunnable action,
+        String expectedMessageFragment,
+        String failureMessage
+    ) {
+        try {
+            action.run();
+            throw new AssertionError(failureMessage);
+        } catch (IllegalArgumentException expected) {
+            if (!expected.getMessage().contains(expectedMessageFragment)) {
+                throw new AssertionError("Unexpected validation message: " + expected.getMessage());
+            }
+        }
+    }
+
     private static void assertEquals(long expected, long actual, String fieldName) {
         if (expected != actual) {
             throw new AssertionError(
                 "Unexpected " + fieldName + ": expected " + expected + ", got " + actual);
         }
+    }
+
+    @FunctionalInterface
+    private interface ThrowingRunnable {
+        void run();
     }
 }

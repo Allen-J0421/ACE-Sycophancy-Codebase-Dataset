@@ -13,16 +13,44 @@ public final class SortedIntArray {
         return new SortedIntArray(Arrays.copyOf(values, values.length));
     }
 
-    public int length() {
+    public static SortedIntArray of(int... values) {
+        return copyOf(values);
+    }
+
+    public int size() {
         return values.length;
     }
 
-    public int valueAt(int index) {
+    public int get(int index) {
         return values[index];
+    }
+
+    public long sumAt(int leftIndex, int rightIndex) {
+        validatePairIndexes(leftIndex, rightIndex);
+        return (long) values[leftIndex] + values[rightIndex];
+    }
+
+    public PairMatch pairAt(int leftIndex, int rightIndex) {
+        validatePairIndexes(leftIndex, rightIndex);
+        return new PairMatch(leftIndex, rightIndex, values[leftIndex], values[rightIndex]);
     }
 
     public int[] toArray() {
         return Arrays.copyOf(values, values.length);
+    }
+
+    private void validatePairIndexes(int leftIndex, int rightIndex) {
+        if (leftIndex < 0 || rightIndex < 0) {
+            throw new IllegalArgumentException("pair indexes must not be negative");
+        }
+
+        if (rightIndex >= values.length) {
+            throw new IllegalArgumentException("pair indexes must be within array bounds");
+        }
+
+        if (leftIndex >= rightIndex) {
+            throw new IllegalArgumentException("leftIndex must be less than rightIndex");
+        }
     }
 
     private static void validateSorted(int[] values) {

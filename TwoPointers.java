@@ -30,15 +30,13 @@ public final class TwoPointers {
 
     private static Optional<PairMatch> findPairInSortedValues(SortedIntArray sortedValues, long target) {
         int left = 0;
-        int right = sortedValues.length() - 1;
+        int right = sortedValues.size() - 1;
 
         while (left < right) {
-            int leftValue = sortedValues.valueAt(left);
-            int rightValue = sortedValues.valueAt(right);
-            long sum = (long) leftValue + rightValue;
+            long sum = sortedValues.sumAt(left, right);
 
             if (sum == target) {
-                return Optional.of(new PairMatch(left, right, leftValue, rightValue));
+                return Optional.of(sortedValues.pairAt(left, right));
             }
 
             if (sum < target) {
@@ -49,11 +47,5 @@ public final class TwoPointers {
         }
 
         return Optional.empty();
-    }
-
-    public record PairMatch(int leftIndex, int rightIndex, int leftValue, int rightValue) {
-        public long sum() {
-            return (long) leftValue + rightValue;
-        }
     }
 }

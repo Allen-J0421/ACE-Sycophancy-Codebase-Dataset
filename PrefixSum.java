@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-final class PrefixSum {
+public final class PrefixSum {
 
     private PrefixSum() {
     }

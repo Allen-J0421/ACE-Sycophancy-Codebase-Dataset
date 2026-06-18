@@ -13,32 +13,33 @@ public class MinHeap {
         size = 0;
     }
 
-    public boolean insertKey(int value) {
-        if (size == heap.length) {
+    public boolean offer(int value) {
+        if (isFull()) {
             return false;
         }
 
-        heap[size] = value;
-        siftUp(size);
+        int insertIndex = size;
+        heap[insertIndex] = value;
         size++;
+        siftUp(insertIndex);
         return true;
     }
 
-    public void decreaseKey(int index, int newValue) {
-        validateOccupiedIndex(index);
-        heap[index] = newValue;
-        siftUp(index);
+    public boolean insertKey(int value) {
+        return offer(value);
     }
 
-    public int getMin() {
+    public int peek() {
         ensureNotEmpty();
         return heap[0];
     }
 
-    public int extractMin() {
-        if (isEmpty()) {
-            return Integer.MAX_VALUE;
-        }
+    public int getMin() {
+        return peek();
+    }
+
+    public int removeMin() {
+        ensureNotEmpty();
 
         int min = heap[0];
         size--;
@@ -49,38 +50,83 @@ public class MinHeap {
         return min;
     }
 
-    public void deleteKey(int index) {
+    public int extractMin() {
+        if (isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
+
+        return removeMin();
+    }
+
+    public int removeAt(int index) {
         validateOccupiedIndex(index);
-        decreaseKey(index, Integer.MIN_VALUE);
-        extractMin();
+
+        int removedValue = heap[index];
+        int lastIndex = size - 1;
+        size--;
+        if (index == lastIndex) {
+            return removedValue;
+        }
+
+        heap[index] = heap[lastIndex];
+        restoreHeapAt(index);
+        return removedValue;
+    }
+
+    public void deleteKey(int index) {
+        removeAt(index);
+    }
+
+    public void updateValue(int index, int newValue) {
+        validateOccupiedIndex(index);
+
+        int currentValue = heap[index];
+        heap[index] = newValue;
+        if (newValue < currentValue) {
+            siftUp(index);
+            return;
+        }
+
+        if (newValue > currentValue) {
+            siftDown(index);
+        }
+    }
+
+    public void decreaseKey(int index, int newValue) {
+        validateOccupiedIndex(index);
+        ensureValueDecreases(index, newValue);
+        updateValue(index, newValue);
     }
 
     public void increaseKey(int index, int newValue) {
         validateOccupiedIndex(index);
-        heap[index] = newValue;
-        siftDown(index);
+        ensureValueIncreases(index, newValue);
+        updateValue(index, newValue);
     }
 
     public void changeValueOnAKey(int index, int newValue) {
-        validateOccupiedIndex(index);
-        if (heap[index] == newValue) {
-            return;
-        }
-
-        if (newValue < heap[index]) {
-            decreaseKey(index, newValue);
-            return;
-        }
-
-        increaseKey(index, newValue);
+        updateValue(index, newValue);
     }
 
     public boolean isEmpty() {
         return size == 0;
     }
 
+    public boolean isFull() {
+        return size == heap.length;
+    }
+
     public int size() {
         return size;
+    }
+
+    public int capacity() {
+        return heap.length;
+    }
+
+    public int valueAt(int index) {
+        validateOccupiedIndex(index);
+        return heap[index];
     }
 
     private void siftUp(int index) {
@@ -118,6 +164,15 @@ public class MinHeap {
         }
     }
 
+    private void restoreHeapAt(int index) {
+        if (index > 0 && heap[index] < heap[parent(index)]) {
+            siftUp(index);
+            return;
+        }
+
+        siftDown(index);
+    }
+
     private void swap(int firstIndex, int secondIndex) {
         int temp = heap[firstIndex];
         heap[firstIndex] = heap[secondIndex];
@@ -134,6 +189,22 @@ public class MinHeap {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException(
                 "index " + index + " is outside heap size " + size
+            );
+        }
+    }
+
+    private void ensureValueDecreases(int index, int newValue) {
+        if (newValue > heap[index]) {
+            throw new IllegalArgumentException(
+                "new value " + newValue + " is greater than current value " + heap[index]
+            );
+        }
+    }
+
+    private void ensureValueIncreases(int index, int newValue) {
+        if (newValue < heap[index]) {
+            throw new IllegalArgumentException(
+                "new value " + newValue + " is less than current value " + heap[index]
             );
         }
     }

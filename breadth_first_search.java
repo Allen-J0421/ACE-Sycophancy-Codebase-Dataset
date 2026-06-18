@@ -1,59 +1,78 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.Deque;
+import java.util.List;
 
-class BreadthFirstSearch {
+final class BreadthFirstSearch {
 
-    static void bfsConnected(ArrayList<ArrayList<Integer>> adj, int src, boolean[] visited, ArrayList<Integer> res) {
-        Queue<Integer> q = new LinkedList<>();
-        visited[src] = true;
-        q.add(src);
+    private BreadthFirstSearch() {
+        // Utility class.
+    }
 
-        while (!q.isEmpty()) {
-            int curr = q.poll();
-            res.add(curr);
+    private static void bfsComponent(List<List<Integer>> adjacencyList, int source, boolean[] visited, List<Integer> result) {
+        Deque<Integer> queue = new ArrayDeque<>();
+        visited[source] = true;
+        queue.addLast(source);
 
-            for (int x : adj.get(curr)) {
-                if (!visited[x]) {
-                    visited[x] = true;
-                    q.add(x);
+        while (!queue.isEmpty()) {
+            int current = queue.removeFirst();
+            result.add(current);
+
+            for (int neighbor : adjacencyList.get(current)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    queue.addLast(neighbor);
                 }
             }
         }
     }
 
-    static ArrayList<Integer> bfs(ArrayList<ArrayList<Integer>> adj) {
-        int V = adj.size();
-        boolean[] visited = new boolean[V];
-        ArrayList<Integer> res = new ArrayList<>();
+    static List<Integer> bfs(List<List<Integer>> adjacencyList) {
+        int vertexCount = adjacencyList.size();
+        boolean[] visited = new boolean[vertexCount];
+        List<Integer> result = new ArrayList<>(vertexCount);
 
-        for (int i = 0; i < V; i++) {
-            if (!visited[i])
-                bfsConnected(adj, i, visited, res);
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            if (!visited[vertex]) {
+                bfsComponent(adjacencyList, vertex, visited, result);
+            }
         }
-        return res;
+        return result;
     }
 
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-        adj.get(v).add(u);
+    static void addUndirectedEdge(List<List<Integer>> adjacencyList, int u, int v) {
+        validateVertex(adjacencyList, u);
+        validateVertex(adjacencyList, v);
+
+        adjacencyList.get(u).add(v);
+        adjacencyList.get(v).add(u);
+    }
+
+    private static void validateVertex(List<List<Integer>> adjacencyList, int vertex) {
+        if (vertex < 0 || vertex >= adjacencyList.size()) {
+            throw new IllegalArgumentException("vertex out of bounds: " + vertex);
+        }
+    }
+
+    private static List<List<Integer>> createGraph(int vertexCount) {
+        List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        return adjacencyList;
     }
 
     public static void main(String[] args) {
-        int V = 6;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        List<List<Integer>> adjacencyList = createGraph(6);
 
-        for (int i = 0; i < V; i++)
-            adj.add(new ArrayList<>());
+        addUndirectedEdge(adjacencyList, 1, 2);
+        addUndirectedEdge(adjacencyList, 2, 0);
+        addUndirectedEdge(adjacencyList, 0, 3);
+        addUndirectedEdge(adjacencyList, 4, 5);
 
-        addEdge(adj, 1, 2);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 0, 3);
-        addEdge(adj, 4, 5);
-
-        ArrayList<Integer> res = bfs(adj);
-
-        for (int x : res)
-            System.out.print(x + " ");
+        List<Integer> traversal = bfs(adjacencyList);
+        for (int vertex : traversal) {
+            System.out.print(vertex + " ");
+        }
     }
 }

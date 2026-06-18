@@ -18,16 +18,16 @@ final class LegacyGraphAdapter {
             throw new IllegalArgumentException("legacyAdjacency must not be null");
         }
 
-        Graph graph = Graph.withVertexCount(legacyAdjacency.size());
+        GraphBuilder builder = GraphBuilder.withVertexCount(legacyAdjacency.size());
         for (int from = 0; from < legacyAdjacency.size(); from++) {
             for (int[] legacyEdge : legacyAdjacency.get(from)) {
                 if (legacyEdge == null || legacyEdge.length < EDGE_FIELD_COUNT) {
                     throw new IllegalArgumentException("legacy edge must contain destination and weight");
                 }
-                graph.addDirectedEdge(from, legacyEdge[DESTINATION_INDEX], legacyEdge[WEIGHT_INDEX]);
+                builder.addDirectedEdge(from, legacyEdge[DESTINATION_INDEX], legacyEdge[WEIGHT_INDEX]);
             }
         }
-        return graph;
+        return builder.build();
     }
 
     private static int[] edge(int destination, int weight) {

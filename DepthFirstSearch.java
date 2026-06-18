@@ -1,4 +1,6 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class DepthFirstSearch {
@@ -12,24 +14,36 @@ public class DepthFirstSearch {
 
         for (int vertex = 0; vertex < adjacencyList.size(); vertex++) {
             if (!visitedVertices[vertex]) {
-                dfsRecursive(adjacencyList, visitedVertices, vertex, traversalOrder);
+                traverseComponent(adjacencyList, visitedVertices, vertex, traversalOrder);
             }
         }
 
         return traversalOrder;
     }
 
-    private static void dfsRecursive(
+    private static void traverseComponent(
             List<List<Integer>> adjacencyList,
             boolean[] visitedVertices,
-            int vertex,
+            int startVertex,
             List<Integer> traversalOrder) {
-        visitedVertices[vertex] = true;
-        traversalOrder.add(vertex);
+        Deque<Integer> pendingVertices = new ArrayDeque<>();
+        pendingVertices.push(startVertex);
 
-        for (int neighbor : adjacencyList.get(vertex)) {
-            if (!visitedVertices[neighbor]) {
-                dfsRecursive(adjacencyList, visitedVertices, neighbor, traversalOrder);
+        while (!pendingVertices.isEmpty()) {
+            int vertex = pendingVertices.pop();
+            if (visitedVertices[vertex]) {
+                continue;
+            }
+
+            visitedVertices[vertex] = true;
+            traversalOrder.add(vertex);
+
+            List<Integer> neighbors = adjacencyList.get(vertex);
+            for (int index = neighbors.size() - 1; index >= 0; index--) {
+                int neighbor = neighbors.get(index);
+                if (!visitedVertices[neighbor]) {
+                    pendingVertices.push(neighbor);
+                }
             }
         }
     }

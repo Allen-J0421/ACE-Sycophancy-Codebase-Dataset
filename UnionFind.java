@@ -1,4 +1,4 @@
-public class UnionFind implements DisjointSet {
+public class UnionFind implements DisjointSet, UnionFindDelegate {
     private DisjointSetStructure structure;
     private IndexValidator validator;
     private EnhancedOperationCounter counter;

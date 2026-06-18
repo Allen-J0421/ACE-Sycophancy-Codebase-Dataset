@@ -15,6 +15,9 @@ public class UnionFindTest {
         testOperationListeners();
         testExceptionHandling();
         testSafeUnionFind();
+        testCaching();
+        testBatching();
+        testComposite();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -352,5 +355,66 @@ public class UnionFindTest {
         assert invalidCheck.isError() : "Invalid check should fail";
 
         System.out.println("✓ testSafeIsConnected passed");
+    }
+
+    private static void testCaching() {
+        UnionFind uf = UnionFind.builder().withSize(10).build();
+        CachedUnionFind cached = CachedUnionFind.wrap(uf);
+
+        uf.union(0, 1);
+        uf.union(1, 2);
+
+        int root1 = cached.find(0);
+        int root2 = cached.find(0);
+        assert root1 == root2 : "Cache should return same root";
+
+        assert cached.getCacheSize() > 0 : "Cache should contain entries";
+        assert cached.isConnected(0, 2) : "Should maintain connectivity through cache";
+
+        cached.invalidateCache();
+        assert cached.getCacheSize() == 0 : "Cache should be cleared";
+
+        cached.union(2, 3);
+        assert cached.getCacheSize() == 0 : "Cache should be invalidated after union";
+
+        System.out.println("✓ testCaching passed");
+    }
+
+    private static void testBatching() {
+        UnionFind uf = UnionFind.builder().withSize(10).build();
+        BatchUnionFind batched = BatchUnionFind.wrap(uf);
+
+        batched.startBatch();
+        batched.union(0, 1);
+        batched.union(1, 2);
+        batched.union(2, 3);
+        assert batched.getPendingOperationCount() == 3 : "Should have 3 pending operations";
+
+        int flushed = batched.flushBatch();
+        assert flushed == 3 : "Should flush 3 operations";
+        assert batched.getPendingOperationCount() == 0 : "Should have no pending after flush";
+        assert batched.isConnected(0, 3) : "Should maintain connectivity after flush";
+
+        System.out.println("✓ testBatching passed");
+    }
+
+    private static void testComposite() {
+        UnionFind base = UnionFind.builder().withSize(10).build();
+        CompositeUnionFind composite = CompositeUnionFind.create(base);
+
+        composite.startBatch();
+        composite.union(0, 1);
+        composite.union(1, 2);
+        composite.union(2, 3);
+        int flushed = composite.flushBatch();
+        assert flushed == 3 : "Composite should batch correctly";
+
+        int root1 = composite.find(0);
+        int root2 = composite.find(0);
+        assert root1 == root2 : "Composite should cache results";
+
+        assert composite.isConnected(0, 3) : "Composite should maintain connectivity";
+
+        System.out.println("✓ testComposite passed");
     }
 }

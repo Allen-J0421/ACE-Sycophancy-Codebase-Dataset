@@ -29,7 +29,7 @@ final class Knapsack {
             int capacity,
             Item item
     ) {
-        for (int currentCapacity = capacity; currentCapacity >= item.weight; currentCapacity--) {
+        for (int currentCapacity = capacity; item.fitsWithin(currentCapacity); currentCapacity--) {
             maxValueByCapacity[currentCapacity] = bestValueForCapacity(
                     maxValueByCapacity,
                     currentCapacity,
@@ -44,7 +44,7 @@ final class Knapsack {
             Item item
     ) {
         int valueWithoutItem = maxValueByCapacity[currentCapacity];
-        int valueWithItem = maxValueByCapacity[currentCapacity - item.weight] + item.value;
+        int valueWithItem = item.valueIfIncluded(maxValueByCapacity, currentCapacity);
         return Math.max(valueWithoutItem, valueWithItem);
     }
 
@@ -55,6 +55,14 @@ final class Knapsack {
         private Item(int weight, int value) {
             this.weight = weight;
             this.value = value;
+        }
+
+        private boolean fitsWithin(int capacity) {
+            return weight <= capacity;
+        }
+
+        private int valueIfIncluded(int[] maxValueByCapacity, int capacity) {
+            return maxValueByCapacity[capacity - weight] + value;
         }
     }
 

@@ -1,6 +1,8 @@
+import java.util.Arrays;
+
 public final class MinHeap {
 
-    public static final int EMPTY_VALUE = Integer.MAX_VALUE;
+    static final int EMPTY_VALUE = Integer.MAX_VALUE;
 
     private final int[] elements;
 
@@ -15,6 +17,16 @@ public final class MinHeap {
         capacity = n;
         elements = new int[capacity];
         size = 0;
+    }
+
+    public MinHeap(int[] values) {
+        if (values == null) {
+            throw new IllegalArgumentException("Heap values must not be null");
+        }
+        capacity = values.length;
+        elements = Arrays.copyOf(values, values.length);
+        size = values.length;
+        heapify();
     }
 
     private int parentIndex(int index) {
@@ -111,6 +123,12 @@ public final class MinHeap {
         if (index > 0 && elements[index] < elements[parentIndex(index)]) {
             bubbleUp(index);
         } else {
+            bubbleDown(index);
+        }
+    }
+
+    private void heapify() {
+        for (int index = (size / 2) - 1; index >= 0; index--) {
             bubbleDown(index);
         }
     }

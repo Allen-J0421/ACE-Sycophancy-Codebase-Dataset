@@ -30,6 +30,13 @@ public class MinHeapTest {
         assertEquals(empty.peek(), MinHeap.EMPTY_VALUE, "Empty heap should report Integer.MAX_VALUE");
         assertEquals(empty.poll(), MinHeap.EMPTY_VALUE, "Empty heap extraction should report Integer.MAX_VALUE");
 
+        MinHeap built = new MinHeap(new int[] { 7, 1, 9, 3, 5 });
+        assertEquals(built.capacity(), 5, "Array constructor should size the heap to the input length");
+        assertEquals(built.size(), 5, "Array constructor should populate the heap");
+        assertEquals(built.peek(), 1, "Heapify should promote the smallest value");
+        assertEquals(built.poll(), 1, "Polling should remove the heapified minimum");
+        assertEquals(built.peek(), 3, "Heapify should preserve the next minimum after polling");
+
         MinHeap heap = new MinHeap(4);
         assertEquals(heap.capacity(), 4, "Capacity accessor should match constructor input");
         assertTrue(heap.offer(8), "Expected insert to succeed");

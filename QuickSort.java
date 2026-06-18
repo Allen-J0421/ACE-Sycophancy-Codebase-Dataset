@@ -15,19 +15,29 @@ public final class QuickSort {
     }
 
     private static void quickSort(int[] values, int startIndex, int endIndex) {
-        if (startIndex >= endIndex) {
-            return;
+        while (startIndex < endIndex) {
+            int pivotIndex = partition(values, startIndex, endIndex);
+
+            int leftPartitionSize = pivotIndex - startIndex;
+            int rightPartitionSize = endIndex - pivotIndex;
+
+            // Recurse into the smaller partition first to limit stack growth.
+            if (leftPartitionSize < rightPartitionSize) {
+                quickSort(values, startIndex, pivotIndex - 1);
+                startIndex = pivotIndex + 1;
+            } else {
+                quickSort(values, pivotIndex + 1, endIndex);
+                endIndex = pivotIndex - 1;
+            }
         }
-
-        int pivotIndex = partition(values, startIndex, endIndex);
-
-        quickSort(values, startIndex, pivotIndex - 1);
-        quickSort(values, pivotIndex + 1, endIndex);
     }
 
     private static int partition(int[] values, int startIndex, int endIndex) {
-        int pivot = values[endIndex];
+        int pivotIndex = choosePivotIndex(startIndex, endIndex);
+        int pivot = values[pivotIndex];
         int nextLowerValueIndex = startIndex;
+
+        swap(values, pivotIndex, endIndex);
 
         for (int currentIndex = startIndex; currentIndex < endIndex; currentIndex++) {
             if (values[currentIndex] < pivot) {
@@ -38,6 +48,10 @@ public final class QuickSort {
 
         swap(values, nextLowerValueIndex, endIndex);
         return nextLowerValueIndex;
+    }
+
+    private static int choosePivotIndex(int startIndex, int endIndex) {
+        return startIndex + (endIndex - startIndex) / 2;
     }
 
     private static void swap(int[] values, int firstIndex, int secondIndex) {

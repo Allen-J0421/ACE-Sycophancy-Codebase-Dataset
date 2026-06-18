@@ -5,8 +5,6 @@ import java.util.StringJoiner;
 
 public final class PrefixSum {
 
-    private static final String VALUE_SEPARATOR = " ";
-
     private PrefixSum() {
     }
 
@@ -25,6 +23,18 @@ public final class PrefixSum {
     }
 
     public static void main(String[] args) {
+        PrefixSumDemo.main(args);
+    }
+}
+
+final class PrefixSumDemo {
+
+    private static final String VALUE_SEPARATOR = " ";
+
+    private PrefixSumDemo() {
+    }
+
+    public static void main(String[] args) {
         printPrefixSums(sampleValues());
     }
 
@@ -33,7 +43,7 @@ public final class PrefixSum {
     }
 
     private static void printPrefixSums(int[] values) {
-        System.out.println(formatValues(prefixSums(values)));
+        System.out.println(formatValues(PrefixSum.prefixSums(values)));
     }
 
     private static String formatValues(List<Integer> values) {

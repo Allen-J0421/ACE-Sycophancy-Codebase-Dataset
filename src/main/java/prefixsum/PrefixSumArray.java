@@ -19,7 +19,11 @@ public final class PrefixSumArray {
      * @return a list of prefix sums with one entry per input value
      */
     public static List<Integer> prefixSums(int[] values) {
-        return toIntegerList(PrefixSumCalculator.compute(values));
+        requireValues(values);
+
+        List<Integer> prefixSums = new ArrayList<>(values.length);
+        accumulate(values, (index, runningTotal) -> prefixSums.add(Math.toIntExact(runningTotal)));
+        return prefixSums;
     }
 
     /**
@@ -29,13 +33,11 @@ public final class PrefixSumArray {
      * @return the prefix sums as a primitive array
      */
     public static int[] prefixSumsAsArray(int[] values) {
-        long[] prefixSums = PrefixSumCalculator.compute(values);
-        int[] boundedPrefixSums = new int[prefixSums.length];
-        for (int i = 0; i < prefixSums.length; i++) {
-            boundedPrefixSums[i] = Math.toIntExact(prefixSums[i]);
-        }
+        requireValues(values);
 
-        return boundedPrefixSums;
+        int[] prefixSums = new int[values.length];
+        accumulate(values, (index, runningTotal) -> prefixSums[index] = Math.toIntExact(runningTotal));
+        return prefixSums;
     }
 
     /**
@@ -45,15 +47,29 @@ public final class PrefixSumArray {
      * @return the prefix sums as a primitive long array
      */
     public static long[] prefixSumsAsLongArray(int[] values) {
-        return PrefixSumCalculator.compute(values);
+        requireValues(values);
+
+        long[] prefixSums = new long[values.length];
+        accumulate(values, (index, runningTotal) -> prefixSums[index] = runningTotal);
+        return prefixSums;
     }
 
-    private static List<Integer> toIntegerList(long[] prefixSums) {
-        List<Integer> boxedPrefixSums = new ArrayList<>(prefixSums.length);
-        for (long prefixSum : prefixSums) {
-            boxedPrefixSums.add(Math.toIntExact(prefixSum));
+    private static void accumulate(int[] values, IndexedLongConsumer consumer) {
+        long runningTotal = 0L;
+        for (int i = 0; i < values.length; i++) {
+            runningTotal += values[i];
+            consumer.accept(i, runningTotal);
         }
-        return boxedPrefixSums;
     }
 
+    private static void requireValues(int[] values) {
+        if (values == null) {
+            throw new IllegalArgumentException("values must not be null");
+        }
+    }
+
+    @FunctionalInterface
+    private interface IndexedLongConsumer {
+        void accept(int index, long value);
+    }
 }

@@ -13,7 +13,6 @@ public final class PrefixSumArrayTest {
         shouldComputePrefixSumsForPositiveNumbers();
         shouldHandleNegativeValues();
         shouldHandleEmptyInput();
-        shouldComputePrefixSumsWithCalculator();
         shouldComputePrefixSumsAsLongArrayForLargeValues();
         shouldRejectIntOverflow();
         shouldRejectIntOverflowWhenBoxing();
@@ -42,11 +41,6 @@ public final class PrefixSumArrayTest {
         if (!PrefixSumArray.prefixSums(new int[0]).isEmpty()) {
             throw new AssertionError("Expected empty list for empty input");
         }
-    }
-
-    private static void shouldComputePrefixSumsWithCalculator() {
-        int[] input = {3, 1, 4, 1, 5};
-        assertArrayEquals(new long[] {3L, 4L, 8L, 9L, 14L}, PrefixSumCalculator.compute(input));
     }
 
     private static void shouldComputePrefixSumsAsLongArrayForLargeValues() {

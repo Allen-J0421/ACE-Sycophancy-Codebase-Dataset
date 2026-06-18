@@ -7,12 +7,12 @@ final class TopologicalSort {
 
     private static final int SAMPLE_VERTEX_COUNT = 6;
     private static final Edge[] SAMPLE_EDGES = {
-        new Edge(0, 1),
-        new Edge(1, 2),
-        new Edge(2, 3),
-        new Edge(4, 5),
-        new Edge(5, 1),
-        new Edge(5, 2)
+        edge(0, 1),
+        edge(1, 2),
+        edge(2, 3),
+        edge(4, 5),
+        edge(5, 1),
+        edge(5, 2)
     };
 
     private TopologicalSort() {
@@ -49,6 +49,14 @@ final class TopologicalSort {
 
     static void addEdge(List<? extends List<Integer>> adjacencyList, int from, int to) {
         adjacencyList.get(from).add(to);
+    }
+
+    private static Edge edge(int from, int to) {
+        return new Edge(from, to);
+    }
+
+    private static List<List<Integer>> buildSampleGraph() {
+        return buildGraph(SAMPLE_VERTEX_COUNT, SAMPLE_EDGES);
     }
 
     private static List<List<Integer>> buildGraph(int vertexCount, Edge[] edges) {
@@ -113,7 +121,7 @@ final class TopologicalSort {
     }
 
     public static void main(String[] args) {
-        List<List<Integer>> adjacencyList = buildGraph(SAMPLE_VERTEX_COUNT, SAMPLE_EDGES);
+        List<List<Integer>> adjacencyList = buildSampleGraph();
         List<Integer> sortedVertices = topologicalSort(adjacencyList);
         printVertices(sortedVertices);
     }

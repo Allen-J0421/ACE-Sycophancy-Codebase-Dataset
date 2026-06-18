@@ -10,16 +10,18 @@ public final class BuildHeapDemo {
 
     public static void main(String[] args) {
         try {
-            int[] values = parseValues(args);
-            int[] heap = BuildHeap.buildHeapCopy(values);
-
-            System.out.println("Input: " + Arrays.toString(values));
-            System.out.println("Heap: " + Arrays.toString(heap));
-            System.out.println("Valid max heap: " + BuildHeap.isMaxHeap(heap));
+            HeapBuildResult result = HeapBuildResult.from(parseValues(args));
+            printResult(result);
         } catch (IllegalArgumentException exception) {
             System.err.println(exception.getMessage());
             printUsage();
         }
+    }
+
+    private static void printResult(HeapBuildResult result) {
+        System.out.println("Input: " + Arrays.toString(result.inputValues()));
+        System.out.println("Heap: " + Arrays.toString(result.heapValues()));
+        System.out.println("Valid max heap: " + result.isValidMaxHeap());
     }
 
     private static int[] parseValues(String[] args) {

@@ -1,6 +1,10 @@
 class CoinChange {
 
     static int count(int[] coins, int amount) {
+        return countWays(coins, amount);
+    }
+
+    static int countWays(int[] coins, int amount) {
         int[] ways = new int[amount + 1];
         ways[0] = 1;
 
@@ -16,6 +20,6 @@ class CoinChange {
     public static void main(String[] args) {
         int[] coins = {1, 2, 3};
         int amount = 5;
-        System.out.println(count(coins, amount));
+        System.out.println(countWays(coins, amount));
     }
 }

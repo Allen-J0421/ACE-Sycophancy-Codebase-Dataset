@@ -8,7 +8,7 @@ public final class PrefixSumDemo {
     }
 
     public static void main(String[] args) {
-        PrefixSumArray prefixSums = PrefixSums.of(SAMPLE_VALUES);
+        PrefixSumArray prefixSums = PrefixSumArray.from(SAMPLE_VALUES);
         System.out.println(prefixSums);
     }
 }

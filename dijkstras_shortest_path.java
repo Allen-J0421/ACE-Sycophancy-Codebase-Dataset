@@ -3,12 +3,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,14 +19,43 @@ interface WeightedGraphView {
     int getVertexCount();
 }
 
-class Edge {
-    private final int destination;
-    private final int weight;
+interface Validator<T> {
+    void validate(T value) throws IllegalArgumentException;
+}
 
-    private Edge(int destination, int weight) {
+class VertexValidator implements Validator<Integer> {
+    private final int vertexCount;
+
+    VertexValidator(int vertexCount) {
+        this.vertexCount = vertexCount;
+    }
+
+    @Override
+    public void validate(Integer vertex) throws IllegalArgumentException {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException(
+                String.format("Vertex %d is out of range [0, %d)", vertex, vertexCount)
+            );
+        }
+    }
+}
+
+class EdgeWeightValidator implements Validator<Integer> {
+    @Override
+    public void validate(Integer weight) throws IllegalArgumentException {
         if (weight < 0) {
             throw new IllegalArgumentException("Edge weight must be non-negative");
         }
+    }
+}
+
+class Edge {
+    private final int destination;
+    private final int weight;
+    private static final EdgeWeightValidator WEIGHT_VALIDATOR = new EdgeWeightValidator();
+
+    private Edge(int destination, int weight) {
+        WEIGHT_VALIDATOR.validate(weight);
         this.destination = destination;
         this.weight = weight;
     }
@@ -80,6 +111,14 @@ class Path {
         return totalDistance;
     }
 
+    int getLength() {
+        return nodes.size();
+    }
+
+    boolean contains(int node) {
+        return nodes.contains(node);
+    }
+
     @Override
     public String toString() {
         return String.format("Path(nodes=%s, distance=%d)", nodes, totalDistance);
@@ -98,11 +137,32 @@ class Path {
     }
 }
 
+class PathCache {
+    private final Map<Integer, Optional<Path>> cache = new LinkedHashMap<>();
+
+    void put(int destination, Optional<Path> path) {
+        cache.put(destination, path);
+    }
+
+    Optional<Optional<Path>> get(int destination) {
+        return Optional.ofNullable(cache.get(destination));
+    }
+
+    void clear() {
+        cache.clear();
+    }
+
+    int size() {
+        return cache.size();
+    }
+}
+
 class ShortestPathResult {
     private final List<Integer> distances;
     private final int[] predecessors;
     private final int sourceNode;
     private final WeightedGraphView graph;
+    private final PathCache pathCache;
     private static final int INFINITY = Integer.MAX_VALUE;
 
     private ShortestPathResult(List<Integer> distances, int[] predecessors,
@@ -111,6 +171,7 @@ class ShortestPathResult {
         this.predecessors = predecessors.clone();
         this.sourceNode = sourceNode;
         this.graph = graph;
+        this.pathCache = new PathCache();
     }
 
     static ShortestPathResult of(List<Integer> distances, int[] predecessors,
@@ -130,7 +191,12 @@ class ShortestPathResult {
     }
 
     Optional<Path> getPathTo(int destination) {
+        if (pathCache.get(destination).isPresent()) {
+            return pathCache.get(destination).flatMap(p -> p);
+        }
+
         if (!isReachable(destination)) {
+            pathCache.put(destination, Optional.empty());
             return Optional.empty();
         }
 
@@ -143,7 +209,9 @@ class ShortestPathResult {
         }
         path.addFirst(sourceNode);
 
-        return Optional.of(Path.of(path, getDistanceTo(destination).orElse(INFINITY)));
+        Optional<Path> result = Optional.of(Path.of(path, getDistanceTo(destination).orElse(INFINITY)));
+        pathCache.put(destination, result);
+        return result;
     }
 
     int getSourceNode() {
@@ -154,6 +222,13 @@ class ShortestPathResult {
         return getDistanceTo(node)
             .map(d -> !d.equals(INFINITY))
             .orElse(false);
+    }
+
+    Map<Integer, Optional<Path>> getAllPaths() {
+        Map<Integer, Optional<Path>> allPaths = new LinkedHashMap<>();
+        IntStream.range(0, distances.size())
+            .forEach(node -> allPaths.put(node, getPathTo(node)));
+        return Collections.unmodifiableMap(allPaths);
     }
 
     @Override
@@ -177,12 +252,15 @@ class ShortestPathResult {
 class Graph implements WeightedGraphView {
     private final List<List<Edge>> adjacencyList;
     private final int vertexCount;
+    private final VertexValidator vertexValidator;
+    private static final BiPredicate<Integer, Integer> NO_SELF_LOOPS = (src, dst) -> src != dst;
 
     private Graph(int vertexCount) {
         if (vertexCount <= 0) {
             throw new IllegalArgumentException("Vertex count must be positive");
         }
         this.vertexCount = vertexCount;
+        this.vertexValidator = new VertexValidator(vertexCount);
         this.adjacencyList = new ArrayList<>();
         IntStream.range(0, vertexCount)
             .forEach(i -> adjacencyList.add(new ArrayList<>()));
@@ -193,9 +271,9 @@ class Graph implements WeightedGraphView {
     }
 
     void addEdge(int source, int destination, int weight) {
-        validateVertex(source);
-        validateVertex(destination);
-        if (source == destination) {
+        vertexValidator.validate(source);
+        vertexValidator.validate(destination);
+        if (!NO_SELF_LOOPS.test(source, destination)) {
             throw new IllegalArgumentException("Self-loops are not supported");
         }
         adjacencyList.get(source).add(Edge.of(destination, weight));
@@ -204,21 +282,13 @@ class Graph implements WeightedGraphView {
 
     @Override
     public List<Edge> getAdjacencyListFor(int vertex) {
-        validateVertex(vertex);
+        vertexValidator.validate(vertex);
         return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
     @Override
     public int getVertexCount() {
         return vertexCount;
-    }
-
-    private void validateVertex(int vertex) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException(
-                String.format("Vertex %d is out of range [0, %d)", vertex, vertexCount)
-            );
-        }
     }
 
     @Override
@@ -430,24 +500,77 @@ class GraphBuilder {
     }
 }
 
+class AlgorithmConfig {
+    private final int sourceNode;
+    private final boolean trackPaths;
+    private final boolean verbose;
+
+    private AlgorithmConfig(int sourceNode, boolean trackPaths, boolean verbose) {
+        this.sourceNode = sourceNode;
+        this.trackPaths = trackPaths;
+        this.verbose = verbose;
+    }
+
+    static AlgorithmConfig create(int sourceNode) {
+        return new AlgorithmConfig(sourceNode, true, false);
+    }
+
+    int getSourceNode() {
+        return sourceNode;
+    }
+
+    boolean shouldTrackPaths() {
+        return trackPaths;
+    }
+
+    boolean isVerbose() {
+        return verbose;
+    }
+}
+
 class ResultFormatter {
-    static void printDistances(ShortestPathResult result) {
+    private final AlgorithmConfig config;
+
+    ResultFormatter(AlgorithmConfig config) {
+        this.config = Objects.requireNonNull(config);
+    }
+
+    void printDistances(ShortestPathResult result) {
         result.getDistances().stream()
             .forEach(distance -> System.out.print(distance + " "));
         System.out.println();
     }
 
-    static String formatResult(ShortestPathResult result) {
+    String formatResult(ShortestPathResult result) {
         return result.getDistances().toString();
     }
 
-    static void printPaths(ShortestPathResult result) {
-        IntStream.range(0, result.getDistances().size())
-            .forEach(node -> result.getPathTo(node)
-                .ifPresent(path -> System.out.println(
-                    String.format("To node %d: %s (distance=%d)",
-                                node, path.getNodes(), path.getTotalDistance())
-                )));
+    void printPaths(ShortestPathResult result) {
+        if (!config.shouldTrackPaths()) {
+            return;
+        }
+
+        result.getAllPaths().forEach((node, pathOpt) ->
+            pathOpt.ifPresent(path -> System.out.println(
+                String.format("To node %d: %s (distance=%d, hops=%d)",
+                            node, path.getNodes(), path.getTotalDistance(), path.getLength() - 1)
+            ))
+        );
+    }
+
+    void printSummary(ShortestPathResult result) {
+        if (!config.isVerbose()) {
+            return;
+        }
+
+        int reachableCount = (int) IntStream.range(0, result.getDistances().size())
+            .filter(result::isReachable)
+            .count();
+
+        System.out.println(String.format(
+            "Summary: From node %d, %d/%d nodes are reachable",
+            result.getSourceNode(), reachableCount, result.getDistances().size()
+        ));
     }
 }
 
@@ -462,9 +585,11 @@ class Main {
             .addEdge(3, 4, 10)
             .build();
 
+        AlgorithmConfig config = AlgorithmConfig.create(0);
         DijkstraShortestPathSolver solver = new DijkstraShortestPathSolver();
         ShortestPathResult result = solver.solve(graph, 0);
 
-        ResultFormatter.printDistances(result);
+        ResultFormatter formatter = new ResultFormatter(config);
+        formatter.printDistances(result);
     }
 }

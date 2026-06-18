@@ -147,22 +147,79 @@
    - `WeightedGraphView` can be extended for directed graphs
    - `DistanceTable` can track updates for visualization
 
-## Result
+## Iteration 5: Validation Abstractions, Caching, and Configuration
 
-All functionality preserved and enhanced:
+### Validation Framework
+1. **Validator Interface**
+   - `Validator<T>` interface for pluggable validation strategies
+   - `VertexValidator`: Validates node indices against graph bounds
+   - `EdgeWeightValidator`: Validates non-negative weights
+   - Separates validation concerns from domain classes
+   - Enables custom validators for future graph types
+
+2. **Validation Integration**
+   - `Graph` uses `VertexValidator` for all vertex operations
+   - `Edge` uses `EdgeWeightValidator` for weight validation
+   - Centralized validation rules, easier to modify and test
+
+3. **Predicate-Based Constraints**
+   - `BiPredicate<Integer, Integer> NO_SELF_LOOPS` for edge constraints
+   - Declarative, functional approach to domain rules
+   - Easy to add new edge constraints without code modification
+
+### Path Caching & Optimization
+1. **PathCache Class**
+   - Memoization of computed paths using `LinkedHashMap`
+   - Caches both successful paths and unreachable destinations
+   - Methods: `put()`, `get()`, `clear()`, `size()`
+   - Significantly improves performance for repeated path queries
+
+2. **Result Caching**
+   - `ShortestPathResult` holds `PathCache` internally
+   - Transparent caching: users call `getPathTo()`, cache is automatic
+   - `getAllPaths()` returns complete cached map
+
+### Configuration Management
+1. **AlgorithmConfig Class**
+   - Centralizes runtime configuration options
+   - `sourceNode`: Algorithm source vertex
+   - `trackPaths`: Enable/disable path reconstruction
+   - `verbose`: Control logging and summary output
+   - Enables future feature flags without API changes
+
+2. **Stateful ResultFormatter**
+   - `ResultFormatter` now takes `AlgorithmConfig` in constructor
+   - `printDistances()`: Core output
+   - `printPaths()`: Conditional, respects `trackPaths` setting
+   - `printSummary()`: Reachability stats, respects `verbose` setting
+   - Shows hop count for each path (nodes - 1)
+
+### Extended Path Capabilities
+1. **Path Utilities**
+   - `getLength()`: Number of nodes in path
+   - `contains(node)`: Check if node appears in path
+   - Useful for path analysis and filtering
+
+2. **Result Utilities**
+   - `getAllPaths()`: Get all paths as immutable map
+   - Enables batch processing and analysis
+
+### Result Quality
+All functionality enhanced:
 - **Original output**: `0 4 7 9 10` ✓
-- **New capability**: Full path reconstruction with node sequences
-- **Paths found**:
-  - Node 0: [0] (distance=0)
-  - Node 1: [0, 1] (distance=4)
-  - Node 2: [0, 1, 2] (distance=7)
-  - Node 3: [0, 1, 2, 3] (distance=9)
-  - Node 4: [0, 1, 4] (distance=10)
+- **Path reconstruction**:
+  - Node 0: [0] (distance=0, hops=0)
+  - Node 1: [0, 1] (distance=4, hops=1)
+  - Node 2: [0, 1, 2] (distance=7, hops=2)
+  - Node 3: [0, 1, 2, 3] (distance=9, hops=3)
+  - Node 4: [0, 1, 4] (distance=10, hops=2)
+- **Path queries**: Instant via caching
+- **Configuration**: Flexible output control
 
 The code is now:
-- **Interface-Driven**: Polymorphic via `WeightedGraphView` abstraction
-- **Feature-Rich**: Path reconstruction without additional computation
-- **Well-Layered**: DistanceTable and Path separate concerns
-- **Testable**: Easy to mock graphs and verify paths
-- **Extensible**: New graph types or visualizations easy to add
-- **Maintainable**: Clear responsibilities across classes
+- **Validated**: Pluggable validator framework
+- **Cached**: Path memoization for performance
+- **Configurable**: Runtime options without API bloat
+- **Observable**: Hop counts, reachability stats, summaries
+- **Flexible**: Optional features via configuration
+- **Maintainable**: Separation of concerns across all layers

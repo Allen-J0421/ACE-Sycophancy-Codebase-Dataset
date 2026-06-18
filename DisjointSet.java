@@ -7,7 +7,11 @@ public interface DisjointSet {
 
     int size();
 
-    int components();
+    int componentCount();
+
+    default int components() {
+        return componentCount();
+    }
 
     int componentSize(int element);
 }

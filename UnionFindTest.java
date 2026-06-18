@@ -41,12 +41,13 @@ public final class UnionFindTest {
     private static void testComponentCountTracksMerges() {
         DisjointSet unionFind = new UnionFind(4);
 
-        assertEquals(4, unionFind.components(), "initial component count");
+        assertEquals(4, unionFind.componentCount(), "initial component count");
         unionFind.union(0, 1);
         unionFind.union(2, 3);
         unionFind.union(1, 3);
 
-        assertEquals(1, unionFind.components(), "component count after merges");
+        assertEquals(1, unionFind.componentCount(), "component count after merges");
+        assertEquals(1, unionFind.components(), "components alias after merges");
     }
 
     private static void testComponentSizeTracksMerges() {

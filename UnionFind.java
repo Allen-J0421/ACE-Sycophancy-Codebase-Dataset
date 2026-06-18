@@ -3,13 +3,13 @@ import java.util.Arrays;
 public final class UnionFind implements DisjointSet {
     private final int[] parent;
     private final int[] componentSizes;
-    private int components;
+    private int componentCount;
 
     public UnionFind(int size) {
         validateSize(size);
         parent = new int[size];
         componentSizes = new int[size];
-        components = size;
+        componentCount = size;
 
         initializeComponents();
     }
@@ -43,7 +43,7 @@ public final class UnionFind implements DisjointSet {
         }
 
         attachRoots(firstRoot, secondRoot);
-        components--;
+        componentCount--;
         return true;
     }
 
@@ -58,8 +58,8 @@ public final class UnionFind implements DisjointSet {
     }
 
     @Override
-    public int components() {
-        return components;
+    public int componentCount() {
+        return componentCount;
     }
 
     @Override
@@ -71,7 +71,7 @@ public final class UnionFind implements DisjointSet {
     public String toString() {
         return "UnionFind{parent=" + Arrays.toString(parent)
                 + ", componentSizes=" + Arrays.toString(componentSizes)
-                + ", components=" + components
+                + ", componentCount=" + componentCount
                 + '}';
     }
 

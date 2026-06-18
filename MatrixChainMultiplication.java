@@ -1,8 +1,18 @@
-class MatrixChainMultiplication {
+public final class MatrixChainMultiplication {
 
     private static final int[] SAMPLE_DIMENSIONS = { 2, 1, 3, 4 };
+    private static final int MINIMUM_DIMENSION_COUNT = 2;
+
+    private MatrixChainMultiplication() {
+    }
 
     static int matrixMultiplication(int[] dimensions) {
+        return minimumMultiplicationCost(dimensions);
+    }
+
+    public static int minimumMultiplicationCost(int[] dimensions) {
+        validateDimensions(dimensions);
+
         int dimensionCount = dimensions.length;
         int[][] minimumCosts = new int[dimensionCount][dimensionCount];
 
@@ -23,6 +33,21 @@ class MatrixChainMultiplication {
         return minimumCosts[0][dimensionCount - 1];
     }
 
+    private static void validateDimensions(int[] dimensions) {
+        if (dimensions == null) {
+            throw new IllegalArgumentException("Dimensions must not be null.");
+        }
+        if (dimensions.length < MINIMUM_DIMENSION_COUNT) {
+            throw new IllegalArgumentException("At least two dimensions are required.");
+        }
+
+        for (int dimension : dimensions) {
+            if (dimension <= 0) {
+                throw new IllegalArgumentException("Dimensions must be positive.");
+            }
+        }
+    }
+
     private static int costForSplit(
             int[] dimensions,
             int[][] minimumCosts,
@@ -35,6 +60,6 @@ class MatrixChainMultiplication {
     }
 
     public static void main(String[] args) {
-        System.out.println(matrixMultiplication(SAMPLE_DIMENSIONS));
+        System.out.println(minimumMultiplicationCost(SAMPLE_DIMENSIONS));
     }
 }

@@ -1,6 +1,6 @@
-public class MinHeap {
+public final class MinHeap {
 
-    static final int EMPTY_HEAP_VALUE = Integer.MAX_VALUE;
+    public static final int EMPTY_VALUE = Integer.MAX_VALUE;
 
     private final int[] elements;
 
@@ -104,7 +104,7 @@ public class MinHeap {
         }
     }
 
-    private void removeAt(int index) {
+    private void removeAtIndex(int index) {
         validateIndex(index);
 
         int lastIndex = size - 1;
@@ -129,10 +129,6 @@ public class MinHeap {
         return true;
     }
 
-    public boolean insertKey(int key) {
-        return offer(key);
-    }
-
     public void decreaseKey(int key, int newVal) {
         validateIndex(key);
         if (newVal > elements[key]) {
@@ -141,33 +137,21 @@ public class MinHeap {
         updateKeyAt(key, newVal);
     }
 
-    public int peekMin() {
+    public int peek() {
         if (isEmptyHeap()) {
-            return EMPTY_HEAP_VALUE;
+            return EMPTY_VALUE;
         }
         return elements[0];
     }
 
-    public int getMin() {
-        return peekMin();
-    }
-
-    public int pollMin() {
+    public int poll() {
         if (isEmptyHeap()) {
-            return EMPTY_HEAP_VALUE;
+            return EMPTY_VALUE;
         }
 
         int root = elements[0];
-        removeAt(0);
+        removeAtIndex(0);
         return root;
-    }
-
-    public int extractMin() {
-        return pollMin();
-    }
-
-    public void deleteKey(int key) {
-        removeAt(key);
     }
 
     public void increaseKey(int key, int newVal) {
@@ -186,9 +170,13 @@ public class MinHeap {
         return isEmptyHeap();
     }
 
-    public void changeValueOnAKey(int key, int newVal) {
+    public void setKey(int key, int newVal) {
         validateIndex(key);
         updateKeyAt(key, newVal);
+    }
+
+    public void removeAt(int key) {
+        removeAtIndex(key);
     }
 
     public int capacity() {

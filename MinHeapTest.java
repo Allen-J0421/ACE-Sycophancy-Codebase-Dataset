@@ -1,10 +1,10 @@
 public class MinHeapTest {
     private static void runSanityChecks() {
         MinHeap empty = new MinHeap(0);
-        if (empty.peekMin() != MinHeap.EMPTY_HEAP_VALUE) {
+        if (empty.peek() != MinHeap.EMPTY_VALUE) {
             throw new AssertionError("Empty heap should report Integer.MAX_VALUE");
         }
-        if (empty.pollMin() != MinHeap.EMPTY_HEAP_VALUE) {
+        if (empty.poll() != MinHeap.EMPTY_VALUE) {
             throw new AssertionError("Empty heap extraction should report Integer.MAX_VALUE");
         }
 
@@ -15,8 +15,8 @@ public class MinHeapTest {
         if (!heap.offer(8) || !heap.offer(3) || !heap.offer(5)) {
             throw new AssertionError("Expected inserts to succeed");
         }
-        heap.changeValueOnAKey(0, 1);
-        if (heap.peekMin() != 1) {
+        heap.setKey(0, 1);
+        if (heap.peek() != 1) {
             throw new AssertionError("Key update should restore heap order");
         }
         if (heap.size() != 3) {
@@ -29,11 +29,11 @@ public class MinHeapTest {
             throw new AssertionError("Insert should fail once the heap reaches capacity");
         }
 
-        heap.deleteKey(1);
+        heap.removeAt(1);
         if (heap.size() != 3) {
             throw new AssertionError("Delete should reduce heap size");
         }
-        if (heap.peekMin() != 1) {
+        if (heap.peek() != 1) {
             throw new AssertionError("Delete should preserve the minimum element");
         }
 
@@ -64,15 +64,15 @@ public class MinHeapTest {
         MinHeap h = new MinHeap(11);
         h.offer(3);
         h.offer(2);
-        h.deleteKey(1);
+        h.removeAt(1);
         h.offer(15);
         h.offer(5);
         h.offer(4);
         h.offer(45);
-        System.out.print(h.pollMin() + " ");
-        System.out.print(h.peekMin() + " ");
+        System.out.print(h.poll() + " ");
+        System.out.print(h.peek() + " ");
 
         h.decreaseKey(2, 1);
-        System.out.print(h.peekMin());
+        System.out.print(h.peek());
     }
 }

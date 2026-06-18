@@ -7,37 +7,56 @@ public final class Trie {
 
     private final TrieNode root = new TrieNode();
 
-    public void insert(String key) {
-        Objects.requireNonNull(key, "key must not be null");
+    /**
+     * Adds a lowercase word to the trie.
+     */
+    public void insert(String word) {
+        Objects.requireNonNull(word, "word must not be null");
         TrieNode current = root;
 
-        for (int position = 0; position < key.length(); position++) {
-            int index = toIndex(key.charAt(position), key);
+        for (int position = 0; position < word.length(); position++) {
+            int index = toIndex(word.charAt(position), word);
             current = current.getOrCreateChild(index);
         }
 
         current.markWord();
     }
 
-    public boolean search(String key) {
-        TrieNode node = findNode(key);
+    /**
+     * Returns true when the trie contains the complete lowercase word.
+     */
+    public boolean contains(String word) {
+        TrieNode node = findNode(word);
         return node != null && node.isWord();
     }
 
+    /**
+     * Compatibility alias for {@link #contains(String)}.
+     */
+    public boolean search(String word) {
+        return contains(word);
+    }
+
+    /**
+     * Returns true when the trie contains the lowercase prefix.
+     */
     public boolean startsWith(String prefix) {
         return findNode(prefix) != null;
     }
 
+    /**
+     * Compatibility alias for {@link #startsWith(String)}.
+     */
     public boolean isPrefix(String prefix) {
         return startsWith(prefix);
     }
 
-    private TrieNode findNode(String key) {
-        Objects.requireNonNull(key, "key must not be null");
+    private TrieNode findNode(String value) {
+        Objects.requireNonNull(value, "value must not be null");
         TrieNode current = root;
 
-        for (int position = 0; position < key.length(); position++) {
-            current = current.getChild(toIndex(key.charAt(position), key));
+        for (int position = 0; position < value.length(); position++) {
+            current = current.getChild(toIndex(value.charAt(position), value));
             if (current == null) {
                 return null;
             }
@@ -46,10 +65,10 @@ public final class Trie {
         return current;
     }
 
-    private static int toIndex(char letter, String key) {
+    private static int toIndex(char letter, String value) {
         if (letter < FIRST_LETTER || letter > LAST_LETTER) {
             throw new IllegalArgumentException(
-                "Trie keys may only contain lowercase letters a-z: " + key);
+                "Trie values may only contain lowercase letters a-z: " + value);
         }
 
         return letter - FIRST_LETTER;

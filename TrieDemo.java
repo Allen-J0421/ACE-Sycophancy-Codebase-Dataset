@@ -11,7 +11,7 @@ final class TrieDemo {
     public static void main(String[] args) {
         Trie trie = buildTrie(WORDS);
 
-        printResults(SEARCH_KEYS, trie::search);
+        printResults(SEARCH_KEYS, trie::contains);
         System.out.println();
         printResults(PREFIX_KEYS, trie::startsWith);
     }

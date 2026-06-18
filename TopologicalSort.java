@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Collections;
 
 public final class TopologicalSort {
     private static final TopologicalSorter SORTER = new KahnTopologicalSorter();
@@ -7,6 +8,6 @@ public final class TopologicalSort {
     }
 
     public static List<Integer> sort(DirectedGraph graph) {
-        return SORTER.sort(graph);
+        return Collections.unmodifiableList(SORTER.sort(graph));
     }
 }

@@ -21,11 +21,11 @@ public final class DirectedGraph {
         return new DirectedGraph(adjacencyList);
     }
 
-    public static DirectedGraph fromEdges(int vertexCount, int[][] edges) {
+    public static DirectedGraph fromEdges(int vertexCount, Iterable<DirectedEdge> edges) {
         DirectedGraph graph = withVertexCount(vertexCount);
-        for (int[] edge : edges) {
-            validateEdgeShape(edge);
-            graph.addEdge(edge[0], edge[1]);
+        for (DirectedEdge edge : edges) {
+            validateEdge(edge);
+            graph.addEdge(edge.source(), edge.destination());
         }
         return graph;
     }
@@ -45,9 +45,9 @@ public final class DirectedGraph {
         adjacencyList.get(source).add(destination);
     }
 
-    private static void validateEdgeShape(int[] edge) {
-        if (edge == null || edge.length != 2) {
-            throw new IllegalArgumentException("Each edge must contain exactly two vertices.");
+    private static void validateEdge(DirectedEdge edge) {
+        if (edge == null) {
+            throw new IllegalArgumentException("Edge cannot be null.");
         }
     }
 

@@ -8,7 +8,7 @@ public final class PrefixSumDemo {
     }
 
     public static void main(String[] args) {
-        int[] prefixSums = PrefixSums.build(SAMPLE_VALUES);
-        System.out.println(IntArrays.joinWithSpaces(prefixSums));
+        PrefixSumArray prefixSums = PrefixSums.of(SAMPLE_VALUES);
+        System.out.println(prefixSums);
     }
 }

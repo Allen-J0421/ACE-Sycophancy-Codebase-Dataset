@@ -7,11 +7,15 @@ public final class PrefixSums {
     private PrefixSums() {
     }
 
-    public static int[] build(int[] values) {
+    public static PrefixSumArray of(int[] values) {
         int[] source = requireValues(values);
         int[] prefixSums = new int[source.length];
         fill(source, prefixSums);
-        return prefixSums;
+        return new PrefixSumArray(prefixSums);
+    }
+
+    public static int[] build(int[] values) {
+        return of(values).toArray();
     }
 
     public static void fill(int[] values, int[] destination) {

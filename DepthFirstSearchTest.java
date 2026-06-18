@@ -9,33 +9,43 @@ public final class DepthFirstSearchTest {
     public static void main(String[] args) {
         shouldTraverseEveryComponent();
         shouldTraverseSingleComponent();
+        shouldRejectInvalidStartVertex();
+        shouldExposeImmutableNeighbors();
         shouldRejectMalformedEdgeList();
     }
 
     private static void shouldTraverseEveryComponent() {
-        Graph graph = Graph.fromUndirectedEdges(
-                6,
-                new int[][] {
-                    {1, 2},
-                    {0, 3},
-                    {2, 0},
-                    {5, 4}
-                });
+        Graph graph = sampleGraph();
 
         assertEquals(List.of(0, 3, 2, 1, 4, 5), DepthFirstSearch.traverse(graph));
     }
 
     private static void shouldTraverseSingleComponent() {
-        Graph graph = Graph.fromUndirectedEdges(
-                6,
-                new int[][] {
-                    {1, 2},
-                    {0, 3},
-                    {2, 0},
-                    {5, 4}
-                });
+        Graph graph = sampleGraph();
 
         assertEquals(List.of(5, 4), DepthFirstSearch.traverseFrom(graph, 5));
+    }
+
+    private static void shouldRejectInvalidStartVertex() {
+        Graph graph = sampleGraph();
+
+        try {
+            DepthFirstSearch.traverseFrom(graph, 7);
+            throw new AssertionError("Expected invalid start vertex to fail");
+        } catch (IndexOutOfBoundsException expected) {
+            // Expected.
+        }
+    }
+
+    private static void shouldExposeImmutableNeighbors() {
+        Graph graph = sampleGraph();
+
+        try {
+            graph.neighborsOf(0).add(99);
+            throw new AssertionError("Expected neighbors to be immutable");
+        } catch (UnsupportedOperationException expected) {
+            // Expected.
+        }
     }
 
     private static void shouldRejectMalformedEdgeList() {
@@ -51,5 +61,14 @@ public final class DepthFirstSearchTest {
         if (!expected.equals(actual)) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
         }
+    }
+
+    private static Graph sampleGraph() {
+        return Graph.builder(6)
+                .addUndirectedEdge(1, 2)
+                .addUndirectedEdge(0, 3)
+                .addUndirectedEdge(2, 0)
+                .addUndirectedEdge(5, 4)
+                .build();
     }
 }

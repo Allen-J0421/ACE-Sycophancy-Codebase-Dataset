@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public final class Graph {
@@ -13,30 +13,26 @@ public final class Graph {
     }
 
     public static Graph undirected(int vertices) {
-        if (vertices < 0) {
-            throw new IllegalArgumentException("vertices must be non-negative");
-        }
-
-        List<List<Integer>> adjacencyList = new ArrayList<>(vertices);
-        for (int vertex = 0; vertex < vertices; vertex++) {
-            adjacencyList.add(new ArrayList<>());
-        }
-        return new Graph(adjacencyList);
+        return builder(vertices).build();
     }
 
     public static Graph fromUndirectedEdges(int vertices, int[][] edges) {
-        Graph graph = undirected(vertices);
         Objects.requireNonNull(edges, "edges");
 
+        Builder builder = builder(vertices);
         for (int[] edge : edges) {
             if (edge == null || edge.length != 2) {
                 throw new IllegalArgumentException(
                         "Each edge must contain exactly two vertices: " + Arrays.toString(edge));
             }
-            graph.addEdge(edge[0], edge[1]);
+            builder.addUndirectedEdge(edge[0], edge[1]);
         }
 
-        return graph;
+        return builder.build();
+    }
+
+    public static Builder builder(int vertices) {
+        return new Builder(vertices);
     }
 
     public int size() {
@@ -49,26 +45,62 @@ public final class Graph {
 
     public List<Integer> neighborsOf(int vertex) {
         checkVertex(vertex);
-        return Collections.unmodifiableList(adjacencyList.get(vertex));
+        return adjacencyList.get(vertex);
     }
 
     public List<Integer> neighbors(int vertex) {
         return neighborsOf(vertex);
     }
 
-    public void addEdge(int u, int v) {
-        checkVertex(u);
-        checkVertex(v);
-
-        adjacencyList.get(u).add(v);
-        adjacencyList.get(v).add(u);
-    }
-
-    public void addUndirectedEdge(int u, int v) {
-        addEdge(u, v);
-    }
-
     private void checkVertex(int vertex) {
         Objects.checkIndex(vertex, adjacencyList.size());
+    }
+
+    public static final class Builder {
+
+        private final List<List<Integer>> adjacencyList;
+        private boolean built;
+
+        private Builder(int vertices) {
+            if (vertices < 0) {
+                throw new IllegalArgumentException("vertices must be non-negative");
+            }
+
+            adjacencyList = new ArrayList<>(vertices);
+            for (int vertex = 0; vertex < vertices; vertex++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+        }
+
+        public Builder addUndirectedEdge(int u, int v) {
+            ensureNotBuilt();
+            checkVertex(u);
+            checkVertex(v);
+
+            adjacencyList.get(u).add(v);
+            adjacencyList.get(v).add(u);
+            return this;
+        }
+
+        public Graph build() {
+            ensureNotBuilt();
+            built = true;
+
+            List<List<Integer>> frozenAdjacencyList = new ArrayList<>(adjacencyList.size());
+            for (List<Integer> neighbors : adjacencyList) {
+                frozenAdjacencyList.add(List.copyOf(neighbors));
+            }
+            return new Graph(List.copyOf(frozenAdjacencyList));
+        }
+
+        private void ensureNotBuilt() {
+            if (built) {
+                throw new IllegalStateException("Builder has already built a graph");
+            }
+        }
+
+        private void checkVertex(int vertex) {
+            Objects.checkIndex(vertex, adjacencyList.size());
+        }
     }
 }

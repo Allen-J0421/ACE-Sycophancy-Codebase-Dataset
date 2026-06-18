@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+// ============================================================================
+// Exception Hierarchy
+// ============================================================================
+
 class GraphException extends RuntimeException {
     GraphException(String message) {
         super(message);
@@ -43,6 +47,10 @@ class InvalidEdgeException extends GraphException {
     }
 }
 
+// ============================================================================
+// Core Utilities
+// ============================================================================
+
 class Validator {
     static void validatePositive(int value, String fieldName) {
         if (value <= 0) {
@@ -59,6 +67,28 @@ class Validator {
 
     static void validateNotNull(Object value, String fieldName) {
         Objects.requireNonNull(value, fieldName + " cannot be null");
+    }
+}
+
+class GraphValidator {
+    static void validateEdge(int source, int destination, int vertices) {
+        Validator.validateInRange(source, 0, vertices - 1, "source vertex");
+        Validator.validateInRange(destination, 0, vertices - 1, "destination vertex");
+        if (source == destination) {
+            throw new InvalidEdgeException("Self-loops are not allowed in a DAG");
+        }
+    }
+
+    static void validateNotLocked(boolean isLocked) {
+        if (isLocked) {
+            throw new GraphMutationException("Cannot modify graph after sorting");
+        }
+    }
+
+    static void validateDuplicateEdge(Edge edge, Set<Edge> edges) {
+        if (edges.contains(edge)) {
+            throw new DuplicateEdgeException(edge);
+        }
     }
 }
 
@@ -107,16 +137,52 @@ class Edge {
     }
 }
 
+// ============================================================================
+// Sorting Algorithms & Results
+// ============================================================================
+
+interface SortListener {
+    void onSortStarted(int vertexCount, int edgeCount);
+    void onVertexProcessed(int vertex, int indegree);
+    void onCycleDetected(int processedCount, int totalCount);
+    void onSortCompleted(long elapsedMs);
+}
+
+class NoOpSortListener implements SortListener {
+    @Override
+    public void onSortStarted(int vertexCount, int edgeCount) {}
+
+    @Override
+    public void onVertexProcessed(int vertex, int indegree) {}
+
+    @Override
+    public void onCycleDetected(int processedCount, int totalCount) {}
+
+    @Override
+    public void onSortCompleted(long elapsedMs) {}
+}
+
 interface TopologicalSortingAlgorithm {
     TopologicalSortResult sort(GraphStructure graph);
 
+    TopologicalSortResult sort(GraphStructure graph, SortListener listener);
+
     static TopologicalSortingAlgorithm withTiming(TopologicalSortingAlgorithm delegate) {
-        return graph -> {
-            long startTime = System.currentTimeMillis();
-            TopologicalSortResult result = delegate.sort(graph);
-            long actualTime = System.currentTimeMillis() - startTime;
-            return new TopologicalSortResult(result.getOrder(), result.getVertexCount(),
-                result.isCyclic(), actualTime, result.getFormatter());
+        return new TopologicalSortingAlgorithm() {
+            @Override
+            public TopologicalSortResult sort(GraphStructure graph) {
+                return sort(graph, new NoOpSortListener());
+            }
+
+            @Override
+            public TopologicalSortResult sort(GraphStructure graph, SortListener listener) {
+                long startTime = System.currentTimeMillis();
+                TopologicalSortResult result = delegate.sort(graph, listener);
+                long actualTime = System.currentTimeMillis() - startTime;
+                listener.onSortCompleted(actualTime);
+                return new TopologicalSortResult(result.getOrder(), result.getVertexCount(),
+                    result.isCyclic(), actualTime, result.getFormatter());
+            }
         };
     }
 }
@@ -164,6 +230,10 @@ class ExecutionTimer {
     }
 }
 
+// ============================================================================
+// Graph Model & Statistics
+// ============================================================================
+
 class GraphStatistics {
     private final int edgeCount;
     private final int vertexCount;
@@ -196,6 +266,10 @@ class GraphStatistics {
             vertexCount, edgeCount, getEdgeDensity(), maxIndegree);
     }
 }
+
+// ============================================================================
+// Result & Formatting
+// ============================================================================
 
 class TopologicalSortResult {
     private final List<Integer> order;
@@ -254,6 +328,10 @@ class TopologicalSortResult {
         return formatter.format(this);
     }
 }
+
+// ============================================================================
+// Internal Graph Representation
+// ============================================================================
 
 class GraphStructure {
     private final int vertices;
@@ -315,18 +393,25 @@ class GraphStructure {
 class KahnTopologicalSort implements TopologicalSortingAlgorithm {
     @Override
     public TopologicalSortResult sort(GraphStructure graph) {
-        long startTime = System.currentTimeMillis();
+        return sort(graph, new NoOpSortListener());
+    }
+
+    @Override
+    public TopologicalSortResult sort(GraphStructure graph, SortListener listener) {
+        listener.onSortStarted(graph.getVertexCount(), graph.getStatistics().getEdgeCount());
 
         int[] indegree = calculateIndegrees(graph);
         Queue<Integer> queue = initializeQueue(graph.getVertexCount(), indegree);
         List<Integer> result = new ArrayList<>();
 
-        processNodes(queue, graph, indegree, result);
+        processNodes(queue, graph, indegree, result, listener);
 
         boolean hasCycle = result.size() != graph.getVertexCount();
-        long executionTime = System.currentTimeMillis() - startTime;
+        if (hasCycle) {
+            listener.onCycleDetected(result.size(), graph.getVertexCount());
+        }
 
-        return new TopologicalSortResult(result, graph.getVertexCount(), hasCycle, executionTime);
+        return new TopologicalSortResult(result, graph.getVertexCount(), hasCycle, 0);
     }
 
     private int[] calculateIndegrees(GraphStructure graph) {
@@ -350,10 +435,11 @@ class KahnTopologicalSort implements TopologicalSortingAlgorithm {
     }
 
     private void processNodes(Queue<Integer> queue, GraphStructure graph,
-                            int[] indegree, List<Integer> result) {
+                            int[] indegree, List<Integer> result, SortListener listener) {
         while (!queue.isEmpty()) {
             int node = queue.poll();
             result.add(node);
+            listener.onVertexProcessed(node, 0);
 
             for (int neighbor : graph.getNeighbors(node)) {
                 indegree[neighbor]--;
@@ -364,6 +450,10 @@ class KahnTopologicalSort implements TopologicalSortingAlgorithm {
         }
     }
 }
+
+// ============================================================================
+// Public Graph API
+// ============================================================================
 
 class DirectedAcyclicGraph implements GraphQuery {
     private final GraphStructure structure;
@@ -393,20 +483,11 @@ class DirectedAcyclicGraph implements GraphQuery {
     }
 
     public void addEdge(int source, int destination) {
-        if (isLocked) {
-            throw new GraphMutationException("Cannot modify graph after sorting");
-        }
-        Validator.validateInRange(source, 0, vertices - 1, "source vertex");
-        Validator.validateInRange(destination, 0, vertices - 1, "destination vertex");
-
-        if (source == destination) {
-            throw new InvalidEdgeException("Self-loops are not allowed in a DAG");
-        }
+        GraphValidator.validateNotLocked(isLocked);
+        GraphValidator.validateEdge(source, destination, vertices);
 
         Edge edge = new Edge(source, destination);
-        if (edges.contains(edge)) {
-            throw new DuplicateEdgeException(edge);
-        }
+        GraphValidator.validateDuplicateEdge(edge, edges);
 
         adjacencyList.get(source).add(destination);
         structure.getAdjacencyList(source).add(destination);
@@ -598,6 +679,10 @@ class TopologicalSortDemo {
     }
 }
 
+// ============================================================================
+// Graph Query Interface
+// ============================================================================
+
 interface GraphQuery {
     int getVertexCount();
     int getEdgeCount();
@@ -605,6 +690,32 @@ interface GraphQuery {
     Set<Edge> getEdges();
     boolean isLocked();
 }
+
+// ============================================================================
+// Algorithm Registry
+// ============================================================================
+
+class AlgorithmRegistry {
+    public static TopologicalSortingAlgorithm getDefault() {
+        return new KahnTopologicalSort();
+    }
+
+    public static TopologicalSortingAlgorithm getDefaultWithTiming() {
+        return TopologicalSortingAlgorithm.withTiming(getDefault());
+    }
+
+    public static TopologicalSortingAlgorithm kahn() {
+        return new KahnTopologicalSort();
+    }
+
+    public static TopologicalSortingAlgorithm kahnWithTiming() {
+        return TopologicalSortingAlgorithm.withTiming(kahn());
+    }
+}
+
+// ============================================================================
+// Demo Framework
+// ============================================================================
 
 interface DemoScenario {
     String getTitle();
@@ -631,6 +742,10 @@ class DemoRunner {
         }
     }
 }
+
+// ============================================================================
+// Statistics & Metrics
+// ============================================================================
 
 class SortingStatistics {
     private final int totalExecutions;

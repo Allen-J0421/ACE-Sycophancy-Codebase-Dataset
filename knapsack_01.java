@@ -7,16 +7,7 @@ final class Knapsack {
     }
 
     static int knapsack(int capacity, int[] values, int[] weights) {
-        return new Solver(capacity, toItems(values, weights)).solve();
-    }
-
-    private static Item[] toItems(int[] values, int[] weights) {
-        Item[] items = new Item[weights.length];
-
-        for (int itemIndex = 0; itemIndex < weights.length; itemIndex++) {
-            items[itemIndex] = new Item(weights[itemIndex], values[itemIndex]);
-        }
-        return items;
+        return new Solver(capacity, Item.from(values, weights)).solve();
     }
 
     private static final class Solver {
@@ -78,6 +69,15 @@ final class Knapsack {
         private Item(int weight, int value) {
             this.weight = weight;
             this.value = value;
+        }
+
+        private static Item[] from(int[] values, int[] weights) {
+            Item[] items = new Item[weights.length];
+
+            for (int itemIndex = 0; itemIndex < weights.length; itemIndex++) {
+                items[itemIndex] = new Item(weights[itemIndex], values[itemIndex]);
+            }
+            return items;
         }
 
         private boolean fitsWithin(int capacity) {

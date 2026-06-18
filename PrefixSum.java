@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -22,7 +21,7 @@ public final class PrefixSum {
             prefixSums.add(runningTotal);
         }
 
-        return Collections.unmodifiableList(prefixSums);
+        return List.copyOf(prefixSums);
     }
 
     public static void main(String[] args) {

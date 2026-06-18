@@ -101,10 +101,15 @@ final class TopologicalSort {
     }
 
     private static void printVertices(List<Integer> vertices) {
+        System.out.println(formatVertices(vertices));
+    }
+
+    private static String formatVertices(List<Integer> vertices) {
+        StringBuilder output = new StringBuilder();
         for (int vertex : vertices) {
-            System.out.print(vertex + " ");
+            output.append(vertex).append(' ');
         }
-        System.out.println();
+        return output.toString();
     }
 
     public static void main(String[] args) {

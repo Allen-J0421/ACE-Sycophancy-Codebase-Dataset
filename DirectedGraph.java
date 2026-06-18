@@ -20,7 +20,7 @@ public final class DirectedGraph {
     public static DirectedGraph fromEdges(int vertexCount, Iterable<DirectedEdge> edges) {
         DirectedGraphBuilder builder = builder(vertexCount);
         for (DirectedEdge edge : edges) {
-            validateEdge(edge);
+            GraphValidation.requireEdge(edge);
             builder.addEdge(edge);
         }
         return builder.build();
@@ -31,43 +31,29 @@ public final class DirectedGraph {
     }
 
     public List<Integer> neighborsOf(int vertex) {
-        validateVertex(vertex);
+        GraphValidation.requireVertex(vertex, adjacencyList.size());
         return adjacencyList.get(vertex);
     }
 
-    private static void validateEdge(DirectedEdge edge) {
-        if (edge == null) {
-            throw new IllegalArgumentException("Edge cannot be null.");
-        }
-    }
-
     static List<List<Integer>> createEmptyAdjacencyList(int vertexCount) {
-        validateVertexCount(vertexCount);
+        GraphValidation.requireVertexCount(vertexCount);
 
-        List<List<Integer>> adjacencyList = new ArrayList<>();
+        List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             adjacencyList.add(new ArrayList<>());
         }
         return adjacencyList;
     }
 
-    static List<List<Integer>> freezeAdjacencyList(List<List<Integer>> adjacencyList) {
+    static DirectedGraph fromAdjacencyList(List<List<Integer>> adjacencyList) {
+        return new DirectedGraph(freezeAdjacencyList(adjacencyList));
+    }
+
+    private static List<List<Integer>> freezeAdjacencyList(List<List<Integer>> adjacencyList) {
         List<List<Integer>> frozenAdjacencyList = new ArrayList<>(adjacencyList.size());
         for (List<Integer> neighbors : adjacencyList) {
             frozenAdjacencyList.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
         }
         return Collections.unmodifiableList(frozenAdjacencyList);
-    }
-
-    static void validateVertexCount(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("Vertex count must be non-negative.");
-        }
-    }
-
-    private void validateVertex(int vertex) {
-        if (vertex < 0 || vertex >= adjacencyList.size()) {
-            throw new IllegalArgumentException("Vertex out of bounds: " + vertex);
-        }
     }
 }

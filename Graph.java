@@ -30,7 +30,7 @@ final class Graph<V> implements Iterable<V> {
     List<V> neighbors(V vertex) {
         List<V> neighbors = adjacencyMap.get(vertex);
         if (neighbors == null) {
-            throw new IllegalArgumentException("Vertex " + vertex + " is not in this graph");
+            throw new VertexNotFoundException(vertex);
         }
         return neighbors;
     }

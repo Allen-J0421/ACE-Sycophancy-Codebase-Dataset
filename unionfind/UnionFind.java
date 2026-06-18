@@ -56,7 +56,7 @@ public final class UnionFind {
         return componentCount;
     }
 
-    public int size() {
+    public int elementCount() {
         return parent.length;
     }
 

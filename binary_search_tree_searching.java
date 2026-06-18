@@ -1,15 +1,12 @@
-final class Node {
-    final int value;
-    Node left;
-    Node right;
-
-    Node(int value) {
-        this.value = value;
-    }
-}
-
 final class BinarySearchTree {
-    private BinarySearchTree() {
+    private Node root;
+
+    void insert(int value) {
+        root = insert(root, value);
+    }
+
+    boolean contains(int key) {
+        return search(root, key);
     }
 
     static boolean search(Node root, int key) {
@@ -26,20 +23,46 @@ final class BinarySearchTree {
         return false;
     }
 
-    private static Node createSampleTree() {
-        Node root = new Node(6);
-        root.left = new Node(2);
-        root.right = new Node(8);
-        root.right.left = new Node(7);
-        root.right.right = new Node(9);
+    private static Node insert(Node node, int value) {
+        if (node == null) {
+            return new Node(value);
+        }
 
-        return root;
+        if (value < node.value) {
+            node.left = insert(node.left, value);
+        } else if (value > node.value) {
+            node.right = insert(node.right, value);
+        }
+
+        return node;
+    }
+
+    private static BinarySearchTree createSampleTree() {
+        BinarySearchTree tree = new BinarySearchTree();
+
+        tree.insert(6);
+        tree.insert(2);
+        tree.insert(8);
+        tree.insert(7);
+        tree.insert(9);
+
+        return tree;
     }
 
     public static void main(String[] args) {
-        Node root = createSampleTree();
+        BinarySearchTree tree = createSampleTree();
         int key = 7;
 
-        System.out.println(search(root, key));
+        System.out.println(tree.contains(key));
+    }
+}
+
+final class Node {
+    final int value;
+    Node left;
+    Node right;
+
+    Node(int value) {
+        this.value = value;
     }
 }

@@ -2,12 +2,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             Logger.setLevel(Logger.Level.INFO);
-            Logger.info("Starting Enterprise Graph Library - Level 6 Demo");
+            Logger.info("Starting Enterprise Graph Library - Level 7 Demo");
 
-            System.out.println("╔═════════════════════════════════════════════╗");
-            System.out.println("║  ENTERPRISE GRAPH LIBRARY - LEVEL 6 DEMO   ║");
-            System.out.println("║   (Production + Testing + Logging)          ║");
-            System.out.println("╚═════════════════════════════════════════════╝");
+            System.out.println("╔═══════════════════════════════════════════════════╗");
+            System.out.println("║   ENTERPRISE GRAPH LIBRARY - LEVEL 7 DEMO       ║");
+            System.out.println("║  (Configuration + Metrics + Resilience + Plugins)║");
+            System.out.println("╚═══════════════════════════════════════════════════╝");
+
+            demonstrateLevel7Features();
 
             Graph graph = GraphBuilder.undirected(6)
                     .addEdge(1, 2)
@@ -124,6 +126,105 @@ public class Main {
             Logger.error("Graph error: " + e.getMessage());
             System.err.println("Graph error: " + e.getMessage());
         }
+    }
+
+    private static void demonstrateLevel7Features() {
+        System.out.println("\n--- Configuration Management ---");
+        demonstrateConfiguration();
+
+        System.out.println("\n--- Metrics Collection ---");
+        demonstrateMetrics();
+
+        System.out.println("\n--- Retry Policy ---");
+        demonstrateRetryPolicy();
+
+        System.out.println("\n--- Circuit Breaker ---");
+        demonstrateCircuitBreaker();
+
+        System.out.println("\n--- Plugin Architecture ---");
+        demonstratePlugins();
+    }
+
+    private static void demonstrateConfiguration() {
+        ConfigurationManager config = ConfigurationManager.getInstance();
+        System.out.println("Cache enabled: " + config.getBoolean("cache.enabled", false));
+        System.out.println("Cache TTL: " + config.getLong("cache.ttl.millis", 0) + " ms");
+        System.out.println("Logging level: " + config.getString("logging.level", "INFO"));
+        System.out.println("Concurrent threads: " + config.getInt("concurrent.threads", 0));
+
+        config.set("custom.setting", "custom_value");
+        System.out.println("Custom setting: " + config.getString("custom.setting", "N/A"));
+    }
+
+    private static void demonstrateMetrics() {
+        MetricsCollector metrics = MetricsCollector.getInstance();
+        metrics.reset();
+
+        metrics.startTiming("operation1");
+        try { Thread.sleep(10); } catch (InterruptedException e) {}
+        metrics.recordTiming("operation1");
+
+        metrics.incrementCounter("requests");
+        metrics.addToCounter("requests", 5);
+
+        System.out.println("Operation1 count: " + metrics.getCounter("operation1.count"));
+        System.out.println("Total requests: " + metrics.getCounter("requests"));
+        System.out.printf("Avg operation1 time: %.3f ms%n", metrics.getAverageTimingMillis("operation1"));
+    }
+
+    private static void demonstrateRetryPolicy() {
+        RetryPolicy policy = new RetryPolicy.Builder()
+            .maxRetries(3)
+            .retryDelayMillis(100)
+            .exponentialBackoff(2.0, 1000)
+            .build();
+
+        int attempts = 0;
+        try {
+            policy.executeWithRetry(() -> {
+                System.out.println("Attempting operation...");
+                return "Success";
+            });
+            System.out.println("Retry policy executed successfully");
+        } catch (Exception e) {
+            Logger.error("Retry policy failed", e);
+        }
+    }
+
+    private static void demonstrateCircuitBreaker() {
+        CircuitBreaker breaker = new CircuitBreaker("demo", 3, 1000);
+
+        System.out.println("Initial state: " + breaker.getState());
+
+        for (int i = 0; i < 5; i++) {
+            final int attempt = i;
+            try {
+                breaker.execute(() -> {
+                    if (attempt < 3) throw new Exception("Simulated failure");
+                    return "Success";
+                });
+                System.out.println("Attempt " + (attempt + 1) + ": Success");
+            } catch (Exception e) {
+                System.out.println("Attempt " + (attempt + 1) + ": Failed - " + breaker.getState());
+            }
+        }
+
+        breaker.reset();
+        System.out.println("After reset: " + breaker.getState());
+    }
+
+    private static void demonstratePlugins() {
+        PluginRegistry registry = PluginRegistry.getInstance();
+
+        GraphPlugin loggingPlugin = new LoggingPlugin();
+        registry.register(loggingPlugin);
+
+        System.out.println("Registered plugins: " + registry.getPluginNames());
+        System.out.println("Plugin count: " + registry.getPluginCount());
+
+        Graph graph = GraphBuilder.undirected(3).addEdge(0, 1).addEdge(1, 2).build();
+        GraphService service = new GraphService(graph);
+        registry.executeAll(service);
     }
 
     private static void demonstrateLoggingAndHealth(Graph graph) {

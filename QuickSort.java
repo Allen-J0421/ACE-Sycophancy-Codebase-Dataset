@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Objects;
 
 public final class QuickSort {
@@ -10,11 +9,17 @@ public final class QuickSort {
 
     public static void sort(int[] values) {
         Objects.requireNonNull(values, "values");
-        if (values.length < 2) {
+        sort(values, 0, values.length);
+    }
+
+    public static void sort(int[] values, int fromIndex, int toIndexExclusive) {
+        Objects.requireNonNull(values, "values");
+        checkRange(values.length, fromIndex, toIndexExclusive);
+        if (toIndexExclusive - fromIndex < 2) {
             return;
         }
 
-        quickSort(values, 0, values.length - 1);
+        quickSort(values, fromIndex, toIndexExclusive - 1);
     }
 
     private static void quickSort(int[] values, int left, int right) {
@@ -51,6 +56,20 @@ public final class QuickSort {
         return storeIndex + 1;
     }
 
+    private static void checkRange(int length, int fromIndex, int toIndexExclusive) {
+        if (fromIndex < 0) {
+            throw new IndexOutOfBoundsException("fromIndex (" + fromIndex + ") is negative");
+        }
+        if (toIndexExclusive > length) {
+            throw new IndexOutOfBoundsException(
+                    "toIndexExclusive (" + toIndexExclusive + ") is greater than array length (" + length + ")");
+        }
+        if (fromIndex > toIndexExclusive) {
+            throw new IllegalArgumentException(
+                    "fromIndex (" + fromIndex + ") is greater than toIndexExclusive (" + toIndexExclusive + ")");
+        }
+    }
+
     private static int medianOfThree(int[] values, int left, int right) {
         int middle = left + ((right - left) >>> 1);
 
@@ -85,11 +104,5 @@ public final class QuickSort {
         int temp = values[first];
         values[first] = values[second];
         values[second] = temp;
-    }
-
-    public static void main(String[] args) {
-        int[] values = {10, 7, 8, 9, 1, 5};
-        sort(values);
-        System.out.println(Arrays.toString(values));
     }
 }

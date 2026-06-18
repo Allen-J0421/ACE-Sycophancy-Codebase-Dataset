@@ -29,31 +29,16 @@ public final class SortedIntArray {
     }
 
     public Optional<PairMatch> findPairWithSum(long target) {
-        if (!canContainPairMatching(target)) {
+        MatchIndexes matchIndexes = findMatchIndexes(target);
+        if (matchIndexes == null) {
             return Optional.empty();
         }
 
-        int left = 0;
-        int right = values.length - 1;
-
-        while (left < right) {
-            long sum = sumAt(left, right);
-            if (sum == target) {
-                return Optional.of(createPairMatch(left, right));
-            }
-
-            if (sum < target) {
-                left++;
-            } else {
-                right--;
-            }
-        }
-
-        return Optional.empty();
+        return Optional.of(matchIndexes.toPairMatch(values));
     }
 
     public boolean hasPairWithSum(long target) {
-        return findPairWithSum(target).isPresent();
+        return findMatchIndexes(target) != null;
     }
 
     public int[] toArray() {
@@ -89,6 +74,30 @@ public final class SortedIntArray {
             && target <= maximumPairSum();
     }
 
+    private MatchIndexes findMatchIndexes(long target) {
+        if (!canContainPairMatching(target)) {
+            return null;
+        }
+
+        int left = 0;
+        int right = values.length - 1;
+
+        while (left < right) {
+            long sum = sumAt(left, right);
+            if (sum == target) {
+                return new MatchIndexes(left, right);
+            }
+
+            if (sum < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return null;
+    }
+
     private long minimumPairSum() {
         return (long) values[0] + values[1];
     }
@@ -102,10 +111,6 @@ public final class SortedIntArray {
         return (long) values[leftIndex] + values[rightIndex];
     }
 
-    private PairMatch createPairMatch(int leftIndex, int rightIndex) {
-        return new PairMatch(leftIndex, rightIndex, values[leftIndex], values[rightIndex]);
-    }
-
     private static void validateSorted(int[] values) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
@@ -116,6 +121,12 @@ public final class SortedIntArray {
                 throw new IllegalArgumentException(
                     "two-pointer search requires values sorted in nondecreasing order");
             }
+        }
+    }
+
+    private record MatchIndexes(int leftIndex, int rightIndex) {
+        private PairMatch toPairMatch(int[] values) {
+            return new PairMatch(leftIndex, rightIndex, values[leftIndex], values[rightIndex]);
         }
     }
 }

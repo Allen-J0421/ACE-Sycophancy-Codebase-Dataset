@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Utility methods for computing prefix sums.
@@ -34,12 +35,28 @@ public final class PrefixSumArray {
      * @return the prefix sums as a primitive array
      */
     public static int[] prefixSumsAsArray(int[] values) {
+        long[] prefixSums = prefixSumsAsLongArray(values);
+        int[] boundedPrefixSums = new int[prefixSums.length];
+        for (int i = 0; i < prefixSums.length; i++) {
+            boundedPrefixSums[i] = Math.toIntExact(prefixSums[i]);
+        }
+
+        return boundedPrefixSums;
+    }
+
+    /**
+     * Computes the running total after each element in the input array.
+     *
+     * @param values the source values
+     * @return the prefix sums as a primitive long array
+     */
+    public static long[] prefixSumsAsLongArray(int[] values) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
         }
 
-        int[] prefixSums = new int[values.length];
-        int runningTotal = 0;
+        long[] prefixSums = new long[values.length];
+        long runningTotal = 0L;
         for (int i = 0; i < values.length; i++) {
             runningTotal += values[i];
             prefixSums[i] = runningTotal;
@@ -49,14 +66,11 @@ public final class PrefixSumArray {
     }
 
     private static String joinPrefixSums(List<Integer> prefixSums) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < prefixSums.size(); i++) {
-            if (i > 0) {
-                builder.append(' ');
-            }
-            builder.append(prefixSums.get(i));
+        StringJoiner joiner = new StringJoiner(" ");
+        for (int value : prefixSums) {
+            joiner.add(Integer.toString(value));
         }
-        return builder.toString();
+        return joiner.toString();
     }
 
     public static void main(String[] args) {

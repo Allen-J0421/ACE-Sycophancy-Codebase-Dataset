@@ -11,6 +11,8 @@ public final class PrefixSumArrayTest {
         shouldComputePrefixSumsForPositiveNumbers();
         shouldHandleNegativeValues();
         shouldHandleEmptyInput();
+        shouldComputePrefixSumsAsLongArrayForLargeValues();
+        shouldRejectIntOverflow();
         shouldRejectNullInput();
         System.out.println("All PrefixSumArray tests passed.");
     }
@@ -32,8 +34,25 @@ public final class PrefixSumArrayTest {
 
     private static void shouldHandleEmptyInput() {
         assertArrayEquals(new int[0], PrefixSumArray.prefixSumsAsArray(new int[0]));
+        assertArrayEquals(new long[0], PrefixSumArray.prefixSumsAsLongArray(new int[0]));
         if (!PrefixSumArray.prefixSums(new int[0]).isEmpty()) {
             throw new AssertionError("Expected empty list for empty input");
+        }
+    }
+
+    private static void shouldComputePrefixSumsAsLongArrayForLargeValues() {
+        int[] input = {Integer.MAX_VALUE, 1};
+        assertArrayEquals(
+            new long[] {2_147_483_647L, 2_147_483_648L},
+            PrefixSumArray.prefixSumsAsLongArray(input));
+    }
+
+    private static void shouldRejectIntOverflow() {
+        try {
+            PrefixSumArray.prefixSumsAsArray(new int[] {Integer.MAX_VALUE, 1});
+            throw new AssertionError("Expected ArithmeticException for int overflow");
+        } catch (ArithmeticException expected) {
+            // Expected path.
         }
     }
 
@@ -47,6 +66,20 @@ public final class PrefixSumArrayTest {
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual) {
+        if (expected.length != actual.length) {
+            throw new AssertionError(
+                "Length mismatch: expected " + expected.length + ", got " + actual.length);
+        }
+
+        for (int i = 0; i < expected.length; i++) {
+            if (expected[i] != actual[i]) {
+                throw new AssertionError(
+                "Mismatch at index " + i + ": expected " + expected[i] + ", got " + actual[i]);
+            }
+        }
+    }
+
+    private static void assertArrayEquals(long[] expected, long[] actual) {
         if (expected.length != actual.length) {
             throw new AssertionError(
                 "Length mismatch: expected " + expected.length + ", got " + actual.length);

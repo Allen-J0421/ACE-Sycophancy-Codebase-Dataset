@@ -14,9 +14,7 @@ final class Knapsack {
     }
 
     static int solve(int capacity, int[] values, int[] weights) {
-        validateInputs(capacity, values, weights);
-
-        return solve(capacity, toItems(values, weights));
+        return solve(capacity, buildItems(capacity, values, weights));
     }
 
     public static void main(String[] args) {
@@ -31,7 +29,7 @@ final class Knapsack {
         System.out.println(solve(capacity, values, weights));
     }
 
-    private static void validateInputs(int capacity, int[] values, int[] weights) {
+    private static Item[] buildItems(int capacity, int[] values, int[] weights) {
         if (capacity < 0) {
             throw new IllegalArgumentException("capacity must be non-negative");
         }
@@ -41,36 +39,33 @@ final class Knapsack {
         if (values.length != weights.length) {
             throw new IllegalArgumentException("values and weights must have the same length");
         }
-        for (int weight : weights) {
+
+        Item[] items = new Item[values.length];
+        for (int index = 0; index < values.length; index++) {
+            int weight = weights[index];
             if (weight < 0) {
                 throw new IllegalArgumentException("weights must be non-negative");
             }
-        }
-    }
-
-    private static Item[] toItems(int[] values, int[] weights) {
-        Item[] items = new Item[values.length];
-        for (int index = 0; index < values.length; index++) {
-            items[index] = new Item(weights[index], values[index]);
+            items[index] = new Item(weight, values[index]);
         }
         return items;
     }
 
     private static int solve(int capacity, Item[] items) {
-        int[] bestByCapacity = new int[capacity + 1];
+        int[] bestValueByCapacity = new int[capacity + 1];
 
         for (Item item : items) {
-            applyItem(bestByCapacity, item);
+            applyItem(bestValueByCapacity, item);
         }
 
-        return bestByCapacity[capacity];
+        return bestValueByCapacity[capacity];
     }
 
-    private static void applyItem(int[] bestByCapacity, Item item) {
-        for (int currentCapacity = bestByCapacity.length - 1; currentCapacity >= item.weight; currentCapacity--) {
-            bestByCapacity[currentCapacity] = Math.max(
-                bestByCapacity[currentCapacity],
-                bestByCapacity[currentCapacity - item.weight] + item.value
+    private static void applyItem(int[] bestValueByCapacity, Item item) {
+        for (int currentCapacity = bestValueByCapacity.length - 1; currentCapacity >= item.weight; currentCapacity--) {
+            bestValueByCapacity[currentCapacity] = Math.max(
+                bestValueByCapacity[currentCapacity],
+                bestValueByCapacity[currentCapacity - item.weight] + item.value
             );
         }
     }

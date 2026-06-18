@@ -1,7 +1,7 @@
 import java.util.Comparator;
 
 public abstract class BaseSorter<T> implements Sorter<T> {
-    protected final SortConfiguration<T> config;
+    public final SortConfiguration<T> config;
     protected SortStatistics statistics;
 
     protected BaseSorter(SortConfiguration<T> config) {

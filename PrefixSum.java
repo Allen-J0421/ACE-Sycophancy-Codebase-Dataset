@@ -4,58 +4,36 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Computes prefix sum arrays efficiently with caching and statistics.
+ * Computes prefix sum arrays efficiently with caching, metrics, and statistics.
  * The prefix sum at index i is the sum of all elements from index 0 to i.
  */
 public class PrefixSum {
 
     private final List<Long> cache;
-    private final boolean cacheEnabled;
-    private final boolean clearCacheOnCompute;
+    private final PrefixSumConfig config;
     private int computationCount;
+    private long totalComputationTime;
+    private long peakMemoryUsed;
 
     /**
-     * Creates a PrefixSum instance with configuration.
-     *
-     * @param cacheEnabled whether to cache computation results
-     * @param clearCacheOnCompute whether to clear cache before each computation
+     * Creates a PrefixSum instance with default configuration.
      */
-    private PrefixSum(boolean cacheEnabled, boolean clearCacheOnCompute) {
-        this.cacheEnabled = cacheEnabled;
-        this.clearCacheOnCompute = clearCacheOnCompute;
-        this.cache = cacheEnabled ? new ArrayList<>() : null;
+    public PrefixSum() {
+        this(PrefixSumConfig.defaults());
+    }
+
+    /**
+     * Creates a PrefixSum instance with custom configuration.
+     *
+     * @param config the configuration object
+     */
+    public PrefixSum(PrefixSumConfig config) {
+        Objects.requireNonNull(config, "Configuration cannot be null");
+        this.config = config;
+        this.cache = config.isCacheEnabled() ? new ArrayList<>() : null;
         this.computationCount = 0;
-    }
-
-    /**
-     * Returns a builder for creating configured PrefixSum instances.
-     *
-     * @return a new Builder instance
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
-     * Builder class for fluent PrefixSum configuration.
-     */
-    public static class Builder {
-        private boolean cacheEnabled = false;
-        private boolean clearCacheOnCompute = false;
-
-        public Builder withCache() {
-            this.cacheEnabled = true;
-            return this;
-        }
-
-        public Builder withCacheClear() {
-            this.clearCacheOnCompute = true;
-            return this;
-        }
-
-        public PrefixSum build() {
-            return new PrefixSum(cacheEnabled, clearCacheOnCompute);
-        }
+        this.totalComputationTime = 0;
+        this.peakMemoryUsed = 0;
     }
 
     /**
@@ -71,7 +49,11 @@ public class PrefixSum {
             throw new IllegalArgumentException("Input array cannot be empty");
         }
 
-        if (cacheEnabled && clearCacheOnCompute) {
+        long startTime = config.isTrackMetricsEnabled() ? System.nanoTime() : 0;
+        Runtime runtime = config.isTrackMetricsEnabled() ? Runtime.getRuntime() : null;
+        long memBefore = config.isTrackMetricsEnabled() ? runtime.totalMemory() - runtime.freeMemory() : 0;
+
+        if (config.isCacheEnabled() && config.shouldClearCacheOnCompute()) {
             cache.clear();
         }
 
@@ -83,13 +65,20 @@ public class PrefixSum {
             result.add(sum);
         }
 
-        if (cacheEnabled) {
+        if (config.isCacheEnabled()) {
             cache.clear();
             cache.addAll(result);
         }
 
+        long memAfter = config.isTrackMetricsEnabled() ? runtime.totalMemory() - runtime.freeMemory() : 0;
+        long computationTime = config.isTrackMetricsEnabled() ? (System.nanoTime() - startTime) / 1_000_000 : 0;
+        long memUsed = config.isTrackMetricsEnabled() ? Math.abs(memAfter - memBefore) : 0;
+
         computationCount++;
-        return new PrefixSumResult(result, arr.length, sum);
+        totalComputationTime += computationTime;
+        peakMemoryUsed = Math.max(peakMemoryUsed, memUsed);
+
+        return new PrefixSumResult(result, arr.length, sum, computationTime, memUsed);
     }
 
     /**
@@ -98,16 +87,18 @@ public class PrefixSum {
      * @return an unmodifiable cached result, or an empty list if caching is disabled
      */
     public List<Long> getCachedResult() {
-        return cacheEnabled && cache != null ? Collections.unmodifiableList(new ArrayList<>(cache)) : Collections.emptyList();
+        return config.isCacheEnabled() && cache != null ?
+            Collections.unmodifiableList(new ArrayList<>(cache)) :
+            Collections.emptyList();
     }
 
     /**
-     * Gets the number of computations performed.
+     * Gets computation metrics.
      *
-     * @return the computation count
+     * @return metrics for this calculator's computations
      */
-    public int getComputationCount() {
-        return computationCount;
+    public ComputationMetrics getMetrics() {
+        return new ComputationMetrics(totalComputationTime, computationCount, peakMemoryUsed);
     }
 
     /**
@@ -117,7 +108,7 @@ public class PrefixSum {
      * @return the result of the prefix sum computation
      */
     public static PrefixSumResult computePrefixSum(int[] arr) {
-        return new PrefixSum(false, false).compute(arr);
+        return new PrefixSum(PrefixSumConfig.defaults()).compute(arr);
     }
 
     /**
@@ -127,11 +118,16 @@ public class PrefixSum {
         private final List<Long> values;
         private final int inputSize;
         private final long totalSum;
+        private final long computationTimeMs;
+        private final long memoryUsedBytes;
 
-        private PrefixSumResult(List<Long> values, int inputSize, long totalSum) {
+        private PrefixSumResult(List<Long> values, int inputSize, long totalSum,
+                               long computationTimeMs, long memoryUsedBytes) {
             this.values = Collections.unmodifiableList(new ArrayList<>(values));
             this.inputSize = inputSize;
             this.totalSum = totalSum;
+            this.computationTimeMs = computationTimeMs;
+            this.memoryUsedBytes = memoryUsedBytes;
         }
 
         public List<Long> getValues() {
@@ -150,12 +146,22 @@ public class PrefixSum {
             return inputSize > 0 ? (double) totalSum / inputSize : 0.0;
         }
 
+        public long getComputationTimeMs() {
+            return computationTimeMs;
+        }
+
+        public long getMemoryUsedBytes() {
+            return memoryUsedBytes;
+        }
+
         @Override
         public String toString() {
             return "PrefixSumResult{" +
                     "values=" + values +
                     ", totalSum=" + totalSum +
                     ", average=" + String.format("%.2f", getAverage()) +
+                    ", timeMs=" + computationTimeMs +
+                    ", memoryBytes=" + memoryUsedBytes +
                     '}';
         }
     }

@@ -1,4 +1,3 @@
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,7 +7,8 @@ public class PrefixSumTest {
 
     public static void main(String[] args) {
         testBasicComputation();
-        testCaching();
+        testConfigBasedCaching();
+        testConfigBasedMetrics();
         testCacheClear();
         testStatistics();
         testResultImmutability();
@@ -24,18 +24,33 @@ public class PrefixSumTest {
         assert result.getTotalSum() == 10L : "Total sum mismatch";
     }
 
-    private static void testCaching() {
-        System.out.println("Testing caching functionality...");
-        PrefixSum calculator = PrefixSum.builder().withCache().build();
+    private static void testConfigBasedCaching() {
+        System.out.println("Testing config-based caching...");
+        PrefixSumConfig config = PrefixSumConfig.builder().withCache().build();
+        PrefixSum calculator = new PrefixSum(config);
         int[] arr = {10, 20, 30};
         PrefixSum.PrefixSumResult result = calculator.compute(arr);
         List<Long> cached = calculator.getCachedResult();
         assert cached.equals(result.getValues()) : "Caching failed";
     }
 
+    private static void testConfigBasedMetrics() {
+        System.out.println("Testing config-based metrics...");
+        PrefixSumConfig config = PrefixSumConfig.builder().withMetrics().build();
+        PrefixSum calculator = new PrefixSum(config);
+        calculator.compute(new int[]{1, 2, 3});
+        ComputationMetrics metrics = calculator.getMetrics();
+        assert metrics.getComputationCount() == 1 : "Metrics computation count mismatch";
+        assert metrics.getComputationTimeMs() >= 0 : "Computation time should be non-negative";
+    }
+
     private static void testCacheClear() {
         System.out.println("Testing cache clear on compute...");
-        PrefixSum calculator = PrefixSum.builder().withCache().withCacheClear().build();
+        PrefixSumConfig config = PrefixSumConfig.builder()
+            .withCache()
+            .withCacheClear()
+            .build();
+        PrefixSum calculator = new PrefixSum(config);
         calculator.compute(new int[]{1, 2, 3});
         List<Long> firstCache = calculator.getCachedResult();
         calculator.compute(new int[]{5, 5});
@@ -45,11 +60,11 @@ public class PrefixSumTest {
 
     private static void testStatistics() {
         System.out.println("Testing statistics...");
-        PrefixSum calculator = PrefixSum.builder().build();
+        PrefixSum calculator = new PrefixSum();
         calculator.compute(new int[]{10, 20, 30});
-        assert calculator.getComputationCount() == 1 : "Computation count mismatch";
+        assert calculator.getMetrics().getComputationCount() == 1 : "Computation count mismatch";
         calculator.compute(new int[]{5, 5, 5});
-        assert calculator.getComputationCount() == 2 : "Computation count not incremented";
+        assert calculator.getMetrics().getComputationCount() == 2 : "Computation count not incremented";
 
         PrefixSum.PrefixSumResult result = PrefixSum.computePrefixSum(new int[]{2, 4, 6});
         assert result.getTotalSum() == 12L : "Total sum incorrect";
@@ -71,7 +86,7 @@ public class PrefixSumTest {
 
     private static void testEdgeCases() {
         System.out.println("Testing edge cases...");
-        PrefixSum calculator = PrefixSum.builder().build();
+        PrefixSum calculator = new PrefixSum();
 
         try {
             calculator.compute(null);
@@ -90,5 +105,12 @@ public class PrefixSumTest {
         PrefixSum.PrefixSumResult singleElement = calculator.compute(new int[]{42});
         assert singleElement.getValues().equals(List.of(42L)) : "Single element failed";
         assert singleElement.getTotalSum() == 42L : "Single element sum mismatch";
+
+        try {
+            new PrefixSum(null);
+            assert false : "Should throw NullPointerException for null config";
+        } catch (NullPointerException e) {
+            // Expected
+        }
     }
 }

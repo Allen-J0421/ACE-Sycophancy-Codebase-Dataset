@@ -3,7 +3,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-final class UndirectedGraph {
+final class UndirectedGraph implements Graph {
     private final int vertexCount;
     private final List<List<Integer>> adjacencyList;
 
@@ -25,11 +25,13 @@ final class UndirectedGraph {
         return new UndirectedGraph(vertexCount, immutableCopyOf(adjacencyList));
     }
 
-    int vertexCount() {
+    @Override
+    public int vertexCount() {
         return vertexCount;
     }
 
-    List<Integer> neighborsOf(int vertex) {
+    @Override
+    public List<Integer> neighborsOf(int vertex) {
         validateVertex(vertex);
         return adjacencyList.get(vertex);
     }

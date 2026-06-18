@@ -9,7 +9,7 @@ final class BreadthFirstTraversal {
     private BreadthFirstTraversal() {
     }
 
-    static List<Integer> traverse(UndirectedGraph graph) {
+    static List<Integer> traverse(Graph graph) {
         Objects.requireNonNull(graph, "graph must not be null");
 
         boolean[] visited = new boolean[graph.vertexCount()];
@@ -25,7 +25,7 @@ final class BreadthFirstTraversal {
     }
 
     private static void traverseComponent(
-            UndirectedGraph graph,
+            Graph graph,
             int source,
             boolean[] visited,
             List<Integer> traversal
@@ -43,7 +43,7 @@ final class BreadthFirstTraversal {
     }
 
     private static void enqueueUnvisitedNeighbors(
-            UndirectedGraph graph,
+            Graph graph,
             int current,
             boolean[] visited,
             Deque<Integer> queue

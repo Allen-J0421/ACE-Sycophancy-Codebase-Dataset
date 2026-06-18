@@ -17,39 +17,70 @@ public final class BinarySearchTree<T> implements Iterable<T> {
         }
     }
 
-    private enum Branch {
-        ROOT,
-        LEFT,
-        RIGHT
+    private interface NodeSlot<T> {
+        Node<T> get();
+
+        void set(Node<T> node);
+    }
+
+    private static final class RootSlot<T> implements NodeSlot<T> {
+        private final BinarySearchTree<T> tree;
+
+        private RootSlot(BinarySearchTree<T> tree) {
+            this.tree = tree;
+        }
+
+        @Override
+        public Node<T> get() {
+            return tree.root;
+        }
+
+        @Override
+        public void set(Node<T> node) {
+            tree.root = node;
+        }
+    }
+
+    private static final class ChildSlot<T> implements NodeSlot<T> {
+        private final Node<T> parent;
+        private final boolean rightChild;
+
+        private ChildSlot(Node<T> parent, boolean rightChild) {
+            this.parent = parent;
+            this.rightChild = rightChild;
+        }
+
+        @Override
+        public Node<T> get() {
+            return rightChild ? parent.right : parent.left;
+        }
+
+        @Override
+        public void set(Node<T> node) {
+            if (rightChild) {
+                parent.right = node;
+                return;
+            }
+
+            parent.left = node;
+        }
     }
 
     private static final class Location<T> {
         private final Node<T> node;
-        private final Node<T> parent;
-        private final Branch branch;
+        private final NodeSlot<T> slot;
 
-        private Location(Node<T> node, Node<T> parent, Branch branch) {
+        private Location(Node<T> node, NodeSlot<T> slot) {
             this.node = node;
-            this.parent = parent;
-            this.branch = branch;
+            this.slot = slot;
         }
 
         private boolean found() {
             return node != null;
         }
 
-        private void insertInto(BinarySearchTree<T> tree, Node<T> newNode) {
-            if (branch == Branch.ROOT) {
-                tree.root = newNode;
-                return;
-            }
-
-            if (branch == Branch.LEFT) {
-                parent.left = newNode;
-                return;
-            }
-
-            parent.right = newNode;
+        private void insertInto(Node<T> newNode) {
+            slot.set(newNode);
         }
     }
 
@@ -69,7 +100,7 @@ public final class BinarySearchTree<T> implements Iterable<T> {
             return false;
         }
 
-        location.insertInto(this, newNode);
+        location.insertInto(newNode);
         size++;
         return true;
     }
@@ -141,23 +172,21 @@ public final class BinarySearchTree<T> implements Iterable<T> {
     }
 
     private Location<T> locate(T value) {
-        Node<T> current = root;
-        Node<T> parent = null;
-        Branch branch = Branch.ROOT;
+        NodeSlot<T> slot = new RootSlot<>(this);
+        Node<T> current = slot.get();
 
         while (current != null) {
             int comparison = compare(value, current.data);
 
             if (comparison == 0) {
-                return new Location<>(current, parent, branch);
+                return new Location<>(current, slot);
             }
 
-            parent = current;
-            branch = comparison > 0 ? Branch.RIGHT : Branch.LEFT;
-            current = comparison > 0 ? current.right : current.left;
+            slot = new ChildSlot<>(current, comparison > 0);
+            current = slot.get();
         }
 
-        return new Location<>(null, parent, branch);
+        return new Location<>(null, slot);
     }
 
     private static final class InOrderIterator<T> implements Iterator<T> {

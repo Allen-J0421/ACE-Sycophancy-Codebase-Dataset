@@ -101,3 +101,44 @@ class FirstOccurrenceStrategy<T extends Comparable<T>> implements SearchStrategy
         return high;
     }
 }
+
+/**
+ * Search strategy that finds the last (rightmost) occurrence.
+ */
+class LastOccurrenceStrategy<T extends Comparable<T>> implements SearchStrategy<T> {
+    private int low;
+    private int high;
+    private int result = -1;
+
+    LastOccurrenceStrategy(int low, int high) {
+        this.low = low;
+        this.high = high;
+    }
+
+    @Override
+    public boolean processBoundary(int comparison, int mid) {
+        if (comparison == 0) {
+            result = mid;
+            low = mid + 1;
+            return true;
+        } else if (comparison < 0) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+        return true;
+    }
+
+    @Override
+    public int getResult() {
+        return result;
+    }
+
+    int getLow() {
+        return low;
+    }
+
+    int getHigh() {
+        return high;
+    }
+}

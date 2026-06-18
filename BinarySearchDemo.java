@@ -7,6 +7,26 @@ class BinarySearchDemo {
         runBasicSearch();
         runSearchWithStats();
         runFirstOccurrence();
+        runLastOccurrence();
+    }
+
+    private static void runLastOccurrence() {
+        System.out.println("\n=== Find Last Occurrence ===");
+        BinarySearch<Integer> searcher = BinarySearch.withStats();
+        Integer[] array = {1, 2, 2, 2, 3, 4, 5};
+        Integer target = 2;
+
+        SearchResult result = searcher.searchLast(array, target);
+        if (result.isFound()) {
+            System.out.println("Last occurrence at index: " + result.getIndex());
+        } else {
+            System.out.println("Element not found");
+        }
+
+        if (result instanceof SearchResultWithStats) {
+            SearchStats stats = ((SearchResultWithStats) result).getStats();
+            System.out.println("Statistics: " + stats);
+        }
     }
 
     private static void runBasicSearch() {
@@ -21,7 +41,7 @@ class BinarySearchDemo {
 
     private static void runSearchWithStats() {
         System.out.println("\n=== Search with Statistics ===");
-        SearchEngine<Integer> searcher = new SearchEngine<Integer>().withStats();
+        BinarySearch<Integer> searcher = BinarySearch.withStats();
         Integer[] array = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         Integer target = 8;
 
@@ -31,7 +51,7 @@ class BinarySearchDemo {
 
     private static void runFirstOccurrence() {
         System.out.println("\n=== Find First Occurrence ===");
-        SearchEngine<Integer> searcher = new SearchEngine<Integer>().withStats();
+        BinarySearch<Integer> searcher = BinarySearch.withStats();
         Integer[] array = {1, 2, 2, 2, 3, 4, 5};
         Integer target = 2;
 

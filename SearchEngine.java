@@ -5,16 +5,14 @@
  * @param <T> the type of elements in the array (must implement Comparable)
  */
 class SearchEngine<T extends Comparable<T>> {
-    private boolean trackStats = false;
+    private final SearchConfig config;
 
-    /**
-     * Enables statistics tracking.
-     *
-     * @return this for method chaining
-     */
-    SearchEngine<T> withStats() {
-        this.trackStats = true;
-        return this;
+    SearchEngine(SearchConfig config) {
+        this.config = config;
+    }
+
+    SearchEngine() {
+        this(SearchConfig.defaults());
     }
 
     /**
@@ -37,6 +35,17 @@ class SearchEngine<T extends Comparable<T>> {
      */
     SearchResult searchFirst(T[] array, T target) {
         return performSearch(array, target, new FirstOccurrenceStrategy<>(0, array.length - 1));
+    }
+
+    /**
+     * Finds the last (rightmost) occurrence of target.
+     *
+     * @param array the sorted array to search
+     * @param target the value to find
+     * @return SearchResult with outcome
+     */
+    SearchResult searchLast(T[] array, T target) {
+        return performSearch(array, target, new LastOccurrenceStrategy<>(0, array.length - 1));
     }
 
     /**
@@ -63,7 +72,7 @@ class SearchEngine<T extends Comparable<T>> {
             return SearchResult.notFound();
         }
 
-        long startTime = trackStats ? System.nanoTime() : 0;
+        long startTime = config.isTrackStats() ? System.nanoTime() : 0;
         int comparisons = 0;
 
         if (strategy instanceof StandardSearchStrategy) {
@@ -86,6 +95,15 @@ class SearchEngine<T extends Comparable<T>> {
 
                 first.processBoundary(comparison, mid);
             }
+        } else if (strategy instanceof LastOccurrenceStrategy) {
+            LastOccurrenceStrategy<T> last = (LastOccurrenceStrategy<T>) strategy;
+            while (last.getLow() <= last.getHigh()) {
+                int mid = last.getLow() + (last.getHigh() - last.getLow()) / 2;
+                int comparison = array[mid].compareTo(target);
+                comparisons++;
+
+                last.processBoundary(comparison, mid);
+            }
         }
 
         int resultIndex = strategy.getResult();
@@ -97,7 +115,7 @@ class SearchEngine<T extends Comparable<T>> {
     }
 
     private SearchResult buildResult(SearchResult result, long startTime, int comparisons) {
-        if (!trackStats) {
+        if (!config.isTrackStats()) {
             return result;
         }
         long elapsed = System.nanoTime() - startTime;

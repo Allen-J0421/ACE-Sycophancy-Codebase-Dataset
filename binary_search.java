@@ -5,18 +5,23 @@
  * @param <T> the type of elements in the array (must implement Comparable)
  */
 class BinarySearch<T extends Comparable<T>> {
-    private final SearchEngine<T> engine = new SearchEngine<>();
-    private boolean statsEnabled = false;
+    private final SearchEngine<T> engine;
+
+    public BinarySearch() {
+        this(SearchConfig.defaults());
+    }
+
+    public BinarySearch(SearchConfig config) {
+        this.engine = new SearchEngine<>(config);
+    }
 
     /**
-     * Enables statistics tracking for search operations.
+     * Creates a new BinarySearch with statistics tracking enabled.
      *
-     * @return this for method chaining
+     * @return new BinarySearch instance with stats enabled
      */
-    public BinarySearch<T> withStats() {
-        this.statsEnabled = true;
-        engine.withStats();
-        return this;
+    public static <T extends Comparable<T>> BinarySearch<T> withStats() {
+        return new BinarySearch<>(SearchConfig.builder().withStats().build());
     }
 
     /**
@@ -39,6 +44,17 @@ class BinarySearch<T extends Comparable<T>> {
      */
     public SearchResult searchFirst(T[] array, T target) {
         return engine.searchFirst(array, target);
+    }
+
+    /**
+     * Finds the last occurrence of target in sorted array.
+     *
+     * @param array the sorted array to search
+     * @param target the value to find
+     * @return SearchResult with last occurrence, or not found
+     */
+    public SearchResult searchLast(T[] array, T target) {
+        return engine.searchLast(array, target);
     }
 
     /**

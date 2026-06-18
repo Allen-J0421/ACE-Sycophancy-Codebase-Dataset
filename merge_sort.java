@@ -17,31 +17,33 @@ class MergeSort {
         private final int[] values;
         private final int[] scratch;
         private final int length;
+        private int[] source;
+        private int[] target;
 
         private MergeSorter(int[] values) {
             this.values = values;
             this.scratch = values.clone();
             this.length = values.length;
+            this.source = scratch;
+            this.target = values;
         }
 
         private void sort() {
-            MergeBuffers buffers = new MergeBuffers(scratch, values);
-
             for (int width = 1; width < length; width *= 2) {
-                mergePass(buffers.source, buffers.target, width);
-                buffers.swap();
+                mergePass(width);
+                swapBuffers();
             }
 
-            copyBackIfNeeded(buffers.source);
+            copyBackIfNeeded();
         }
 
-        private void mergePass(int[] source, int[] target, int width) {
+        private void mergePass(int width) {
             for (int start = 0; start < length; start += width * 2) {
-                mergeRange(source, target, MergeWindow.from(start, width, length));
+                mergeRange(MergeWindow.from(start, width, length));
             }
         }
 
-        private void mergeRange(int[] source, int[] target, MergeWindow window) {
+        private void mergeRange(MergeWindow window) {
             Run left = new Run(source, window.start, window.middle);
             Run right = new Run(source, window.middle, window.end);
             int targetIndex = window.start;
@@ -54,20 +56,26 @@ class MergeSort {
                 }
             }
 
-            copyRemaining(left, target, targetIndex);
-            copyRemaining(right, target, targetIndex + left.remainingLength());
+            copyRemaining(left, targetIndex);
+            copyRemaining(right, targetIndex + left.remainingLength());
         }
 
-        private void copyRemaining(Run run, int[] target, int targetIndex) {
+        private void copyRemaining(Run run, int targetIndex) {
             if (run.hasRemaining()) {
                 System.arraycopy(run.source, run.index, target, targetIndex, run.remainingLength());
             }
         }
 
-        private void copyBackIfNeeded(int[] source) {
+        private void copyBackIfNeeded() {
             if (source != values) {
                 System.arraycopy(source, 0, values, 0, length);
             }
+        }
+
+        private void swapBuffers() {
+            int[] nextSource = target;
+            target = source;
+            source = nextSource;
         }
 
         private static final class MergeWindow {
@@ -85,22 +93,6 @@ class MergeSort {
                 int middle = Math.min(start + width, length);
                 int end = Math.min(start + (width * 2), length);
                 return new MergeWindow(start, middle, end);
-            }
-        }
-
-        private static final class MergeBuffers {
-            private int[] source;
-            private int[] target;
-
-            private MergeBuffers(int[] source, int[] target) {
-                this.source = source;
-                this.target = target;
-            }
-
-            private void swap() {
-                int[] nextSource = target;
-                target = source;
-                source = nextSource;
             }
         }
 

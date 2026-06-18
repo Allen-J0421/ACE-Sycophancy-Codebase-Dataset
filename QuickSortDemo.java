@@ -7,9 +7,7 @@ public final class QuickSortDemo {
     }
 
     public static void main(String[] args) {
-        int[] values = SAMPLE_VALUES.clone();
-
-        QuickSort.sort(values);
+        int[] values = QuickSort.sortedCopy(SAMPLE_VALUES);
 
         System.out.print(formatValues(values));
     }

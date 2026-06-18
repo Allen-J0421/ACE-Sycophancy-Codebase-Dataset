@@ -9,6 +9,7 @@ public final class QuickSortTest {
             assertSorted(scenario);
         }
 
+        assertSortedCopyDoesNotMutateInput();
         assertNullRejected();
         assertFormattedValues();
     }
@@ -68,6 +69,26 @@ public final class QuickSortTest {
             throw new AssertionError("null values should be rejected");
         } catch (NullPointerException expected) {
             // Expected by the public sorting contract.
+        }
+
+        try {
+            QuickSort.sortedCopy(null);
+            throw new AssertionError("null values should be rejected for sorted copies");
+        } catch (NullPointerException expected) {
+            // Expected by the public sorting contract.
+        }
+    }
+
+    private static void assertSortedCopyDoesNotMutateInput() {
+        int[] inputValues = {3, 1, 2};
+        int[] sortedValues = QuickSort.sortedCopy(inputValues);
+
+        if (!Arrays.equals(sortedValues, new int[] {1, 2, 3})) {
+            throw new AssertionError("sorted copy should return sorted values");
+        }
+
+        if (!Arrays.equals(inputValues, new int[] {3, 1, 2})) {
+            throw new AssertionError("sorted copy should not mutate input values");
         }
     }
 

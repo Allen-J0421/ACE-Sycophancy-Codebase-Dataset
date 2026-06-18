@@ -4,6 +4,14 @@ public final class QuickSort {
     private QuickSort() {
     }
 
+    public static int[] sortedCopy(int[] values) {
+        int[] sortedValues = Objects.requireNonNull(values, "values").clone();
+
+        sort(sortedValues);
+
+        return sortedValues;
+    }
+
     public static void sort(int[] values) {
         Objects.requireNonNull(values, "values");
 

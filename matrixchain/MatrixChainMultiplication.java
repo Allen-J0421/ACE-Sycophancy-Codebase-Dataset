@@ -1,3 +1,5 @@
+package matrixchain;
+
 public final class MatrixChainMultiplication {
 
     private MatrixChainMultiplication() {

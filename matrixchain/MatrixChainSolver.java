@@ -1,3 +1,5 @@
+package matrixchain;
+
 import java.util.Objects;
 
 final class MatrixChainSolver {

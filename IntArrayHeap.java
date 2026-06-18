@@ -8,12 +8,20 @@ final class IntArrayHeap {
         this.size = values.length;
     }
 
-    static IntArrayHeap wrap(int[] values) {
-        return new IntArrayHeap(values);
+    static void buildInPlace(int[] values) {
+        new IntArrayHeap(values).buildMaxHeap();
     }
 
-    static IntArrayHeap copyOf(int[] values) {
-        return new IntArrayHeap(IntArrays.copyOf(values));
+    static int[] buildCopy(int[] values) {
+        return new IntArrayHeap(IntArrays.copyOf(values)).buildMaxHeap().toArray();
+    }
+
+    static boolean isMaxHeap(int[] values) {
+        return new IntArrayHeap(values).hasMaxHeapOrder();
+    }
+
+    static HeapBuildResult analyze(int[] values) {
+        return new IntArrayHeap(values).analyzeHeap();
     }
 
     IntArrayHeap buildMaxHeap() {
@@ -28,7 +36,7 @@ final class IntArrayHeap {
         return this;
     }
 
-    boolean isMaxHeap() {
+    private boolean hasMaxHeapOrder() {
         for (int parentIndex = 0; parentIndex <= lastParentIndex(); parentIndex++) {
             if (hasGreaterChild(parentIndex, leftChildIndex(parentIndex))) {
                 return false;
@@ -42,14 +50,14 @@ final class IntArrayHeap {
         return true;
     }
 
-    HeapBuildResult analyze() {
+    private HeapBuildResult analyzeHeap() {
         IntArrayHeap inputSnapshot = copy();
         IntArrayHeap heapSnapshot = copy().buildMaxHeap();
 
         return HeapBuildResult.of(
                 inputSnapshot.toArray(),
                 heapSnapshot.toArray(),
-                heapSnapshot.isMaxHeap());
+                heapSnapshot.hasMaxHeapOrder());
     }
 
     int[] toArray() {

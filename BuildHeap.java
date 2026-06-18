@@ -5,18 +5,18 @@ public final class BuildHeap {
     }
 
     public static void buildHeap(int[] values) {
-        IntArrayHeap.wrap(values).buildMaxHeap();
+        IntArrayHeap.buildInPlace(values);
     }
 
     public static int[] buildHeapCopy(int[] values) {
-        return IntArrayHeap.copyOf(values).buildMaxHeap().toArray();
+        return IntArrayHeap.buildCopy(values);
     }
 
     public static boolean isMaxHeap(int[] values) {
-        return IntArrayHeap.wrap(values).isMaxHeap();
+        return IntArrayHeap.isMaxHeap(values);
     }
 
     public static HeapBuildResult analyze(int[] values) {
-        return IntArrayHeap.wrap(values).analyze();
+        return IntArrayHeap.analyze(values);
     }
 }

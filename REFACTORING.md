@@ -216,10 +216,78 @@ All functionality enhanced:
 - **Path queries**: Instant via caching
 - **Configuration**: Flexible output control
 
+## Iteration 6: Modular Architecture with File Separation
+
+### Monolithic to Modular Transformation
+1. **File Organization**
+   - Split 595-line monolithic file into 15 focused modules
+   - Each file has single responsibility and clear purpose
+   - Improves code navigation and maintainability
+   - Reduces cognitive load when reading
+
+2. **Module Breakdown**
+
+   **Core Interfaces**:
+   - `WeightedGraphView.java`: Graph abstraction interface
+   - `Validator.java`: Generic validation framework
+   
+   **Graph & Vertices**:
+   - `Graph.java`: Undirected weighted graph implementation (55 lines)
+   - `Edge.java`: Edge representation with weight validation (50 lines)
+   - `GraphBuilder.java`: Fluent builder for graph construction (25 lines)
+   - `VertexValidator.java`: Vertex bounds validation (14 lines)
+   
+   **Algorithm Components**:
+   - `DijkstraShortestPathSolver.java`: Core algorithm implementation (75 lines)
+   - `DistanceTable.java`: Distance array encapsulation (25 lines)
+   - `PriorityQueueEntry.java`: Priority queue element (40 lines)
+   
+   **Result Handling**:
+   - `ShortestPathResult.java`: Result aggregation with caching (90 lines)
+   - `Path.java`: Path representation with utilities (45 lines)
+   - `PathCache.java`: Path memoization (14 lines)
+   
+   **Configuration & Output**:
+   - `AlgorithmConfig.java`: Runtime configuration options (28 lines)
+   - `ResultFormatter.java`: Flexible output formatting (50 lines)
+   - `Main.java`: Application entry point (20 lines)
+
+### Benefits of Modular Architecture
+
+1. **Parallel Development**
+   - Different developers can work on separate modules
+   - No merge conflicts on monolithic file
+   - Enables team scaling
+
+2. **Testability**
+   - Each module can be unit tested independently
+   - Easy to mock dependencies
+   - Clear test boundaries
+
+3. **Reusability**
+   - Modules can be imported and used in other projects
+   - No need to pull entire codebase
+   - Enables library extraction
+
+4. **Maintainability**
+   - 50-100 line files are easier to understand
+   - Clear module responsibilities
+   - Simpler code reviews
+
+5. **Extensibility**
+   - Adding new validators: Just extend `Validator.java`
+   - New graph types: Implement `WeightedGraphView.java`
+   - Custom algorithms: Extend `DijkstraShortestPathSolver.java`
+
+### Compilation & Execution
+- Single `javac *.java` compiles all modules
+- No build files or module descriptors needed
+- Retains simplicity while gaining modularity
+
 The code is now:
-- **Validated**: Pluggable validator framework
-- **Cached**: Path memoization for performance
-- **Configurable**: Runtime options without API bloat
-- **Observable**: Hop counts, reachability stats, summaries
-- **Flexible**: Optional features via configuration
-- **Maintainable**: Separation of concerns across all layers
+- **Modular**: 15 focused files with clear responsibilities
+- **Scalable**: Multiple developers can work without conflicts
+- **Testable**: Each module independently unit testable
+- **Reusable**: Components can be extracted for other projects
+- **Maintainable**: Files under 100 lines, easy to understand
+- **Extensible**: Clear extension points via interfaces

@@ -5,29 +5,25 @@ import java.util.List;
 public final class DirectedGraph {
     private final List<List<Integer>> adjacencyList;
 
-    private DirectedGraph(List<List<Integer>> adjacencyList) {
+    DirectedGraph(List<List<Integer>> adjacencyList) {
         this.adjacencyList = adjacencyList;
     }
 
-    public static DirectedGraph withVertexCount(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("Vertex count must be non-negative.");
-        }
+    public static DirectedGraphBuilder builder(int vertexCount) {
+        return new DirectedGraphBuilder(vertexCount);
+    }
 
-        List<List<Integer>> adjacencyList = new ArrayList<>();
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
-        }
-        return new DirectedGraph(adjacencyList);
+    public static DirectedGraph withVertexCount(int vertexCount) {
+        return builder(vertexCount).build();
     }
 
     public static DirectedGraph fromEdges(int vertexCount, Iterable<DirectedEdge> edges) {
-        DirectedGraph graph = withVertexCount(vertexCount);
+        DirectedGraphBuilder builder = builder(vertexCount);
         for (DirectedEdge edge : edges) {
             validateEdge(edge);
-            graph.addEdge(edge.source(), edge.destination());
+            builder.addEdge(edge);
         }
-        return graph;
+        return builder.build();
     }
 
     public int vertexCount() {
@@ -36,18 +32,36 @@ public final class DirectedGraph {
 
     public List<Integer> neighborsOf(int vertex) {
         validateVertex(vertex);
-        return Collections.unmodifiableList(adjacencyList.get(vertex));
-    }
-
-    public void addEdge(int source, int destination) {
-        validateVertex(source);
-        validateVertex(destination);
-        adjacencyList.get(source).add(destination);
+        return adjacencyList.get(vertex);
     }
 
     private static void validateEdge(DirectedEdge edge) {
         if (edge == null) {
             throw new IllegalArgumentException("Edge cannot be null.");
+        }
+    }
+
+    static List<List<Integer>> createEmptyAdjacencyList(int vertexCount) {
+        validateVertexCount(vertexCount);
+
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        return adjacencyList;
+    }
+
+    static List<List<Integer>> freezeAdjacencyList(List<List<Integer>> adjacencyList) {
+        List<List<Integer>> frozenAdjacencyList = new ArrayList<>(adjacencyList.size());
+        for (List<Integer> neighbors : adjacencyList) {
+            frozenAdjacencyList.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
+        }
+        return Collections.unmodifiableList(frozenAdjacencyList);
+    }
+
+    static void validateVertexCount(int vertexCount) {
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("Vertex count must be non-negative.");
         }
     }
 

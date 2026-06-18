@@ -7,6 +7,36 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+/**
+ * Encapsulates the complete result of a shortest path computation.
+ *
+ * Contains:
+ * - Distance from source to each vertex
+ * - Predecessor information for path reconstruction
+ * - Cached paths for efficient repeated queries
+ * - Reference to original graph
+ *
+ * Features:
+ * - Lazy path computation via caching
+ * - Unreachable node detection
+ * - Path length and membership queries
+ * - Bulk path retrieval
+ *
+ * Example:
+ * {@code
+ * ShortestPathResult result = solver.solve(graph, 0);
+ * int distTo2 = result.getDistanceTo(2).orElse(-1);
+ * Optional<Path> path = result.getPathTo(2);
+ * if (path.isPresent() && path.get().contains(1)) {
+ *     // Node 1 is on the shortest path to node 2
+ * }
+ * Map<Integer, Optional<Path>> allPaths = result.getAllPaths();
+ * }
+ *
+ * @see Path
+ * @see PathCache
+ * @see DijkstraShortestPathSolver
+ */
 class ShortestPathResult {
     private final List<Integer> distances;
     private final int[] predecessors;

@@ -1,14 +1,34 @@
 import java.util.Objects;
 
+/**
+ * Validates that edge weights are non-negative.
+ * Used during edge creation to enforce constraint that weighted graphs
+ * with Dijkstra's algorithm require non-negative weights.
+ */
 class EdgeWeightValidator implements Validator<Integer> {
+    private static final String ERROR_MESSAGE = "Edge weight must be non-negative, got %d";
+
     @Override
     public void validate(Integer weight) throws IllegalArgumentException {
         if (weight < 0) {
-            throw new IllegalArgumentException("Edge weight must be non-negative");
+            throw new IllegalArgumentException(String.format(ERROR_MESSAGE, weight));
         }
     }
 }
 
+/**
+ * Represents a weighted edge in an undirected graph.
+ * Immutable value object with non-negative weight constraint.
+ *
+ * Example:
+ * {@code
+ * Edge edge = Edge.of(targetNode, 10);
+ * int target = edge.getDestination();  // 10
+ * int weight = edge.getWeight();       // 10
+ * }
+ *
+ * @see WeightedGraphView
+ */
 class Edge {
     private final int destination;
     private final int weight;

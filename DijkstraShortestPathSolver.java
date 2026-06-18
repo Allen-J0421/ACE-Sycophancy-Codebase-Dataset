@@ -4,9 +4,48 @@ import java.util.List;
 import java.util.Objects;
 import java.util.PriorityQueue;
 
+/**
+ * Solves the single-source shortest path problem using Dijkstra's algorithm.
+ *
+ * Algorithm Overview:
+ * - Maintains distance estimates to all vertices
+ * - Uses priority queue to greedily select nearest unprocessed vertex
+ * - Relaxes edges from current vertex to update distance estimates
+ * - Tracks predecessors for path reconstruction
+ *
+ * Time Complexity: O((V + E) log V) where V = vertices, E = edges
+ * Space Complexity: O(V) for distances and predecessors
+ *
+ * Constraints:
+ * - Requires non-negative edge weights (guaranteed by Edge validation)
+ * - Works on undirected and directed graphs
+ *
+ * Example:
+ * {@code
+ * Graph graph = GraphBuilder.withVertexCount(5)
+ *     .addEdge(0, 1, 4)
+ *     .addEdge(1, 2, 3)
+ *     .build();
+ * DijkstraShortestPathSolver solver = new DijkstraShortestPathSolver();
+ * ShortestPathResult result = solver.solve(graph, 0);
+ * Optional<Path> path = result.getPathTo(2);  // [0, 1, 2]
+ * }
+ *
+ * @see ShortestPathResult
+ * @see Path
+ */
 class DijkstraShortestPathSolver {
     private static final int INFINITY = Integer.MAX_VALUE;
 
+    /**
+     * Computes shortest paths from source to all vertices.
+     *
+     * @param graph The weighted graph to search (non-null)
+     * @param sourceNode The source vertex index (must be valid)
+     * @return ShortestPathResult containing distances, paths, and metadata
+     * @throws NullPointerException if graph is null
+     * @throws IllegalArgumentException if sourceNode is out of bounds
+     */
     ShortestPathResult solve(WeightedGraphView graph, int sourceNode) {
         Objects.requireNonNull(graph, "Graph cannot be null");
         validateSourceNode(graph, sourceNode);

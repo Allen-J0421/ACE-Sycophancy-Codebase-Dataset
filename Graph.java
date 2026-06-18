@@ -5,6 +5,35 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 
+/**
+ * Undirected weighted graph representation using adjacency list.
+ *
+ * Properties:
+ * - Undirected: addEdge(a, b, w) adds edges in both directions
+ * - Weighted: Each edge has non-negative integer weight
+ * - Immutable after construction (no edge removal)
+ *
+ * Storage:
+ * - Adjacency list: O(V + E) space
+ * - Edge lookups: O(degree) time per vertex
+ *
+ * Constraints:
+ * - No self-loops (edge to same vertex)
+ * - No negative weights (enforced by Edge validator)
+ * - Vertex count must be positive
+ *
+ * Example:
+ * {@code
+ * Graph graph = Graph.create(4);
+ * graph.addEdge(0, 1, 5);
+ * graph.addEdge(1, 2, 3);
+ * List<Edge> neighbors = graph.getAdjacencyListFor(1);  // [0→5, 2→3]
+ * }
+ *
+ * @see WeightedGraphView
+ * @see Edge
+ * @see GraphBuilder
+ */
 class Graph implements WeightedGraphView {
     private final List<List<Edge>> adjacencyList;
     private final int vertexCount;

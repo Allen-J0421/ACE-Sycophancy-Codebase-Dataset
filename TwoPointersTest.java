@@ -8,6 +8,7 @@ public final class TwoPointersTest {
         shouldReturnEmptyWhenNoPairExists();
         shouldReturnEmptyForArraysWithFewerThanTwoValues();
         shouldReturnEmptyWhenTargetIsOutsidePossibleRange();
+        shouldSupportRepeatedSearchesOnSameInstance();
         shouldSupportRawArrayFacadeLookups();
         shouldSupportRawArrayFacadeBooleanChecks();
         shouldRejectNullRawArrayFacadeInput();
@@ -43,6 +44,14 @@ public final class TwoPointersTest {
 
         assertNoMatch(sortedValues.findPairWithSum(5));
         assertNoMatch(sortedValues.findPairWithSum(30));
+    }
+
+    private static void shouldSupportRepeatedSearchesOnSameInstance() {
+        SortedIntArray sortedValues = SortedIntArray.of(-3, -1, 0, 1, 2);
+
+        assertTrue(sortedValues.hasPairWithSum(-2), "Expected repeated instance search to find -2");
+        assertTrue(sortedValues.hasPairWithSum(1), "Expected repeated instance search to find 1");
+        assertFalse(sortedValues.hasPairWithSum(8), "Expected repeated instance search to reject 8");
     }
 
     private static void shouldSupportRawArrayFacadeLookups() {

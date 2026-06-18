@@ -6,9 +6,22 @@ public final class SortedIntArray {
     private static final SortedIntArray EMPTY = new SortedIntArray(new int[0]);
 
     private final int[] values;
+    private final boolean hasAtLeastOnePair;
+    private final long minimumPairSum;
+    private final long maximumPairSum;
 
     private SortedIntArray(int[] values) {
         this.values = values;
+        if (values.length >= 2) {
+            hasAtLeastOnePair = true;
+            minimumPairSum = (long) values[0] + values[1];
+            int lastIndex = values.length - 1;
+            maximumPairSum = (long) values[lastIndex - 1] + values[lastIndex];
+        } else {
+            hasAtLeastOnePair = false;
+            minimumPairSum = 0;
+            maximumPairSum = 0;
+        }
     }
 
     public static SortedIntArray copyOf(int[] values) {
@@ -65,9 +78,9 @@ public final class SortedIntArray {
     }
 
     private boolean canContainPairMatching(long target) {
-        return values.length >= 2
-            && target >= minimumPairSum()
-            && target <= maximumPairSum();
+        return hasAtLeastOnePair
+            && target >= minimumPairSum
+            && target <= maximumPairSum;
     }
 
     private SearchResult search(long target) {
@@ -92,15 +105,6 @@ public final class SortedIntArray {
         }
 
         return SearchResult.notFound();
-    }
-
-    private long minimumPairSum() {
-        return (long) values[0] + values[1];
-    }
-
-    private long maximumPairSum() {
-        int lastIndex = values.length - 1;
-        return (long) values[lastIndex - 1] + values[lastIndex];
     }
 
     private long sumAt(int leftIndex, int rightIndex) {

@@ -19,7 +19,7 @@ public final class BreadthFirstSearch {
             int current = queue.removeFirst();
             result.add(current);
 
-            for (int neighbor : graph.neighbors(current)) {
+            for (int neighbor : graph.neighborsInternal(current)) {
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
                     queue.addLast(neighbor);

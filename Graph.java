@@ -43,6 +43,10 @@ public final class Graph {
         return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
+    List<Integer> neighborsInternal(int vertex) {
+        return adjacencyList.get(vertex);
+    }
+
     void validateVertex(int vertex) {
         if (vertex < 0 || vertex >= adjacencyList.size()) {
             throw new IllegalArgumentException("vertex out of bounds: " + vertex);

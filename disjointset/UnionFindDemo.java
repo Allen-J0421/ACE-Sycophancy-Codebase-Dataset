@@ -1,3 +1,5 @@
+package disjointset;
+
 public final class UnionFindDemo {
     private UnionFindDemo() {
     }

@@ -1,3 +1,5 @@
+package disjointset;
+
 public interface DisjointSet {
     static DisjointSet create(int size) {
         return new ArrayDisjointSet(size);

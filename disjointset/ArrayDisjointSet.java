@@ -1,3 +1,5 @@
+package disjointset;
+
 public final class ArrayDisjointSet implements DisjointSet {
     private static final String NEGATIVE_SIZE_MESSAGE = "size must be non-negative";
 

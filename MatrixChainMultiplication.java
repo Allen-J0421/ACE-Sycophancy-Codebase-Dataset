@@ -81,5 +81,4 @@ public final class MatrixChainMultiplication {
                 + minimumCosts[split][end]
                 + dimensions[start] * dimensions[split] * dimensions[end];
     }
-
 }

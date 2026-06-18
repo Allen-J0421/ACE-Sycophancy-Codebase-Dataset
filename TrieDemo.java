@@ -4,26 +4,18 @@ final class TrieDemo {
 
     public static void main(String[] args) {
         Trie trie = new Trie();
-        loadWords(trie, "and", "ant", "do", "dad");
-        printLookups(trie, "do", "gee", "bat");
-        printPrefixes(trie, "ge", "ba", "do", "de");
+        insertAll(trie, "and", "ant", "do", "dad");
+        printResults(trie::search, "do", "gee", "bat");
+        printResults(trie::startsWith, "ge", "ba", "do", "de");
     }
 
-    private static void loadWords(Trie trie, String... words) {
+    private static void insertAll(Trie trie, String... words) {
         for (String word : words) {
             trie.insert(word);
         }
     }
 
-    private static void printLookups(Trie trie, String... keys) {
-        printResults(keys, trie::search);
-    }
-
-    private static void printPrefixes(Trie trie, String... prefixes) {
-        printResults(prefixes, trie::startsWith);
-    }
-
-    private static void printResults(String[] values, Lookup lookup) {
+    private static void printResults(Lookup lookup, String... values) {
         for (String value : values) {
             System.out.print(lookup.test(value) + " ");
         }

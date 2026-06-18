@@ -1,4 +1,24 @@
 final class TrieTest {
+    private static final QueryCase[] SEARCH_CASES = {
+        new QueryCase("and", true),
+        new QueryCase("ant", true),
+        new QueryCase("do", true),
+        new QueryCase("an", false),
+        new QueryCase("dog", false),
+    };
+
+    private static final QueryCase[] PREFIX_CASES = {
+        new QueryCase("da", true),
+        new QueryCase("de", false),
+        new QueryCase("dads", false),
+    };
+
+    private static final ThrowCase[] INVALID_INPUT_CASES = {
+        new ThrowCase(() -> new Trie().insert("Do"), "Expected uppercase input to be rejected"),
+        new ThrowCase(() -> new Trie().search(null), "Expected null input to be rejected"),
+        new ThrowCase(() -> new Trie().startsWith("do-"), "Expected punctuation to be rejected"),
+    };
+
     private TrieTest() {
     }
 
@@ -11,25 +31,14 @@ final class TrieTest {
 
     private static void testInsertAndSearch() {
         Trie trie = new Trie();
-        trie.insert("and");
-        trie.insert("ant");
-        trie.insert("do");
-
-        expectTrue(trie.search("and"), "Expected 'and' to be found");
-        expectTrue(trie.search("ant"), "Expected 'ant' to be found");
-        expectTrue(trie.search("do"), "Expected 'do' to be found");
-        expectFalse(trie.search("an"), "Expected 'an' not to be found");
-        expectFalse(trie.search("dog"), "Expected 'dog' not to be found");
+        insertAll(trie, "and", "ant", "do");
+        assertQueries(trie::search, SEARCH_CASES);
     }
 
     private static void testPrefixChecks() {
         Trie trie = new Trie();
-        trie.insert("dad");
-        trie.insert("dart");
-
-        expectTrue(trie.startsWith("da"), "Expected 'da' to be a prefix");
-        expectFalse(trie.startsWith("de"), "Expected 'de' not to be a prefix");
-        expectFalse(trie.startsWith("dads"), "Expected 'dads' not to be a prefix");
+        insertAll(trie, "dad", "dart");
+        assertQueries(trie::startsWith, PREFIX_CASES);
     }
 
     private static void testMissingAndInvalidInputs() {
@@ -38,18 +47,25 @@ final class TrieTest {
         expectFalse(trie.search("missing"), "Expected missing word to return false");
         expectFalse(trie.startsWith("missing"), "Expected missing prefix to return false");
 
-        expectThrows(
-            IllegalArgumentException.class,
-            () -> trie.insert("Do"),
-            "Expected uppercase input to be rejected");
-        expectThrows(
-            IllegalArgumentException.class,
-            () -> trie.search(null),
-            "Expected null input to be rejected");
-        expectThrows(
-            IllegalArgumentException.class,
-            () -> trie.startsWith("do-"),
-            "Expected punctuation to be rejected");
+        for (ThrowCase testCase : INVALID_INPUT_CASES) {
+            expectThrows(IllegalArgumentException.class, testCase.action, testCase.message);
+        }
+    }
+
+    private static void insertAll(Trie trie, String... words) {
+        for (String word : words) {
+            trie.insert(word);
+        }
+    }
+
+    private static void assertQueries(QueryFunction query, QueryCase[] cases) {
+        for (QueryCase testCase : cases) {
+            boolean actual = query.test(testCase.value);
+            if (actual != testCase.expected) {
+                throw new AssertionError(
+                    "Expected '" + testCase.value + "' to be " + testCase.expected);
+            }
+        }
     }
 
     private static void expectTrue(boolean value, String message) {
@@ -85,5 +101,30 @@ final class TrieTest {
     @FunctionalInterface
     private interface CheckedRunnable {
         void run();
+    }
+
+    @FunctionalInterface
+    private interface QueryFunction {
+        boolean test(String value);
+    }
+
+    private static final class QueryCase {
+        private final String value;
+        private final boolean expected;
+
+        private QueryCase(String value, boolean expected) {
+            this.value = value;
+            this.expected = expected;
+        }
+    }
+
+    private static final class ThrowCase {
+        private final CheckedRunnable action;
+        private final String message;
+
+        private ThrowCase(CheckedRunnable action, String message) {
+            this.action = action;
+            this.message = message;
+        }
     }
 }

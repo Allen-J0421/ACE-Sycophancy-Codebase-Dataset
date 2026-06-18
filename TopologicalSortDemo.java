@@ -25,9 +25,13 @@ public final class TopologicalSortDemo {
         return graph;
     }
 
+    private static <T extends List<Integer>> void addEdge(List<T> graph, int from, int to) {
+        graph.get(from).add(to);
+    }
+
     private static void buildSampleGraph(List<List<Integer>> graph) {
         for (int[] edge : SAMPLE_EDGES) {
-            TopologicalSort.addEdge(graph, edge[0], edge[1]);
+            addEdge(graph, edge[0], edge[1]);
         }
     }
 

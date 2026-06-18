@@ -60,10 +60,6 @@ final class TopologicalSort {
         return indegree;
     }
 
-    static <T extends List<Integer>> void addEdge(List<T> adj, int u, int v) {
-        adj.get(u).add(v);
-    }
-
     private static void enqueueZeroIndegreeVertices(int[] indegree, Deque<Integer> queue) {
         for (int vertex = 0; vertex < indegree.length; vertex++) {
             if (indegree[vertex] == 0) {

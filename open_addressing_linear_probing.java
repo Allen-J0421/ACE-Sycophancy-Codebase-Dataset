@@ -161,9 +161,13 @@ class LinearProbingHashMap {
     }
 }
 
-class hashMap extends LinearProbingHashMap {
+class HashMapDemo {
     public static void main(String[] args) {
         LinearProbingHashMap map = new LinearProbingHashMap();
+        runDemo(map);
+    }
+
+    private static void runDemo(LinearProbingHashMap map) {
         map.put(1, 1);
         map.put(2, 2);
         map.put(2, 3);
@@ -173,5 +177,11 @@ class hashMap extends LinearProbingHashMap {
         System.out.println(map.size());
         System.out.println(map.isEmpty());
         System.out.println(map.get(2));
+    }
+}
+
+class hashMap extends LinearProbingHashMap {
+    public static void main(String[] args) {
+        HashMapDemo.main(args);
     }
 }

@@ -4,11 +4,14 @@ public class MinHeapTest {
     public static void main(String[] args) {
         testExampleFlow();
         testQueueStyleApi();
-        testInsertIntoFullHeap();
+        testHeapGrowsBeyondInitialCapacity();
+        testBulkConstructionHeapifiesInput();
         testRemoveAtRestoresHeapOrder();
         testChangeValueReordersBothDirections();
         testDirectionalUpdatesRejectInvalidValues();
         testInvalidIndexFailsFast();
+        testClearResetsHeapState();
+        testToArrayReturnsDefensiveCopy();
         testEmptyHeapBehavior();
         System.out.println("All MinHeap tests passed.");
     }
@@ -40,14 +43,23 @@ public class MinHeapTest {
         assertEquals("peek should update after removal", 7, heap.peek());
     }
 
-    private static void testInsertIntoFullHeap() {
-        MinHeap heap = new MinHeap(2);
-        assertTrue("first insert should succeed", heap.insertKey(10));
-        assertTrue("second insert should succeed", heap.insertKey(20));
-        assertFalse("insert on full heap should fail", heap.insertKey(30));
-        assertTrue("heap should report full capacity", heap.isFull());
-        assertEquals("size should remain capped at capacity", 2, heap.size());
-        assertEquals("capacity should reflect constructor value", 2, heap.capacity());
+    private static void testHeapGrowsBeyondInitialCapacity() {
+        MinHeap heap = new MinHeap(1);
+        heap.offer(10);
+        assertTrue("single-slot heap should be full after one insert", heap.isFull());
+
+        heap.offer(4);
+        heap.offer(7);
+
+        assertEquals("size should include all inserted values", 3, heap.size());
+        assertTrue("capacity should grow to fit additional values", heap.capacity() >= 3);
+        assertRemovalOrder("growth should preserve heap ordering", heap, 4, 7, 10);
+    }
+
+    private static void testBulkConstructionHeapifiesInput() {
+        MinHeap heap = new MinHeap(new int[] {8, 3, 9, 1, 4});
+        assertEquals("bulk constructor should heapify input", 1, heap.peek());
+        assertRemovalOrder("bulk constructor should produce sorted removals", heap, 1, 3, 4, 8, 9);
     }
 
     private static void testRemoveAtRestoresHeapOrder() {
@@ -60,8 +72,7 @@ public class MinHeapTest {
 
         assertEquals("removeAt should return the removed value", 4, heap.removeAt(1));
         assertEquals("removal should preserve the heap minimum", 1, heap.peek());
-        assertEquals("next removal should return remaining minimum", 1, heap.removeMin());
-        assertEquals("heap order should remain valid after removeAt", 2, heap.peek());
+        assertRemovalOrder("heap order should remain valid after removeAt", heap, 1, 2, 7, 9);
     }
 
     private static void testChangeValueReordersBothDirections() {
@@ -113,6 +124,24 @@ public class MinHeapTest {
         );
     }
 
+    private static void testClearResetsHeapState() {
+        MinHeap heap = new MinHeap(new int[] {5, 2, 8});
+        heap.clear();
+
+        assertTrue("clear should empty the heap", heap.isEmpty());
+        assertEquals("clear should reset size", 0, heap.size());
+        assertEquals("clear should keep current capacity available", 3, heap.capacity());
+        assertTrue("toArray should be empty after clear", heap.toArray().length == 0);
+    }
+
+    private static void testToArrayReturnsDefensiveCopy() {
+        MinHeap heap = new MinHeap(new int[] {6, 1, 3});
+        int[] snapshot = heap.toArray();
+        snapshot[0] = 99;
+
+        assertEquals("mutating a snapshot should not affect the heap", 1, heap.peek());
+    }
+
     private static void testEmptyHeapBehavior() {
         MinHeap heap = new MinHeap(1);
 
@@ -135,6 +164,13 @@ public class MinHeapTest {
         );
     }
 
+    private static void assertRemovalOrder(String message, MinHeap heap, int... expectedValues) {
+        for (int expectedValue : expectedValues) {
+            assertEquals(message, expectedValue, heap.removeMin());
+        }
+        assertTrue(message + ": heap should be empty after draining", heap.isEmpty());
+    }
+
     private static void assertEquals(String message, int expected, int actual) {
         if (expected != actual) {
             throw new AssertionError(message + ": expected " + expected + ", got " + actual);
@@ -145,10 +181,6 @@ public class MinHeapTest {
         if (!condition) {
             throw new AssertionError(message);
         }
-    }
-
-    private static void assertFalse(String message, boolean condition) {
-        assertTrue(message, !condition);
     }
 
     private static void assertThrows(

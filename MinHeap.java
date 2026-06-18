@@ -1,27 +1,40 @@
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class MinHeap {
-    private final int[] heap;
+    private static final int DEFAULT_CAPACITY = 10;
+
+    private int[] heap;
     private int size;
 
-    public MinHeap(int capacity) {
-        if (capacity < 0) {
-            throw new IllegalArgumentException("capacity must be non-negative");
+    public MinHeap() {
+        this(DEFAULT_CAPACITY);
+    }
+
+    public MinHeap(int initialCapacity) {
+        if (initialCapacity < 0) {
+            throw new IllegalArgumentException("initial capacity must be non-negative");
         }
 
-        heap = new int[capacity];
+        heap = new int[initialCapacity];
         size = 0;
     }
 
-    public boolean offer(int value) {
-        if (isFull()) {
-            return false;
+    public MinHeap(int[] values) {
+        if (values == null) {
+            throw new IllegalArgumentException("values must not be null");
         }
 
-        int insertIndex = size;
-        heap[insertIndex] = value;
+        heap = Arrays.copyOf(values, values.length);
+        size = values.length;
+        heapify();
+    }
+
+    public boolean offer(int value) {
+        ensureCapacity(size + 1);
+        heap[size] = value;
+        siftUp(size);
         size++;
-        siftUp(insertIndex);
         return true;
     }
 
@@ -40,14 +53,7 @@ public class MinHeap {
 
     public int removeMin() {
         ensureNotEmpty();
-
-        int min = heap[0];
-        size--;
-        if (!isEmpty()) {
-            heap[0] = heap[size];
-            siftDown(0);
-        }
-        return min;
+        return removeAt(0);
     }
 
     public int extractMin() {
@@ -63,12 +69,14 @@ public class MinHeap {
 
         int removedValue = heap[index];
         int lastIndex = size - 1;
+        int lastValue = heap[lastIndex];
+        heap[lastIndex] = 0;
         size--;
         if (index == lastIndex) {
             return removedValue;
         }
 
-        heap[index] = heap[lastIndex];
+        heap[index] = lastValue;
         restoreHeapAt(index);
         return removedValue;
     }
@@ -108,6 +116,11 @@ public class MinHeap {
         updateValue(index, newValue);
     }
 
+    public void clear() {
+        Arrays.fill(heap, 0, size, 0);
+        size = 0;
+    }
+
     public boolean isEmpty() {
         return size == 0;
     }
@@ -127,6 +140,29 @@ public class MinHeap {
     public int valueAt(int index) {
         validateOccupiedIndex(index);
         return heap[index];
+    }
+
+    public int[] toArray() {
+        return Arrays.copyOf(heap, size);
+    }
+
+    private void heapify() {
+        for (int index = parent(size - 1); index >= 0; index--) {
+            siftDown(index);
+        }
+    }
+
+    private void ensureCapacity(int requiredCapacity) {
+        if (requiredCapacity <= heap.length) {
+            return;
+        }
+
+        int newCapacity = heap.length == 0 ? 1 : heap.length;
+        while (newCapacity < requiredCapacity) {
+            newCapacity *= 2;
+        }
+
+        heap = Arrays.copyOf(heap, newCapacity);
     }
 
     private void siftUp(int index) {

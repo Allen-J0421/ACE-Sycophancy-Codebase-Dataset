@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
 
 public final class TwoPointersTechniqueTest {
 
@@ -7,78 +8,57 @@ public final class TwoPointersTechniqueTest {
     }
 
     public static void main(String[] args) {
-        shouldFindPairInUnsortedInput();
-        shouldFindPairInSortedInput();
-        shouldRejectMissingPair();
-        shouldHandleDuplicates();
-        shouldNotMutateInput();
-        shouldRejectInvalidInput();
-        shouldAvoidOverflowFalsePositive();
+        TestCase[] cases = {
+            new TestCase("find pair in unsorted input", () ->
+                TwoPointersTechnique.hasPairWithSum(new int[] {2, -3, 1, 0, -1}, -2)
+            ),
+            new TestCase("find pair in sorted input", () ->
+                TwoPointersTechnique.hasPairWithSumSorted(new int[] {-3, -1, 0, 1, 2}, -2)
+            ),
+            new TestCase("reject missing pair", () ->
+                !TwoPointersTechnique.hasPairWithSum(new int[] {1, 4, 6, 9}, 20)
+            ),
+            new TestCase("handle duplicates", () ->
+                TwoPointersTechnique.hasPairWithSum(new int[] {3, 3, 7}, 6)
+            ),
+            new TestCase("preserve input array", () -> {
+                int[] values = {5, 1, 4};
+                int[] snapshot = values.clone();
+                TwoPointersTechnique.hasPairWithSum(values, 9);
+                return Arrays.equals(values, snapshot);
+            }),
+            new TestCase("reject invalid input", () ->
+                !TwoPointersTechnique.hasPairWithSum(null, 1)
+                    && !TwoPointersTechnique.hasPairWithSum(new int[] {42}, 42)
+            ),
+            new TestCase("avoid overflow false positive", () ->
+                !TwoPointersTechnique.hasPairWithSum(
+                    new int[] {Integer.MAX_VALUE, Integer.MAX_VALUE},
+                    -2
+                )
+            ),
+        };
+
+        for (TestCase testCase : cases) {
+            testCase.run();
+        }
 
         System.out.println("All tests passed.");
     }
 
-    private static void shouldFindPairInUnsortedInput() {
-        assertTrue(
-            TwoPointersTechnique.hasPairWithSum(new int[] {2, -3, 1, 0, -1}, -2),
-            "expected to find -3 + 1"
-        );
-    }
+    private static final class TestCase {
+        private final String name;
+        private final BooleanSupplier check;
 
-    private static void shouldFindPairInSortedInput() {
-        assertTrue(
-            TwoPointersTechnique.hasPairWithSumSorted(new int[] {-3, -1, 0, 1, 2}, -2),
-            "expected two-pointer helper to find -3 + 1"
-        );
-    }
-
-    private static void shouldRejectMissingPair() {
-        assertFalse(
-            TwoPointersTechnique.hasPairWithSum(new int[] {1, 4, 6, 9}, 20),
-            "expected no pair to match"
-        );
-    }
-
-    private static void shouldHandleDuplicates() {
-        assertTrue(
-            TwoPointersTechnique.hasPairWithSum(new int[] {3, 3, 7}, 6),
-            "expected to use duplicate values"
-        );
-    }
-
-    private static void shouldNotMutateInput() {
-        int[] values = {5, 1, 4};
-        int[] snapshot = values.clone();
-
-        TwoPointersTechnique.hasPairWithSum(values, 9);
-
-        assertTrue(Arrays.equals(values, snapshot), "expected input array to remain unchanged");
-    }
-
-    private static void shouldRejectInvalidInput() {
-        assertFalse(TwoPointersTechnique.hasPairWithSum(null, 1), "expected null to return false");
-        assertFalse(TwoPointersTechnique.hasPairWithSum(new int[] {42}, 42), "expected single item to return false");
-    }
-
-    private static void shouldAvoidOverflowFalsePositive() {
-        assertFalse(
-            TwoPointersTechnique.hasPairWithSum(
-                new int[] {Integer.MAX_VALUE, Integer.MAX_VALUE},
-                -2
-            ),
-            "expected long-based sum to avoid overflow"
-        );
-    }
-
-    private static void assertTrue(boolean condition, String message) {
-        if (!condition) {
-            throw new AssertionError(message);
+        private TestCase(String name, BooleanSupplier check) {
+            this.name = name;
+            this.check = check;
         }
-    }
 
-    private static void assertFalse(boolean condition, String message) {
-        if (condition) {
-            throw new AssertionError(message);
+        private void run() {
+            if (!check.getAsBoolean()) {
+                throw new AssertionError("failed: " + name);
+            }
         }
     }
 }

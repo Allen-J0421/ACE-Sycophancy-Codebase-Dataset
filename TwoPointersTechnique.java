@@ -9,10 +9,10 @@ final class TwoPointersTechnique {
 
     /**
      * Returns true when an array contains two values that add up to the target.
-     * This version works on unsorted input and does not mutate the caller's array.
+     * This version works on unsorted input in linear time and does not mutate the caller's array.
      */
     static boolean hasPairWithSum(int[] values, int target) {
-        if (values == null || values.length < 2) {
+        if (!hasAtLeastTwoValues(values)) {
             return false;
         }
 
@@ -34,7 +34,7 @@ final class TwoPointersTechnique {
      * Two-pointer search over an already sorted array.
      */
     static boolean hasPairWithSumSorted(int[] sortedValues, int target) {
-        if (sortedValues == null || sortedValues.length < 2) {
+        if (!hasAtLeastTwoValues(sortedValues)) {
             return false;
         }
 
@@ -56,5 +56,9 @@ final class TwoPointersTechnique {
         }
 
         return false;
+    }
+
+    private static boolean hasAtLeastTwoValues(int[] values) {
+        return values != null && values.length >= 2;
     }
 }

@@ -3,7 +3,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-class BreadthFirstSearch {
+final class BreadthFirstSearch {
+    private BreadthFirstSearch() {}
 
     static List<Integer> traverse(Graph graph) {
         int n = graph.vertexCount();
@@ -12,20 +13,21 @@ class BreadthFirstSearch {
 
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
-                traverseComponent(graph, i, visited, result);
+                result.addAll(traverseComponent(graph, i, visited));
             }
         }
         return result;
     }
 
-    private static void traverseComponent(Graph graph, int source, boolean[] visited, List<Integer> result) {
+    private static List<Integer> traverseComponent(Graph graph, int source, boolean[] visited) {
+        List<Integer> component = new ArrayList<>();
         Queue<Integer> queue = new LinkedList<>();
         visited[source] = true;
         queue.add(source);
 
         while (!queue.isEmpty()) {
             int current = queue.poll();
-            result.add(current);
+            component.add(current);
 
             for (int neighbor : graph.neighbors(current)) {
                 if (!visited[neighbor]) {
@@ -34,19 +36,6 @@ class BreadthFirstSearch {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Graph graph = new Graph(6);
-        graph.addEdge(1, 2);
-        graph.addEdge(2, 0);
-        graph.addEdge(0, 3);
-        graph.addEdge(4, 5);
-
-        List<Integer> result = traverse(graph);
-        for (int vertex : result) {
-            System.out.print(vertex + " ");
-        }
-        System.out.println();
+        return component;
     }
 }

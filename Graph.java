@@ -15,6 +15,8 @@ class Graph {
     }
 
     void addEdge(int u, int v) {
+        validateVertex(u);
+        validateVertex(v);
         adjacencyList.get(u).add(v);
         adjacencyList.get(v).add(u);
     }
@@ -24,6 +26,14 @@ class Graph {
     }
 
     List<Integer> neighbors(int vertex) {
+        validateVertex(vertex);
         return Collections.unmodifiableList(adjacencyList.get(vertex));
+    }
+
+    private void validateVertex(int vertex) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException(
+                "Vertex " + vertex + " is out of range [0, " + (vertexCount - 1) + "]");
+        }
     }
 }

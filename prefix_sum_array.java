@@ -1,23 +1,33 @@
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class PrefixSum {
+final class PrefixSum {
 
-    public static ArrayList<Integer> prefSum(int[] arr) {
-        int n = arr.length;
+    private PrefixSum() {
+    }
 
-        ArrayList<Integer> prefixSum = new ArrayList<>();
+    public static List<Integer> prefSum(int[] arr) {
+        return prefixSums(arr);
+    }
 
-        prefixSum.add(arr[0]);
+    public static List<Integer> prefixSums(int[] values) {
+        Objects.requireNonNull(values, "values must not be null");
 
-        for (int i = 1; i < n; i++)
-            prefixSum.add(prefixSum.get(i - 1) + arr[i]);
+        List<Integer> prefixSums = new ArrayList<>(values.length);
+        int runningTotal = 0;
 
-        return prefixSum;
+        for (int value : values) {
+            runningTotal += value;
+            prefixSums.add(runningTotal);
+        }
+
+        return prefixSums;
     }
 
     public static void main(String[] args) {
         int[] arr = {10, 20, 10, 5, 15};
-        ArrayList<Integer> prefixSum = prefSum(arr);
+        List<Integer> prefixSum = prefSum(arr);
         for (int i : prefixSum) {
             System.out.print(i + " ");
         }

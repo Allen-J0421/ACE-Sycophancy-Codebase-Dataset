@@ -1,7 +1,6 @@
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
-    private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
-    private static final int SAMPLE_TARGET = 10;
+    private static final SearchDemo SAMPLE_DEMO = new SearchDemo(new int[] { 2, 3, 4, 10, 40 }, 10);
 
     private BinarySearch() {
     }
@@ -11,9 +10,7 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
-        SearchResult result = runSampleSearch();
-
-        System.out.println(formatSearchResult(result));
+        System.out.println(SAMPLE_DEMO.run());
     }
 
     private static SearchResult search(int[] arr, int target) {
@@ -35,10 +32,6 @@ final class BinarySearch {
         }
 
         return SearchResult.notFound();
-    }
-
-    private static SearchResult runSampleSearch() {
-        return search(SAMPLE_VALUES, SAMPLE_TARGET);
     }
 
     private static int toLegacyIndex(SearchResult result) {
@@ -84,6 +77,12 @@ final class BinarySearch {
 
         private boolean wasFound() {
             return index != NOT_FOUND;
+        }
+    }
+
+    private record SearchDemo(int[] values, int target) {
+        private String run() {
+            return formatSearchResult(search(values, target));
         }
     }
 }

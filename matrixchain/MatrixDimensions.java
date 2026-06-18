@@ -21,16 +21,16 @@ public final class MatrixDimensions {
         this.values = Arrays.copyOf(values, values.length);
     }
 
+    public static MatrixDimensions of(int... values) {
+        return new MatrixDimensions(values);
+    }
+
     public int[] values() {
         return Arrays.copyOf(values, values.length);
     }
 
     public int matrixCount() {
         return values.length - 1;
-    }
-
-    public int[] toArray() {
-        return values();
     }
 
     @Override

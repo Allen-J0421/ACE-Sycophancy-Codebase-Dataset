@@ -20,7 +20,7 @@ public final class MatrixChainCli {
 
     static MatrixDimensions parseDimensions(String[] args) {
         if (args.length == 0) {
-            return new MatrixDimensions(new int[] { 2, 1, 3, 4 });
+            return MatrixDimensions.of(2, 1, 3, 4);
         }
 
         if (args.length < 2) {

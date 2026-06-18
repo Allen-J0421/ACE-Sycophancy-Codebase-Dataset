@@ -7,23 +7,23 @@ final class MatrixChainMultiplicationTest {
     }
 
     public static void main(String[] args) {
-        MatrixDimensions dimensions = new MatrixDimensions(new int[] { 2, 1, 3, 4 });
+        MatrixDimensions dimensions = MatrixDimensions.of(2, 1, 3, 4);
         MatrixChainResult sample = MatrixChainMultiplication.optimize(dimensions);
         expectEquals(20L, sample.minimumCost(), "sample chain cost");
         expectEquals("(A1 * (A2 * A3))", sample.parenthesization(), "sample chain order");
 
-        expectEquals(20, MatrixChainMultiplication.matrixMultiplication(new int[] { 2, 1, 3, 4 }),
+        expectEquals(20, MatrixChainMultiplication.matrixMultiplication(MatrixDimensions.of(2, 1, 3, 4)),
                 "sample chain");
-        expectEquals(0, MatrixChainMultiplication.matrixMultiplication(new int[] { 5, 10 }),
+        expectEquals(0, MatrixChainMultiplication.matrixMultiplication(MatrixDimensions.of(5, 10)),
                 "single matrix");
         expectThrows(NullPointerException.class,
                 () -> MatrixChainMultiplication.matrixMultiplication(null),
                 "null dimensions");
         expectThrows(IllegalArgumentException.class,
-                () -> MatrixChainMultiplication.matrixMultiplication(new int[] { 2, 0, 3 }),
+                () -> MatrixChainMultiplication.matrixMultiplication(MatrixDimensions.of(2, 0, 3)),
                 "non-positive dimension");
         expectThrows(IllegalArgumentException.class,
-                () -> new MatrixDimensions(new int[] { 5 }),
+                () -> MatrixDimensions.of(5),
                 "missing chain");
         expectEquals(3, MatrixChainCli.parseDimensions(new String[0]).matrixCount(),
                 "cli default sample chain");
@@ -36,8 +36,8 @@ final class MatrixChainMultiplicationTest {
                 () -> MatrixChainCli.parseDimensions(new String[] { "10", "x" }),
                 "cli invalid number");
         expectEquals(
-                new MatrixDimensions(new int[] { 2, 1, 3, 4 }),
-                new MatrixDimensions(new int[] { 2, 1, 3, 4 }),
+                MatrixDimensions.of(2, 1, 3, 4),
+                MatrixDimensions.of(2, 1, 3, 4),
                 "dimension equality");
 
         int[] copied = dimensions.values();

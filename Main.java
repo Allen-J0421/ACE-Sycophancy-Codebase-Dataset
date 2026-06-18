@@ -3,7 +3,7 @@ import java.util.stream.Collectors;
 
 class Main {
     public static void main(String[] args) {
-        Graph graph = new Graph.Builder(6)
+        Graph<Integer> graph = new Graph.Builder<Integer>()
             .addEdge(1, 2)
             .addEdge(2, 0)
             .addEdge(0, 3)

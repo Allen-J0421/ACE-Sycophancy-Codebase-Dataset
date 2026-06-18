@@ -1,61 +1,57 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
-final class Graph {
-    private final int vertexCount;
-    private final List<List<Integer>> adjacencyList;
+final class Graph<V> {
+    private final Map<V, List<V>> adjacencyMap;
 
-    private Graph(int vertexCount, List<List<Integer>> adjacencyList) {
-        this.vertexCount = vertexCount;
-        this.adjacencyList = adjacencyList;
+    private Graph(Map<V, List<V>> adjacencyMap) {
+        this.adjacencyMap = adjacencyMap;
+    }
+
+    Set<V> vertices() {
+        return adjacencyMap.keySet();
     }
 
     int vertexCount() {
-        return vertexCount;
+        return adjacencyMap.size();
     }
 
-    List<Integer> neighbors(int vertex) {
-        validateVertex(vertex, vertexCount);
-        return adjacencyList.get(vertex);
-    }
-
-    private static void validateVertex(int vertex, int vertexCount) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException(
-                "Vertex " + vertex + " is out of range [0, " + (vertexCount - 1) + "]");
+    List<V> neighbors(V vertex) {
+        List<V> neighbors = adjacencyMap.get(vertex);
+        if (neighbors == null) {
+            throw new IllegalArgumentException("Vertex " + vertex + " is not in this graph");
         }
+        return neighbors;
     }
 
-    static final class Builder {
-        private final int vertexCount;
-        private final List<List<Integer>> adjacencyList;
+    static final class Builder<V> {
+        private final Map<V, List<V>> adjacencyMap = new LinkedHashMap<>();
 
-        Builder(int vertexCount) {
-            if (vertexCount < 0) {
-                throw new IllegalArgumentException("vertexCount must be non-negative, got " + vertexCount);
-            }
-            this.vertexCount = vertexCount;
-            adjacencyList = new ArrayList<>(vertexCount);
-            for (int i = 0; i < vertexCount; i++) {
-                adjacencyList.add(new ArrayList<>());
-            }
-        }
-
-        Builder addEdge(int u, int v) {
-            validateVertex(u, vertexCount);
-            validateVertex(v, vertexCount);
-            adjacencyList.get(u).add(v);
-            adjacencyList.get(v).add(u);
+        Builder<V> addVertex(V vertex) {
+            Objects.requireNonNull(vertex, "vertex must not be null");
+            adjacencyMap.putIfAbsent(vertex, new ArrayList<>());
             return this;
         }
 
-        Graph build() {
-            List<List<Integer>> frozen = new ArrayList<>(vertexCount);
-            for (List<Integer> neighbors : adjacencyList) {
-                frozen.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
+        Builder<V> addEdge(V u, V v) {
+            Objects.requireNonNull(u, "u must not be null");
+            Objects.requireNonNull(v, "v must not be null");
+            adjacencyMap.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
+            adjacencyMap.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
+            return this;
+        }
+
+        Graph<V> build() {
+            Map<V, List<V>> frozen = new LinkedHashMap<>();
+            for (Map.Entry<V, List<V>> entry : adjacencyMap.entrySet()) {
+                frozen.put(entry.getKey(), Collections.unmodifiableList(new ArrayList<>(entry.getValue())));
             }
-            return new Graph(vertexCount, Collections.unmodifiableList(frozen));
+            return new Graph<>(Collections.unmodifiableMap(frozen));
         }
     }
 }

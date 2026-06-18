@@ -31,8 +31,9 @@ class DijkstraTest {
     }
 
     private static void reportsUnreachableVertices() {
-        WeightedGraph graph = WeightedGraph.withVertexCount(3);
-        graph.addUndirectedEdge(0, 1, 5);
+        WeightedGraph graph = WeightedGraph.builder(3)
+                .addUndirectedEdge(0, 1, 5)
+                .build();
 
         assertDistances(
                 Arrays.asList(0, 5, Integer.MAX_VALUE),

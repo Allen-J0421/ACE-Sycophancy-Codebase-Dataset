@@ -5,6 +5,28 @@ import java.util.List;
 final class WeightedGraph {
     private final ArrayList<ArrayList<Edge>> adjacency;
 
+    static final class Builder {
+        private final WeightedGraph graph;
+
+        private Builder(int vertexCount) {
+            graph = new WeightedGraph(vertexCount);
+        }
+
+        Builder addUndirectedEdge(int u, int v, int weight) {
+            graph.addUndirectedEdge(u, v, weight);
+            return this;
+        }
+
+        Builder addDirectedEdge(int from, int to, int weight) {
+            graph.addDirectedEdge(from, to, weight);
+            return this;
+        }
+
+        WeightedGraph build() {
+            return graph;
+        }
+    }
+
     private WeightedGraph(int vertexCount) {
         validateVertexCount(vertexCount);
 
@@ -12,6 +34,10 @@ final class WeightedGraph {
         for (int i = 0; i < vertexCount; i++) {
             adjacency.add(new ArrayList<>());
         }
+    }
+
+    static Builder builder(int vertexCount) {
+        return new Builder(vertexCount);
     }
 
     static WeightedGraph withVertexCount(int vertexCount) {

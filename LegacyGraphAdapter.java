@@ -11,15 +11,15 @@ final class LegacyGraphAdapter {
     static WeightedGraph toWeightedGraph(ArrayList<ArrayList<int[]>> adjacency) {
         validateAdjacencyList(adjacency);
 
-        WeightedGraph graph = WeightedGraph.withVertexCount(adjacency.size());
+        WeightedGraph.Builder builder = WeightedGraph.builder(adjacency.size());
         for (int from = 0; from < adjacency.size(); from++) {
             for (int[] edge : adjacency.get(from)) {
                 validateEdge(adjacency.size(), edge);
-                graph.addDirectedEdge(from, destination(edge), weight(edge));
+                builder.addDirectedEdge(from, destination(edge), weight(edge));
             }
         }
 
-        return graph;
+        return builder.build();
     }
 
     static void addUndirectedEdge(ArrayList<ArrayList<int[]>> adjacency, int u, int v, int weight) {

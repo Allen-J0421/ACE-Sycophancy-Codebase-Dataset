@@ -1,4 +1,6 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,64 +10,38 @@ public final class DepthFirstSearch {
         // Utility class.
     }
 
-    public static List<Integer> dfs(List<? extends List<Integer>> adjacencyList) {
-        Objects.requireNonNull(adjacencyList, "adjacencyList");
+    public static List<Integer> traverse(Graph graph) {
+        Objects.requireNonNull(graph, "graph");
 
-        boolean[] visited = new boolean[adjacencyList.size()];
-        List<Integer> traversal = new ArrayList<>(adjacencyList.size());
+        boolean[] visited = new boolean[graph.size()];
+        List<Integer> order = new ArrayList<>(graph.size());
+        Deque<Integer> stack = new ArrayDeque<>();
 
-        for (int vertex = 0; vertex < adjacencyList.size(); vertex++) {
-            if (!visited[vertex]) {
-                dfsFromVertex(adjacencyList, visited, vertex, traversal);
+        for (int start = 0; start < graph.size(); start++) {
+            if (visited[start]) {
+                continue;
+            }
+
+            stack.push(start);
+            while (!stack.isEmpty()) {
+                int vertex = stack.pop();
+                if (visited[vertex]) {
+                    continue;
+                }
+
+                visited[vertex] = true;
+                order.add(vertex);
+
+                List<Integer> neighbors = graph.neighborsOf(vertex);
+                for (int index = neighbors.size() - 1; index >= 0; index--) {
+                    int neighbor = neighbors.get(index);
+                    if (!visited[neighbor]) {
+                        stack.push(neighbor);
+                    }
+                }
             }
         }
 
-        return traversal;
-    }
-
-    private static void dfsFromVertex(
-            List<? extends List<Integer>> adjacencyList,
-            boolean[] visited,
-            int vertex,
-            List<Integer> traversal) {
-        visited[vertex] = true;
-        traversal.add(vertex);
-
-        for (int neighbor : adjacencyList.get(vertex)) {
-            if (neighbor < 0 || neighbor >= adjacencyList.size()) {
-                throw new IllegalArgumentException("Invalid neighbor vertex: " + neighbor);
-            }
-            if (!visited[neighbor]) {
-                dfsFromVertex(adjacencyList, visited, neighbor, traversal);
-            }
-        }
-    }
-
-    static void addEdge(List<List<Integer>> adjacencyList, int u, int v) {
-        adjacencyList.get(u).add(v);
-        adjacencyList.get(v).add(u);
-    }
-
-    private static List<List<Integer>> createGraph(int vertices) {
-        List<List<Integer>> adjacencyList = new ArrayList<>(vertices);
-        for (int vertex = 0; vertex < vertices; vertex++) {
-            adjacencyList.add(new ArrayList<>());
-        }
-        return adjacencyList;
-    }
-
-    public static void main(String[] args) {
-        List<List<Integer>> adjacencyList = createGraph(6);
-
-        addEdge(adjacencyList, 1, 2);
-        addEdge(adjacencyList, 0, 3);
-        addEdge(adjacencyList, 2, 0);
-        addEdge(adjacencyList, 5, 4);
-
-        List<Integer> traversal = dfs(adjacencyList);
-
-        for (int vertex : traversal) {
-            System.out.print(vertex + " ");
-        }
+        return order;
     }
 }

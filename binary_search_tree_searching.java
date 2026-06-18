@@ -1,40 +1,64 @@
-class Node {
-    int data;
-    Node left, right;
-
-    public Node(int item) {
-        data = item;
-        left = right = null;
-    }
-}
 class BinarySearchTree {
-    static boolean search(Node root, int key) {
-        boolean present = false;
+    private static final class Node {
+        private final int data;
+        private Node left;
+        private Node right;
 
-        while( root != null ) {
-            if( root.data == key ) {
-                present = true;
-                break;
+        private Node(int data) {
+            this.data = data;
+        }
+    }
+
+    private Node root;
+
+    public void insert(int value) {
+        root = insert(root, value);
+    }
+
+    public boolean contains(int value) {
+        Node current = root;
+
+        while (current != null) {
+            if (current.data == value) {
+                return true;
             }
 
-            else if( key > root.data )
-                root = root.right;
-
-            else root = root.left;
+            current = value > current.data ? current.right : current.left;
         }
-        return present;
+
+        return false;
     }
 
+    public static BinarySearchTree fromValues(int... values) {
+        BinarySearchTree tree = new BinarySearchTree();
+
+        for (int value : values) {
+            tree.insert(value);
+        }
+
+        return tree;
+    }
+
+    private Node insert(Node current, int value) {
+        if (current == null) {
+            return new Node(value);
+        }
+
+        if (value < current.data) {
+            current.left = insert(current.left, value);
+        } else if (value > current.data) {
+            current.right = insert(current.right, value);
+        }
+
+        return current;
+    }
+}
+
+class BinarySearchTreeSearching {
     public static void main(String[] args) {
-
-        Node root = new Node(6);
-        root.left = new Node(2);
-        root.right = new Node(8);
-        root.right.left = new Node(7);
-        root.right.right = new Node(9);
-
+        BinarySearchTree tree = BinarySearchTree.fromValues(6, 2, 8, 7, 9);
         int key = 7;
 
-        System.out.println(search(root, key));
+        System.out.println(tree.contains(key));
     }
 }

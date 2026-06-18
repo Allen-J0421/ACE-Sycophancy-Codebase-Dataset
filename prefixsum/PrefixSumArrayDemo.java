@@ -1,3 +1,5 @@
+package prefixsum;
+
 import java.util.List;
 import java.util.StringJoiner;
 

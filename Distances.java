@@ -1,5 +1,6 @@
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 final class Distances {
     private final int[] values;
@@ -32,7 +33,7 @@ final class Distances {
         return true;
     }
 
-    ArrayList<Integer> toList() {
+    List<Integer> toList() {
         ArrayList<Integer> result = new ArrayList<>(values.length);
         for (int value : values) {
             result.add(value);

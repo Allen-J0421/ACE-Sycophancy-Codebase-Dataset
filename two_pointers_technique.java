@@ -27,9 +27,11 @@ final class TwoPointers {
     }
 
     public static void main(String[] args) {
-        boolean pairExists = hasPairWithSum(sampleSortedNumbers(), SAMPLE_TARGET_SUM);
+        System.out.println(samplePairExists());
+    }
 
-        System.out.println(pairExists);
+    private static boolean samplePairExists() {
+        return hasPairWithSum(sampleSortedNumbers(), SAMPLE_TARGET_SUM);
     }
 
     private static int[] sampleSortedNumbers() {

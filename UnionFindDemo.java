@@ -1,4 +1,7 @@
-public class UnionFindDemo {
+public final class UnionFindDemo {
+    private UnionFindDemo() {
+    }
+
     public static void main(String[] args) {
         UnionFind unionFind = new UnionFind(5);
         unionFind.union(1, 2);

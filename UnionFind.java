@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class UnionFind {
+public final class UnionFind {
     private final int[] parent;
     private final int[] rank;
     private int components;

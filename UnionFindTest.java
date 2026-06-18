@@ -1,10 +1,15 @@
-public class UnionFindTest {
+public final class UnionFindTest {
+    private UnionFindTest() {
+    }
+
     public static void main(String[] args) {
         testNewElementsStartDisconnected();
         testUnionConnectsElements();
         testUnionReturnsWhetherMergeHappened();
         testComponentCountTracksMerges();
         testInvalidElementsAreRejected();
+
+        System.out.println("All UnionFind tests passed.");
     }
 
     private static void testNewElementsStartDisconnected() {
@@ -44,8 +49,16 @@ public class UnionFindTest {
     private static void testInvalidElementsAreRejected() {
         UnionFind unionFind = new UnionFind(1);
 
-        assertThrows(() -> unionFind.find(-1), "negative element should be rejected");
-        assertThrows(() -> unionFind.find(1), "element beyond size should be rejected");
+        assertThrows(
+                IndexOutOfBoundsException.class,
+                () -> unionFind.find(-1),
+                "negative element should be rejected"
+        );
+        assertThrows(
+                IndexOutOfBoundsException.class,
+                () -> unionFind.find(1),
+                "element beyond size should be rejected"
+        );
     }
 
     private static void assertTrue(boolean condition, String message) {
@@ -64,13 +77,24 @@ public class UnionFindTest {
         }
     }
 
-    private static void assertThrows(Runnable action, String message) {
+    private static void assertThrows(
+            Class<? extends RuntimeException> expectedType,
+            Runnable action,
+            String message
+    ) {
         try {
             action.run();
         } catch (RuntimeException exception) {
+            if (!expectedType.isInstance(exception)) {
+                throw new AssertionError(
+                        message + ": expected " + expectedType.getSimpleName()
+                                + ", got " + exception.getClass().getSimpleName()
+                );
+            }
+
             return;
         }
 
-        throw new AssertionError(message);
+        throw new AssertionError(message + ": expected " + expectedType.getSimpleName());
     }
 }

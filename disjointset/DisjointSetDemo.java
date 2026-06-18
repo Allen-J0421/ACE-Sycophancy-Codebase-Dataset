@@ -1,11 +1,11 @@
 package disjointset;
 
-public final class UnionFindDemo {
-    private UnionFindDemo() {
+public final class DisjointSetDemo {
+    private DisjointSetDemo() {
     }
 
     public static void main(String[] args) {
-        DisjointSet disjointSet = DisjointSet.create(5);
+        DisjointSet disjointSet = DisjointSets.create(5);
         disjointSet.union(1, 2);
         disjointSet.union(3, 4);
 

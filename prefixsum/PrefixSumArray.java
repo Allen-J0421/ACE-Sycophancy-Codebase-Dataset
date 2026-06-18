@@ -19,7 +19,7 @@ public final class PrefixSumArray {
      * @return a list of prefix sums with one entry per input value
      */
     public static List<Integer> prefixSums(int[] values) {
-        return toIntegerList(prefixSumsAsLongArray(values));
+        return toIntegerList(PrefixSumCalculator.compute(values));
     }
 
     /**
@@ -29,7 +29,7 @@ public final class PrefixSumArray {
      * @return the prefix sums as a primitive array
      */
     public static int[] prefixSumsAsArray(int[] values) {
-        long[] prefixSums = prefixSumsAsLongArray(values);
+        long[] prefixSums = PrefixSumCalculator.compute(values);
         int[] boundedPrefixSums = new int[prefixSums.length];
         for (int i = 0; i < prefixSums.length; i++) {
             boundedPrefixSums[i] = Math.toIntExact(prefixSums[i]);
@@ -45,16 +45,7 @@ public final class PrefixSumArray {
      * @return the prefix sums as a primitive long array
      */
     public static long[] prefixSumsAsLongArray(int[] values) {
-        requireValues(values);
-
-        long[] prefixSums = new long[values.length];
-        long runningTotal = 0L;
-        for (int i = 0; i < values.length; i++) {
-            runningTotal += values[i];
-            prefixSums[i] = runningTotal;
-        }
-
-        return prefixSums;
+        return PrefixSumCalculator.compute(values);
     }
 
     private static List<Integer> toIntegerList(long[] prefixSums) {
@@ -65,9 +56,4 @@ public final class PrefixSumArray {
         return boxedPrefixSums;
     }
 
-    private static void requireValues(int[] values) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
-    }
 }

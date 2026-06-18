@@ -1,7 +1,9 @@
+package graph.traversal;
+
 import java.util.List;
 import java.util.StringJoiner;
 
-final class TraversalResult {
+public final class TraversalResult {
     private final List<Integer> visitOrder;
 
     private TraversalResult(List<Integer> visitOrder) {
@@ -12,15 +14,16 @@ final class TraversalResult {
         return new TraversalResult(visitOrder);
     }
 
-    List<Integer> visitOrder() {
+    public List<Integer> visitOrder() {
         return visitOrder;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return visitOrder.isEmpty();
     }
 
-    String formatVisitOrder() {
+    @Override
+    public String toString() {
         StringJoiner joiner = new StringJoiner(" ");
         for (int vertex : visitOrder) {
             joiner.add(String.valueOf(vertex));

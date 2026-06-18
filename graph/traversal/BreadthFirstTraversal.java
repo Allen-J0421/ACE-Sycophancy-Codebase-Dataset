@@ -1,20 +1,23 @@
+package graph.traversal;
+
+import graph.Graph;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-final class BreadthFirstTraversal {
+public final class BreadthFirstTraversal {
     private BreadthFirstTraversal() {
     }
 
-    static TraversalResult traverseFrom(Graph graph, int startVertex) {
+    public static TraversalResult traverseFrom(Graph graph, int startVertex) {
         TraversalState traversalState = TraversalState.create(graph);
         graph.requireVertex(startVertex);
         traversalState.traverseComponent(startVertex);
         return traversalState.result();
     }
 
-    static TraversalResult traverseAllComponents(Graph graph) {
+    public static TraversalResult traverseAllComponents(Graph graph) {
         TraversalState traversalState = TraversalState.create(graph);
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {

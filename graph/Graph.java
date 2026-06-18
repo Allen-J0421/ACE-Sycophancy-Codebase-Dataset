@@ -1,6 +1,8 @@
+package graph;
+
 import java.util.List;
 
-interface Graph {
+public interface Graph {
     int vertexCount();
 
     List<Integer> neighborsOf(int vertex);

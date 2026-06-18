@@ -1,4 +1,6 @@
-interface MutableGraph extends Graph {
+package graph;
+
+public interface MutableGraph extends Graph {
     void addDirectedEdge(int from, int to);
 
     default void addUndirectedEdge(int from, int to) {

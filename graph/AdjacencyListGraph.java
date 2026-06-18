@@ -1,12 +1,14 @@
+package graph;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class AdjacencyListGraph implements MutableGraph {
+public final class AdjacencyListGraph implements MutableGraph {
     private final List<List<Integer>> adjacencyList;
     private final List<List<Integer>> adjacencyViews;
 
-    AdjacencyListGraph(int vertexCount) {
+    public AdjacencyListGraph(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count cannot be negative.");
         }

@@ -10,7 +10,7 @@ public final class BinarySearchTest {
         findsExistingValues();
         returnsNotFoundForMissingValues();
         handlesEmptyArrays();
-        preservesLegacyMethodName();
+        preservesDeprecatedMethodName();
         rejectsNullInput();
     }
 
@@ -30,7 +30,8 @@ public final class BinarySearchTest {
         assertIndex(BinarySearch.NOT_FOUND, EMPTY_VALUES, TARGET);
     }
 
-    private static void preservesLegacyMethodName() {
+    @SuppressWarnings("deprecation")
+    private static void preservesDeprecatedMethodName() {
         assertEquals(3, BinarySearch.binarySearch(SORTED_VALUES, TARGET));
     }
 

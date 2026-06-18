@@ -6,6 +6,10 @@ public final class BinarySearch {
     private BinarySearch() {
     }
 
+    /**
+     * @deprecated Use {@link #indexOf(int[], int)}.
+     */
+    @Deprecated
     public static int binarySearch(int[] sortedValues, int target) {
         return indexOf(sortedValues, target);
     }

@@ -1,5 +1,15 @@
 public class QuickSort implements Sorter {
 
+    private final PivotSelector pivotSelector;
+
+    public QuickSort() {
+        this(PivotSelector.LAST_ELEMENT);
+    }
+
+    public QuickSort(PivotSelector pivotSelector) {
+        this.pivotSelector = pivotSelector;
+    }
+
     @Override
     public void sort(int[] arr) {
         sort(arr, 0, arr.length - 1);
@@ -14,16 +24,17 @@ public class QuickSort implements Sorter {
     }
 
     private int partition(int[] arr, int low, int high) {
+        int pivotIndex = pivotSelector.selectPivot(arr, low, high);
+        swap(arr, pivotIndex, high);
+
         int pivot = arr[high];
         int i = low - 1;
-
-        for (int j = low; j <= high - 1; j++) {
+        for (int j = low; j < high; j++) {
             if (arr[j] < pivot) {
                 i++;
                 swap(arr, i, j);
             }
         }
-
         swap(arr, i + 1, high);
         return i + 1;
     }

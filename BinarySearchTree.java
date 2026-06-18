@@ -4,17 +4,44 @@ public final class BinarySearchTree {
 
     private Node root;
 
-    void insert(int value) {
-        root = insert(root, value);
+    public void insert(int value) {
+        if (root == null) {
+            root = new Node(value);
+            return;
+        }
+
+        Node current = root;
+
+        while (true) {
+            if (value == current.value) {
+                return;
+            }
+
+            if (value < current.value) {
+                if (current.left == null) {
+                    current.left = new Node(value);
+                    return;
+                }
+
+                current = current.left;
+            } else {
+                if (current.right == null) {
+                    current.right = new Node(value);
+                    return;
+                }
+
+                current = current.right;
+            }
+        }
     }
 
-    void insertAll(int... values) {
+    public void insertAll(int... values) {
         for (int value : values) {
             insert(value);
         }
     }
 
-    boolean contains(int key) {
+    public boolean contains(int key) {
         return contains(root, key);
     }
 
@@ -30,20 +57,6 @@ public final class BinarySearchTree {
         }
 
         return false;
-    }
-
-    private static Node insert(Node node, int value) {
-        if (node == null) {
-            return new Node(value);
-        }
-
-        if (value < node.value) {
-            node.left = insert(node.left, value);
-        } else if (value > node.value) {
-            node.right = insert(node.right, value);
-        }
-
-        return node;
     }
 
     private static BinarySearchTree createSampleTree() {

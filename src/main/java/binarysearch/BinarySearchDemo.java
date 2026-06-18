@@ -1,5 +1,7 @@
 package binarysearch;
 
+import java.util.OptionalInt;
+
 public final class BinarySearchDemo {
     private static final int[] SAMPLE_ARRAY = { 2, 3, 4, 10, 40 };
     private static final int SAMPLE_TARGET = 10;
@@ -11,15 +13,15 @@ public final class BinarySearchDemo {
     }
 
     public static void main(String[] args) {
-        int result = BinarySearch.binarySearch(SAMPLE_ARRAY, SAMPLE_TARGET);
+        OptionalInt result = BinarySearch.findIndex(SAMPLE_ARRAY, SAMPLE_TARGET);
         System.out.println(formatResult(result));
     }
 
-    private static String formatResult(int index) {
-        if (index == -1) {
+    private static String formatResult(OptionalInt result) {
+        if (result.isEmpty()) {
             return NOT_FOUND_MESSAGE;
         }
 
-        return FOUND_MESSAGE_PREFIX + index;
+        return FOUND_MESSAGE_PREFIX + result.getAsInt();
     }
 }

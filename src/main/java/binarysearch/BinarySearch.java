@@ -1,6 +1,7 @@
 package binarysearch;
 
 import java.util.Comparator;
+import java.util.OptionalInt;
 import java.util.function.IntUnaryOperator;
 import java.util.Objects;
 
@@ -10,28 +11,40 @@ public final class BinarySearch {
     }
 
     public static int binarySearch(int[] array, int target) {
+        return findIndex(array, target).orElse(-1);
+    }
+
+    public static OptionalInt findIndex(int[] array, int target) {
         Objects.requireNonNull(array, "array");
-        return binarySearch(array.length - 1, mid -> Integer.compare(array[mid], target));
+        return search(array.length - 1, mid -> Integer.compare(array[mid], target));
     }
 
     public static <T extends Comparable<? super T>> int binarySearch(T[] array, T target) {
-        return binarySearch(array, target, Comparator.naturalOrder());
+        return findIndex(array, target).orElse(-1);
+    }
+
+    public static <T extends Comparable<? super T>> OptionalInt findIndex(T[] array, T target) {
+        return findIndex(array, target, Comparator.naturalOrder());
     }
 
     public static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
-        return binarySearch(array.length - 1, mid -> comparator.compare(array[mid], target));
+        return findIndex(array, target, comparator).orElse(-1);
     }
 
-    private static int binarySearch(int right, IntUnaryOperator comparisonAtIndex) {
+    public static <T> OptionalInt findIndex(T[] array, T target, Comparator<? super T> comparator) {
+        Objects.requireNonNull(array, "array");
+        Objects.requireNonNull(comparator, "comparator");
+        return search(array.length - 1, mid -> comparator.compare(array[mid], target));
+    }
+
+    private static OptionalInt search(int right, IntUnaryOperator comparisonAtIndex) {
         int left = 0;
         while (left <= right) {
             int mid = left + (right - left) / 2;
             int comparison = comparisonAtIndex.applyAsInt(mid);
 
             if (comparison == 0) {
-                return mid;
+                return OptionalInt.of(mid);
             }
 
             if (comparison < 0) {
@@ -41,6 +54,6 @@ public final class BinarySearch {
             }
         }
 
-        return -1;
+        return OptionalInt.empty();
     }
 }

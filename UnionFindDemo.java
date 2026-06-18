@@ -3,7 +3,7 @@ public final class UnionFindDemo {
     }
 
     public static void main(String[] args) {
-        UnionFind unionFind = new UnionFind(5);
+        DisjointSet unionFind = new UnionFind(5);
         unionFind.union(1, 2);
         unionFind.union(3, 4);
 

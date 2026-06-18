@@ -1,4 +1,4 @@
-public final class UnionFind {
+public final class UnionFind implements DisjointSet {
     private final int[] parent;
     private final int[] rank;
     private final int[] componentSize;
@@ -13,11 +13,13 @@ public final class UnionFind {
         initializeSingletonSets();
     }
 
+    @Override
     public int find(int element) {
         validateIndex(element);
         return findRoot(element);
     }
 
+    @Override
     public boolean union(int first, int second) {
         int firstRoot = find(first);
         int secondRoot = find(second);
@@ -30,18 +32,22 @@ public final class UnionFind {
         return true;
     }
 
+    @Override
     public boolean connected(int first, int second) {
         return find(first) == find(second);
     }
 
+    @Override
     public int componentSize(int element) {
         return componentSize[find(element)];
     }
 
+    @Override
     public int components() {
         return componentCount;
     }
 
+    @Override
     public int size() {
         return parent.length;
     }

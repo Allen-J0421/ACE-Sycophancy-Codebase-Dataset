@@ -5,26 +5,31 @@ final class BuildHeap {
     private static void siftDown(int[] values, int heapSize, int startIndex) {
         int currentIndex = startIndex;
 
-        while (true) {
-            int largestIndex = currentIndex;
-            int leftChildIndex = leftChildIndex(currentIndex);
-            int rightChildIndex = rightChildIndex(currentIndex);
+        while (hasLeftChild(currentIndex, heapSize)) {
+            int largerChildIndex = largerChildIndex(values, heapSize, currentIndex);
 
-            if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
-                largestIndex = leftChildIndex;
-            }
-
-            if (rightChildIndex < heapSize && values[rightChildIndex] > values[largestIndex]) {
-                largestIndex = rightChildIndex;
-            }
-
-            if (largestIndex == currentIndex) {
+            if (values[currentIndex] >= values[largerChildIndex]) {
                 return;
             }
 
-            swap(values, currentIndex, largestIndex);
-            currentIndex = largestIndex;
+            swap(values, currentIndex, largerChildIndex);
+            currentIndex = largerChildIndex;
         }
+    }
+
+    private static boolean hasLeftChild(int index, int heapSize) {
+        return leftChildIndex(index) < heapSize;
+    }
+
+    private static int largerChildIndex(int[] values, int heapSize, int parentIndex) {
+        int leftChildIndex = leftChildIndex(parentIndex);
+        int rightChildIndex = rightChildIndex(parentIndex);
+
+        if (rightChildIndex < heapSize && values[rightChildIndex] > values[leftChildIndex]) {
+            return rightChildIndex;
+        }
+
+        return leftChildIndex;
     }
 
     private static int leftChildIndex(int index) {

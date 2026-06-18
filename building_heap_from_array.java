@@ -1,52 +1,58 @@
-public class BuildHeap {
+class BuildHeap {
+    private static void heapify(int[] values, int heapSize, int rootIndex) {
+        int largestIndex = rootIndex;
+        int leftChildIndex = leftChildIndex(rootIndex);
+        int rightChildIndex = rightChildIndex(rootIndex);
 
-    static void heapify(int arr[], int n, int i)
-    {
+        if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
+            largestIndex = leftChildIndex;
+        }
 
-        int largest = i;
+        if (rightChildIndex < heapSize && values[rightChildIndex] > values[largestIndex]) {
+            largestIndex = rightChildIndex;
+        }
 
-        int l = 2 * i + 1;
+        if (largestIndex == rootIndex) {
+            return;
+        }
 
-        int r = 2 * i + 2;
+        swap(values, rootIndex, largestIndex);
+        heapify(values, heapSize, largestIndex);
+    }
 
-        if (l < n && arr[l] > arr[largest])
-            largest = l;
+    private static int leftChildIndex(int index) {
+        return 2 * index + 1;
+    }
 
-        if (r < n && arr[r] > arr[largest])
-            largest = r;
+    private static int rightChildIndex(int index) {
+        return 2 * index + 2;
+    }
 
-        if (largest != i) {
-            int temp = arr[i];
-            arr[i] = arr[largest];
-            arr[largest] = temp;
+    private static void swap(int[] values, int firstIndex, int secondIndex) {
+        int temp = values[firstIndex];
+        values[firstIndex] = values[secondIndex];
+        values[secondIndex] = temp;
+    }
 
-            heapify(arr, n, largest);
+    static void buildHeap(int[] values) {
+        int firstParentIndex = values.length / 2 - 1;
+
+        for (int index = firstParentIndex; index >= 0; index--) {
+            heapify(values, values.length, index);
         }
     }
 
-    static void buildHeap(int arr[])
-    {
-
-        int n = arr.length;
-
-        int startIdx = (n / 2) - 1;
-
-        for (int i = startIdx; i >= 0; i--) {
-            heapify(arr, n, i);
+    private static void printValues(int[] values) {
+        for (int value : values) {
+            System.out.print(value + " ");
         }
-    }
-
-    public static void main(String[] args)
-    {
-
-        int arr[] = {1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17};
-
-        int n = arr.length;
-
-        buildHeap(arr);
-        for (int i = 0; i < n; ++i)
-            System.out.print(arr[i] + " ");
         System.out.println();
+    }
 
+    public static void main(String[] args) {
+        int[] values = {1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17};
+
+        buildHeap(values);
+        printValues(values);
     }
 }

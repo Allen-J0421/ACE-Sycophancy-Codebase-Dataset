@@ -1,5 +1,8 @@
 package matrixchain;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 final class MatrixChainMultiplicationTest {
 
     private MatrixChainMultiplicationTest() {
@@ -25,15 +28,15 @@ final class MatrixChainMultiplicationTest {
         expectThrows(IllegalArgumentException.class,
                 () -> MatrixDimensions.of(5),
                 "missing chain");
-        expectEquals(3, MatrixChainArguments.parse(new String[0]).matrixCount(),
+        expectEquals(3, MatrixDimensions.of(2, 1, 3, 4).matrixCount(),
                 "cli default sample chain");
-        expectEquals(3, MatrixChainArguments.parse(new String[] { "10", "20", "30", "40" }).matrixCount(),
+        expectEquals(3, MatrixDimensions.parse("10", "20", "30", "40").matrixCount(),
                 "cli parsed chain");
         expectThrows(IllegalArgumentException.class,
-                () -> MatrixChainArguments.parse(new String[] { "10" }),
+                () -> MatrixDimensions.parse("10"),
                 "cli too few dimensions");
         expectThrows(IllegalArgumentException.class,
-                () -> MatrixChainArguments.parse(new String[] { "10", "x" }),
+                () -> MatrixDimensions.parse("10", "x"),
                 "cli invalid number");
         expectEquals(
                 MatrixDimensions.of(2, 1, 3, 4),
@@ -41,8 +44,12 @@ final class MatrixChainMultiplicationTest {
                 "dimension equality");
         expectEquals(
                 "Usage: java matrixchain.MatrixChainCli <d1> <d2> ... <dn>",
-                MatrixChainArguments.usage(),
+                extractUsageLine(captureCliError(new String[] { "10", "x" })),
                 "cli usage");
+        expectEquals(
+                "20" + System.lineSeparator() + "(A1 * (A2 * A3))",
+                captureCliOutput(new String[0]),
+                "cli default output");
 
         int[] copied = dimensions.values();
         copied[0] = 99;
@@ -94,5 +101,35 @@ final class MatrixChainMultiplicationTest {
     @FunctionalInterface
     private interface ThrowingRunnable {
         void run() throws Throwable;
+    }
+
+    private static String captureCliOutput(String[] args) {
+        return captureStreams(args, false);
+    }
+
+    private static String captureCliError(String[] args) {
+        return captureStreams(args, true);
+    }
+
+    private static String extractUsageLine(String output) {
+        String[] lines = output.split("\\R");
+        return lines[lines.length - 1];
+    }
+
+    private static String captureStreams(String[] args, boolean errorOnly) {
+        PrintStream originalOut = System.out;
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream outBuffer = new ByteArrayOutputStream();
+        ByteArrayOutputStream errBuffer = new ByteArrayOutputStream();
+        try {
+            System.setOut(new PrintStream(outBuffer));
+            System.setErr(new PrintStream(errBuffer));
+            MatrixChainCli.main(args);
+        } finally {
+            System.setOut(originalOut);
+            System.setErr(originalErr);
+        }
+        String output = errorOnly ? errBuffer.toString() : outBuffer.toString();
+        return output.trim();
     }
 }

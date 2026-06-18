@@ -25,6 +25,20 @@ public final class MatrixDimensions {
         return new MatrixDimensions(values);
     }
 
+    public static MatrixDimensions parse(String... tokens) {
+        Objects.requireNonNull(tokens, "tokens");
+        if (tokens.length < 2) {
+            throw new IllegalArgumentException(
+                    "Expected at least two dimensions, for example: 10 20 30");
+        }
+
+        int[] values = new int[tokens.length];
+        for (int index = 0; index < tokens.length; index++) {
+            values[index] = parseDimension(tokens[index], index);
+        }
+        return new MatrixDimensions(values);
+    }
+
     public int[] values() {
         return Arrays.copyOf(values, values.length);
     }
@@ -47,5 +61,14 @@ public final class MatrixDimensions {
     @Override
     public String toString() {
         return "MatrixDimensions" + Arrays.toString(values);
+    }
+
+    private static int parseDimension(String token, int index) {
+        try {
+            return Integer.parseInt(token);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(
+                    "Invalid dimension at position " + (index + 1) + ": " + token, exception);
+        }
     }
 }

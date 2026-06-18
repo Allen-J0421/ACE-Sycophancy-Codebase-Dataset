@@ -15,7 +15,7 @@ public final class MatrixChainMultiplication {
         return solve(MatrixDimensions.of(dimensions));
     }
 
-    static MatrixChainResult solve(MatrixDimensions dimensions) {
+    public static MatrixChainResult solve(MatrixDimensions dimensions) {
         return MatrixChainSolver.solve(dimensions);
     }
 }

@@ -1,14 +1,16 @@
 import java.util.Arrays;
 
-final class MatrixDimensions {
+public final class MatrixDimensions {
 
     private final int[] values;
+    private final int size;
 
     private MatrixDimensions(int[] values) {
         this.values = values;
+        this.size = values.length;
     }
 
-    static MatrixDimensions of(int[] dimensions) {
+    public static MatrixDimensions of(int... dimensions) {
         if (dimensions == null) {
             throw new IllegalArgumentException("Matrix dimensions cannot be null.");
         }
@@ -23,7 +25,7 @@ final class MatrixDimensions {
         return new MatrixDimensions(copy);
     }
 
-    static MatrixDimensions parse(String[] args) {
+    public static MatrixDimensions parse(String[] args) {
         int[] dimensions = new int[args.length];
 
         for (int index = 0; index < args.length; index++) {
@@ -33,15 +35,15 @@ final class MatrixDimensions {
         return of(dimensions);
     }
 
-    int count() {
-        return values.length;
+    public int size() {
+        return size;
     }
 
-    int at(int index) {
+    public int valueAt(int index) {
         return values[index];
     }
 
-    int[] toArray() {
+    public int[] toArray() {
         return Arrays.copyOf(values, values.length);
     }
 }

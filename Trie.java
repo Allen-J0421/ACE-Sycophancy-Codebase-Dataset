@@ -27,6 +27,7 @@ public class Trie {
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
         }
+        validateText(text);
 
         TrieNode node = root;
         for (int i = 0; i < text.length(); i++) {
@@ -42,6 +43,12 @@ public class Trie {
             node = next;
         }
         return node;
+    }
+
+    private static void validateText(String text) {
+        for (int i = 0; i < text.length(); i++) {
+            toIndex(text.charAt(i));
+        }
     }
 
     private static int toIndex(char c) {

@@ -19,6 +19,10 @@ public class LinearProbingHashMap {
         table = new Entry[capacity];
     }
 
+    /**
+     * @deprecated Use {@link #put(int, int)} instead.
+     */
+    @Deprecated
     public void insertNode(int key, int value) {
         put(key, value);
     }
@@ -31,6 +35,10 @@ public class LinearProbingHashMap {
         table[insertIndex] = new Entry(key, value);
     }
 
+    /**
+     * @deprecated Use {@link #remove(int)} instead.
+     */
+    @Deprecated
     public int deleteNode(int key) {
         return remove(key);
     }
@@ -64,6 +72,10 @@ public class LinearProbingHashMap {
         return findExistingIndex(key) != NOT_FOUND;
     }
 
+    /**
+     * @deprecated Use {@link #size()} instead.
+     */
+    @Deprecated
     public int sizeofMap() {
         return size();
     }
@@ -76,6 +88,10 @@ public class LinearProbingHashMap {
         return size == 0;
     }
 
+    /**
+     * @deprecated Use {@link #printEntries()} instead.
+     */
+    @Deprecated
     public void display() {
         printEntries();
     }

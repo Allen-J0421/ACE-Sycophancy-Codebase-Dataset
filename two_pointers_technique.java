@@ -10,13 +10,13 @@ final class TwoPointers {
         int rightIndex = sortedNumbers.length - 1;
 
         while (leftIndex < rightIndex) {
-            int sum = sortedNumbers[leftIndex] + sortedNumbers[rightIndex];
+            int currentSum = sortedNumbers[leftIndex] + sortedNumbers[rightIndex];
 
-            if (sum == targetSum) {
+            if (currentSum == targetSum) {
                 return true;
             }
 
-            if (sum < targetSum) {
+            if (currentSum < targetSum) {
                 leftIndex++;
             } else {
                 rightIndex--;

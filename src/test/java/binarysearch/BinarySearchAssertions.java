@@ -7,12 +7,6 @@ final class BinarySearchAssertions {
         // Test utility class.
     }
 
-    static void expectEquals(int expected, int actual, String description) {
-        if (expected != actual) {
-            throw new AssertionError(description + ": expected " + expected + ", got " + actual);
-        }
-    }
-
     static void expectThrows(Class<? extends Throwable> expectedType, ThrowingRunnable action, String description) {
         try {
             action.run();

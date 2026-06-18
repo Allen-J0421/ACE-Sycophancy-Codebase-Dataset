@@ -14,14 +14,6 @@ public final class BinarySearchDemo {
 
     public static void main(String[] args) {
         OptionalInt result = BinarySearch.findIndex(SAMPLE_ARRAY, SAMPLE_TARGET);
-        System.out.println(formatResult(result));
-    }
-
-    private static String formatResult(OptionalInt result) {
-        if (result.isEmpty()) {
-            return NOT_FOUND_MESSAGE;
-        }
-
-        return FOUND_MESSAGE_PREFIX + result.getAsInt();
+        System.out.println(result.isPresent() ? FOUND_MESSAGE_PREFIX + result.getAsInt() : NOT_FOUND_MESSAGE);
     }
 }

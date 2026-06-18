@@ -10,25 +10,13 @@ public final class BinarySearch {
         // Utility class.
     }
 
-    public static int binarySearch(int[] array, int target) {
-        return findIndex(array, target).orElse(-1);
-    }
-
     public static OptionalInt findIndex(int[] array, int target) {
         Objects.requireNonNull(array, "array");
         return search(array.length - 1, mid -> Integer.compare(array[mid], target));
     }
 
-    public static <T extends Comparable<? super T>> int binarySearch(T[] array, T target) {
-        return findIndex(array, target).orElse(-1);
-    }
-
     public static <T extends Comparable<? super T>> OptionalInt findIndex(T[] array, T target) {
         return findIndex(array, target, Comparator.naturalOrder());
-    }
-
-    public static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator) {
-        return findIndex(array, target, comparator).orElse(-1);
     }
 
     public static <T> OptionalInt findIndex(T[] array, T target, Comparator<? super T> comparator) {

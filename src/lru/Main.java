@@ -1,3 +1,5 @@
+package lru;
+
 public class Main {
     public static void main(String[] args) {
         LRUCache<Integer, Integer> cache = new LRUCache<>(2);

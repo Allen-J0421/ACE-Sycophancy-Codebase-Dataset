@@ -3,6 +3,7 @@ import java.util.NoSuchElementException;
 public class MinHeapTest {
     public static void main(String[] args) {
         testDefaultConstructorProvidesUsableHeap();
+        testFactoryBuildsHeapFromValues();
         testInterfaceContractSupportsBulkInsert();
         testExampleFlow();
         testQueueStyleApi();
@@ -27,6 +28,11 @@ public class MinHeapTest {
         assertEquals("default constructor should create a working heap", 2, heap.peek());
     }
 
+    private static void testFactoryBuildsHeapFromValues() {
+        MinHeap heap = MinHeap.from(6, 2, 9, 1);
+        assertRemovalOrder("factory should build a valid heap", heap, 1, 2, 6, 9);
+    }
+
     private static void testInterfaceContractSupportsBulkInsert() {
         IntHeap heap = new MinHeap();
         heap.addAll(6, 2, 9, 1);
@@ -36,6 +42,7 @@ public class MinHeapTest {
         assertEquals("interface removeMin should return the minimum", 1, heap.removeMin());
     }
 
+    @SuppressWarnings("deprecation")
     private static void testExampleFlow() {
         MinHeap heap = new MinHeap(11);
         heap.insertKey(3);
@@ -63,6 +70,7 @@ public class MinHeapTest {
         assertEquals("peek should update after removal", 7, heap.peek());
     }
 
+    @SuppressWarnings("deprecation")
     private static void testHeapGrowsBeyondInitialCapacity() {
         MinHeap heap = new MinHeap(1);
         heap.offer(10);
@@ -106,6 +114,7 @@ public class MinHeapTest {
         assertRemovalOrder("heap order should remain valid after removeAt", heap, 1, 2, 7, 9);
     }
 
+    @SuppressWarnings("deprecation")
     private static void testChangeValueReordersBothDirections() {
         MinHeap heap = new MinHeap(5);
         heap.insertKey(8);
@@ -120,6 +129,7 @@ public class MinHeapTest {
         assertEquals("raising the root should restore heap order", 4, heap.getMin());
     }
 
+    @SuppressWarnings("deprecation")
     private static void testDirectionalUpdatesRejectInvalidValues() {
         MinHeap heap = new MinHeap(3);
         heap.offer(5);
@@ -138,6 +148,7 @@ public class MinHeapTest {
         );
     }
 
+    @SuppressWarnings("deprecation")
     private static void testInvalidIndexFailsFast() {
         MinHeap heap = new MinHeap(3);
         heap.insertKey(5);
@@ -173,6 +184,7 @@ public class MinHeapTest {
         assertEquals("mutating a snapshot should not affect the heap", 1, heap.peek());
     }
 
+    @SuppressWarnings("deprecation")
     private static void testEmptyHeapBehavior() {
         MinHeap heap = new MinHeap(1);
 

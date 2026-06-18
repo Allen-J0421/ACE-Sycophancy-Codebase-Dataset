@@ -2,15 +2,23 @@ public final class MinHeap implements IntHeap {
     private final IntBinaryHeap heap;
 
     public MinHeap() {
-        this.heap = new IntBinaryHeap();
+        this(new IntBinaryHeap());
     }
 
     public MinHeap(int initialCapacity) {
-        this.heap = new IntBinaryHeap(initialCapacity);
+        this(new IntBinaryHeap(initialCapacity));
     }
 
     public MinHeap(int[] values) {
-        this.heap = new IntBinaryHeap(values);
+        this(new IntBinaryHeap(values));
+    }
+
+    public static MinHeap from(int... values) {
+        return new MinHeap(values);
+    }
+
+    private MinHeap(IntBinaryHeap heap) {
+        this.heap = heap;
     }
 
     @Override

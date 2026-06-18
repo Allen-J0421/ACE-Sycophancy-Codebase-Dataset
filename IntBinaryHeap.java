@@ -25,9 +25,9 @@ final class IntBinaryHeap {
             throw new IllegalArgumentException("values must not be null");
         }
 
-        elements = Arrays.copyOf(values, values.length);
+        elements = copyOf(values);
         size = values.length;
-        heapify();
+        rebuildHeap();
     }
 
     boolean offer(int value) {
@@ -43,10 +43,12 @@ final class IntBinaryHeap {
             throw new IllegalArgumentException("values must not be null");
         }
 
-        ensureCapacity(size + values.length);
-        for (int value : values) {
-            offer(value);
+        if (values.length == 0) {
+            return;
         }
+
+        appendAll(values);
+        rebuildHeap();
     }
 
     int peek() {
@@ -138,10 +140,17 @@ final class IntBinaryHeap {
     }
 
     int[] toArray() {
-        return Arrays.copyOf(elements, size);
+        return copyOf(elements, size);
     }
 
-    private void heapify() {
+    private void appendAll(int[] values) {
+        int originalSize = size;
+        ensureCapacity(originalSize + values.length);
+        System.arraycopy(values, 0, elements, originalSize, values.length);
+        size += values.length;
+    }
+
+    private void rebuildHeap() {
         for (int index = parentIndex(size - 1); index >= 0; index--) {
             siftDown(index);
         }
@@ -250,5 +259,13 @@ final class IntBinaryHeap {
 
     private int rightChildIndex(int index) {
         return index * 2 + 2;
+    }
+
+    private static int[] copyOf(int[] values) {
+        return copyOf(values, values.length);
+    }
+
+    private static int[] copyOf(int[] values, int length) {
+        return Arrays.copyOf(values, length);
     }
 }

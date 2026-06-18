@@ -1,4 +1,8 @@
 public interface DisjointSet {
+    static DisjointSet create(int size) {
+        return new ArrayDisjointSet(size);
+    }
+
     int find(int element);
 
     boolean union(int first, int second);

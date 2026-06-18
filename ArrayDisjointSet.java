@@ -1,4 +1,4 @@
-public final class UnionFind implements DisjointSet {
+public final class ArrayDisjointSet implements DisjointSet {
     private static final String NEGATIVE_SIZE_MESSAGE = "size must be non-negative";
 
     private final int[] parent;
@@ -6,7 +6,7 @@ public final class UnionFind implements DisjointSet {
     private final int[] componentSize;
     private int componentCount;
 
-    public UnionFind(int size) {
+    public ArrayDisjointSet(int size) {
         validateSize(size);
         parent = new int[size];
         rank = new int[size];

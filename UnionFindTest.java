@@ -10,7 +10,7 @@ public final class UnionFindTest {
     }
 
     private static void verifiesEmptyStructure() {
-        DisjointSet disjointSet = new UnionFind(0);
+        DisjointSet disjointSet = DisjointSet.create(0);
 
         assertTrue(disjointSet.isEmpty(), "expected empty set to report isEmpty()");
         assertEquals(0, disjointSet.size(), "unexpected size for empty set");
@@ -18,7 +18,7 @@ public final class UnionFindTest {
     }
 
     private static void verifiesUnionAndConnectivity() {
-        DisjointSet disjointSet = new UnionFind(6);
+        DisjointSet disjointSet = DisjointSet.create(6);
 
         assertTrue(disjointSet.union(0, 1), "first union should merge two components");
         assertTrue(disjointSet.union(1, 2), "chained union should merge through compressed roots");
@@ -28,7 +28,7 @@ public final class UnionFindTest {
     }
 
     private static void verifiesComponentSizesAndCounts() {
-        DisjointSet disjointSet = new UnionFind(5);
+        DisjointSet disjointSet = DisjointSet.create(5);
 
         disjointSet.union(0, 1);
         disjointSet.union(3, 4);
@@ -41,7 +41,7 @@ public final class UnionFindTest {
     }
 
     private static void verifiesIndexValidation() {
-        DisjointSet disjointSet = new UnionFind(3);
+        DisjointSet disjointSet = DisjointSet.create(3);
 
         assertThrows(() -> disjointSet.find(-1), IndexOutOfBoundsException.class);
         assertThrows(() -> disjointSet.find(3), IndexOutOfBoundsException.class);

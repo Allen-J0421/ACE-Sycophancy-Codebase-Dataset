@@ -34,7 +34,7 @@ public final class QuickSort {
 
     private static void quickSort(int[] values, int fromIndex, int toIndex) {
         while (toIndex - fromIndex > INSERTION_SORT_THRESHOLD) {
-            int pivotIndex = partition(values, fromIndex, toIndex);
+            int pivotIndex = partition(values, fromIndex, toIndex, selectPivotIndex(values, fromIndex, toIndex));
 
             if (pivotIndex - fromIndex < toIndex - (pivotIndex + 1)) {
                 quickSort(values, fromIndex, pivotIndex);
@@ -48,20 +48,48 @@ public final class QuickSort {
         insertionSort(values, fromIndex, toIndex);
     }
 
-    private static int partition(int[] values, int fromIndex, int toIndex) {
-        int pivotIndex = toIndex - 1;
+    private static int partition(int[] values, int fromIndex, int toIndex, int pivotIndex) {
+        int lastIndex = toIndex - 1;
         int pivot = values[pivotIndex];
         int smallerElementBoundary = fromIndex;
 
-        for (int currentIndex = fromIndex; currentIndex < pivotIndex; currentIndex++) {
+        swap(values, pivotIndex, lastIndex);
+
+        for (int currentIndex = fromIndex; currentIndex < lastIndex; currentIndex++) {
             if (values[currentIndex] < pivot) {
                 swap(values, smallerElementBoundary, currentIndex);
                 smallerElementBoundary++;
             }
         }
 
-        swap(values, smallerElementBoundary, pivotIndex);
+        swap(values, smallerElementBoundary, lastIndex);
         return smallerElementBoundary;
+    }
+
+    private static int selectPivotIndex(int[] values, int fromIndex, int toIndex) {
+        int lastIndex = toIndex - 1;
+        int middleIndex = fromIndex + ((toIndex - fromIndex) >>> 1);
+        return medianOfThreeIndex(values, fromIndex, middleIndex, lastIndex);
+    }
+
+    private static int medianOfThreeIndex(int[] values, int firstIndex, int secondIndex, int thirdIndex) {
+        int firstValue = values[firstIndex];
+        int secondValue = values[secondIndex];
+        int thirdValue = values[thirdIndex];
+
+        if (firstValue < secondValue) {
+            if (secondValue < thirdValue) {
+                return secondIndex;
+            }
+
+            return firstValue < thirdValue ? thirdIndex : firstIndex;
+        }
+
+        if (firstValue < thirdValue) {
+            return firstIndex;
+        }
+
+        return secondValue < thirdValue ? thirdIndex : secondIndex;
     }
 
     private static void insertionSort(int[] values, int fromIndex, int toIndex) {

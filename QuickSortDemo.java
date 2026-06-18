@@ -8,7 +8,18 @@ public final class QuickSortDemo {
     }
 
     public static void main(String[] args) {
-        int[] values = args.length == 0 ? DEFAULT_VALUES : parseValues(args);
+        printSortedValues(resolveInputValues(args));
+    }
+
+    private static int[] resolveInputValues(String[] args) {
+        if (args.length == 0) {
+            return Arrays.copyOf(DEFAULT_VALUES, DEFAULT_VALUES.length);
+        }
+
+        return parseValues(args);
+    }
+
+    private static void printSortedValues(int[] values) {
         System.out.println(Arrays.toString(QuickSort.sortedCopy(values)));
     }
 

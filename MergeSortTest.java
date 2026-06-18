@@ -18,6 +18,7 @@ final class MergeSortTest {
     public static void main(String[] args) {
         nullInputDoesNotThrow();
         sortsEdgeCases();
+        sortsAroundInsertionCutoff();
         matchesReferenceOnRandomInput();
 
         if (failures == 0) {
@@ -46,6 +47,24 @@ final class MergeSortTest {
         checkSorted(new int[] {3, -1, -1, 3, 0});            // duplicates + negatives
         checkSorted(new int[] {9, 8, 7, 6, 5, 4, 3, 2, 1});  // reverse sorted
         checkSorted(new int[] {Integer.MAX_VALUE, Integer.MIN_VALUE, 0}); // extremes
+    }
+
+    /**
+     * Exercises sizes straddling {@link MergeSort#INSERTION_SORT_CUTOFF} so both the
+     * insertion-sort path and the recursive/merge path are covered at their boundary.
+     */
+    private static void sortsAroundInsertionCutoff() {
+        int cutoff = MergeSort.INSERTION_SORT_CUTOFF;
+        for (int size = 0; size <= 2 * cutoff + 2; size++) {
+            int[] reversed = new int[size];
+            for (int i = 0; i < size; i++) {
+                reversed[i] = size - i; // worst case for insertion sort
+            }
+            if (!checkSorted(reversed)) {
+                return;
+            }
+        }
+        pass("sizes around the insertion-sort cutoff sort correctly");
     }
 
     private static void matchesReferenceOnRandomInput() {

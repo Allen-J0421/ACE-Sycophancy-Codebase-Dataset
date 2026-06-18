@@ -5,8 +5,20 @@
  * {@code O(n log n)} time complexity and {@code O(n)} auxiliary space.
  * This implementation allocates a single scratch buffer for the whole sort
  * rather than allocating fresh temporaries on every merge.
+ *
+ * <p>As a performance refinement, subarrays of at most {@link #INSERTION_SORT_CUTOFF}
+ * elements are sorted with insertion sort instead of recursing further. For small
+ * inputs insertion sort's low constant factors beat the recursion and merge overhead
+ * of merge sort. Insertion sort is itself stable, so overall stability is preserved.
  */
 final class MergeSort {
+
+    /**
+     * Subarrays with this many elements or fewer are sorted with insertion sort
+     * rather than by further recursion. Values in the 7–16 range are typical;
+     * the exact optimum is hardware-dependent.
+     */
+    static final int INSERTION_SORT_CUTOFF = 7;
 
     private MergeSort() {
         // Utility class; not meant to be instantiated.
@@ -30,13 +42,31 @@ final class MergeSort {
      * Recursively sorts {@code array[low..high]} (inclusive) using a shared buffer.
      */
     private static void sort(int[] array, int[] buffer, int low, int high) {
-        if (low >= high) {
+        if (high - low + 1 <= INSERTION_SORT_CUTOFF) {
+            insertionSort(array, low, high);
             return;
         }
         int mid = low + (high - low) / 2;
         sort(array, buffer, low, mid);
         sort(array, buffer, mid + 1, high);
         merge(array, buffer, low, mid, high);
+    }
+
+    /**
+     * Sorts the small run {@code array[low..high]} (inclusive) in place using
+     * insertion sort. Stable: each element stops shifting at the first element
+     * that is not strictly greater, so equal elements keep their relative order.
+     */
+    private static void insertionSort(int[] array, int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            int key = array[i];
+            int j = i - 1;
+            while (j >= low && array[j] > key) {
+                array[j + 1] = array[j];
+                j--;
+            }
+            array[j + 1] = key;
+        }
     }
 
     /**

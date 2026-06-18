@@ -9,6 +9,8 @@ public class UnionFindTest {
         t.runSection("Component count",      () -> testComponentCount(t));
         t.runSection("Component size",       () -> testComponentSize(t));
         t.runSection("Reset",                () -> testReset(t));
+        t.runSection("Component members",    () -> testComponentMembers(t));
+        t.runSection("Large structure",      () -> testLargeStructure(t));
         t.runSection("Boundary conditions",  () -> testBoundaryConditions(t));
         t.printSummary();
         if (!t.allPassed()) System.exit(1);
@@ -93,6 +95,48 @@ public class UnionFindTest {
 
         uf.union(0, 1);
         t.assertTrue("structure usable after reset", uf.connected(0, 1));
+    }
+
+    private static void testComponentMembers(TestSupport t) {
+        UnionFind uf = new UnionFind(5);
+        int[] solo = uf.componentMembers(2);
+        t.assertEquals("isolated element has 1 member", 1, solo.length);
+        t.assertEquals("isolated element's only member is itself", 2, solo[0]);
+
+        uf.union(0, 1);
+        uf.union(1, 3);
+        int[] group = uf.componentMembers(0);
+        t.assertEquals("merged component has correct member count", 3, group.length);
+
+        // verify all three members are present (order is not specified)
+        boolean has0 = false, has1 = false, has3 = false;
+        for (int m : group) {
+            if (m == 0) has0 = true;
+            if (m == 1) has1 = true;
+            if (m == 3) has3 = true;
+        }
+        t.assertTrue("component members contains 0", has0);
+        t.assertTrue("component members contains 1", has1);
+        t.assertTrue("component members contains 3", has3);
+
+        // any member of the component returns the same set
+        t.assertEquals("componentMembers(1) same size as componentMembers(0)",
+                uf.componentMembers(0).length, uf.componentMembers(1).length);
+
+        // isolated elements are not included
+        t.assertEquals("isolated element 2 has 1 member after merges", 1, uf.componentMembers(2).length);
+    }
+
+    private static void testLargeStructure(TestSupport t) {
+        int n = 1000;
+        UnionFind uf = new UnionFind(n);
+        for (int i = 0; i < n - 1; i++) {
+            uf.union(i, i + 1);
+        }
+        t.assertEquals("single component after chaining " + n + " elements", 1, uf.componentCount());
+        t.assertTrue("first and last element connected", uf.connected(0, n - 1));
+        t.assertEquals("component size equals n", n, uf.componentSize(0));
+        t.assertEquals("componentMembers returns all n elements", n, uf.componentMembers(0).length);
     }
 
     private static void testBoundaryConditions(TestSupport t) {

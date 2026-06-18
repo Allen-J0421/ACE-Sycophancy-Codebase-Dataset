@@ -9,11 +9,7 @@ public class UnionFind {
         if (n < 0) throw new IllegalArgumentException("Capacity must be non-negative, got " + n);
         parent = new int[n];
         size = new int[n];
-        componentCount = n;
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-            size[i] = 1;
-        }
+        reset();
     }
 
     public int find(int i) {
@@ -47,6 +43,20 @@ public class UnionFind {
 
     public int componentSize(int i) {
         return size[find(i)];
+    }
+
+    public int[] componentMembers(int i) {
+        int root = find(i);
+        int count = 0;
+        for (int k = 0; k < parent.length; k++) {
+            if (find(k) == root) count++;
+        }
+        int[] members = new int[count];
+        int idx = 0;
+        for (int k = 0; k < parent.length; k++) {
+            if (find(k) == root) members[idx++] = k;
+        }
+        return members;
     }
 
     public void reset() {

@@ -44,7 +44,7 @@ public class MinHeapTest {
 
     @SuppressWarnings("deprecation")
     private static void testExampleFlow() {
-        MinHeap heap = new MinHeap(11);
+        LegacyMinHeapApi heap = new MinHeap(11);
         heap.insertKey(3);
         heap.insertKey(2);
         heap.deleteKey(1);
@@ -72,7 +72,7 @@ public class MinHeapTest {
 
     @SuppressWarnings("deprecation")
     private static void testHeapGrowsBeyondInitialCapacity() {
-        MinHeap heap = new MinHeap(1);
+        LegacyMinHeapApi heap = new MinHeap(1);
         heap.offer(10);
         assertTrue(
             "legacy isFull should reflect when the current backing array is saturated",
@@ -116,7 +116,7 @@ public class MinHeapTest {
 
     @SuppressWarnings("deprecation")
     private static void testChangeValueReordersBothDirections() {
-        MinHeap heap = new MinHeap(5);
+        LegacyMinHeapApi heap = new MinHeap(5);
         heap.insertKey(8);
         heap.insertKey(4);
         heap.insertKey(6);
@@ -131,7 +131,7 @@ public class MinHeapTest {
 
     @SuppressWarnings("deprecation")
     private static void testDirectionalUpdatesRejectInvalidValues() {
-        MinHeap heap = new MinHeap(3);
+        LegacyMinHeapApi heap = new MinHeap(3);
         heap.offer(5);
         heap.offer(9);
 
@@ -150,7 +150,7 @@ public class MinHeapTest {
 
     @SuppressWarnings("deprecation")
     private static void testInvalidIndexFailsFast() {
-        MinHeap heap = new MinHeap(3);
+        LegacyMinHeapApi heap = new MinHeap(3);
         heap.insertKey(5);
 
         assertThrows(
@@ -186,7 +186,7 @@ public class MinHeapTest {
 
     @SuppressWarnings("deprecation")
     private static void testEmptyHeapBehavior() {
-        MinHeap heap = new MinHeap(1);
+        LegacyMinHeapApi heap = new MinHeap(1);
 
         assertThrows(
             "peek should reject an empty heap",
@@ -207,7 +207,7 @@ public class MinHeapTest {
         );
     }
 
-    private static void assertRemovalOrder(String message, MinHeap heap, int... expectedValues) {
+    private static void assertRemovalOrder(String message, IntHeap heap, int... expectedValues) {
         for (int expectedValue : expectedValues) {
             assertEquals(message, expectedValue, heap.removeMin());
         }

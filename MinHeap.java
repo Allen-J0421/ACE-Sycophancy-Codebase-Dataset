@@ -1,4 +1,4 @@
-public final class MinHeap implements IntHeap {
+public final class MinHeap implements LegacyMinHeapApi {
     private final IntBinaryHeap heap;
 
     public MinHeap() {
@@ -26,19 +26,9 @@ public final class MinHeap implements IntHeap {
         return heap.offer(value);
     }
 
-    @Deprecated(forRemoval = false)
-    public boolean insertKey(int value) {
-        return offer(value);
-    }
-
     @Override
     public int peek() {
         return heap.peek();
-    }
-
-    @Deprecated(forRemoval = false)
-    public int getMin() {
-        return peek();
     }
 
     @Override
@@ -46,39 +36,14 @@ public final class MinHeap implements IntHeap {
         return heap.removeMin();
     }
 
-    @Deprecated(forRemoval = false)
-    public int extractMin() {
-        return heap.extractMin();
-    }
-
     @Override
     public int removeAt(int index) {
         return heap.removeAt(index);
     }
 
-    @Deprecated(forRemoval = false)
-    public void deleteKey(int index) {
-        heap.removeAt(index);
-    }
-
     @Override
     public void updateValue(int index, int newValue) {
         heap.updateValue(index, newValue);
-    }
-
-    @Deprecated(forRemoval = false)
-    public void decreaseKey(int index, int newValue) {
-        heap.decreaseKey(index, newValue);
-    }
-
-    @Deprecated(forRemoval = false)
-    public void increaseKey(int index, int newValue) {
-        heap.increaseKey(index, newValue);
-    }
-
-    @Deprecated(forRemoval = false)
-    public void changeValueOnAKey(int index, int newValue) {
-        updateValue(index, newValue);
     }
 
     @Override
@@ -89,11 +54,6 @@ public final class MinHeap implements IntHeap {
     @Override
     public boolean isEmpty() {
         return heap.isEmpty();
-    }
-
-    @Deprecated(forRemoval = false)
-    public boolean isFull() {
-        return heap.isAtCapacity();
     }
 
     @Override

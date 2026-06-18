@@ -61,14 +61,6 @@ final class IntBinaryHeap {
         return removeAt(0);
     }
 
-    int extractMin() {
-        if (isEmpty()) {
-            return Integer.MAX_VALUE;
-        }
-
-        return removeMin();
-    }
-
     int removeAt(int index) {
         validateOccupiedIndex(index);
 
@@ -101,18 +93,6 @@ final class IntBinaryHeap {
         }
     }
 
-    void decreaseKey(int index, int newValue) {
-        validateOccupiedIndex(index);
-        ensureValueDecreases(index, newValue);
-        updateValue(index, newValue);
-    }
-
-    void increaseKey(int index, int newValue) {
-        validateOccupiedIndex(index);
-        ensureValueIncreases(index, newValue);
-        updateValue(index, newValue);
-    }
-
     void clear() {
         Arrays.fill(elements, 0, size, 0);
         size = 0;
@@ -120,10 +100,6 @@ final class IntBinaryHeap {
 
     boolean isEmpty() {
         return size == 0;
-    }
-
-    boolean isAtCapacity() {
-        return size == elements.length;
     }
 
     int size() {
@@ -229,22 +205,6 @@ final class IntBinaryHeap {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException(
                 "index " + index + " is outside heap size " + size
-            );
-        }
-    }
-
-    private void ensureValueDecreases(int index, int newValue) {
-        if (newValue > elements[index]) {
-            throw new IllegalArgumentException(
-                "new value " + newValue + " is greater than current value " + elements[index]
-            );
-        }
-    }
-
-    private void ensureValueIncreases(int index, int newValue) {
-        if (newValue < elements[index]) {
-            throw new IllegalArgumentException(
-                "new value " + newValue + " is less than current value " + elements[index]
             );
         }
     }

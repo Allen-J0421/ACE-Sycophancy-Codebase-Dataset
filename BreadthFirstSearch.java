@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-class BreadthFirstSearch {
+public class BreadthFirstSearch {
     private static final int SAMPLE_VERTEX_COUNT = 6;
     private static final List<Edge> SAMPLE_EDGES = Collections.unmodifiableList(Arrays.asList(
             new Edge(1, 2),

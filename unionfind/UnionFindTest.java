@@ -23,6 +23,8 @@ public class UnionFindTest {
         t.assertFalse("distinct elements not connected initially", uf.connected(0, 1));
         t.assertTrue("element is connected to itself", uf.connected(0, 0));
         t.assertEquals("initial component size is 1", 1, uf.componentSize(0));
+        t.assertTrue("toString includes capacity", uf.toString().contains("capacity=5"));
+        t.assertTrue("toString includes component count", uf.toString().contains("components=5"));
     }
 
     private static void testUnionReturnValue(TestSupport t) {
@@ -108,16 +110,9 @@ public class UnionFindTest {
         int[] group = uf.componentMembers(0);
         t.assertEquals("merged component has correct member count", 3, group.length);
 
-        // verify all three members are present (order is not specified)
-        boolean has0 = false, has1 = false, has3 = false;
-        for (int m : group) {
-            if (m == 0) has0 = true;
-            if (m == 1) has1 = true;
-            if (m == 3) has3 = true;
-        }
-        t.assertTrue("component members contains 0", has0);
-        t.assertTrue("component members contains 1", has1);
-        t.assertTrue("component members contains 3", has3);
+        t.assertContains("component members contains 0", group, 0);
+        t.assertContains("component members contains 1", group, 1);
+        t.assertContains("component members contains 3", group, 3);
 
         // any member of the component returns the same set
         t.assertEquals("componentMembers(1) same size as componentMembers(0)",

@@ -32,6 +32,18 @@ public class TestSupport {
         }
     }
 
+    public void assertContains(String label, int[] arr, int value) {
+        for (int x : arr) {
+            if (x == value) {
+                System.out.println("PASS: " + label);
+                passed++;
+                return;
+            }
+        }
+        System.out.println("FAIL: " + label + " (value " + value + " not found in array)");
+        failed++;
+    }
+
     public void assertThrows(String label, Class<? extends Exception> expectedType, ThrowingRunnable runnable) {
         try {
             runnable.run();

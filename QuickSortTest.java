@@ -17,6 +17,18 @@ class QuickSortTest {
         System.out.println("\n--- HybridQuickSort with Median-of-Three ---");
         runTestsWithSorter(new HybridQuickSort<Integer>(new MedianOfThreePivotSelector<Integer>()));
 
+        System.out.println("\n--- HybridQuickSort with Random Pivot ---");
+        runTestsWithSorter(new HybridQuickSort<Integer>(new RandomPivotSelector<Integer>()));
+
+        System.out.println("\n--- ThreeWayQuickSort ---");
+        runTestsWithSorter(new ThreeWayQuickSort<Integer>());
+
+        System.out.println("\n--- IntroSort (Quicksort + Heapsort Hybrid) ---");
+        runTestsWithSorter(new IntroSort<Integer>());
+
+        System.out.println("\n--- HeapSort ---");
+        runTestsWithSorter(new HeapSort<Integer>());
+
         System.out.println("\n=== Final Test Results ===");
         System.out.println("Passed: " + passedTests + "/" + totalTests);
         System.out.println(passedTests == totalTests ? "✓ All tests passed!" : "✗ Some tests failed!");

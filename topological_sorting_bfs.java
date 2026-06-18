@@ -2,6 +2,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 class TopologicalSort {
 
@@ -14,6 +15,8 @@ class TopologicalSort {
     }
 
     static List<Integer> topologicalSort(List<? extends List<Integer>> graph) {
+        validateGraph(graph);
+
         int[] indegree = computeIndegrees(graph);
         Deque<Integer> queue = new ArrayDeque<>();
         ArrayList<Integer> order = new ArrayList<>(graph.size());
@@ -32,6 +35,10 @@ class TopologicalSort {
             }
         }
 
+        if (order.size() != graph.size()) {
+            throw new IllegalArgumentException("Graph contains a cycle.");
+        }
+
         return order;
     }
 
@@ -43,6 +50,21 @@ class TopologicalSort {
             }
         }
         return indegree;
+    }
+
+    private static void validateGraph(List<? extends List<Integer>> graph) {
+        Objects.requireNonNull(graph, "graph");
+
+        for (int vertex = 0; vertex < graph.size(); vertex++) {
+            List<Integer> neighbors = Objects.requireNonNull(graph.get(vertex),
+                    "graph[" + vertex + "]");
+            for (int neighbor : neighbors) {
+                if (neighbor < 0 || neighbor >= graph.size()) {
+                    throw new IllegalArgumentException(
+                            "Invalid edge from " + vertex + " to " + neighbor);
+                }
+            }
+        }
     }
 
     private static void enqueueZeroIndegreeVertices(int[] indegree, Deque<Integer> queue) {

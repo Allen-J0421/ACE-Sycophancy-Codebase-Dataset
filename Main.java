@@ -1,9 +1,13 @@
 public class Main {
     public static void main(String[] args) {
         try {
-            System.out.println("╔════════════════════════════════════════════╗");
-            System.out.println("║   ENTERPRISE GRAPH LIBRARY - FULL DEMO    ║");
-            System.out.println("╚════════════════════════════════════════════╝");
+            Logger.setLevel(Logger.Level.INFO);
+            Logger.info("Starting Enterprise Graph Library - Level 6 Demo");
+
+            System.out.println("╔═════════════════════════════════════════════╗");
+            System.out.println("║  ENTERPRISE GRAPH LIBRARY - LEVEL 6 DEMO   ║");
+            System.out.println("║   (Production + Testing + Logging)          ║");
+            System.out.println("╚═════════════════════════════════════════════╝");
 
             Graph graph = GraphBuilder.undirected(6)
                     .addEdge(1, 2)
@@ -97,12 +101,62 @@ public class Main {
             System.out.println("\n--- Result Validation ---");
             demonstrateValidation(service, graph);
 
+            System.out.println("\n--- Logging & Health Checks ---");
+            demonstrateLoggingAndHealth(graph);
+
+            System.out.println("\n--- Benchmarking ---");
+            demonstrateBenchmarking(graph);
+
+            System.out.println("\n--- Serialization ---");
+            try {
+                demonstrateSerialization(graph);
+            } catch (java.io.IOException e) {
+                Logger.error("Serialization failed", e);
+            }
+
+            System.out.println("\n--- Concurrent Traversal ---");
+            demonstrateConcurrency(graph);
+
             System.out.println("\n--- Error Handling ---");
             demonstrateErrorHandling();
 
         } catch (GraphException e) {
+            Logger.error("Graph error: " + e.getMessage());
             System.err.println("Graph error: " + e.getMessage());
         }
+    }
+
+    private static void demonstrateLoggingAndHealth(Graph graph) {
+        Logger.debug("Starting health check on graph");
+        GraphHealthCheck health = new GraphHealthCheck(graph);
+        health.check().print();
+    }
+
+    private static void demonstrateBenchmarking(Graph graph) {
+        GraphBenchmark benchmark = new GraphBenchmark(graph);
+        benchmark.benchmarkTraversal(new BreadthFirstSearch(), "BFS", 100);
+        benchmark.benchmarkTraversal(new DepthFirstSearch(), "DFS", 100);
+        benchmark.printResults();
+    }
+
+    private static void demonstrateSerialization(Graph graph) throws java.io.IOException {
+        Logger.info("Serializing graph to JSON format");
+        String json = GraphSerializer.toJSON(graph);
+        System.out.println("JSON representation (first 200 chars):");
+        System.out.println(json.substring(0, Math.min(200, json.length())) + "...");
+
+        Logger.info("Serializing graph to DOT format");
+        String dot = GraphSerializer.toDOT(graph);
+        System.out.println("\nDOT representation:");
+        System.out.println(dot);
+    }
+
+    private static void demonstrateConcurrency(Graph graph) {
+        Logger.info("Testing concurrent traversal with 4 threads");
+        ConcurrentGraphTraversal concurrent = new ConcurrentGraphTraversal(4);
+        TraversalResult result = concurrent.traverse(graph);
+        System.out.println("Concurrent traversal result: " + result.getVertices());
+        System.out.println("Components: " + result.getComponentCount());
     }
 
     private static void demonstrateGraphOperations(Graph graph) {

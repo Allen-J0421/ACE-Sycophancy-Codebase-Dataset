@@ -11,20 +11,19 @@ public final class TwoPointersTest {
         shouldSupportTargetsBeyondIntegerRange();
         shouldDefensivelyCopyValidatedInput();
         shouldRejectNullSortedValueObjects();
+        shouldBehaveLikeAValueObject();
     }
 
     private static void shouldFindMatchingPair() {
         SortedIntArray sortedValues = SortedIntArray.of(-3, -1, 0, 1, 2);
-        PairMatch match = TwoPointers.findPairWithSum(
-            sortedValues,
-            -2
-        ).orElseThrow(() -> new AssertionError("Expected a matching pair"));
+        PairMatch match = sortedValues.findPairWithSum(-2)
+            .orElseThrow(() -> new AssertionError("Expected a matching pair"));
 
         assertMatch(match, 0, 3, -3, 1, -2);
     }
 
     private static void shouldReturnEmptyWhenNoPairExists() {
-        assertNoMatch(TwoPointers.findPairWithSum(SortedIntArray.of(1, 4, 8), 6));
+        assertNoMatch(SortedIntArray.of(1, 4, 8).findPairWithSum(6));
     }
 
     private static void shouldRejectUnsortedInput() {
@@ -35,19 +34,17 @@ public final class TwoPointersTest {
     }
 
     private static void shouldHandleIntegerOverflowSafely() {
-        PairMatch match = TwoPointers.findPairWithSum(
-            SortedIntArray.of(-1, Integer.MAX_VALUE),
-            Integer.MAX_VALUE - 1
-        ).orElseThrow(() -> new AssertionError("Expected overflow-safe matching pair"));
+        PairMatch match = SortedIntArray.of(-1, Integer.MAX_VALUE)
+            .findPairWithSum(Integer.MAX_VALUE - 1)
+            .orElseThrow(() -> new AssertionError("Expected overflow-safe matching pair"));
 
         assertEquals(Integer.MAX_VALUE - 1L, match.sum(), "overflow-safe sum");
     }
 
     private static void shouldSupportTargetsBeyondIntegerRange() {
-        PairMatch match = TwoPointers.findPairWithSum(
-            SortedIntArray.of(Integer.MAX_VALUE, Integer.MAX_VALUE),
-            4_294_967_294L
-        ).orElseThrow(() -> new AssertionError("Expected match for large long target"));
+        PairMatch match = SortedIntArray.of(Integer.MAX_VALUE, Integer.MAX_VALUE)
+            .findPairWithSum(4_294_967_294L)
+            .orElseThrow(() -> new AssertionError("Expected match for large long target"));
 
         assertEquals(4_294_967_294L, match.sum(), "large target sum");
     }
@@ -67,6 +64,21 @@ public final class TwoPointersTest {
             () -> TwoPointers.findPairWithSum((SortedIntArray) null, 0),
             "must not be null",
             "Expected null SortedIntArray to be rejected");
+    }
+
+    private static void shouldBehaveLikeAValueObject() {
+        SortedIntArray first = SortedIntArray.of(1, 2, 3);
+        SortedIntArray second = SortedIntArray.copyOf(new int[] {1, 2, 3});
+
+        if (!first.equals(second)) {
+            throw new AssertionError("Expected equal sorted arrays to compare by value");
+        }
+
+        assertEquals(first.hashCode(), second.hashCode(), "hash code");
+
+        if (!"[1, 2, 3]".equals(first.toString())) {
+            throw new AssertionError("Unexpected string representation: " + first);
+        }
     }
 
     private static void assertMatch(

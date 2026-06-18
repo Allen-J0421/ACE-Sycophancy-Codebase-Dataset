@@ -7,6 +7,6 @@ public final class TwoPointersDemo {
         SortedIntArray sortedValues = SortedIntArray.of(-3, -1, 0, 1, 2);
         long target = -2;
 
-        System.out.println(TwoPointers.findPairWithSum(sortedValues, target));
+        System.out.println(sortedValues.findPairWithSum(target));
     }
 }

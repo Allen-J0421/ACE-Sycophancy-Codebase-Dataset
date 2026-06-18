@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Optional;
 
 public final class SortedIntArray {
 
@@ -25,6 +26,26 @@ public final class SortedIntArray {
         return values[index];
     }
 
+    public Optional<PairMatch> findPairWithSum(long target) {
+        SearchWindow window = new SearchWindow();
+
+        while (window.isOpen()) {
+            long sum = window.sum();
+
+            if (sum == target) {
+                return Optional.of(window.toPairMatch());
+            }
+
+            window.moveToward(target, sum);
+        }
+
+        return Optional.empty();
+    }
+
+    public boolean hasPairWithSum(long target) {
+        return findPairWithSum(target).isPresent();
+    }
+
     public long sumAt(int leftIndex, int rightIndex) {
         validatePairIndexes(leftIndex, rightIndex);
         return (long) values[leftIndex] + values[rightIndex];
@@ -37,6 +58,29 @@ public final class SortedIntArray {
 
     public int[] toArray() {
         return Arrays.copyOf(values, values.length);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (!(other instanceof SortedIntArray that)) {
+            return false;
+        }
+
+        return Arrays.equals(values, that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(values);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(values);
     }
 
     private void validatePairIndexes(int leftIndex, int rightIndex) {
@@ -62,6 +106,32 @@ public final class SortedIntArray {
             if (values[index - 1] > values[index]) {
                 throw new IllegalArgumentException(
                     "two-pointer search requires values sorted in nondecreasing order");
+            }
+        }
+    }
+
+    private final class SearchWindow {
+
+        private int left = 0;
+        private int right = values.length - 1;
+
+        private boolean isOpen() {
+            return left < right;
+        }
+
+        private long sum() {
+            return (long) values[left] + values[right];
+        }
+
+        private PairMatch toPairMatch() {
+            return new PairMatch(left, right, values[left], values[right]);
+        }
+
+        private void moveToward(long target, long sum) {
+            if (sum < target) {
+                left++;
+            } else {
+                right--;
             }
         }
     }

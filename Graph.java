@@ -96,4 +96,48 @@ class Graph implements WeightedGraphView {
     public int hashCode() {
         return Objects.hash(vertexCount, adjacencyList);
     }
+
+    /**
+     * Creates a snapshot of current graph state.
+     * Can be used for undo/redo or state comparison.
+     *
+     * @return Snapshot capturing current graph state
+     */
+    public GraphSnapshot createSnapshot() {
+        List<GraphSnapshot.EdgeRecord> edges = new ArrayList<>();
+        for (int i = 0; i < vertexCount; i++) {
+            for (Edge edge : adjacencyList.get(i)) {
+                if (i <= edge.getDestination()) {  // Avoid duplicates for undirected graphs
+                    edges.add(new GraphSnapshot.EdgeRecord(i, edge.getDestination(), edge.getWeight()));
+                }
+            }
+        }
+        return new GraphSnapshot(vertexCount, edges);
+    }
+
+    /**
+     * Restores graph to state captured in snapshot.
+     *
+     * @param snapshot The snapshot to restore from
+     * @throws IllegalArgumentException if snapshot vertex count doesn't match
+     */
+    public void restoreFromSnapshot(GraphSnapshot snapshot) {
+        if (snapshot.getVertexCount() != vertexCount) {
+            throw new IllegalArgumentException(
+                String.format("Cannot restore snapshot with %d vertices to graph with %d vertices",
+                            snapshot.getVertexCount(), vertexCount)
+            );
+        }
+
+        // Clear current edges
+        for (List<Edge> list : adjacencyList) {
+            list.clear();
+        }
+
+        // Restore edges from snapshot
+        for (GraphSnapshot.EdgeRecord record : snapshot.getEdges()) {
+            adjacencyList.get(record.source).add(Edge.of(record.destination, record.weight));
+            adjacencyList.get(record.destination).add(Edge.of(record.source, record.weight));
+        }
+    }
 }

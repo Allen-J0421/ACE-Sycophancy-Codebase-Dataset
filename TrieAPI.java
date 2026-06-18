@@ -6,6 +6,11 @@ import java.util.function.Consumer;
 import java.time.Instant;
 import java.util.UUID;
 
+// For CharacterSet - make it accessible to decorators
+class TrieAPICharacterSet {
+    static CharacterSet charset;
+}
+
 // Trie builder for fluent configuration
 class TrieBuilder {
     private CharacterSet charset = new LowercaseCharacterSet();

@@ -1,5 +1,6 @@
 import java.util.Comparator;
 
+@Deprecated(since = "2.0", forRemoval = true)
 public class MergeSort<T extends Comparable<T>> implements Sorter<T> {
     private final SortConfiguration<T> config;
     private SortStatistics statistics;

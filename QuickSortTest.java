@@ -8,76 +8,86 @@ class QuickSortTest {
     public static void main(String[] args) {
         System.out.println("=== QuickSort Test Suite ===\n");
 
-        testIntegerSorting();
-        testStringSorting();
-        testEdgeCases();
-        testCustomObjects();
+        System.out.println("--- QuickSortImpl (Standard) ---");
+        runTestsWithSorter(new QuickSortImpl<Integer>());
 
-        System.out.println("\n=== Test Results ===");
+        System.out.println("\n--- HybridQuickSort (Optimized) ---");
+        runTestsWithSorter(new HybridQuickSort<Integer>());
+
+        System.out.println("\n--- HybridQuickSort with Median-of-Three ---");
+        runTestsWithSorter(new HybridQuickSort<Integer>(new MedianOfThreePivotSelector<Integer>()));
+
+        System.out.println("\n=== Final Test Results ===");
         System.out.println("Passed: " + passedTests + "/" + totalTests);
         System.out.println(passedTests == totalTests ? "✓ All tests passed!" : "✗ Some tests failed!");
     }
 
-    private static void testIntegerSorting() {
-        System.out.println("Testing Integer Sorting:");
+    private static void runTestsWithSorter(Sorter<Integer> intSorter) {
+        testIntegerSorting(intSorter);
+        testStringSorting();
+        testEdgeCases(intSorter);
+        testCustomObjects();
+    }
 
-        testCase("Basic integers",
+    private static void testIntegerSorting(Sorter<Integer> sorter) {
+        System.out.println("  Testing Integer Sorting:");
+
+        testCase(sorter, "Basic integers",
             new Integer[]{10, 7, 8, 9, 1, 5},
             new Integer[]{1, 5, 7, 8, 9, 10});
 
-        testCase("Already sorted",
+        testCase(sorter, "Already sorted",
             new Integer[]{1, 2, 3, 4, 5},
             new Integer[]{1, 2, 3, 4, 5});
 
-        testCase("Reverse sorted",
+        testCase(sorter, "Reverse sorted",
             new Integer[]{5, 4, 3, 2, 1},
             new Integer[]{1, 2, 3, 4, 5});
 
-        testCase("Duplicates",
+        testCase(sorter, "Duplicates",
             new Integer[]{3, 1, 3, 2, 1},
             new Integer[]{1, 1, 2, 3, 3});
 
-        testCase("Single element",
+        testCase(sorter, "Single element",
             new Integer[]{42},
             new Integer[]{42});
 
-        testCase("Empty array",
+        testCase(sorter, "Empty array",
             new Integer[]{},
             new Integer[]{});
 
-        System.out.println();
+        testCase(sorter, "Large array",
+            new Integer[]{100, 50, 75, 25, 10, 90, 60, 30, 80, 40},
+            new Integer[]{10, 25, 30, 40, 50, 60, 75, 80, 90, 100});
     }
 
     private static void testStringSorting() {
-        System.out.println("Testing String Sorting:");
+        System.out.println("  Testing String Sorting:");
+        Sorter<String> stringSorter = new HybridQuickSort<String>();
 
-        testCase("Words",
+        testCase(stringSorter, "Words",
             new String[]{"zebra", "apple", "mango", "banana"},
             new String[]{"apple", "banana", "mango", "zebra"});
 
-        testCase("Mixed case",
+        testCase(stringSorter, "Mixed case",
             new String[]{"Zoo", "apple", "Banana"},
             new String[]{"Banana", "Zoo", "apple"});
-
-        System.out.println();
     }
 
-    private static void testEdgeCases() {
-        System.out.println("Testing Edge Cases:");
+    private static void testEdgeCases(Sorter<Integer> sorter) {
+        System.out.println("  Testing Edge Cases:");
 
-        testCase("Negative numbers",
+        testCase(sorter, "Negative numbers",
             new Integer[]{-5, 3, -1, 0, 2},
             new Integer[]{-5, -1, 0, 2, 3});
 
-        testCase("Two elements",
+        testCase(sorter, "Two elements",
             new Integer[]{2, 1},
             new Integer[]{1, 2});
 
-        testCase("All same elements",
+        testCase(sorter, "All same elements",
             new Integer[]{5, 5, 5, 5},
             new Integer[]{5, 5, 5, 5});
-
-        System.out.println();
     }
 
     private static void testCustomObjects() {
@@ -108,16 +118,16 @@ class QuickSortTest {
         System.out.println();
     }
 
-    private static <T extends Comparable<T>> void testCase(String name, T[] input, T[] expected) {
-        Sorter<T> sorter = new QuickSortImpl<>();
-        sorter.sort(input);
+    private static <T extends Comparable<T>> void testCase(Sorter<T> sorter, String name, T[] input, T[] expected) {
+        T[] inputCopy = input.clone();
+        sorter.sort(inputCopy);
 
-        boolean matches = Arrays.deepEquals(input, expected);
+        boolean matches = Arrays.deepEquals(inputCopy, expected);
         recordTest(matches, name);
 
         if (!matches) {
-            System.out.println("  Expected: " + Arrays.toString(expected));
-            System.out.println("  Got: " + Arrays.toString(input));
+            System.out.println("    Expected: " + Arrays.toString(expected));
+            System.out.println("    Got: " + Arrays.toString(inputCopy));
         }
     }
 
@@ -125,9 +135,9 @@ class QuickSortTest {
         totalTests++;
         if (passed) {
             passedTests++;
-            System.out.println("  ✓ " + testName);
+            System.out.println("    ✓ " + testName);
         } else {
-            System.out.println("  ✗ " + testName);
+            System.out.println("    ✗ " + testName);
         }
     }
 

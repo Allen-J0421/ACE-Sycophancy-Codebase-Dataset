@@ -11,6 +11,8 @@ public class UnionFindTest {
         testStrategies();
         testFindStrategies();
         testPresets();
+        testPerformanceMetrics();
+        testOperationListeners();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -223,5 +225,57 @@ public class UnionFindTest {
         uf.union(2, 3);
         assert uf.isConnected(1, 3) : "Balanced preset should work";
         System.out.println("✓ testBalancedPreset passed");
+    }
+
+    private static void testPerformanceMetrics() {
+        UnionFind uf = UnionFind.builder().withSize(10).build();
+        uf.union(0, 1);
+        uf.union(1, 2);
+        uf.union(2, 3);
+        uf.find(0);
+        uf.find(3);
+        PerformanceMetrics metrics = uf.getPerformanceMetrics();
+        assert metrics.getFindCount() >= 2 : "Should track find operations";
+        assert metrics.getUnionCount() == 3 : "Should track union operations";
+        assert metrics.getTotalOperations() >= 5 : "Should track total operations";
+        System.out.println("✓ testPerformanceMetrics passed (" + metrics + ")");
+    }
+
+    private static void testOperationListeners() {
+        UnionFind uf = UnionFind.builder().withSize(5).build();
+
+        class TestListener implements OperationListener {
+            int findCalls = 0;
+            int unionCalls = 0;
+
+            @Override
+            public void onFindOperation(int index, long totalFinds) {
+                findCalls++;
+            }
+
+            @Override
+            public void onUnionOperation(int index1, int index2, long totalUnions) {
+                unionCalls++;
+            }
+        }
+
+        TestListener listener = new TestListener();
+        uf.addOperationListener(listener);
+
+        uf.union(1, 2);
+        uf.union(2, 3);
+        uf.find(1);
+        uf.find(3);
+
+        assert listener.unionCalls == 2 : "Listener should record union operations";
+        assert listener.findCalls >= 2 : "Listener should record find operations";
+
+        uf.removeOperationListener(listener);
+        listener.findCalls = 0;
+        listener.unionCalls = 0;
+        uf.union(3, 4);
+        assert listener.unionCalls == 0 : "Removed listener should not be notified";
+
+        System.out.println("✓ testOperationListeners passed");
     }
 }

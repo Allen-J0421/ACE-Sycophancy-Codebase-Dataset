@@ -1,12 +1,12 @@
 public class UnionFind implements DisjointSet {
     private DisjointSetStructure structure;
     private IndexValidator validator;
-    private OperationCounter counter;
+    private EnhancedOperationCounter counter;
 
     private UnionFind(int size, UnionStrategy unionStrategy, FindStrategy findStrategy) {
         this.validator = new IndexValidator(size);
         this.structure = new DisjointSetStructure(size, unionStrategy, findStrategy);
-        this.counter = new OperationCounter();
+        this.counter = new EnhancedOperationCounter();
     }
 
     private UnionFind(int size, UnionStrategy strategy) {
@@ -20,7 +20,7 @@ public class UnionFind implements DisjointSet {
     @Override
     public int find(int i) {
         validator.validate(i);
-        counter.incrementFind();
+        counter.incrementFind(i);
         return structure.find(i);
     }
 
@@ -28,7 +28,7 @@ public class UnionFind implements DisjointSet {
     public void union(int i, int j) {
         validator.validate(i);
         validator.validate(j);
-        counter.incrementUnion();
+        counter.incrementUnion(i, j);
 
         int irep = structure.find(i);
         int jrep = structure.find(j);
@@ -55,6 +55,18 @@ public class UnionFind implements DisjointSet {
     public void reset() {
         structure.reset();
         counter.reset();
+    }
+
+    public void addOperationListener(OperationListener listener) {
+        counter.addListener(listener);
+    }
+
+    public void removeOperationListener(OperationListener listener) {
+        counter.removeListener(listener);
+    }
+
+    public PerformanceMetrics getPerformanceMetrics() {
+        return counter.getMetrics();
     }
 
     public static UnionFindBuilder builder() {

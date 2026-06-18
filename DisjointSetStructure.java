@@ -1,11 +1,17 @@
 public class DisjointSetStructure {
     private int[] parent;
     private int[] rank;
+    private UnionStrategy strategy;
+
+    public DisjointSetStructure(int size, UnionStrategy strategy) {
+        this.parent = new int[size];
+        this.rank = new int[size];
+        this.strategy = strategy;
+        initialize();
+    }
 
     public DisjointSetStructure(int size) {
-        parent = new int[size];
-        rank = new int[size];
-        initialize();
+        this(size, new RankBasedUnionStrategy());
     }
 
     public int find(int i) {
@@ -19,28 +25,18 @@ public class DisjointSetStructure {
         if (irep == jrep) {
             return;
         }
-        performUnion(irep, jrep);
+        strategy.union(parent, rank, irep, jrep);
     }
 
     public void reset() {
-        initialize();
+        strategy.reset(parent, rank);
+    }
+
+    public void setStrategy(UnionStrategy newStrategy) {
+        this.strategy = newStrategy;
     }
 
     private void initialize() {
-        for (int i = 0; i < parent.length; i++) {
-            parent[i] = i;
-            rank[i] = 0;
-        }
-    }
-
-    private void performUnion(int irep, int jrep) {
-        if (rank[irep] < rank[jrep]) {
-            parent[irep] = jrep;
-        } else if (rank[irep] > rank[jrep]) {
-            parent[jrep] = irep;
-        } else {
-            parent[jrep] = irep;
-            rank[irep]++;
-        }
+        strategy.reset(parent, rank);
     }
 }

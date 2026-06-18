@@ -3,10 +3,14 @@ public class UnionFind implements DisjointSet {
     private IndexValidator validator;
     private OperationCounter counter;
 
-    private UnionFind(int size) {
+    private UnionFind(int size, UnionStrategy strategy) {
         this.validator = new IndexValidator(size);
-        this.structure = new DisjointSetStructure(size);
+        this.structure = new DisjointSetStructure(size, strategy);
         this.counter = new OperationCounter();
+    }
+
+    private UnionFind(int size) {
+        this(size, new RankBasedUnionStrategy());
     }
 
     @Override
@@ -55,9 +59,15 @@ public class UnionFind implements DisjointSet {
 
     public static class UnionFindBuilder {
         private int size;
+        private UnionStrategy strategy = new RankBasedUnionStrategy();
 
         public UnionFindBuilder withSize(int size) {
             this.size = size;
+            return this;
+        }
+
+        public UnionFindBuilder withStrategy(UnionStrategy strategy) {
+            this.strategy = strategy;
             return this;
         }
 
@@ -65,7 +75,7 @@ public class UnionFind implements DisjointSet {
             if (size <= 0) {
                 throw new IllegalArgumentException("Size must be set and positive");
             }
-            return new UnionFind(size);
+            return new UnionFind(size, strategy);
         }
     }
 }

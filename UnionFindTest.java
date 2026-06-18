@@ -8,6 +8,7 @@ public class UnionFindTest {
         testStatistics();
         testReset();
         testBuilder();
+        testStrategies();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -124,5 +125,32 @@ public class UnionFindTest {
         UnionFind uf = UnionFind.builder().withSize(10).build();
         assert uf.getSize() == 10 : "Builder should create UnionFind with correct size";
         System.out.println("✓ testBuilder passed");
+    }
+
+    private static void testStrategies() {
+        testRankBasedStrategy();
+        testSimpleStrategy();
+    }
+
+    private static void testRankBasedStrategy() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withStrategy(new RankBasedUnionStrategy())
+            .build();
+        uf.union(1, 2);
+        uf.union(2, 3);
+        assert uf.isConnected(1, 3) : "Rank-based strategy should maintain connections";
+        System.out.println("✓ testRankBasedStrategy passed");
+    }
+
+    private static void testSimpleStrategy() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withStrategy(new SimpleUnionStrategy())
+            .build();
+        uf.union(1, 2);
+        uf.union(2, 3);
+        assert uf.isConnected(1, 3) : "Simple strategy should maintain connections";
+        System.out.println("✓ testSimpleStrategy passed");
     }
 }

@@ -1,14 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public final class PrefixSum {
 
     private PrefixSum() {
-    }
-
-    public static List<Integer> prefSum(int[] arr) {
-        return prefixSums(arr);
     }
 
     public static List<Integer> prefixSums(int[] values) {
@@ -26,10 +23,15 @@ public final class PrefixSum {
     }
 
     public static void main(String[] args) {
-        int[] arr = {10, 20, 10, 5, 15};
-        List<Integer> prefixSum = prefSum(arr);
-        for (int i : prefixSum) {
-            System.out.print(i + " ");
+        int[] values = {10, 20, 10, 5, 15};
+        System.out.println(formatValues(prefixSums(values)));
+    }
+
+    private static String formatValues(List<Integer> values) {
+        StringJoiner joinedValues = new StringJoiner(" ");
+        for (int value : values) {
+            joinedValues.add(Integer.toString(value));
         }
+        return joinedValues.toString();
     }
 }

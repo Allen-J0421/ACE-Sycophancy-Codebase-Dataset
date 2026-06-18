@@ -20,6 +20,7 @@ public final class QuickSortTest {
                 new int[] {0, -4, 8, -1},
                 new int[] {-4, -1, 0, 8});
         assertNullRejected();
+        assertFormattedValues();
     }
 
     private static void assertSorted(String scenario, int[] values, int[] expectedValues) {
@@ -41,6 +42,14 @@ public final class QuickSortTest {
             throw new AssertionError("null values should be rejected");
         } catch (NullPointerException expected) {
             // Expected by the public sorting contract.
+        }
+    }
+
+    private static void assertFormattedValues() {
+        String formattedValues = QuickSortDemo.formatValues(new int[] {1, 5, 7});
+
+        if (!"1 5 7 ".equals(formattedValues)) {
+            throw new AssertionError("formatted values should preserve the legacy console output");
         }
     }
 }

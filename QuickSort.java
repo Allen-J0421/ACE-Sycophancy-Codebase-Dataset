@@ -1,8 +1,6 @@
 import java.util.Objects;
 
 public final class QuickSort {
-    private static final int[] SAMPLE_VALUES = {10, 7, 8, 9, 1, 5};
-
     private QuickSort() {
     }
 
@@ -52,17 +50,7 @@ public final class QuickSort {
         values[secondIndex] = temporaryValue;
     }
 
-    private static void printValues(int[] values) {
-        for (int value : values) {
-            System.out.print(value + " ");
-        }
-    }
-
     public static void main(String[] args) {
-        int[] values = SAMPLE_VALUES.clone();
-
-        sort(values);
-
-        printValues(values);
+        QuickSortDemo.main(args);
     }
 }

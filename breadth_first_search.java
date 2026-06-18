@@ -1,59 +1,94 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.LinkedList;
 
+class UndirectedGraph {
+    private final List<List<Integer>> adjacencyList;
+    private final int vertexCount;
+
+    public UndirectedGraph(int vertexCount) {
+        this.vertexCount = vertexCount;
+        this.adjacencyList = new ArrayList<>();
+        for (int i = 0; i < vertexCount; i++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+    }
+
+    public void addEdge(int u, int v) {
+        if (isValidVertex(u) && isValidVertex(v)) {
+            adjacencyList.get(u).add(v);
+            adjacencyList.get(v).add(u);
+        }
+    }
+
+    public List<Integer> getAdjacent(int vertex) {
+        return adjacencyList.get(vertex);
+    }
+
+    public int getVertexCount() {
+        return vertexCount;
+    }
+
+    private boolean isValidVertex(int vertex) {
+        return vertex >= 0 && vertex < vertexCount;
+    }
+}
+
 class BreadthFirstSearch {
+    private final UndirectedGraph graph;
+    private final boolean[] visited;
+    private final List<Integer> result;
 
-    static void bfsConnected(ArrayList<ArrayList<Integer>> adj, int src, boolean[] visited, ArrayList<Integer> res) {
-        Queue<Integer> q = new LinkedList<>();
-        visited[src] = true;
-        q.add(src);
+    public BreadthFirstSearch(UndirectedGraph graph) {
+        this.graph = graph;
+        this.visited = new boolean[graph.getVertexCount()];
+        this.result = new ArrayList<>();
+    }
 
-        while (!q.isEmpty()) {
-            int curr = q.poll();
-            res.add(curr);
+    public List<Integer> traverse() {
+        for (int i = 0; i < graph.getVertexCount(); i++) {
+            if (!visited[i]) {
+                bfsFromVertex(i);
+            }
+        }
+        return result;
+    }
 
-            for (int x : adj.get(curr)) {
-                if (!visited[x]) {
-                    visited[x] = true;
-                    q.add(x);
+    private void bfsFromVertex(int startVertex) {
+        Queue<Integer> queue = new LinkedList<>();
+        visited[startVertex] = true;
+        queue.add(startVertex);
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            result.add(current);
+
+            for (int neighbor : graph.getAdjacent(current)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    queue.add(neighbor);
                 }
             }
         }
     }
+}
 
-    static ArrayList<Integer> bfs(ArrayList<ArrayList<Integer>> adj) {
-        int V = adj.size();
-        boolean[] visited = new boolean[V];
-        ArrayList<Integer> res = new ArrayList<>();
-
-        for (int i = 0; i < V; i++) {
-            if (!visited[i])
-                bfsConnected(adj, i, visited, res);
-        }
-        return res;
-    }
-
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-        adj.get(v).add(u);
-    }
-
+public class BreadthFirstSearchDemo {
     public static void main(String[] args) {
-        int V = 6;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        UndirectedGraph graph = new UndirectedGraph(6);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 0);
+        graph.addEdge(0, 3);
+        graph.addEdge(4, 5);
 
-        for (int i = 0; i < V; i++)
-            adj.add(new ArrayList<>());
+        BreadthFirstSearch bfs = new BreadthFirstSearch(graph);
+        List<Integer> traversalOrder = bfs.traverse();
 
-        addEdge(adj, 1, 2);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 0, 3);
-        addEdge(adj, 4, 5);
-
-        ArrayList<Integer> res = bfs(adj);
-
-        for (int x : res)
-            System.out.print(x + " ");
+        System.out.print("BFS Traversal: ");
+        for (int vertex : traversalOrder) {
+            System.out.print(vertex + " ");
+        }
+        System.out.println();
     }
 }

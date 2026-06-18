@@ -22,13 +22,9 @@ public class IterativeQuickSort extends AbstractQuickSort {
         while (!stack.isEmpty()) {
             int high = stack.pop();
             int low  = stack.pop();
-            if (low < high) {
-                int pi = partition(arr, low, high);
-                stack.push(low);
-                stack.push(pi - 1);
-                stack.push(pi + 1);
-                stack.push(high);
-            }
+            int pi   = partition(arr, low, high);
+            if (low  < pi - 1) { stack.push(low);    stack.push(pi - 1); }
+            if (pi + 1 < high) { stack.push(pi + 1); stack.push(high);   }
         }
     }
 }

@@ -1,38 +1,43 @@
-class Node {
-    int data;
-    Node left, right;
+final class Node {
+    final int value;
+    Node left;
+    Node right;
 
-    public Node(int item) {
-        data = item;
-        left = right = null;
+    Node(int value) {
+        this.value = value;
     }
 }
-class BinarySearchTree {
-    static boolean search(Node root, int key) {
-        boolean present = false;
 
-        while( root != null ) {
-            if( root.data == key ) {
-                present = true;
-                break;
-            }
-
-            else if( key > root.data )
-                root = root.right;
-
-            else root = root.left;
-        }
-        return present;
+final class BinarySearchTree {
+    private BinarySearchTree() {
     }
 
-    public static void main(String[] args) {
+    static boolean search(Node root, int key) {
+        Node current = root;
 
+        while (current != null) {
+            if (current.value == key) {
+                return true;
+            }
+
+            current = key > current.value ? current.right : current.left;
+        }
+
+        return false;
+    }
+
+    private static Node createSampleTree() {
         Node root = new Node(6);
         root.left = new Node(2);
         root.right = new Node(8);
         root.right.left = new Node(7);
         root.right.right = new Node(9);
 
+        return root;
+    }
+
+    public static void main(String[] args) {
+        Node root = createSampleTree();
         int key = 7;
 
         System.out.println(search(root, key));

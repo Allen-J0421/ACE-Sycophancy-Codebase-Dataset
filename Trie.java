@@ -1,3 +1,4 @@
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class Trie {
@@ -39,6 +40,7 @@ public class Trie {
     private final TrieNode root = new TrieNode();
 
     public void insert(String key) {
+        validateKey(key);
         TrieNode node = ensurePath(key);
         node.markAsLeaf();
     }
@@ -50,11 +52,13 @@ public class Trie {
     }
 
     public boolean search(String key) {
+        validateKey(key);
         TrieNode node = findNode(key);
         return node != null && node.isLeaf();
     }
 
     public boolean isPrefix(String prefix) {
+        validateKey(prefix);
         return findNode(prefix) != null;
     }
 
@@ -79,6 +83,17 @@ public class Trie {
 
     private static int toIndex(char c) {
         return c - 'a';
+    }
+
+    private static void validateKey(String key) {
+        Objects.requireNonNull(key, "key");
+        for (int i = 0; i < key.length(); i++) {
+            char c = key.charAt(i);
+            if (c < 'a' || c > 'z') {
+                throw new IllegalArgumentException(
+                    "Keys must contain only lowercase letters a-z: " + key);
+            }
+        }
     }
 
     public static void main(String[] args) {

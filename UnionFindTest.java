@@ -7,6 +7,7 @@ public final class UnionFindTest {
         testUnionConnectsElements();
         testUnionReturnsWhetherMergeHappened();
         testComponentCountTracksMerges();
+        testComponentSizeTracksMerges();
         testInvalidElementsAreRejected();
 
         System.out.println("All UnionFind tests passed.");
@@ -44,6 +45,22 @@ public final class UnionFindTest {
         unionFind.union(1, 3);
 
         assertEquals(1, unionFind.components(), "component count after merges");
+    }
+
+    private static void testComponentSizeTracksMerges() {
+        UnionFind unionFind = new UnionFind(5);
+
+        assertEquals(1, unionFind.componentSize(0), "initial component size");
+        unionFind.union(0, 1);
+        unionFind.union(2, 3);
+
+        assertEquals(2, unionFind.componentSize(0), "component size after first merge");
+        assertEquals(2, unionFind.componentSize(3), "component size after second merge");
+
+        unionFind.union(1, 2);
+
+        assertEquals(4, unionFind.componentSize(0), "component size after joining components");
+        assertEquals(1, unionFind.componentSize(4), "unmerged element size");
     }
 
     private static void testInvalidElementsAreRejected() {

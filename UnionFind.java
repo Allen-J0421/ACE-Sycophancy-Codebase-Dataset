@@ -2,16 +2,16 @@ import java.util.Arrays;
 
 public final class UnionFind {
     private final int[] parent;
-    private final int[] rank;
+    private final int[] componentSizes;
     private int components;
 
     public UnionFind(int size) {
         validateSize(size);
         parent = new int[size];
-        rank = new int[size];
+        componentSizes = new int[size];
         components = size;
 
-        initializeParents();
+        initializeComponents();
     }
 
     private static void validateSize(int size) {
@@ -20,9 +20,10 @@ public final class UnionFind {
         }
     }
 
-    private void initializeParents() {
+    private void initializeComponents() {
         for (int i = 0; i < parent.length; i++) {
             parent[i] = i;
+            componentSizes[i] = 1;
         }
     }
 
@@ -56,10 +57,14 @@ public final class UnionFind {
         return components;
     }
 
+    public int componentSize(int element) {
+        return componentSizes[find(element)];
+    }
+
     @Override
     public String toString() {
         return "UnionFind{parent=" + Arrays.toString(parent)
-                + ", rank=" + Arrays.toString(rank)
+                + ", componentSizes=" + Arrays.toString(componentSizes)
                 + ", components=" + components
                 + '}';
     }
@@ -81,14 +86,14 @@ public final class UnionFind {
     }
 
     private void attachRoots(int firstRoot, int secondRoot) {
-        if (rank[firstRoot] < rank[secondRoot]) {
-            parent[firstRoot] = secondRoot;
-        } else if (rank[firstRoot] > rank[secondRoot]) {
-            parent[secondRoot] = firstRoot;
-        } else {
-            parent[secondRoot] = firstRoot;
-            rank[firstRoot]++;
+        if (componentSizes[firstRoot] < componentSizes[secondRoot]) {
+            int smallerRoot = firstRoot;
+            firstRoot = secondRoot;
+            secondRoot = smallerRoot;
         }
+
+        parent[secondRoot] = firstRoot;
+        componentSizes[firstRoot] += componentSizes[secondRoot];
     }
 
     private void validateElement(int element) {

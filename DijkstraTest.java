@@ -7,6 +7,7 @@ class DijkstraTest {
         findsShortestPathsOnWeightedGraph();
         preservesLegacyAdjacencyApi();
         reportsUnreachableVertices();
+        builtGraphsAreImmutable();
 
         System.out.println("All tests passed.");
     }
@@ -40,6 +41,21 @@ class DijkstraTest {
                 Dijkstra.shortestPathsFrom(graph, 0));
     }
 
+    private static void builtGraphsAreImmutable() {
+        WeightedGraph.Builder builder = WeightedGraph.builder(2)
+                .addUndirectedEdge(0, 1, 5);
+        WeightedGraph graph = builder.build();
+
+        builder.addUndirectedEdge(0, 1, 9);
+        assertInt(1, graph.edgesFrom(0).size());
+
+        try {
+            graph.edgesFrom(0).add(new Edge(1, 1));
+            throw new AssertionError("Expected edge list to be immutable.");
+        } catch (UnsupportedOperationException expected) {
+        }
+    }
+
     private static ArrayList<ArrayList<int[]>> emptyLegacyGraph(int vertexCount) {
         ArrayList<ArrayList<int[]>> adjacency = new ArrayList<>();
         for (int i = 0; i < vertexCount; i++) {
@@ -50,6 +66,12 @@ class DijkstraTest {
 
     private static void assertDistances(List<Integer> expected, List<Integer> actual) {
         if (!expected.equals(actual)) {
+            throw new AssertionError("Expected " + expected + " but got " + actual);
+        }
+    }
+
+    private static void assertInt(int expected, int actual) {
+        if (expected != actual) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
         }
     }

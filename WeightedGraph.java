@@ -3,58 +3,46 @@ import java.util.Collections;
 import java.util.List;
 
 final class WeightedGraph {
-    private final ArrayList<ArrayList<Edge>> adjacency;
+    private final List<List<Edge>> adjacency;
 
     static final class Builder {
-        private final WeightedGraph graph;
+        private final ArrayList<ArrayList<Edge>> adjacency;
 
         private Builder(int vertexCount) {
-            graph = new WeightedGraph(vertexCount);
+            validateVertexCount(vertexCount);
+
+            adjacency = new ArrayList<>();
+            for (int i = 0; i < vertexCount; i++) {
+                adjacency.add(new ArrayList<>());
+            }
         }
 
         Builder addUndirectedEdge(int u, int v, int weight) {
-            graph.addUndirectedEdge(u, v, weight);
+            addDirectedEdge(u, v, weight);
+            addDirectedEdge(v, u, weight);
             return this;
         }
 
         Builder addDirectedEdge(int from, int to, int weight) {
-            graph.addDirectedEdge(from, to, weight);
+            validateVertex(from, adjacency.size());
+            validateVertex(to, adjacency.size());
+            Edge.validateWeight(weight);
+
+            adjacency.get(from).add(new Edge(to, weight));
             return this;
         }
 
         WeightedGraph build() {
-            return graph;
+            return new WeightedGraph(freeze(adjacency));
         }
     }
 
-    private WeightedGraph(int vertexCount) {
-        validateVertexCount(vertexCount);
-
-        adjacency = new ArrayList<>();
-        for (int i = 0; i < vertexCount; i++) {
-            adjacency.add(new ArrayList<>());
-        }
+    private WeightedGraph(List<List<Edge>> adjacency) {
+        this.adjacency = adjacency;
     }
 
     static Builder builder(int vertexCount) {
         return new Builder(vertexCount);
-    }
-
-    static WeightedGraph withVertexCount(int vertexCount) {
-        return new WeightedGraph(vertexCount);
-    }
-
-    void addUndirectedEdge(int u, int v, int weight) {
-        addDirectedEdge(u, v, weight);
-        addDirectedEdge(v, u, weight);
-    }
-
-    void addDirectedEdge(int from, int to, int weight) {
-        validateVertex(from);
-        validateVertex(to);
-        Edge.validateWeight(weight);
-
-        adjacency.get(from).add(new Edge(to, weight));
     }
 
     int vertexCount() {
@@ -66,8 +54,16 @@ final class WeightedGraph {
     }
 
     List<Edge> edgesFrom(int vertex) {
-        validateVertex(vertex);
-        return Collections.unmodifiableList(adjacency.get(vertex));
+        validateVertex(vertex, adjacency.size());
+        return adjacency.get(vertex);
+    }
+
+    private static List<List<Edge>> freeze(ArrayList<ArrayList<Edge>> adjacency) {
+        ArrayList<List<Edge>> frozen = new ArrayList<>();
+        for (List<Edge> edges : adjacency) {
+            frozen.add(Collections.unmodifiableList(new ArrayList<>(edges)));
+        }
+        return Collections.unmodifiableList(frozen);
     }
 
     private static void validateVertexCount(int vertexCount) {
@@ -76,8 +72,8 @@ final class WeightedGraph {
         }
     }
 
-    private void validateVertex(int vertex) {
-        if (!hasVertex(vertex)) {
+    private static void validateVertex(int vertex, int vertexCount) {
+        if (vertex < 0 || vertex >= vertexCount) {
             throw new IllegalArgumentException("Vertex is outside the graph.");
         }
     }

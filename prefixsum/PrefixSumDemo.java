@@ -9,7 +9,7 @@ public final class PrefixSumDemo {
 
     public static void main(String[] args) {
         PrefixSumArray prefixSums = PrefixSumArray.from(readValues(args));
-        System.out.println(prefixSums);
+        System.out.println(prefixSums.format());
     }
 
     private static int[] readValues(String[] args) {

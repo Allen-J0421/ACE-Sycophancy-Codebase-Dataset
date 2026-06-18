@@ -1,70 +1,80 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.PriorityQueue;
 
 class Dijkstra {
 
-    static ArrayList<Integer> dijkstra(ArrayList<ArrayList<int[]>> adj, int src) {
-        int V = adj.size();
+    static class Graph {
+        private final int numVertices;
+        private final List<List<int[]>> adjacencyList;
 
-        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        Graph(int numVertices) {
+            this.numVertices = numVertices;
+            adjacencyList = new ArrayList<>(numVertices);
+            for (int i = 0; i < numVertices; i++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+        }
 
-        int[] dist = new int[V];
+        void addEdge(int u, int v, int weight) {
+            adjacencyList.get(u).add(new int[]{v, weight});
+            adjacencyList.get(v).add(new int[]{u, weight});
+        }
+
+        List<int[]> neighbors(int vertex) {
+            return adjacencyList.get(vertex);
+        }
+
+        int size() {
+            return numVertices;
+        }
+    }
+
+    static int[] shortestPaths(Graph graph, int source) {
+        int n = graph.size();
+        int[] dist = new int[n];
         Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[source] = 0;
 
-        dist[src] = 0;
-        pq.offer(new int[]{0, src});
+        // Priority queue entries: [distance, vertex]
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0, source});
 
         while (!pq.isEmpty()) {
-            int[] top = pq.poll();
-            int d = top[0];
-            int u = top[1];
+            int[] entry = pq.poll();
+            int currentDist = entry[0];
+            int u = entry[1];
 
-            if (d > dist[u])
-                continue;
+            if (currentDist > dist[u]) continue;
 
-            for (int[] p : adj.get(u)) {
-                int v = p[0];
-                int w = p[1];
-
-                if (dist[u] + w < dist[v]) {
-                    dist[v] = dist[u] + w;
-                    pq.offer(new int[]{dist[v], v});
+            for (int[] edge : graph.neighbors(u)) {
+                int v = edge[0];
+                int weight = edge[1];
+                int newDist = dist[u] + weight;
+                if (newDist < dist[v]) {
+                    dist[v] = newDist;
+                    pq.offer(new int[]{newDist, v});
                 }
             }
         }
 
-        ArrayList<Integer> result = new ArrayList<>();
-        for (int d : dist)
-            result.add(d);
-
-        return result;
+        return dist;
     }
 
-    static void addEdge(ArrayList<ArrayList<int[]>> adj, int u, int v, int w) {
-        adj.get(u).add(new int[]{v, w});
-        adj.get(v).add(new int[]{u, w});
-    }
+    public static void main(String[] args) {
+        Graph graph = new Graph(5);
+        graph.addEdge(0, 1, 4);
+        graph.addEdge(0, 2, 8);
+        graph.addEdge(1, 4, 6);
+        graph.addEdge(1, 2, 3);
+        graph.addEdge(2, 3, 2);
+        graph.addEdge(3, 4, 10);
 
-     public static void main(String[] args) {
-        int V = 5;
-        int src = 0;
-
-        ArrayList<ArrayList<int[]>> adj = new ArrayList<>();
-        for (int i = 0; i < V; i++) {
-            adj.add(new ArrayList<>());
-        }
-
-        addEdge(adj, 0, 1, 4);
-        addEdge(adj, 0, 2, 8);
-        addEdge(adj, 1, 4, 6);
-        addEdge(adj, 1, 2, 3);
-        addEdge(adj, 2, 3, 2);
-        addEdge(adj, 3, 4, 10);
-
-        ArrayList<Integer> result = dijkstra(adj, src);
-        for (int d : result)
+        int[] distances = shortestPaths(graph, 0);
+        for (int d : distances) {
             System.out.print(d + " ");
+        }
         System.out.println();
     }
 }

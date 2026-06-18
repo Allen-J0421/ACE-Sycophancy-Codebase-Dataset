@@ -1,10 +1,12 @@
 public class CoinChange {
 
-  private static final CoinChangeStrategy DEFAULT_STRATEGY = new DynamicProgrammingStrategy();
-
   public static CoinChangeResult solve(int[] coins, int targetSum) {
-    CoinChangeSolver solver = new CoinChangeSolver(DEFAULT_STRATEGY);
+    CoinChangeSolver solver = new CoinChangeSolverBuilder().build();
     return solver.solve(coins, targetSum);
+  }
+
+  public static CoinChangeSolverBuilder builder() {
+    return new CoinChangeSolverBuilder();
   }
 
   public static void main(String[] args) {
@@ -15,7 +17,7 @@ public class CoinChange {
       CoinChangeResult result = solve(coins, targetSum);
       System.out.println("Number of ways to make sum " + result.getTargetSum() + ": " + result.getWays());
       System.out.println(result);
-    } catch (IllegalArgumentException e) {
+    } catch (CoinChangeException e) {
       System.err.println("Error: " + e.getMessage());
     }
   }

@@ -7,18 +7,18 @@ public class InputValidator {
 
   private static void validateCoins(int[] coins) {
     if (coins == null || coins.length == 0) {
-      throw new IllegalArgumentException("Coins array cannot be null or empty");
+      throw new InvalidCoinsException("Coins array cannot be null or empty");
     }
     for (int coin : coins) {
       if (coin <= 0) {
-        throw new IllegalArgumentException("All coin values must be positive");
+        throw new InvalidCoinsException("All coin values must be positive");
       }
     }
   }
 
   private static void validateTargetSum(int targetSum) {
     if (targetSum < 0) {
-      throw new IllegalArgumentException("Target sum cannot be negative");
+      throw new InvalidTargetSumException("Target sum cannot be negative");
     }
   }
 }

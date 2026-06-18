@@ -54,12 +54,12 @@ final class Graph<V> implements Iterable<V> {
     /**
      * Returns the neighbors of {@code vertex} in insertion order, as a read-only view.
      *
-     * @throws IllegalArgumentException if {@code vertex} is not in the graph
+     * @throws VertexNotFoundException if {@code vertex} is not in the graph
      */
     List<V> neighbors(V vertex) {
         List<V> adjacent = adjacency.get(vertex);
         if (adjacent == null) {
-            throw new IllegalArgumentException("vertex not in graph: " + vertex);
+            throw new VertexNotFoundException(vertex);
         }
         return Collections.unmodifiableList(adjacent);
     }
@@ -71,8 +71,8 @@ final class Graph<V> implements Iterable<V> {
      *
      * @return {@code true} if every neighbor was visited, {@code false} if the
      *         visitor interrupted the traversal
-     * @throws IllegalArgumentException if {@code vertex} is not in the graph
-     * @throws NullPointerException     if {@code visitor} is null
+     * @throws VertexNotFoundException if {@code vertex} is not in the graph
+     * @throws NullPointerException    if {@code visitor} is null
      */
     boolean forEachNeighbor(V vertex, NeighborVisitor<? super V> visitor) {
         Objects.requireNonNull(visitor, "visitor");
@@ -98,6 +98,24 @@ final class Graph<V> implements Iterable<V> {
     @Override
     public Iterator<V> iterator() {
         return vertices().iterator();
+    }
+
+    /** Base type for all {@link Graph} errors, so callers can catch them as a group. */
+    static class GraphException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        GraphException(String message) {
+            super(message);
+        }
+    }
+
+    /** Thrown when an operation references a vertex that is not in the graph. */
+    static final class VertexNotFoundException extends GraphException {
+        private static final long serialVersionUID = 1L;
+
+        VertexNotFoundException(Object vertex) {
+            super("vertex not in graph: " + vertex);
+        }
     }
 }
 

@@ -41,7 +41,8 @@ class BreadthFirstSearchTest {
         test("BFS works over String vertices", BreadthFirstSearchTest::stringVertices);
         test("addEdge auto-creates missing vertices", BreadthFirstSearchTest::addEdgeCreatesVertices);
         test("vertices() preserves insertion order", BreadthFirstSearchTest::verticesInInsertionOrder);
-        test("neighbors() of an absent vertex throws", BreadthFirstSearchTest::neighborsAbsentVertexThrows);
+        test("neighbors() of an absent vertex throws VertexNotFoundException", BreadthFirstSearchTest::neighborsAbsentVertexThrows);
+        test("VertexNotFoundException is a GraphException", BreadthFirstSearchTest::vertexNotFoundIsAGraphException);
         test("null vertices are rejected", BreadthFirstSearchTest::nullVerticesRejected);
         test("graph is iterable over vertices in insertion order", BreadthFirstSearchTest::graphIsIterable);
         test("graph iterator is read-only", BreadthFirstSearchTest::graphIteratorReadOnly);
@@ -150,7 +151,13 @@ class BreadthFirstSearchTest {
 
     private static void neighborsAbsentVertexThrows() {
         Graph<Integer> g = new Graph<>();
-        assertThrows(IllegalArgumentException.class, () -> g.neighbors(42));
+        assertThrows(Graph.VertexNotFoundException.class, () -> g.neighbors(42));
+    }
+
+    private static void vertexNotFoundIsAGraphException() {
+        Graph<Integer> g = new Graph<>();
+        // The specific exception must be catchable via the hierarchy's base type.
+        assertThrows(Graph.GraphException.class, () -> g.neighbors(42));
     }
 
     private static void nullVerticesRejected() {
@@ -216,7 +223,7 @@ class BreadthFirstSearchTest {
 
     private static void forEachNeighborAbsentVertexThrows() {
         Graph<Integer> g = new Graph<>();
-        assertThrows(IllegalArgumentException.class, () -> g.forEachNeighbor(42, v -> true));
+        assertThrows(Graph.VertexNotFoundException.class, () -> g.forEachNeighbor(42, v -> true));
     }
 
     private static void forEachNeighborNullVisitor() {

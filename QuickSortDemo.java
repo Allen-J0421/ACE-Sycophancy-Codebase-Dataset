@@ -14,7 +14,12 @@ public class QuickSortDemo {
     private static int[] parseArgs(String[] args) {
         int[] arr = new int[args.length];
         for (int i = 0; i < args.length; i++) {
-            arr[i] = Integer.parseInt(args[i]);
+            try {
+                arr[i] = Integer.parseInt(args[i]);
+            } catch (NumberFormatException e) {
+                System.err.println("Error: '" + args[i] + "' is not a valid integer.");
+                System.exit(1);
+            }
         }
         return arr;
     }

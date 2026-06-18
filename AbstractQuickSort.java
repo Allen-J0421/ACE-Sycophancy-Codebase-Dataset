@@ -1,6 +1,6 @@
 abstract class AbstractQuickSort implements Sorter {
 
-    protected final PivotSelector pivotSelector;
+    private final PivotSelector pivotSelector;
 
     protected AbstractQuickSort(PivotSelector pivotSelector) {
         this.pivotSelector = pivotSelector;

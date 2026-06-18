@@ -1,16 +1,22 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-final class Graph<V> {
+final class Graph<V> implements Iterable<V> {
     private final Map<V, List<V>> adjacencyMap;
 
     private Graph(Map<V, List<V>> adjacencyMap) {
         this.adjacencyMap = adjacencyMap;
+    }
+
+    @Override
+    public Iterator<V> iterator() {
+        return adjacencyMap.keySet().iterator();
     }
 
     Set<V> vertices() {

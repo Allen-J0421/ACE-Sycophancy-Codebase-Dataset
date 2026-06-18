@@ -14,7 +14,7 @@ final class BreadthFirstSearch {
         Set<V> visited = new HashSet<>();
         List<V> result = new ArrayList<>();
 
-        for (V vertex : graph.vertices()) {
+        for (V vertex : graph) {
             if (!visited.contains(vertex)) {
                 result.addAll(traverseComponent(graph, vertex, visited));
             }

@@ -9,13 +9,25 @@ final class BinarySearchTree {
         }
     }
 
+    private static final class SearchResult {
+        final Node parent;
+        final Node node;
+        final boolean wentLeft;
+
+        private SearchResult(Node parent, Node node, boolean wentLeft) {
+            this.parent = parent;
+            this.node = node;
+            this.wentLeft = wentLeft;
+        }
+    }
+
     private Node root;
 
     BinarySearchTree() {
     }
 
     boolean contains(int key) {
-        return findNode(root, key) != null;
+        return find(key).node != null;
     }
 
     void insert(int key) {
@@ -24,38 +36,39 @@ final class BinarySearchTree {
             return;
         }
 
-        Node current = root;
-        while (true) {
-            if (key == current.data) {
-                return;
-            }
+        SearchResult result = find(key);
+        if (result.node != null) {
+            return;
+        }
 
-            if (key < current.data) {
-                if (current.left == null) {
-                    current.left = new Node(key);
-                    return;
-                }
-                current = current.left;
-            } else {
-                if (current.right == null) {
-                    current.right = new Node(key);
-                    return;
-                }
-                current = current.right;
-            }
+        if (result.wentLeft) {
+            result.parent.left = new Node(key);
+        } else {
+            result.parent.right = new Node(key);
         }
     }
 
-    private static Node findNode(Node node, int key) {
-        while (node != null) {
-            if (node.data == key) {
-                return node;
+    private SearchResult find(int key) {
+        Node parent = null;
+        Node current = root;
+        boolean wentLeft = false;
+
+        while (current != null) {
+            if (key == current.data) {
+                return new SearchResult(parent, current, wentLeft);
             }
 
-            node = key > node.data ? node.right : node.left;
+            parent = current;
+            if (key < current.data) {
+                current = current.left;
+                wentLeft = true;
+            } else {
+                current = current.right;
+                wentLeft = false;
+            }
         }
 
-        return null;
+        return new SearchResult(parent, null, wentLeft);
     }
 
     public static void main(String[] args) {

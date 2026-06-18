@@ -17,15 +17,13 @@ final class MatrixChainSolver {
         private final MatrixDimensions dimensions;
         private final int dimensionCount;
         private final int matrixCount;
-        private final int[][] minimumCosts;
-        private final int[][] bestSplits;
+        private final OptimalOrderTables tables;
 
         private SolverState(MatrixDimensions dimensions) {
             this.dimensions = dimensions;
             this.dimensionCount = dimensions.size();
             this.matrixCount = dimensions.matrixCount();
-            this.minimumCosts = new int[dimensionCount][dimensionCount];
-            this.bestSplits = new int[dimensionCount][dimensionCount];
+            this.tables = new OptimalOrderTables(dimensionCount);
         }
 
         private void compute() {
@@ -33,15 +31,14 @@ final class MatrixChainSolver {
                 for (int start = 0; start < dimensionCount - chainLength; start++) {
                     int end = start + chainLength;
                     CostEvaluation costEvaluation = findMinimumCost(start, end);
-                    minimumCosts[start][end] = costEvaluation.cost();
-                    bestSplits[start][end] = costEvaluation.split();
+                    tables.record(start, end, costEvaluation);
                 }
             }
         }
 
         private MatrixChainResult toResult() {
             return new MatrixChainResult(
-                minimumCosts[0][dimensionCount - 1],
+                tables.minimumCost(0, dimensionCount - 1),
                 buildParenthesization()
             );
         }
@@ -63,8 +60,8 @@ final class MatrixChainSolver {
         }
 
         private int costForSplit(int start, int split, int end) {
-            return minimumCosts[start][split]
-                + minimumCosts[split][end]
+            return tables.minimumCost(start, split)
+                + tables.minimumCost(split, end)
                 + multiplicationCost(start, split, end);
         }
 
@@ -82,16 +79,39 @@ final class MatrixChainSolver {
 
         private void appendParenthesization(StringBuilder parenthesization, int start, int end) {
             if (end - start == 1) {
-                parenthesization.append('A').append(start + 1);
+                parenthesization.append(dimensions.matrixLabel(start));
                 return;
             }
 
-            int split = bestSplits[start][end];
+            int split = tables.bestSplit(start, end);
             parenthesization.append('(');
             appendParenthesization(parenthesization, start, split);
             parenthesization.append(" x ");
             appendParenthesization(parenthesization, split, end);
             parenthesization.append(')');
+        }
+    }
+
+    private static final class OptimalOrderTables {
+        private final int[][] minimumCosts;
+        private final int[][] bestSplits;
+
+        private OptimalOrderTables(int dimensionCount) {
+            this.minimumCosts = new int[dimensionCount][dimensionCount];
+            this.bestSplits = new int[dimensionCount][dimensionCount];
+        }
+
+        private void record(int start, int end, CostEvaluation costEvaluation) {
+            minimumCosts[start][end] = costEvaluation.cost();
+            bestSplits[start][end] = costEvaluation.split();
+        }
+
+        private int minimumCost(int start, int end) {
+            return minimumCosts[start][end];
+        }
+
+        private int bestSplit(int start, int end) {
+            return bestSplits[start][end];
         }
     }
 

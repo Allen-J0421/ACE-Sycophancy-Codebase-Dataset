@@ -47,6 +47,10 @@ public final class MatrixDimensions {
         return matrixCount() <= 1;
     }
 
+    public String matrixLabel(int matrixIndex) {
+        return "A" + (matrixIndex + 1);
+    }
+
     public int valueAt(int index) {
         return values[index];
     }

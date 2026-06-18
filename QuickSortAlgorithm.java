@@ -5,11 +5,11 @@ final class QuickSortAlgorithm {
     private QuickSortAlgorithm() {
     }
 
-    static void sort(int[] values, int fromIndex, int toIndex) {
-        quickSort(values, new Range(fromIndex, toIndex));
+    static void sort(int[] values, IndexRange range) {
+        quickSort(values, range);
     }
 
-    private static void quickSort(int[] values, Range range) {
+    private static void quickSort(int[] values, IndexRange range) {
         while (range.length() > INSERTION_SORT_THRESHOLD) {
             Partition partition = partition(values, range, values[selectPivotIndex(values, range)]);
 
@@ -25,7 +25,7 @@ final class QuickSortAlgorithm {
         insertionSort(values, range);
     }
 
-    private static Partition partition(int[] values, Range range, int pivotValue) {
+    private static Partition partition(int[] values, IndexRange range, int pivotValue) {
         int lessThanBoundary = range.fromIndex;
         int currentIndex = range.fromIndex;
         int greaterThanBoundary = range.toIndex;
@@ -44,11 +44,11 @@ final class QuickSortAlgorithm {
         }
 
         return new Partition(
-                new Range(range.fromIndex, lessThanBoundary),
-                new Range(greaterThanBoundary, range.toIndex));
+                IndexRange.of(values.length, range.fromIndex, lessThanBoundary),
+                IndexRange.of(values.length, greaterThanBoundary, range.toIndex));
     }
 
-    private static int selectPivotIndex(int[] values, Range range) {
+    private static int selectPivotIndex(int[] values, IndexRange range) {
         int lastIndex = range.toIndex - 1;
         int middleIndex = range.fromIndex + (range.length() >>> 1);
         return medianOfThreeIndex(values, range.fromIndex, middleIndex, lastIndex);
@@ -74,7 +74,7 @@ final class QuickSortAlgorithm {
         return secondValue < thirdValue ? thirdIndex : secondIndex;
     }
 
-    private static void insertionSort(int[] values, Range range) {
+    private static void insertionSort(int[] values, IndexRange range) {
         for (int index = range.fromIndex + 1; index < range.toIndex; index++) {
             int currentValue = values[index];
             int insertionIndex = index - 1;
@@ -100,35 +100,20 @@ final class QuickSortAlgorithm {
 
     private static final class Partition {
 
-        private final Range left;
-        private final Range right;
+        private final IndexRange left;
+        private final IndexRange right;
 
-        private Partition(Range left, Range right) {
+        private Partition(IndexRange left, IndexRange right) {
             this.left = left;
             this.right = right;
         }
 
-        private Range left() {
+        private IndexRange left() {
             return left;
         }
 
-        private Range right() {
+        private IndexRange right() {
             return right;
-        }
-    }
-
-    private static final class Range {
-
-        private final int fromIndex;
-        private final int toIndex;
-
-        private Range(int fromIndex, int toIndex) {
-            this.fromIndex = fromIndex;
-            this.toIndex = toIndex;
-        }
-
-        private int length() {
-            return toIndex - fromIndex;
         }
     }
 }

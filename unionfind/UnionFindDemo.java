@@ -2,17 +2,21 @@ package unionfind;
 
 public class UnionFindDemo {
     public static void main(String[] args) {
-        UnionFind uf = new UnionFind(5);
-        uf.union(1, 2);
-        uf.union(3, 4);
+        UnionFind uf = new UnionFind(6);
 
-        System.out.println("Are 1 and 2 in the same set? " + uf.connected(1, 2));
-        System.out.println("Are 1 and 3 in the same set? " + uf.connected(1, 3));
-        System.out.println("Component count: " + uf.getComponentCount());
+        System.out.println("Edges: 0-1, 1-2, 3-4");
+        boolean merged;
+        merged = uf.union(0, 1); System.out.println("union(0,1): merged=" + merged);
+        merged = uf.union(1, 2); System.out.println("union(1,2): merged=" + merged);
+        merged = uf.union(3, 4); System.out.println("union(3,4): merged=" + merged);
+        merged = uf.union(0, 2); System.out.println("union(0,2): merged=" + merged + " (already connected)");
 
-        uf.union(2, 3);
-        System.out.println("After union(2,3):");
-        System.out.println("Are 1 and 4 in the same set? " + uf.connected(1, 4));
-        System.out.println("Component count: " + uf.getComponentCount());
+        System.out.println();
+        System.out.println("connected(0,2): " + uf.connected(0, 2));
+        System.out.println("connected(0,3): " + uf.connected(0, 3));
+        System.out.println("componentSize(0): " + uf.componentSize(0));
+        System.out.println("componentSize(3): " + uf.componentSize(3));
+        System.out.println("componentSize(5): " + uf.componentSize(5) + " (isolated)");
+        System.out.println("components: " + uf.getComponentCount());
     }
 }

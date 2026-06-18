@@ -32,15 +32,25 @@ public class TestSupport {
         }
     }
 
-    public void assertThrows(String label, ThrowingRunnable runnable) {
+    public void assertThrows(String label, Class<? extends Exception> expectedType, ThrowingRunnable runnable) {
         try {
             runnable.run();
-            System.out.println("FAIL: " + label + " (expected exception, none thrown)");
+            System.out.println("FAIL: " + label + " (expected " + expectedType.getSimpleName() + ", none thrown)");
             failed++;
         } catch (Exception e) {
-            System.out.println("PASS: " + label);
-            passed++;
+            if (expectedType.isInstance(e)) {
+                System.out.println("PASS: " + label);
+                passed++;
+            } else {
+                System.out.println("FAIL: " + label + " (expected " + expectedType.getSimpleName()
+                        + ", got " + e.getClass().getSimpleName() + ")");
+                failed++;
+            }
         }
+    }
+
+    public void section(String name) {
+        System.out.println("\n-- " + name + " --");
     }
 
     public void printSummary() {

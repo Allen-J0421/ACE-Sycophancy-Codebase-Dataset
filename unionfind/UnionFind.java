@@ -6,6 +6,7 @@ public class UnionFind {
     private int componentCount;
 
     public UnionFind(int n) {
+        if (n < 0) throw new IllegalArgumentException("Capacity must be non-negative, got " + n);
         parent = new int[n];
         size = new int[n];
         componentCount = n;
@@ -24,10 +25,10 @@ public class UnionFind {
         return i;
     }
 
-    public void union(int i, int j) {
+    public boolean union(int i, int j) {
         int ri = find(i);
         int rj = find(j);
-        if (ri == rj) return;
+        if (ri == rj) return false;
 
         if (size[ri] < size[rj]) {
             parent[ri] = rj;
@@ -37,10 +38,15 @@ public class UnionFind {
             size[ri] += size[rj];
         }
         componentCount--;
+        return true;
     }
 
     public boolean connected(int i, int j) {
         return find(i) == find(j);
+    }
+
+    public int componentSize(int i) {
+        return size[find(i)];
     }
 
     public int getComponentCount() {

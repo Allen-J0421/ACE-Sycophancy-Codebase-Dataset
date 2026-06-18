@@ -5,7 +5,7 @@ final class CapacityTable {
         this.bestValues = new int[capacity + 1];
     }
 
-    int bestValueAt(int capacity) {
+    private int bestValueAt(int capacity) {
         return bestValues[capacity];
     }
 
@@ -14,5 +14,9 @@ final class CapacityTable {
             int candidateValue = bestValueAt(capacity - item.weight()) + item.value();
             bestValues[capacity] = Math.max(bestValues[capacity], candidateValue);
         }
+    }
+
+    KnapsackSolution solutionFor(Problem problem) {
+        return new KnapsackSolution(problem, bestValueAt(problem.capacity()));
     }
 }

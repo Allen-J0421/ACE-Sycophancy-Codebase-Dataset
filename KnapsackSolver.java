@@ -1,3 +1,3 @@
 interface KnapsackSolver {
-    int solve(Problem problem);
+    KnapsackSolution solve(Problem problem);
 }

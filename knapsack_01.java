@@ -11,20 +11,32 @@ class Knapsack {
     }
 
     static int maxValue(int capacity, Item... items) {
-        return maxValue(Problem.of(capacity, items));
+        return solve(capacity, items).optimalValue();
     }
 
     static int maxValue(int capacity, List<Item> items) {
-        return maxValue(Problem.of(capacity, items));
+        return solve(capacity, items).optimalValue();
     }
 
     static int maxValue(Problem problem) {
+        return solve(problem).optimalValue();
+    }
+
+    static KnapsackSolution solve(int capacity, Item... items) {
+        return solve(Problem.of(capacity, items));
+    }
+
+    static KnapsackSolution solve(int capacity, List<Item> items) {
+        return solve(Problem.of(capacity, items));
+    }
+
+    static KnapsackSolution solve(Problem problem) {
         return SOLVER.solve(problem);
     }
 
     public static void main(String[] args) {
         Problem problem = Problems.sampleProblem();
 
-        System.out.println(maxValue(problem));
+        System.out.println(solve(problem).optimalValue());
     }
 }

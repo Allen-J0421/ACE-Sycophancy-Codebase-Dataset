@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 /**
  * An undirected graph over vertices of arbitrary type {@code V}, backed by an
@@ -64,6 +65,18 @@ final class Graph<V> implements Iterable<V> {
         return Collections.unmodifiableList(adjacent);
     }
 
+    /**
+     * Applies {@code action} to each neighbor of {@code vertex} in insertion order.
+     * A functional alternative to iterating {@link #neighbors(Object)}.
+     *
+     * @throws IllegalArgumentException if {@code vertex} is not in the graph
+     * @throws NullPointerException     if {@code action} is null
+     */
+    void forEachNeighbor(V vertex, Consumer<? super V> action) {
+        Objects.requireNonNull(action, "action");
+        neighbors(vertex).forEach(action);
+    }
+
     /** Iterates the graph's vertices in insertion order; the iterator is read-only. */
     @Override
     public Iterator<V> iterator() {
@@ -112,11 +125,11 @@ final class BreadthFirstSearch {
             V current = queue.poll();
             order.add(current);
 
-            for (V neighbor : graph.neighbors(current)) {
+            graph.forEachNeighbor(current, neighbor -> {
                 if (visited.add(neighbor)) {
                     queue.add(neighbor);
                 }
-            }
+            });
         }
     }
 

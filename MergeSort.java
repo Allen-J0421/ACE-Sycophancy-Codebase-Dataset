@@ -1,23 +1,19 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-final class MergeSort {
+public final class MergeSort {
 
     private MergeSort() {
         // Utility class.
     }
 
-    static void sort(int[] values) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
+    public static void sort(int[] values) {
+        requireValues(values);
         sort(values, 0, values.length);
     }
 
-    static void sort(int[] values, int fromInclusive, int toExclusive) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
+    public static void sort(int[] values, int fromInclusive, int toExclusive) {
+        requireValues(values);
         validateRange(values.length, fromInclusive, toExclusive);
         if (toExclusive - fromInclusive < 2) {
             return;
@@ -27,23 +23,31 @@ final class MergeSort {
         sort(values, buffer, fromInclusive, toExclusive);
     }
 
-    static <T extends Comparable<? super T>> void sort(T[] values) {
+    public static <T extends Comparable<? super T>> void sort(T[] values) {
         sort(values, Comparator.naturalOrder());
     }
 
-    static <T> void sort(T[] values, Comparator<? super T> comparator) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
-        if (comparator == null) {
-            throw new IllegalArgumentException("comparator must not be null");
-        }
+    public static <T> void sort(T[] values, Comparator<? super T> comparator) {
+        requireValues(values);
+        requireComparator(comparator);
         if (values.length < 2) {
             return;
         }
 
         Object[] buffer = new Object[values.length];
         sort(values, buffer, comparator, 0, values.length);
+    }
+
+    private static void requireValues(Object values) {
+        if (values == null) {
+            throw new IllegalArgumentException("values must not be null");
+        }
+    }
+
+    private static void requireComparator(Object comparator) {
+        if (comparator == null) {
+            throw new IllegalArgumentException("comparator must not be null");
+        }
     }
 
     private static void validateRange(int length, int fromInclusive, int toExclusive) {

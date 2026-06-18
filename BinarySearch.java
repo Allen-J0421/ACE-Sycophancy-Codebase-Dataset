@@ -1,3 +1,6 @@
+import java.util.Comparator;
+import java.util.Objects;
+
 public final class BinarySearch {
     private static final int[] SAMPLE_ARRAY = { 2, 3, 4, 10, 40 };
     private static final int SAMPLE_TARGET = 10;
@@ -9,10 +12,7 @@ public final class BinarySearch {
     }
 
     public static int binarySearch(int[] array, int target) {
-        if (array == null) {
-            throw new IllegalArgumentException("array must not be null");
-        }
-
+        Objects.requireNonNull(array, "array");
         return binarySearch(array, target, 0, array.length - 1);
     }
 
@@ -26,6 +26,36 @@ public final class BinarySearch {
             }
 
             if (value < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public static <T extends Comparable<? super T>> int binarySearch(T[] array, T target) {
+        return binarySearch(array, target, Comparator.naturalOrder());
+    }
+
+    public static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator) {
+        Objects.requireNonNull(array, "array");
+        Objects.requireNonNull(comparator, "comparator");
+        return binarySearch(array, target, comparator, 0, array.length - 1);
+    }
+
+    private static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator, int left, int right) {
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            T value = array[mid];
+            int comparison = comparator.compare(value, target);
+
+            if (comparison == 0) {
+                return mid;
+            }
+
+            if (comparison < 0) {
                 left = mid + 1;
             } else {
                 right = mid - 1;

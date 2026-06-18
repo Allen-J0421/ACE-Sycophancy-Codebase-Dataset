@@ -49,7 +49,15 @@ public class UnionFind {
         return size[find(i)];
     }
 
-    public int getComponentCount() {
+    public void reset() {
+        componentCount = parent.length;
+        for (int i = 0; i < parent.length; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+    }
+
+    public int componentCount() {
         return componentCount;
     }
 

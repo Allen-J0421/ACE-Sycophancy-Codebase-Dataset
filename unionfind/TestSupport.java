@@ -49,8 +49,15 @@ public class TestSupport {
         }
     }
 
-    public void section(String name) {
+    public void runSection(String name, Runnable body) {
         System.out.println("\n-- " + name + " --");
+        try {
+            body.run();
+        } catch (Exception e) {
+            System.out.println("ERROR: unexpected exception: "
+                    + e.getClass().getSimpleName() + ": " + e.getMessage());
+            failed++;
+        }
     }
 
     public void printSummary() {

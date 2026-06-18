@@ -1,22 +1,47 @@
 package unionfind;
 
-public class UnionFindDemo {
-    public static void main(String[] args) {
-        UnionFind uf = new UnionFind(6);
+import java.util.Arrays;
 
-        System.out.println("Edges: 0-1, 1-2, 3-4");
-        boolean merged;
-        merged = uf.union(0, 1); System.out.println("union(0,1): merged=" + merged);
-        merged = uf.union(1, 2); System.out.println("union(1,2): merged=" + merged);
-        merged = uf.union(3, 4); System.out.println("union(3,4): merged=" + merged);
-        merged = uf.union(0, 2); System.out.println("union(0,2): merged=" + merged + " (already connected)");
+public class UnionFindDemo {
+
+    static class Edge implements Comparable<Edge> {
+        final int u, v, weight;
+        Edge(int u, int v, int weight) { this.u = u; this.v = v; this.weight = weight; }
+        public int compareTo(Edge other) { return Integer.compare(this.weight, other.weight); }
+        public String toString() { return u + "-" + v + " (weight " + weight + ")"; }
+    }
+
+    public static void main(String[] args) {
+        // Kruskal's MST: union() returning false means adding the edge would form a cycle
+        Edge[] edges = {
+            new Edge(0, 1, 2),
+            new Edge(1, 2, 3),
+            new Edge(1, 4, 5),
+            new Edge(0, 3, 6),
+            new Edge(2, 4, 7),
+            new Edge(1, 3, 8),
+            new Edge(3, 4, 9),
+        };
+
+        int vertices = 5;
+        Arrays.sort(edges);
+        UnionFind uf = new UnionFind(vertices);
+        int mstWeight = 0;
+
+        System.out.println("Kruskal's MST (" + vertices + " vertices, " + edges.length + " edges)");
+        System.out.println();
+
+        for (Edge e : edges) {
+            if (uf.union(e.u, e.v)) {
+                System.out.println("  add  " + e);
+                mstWeight += e.weight;
+            } else {
+                System.out.println("  skip " + e + "  <- cycle");
+            }
+        }
 
         System.out.println();
-        System.out.println("connected(0,2): " + uf.connected(0, 2));
-        System.out.println("connected(0,3): " + uf.connected(0, 3));
-        System.out.println("componentSize(0): " + uf.componentSize(0));
-        System.out.println("componentSize(3): " + uf.componentSize(3));
-        System.out.println("componentSize(5): " + uf.componentSize(5) + " (isolated)");
-        System.out.println("components: " + uf.getComponentCount());
+        System.out.println("MST weight:     " + mstWeight);
+        System.out.println("MST complete:   " + (uf.componentCount() == 1));
     }
 }

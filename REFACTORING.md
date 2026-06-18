@@ -1,50 +1,73 @@
 # Dijkstra's Shortest Path - Refactoring Summary
 
-## Improvements Made
+## Iteration 1: Type Safety & Naming
 
-### 1. **Introduced Type Safety with Dedicated Classes**
-   - **Before**: Raw `int[]` arrays with magic indices (0 for distance, 1 for node)
-   - **After**: 
-     - `Edge` class: Encapsulates destination and weight
-     - `QueueEntry` class: Replaces `int[]{distance, node}` arrays
-     - `Graph` class: Manages graph structure and operations
+### Improvements Made
 
-### 2. **Improved Naming Clarity**
-   - Replaced cryptic single-letter variables:
-     - `u`, `v` → `currentNode`, `neighbor`
-     - `w` → `weight`
-     - `d` → `currentDistance`, `newDistance`
-     - `p` → `edge`
-     - `src` → `sourceNode`
-     - `V` → `vertexCount`
-     - `pq` → `priorityQueue`
-     - `adj` → `adjacencyList`
+1. **Introduced Type Safety with Dedicated Classes**
+   - Replaced raw `int[]` arrays with `Edge` and `QueueEntry` classes
+   - Added `Graph` class for structure management
 
-### 3. **Separated Concerns**
-   - **Graph Building**: Isolated in `Graph` class
-   - **Algorithm Logic**: Moved to `ShortestPathSolver` class
-   - **Display/Entry Point**: Handled by `Main` class
-   - **Data Structure**: `Edge` and `QueueEntry` classes provide domain-specific types
+2. **Improved Naming Clarity**
+   - Renamed cryptic variables: `u`, `v`, `w`, `d`, `src`, `V`, `pq`, `adj`
+   - Used descriptive names: `currentNode`, `neighbor`, `weight`, `sourceNode`, `vertexCount`
 
-### 4. **Better Encapsulation**
-   - Graph internals (adjacencyList) are private with public accessor methods
-   - Graph handles its own initialization and edge addition
-   - Clear public interface: `addEdge()`, `getAdjacencyList()`, `getVertexCount()`
+3. **Separated Concerns**
+   - Graph building, algorithm logic, and display in separate classes
 
-### 5. **Comparable Implementation**
-   - `QueueEntry` implements `Comparable` for proper PriorityQueue ordering
-   - Removes fragile lambda comparator: `(a, b) -> a[0] - b[0]`
-   - More maintainable and prevents integer overflow in edge cases
+## Iteration 2: Architecture & Extensibility
 
-### 6. **Improved Code Readability**
-   - Method names describe intent: `solve()`, `printDistances()`
-   - Clear variable names in loops make algorithm flow obvious
-   - Comments implicit in structure (no need to guess what array indices mean)
+### Additional Improvements
+
+1. **Immutability & Robustness**
+   - Made `Edge` fields `final` and added getter methods
+   - Added `ShortestPathResult` class to encapsulate output
+   - Made adjacency lists unmodifiable via `Collections.unmodifiableList()`
+
+2. **Input Validation**
+   - Added `validateVertex()` in Graph class to prevent index out of bounds
+   - Added `validateSourceNode()` in solver to catch invalid source nodes
+   - Uses `Objects.requireNonNull()` for null safety
+
+3. **Better API Design**
+   - Changed `getAdjacencyList()` to `getAdjacencyListFor(vertex)` for clarity
+   - `ShortestPathResult` provides both list and single-node distance access
+   - Clear, type-safe result object instead of raw list
+
+4. **Method Extraction & Single Responsibility**
+   - Extracted `processQueueEntry()` for queue processing logic
+   - Extracted `relaxEdge()` for edge relaxation (core Dijkstra operation)
+   - Extracted `initializeDistances()` for setup logic
+   - Extracted `validateSourceNode()` for input validation
+   - Each method has one clear purpose
+
+5. **Builder Pattern**
+   - Added `GraphBuilder` for fluent, readable graph construction
+   - Enables chaining: `.addEdge().addEdge().addEdge().build()`
+   - More maintainable than inline edge additions
+
+6. **Renaming for Clarity**
+   - `QueueEntry` → `PriorityQueueEntry` (more specific)
+   - `ShortestPathSolver` → `DijkstraShortestPathSolver` (algorithm-specific)
+   - Constant `INFINITY` extracted for reuse
+
+7. **Documentation & Debugging**
+   - Added `toString()` methods to all domain classes for debugging
+   - Added `countEdges()` helper for graph introspection
+   - Better error messages with context
+
+8. **Getter Methods**
+   - Edge: `getDestination()`, `getWeight()`
+   - PriorityQueueEntry: `getDistance()`, `getNode()`
+   - ShortestPathResult: `getDistances()`, `getDistanceTo()`, `getSourceNode()`
+   - Follows Java conventions and enables future validation
 
 ## Result
-All functionality preserved, output matches original (0 4 7 9 10). The refactored code is:
-- More maintainable
-- Easier to test (each class has single responsibility)
-- Self-documenting through clear naming
-- Type-safe with dedicated classes
-- Scalable for future enhancements
+
+All functionality preserved, output matches original (0 4 7 9 10). The code is now:
+- **Immutable**: Less risk of accidental modification
+- **Validated**: Catches errors at boundaries
+- **Extensible**: Easy to add features (tracking predecessors, finding paths, etc.)
+- **Testable**: Each component can be unit tested independently
+- **Readable**: Builder pattern and small methods make flow crystal clear
+- **Debuggable**: `toString()` methods aid investigation

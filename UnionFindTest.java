@@ -5,6 +5,8 @@ public class UnionFindTest {
         testConnectivity();
         testMultipleUnions();
         testValidation();
+        testStatistics();
+        testReset();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -75,5 +77,31 @@ public class UnionFindTest {
         } catch (IllegalArgumentException e) {
             // Expected
         }
+    }
+
+    private static void testStatistics() {
+        UnionFind uf = new UnionFind(5);
+        uf.union(1, 2);
+        uf.union(2, 3);
+        uf.isConnected(1, 3);
+        DisjointSet.Statistics stats = uf.getStatistics();
+        assert stats.unionOperations == 2 : "Should have 2 union operations";
+        assert stats.findOperations >= 3 : "Should have at least 3 find operations";
+        System.out.println("✓ testStatistics passed (" + stats + ")");
+    }
+
+    private static void testReset() {
+        UnionFind uf = new UnionFind(5);
+        uf.union(1, 2);
+        uf.union(2, 3);
+        DisjointSet.Statistics statsBefore = uf.getStatistics();
+        assert statsBefore.unionOperations == 2 : "Should have recorded operations";
+
+        uf.reset();
+        DisjointSet.Statistics statsAfter = uf.getStatistics();
+        assert statsAfter.findOperations == 0 : "Statistics should be reset";
+        assert statsAfter.unionOperations == 0 : "Statistics should be reset";
+        assert !uf.isConnected(1, 2) : "Connections should be reset";
+        System.out.println("✓ testReset passed");
     }
 }

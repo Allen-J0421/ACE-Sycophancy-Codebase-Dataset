@@ -3,7 +3,7 @@ package com.example.dfs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DepthFirstSearchDemo {
+public final class DepthFirstSearchDemo {
 
     private static final int VERTEX_COUNT = 6;
     private static final int[][] SAMPLE_EDGES = {

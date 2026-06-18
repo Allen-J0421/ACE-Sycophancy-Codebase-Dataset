@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class DepthFirstSearch {
+public final class DepthFirstSearch {
 
     private DepthFirstSearch() {
     }

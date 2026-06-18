@@ -25,6 +25,12 @@ public class CoinChangeTest {
     testTracing();
     testServiceRegistry();
     testObservability();
+    testPluginSystem();
+    testValidationEngine();
+    testTransformationPipeline();
+    testCommandPattern();
+    testCompositeSolver();
+    testEventSourcing();
 
     System.out.println("\n=== Test Summary ===");
     System.out.println("Passed: " + testsPassed);
@@ -490,6 +496,172 @@ public class CoinChangeTest {
           collector.collect(new Observation(Observation.Type.REQUEST, "test"));
           String report = collector.generateReport();
           return report.contains("Observations Report");
+        });
+  }
+
+  private static void testPluginSystem() {
+    System.out.println("\nTesting Plugin System:");
+    test("Plugin: Loads and manages plugins",
+        () -> {
+          PluginManager manager = new PluginManager();
+          Plugin plugin = new Plugin() {
+            public String getName() { return "test"; }
+            public String getVersion() { return "1.0"; }
+            public void initialize() {}
+            public void shutdown() {}
+            public java.util.Map<String, Object> getMetadata() { return new java.util.HashMap<>(); }
+          };
+          manager.load(plugin);
+          return manager.getPlugin("test") != null;
+        });
+    test("Plugin: Unloads plugins",
+        () -> {
+          PluginManager manager = new PluginManager();
+          Plugin plugin = new Plugin() {
+            public String getName() { return "test"; }
+            public String getVersion() { return "1.0"; }
+            public void initialize() {}
+            public void shutdown() {}
+            public java.util.Map<String, Object> getMetadata() { return new java.util.HashMap<>(); }
+          };
+          manager.load(plugin);
+          manager.unload("test");
+          return manager.getPlugin("test") == null;
+        });
+    test("Plugin: Lists all plugins",
+        () -> {
+          PluginManager manager = new PluginManager();
+          return manager.getPluginCount() == 0;
+        });
+  }
+
+  private static void testValidationEngine() {
+    System.out.println("\nTesting Validation Engine:");
+    test("Validation: Validates with rules",
+        () -> {
+          ValidationEngine engine = new ValidationEngine();
+          engine.addRule(new ValidationRule() {
+            public boolean validate(int[] coins, int sum) { return coins != null; }
+            public String getErrorMessage() { return "null"; }
+            public String getRuleName() { return "NotNull"; }
+          });
+          return engine.validate(new int[]{1}, 5);
+        });
+    test("Validation: Detects failed rules",
+        () -> {
+          ValidationEngine engine = new ValidationEngine();
+          engine.addRule(new ValidationRule() {
+            public boolean validate(int[] coins, int sum) { return false; }
+            public String getErrorMessage() { return "failed"; }
+            public String getRuleName() { return "AlwaysFails"; }
+          });
+          return engine.getFailedRules(new int[]{1}, 5).size() == 1;
+        });
+    test("Validation: Generates report",
+        () -> {
+          ValidationEngine engine = new ValidationEngine();
+          String report = engine.generateValidationReport(new int[]{1}, 5);
+          return report.contains("Validation Report");
+        });
+  }
+
+  private static void testTransformationPipeline() {
+    System.out.println("\nTesting Transformation Pipeline:");
+    test("Transform: Chains transformations",
+        () -> {
+          TransformationPipeline pipeline = new TransformationPipeline();
+          pipeline.addTransformer(ctx -> {
+            ctx.setAttribute("transformed", true);
+            return ctx;
+          });
+          SolveContext ctx = new SolveContext("REQ", new int[]{1}, 1);
+          SolveContext result = pipeline.transform(ctx);
+          return "true".equals(String.valueOf(result.getAttribute("transformed")));
+        });
+    test("Transform: Counts transformers",
+        () -> {
+          TransformationPipeline pipeline = new TransformationPipeline();
+          pipeline.addTransformer(ctx -> ctx);
+          pipeline.addTransformer(ctx -> ctx);
+          return pipeline.getTransformerCount() == 2;
+        });
+  }
+
+  private static void testCommandPattern() {
+    System.out.println("\nTesting Command Pattern:");
+    test("Command: Executes and tracks history",
+        () -> {
+          CommandInvoker invoker = new CommandInvoker();
+          Command cmd = new Command() {
+            public void execute() {}
+            public void undo() {}
+            public String getDescription() { return "test"; }
+          };
+          invoker.execute(cmd);
+          return invoker.getHistorySize() == 1;
+        });
+    test("Command: Undoes operations",
+        () -> {
+          CommandInvoker invoker = new CommandInvoker();
+          Command cmd = new Command() {
+            public void execute() {}
+            public void undo() {}
+            public String getDescription() { return "test"; }
+          };
+          invoker.execute(cmd);
+          invoker.undo();
+          return invoker.getHistorySize() == 0;
+        });
+  }
+
+  private static void testCompositeSolver() {
+    System.out.println("\nTesting Composite Solver:");
+    test("Composite: Combines multiple solvers",
+        () -> {
+          CompositeSolver solver = new CompositeSolver("test");
+          solver.addSolver(new DynamicProgrammingStrategy());
+          solver.addSolver(new SpaceOptimizedStrategy());
+          return solver.getSolverCount() == 2;
+        });
+    test("Composite: Solves with all solvers",
+        () -> {
+          CompositeSolver solver = new CompositeSolver("test");
+          solver.addSolver(new DynamicProgrammingStrategy());
+          solver.addSolver(new SpaceOptimizedStrategy());
+          java.util.List<Integer> results = solver.solveWithAll(new int[]{1, 2}, 3);
+          return results.size() == 2;
+        });
+    test("Composite: Voting consensus",
+        () -> {
+          CompositeSolver solver = new CompositeSolver("test");
+          solver.addSolver(new DynamicProgrammingStrategy());
+          solver.addSolver(new SpaceOptimizedStrategy());
+          int consensus = solver.solveWithVoting(new int[]{1, 2}, 3);
+          return consensus == 2;
+        });
+  }
+
+  private static void testEventSourcing() {
+    System.out.println("\nTesting Event Sourcing:");
+    test("Events: Stores events",
+        () -> {
+          EventStore store = new EventStore();
+          store.append("TEST", new java.util.HashMap<>());
+          return store.getEventCount() == 1;
+        });
+    test("Events: Filters by type",
+        () -> {
+          EventStore store = new EventStore();
+          store.append("TYPE_A", new java.util.HashMap<>());
+          store.append("TYPE_B", new java.util.HashMap<>());
+          return store.getEventsByType("TYPE_A").size() == 1;
+        });
+    test("Events: Generates log",
+        () -> {
+          EventStore store = new EventStore();
+          store.append("TEST", new java.util.HashMap<>());
+          String log = store.generateEventLog();
+          return log.contains("Event Log");
         });
   }
 

@@ -14,9 +14,9 @@ public final class BinarySearch {
         Objects.requireNonNull(values, "values");
 
         int left = 0;
-        int right = values.length - 1;
+        int right = values.length;
 
-        while (left <= right) {
+        while (left < right) {
             int middle = middleIndex(left, right);
             int candidate = values[middle];
 
@@ -27,7 +27,7 @@ public final class BinarySearch {
             if (candidate < target) {
                 left = middle + 1;
             } else {
-                right = middle - 1;
+                right = middle;
             }
         }
 

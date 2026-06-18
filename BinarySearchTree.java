@@ -1,9 +1,6 @@
 import java.util.Objects;
 
 public final class BinarySearchTree<T extends Comparable<? super T>> {
-    private static final Integer SEARCH_KEY = 7;
-    private static final Integer[] SAMPLE_VALUES = {6, 2, 8, 7, 9};
-
     private Node<T> root;
 
     @SafeVarargs
@@ -84,12 +81,6 @@ public final class BinarySearchTree<T extends Comparable<? super T>> {
         }
 
         return false;
-    }
-
-    public static void main(String[] args) {
-        BinarySearchTree<Integer> tree = BinarySearchTree.fromValues(SAMPLE_VALUES);
-
-        System.out.println(tree.contains(SEARCH_KEY));
     }
 
     private static final class Node<T> {

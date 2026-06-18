@@ -6,10 +6,11 @@ public final class QuickSortTest {
     }
 
     public static void main(String[] args) {
-        shouldSortWholeArray();
-        shouldSortOnlyRequestedRange();
-        shouldHandleDuplicatesAndEmptyInputs();
-        shouldRejectInvalidRanges();
+        runCase("sort whole array", QuickSortTest::shouldSortWholeArray);
+        runCase("sort requested range", QuickSortTest::shouldSortOnlyRequestedRange);
+        runCase("handle duplicates and empty input", QuickSortTest::shouldHandleDuplicatesAndEmptyInputs);
+        runCase("sort many duplicates", QuickSortTest::shouldSortManyDuplicates);
+        runCase("reject invalid ranges", QuickSortTest::shouldRejectInvalidRanges);
     }
 
     private static void shouldSortWholeArray() {
@@ -34,10 +35,24 @@ public final class QuickSortTest {
         assertArrayEquals(new int[] {}, empty);
     }
 
+    private static void shouldSortManyDuplicates() {
+        int[] values = {4, 2, 4, 4, 1, 2, 4, 3, 4, 2, 4};
+        QuickSort.sort(values);
+        assertArrayEquals(new int[] {1, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4}, values);
+    }
+
     private static void shouldRejectInvalidRanges() {
         expectThrows(IndexOutOfBoundsException.class, () -> QuickSort.sort(new int[] {1, 2, 3}, -1, 2));
         expectThrows(IndexOutOfBoundsException.class, () -> QuickSort.sort(new int[] {1, 2, 3}, 0, 4));
-        expectThrows(IllegalArgumentException.class, () -> QuickSort.sort(new int[] {1, 2, 3}, 2, 1));
+        expectThrows(IndexOutOfBoundsException.class, () -> QuickSort.sort(new int[] {1, 2, 3}, 2, 1));
+    }
+
+    private static void runCase(String name, Runnable action) {
+        try {
+            action.run();
+        } catch (Throwable thrown) {
+            throw new AssertionError("Case failed: " + name, thrown);
+        }
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual) {

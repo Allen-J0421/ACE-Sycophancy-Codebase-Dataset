@@ -28,53 +28,65 @@ public final class QuickSort {
 
     private static void quickSort(int[] values, int left, int rightExclusive) {
         while (rightExclusive - left > INSERTION_SORT_THRESHOLD) {
-            int pivotIndex = partition(values, left, rightExclusive);
+            Partition partition = partition(values, left, rightExclusive);
+            int leftSize = partition.lessThanEndExclusive() - left;
+            int rightSize = rightExclusive - partition.greaterThanStart();
 
-            if (pivotIndex - left < rightExclusive - (pivotIndex + 1)) {
-                quickSort(values, left, pivotIndex);
-                left = pivotIndex + 1;
+            if (leftSize < rightSize) {
+                quickSort(values, left, partition.lessThanEndExclusive());
+                left = partition.greaterThanStart();
             } else {
-                quickSort(values, pivotIndex + 1, rightExclusive);
-                rightExclusive = pivotIndex;
+                quickSort(values, partition.greaterThanStart(), rightExclusive);
+                rightExclusive = partition.lessThanEndExclusive();
             }
         }
 
         insertionSort(values, left, rightExclusive);
     }
 
-    private static int partition(int[] values, int left, int rightExclusive) {
-        int right = rightExclusive - 1;
-        int pivotIndex = medianOfThree(values, left, right);
-        int pivot = values[pivotIndex];
-        swap(values, pivotIndex, right);
+    private static Partition partition(int[] values, int left, int rightExclusive) {
+        int pivot = medianOfThreeValue(values, left, rightExclusive);
+        int lessThan = left;
+        int index = left;
+        int greaterThan = rightExclusive - 1;
 
-        int storeIndex = left;
-
-        for (int index = left; index < right; index++) {
-            if (values[index] < pivot) {
-                swap(values, storeIndex, index);
-                storeIndex++;
+        while (index <= greaterThan) {
+            int current = values[index];
+            if (current < pivot) {
+                swap(values, lessThan, index);
+                lessThan++;
+                index++;
+            } else if (current > pivot) {
+                swap(values, index, greaterThan);
+                greaterThan--;
+            } else {
+                index++;
             }
         }
 
-        swap(values, storeIndex, right);
-        return storeIndex;
+        return new Partition(lessThan, greaterThan + 1);
     }
 
-    private static int medianOfThree(int[] values, int left, int right) {
-        int middle = left + ((right - left) >>> 1);
+    private static int medianOfThreeValue(int[] values, int left, int rightExclusive) {
+        int middle = left + ((rightExclusive - left - 1) >>> 1);
+        int right = rightExclusive - 1;
 
-        if (values[left] > values[middle]) {
-            swap(values, left, middle);
-        }
-        if (values[left] > values[right]) {
-            swap(values, left, right);
-        }
-        if (values[middle] > values[right]) {
-            swap(values, middle, right);
+        int leftValue = values[left];
+        int middleValue = values[middle];
+        int rightValue = values[right];
+
+        if (leftValue < middleValue) {
+            if (middleValue < rightValue) {
+                return middleValue;
+            }
+            return Math.max(leftValue, rightValue);
         }
 
-        return middle;
+        if (leftValue < rightValue) {
+            return leftValue;
+        }
+
+        return Math.max(middleValue, rightValue);
     }
 
     private static void insertionSort(int[] values, int left, int rightExclusive) {
@@ -95,5 +107,23 @@ public final class QuickSort {
         int temp = values[first];
         values[first] = values[second];
         values[second] = temp;
+    }
+
+    private static final class Partition {
+        private final int lessThanEndExclusive;
+        private final int greaterThanStart;
+
+        private Partition(int lessThanEndExclusive, int greaterThanStart) {
+            this.lessThanEndExclusive = lessThanEndExclusive;
+            this.greaterThanStart = greaterThanStart;
+        }
+
+        private int lessThanEndExclusive() {
+            return lessThanEndExclusive;
+        }
+
+        private int greaterThanStart() {
+            return greaterThanStart;
+        }
     }
 }

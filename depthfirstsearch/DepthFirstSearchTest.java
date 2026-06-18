@@ -11,6 +11,7 @@ public final class DepthFirstSearchTest {
     public static void main(String[] args) {
         shouldTraverseEveryComponent();
         shouldTraverseSingleComponent();
+        shouldTraverseIntoCallback();
         shouldRejectInvalidStartVertex();
         shouldExposeImmutableNeighbors();
         shouldRejectMalformedEdgeList();
@@ -26,6 +27,15 @@ public final class DepthFirstSearchTest {
         Graph graph = sampleGraph();
 
         assertEquals(List.of(5, 4), DepthFirstSearch.traverseFrom(graph, 5));
+    }
+
+    private static void shouldTraverseIntoCallback() {
+        Graph graph = sampleGraph();
+        var order = new java.util.ArrayList<Integer>();
+
+        DepthFirstSearch.traverseFrom(graph, 5, order::add);
+
+        assertEquals(List.of(5, 4), order);
     }
 
     private static void shouldRejectInvalidStartVertex() {

@@ -2,8 +2,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class AdjacencyListGraph implements Graph {
+final class AdjacencyListGraph implements MutableGraph {
     private final List<List<Integer>> adjacencyList;
+    private final List<List<Integer>> adjacencyViews;
 
     AdjacencyListGraph(int vertexCount) {
         if (vertexCount < 0) {
@@ -11,8 +12,11 @@ final class AdjacencyListGraph implements Graph {
         }
 
         adjacencyList = new ArrayList<>(vertexCount);
+        adjacencyViews = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
+            List<Integer> neighbors = new ArrayList<>();
+            adjacencyList.add(neighbors);
+            adjacencyViews.add(Collections.unmodifiableList(neighbors));
         }
     }
 
@@ -21,18 +25,23 @@ final class AdjacencyListGraph implements Graph {
         return adjacencyList.size();
     }
 
-    void addUndirectedEdge(int from, int to) {
+    @Override
+    public void addUndirectedEdge(int from, int to) {
         validateVertex(from);
         validateVertex(to);
 
-        adjacencyList.get(from).add(to);
-        adjacencyList.get(to).add(from);
+        addDirectedEdge(from, to);
+        addDirectedEdge(to, from);
     }
 
     @Override
     public List<Integer> neighborsOf(int vertex) {
         validateVertex(vertex);
-        return Collections.unmodifiableList(adjacencyList.get(vertex));
+        return adjacencyViews.get(vertex);
+    }
+
+    private void addDirectedEdge(int from, int to) {
+        adjacencyList.get(from).add(to);
     }
 
     private void validateVertex(int vertex) {

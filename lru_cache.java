@@ -7,7 +7,7 @@ class LRUCache {
     private final Map<Integer, Integer> cache;
 
     LRUCache(int capacity) {
-        this.cache = new BoundedAccessOrderMap(capacity);
+        this.cache = new BoundedAccessOrderMap(requireNonNegativeCapacity(capacity));
     }
 
     int get(int key) {
@@ -17,6 +17,14 @@ class LRUCache {
 
     void put(int key, int value) {
         cache.put(key, value);
+    }
+
+    private static int requireNonNegativeCapacity(int capacity) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException("capacity must be non-negative");
+        }
+
+        return capacity;
     }
 
     private static final class BoundedAccessOrderMap extends LinkedHashMap<Integer, Integer> {

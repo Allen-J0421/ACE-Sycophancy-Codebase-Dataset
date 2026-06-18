@@ -60,8 +60,14 @@ class LRUCache {
 }
 
 class Main {
+    private static final int EXAMPLE_CACHE_CAPACITY = 2;
+
     public static void main(String[] args) {
-        LRUCache cache = new LRUCache(2);
+        runExample();
+    }
+
+    private static void runExample() {
+        LRUCache cache = new LRUCache(EXAMPLE_CACHE_CAPACITY);
 
         cache.put(1, 1);
         cache.put(2, 2);

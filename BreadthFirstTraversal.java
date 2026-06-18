@@ -5,11 +5,12 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
-final class BreadthFirstTraversal {
-    private BreadthFirstTraversal() {
+final class BreadthFirstTraversal implements GraphTraversal {
+    BreadthFirstTraversal() {
     }
 
-    static List<Integer> traverse(Graph graph) {
+    @Override
+    public List<Integer> traverse(Graph graph) {
         Objects.requireNonNull(graph, "graph must not be null");
 
         boolean[] visited = new boolean[graph.vertexCount()];
@@ -24,7 +25,7 @@ final class BreadthFirstTraversal {
         return Collections.unmodifiableList(traversal);
     }
 
-    private static void traverseComponent(
+    private void traverseComponent(
             Graph graph,
             int source,
             boolean[] visited,
@@ -42,7 +43,7 @@ final class BreadthFirstTraversal {
         }
     }
 
-    private static void enqueueUnvisitedNeighbors(
+    private void enqueueUnvisitedNeighbors(
             Graph graph,
             int current,
             boolean[] visited,

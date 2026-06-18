@@ -1,42 +1,51 @@
 public class DisjointSetStructure {
     private int[] parent;
     private int[] rank;
-    private UnionStrategy strategy;
+    private UnionStrategy unionStrategy;
+    private FindStrategy findStrategy;
 
-    public DisjointSetStructure(int size, UnionStrategy strategy) {
+    public DisjointSetStructure(int size, UnionStrategy unionStrategy, FindStrategy findStrategy) {
         this.parent = new int[size];
         this.rank = new int[size];
-        this.strategy = strategy;
+        this.unionStrategy = unionStrategy;
+        this.findStrategy = findStrategy;
         initialize();
     }
 
+    public DisjointSetStructure(int size, UnionStrategy unionStrategy) {
+        this(size, unionStrategy, new PathCompressionFindStrategy());
+    }
+
     public DisjointSetStructure(int size) {
-        this(size, new RankBasedUnionStrategy());
+        this(size, new RankBasedUnionStrategy(), new PathCompressionFindStrategy());
     }
 
     public int find(int i) {
-        if (parent[i] != i) {
-            parent[i] = find(parent[i]);
-        }
-        return parent[i];
+        return findStrategy.find(parent, i);
     }
 
     public void union(int irep, int jrep) {
         if (irep == jrep) {
             return;
         }
-        strategy.union(parent, rank, irep, jrep);
+        unionStrategy.union(parent, rank, irep, jrep);
     }
 
     public void reset() {
-        strategy.reset(parent, rank);
+        unionStrategy.reset(parent, rank);
+        findStrategy.reset(parent);
     }
 
-    public void setStrategy(UnionStrategy newStrategy) {
-        this.strategy = newStrategy;
+    public void setUnionStrategy(UnionStrategy newStrategy) {
+        this.unionStrategy = newStrategy;
+    }
+
+    public void setFindStrategy(FindStrategy newStrategy) {
+        this.findStrategy = newStrategy;
     }
 
     private void initialize() {
-        strategy.reset(parent, rank);
+        unionStrategy.reset(parent, rank);
+        findStrategy.reset(parent);
     }
 }

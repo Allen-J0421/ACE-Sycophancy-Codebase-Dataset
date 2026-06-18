@@ -3,10 +3,14 @@ public class UnionFind implements DisjointSet {
     private IndexValidator validator;
     private OperationCounter counter;
 
-    private UnionFind(int size, UnionStrategy strategy) {
+    private UnionFind(int size, UnionStrategy unionStrategy, FindStrategy findStrategy) {
         this.validator = new IndexValidator(size);
-        this.structure = new DisjointSetStructure(size, strategy);
+        this.structure = new DisjointSetStructure(size, unionStrategy, findStrategy);
         this.counter = new OperationCounter();
+    }
+
+    private UnionFind(int size, UnionStrategy strategy) {
+        this(size, strategy, new PathCompressionFindStrategy());
     }
 
     private UnionFind(int size) {
@@ -59,15 +63,25 @@ public class UnionFind implements DisjointSet {
 
     public static class UnionFindBuilder {
         private int size;
-        private UnionStrategy strategy = new RankBasedUnionStrategy();
+        private UnionStrategy unionStrategy = new RankBasedUnionStrategy();
+        private FindStrategy findStrategy = new PathCompressionFindStrategy();
 
         public UnionFindBuilder withSize(int size) {
             this.size = size;
             return this;
         }
 
+        public UnionFindBuilder withUnionStrategy(UnionStrategy strategy) {
+            this.unionStrategy = strategy;
+            return this;
+        }
+
         public UnionFindBuilder withStrategy(UnionStrategy strategy) {
-            this.strategy = strategy;
+            return withUnionStrategy(strategy);
+        }
+
+        public UnionFindBuilder withFindStrategy(FindStrategy strategy) {
+            this.findStrategy = strategy;
             return this;
         }
 
@@ -75,7 +89,7 @@ public class UnionFind implements DisjointSet {
             if (size <= 0) {
                 throw new IllegalArgumentException("Size must be set and positive");
             }
-            return new UnionFind(size, strategy);
+            return new UnionFind(size, unionStrategy, findStrategy);
         }
     }
 }

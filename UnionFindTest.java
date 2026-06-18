@@ -9,6 +9,7 @@ public class UnionFindTest {
         testReset();
         testBuilder();
         testStrategies();
+        testFindStrategies();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -152,5 +153,35 @@ public class UnionFindTest {
         uf.union(2, 3);
         assert uf.isConnected(1, 3) : "Simple strategy should maintain connections";
         System.out.println("✓ testSimpleStrategy passed");
+    }
+
+    private static void testFindStrategies() {
+        testPathCompressionFindStrategy();
+        testSimpleFindStrategy();
+    }
+
+    private static void testPathCompressionFindStrategy() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withUnionStrategy(new RankBasedUnionStrategy())
+            .withFindStrategy(new PathCompressionFindStrategy())
+            .build();
+        uf.union(0, 1);
+        uf.union(1, 2);
+        uf.union(2, 3);
+        assert uf.isConnected(0, 3) : "Path compression should maintain connectivity";
+        System.out.println("✓ testPathCompressionFindStrategy passed");
+    }
+
+    private static void testSimpleFindStrategy() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withUnionStrategy(new SimpleUnionStrategy())
+            .withFindStrategy(new SimpleFindStrategy())
+            .build();
+        uf.union(0, 1);
+        uf.union(1, 2);
+        assert uf.isConnected(0, 2) : "Simple find should maintain connectivity";
+        System.out.println("✓ testSimpleFindStrategy passed");
     }
 }

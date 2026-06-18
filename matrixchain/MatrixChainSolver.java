@@ -30,7 +30,9 @@ final class MatrixChainSolver {
             }
         }
 
-        return new MatrixChainResult(dp[1][n], buildParenthesization(split, 1, n));
+        StringBuilder sb = new StringBuilder();
+        appendParenthesization(sb, split, 1, n);
+        return new MatrixChainResult(dp[1][n], sb.toString());
     }
 
     private static int[] buildValidatedDimsArray(MatrixDimensions[] matrices) {
@@ -46,12 +48,6 @@ final class MatrixChainSolver {
             }
         }
         return dims;
-    }
-
-    private static String buildParenthesization(int[][] split, int i, int j) {
-        StringBuilder sb = new StringBuilder();
-        appendParenthesization(sb, split, i, j);
-        return sb.toString();
     }
 
     private static void appendParenthesization(StringBuilder sb, int[][] split, int i, int j) {

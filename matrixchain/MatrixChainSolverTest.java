@@ -51,6 +51,8 @@ public class MatrixChainSolverTest {
         MatrixDimensions c = new MatrixDimensions(3, 5);
         assertEquals(a, b);
         assertFalse(a.equals(c), "Different dimensions should not be equal");
+        assertFalse(a.equals(null), "Dimensions should not equal null");
+        assertFalse(a.equals("3x4"), "Dimensions should not equal a different type");
         assertTrue(a.hashCode() == b.hashCode(), "Equal dimensions should have equal hash codes");
     }
 
@@ -67,8 +69,12 @@ public class MatrixChainSolverTest {
         MatrixChainResult a = new MatrixChainResult(42, "(A1 x A2)");
         MatrixChainResult b = new MatrixChainResult(42, "(A1 x A2)");
         MatrixChainResult c = new MatrixChainResult(99, "(A1 x A2)");
+        MatrixChainResult d = new MatrixChainResult(42, "(A1 x (A2 x A3))");
         assertEquals(a, b);
         assertFalse(a.equals(c), "Results with different costs should not be equal");
+        assertFalse(a.equals(d), "Results with different parenthesizations should not be equal");
+        assertFalse(a.equals(null), "Result should not equal null");
+        assertFalse(a.equals("42"), "Result should not equal a different type");
         assertTrue(a.hashCode() == b.hashCode(), "Equal results should have equal hash codes");
     }
 
@@ -160,6 +166,8 @@ public class MatrixChainSolverTest {
                 () -> MatrixChainArguments.parse(new String[]{"abc", "10"}));
         assertThrows(IllegalArgumentException.class,
                 () -> MatrixChainArguments.parse(new String[]{"0", "10"}));
+        assertThrows(IllegalArgumentException.class,
+                () -> MatrixChainArguments.parse(new String[]{"-5", "10"}));
     }
 
     public static void main(String[] args) {

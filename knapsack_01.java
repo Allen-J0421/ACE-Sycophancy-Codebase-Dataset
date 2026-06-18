@@ -23,11 +23,15 @@ final class Knapsack {
             for (Item item : items) {
                 include(item);
             }
-            return capacityTable.maxValueAt(capacityTable.capacity());
+            return capacityTable.maxValueAt(capacityTable.maximumCapacity());
         }
 
         private void include(Item item) {
-            for (int currentCapacity = capacityTable.capacity(); item.fitsWithin(currentCapacity); currentCapacity--) {
+            for (
+                    int currentCapacity = capacityTable.maximumCapacity();
+                    item.fitsWithin(currentCapacity);
+                    currentCapacity--
+            ) {
                 capacityTable.setMaxValueAt(
                         currentCapacity,
                         bestValueForCapacity(currentCapacity, item)
@@ -49,7 +53,7 @@ final class Knapsack {
             maxValueByCapacity = new int[capacity + 1];
         }
 
-        private int capacity() {
+        private int maximumCapacity() {
             return maxValueByCapacity.length - 1;
         }
 

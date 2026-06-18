@@ -1,11 +1,8 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
 class Dijkstra {
-    private static final int INFINITE_DISTANCE = Integer.MAX_VALUE;
-
     private Dijkstra() {
     }
 
@@ -30,7 +27,7 @@ class Dijkstra {
     static List<Integer> shortestPathsFrom(WeightedGraph graph, int source) {
         validateSource(graph, source);
 
-        int[] distances = initializeDistances(graph.vertexCount(), source);
+        DistanceTable distances = DistanceTable.withSource(graph.vertexCount(), source);
         PriorityQueue<NodeDistance> queue =
                 new PriorityQueue<>((a, b) -> Integer.compare(a.distance, b.distance));
 
@@ -39,14 +36,14 @@ class Dijkstra {
         while (!queue.isEmpty()) {
             NodeDistance current = queue.poll();
 
-            if (current.distance > distances[current.node]) {
+            if (distances.hasShorterPathTo(current.node, current.distance)) {
                 continue;
             }
 
             relaxEdges(graph, current, distances, queue);
         }
 
-        return toList(distances);
+        return distances.toList();
     }
 
     static void addEdge(ArrayList<ArrayList<int[]>> adjacency, int u, int v, int weight) {
@@ -62,37 +59,16 @@ class Dijkstra {
         }
     }
 
-    private static int[] initializeDistances(int vertexCount, int source) {
-        int[] distances = new int[vertexCount];
-        Arrays.fill(distances, INFINITE_DISTANCE);
-        distances[source] = 0;
-        return distances;
-    }
-
     private static void relaxEdges(
             WeightedGraph graph,
             NodeDistance current,
-            int[] distances,
+            DistanceTable distances,
             PriorityQueue<NodeDistance> queue) {
         for (Edge edge : graph.edgesFrom(current.node)) {
-            if (current.distance > INFINITE_DISTANCE - edge.weight()) {
-                continue;
-            }
-
-            int candidateDistance = current.distance + edge.weight();
-            if (candidateDistance < distances[edge.destination()]) {
-                distances[edge.destination()] = candidateDistance;
-                queue.offer(new NodeDistance(edge.destination(), candidateDistance));
+            if (distances.tryRelax(current.node, edge)) {
+                queue.offer(new NodeDistance(edge.destination(), distances.distanceTo(edge.destination())));
             }
         }
-    }
-
-    private static ArrayList<Integer> toList(int[] distances) {
-        ArrayList<Integer> result = new ArrayList<>();
-        for (int distance : distances) {
-            result.add(distance);
-        }
-        return result;
     }
 
     public static void main(String[] args) {

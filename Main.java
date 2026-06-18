@@ -8,7 +8,7 @@ public final class Main {
 
     public static void main(String[] args) {
         List<Integer> result = ShortestPath.shortestPaths(
-            SampleGraphs.weightedUndirectedExample(),
+            GraphFixtures.weightedUndirectedExample(),
             SAMPLE_SOURCE
         );
         System.out.println(formatDistances(result));

@@ -13,26 +13,17 @@ public final class ShortestPathTest {
     }
 
     private static void verifiesSampleGraphDistances() {
-        List<Integer> distances = ShortestPath.shortestPaths(SampleGraphs.weightedUndirectedExample(), 0);
+        List<Integer> distances = ShortestPath.shortestPaths(GraphFixtures.weightedUndirectedExample(), 0);
         assertDistances("sample graph", distances, 0, 4, 7, 9, 10);
     }
 
     private static void verifiesBuilderChainingBuildsGraph() {
-        Graph graph = GraphBuilder.withVertexCount(3)
-            .addUndirectedEdge(0, 1, 2)
-            .addUndirectedEdge(1, 2, 1)
-            .build();
-
-        List<Integer> distances = ShortestPath.shortestPaths(graph, 0);
+        List<Integer> distances = ShortestPath.shortestPaths(GraphFixtures.threeVertexChain(), 0);
         assertDistances("builder chaining", distances, 0, 2, 3);
     }
 
     private static void verifiesUnreachableVerticesRemainInfinite() {
-        Graph graph = GraphBuilder.withVertexCount(3)
-            .addUndirectedEdge(0, 1, 5)
-            .build();
-
-        List<Integer> distances = ShortestPath.shortestPaths(graph, 0);
+        List<Integer> distances = ShortestPath.shortestPaths(GraphFixtures.threeVertexGraphWithUnreachableTail(), 0);
         assertDistances("unreachable vertex", distances, 0, 5, Integer.MAX_VALUE);
     }
 

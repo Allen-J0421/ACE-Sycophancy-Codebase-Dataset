@@ -149,6 +149,14 @@ public class Main {
 
         System.out.println("\n--- Performance Optimization ---");
         demonstratePerformanceOptimization();
+
+        demonstrateSecurityContext();
+
+        demonstrateFeatureFlags();
+
+        demonstrateIdempotency();
+
+        demonstrateContentNegotiation();
     }
 
     private static void demonstrateDependencyInjection() {
@@ -242,6 +250,70 @@ public class Main {
         PerformanceOptimizer optimizer = new PerformanceOptimizer(graph);
         PerformanceOptimizer.OptimizationReport report = optimizer.analyze();
         report.print();
+    }
+
+    private static void demonstrateSecurityContext() {
+        System.out.println("\n--- Security Context ---");
+        java.util.Set<String> roles = new java.util.HashSet<>();
+        roles.add("admin");
+        roles.add("user");
+
+        SecurityContext secCtx = new SecurityContext("user-123", roles, 3600000);
+        System.out.println("Principal: " + secCtx.getPrincipalId());
+        System.out.println("Roles: " + secCtx.getRoles());
+        System.out.println("Has admin role? " + secCtx.hasRole("admin"));
+        System.out.println("Authenticated? " + secCtx.isAuthenticated());
+
+        secCtx.setAttribute("department", "Engineering");
+        System.out.println("Department: " + secCtx.getAttribute("department"));
+    }
+
+    private static void demonstrateFeatureFlags() {
+        System.out.println("\n--- Feature Flags ---");
+        FeatureFlags flags = FeatureFlags.getInstance();
+
+        System.out.println("Cache enabled? " + flags.isEnabled("cache_enabled"));
+        System.out.println("Tracing enabled? " + flags.isEnabled("tracing_enabled"));
+
+        flags.disableFeature("cache_enabled");
+        System.out.println("After disable - Cache enabled? " + flags.isEnabled("cache_enabled"));
+
+        flags.enableFeature("cache_enabled");
+        System.out.println("After enable - Cache enabled? " + flags.isEnabled("cache_enabled"));
+    }
+
+    private static void demonstrateIdempotency() {
+        System.out.println("\n--- Idempotency Management ---");
+        IdempotencyManager idempotency = IdempotencyManager.getInstance();
+        idempotency.clear();
+
+        String key1 = "request-001";
+        String key2 = "request-002";
+
+        System.out.println("Key1 processed? " + idempotency.isIdempotencyKeyProcessed(key1));
+        idempotency.recordIdempotencyKey(key1, "result-1");
+        System.out.println("Key1 processed after recording? " + idempotency.isIdempotencyKeyProcessed(key1));
+        System.out.println("Result for Key1: " + idempotency.getResult(key1));
+
+        idempotency.recordIdempotencyKey(key2, "result-2");
+        System.out.println("Key2 result: " + idempotency.getResult(key2));
+    }
+
+    private static void demonstrateContentNegotiation() {
+        System.out.println("\n--- Content Negotiation ---");
+        Object data = "Graph traversal result";
+
+        String jsonOutput = ContentNegotiation.serialize(data, ContentNegotiation.ContentType.JSON);
+        System.out.println("JSON: " + jsonOutput);
+
+        String xmlOutput = ContentNegotiation.serialize(data, ContentNegotiation.ContentType.XML);
+        System.out.println("XML: " + xmlOutput);
+
+        String yamlOutput = ContentNegotiation.serialize(data, ContentNegotiation.ContentType.YAML);
+        System.out.println("YAML: " + yamlOutput);
+
+        ContentNegotiation.ContentType negotiated = ContentNegotiation.negotiate("application/json");
+        System.out.println("Negotiated type: " + negotiated);
     }
 
     private static void demonstrateLevel8Features() {

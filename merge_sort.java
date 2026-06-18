@@ -1,4 +1,5 @@
 class MergeSort {
+    private static final int[] SAMPLE_VALUES = {38, 27, 43, 10};
 
     private MergeSort() {
         // Utility class.
@@ -36,16 +37,14 @@ class MergeSort {
 
         private void mergePass(int[] source, int[] target, int width) {
             for (int start = 0; start < length; start += width * 2) {
-                int middle = Math.min(start + width, length);
-                int end = Math.min(start + (width * 2), length);
-                mergeRange(source, target, start, middle, end);
+                mergeRange(source, target, MergeWindow.from(start, width, length));
             }
         }
 
-        private void mergeRange(int[] source, int[] target, int start, int middle, int end) {
-            Run left = new Run(source, start, middle);
-            Run right = new Run(source, middle, end);
-            int targetIndex = start;
+        private void mergeRange(int[] source, int[] target, MergeWindow window) {
+            Run left = new Run(source, window.start, window.middle);
+            Run right = new Run(source, window.middle, window.end);
+            int targetIndex = window.start;
 
             while (left.hasRemaining() && right.hasRemaining()) {
                 if (left.peek() <= right.peek()) {
@@ -68,6 +67,24 @@ class MergeSort {
         private void copyBackIfNeeded(int[] source) {
             if (source != values) {
                 System.arraycopy(source, 0, values, 0, length);
+            }
+        }
+
+        private static final class MergeWindow {
+            private final int start;
+            private final int middle;
+            private final int end;
+
+            private MergeWindow(int start, int middle, int end) {
+                this.start = start;
+                this.middle = middle;
+                this.end = end;
+            }
+
+            private static MergeWindow from(int start, int width, int length) {
+                int middle = Math.min(start + width, length);
+                int end = Math.min(start + (width * 2), length);
+                return new MergeWindow(start, middle, end);
             }
         }
 
@@ -117,14 +134,19 @@ class MergeSort {
     }
 
     private static void printArray(int[] values) {
+        System.out.println(formatArray(values));
+    }
+
+    private static String formatArray(int[] values) {
+        StringBuilder builder = new StringBuilder();
         for (int value : values) {
-            System.out.print(value + " ");
+            builder.append(value).append(' ');
         }
-        System.out.println();
+        return builder.toString();
     }
 
     public static void main(String[] args) {
-        int[] values = {38, 27, 43, 10};
+        int[] values = SAMPLE_VALUES.clone();
 
         sort(values);
         printArray(values);

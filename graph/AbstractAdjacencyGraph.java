@@ -19,8 +19,4 @@ abstract class AbstractAdjacencyGraph implements Graph {
         requireVertex(vertex);
         return adjacencyViews.get(vertex);
     }
-
-    protected final List<List<Integer>> adjacencyViews() {
-        return adjacencyViews;
-    }
 }

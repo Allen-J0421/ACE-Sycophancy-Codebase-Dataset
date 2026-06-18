@@ -21,6 +21,11 @@ public final class MergeSort {
 
         mergeSort(values, buffer, start, middle);
         mergeSort(values, buffer, middle, end);
+
+        if (values[middle - 1] <= values[middle]) {
+            return;
+        }
+
         merge(values, buffer, start, middle, end);
     }
 
@@ -41,10 +46,6 @@ public final class MergeSort {
 
         while (leftIndex < middle) {
             values[mergedIndex++] = buffer[leftIndex++];
-        }
-
-        while (rightIndex < end) {
-            values[mergedIndex++] = buffer[rightIndex++];
         }
     }
 

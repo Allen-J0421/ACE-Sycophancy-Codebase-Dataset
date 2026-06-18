@@ -13,17 +13,7 @@ public final class BuildHeap {
         int currentIndex = rootIndex;
 
         while (true) {
-            int largestIndex = currentIndex;
-            int leftChildIndex = leftChildIndex(currentIndex);
-            int rightChildIndex = rightChildIndex(currentIndex);
-
-            if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
-                largestIndex = leftChildIndex;
-            }
-
-            if (rightChildIndex < heapSize && values[rightChildIndex] > values[largestIndex]) {
-                largestIndex = rightChildIndex;
-            }
+            int largestIndex = largerChildIndex(values, heapSize, currentIndex);
 
             if (largestIndex == currentIndex) {
                 return;
@@ -56,14 +46,7 @@ public final class BuildHeap {
         for (int parentIndex = 0, lastParentIndex = lastParentIndex(heapSize);
                 parentIndex <= lastParentIndex;
                 parentIndex++) {
-            int leftChildIndex = leftChildIndex(parentIndex);
-            int rightChildIndex = rightChildIndex(parentIndex);
-
-            if (leftChildIndex < heapSize && values[parentIndex] < values[leftChildIndex]) {
-                return false;
-            }
-
-            if (rightChildIndex < heapSize && values[parentIndex] < values[rightChildIndex]) {
+            if (largerChildIndex(values, heapSize, parentIndex) != parentIndex) {
                 return false;
             }
         }
@@ -88,6 +71,22 @@ public final class BuildHeap {
 
     private static int rightChildIndex(int parentIndex) {
         return 2 * parentIndex + 2;
+    }
+
+    private static int largerChildIndex(int[] values, int heapSize, int parentIndex) {
+        int largestIndex = parentIndex;
+        int leftChildIndex = leftChildIndex(parentIndex);
+        int rightChildIndex = rightChildIndex(parentIndex);
+
+        if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
+            largestIndex = leftChildIndex;
+        }
+
+        if (rightChildIndex < heapSize && values[rightChildIndex] > values[largestIndex]) {
+            largestIndex = rightChildIndex;
+        }
+
+        return largestIndex;
     }
 
     private static int lastParentIndex(int heapSize) {

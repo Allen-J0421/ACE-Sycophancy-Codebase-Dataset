@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -81,8 +82,12 @@ final class Edge {
 final class Graph {
     private final List<List<Edge>> adjacency;
 
-    Graph(List<List<Edge>> adjacency) {
+    private Graph(List<List<Edge>> adjacency) {
         this.adjacency = adjacency;
+    }
+
+    static Graph fromMutableAdjacency(List<List<Edge>> adjacency) {
+        return new Graph(freezeAdjacency(adjacency));
     }
 
     List<Edge> neighborsOf(int vertex) {
@@ -96,6 +101,14 @@ final class Graph {
 
     void validateSource(int source) {
         GraphChecks.validateVertex(source, vertexCount(), "src");
+    }
+
+    private static List<List<Edge>> freezeAdjacency(List<List<Edge>> adjacency) {
+        List<List<Edge>> frozenAdjacency = new ArrayList<>(adjacency.size());
+        for (List<Edge> edges : adjacency) {
+            frozenAdjacency.add(Collections.unmodifiableList(new ArrayList<>(edges)));
+        }
+        return Collections.unmodifiableList(frozenAdjacency);
     }
 }
 
@@ -130,15 +143,7 @@ final class GraphBuilder {
     }
 
     Graph build() {
-        return new Graph(copyAdjacency());
-    }
-
-    private List<List<Edge>> copyAdjacency() {
-        List<List<Edge>> adjacencyCopy = new ArrayList<>(adjacency.size());
-        for (List<Edge> edges : adjacency) {
-            adjacencyCopy.add(new ArrayList<>(edges));
-        }
-        return adjacencyCopy;
+        return Graph.fromMutableAdjacency(adjacency);
     }
 
     private void addDirectedEdgeUnchecked(int from, int to, int weight) {

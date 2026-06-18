@@ -56,9 +56,21 @@ public final class MergeSort {
     }
 
     private static void printValues(int[] values) {
-        for (int value : values) {
-            System.out.print(value + " ");
+        System.out.println(formatValues(values));
+    }
+
+    private static String formatValues(int[] values) {
+        if (values.length == 0) {
+            return "";
         }
-        System.out.println();
+
+        StringBuilder result = new StringBuilder();
+        result.append(values[0]);
+
+        for (int i = 1; i < values.length; i++) {
+            result.append(' ').append(values[i]);
+        }
+
+        return result.toString();
     }
 }

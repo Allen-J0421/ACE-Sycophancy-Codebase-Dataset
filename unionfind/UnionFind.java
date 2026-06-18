@@ -42,10 +42,10 @@ public final class UnionFind {
             return false;
         }
 
-        if (parent[rootFirst] > parent[rootSecond]) {
-            linkRoots(rootFirst, rootSecond);
+        if (componentSize(rootFirst) < componentSize(rootSecond)) {
+            mergeRoots(rootFirst, rootSecond);
         } else {
-            linkRoots(rootSecond, rootFirst);
+            mergeRoots(rootSecond, rootFirst);
         }
 
         componentCount--;
@@ -64,7 +64,11 @@ public final class UnionFind {
         return parent.length;
     }
 
-    private void linkRoots(int childRoot, int parentRoot) {
+    private int componentSize(int root) {
+        return -parent[root];
+    }
+
+    private void mergeRoots(int childRoot, int parentRoot) {
         parent[parentRoot] += parent[childRoot];
         parent[childRoot] = parentRoot;
     }

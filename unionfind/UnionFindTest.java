@@ -2,10 +2,18 @@ package unionfind;
 
 public final class UnionFindTest {
     public static void main(String[] args) {
-        shouldTrackConnectivity();
-        shouldTrackComponentCount();
-        shouldRejectInvalidElements();
+        run("connectivity", UnionFindTest::shouldTrackConnectivity);
+        run("component count", UnionFindTest::shouldTrackComponentCount);
+        run("invalid elements", UnionFindTest::shouldRejectInvalidElements);
         System.out.println("All UnionFind checks passed.");
+    }
+
+    private static void run(String name, TestSupport.ThrowingRunnable test) {
+        try {
+            test.run();
+        } catch (Throwable thrown) {
+            throw new AssertionError("failed test: " + name, thrown);
+        }
     }
 
     private static void shouldTrackConnectivity() {

@@ -20,15 +20,22 @@ class HashEntry {
     void markDeleted() {
         this.deleted = true;
     }
+
+    @Override
+    public String toString() {
+        return key + " -> " + value + (deleted ? " [DELETED]" : "");
+    }
 }
 
 class HashStats {
-    int probeDepth;
-    int maxProbeDepth;
-    int collisions;
+    private int totalProbes;
+    private int probeCount;
+    private int maxProbeDepth;
+    private int collisions;
+    private int resizeCount;
 
     void recordProbe(int depth) {
-        probeDepth++;
+        totalProbes++;
         maxProbeDepth = Math.max(maxProbeDepth, depth);
     }
 
@@ -36,16 +43,39 @@ class HashStats {
         collisions++;
     }
 
+    void recordResize() {
+        resizeCount++;
+    }
+
     void reset() {
-        probeDepth = 0;
+        totalProbes = 0;
+        probeCount = 0;
         maxProbeDepth = 0;
         collisions = 0;
+        resizeCount = 0;
+    }
+
+    int getTotalProbes() {
+        return totalProbes;
+    }
+
+    int getMaxProbeDepth() {
+        return maxProbeDepth;
+    }
+
+    int getCollisions() {
+        return collisions;
+    }
+
+    int getResizeCount() {
+        return resizeCount;
     }
 
     void print() {
-        System.out.println("  Avg Probe Depth: " + (probeDepth > 0 ? probeDepth : 0));
+        System.out.println("  Total Probes: " + totalProbes);
         System.out.println("  Max Probe Depth: " + maxProbeDepth);
-        System.out.println("  Total Collisions: " + collisions);
+        System.out.println("  Collisions: " + collisions);
+        System.out.println("  Resize Count: " + resizeCount);
     }
 }
 
@@ -63,6 +93,8 @@ interface ResizeStrategy {
     boolean shouldExpand(int size, int deletedCount, int capacity);
     boolean shouldShrink(int size, int capacity);
     int nextCapacity(int currentCapacity, boolean expand);
+    int getMinCapacity();
+    int getMaxCapacity();
 }
 
 class DefaultResizeStrategy implements ResizeStrategy {
@@ -87,12 +119,22 @@ class DefaultResizeStrategy implements ResizeStrategy {
         return Math.max(Math.min(newCapacity, MAX_CAPACITY), MIN_CAPACITY);
     }
 
-    public static int getMinCapacity() {
+    @Override
+    public int getMinCapacity() {
         return MIN_CAPACITY;
     }
 
-    public static int getMaxCapacity() {
+    @Override
+    public int getMaxCapacity() {
         return MAX_CAPACITY;
+    }
+
+    public float getUpperLoadFactor() {
+        return UPPER_LOAD_FACTOR;
+    }
+
+    public float getLowerLoadFactor() {
+        return LOWER_LOAD_FACTOR;
     }
 }
 
@@ -105,6 +147,27 @@ class ModuloHashFunction implements HashFunction {
     public int hash(int key, int capacity) {
         return Math.abs(key) % capacity;
     }
+
+    @Override
+    public String toString() {
+        return "ModuloHashFunction";
+    }
+}
+
+class QuadraticHashFunction implements HashFunction {
+    private static final int MULTIPLIER = 31;
+
+    @Override
+    public int hash(int key, int capacity) {
+        int h = Math.abs(key) * MULTIPLIER;
+        h = h ^ (h >>> 16);
+        return h % capacity;
+    }
+
+    @Override
+    public String toString() {
+        return "QuadraticHashFunction";
+    }
 }
 
 interface ProbeSequence {
@@ -115,6 +178,26 @@ class LinearProbeSequence implements ProbeSequence {
     @Override
     public int nextProbe(int startIndex, int probeCount, int capacity) {
         return (startIndex + probeCount) % capacity;
+    }
+
+    @Override
+    public String toString() {
+        return "LinearProbeSequence";
+    }
+}
+
+class QuadraticProbeSequence implements ProbeSequence {
+    @Override
+    public int nextProbe(int startIndex, int probeCount, int capacity) {
+        int c1 = 1;
+        int c2 = 3;
+        long offset = (long) c1 * probeCount + (long) c2 * probeCount * probeCount;
+        return (int) ((startIndex + offset) % capacity);
+    }
+
+    @Override
+    public String toString() {
+        return "QuadraticProbeSequence";
     }
 }
 
@@ -133,7 +216,7 @@ class LinearProbingHashMap implements IntMap {
     private boolean trackStats;
 
     public LinearProbingHashMap() {
-        this(DefaultResizeStrategy.getMinCapacity(), true);
+        this(new DefaultResizeStrategy().getMinCapacity(), true);
     }
 
     public LinearProbingHashMap(int initialCapacity, boolean trackStats) {
@@ -143,8 +226,8 @@ class LinearProbingHashMap implements IntMap {
 
     public LinearProbingHashMap(int initialCapacity, ResizeStrategy strategy,
                                HashFunction hash, ProbeSequence probe, boolean trackStats) {
-        validateInitialCapacity(initialCapacity);
-        this.capacity = normalizeCapacity(initialCapacity);
+        validateInitialCapacity(initialCapacity, strategy);
+        this.capacity = normalizeCapacity(initialCapacity, strategy.getMaxCapacity());
         this.size = 0;
         this.deletedCount = 0;
         this.table = new HashEntry[capacity];
@@ -157,6 +240,10 @@ class LinearProbingHashMap implements IntMap {
 
     @Override
     public void put(int key, int value) {
+        if (key == NOT_FOUND) {
+            throw new IllegalArgumentException("Key cannot be " + NOT_FOUND);
+        }
+
         if (resizeStrategy.shouldExpand(size, deletedCount, capacity)) {
             resize(resizeStrategy.nextCapacity(capacity, true));
         }
@@ -227,25 +314,37 @@ class LinearProbingHashMap implements IntMap {
         if (trackStats) {
             System.out.println("Hash Table Statistics:");
             System.out.println("  Size: " + size + "/" + capacity);
-            System.out.println("  Load Factor: " + String.format("%.2f", (float) size / capacity));
+            float loadFactor = (float) size / capacity;
+            System.out.println("  Load Factor: " + String.format("%.2f%%", loadFactor * 100));
+            System.out.println("  Hash Function: " + hashFunction);
+            System.out.println("  Probe Sequence: " + probeSequence);
             stats.print();
         }
     }
 
     public void display() {
+        display(false);
+    }
+
+    public void display(boolean showEmpty) {
         System.out.println("=== Hash Table ===");
+        int shown = 0;
         for (int i = 0; i < capacity; i++) {
             HashEntry entry = table[i];
             if (entry == null) {
-                System.out.println("[" + i + "] EMPTY");
+                if (showEmpty) {
+                    System.out.println("[" + i + "] EMPTY");
+                }
             } else if (entry.isActive()) {
-                System.out.println("[" + i + "] " + entry.key + " -> " + entry.value);
+                System.out.println("[" + i + "] " + entry);
+                shown++;
             } else {
-                System.out.println("[" + i + "] DELETED");
+                System.out.println("[" + i + "] " + entry);
+                shown++;
             }
         }
-        System.out.println("Size: " + size + ", Capacity: " + capacity +
-                          ", Deleted: " + deletedCount);
+        System.out.println("Total shown: " + shown + ", Size: " + size +
+                          ", Capacity: " + capacity + ", Deleted: " + deletedCount);
     }
 
     private int findSlot(int key) {
@@ -254,6 +353,11 @@ class LinearProbingHashMap implements IntMap {
 
         for (int i = 0; i < capacity; i++) {
             int probeIndex = probeSequence.nextProbe(startIndex, i, capacity);
+            if (probeIndex < 0 || probeIndex >= capacity) {
+                probeIndex = probeIndex % capacity;
+                if (probeIndex < 0) probeIndex += capacity;
+            }
+
             HashEntry entry = table[probeIndex];
 
             if (trackStats && i > 0) {
@@ -279,6 +383,11 @@ class LinearProbingHashMap implements IntMap {
 
         for (int i = 0; i < capacity; i++) {
             int probeIndex = probeSequence.nextProbe(startIndex, i, capacity);
+            if (probeIndex < 0 || probeIndex >= capacity) {
+                probeIndex = probeIndex % capacity;
+                if (probeIndex < 0) probeIndex += capacity;
+            }
+
             HashEntry entry = table[probeIndex];
 
             if (trackStats && i > 0) {
@@ -303,9 +412,13 @@ class LinearProbingHashMap implements IntMap {
         HashEntry[] oldTable = table;
         capacity = newCapacity;
         table = new HashEntry[capacity];
+        int oldSize = size;
         size = 0;
         deletedCount = 0;
-        stats.reset();
+
+        if (trackStats) {
+            stats.recordResize();
+        }
 
         for (HashEntry entry : oldTable) {
             if (entry != null && entry.isActive()) {
@@ -314,23 +427,22 @@ class LinearProbingHashMap implements IntMap {
         }
     }
 
-    private void validateInitialCapacity(int capacity) {
-        if (capacity < DefaultResizeStrategy.getMinCapacity()) {
-            throw new IllegalArgumentException("Capacity below minimum: " +
-                DefaultResizeStrategy.getMinCapacity());
+    private void validateInitialCapacity(int capacity, ResizeStrategy strategy) {
+        if (capacity < strategy.getMinCapacity()) {
+            throw new IllegalArgumentException(
+                "Capacity " + capacity + " below minimum: " + strategy.getMinCapacity());
         }
-        if (capacity > DefaultResizeStrategy.getMaxCapacity()) {
-            throw new IllegalArgumentException("Capacity exceeds maximum: " +
-                DefaultResizeStrategy.getMaxCapacity());
+        if (capacity > strategy.getMaxCapacity()) {
+            throw new IllegalArgumentException(
+                "Capacity " + capacity + " exceeds maximum: " + strategy.getMaxCapacity());
         }
     }
 
-    private int normalizeCapacity(int capacity) {
+    private int normalizeCapacity(int capacity, int maxCapacity) {
         if (PowerOfTwo.isPowerOfTwo(capacity)) {
             return capacity;
         }
-        return PowerOfTwo.nextPowerOfTwo(capacity,
-            DefaultResizeStrategy.getMaxCapacity());
+        return PowerOfTwo.nextPowerOfTwo(capacity, maxCapacity);
     }
 }
 
@@ -342,11 +454,65 @@ class PowerOfTwo {
     }
 
     static int nextPowerOfTwo(int n, int max) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("n must be positive");
+        }
+        if (n > max) {
+            return max;
+        }
         int power = 1;
         while (power < n && power < max) {
             power <<= 1;
         }
         return power;
+    }
+
+    static int previousPowerOfTwo(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        int power = 1;
+        while (power * 2 < n) {
+            power <<= 1;
+        }
+        return power;
+    }
+}
+
+class HashMapBuilder {
+    private int capacity = 16;
+    private ResizeStrategy strategy = new DefaultResizeStrategy();
+    private HashFunction hash = new ModuloHashFunction();
+    private ProbeSequence probe = new LinearProbeSequence();
+    private boolean trackStats = false;
+
+    public HashMapBuilder capacity(int capacity) {
+        this.capacity = capacity;
+        return this;
+    }
+
+    public HashMapBuilder strategy(ResizeStrategy strategy) {
+        this.strategy = strategy;
+        return this;
+    }
+
+    public HashMapBuilder hashFunction(HashFunction hash) {
+        this.hash = hash;
+        return this;
+    }
+
+    public HashMapBuilder probeSequence(ProbeSequence probe) {
+        this.probe = probe;
+        return this;
+    }
+
+    public HashMapBuilder trackStats(boolean trackStats) {
+        this.trackStats = trackStats;
+        return this;
+    }
+
+    public LinearProbingHashMap build() {
+        return new LinearProbingHashMap(capacity, strategy, hash, probe, trackStats);
     }
 }
 
@@ -357,6 +523,9 @@ class Demo {
         testContainsAndClear();
         testCustomStrategies();
         testStatistics();
+        testBuilderPattern();
+        testProbeSequences();
+        testErrorHandling();
     }
 
     private static void testBasicOperations() {
@@ -434,6 +603,74 @@ class Demo {
         }
         System.out.println("After inserting 12 items:");
         map.printStats();
+        System.out.println();
+    }
+
+    private static void testBuilderPattern() {
+        System.out.println("=== Test: Builder Pattern ===");
+        LinearProbingHashMap map = new HashMapBuilder()
+            .capacity(32)
+            .hashFunction(new QuadraticHashFunction())
+            .probeSequence(new LinearProbeSequence())
+            .trackStats(false)
+            .build();
+
+        for (int i = 0; i < 8; i++) {
+            map.put(i * 13, i * 50);
+        }
+        System.out.println("Built map with custom config");
+        System.out.println("Size: " + map.size());
+        System.out.println("Get(39): " + map.get(39));
+        System.out.println();
+    }
+
+    private static void testProbeSequences() {
+        System.out.println("=== Test: Probe Sequences ===");
+
+        LinearProbingHashMap linearMap = new HashMapBuilder()
+            .capacity(16)
+            .probeSequence(new LinearProbeSequence())
+            .trackStats(true)
+            .build();
+
+        for (int i = 0; i < 8; i++) {
+            linearMap.put(i * 17, i * 100);
+        }
+        System.out.println("Linear Probing:");
+        linearMap.printStats();
+
+        LinearProbingHashMap quadraticMap = new HashMapBuilder()
+            .capacity(16)
+            .probeSequence(new QuadraticProbeSequence())
+            .trackStats(true)
+            .build();
+
+        for (int i = 0; i < 8; i++) {
+            quadraticMap.put(i * 17, i * 100);
+        }
+        System.out.println("Quadratic Probing:");
+        quadraticMap.printStats();
+        System.out.println();
+    }
+
+    private static void testErrorHandling() {
+        System.out.println("=== Test: Error Handling ===");
+        LinearProbingHashMap map = new LinearProbingHashMap();
+
+        try {
+            map.put(-1, 100);
+            System.out.println("ERROR: Should have rejected key -1");
+        } catch (IllegalArgumentException e) {
+            System.out.println("✓ Correctly rejected invalid key: " + e.getMessage());
+        }
+
+        try {
+            new LinearProbingHashMap(5, false);
+            System.out.println("ERROR: Should have rejected capacity 5");
+        } catch (IllegalArgumentException e) {
+            System.out.println("✓ Correctly rejected invalid capacity: " + e.getMessage());
+        }
+
         System.out.println();
     }
 }

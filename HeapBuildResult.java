@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public final class HeapBuildResult {
 
     private final int[] inputValues;
@@ -14,28 +12,20 @@ public final class HeapBuildResult {
 
     static HeapBuildResult of(int[] inputValues, int[] heapValues, boolean validMaxHeap) {
         return new HeapBuildResult(
-                Arrays.copyOf(requireValues(inputValues), inputValues.length),
-                Arrays.copyOf(requireValues(heapValues), heapValues.length),
+                IntArrays.copyOf(inputValues),
+                IntArrays.copyOf(heapValues),
                 validMaxHeap);
     }
 
     public int[] inputValues() {
-        return Arrays.copyOf(inputValues, inputValues.length);
+        return IntArrays.copyOf(inputValues);
     }
 
     public int[] heapValues() {
-        return Arrays.copyOf(heapValues, heapValues.length);
+        return IntArrays.copyOf(heapValues);
     }
 
     public boolean isValidMaxHeap() {
         return validMaxHeap;
-    }
-
-    private static int[] requireValues(int[] values) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
-
-        return values;
     }
 }

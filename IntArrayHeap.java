@@ -1,12 +1,10 @@
-import java.util.Arrays;
-
 final class IntArrayHeap {
 
     private final int[] values;
     private final int size;
 
     private IntArrayHeap(int[] values) {
-        this.values = requireValues(values);
+        this.values = IntArrays.requireValues(values);
         this.size = values.length;
     }
 
@@ -15,8 +13,7 @@ final class IntArrayHeap {
     }
 
     static IntArrayHeap copyOf(int[] values) {
-        int[] copiedValues = Arrays.copyOf(requireValues(values), values.length);
-        return new IntArrayHeap(copiedValues);
+        return new IntArrayHeap(IntArrays.copyOf(values));
     }
 
     IntArrayHeap buildMaxHeap() {
@@ -60,7 +57,7 @@ final class IntArrayHeap {
     }
 
     private IntArrayHeap copy() {
-        return new IntArrayHeap(Arrays.copyOf(values, size));
+        return new IntArrayHeap(IntArrays.copyOf(values));
     }
 
     private void siftDown(int parentIndex) {
@@ -108,13 +105,5 @@ final class IntArrayHeap {
         int temp = values[firstIndex];
         values[firstIndex] = values[secondIndex];
         values[secondIndex] = temp;
-    }
-
-    private static int[] requireValues(int[] values) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
-
-        return values;
     }
 }

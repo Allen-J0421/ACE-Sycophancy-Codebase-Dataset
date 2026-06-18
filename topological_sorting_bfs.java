@@ -84,9 +84,7 @@ final class TopologicalSort {
     private static Deque<Integer> collectZeroInDegreeVertices(int[] inDegree) {
         Deque<Integer> readyVertices = new ArrayDeque<>();
         for (int vertex = 0; vertex < inDegree.length; vertex++) {
-            if (inDegree[vertex] == 0) {
-                readyVertices.addLast(vertex);
-            }
+            enqueueIfReady(vertex, inDegree, readyVertices);
         }
         return readyVertices;
     }
@@ -98,9 +96,13 @@ final class TopologicalSort {
     ) {
         for (int neighbor : neighbors) {
             inDegree[neighbor]--;
-            if (inDegree[neighbor] == 0) {
-                readyVertices.addLast(neighbor);
-            }
+            enqueueIfReady(neighbor, inDegree, readyVertices);
+        }
+    }
+
+    private static void enqueueIfReady(int vertex, int[] inDegree, Deque<Integer> readyVertices) {
+        if (inDegree[vertex] == 0) {
+            readyVertices.addLast(vertex);
         }
     }
 

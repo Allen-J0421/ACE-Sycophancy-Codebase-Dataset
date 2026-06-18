@@ -18,6 +18,10 @@ class CoinChange {
     }
 
     public static void main(String[] args) {
+        printExampleResult();
+    }
+
+    private static void printExampleResult() {
         int[] coins = {1, 2, 3};
         int amount = 5;
         System.out.println(countWays(coins, amount));

@@ -10,6 +10,8 @@ public final class TwoPointersTest {
         shouldReturnEmptyWhenTargetIsOutsidePossibleRange();
         shouldSupportRawArrayFacadeLookups();
         shouldSupportRawArrayFacadeBooleanChecks();
+        shouldRejectNullRawArrayFacadeInput();
+        shouldRejectUnsortedRawArrayFacadeInput();
         shouldRejectUnsortedInput();
         shouldHandleIntegerOverflowSafely();
         shouldSupportTargetsBeyondIntegerRange();
@@ -57,6 +59,20 @@ public final class TwoPointersTest {
         if (TwoPointers.hasPairWithSum(new int[] {1, 3, 7, 9}, 13)) {
             throw new AssertionError("Expected raw array facade to report no matching pair");
         }
+    }
+
+    private static void shouldRejectNullRawArrayFacadeInput() {
+        assertThrowsWithMessage(
+            () -> TwoPointers.findPairWithSum((int[]) null, 0),
+            "must not be null",
+            "Expected null raw arrays to be rejected");
+    }
+
+    private static void shouldRejectUnsortedRawArrayFacadeInput() {
+        assertThrowsWithMessage(
+            () -> TwoPointers.hasPairWithSum(new int[] {3, 1, 2}, 4),
+            "sorted",
+            "Expected unsorted raw arrays to be rejected");
     }
 
     private static void shouldRejectUnsortedInput() {

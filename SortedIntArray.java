@@ -29,16 +29,16 @@ public final class SortedIntArray {
     }
 
     public Optional<PairMatch> findPairWithSum(long target) {
-        MatchIndexes matchIndexes = findMatchIndexes(target);
-        if (matchIndexes == null) {
+        SearchResult result = search(target);
+        if (!result.found()) {
             return Optional.empty();
         }
 
-        return Optional.of(matchIndexes.toPairMatch(values));
+        return Optional.of(result.toPairMatch(values));
     }
 
     public boolean hasPairWithSum(long target) {
-        return findMatchIndexes(target) != null;
+        return search(target).found();
     }
 
     public int[] toArray() {
@@ -74,9 +74,9 @@ public final class SortedIntArray {
             && target <= maximumPairSum();
     }
 
-    private MatchIndexes findMatchIndexes(long target) {
+    private SearchResult search(long target) {
         if (!canContainPairMatching(target)) {
-            return null;
+            return SearchResult.notFound();
         }
 
         int left = 0;
@@ -85,7 +85,7 @@ public final class SortedIntArray {
         while (left < right) {
             long sum = sumAt(left, right);
             if (sum == target) {
-                return new MatchIndexes(left, right);
+                return SearchResult.match(left, right);
             }
 
             if (sum < target) {
@@ -95,7 +95,7 @@ public final class SortedIntArray {
             }
         }
 
-        return null;
+        return SearchResult.notFound();
     }
 
     private long minimumPairSum() {
@@ -124,7 +124,32 @@ public final class SortedIntArray {
         }
     }
 
-    private record MatchIndexes(int leftIndex, int rightIndex) {
+    private static final class SearchResult {
+
+        private static final SearchResult NOT_FOUND = new SearchResult(false, -1, -1);
+
+        private final boolean found;
+        private final int leftIndex;
+        private final int rightIndex;
+
+        private SearchResult(boolean found, int leftIndex, int rightIndex) {
+            this.found = found;
+            this.leftIndex = leftIndex;
+            this.rightIndex = rightIndex;
+        }
+
+        private static SearchResult notFound() {
+            return NOT_FOUND;
+        }
+
+        private static SearchResult match(int leftIndex, int rightIndex) {
+            return new SearchResult(true, leftIndex, rightIndex);
+        }
+
+        private boolean found() {
+            return found;
+        }
+
         private PairMatch toPairMatch(int[] values) {
             return new PairMatch(leftIndex, rightIndex, values[leftIndex], values[rightIndex]);
         }

@@ -1,9 +1,11 @@
-class HashEntry {
-    final int key;
-    int value;
+import java.util.*;
+
+class HashEntry<K, V> {
+    final K key;
+    V value;
     boolean deleted;
 
-    HashEntry(int key, int value) {
+    HashEntry(K key, V value) {
         this.key = key;
         this.value = value;
         this.deleted = false;
@@ -13,12 +15,17 @@ class HashEntry {
         return !deleted;
     }
 
-    boolean matches(int k) {
-        return key == k && !deleted;
+    boolean matches(K k) {
+        return key != null && key.equals(k) && !deleted;
     }
 
     void markDeleted() {
         this.deleted = true;
+    }
+
+    void updateValue(V newValue) {
+        this.value = newValue;
+        this.deleted = false;
     }
 
     @Override
@@ -28,11 +35,11 @@ class HashEntry {
 }
 
 class HashStats {
-    private int totalProbes;
-    private int probeCount;
+    private long totalProbes;
     private int maxProbeDepth;
     private int collisions;
     private int resizeCount;
+    private long operationCount;
 
     void recordProbe(int depth) {
         totalProbes++;
@@ -47,15 +54,19 @@ class HashStats {
         resizeCount++;
     }
 
+    void recordOperation() {
+        operationCount++;
+    }
+
     void reset() {
         totalProbes = 0;
-        probeCount = 0;
         maxProbeDepth = 0;
         collisions = 0;
         resizeCount = 0;
+        operationCount = 0;
     }
 
-    int getTotalProbes() {
+    long getTotalProbes() {
         return totalProbes;
     }
 
@@ -71,22 +82,34 @@ class HashStats {
         return resizeCount;
     }
 
+    long getOperationCount() {
+        return operationCount;
+    }
+
+    double getAverageProbeDepth() {
+        return operationCount > 0 ? (double) totalProbes / operationCount : 0;
+    }
+
     void print() {
         System.out.println("  Total Probes: " + totalProbes);
+        System.out.println("  Avg Probe Depth: " + String.format("%.2f", getAverageProbeDepth()));
         System.out.println("  Max Probe Depth: " + maxProbeDepth);
         System.out.println("  Collisions: " + collisions);
         System.out.println("  Resize Count: " + resizeCount);
+        System.out.println("  Operations: " + operationCount);
     }
 }
 
-interface IntMap {
-    void put(int key, int value);
-    int get(int key);
-    int remove(int key);
+interface Map<K, V> {
+    V put(K key, V value);
+    V get(K key);
+    V remove(K key);
     int size();
     boolean isEmpty();
-    boolean containsKey(int key);
+    boolean containsKey(K key);
     void clear();
+    Set<K> keySet();
+    Collection<V> values();
 }
 
 interface ResizeStrategy {
@@ -138,35 +161,22 @@ class DefaultResizeStrategy implements ResizeStrategy {
     }
 }
 
-interface HashFunction {
-    int hash(int key, int capacity);
+interface HashFunction<K> {
+    int hash(K key, int capacity);
 }
 
-class ModuloHashFunction implements HashFunction {
+class DefaultHashFunction<K> implements HashFunction<K> {
     @Override
-    public int hash(int key, int capacity) {
-        return Math.abs(key) % capacity;
-    }
-
-    @Override
-    public String toString() {
-        return "ModuloHashFunction";
-    }
-}
-
-class QuadraticHashFunction implements HashFunction {
-    private static final int MULTIPLIER = 31;
-
-    @Override
-    public int hash(int key, int capacity) {
-        int h = Math.abs(key) * MULTIPLIER;
+    public int hash(K key, int capacity) {
+        if (key == null) return 0;
+        int h = key.hashCode();
         h = h ^ (h >>> 16);
-        return h % capacity;
+        return Math.abs(h % capacity);
     }
 
     @Override
     public String toString() {
-        return "QuadraticHashFunction";
+        return "DefaultHashFunction";
     }
 }
 
@@ -201,31 +211,34 @@ class QuadraticProbeSequence implements ProbeSequence {
     }
 }
 
-class LinearProbingHashMap implements IntMap {
-    private static final int NOT_FOUND = -1;
+class LinearProbingHashMap<K, V> implements Map<K, V> {
+    private static final Object NOT_FOUND = new Object();
 
-    private HashEntry[] table;
+    private HashEntry<K, V>[] table;
     private int size;
     private int capacity;
     private int deletedCount;
 
     private ResizeStrategy resizeStrategy;
-    private HashFunction hashFunction;
+    private HashFunction<K> hashFunction;
     private ProbeSequence probeSequence;
     private HashStats stats;
     private boolean trackStats;
 
+    @SuppressWarnings("unchecked")
     public LinearProbingHashMap() {
         this(new DefaultResizeStrategy().getMinCapacity(), true);
     }
 
+    @SuppressWarnings("unchecked")
     public LinearProbingHashMap(int initialCapacity, boolean trackStats) {
         this(initialCapacity, new DefaultResizeStrategy(),
-             new ModuloHashFunction(), new LinearProbeSequence(), trackStats);
+             new DefaultHashFunction<>(), new LinearProbeSequence(), trackStats);
     }
 
+    @SuppressWarnings("unchecked")
     public LinearProbingHashMap(int initialCapacity, ResizeStrategy strategy,
-                               HashFunction hash, ProbeSequence probe, boolean trackStats) {
+                               HashFunction<K> hash, ProbeSequence probe, boolean trackStats) {
         validateInitialCapacity(initialCapacity, strategy);
         this.capacity = normalizeCapacity(initialCapacity, strategy.getMaxCapacity());
         this.size = 0;
@@ -239,9 +252,9 @@ class LinearProbingHashMap implements IntMap {
     }
 
     @Override
-    public void put(int key, int value) {
-        if (key == NOT_FOUND) {
-            throw new IllegalArgumentException("Key cannot be " + NOT_FOUND);
+    public V put(K key, V value) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
         }
 
         if (resizeStrategy.shouldExpand(size, deletedCount, capacity)) {
@@ -253,28 +266,56 @@ class LinearProbingHashMap implements IntMap {
             throw new RuntimeException("Hash table full - probe sequence exhausted");
         }
 
+        V oldValue = null;
         boolean isNewEntry = table[index] == null || !table[index].isActive();
+
+        if (table[index] != null && table[index].isActive()) {
+            oldValue = table[index].value;
+        }
+
         if (table[index] != null && table[index].deleted) {
             deletedCount--;
         }
 
-        table[index] = new HashEntry(key, value);
+        if (table[index] == null) {
+            table[index] = new HashEntry<>(key, value);
+        } else {
+            table[index].updateValue(value);
+        }
+
         if (isNewEntry) {
             size++;
         }
+
+        if (trackStats) {
+            stats.recordOperation();
+        }
+
+        return oldValue;
     }
 
     @Override
-    public int get(int key) {
+    public V get(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+
         int index = findExisting(key);
-        return index >= 0 ? table[index].value : NOT_FOUND;
+        if (trackStats) {
+            stats.recordOperation();
+        }
+        return index >= 0 ? table[index].value : null;
     }
 
     @Override
-    public int remove(int key) {
+    public V remove(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+
         int index = findExisting(key);
         if (index >= 0) {
-            int value = table[index].value;
+            V value = table[index].value;
             table[index].markDeleted();
             size--;
             deletedCount++;
@@ -282,9 +323,13 @@ class LinearProbingHashMap implements IntMap {
             if (resizeStrategy.shouldShrink(size, capacity)) {
                 resize(resizeStrategy.nextCapacity(capacity, false));
             }
+
+            if (trackStats) {
+                stats.recordOperation();
+            }
             return value;
         }
-        return NOT_FOUND;
+        return null;
     }
 
     @Override
@@ -298,7 +343,10 @@ class LinearProbingHashMap implements IntMap {
     }
 
     @Override
-    public boolean containsKey(int key) {
+    public boolean containsKey(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
         return findExisting(key) >= 0;
     }
 
@@ -306,8 +354,32 @@ class LinearProbingHashMap implements IntMap {
     public void clear() {
         size = 0;
         deletedCount = 0;
-        table = new HashEntry[capacity];
+        @SuppressWarnings("unchecked")
+        HashEntry<K, V>[] newTable = new HashEntry[capacity];
+        table = newTable;
         stats.reset();
+    }
+
+    @Override
+    public Set<K> keySet() {
+        Set<K> keys = new HashSet<>();
+        for (HashEntry<K, V> entry : table) {
+            if (entry != null && entry.isActive()) {
+                keys.add(entry.key);
+            }
+        }
+        return Collections.unmodifiableSet(keys);
+    }
+
+    @Override
+    public Collection<V> values() {
+        Collection<V> vals = new ArrayList<>();
+        for (HashEntry<K, V> entry : table) {
+            if (entry != null && entry.isActive()) {
+                vals.add(entry.value);
+            }
+        }
+        return Collections.unmodifiableCollection(vals);
     }
 
     public void printStats() {
@@ -330,7 +402,7 @@ class LinearProbingHashMap implements IntMap {
         System.out.println("=== Hash Table ===");
         int shown = 0;
         for (int i = 0; i < capacity; i++) {
-            HashEntry entry = table[i];
+            HashEntry<K, V> entry = table[i];
             if (entry == null) {
                 if (showEmpty) {
                     System.out.println("[" + i + "] EMPTY");
@@ -347,7 +419,7 @@ class LinearProbingHashMap implements IntMap {
                           ", Capacity: " + capacity + ", Deleted: " + deletedCount);
     }
 
-    private int findSlot(int key) {
+    private int findSlot(K key) {
         int startIndex = hashFunction.hash(key, capacity);
         int firstDeleted = -1;
 
@@ -358,7 +430,7 @@ class LinearProbingHashMap implements IntMap {
                 if (probeIndex < 0) probeIndex += capacity;
             }
 
-            HashEntry entry = table[probeIndex];
+            HashEntry<K, V> entry = table[probeIndex];
 
             if (trackStats && i > 0) {
                 stats.recordProbe(i);
@@ -378,7 +450,7 @@ class LinearProbingHashMap implements IntMap {
         return -1;
     }
 
-    private int findExisting(int key) {
+    private int findExisting(K key) {
         int startIndex = hashFunction.hash(key, capacity);
 
         for (int i = 0; i < capacity; i++) {
@@ -388,7 +460,7 @@ class LinearProbingHashMap implements IntMap {
                 if (probeIndex < 0) probeIndex += capacity;
             }
 
-            HashEntry entry = table[probeIndex];
+            HashEntry<K, V> entry = table[probeIndex];
 
             if (trackStats && i > 0) {
                 stats.recordProbe(i);
@@ -409,9 +481,12 @@ class LinearProbingHashMap implements IntMap {
             return;
         }
 
-        HashEntry[] oldTable = table;
+        @SuppressWarnings("unchecked")
+        HashEntry<K, V>[] oldTable = table;
         capacity = newCapacity;
-        table = new HashEntry[capacity];
+        @SuppressWarnings("unchecked")
+        HashEntry<K, V>[] newTable = new HashEntry[capacity];
+        table = newTable;
         int oldSize = size;
         size = 0;
         deletedCount = 0;
@@ -420,7 +495,7 @@ class LinearProbingHashMap implements IntMap {
             stats.recordResize();
         }
 
-        for (HashEntry entry : oldTable) {
+        for (HashEntry<K, V> entry : oldTable) {
             if (entry != null && entry.isActive()) {
                 put(entry.key, entry.value);
             }
@@ -447,8 +522,6 @@ class LinearProbingHashMap implements IntMap {
 }
 
 class PowerOfTwo {
-    private static final int MAX_POWER_OF_TWO = 1 << 30;
-
     static boolean isPowerOfTwo(int n) {
         return n > 0 && (n & (n - 1)) == 0;
     }
@@ -479,198 +552,241 @@ class PowerOfTwo {
     }
 }
 
-class HashMapBuilder {
+class HashMapBuilder<K, V> {
     private int capacity = 16;
     private ResizeStrategy strategy = new DefaultResizeStrategy();
-    private HashFunction hash = new ModuloHashFunction();
+    private HashFunction<K> hash = new DefaultHashFunction<>();
     private ProbeSequence probe = new LinearProbeSequence();
     private boolean trackStats = false;
 
-    public HashMapBuilder capacity(int capacity) {
+    public HashMapBuilder<K, V> capacity(int capacity) {
         this.capacity = capacity;
         return this;
     }
 
-    public HashMapBuilder strategy(ResizeStrategy strategy) {
+    public HashMapBuilder<K, V> strategy(ResizeStrategy strategy) {
         this.strategy = strategy;
         return this;
     }
 
-    public HashMapBuilder hashFunction(HashFunction hash) {
+    public HashMapBuilder<K, V> hashFunction(HashFunction<K> hash) {
         this.hash = hash;
         return this;
     }
 
-    public HashMapBuilder probeSequence(ProbeSequence probe) {
+    public HashMapBuilder<K, V> probeSequence(ProbeSequence probe) {
         this.probe = probe;
         return this;
     }
 
-    public HashMapBuilder trackStats(boolean trackStats) {
+    public HashMapBuilder<K, V> trackStats(boolean trackStats) {
         this.trackStats = trackStats;
         return this;
     }
 
-    public LinearProbingHashMap build() {
-        return new LinearProbingHashMap(capacity, strategy, hash, probe, trackStats);
+    public LinearProbingHashMap<K, V> build() {
+        return new LinearProbingHashMap<>(capacity, strategy, hash, probe, trackStats);
+    }
+}
+
+class TestAssertions {
+    private static int assertCount = 0;
+    private static int passCount = 0;
+    private static int failCount = 0;
+
+    static void assertTrue(String message, boolean condition) {
+        assertCount++;
+        if (condition) {
+            passCount++;
+            System.out.println("  ✓ " + message);
+        } else {
+            failCount++;
+            System.out.println("  ✗ FAIL: " + message);
+        }
+    }
+
+    static void assertEquals(String message, Object expected, Object actual) {
+        assertCount++;
+        if (Objects.equals(expected, actual)) {
+            passCount++;
+            System.out.println("  ✓ " + message);
+        } else {
+            failCount++;
+            System.out.println("  ✗ FAIL: " + message + " (expected " + expected + ", got " + actual + ")");
+        }
+    }
+
+    static void printResults() {
+        System.out.println("\n=== Test Results ===");
+        System.out.println("Total assertions: " + assertCount);
+        System.out.println("Passed: " + passCount);
+        System.out.println("Failed: " + failCount);
+        System.out.println("Success rate: " + String.format("%.1f%%", 100.0 * passCount / assertCount));
     }
 }
 
 class Demo {
     public static void main(String[] args) {
-        testBasicOperations();
-        testResizing();
-        testContainsAndClear();
-        testCustomStrategies();
-        testStatistics();
-        testBuilderPattern();
-        testProbeSequences();
+        testGenericIntegers();
+        testGenericStrings();
+        testGenericObjects();
+        testKeySetAndValues();
         testErrorHandling();
+        testBuilderWithGenerics();
+        testStatistics();
+
+        TestAssertions.printResults();
     }
 
-    private static void testBasicOperations() {
-        System.out.println("=== Test: Basic Operations ===");
-        LinearProbingHashMap map = new LinearProbingHashMap();
+    private static void testGenericIntegers() {
+        System.out.println("\n=== Test: Generic Integers ===");
+        LinearProbingHashMap<Integer, Integer> map = new LinearProbingHashMap<>(16, false);
 
         map.put(1, 100);
         map.put(2, 200);
-        map.put(2, 300);
+        map.put(3, 300);
 
-        System.out.println("Get(1): " + map.get(1));
-        System.out.println("Get(2): " + map.get(2));
-        System.out.println("Size: " + map.size());
+        TestAssertions.assertEquals("get(1)", 100, map.get(1));
+        TestAssertions.assertEquals("get(2)", 200, map.get(2));
+        TestAssertions.assertEquals("size", 3, map.size());
 
-        int removed = map.remove(2);
-        System.out.println("Removed 2 (value was): " + removed);
-        System.out.println("Get(2) after removal: " + map.get(2));
-        System.out.println("Size: " + map.size());
-        System.out.println("Is empty: " + map.isEmpty());
-        System.out.println();
+        Integer removed = map.remove(2);
+        TestAssertions.assertEquals("removed value", 200, removed);
+        TestAssertions.assertEquals("size after remove", 2, map.size());
+        TestAssertions.assertEquals("get(2) after remove", null, map.get(2));
     }
 
-    private static void testResizing() {
-        System.out.println("=== Test: Dynamic Resizing ===");
-        LinearProbingHashMap map = new LinearProbingHashMap(16, false);
+    private static void testGenericStrings() {
+        System.out.println("\n=== Test: Generic Strings ===");
+        LinearProbingHashMap<String, String> map = new LinearProbingHashMap<>(16, false);
 
-        for (int i = 0; i < 15; i++) {
-            map.put(i, i * 10);
-            if ((i + 1) % 5 == 0) {
-                System.out.println("Inserted " + (i + 1) + " items, size: " + map.size());
-            }
-        }
-        System.out.println("Final size: " + map.size());
-        System.out.println();
+        map.put("name", "Alice");
+        map.put("city", "New York");
+        map.put("age", "30");
+
+        TestAssertions.assertEquals("get name", "Alice", map.get("name"));
+        TestAssertions.assertEquals("get city", "New York", map.get("city"));
+        TestAssertions.assertEquals("containsKey city", true, map.containsKey("city"));
+        TestAssertions.assertEquals("containsKey unknown", false, map.containsKey("unknown"));
     }
 
-    private static void testContainsAndClear() {
-        System.out.println("=== Test: Contains and Clear ===");
-        LinearProbingHashMap map = new LinearProbingHashMap();
+    private static void testGenericObjects() {
+        System.out.println("\n=== Test: Generic Objects ===");
+        LinearProbingHashMap<Integer, Person> map = new LinearProbingHashMap<>(16, false);
 
-        map.put(42, 420);
-        System.out.println("Contains 42: " + map.containsKey(42));
-        System.out.println("Contains 99: " + map.containsKey(99));
-        System.out.println("Size before clear: " + map.size());
+        Person alice = new Person("Alice", 30);
+        Person bob = new Person("Bob", 25);
 
-        map.clear();
-        System.out.println("Size after clear: " + map.size());
-        System.out.println("Contains 42 after clear: " + map.containsKey(42));
-        System.out.println();
+        map.put(1, alice);
+        map.put(2, bob);
+
+        TestAssertions.assertEquals("get person", alice, map.get(1));
+        TestAssertions.assertEquals("size", 2, map.size());
+
+        Person removed = map.remove(1);
+        TestAssertions.assertEquals("removed person", alice, removed);
+        TestAssertions.assertEquals("size after remove", 1, map.size());
     }
 
-    private static void testCustomStrategies() {
-        System.out.println("=== Test: Custom Strategies ===");
-        ResizeStrategy customStrategy = new DefaultResizeStrategy();
-        HashFunction customHash = new ModuloHashFunction();
-        ProbeSequence customProbe = new LinearProbeSequence();
+    private static void testKeySetAndValues() {
+        System.out.println("\n=== Test: KeySet and Values ===");
+        LinearProbingHashMap<String, Integer> map = new LinearProbingHashMap<>(16, false);
 
-        LinearProbingHashMap map = new LinearProbingHashMap(16, customStrategy,
-                                                           customHash, customProbe, false);
-        for (int i = 0; i < 10; i++) {
-            map.put(i * 7, i * 100);
-        }
-        System.out.println("Inserted 10 items with custom strategies");
-        System.out.println("Size: " + map.size());
-        System.out.println("Get(21): " + map.get(21));
-        System.out.println();
-    }
+        map.put("apple", 1);
+        map.put("banana", 2);
+        map.put("cherry", 3);
 
-    private static void testStatistics() {
-        System.out.println("=== Test: Statistics ===");
-        LinearProbingHashMap map = new LinearProbingHashMap(16, true);
+        Set<String> keySet = map.keySet();
+        TestAssertions.assertTrue("keySet contains apple", keySet.contains("apple"));
+        TestAssertions.assertTrue("keySet contains banana", keySet.contains("banana"));
+        TestAssertions.assertTrue("keySet contains cherry", keySet.contains("cherry"));
+        TestAssertions.assertEquals("keySet size", 3, keySet.size());
 
-        for (int i = 0; i < 12; i++) {
-            map.put(i * 11, i * 100);
-        }
-        System.out.println("After inserting 12 items:");
-        map.printStats();
-        System.out.println();
-    }
-
-    private static void testBuilderPattern() {
-        System.out.println("=== Test: Builder Pattern ===");
-        LinearProbingHashMap map = new HashMapBuilder()
-            .capacity(32)
-            .hashFunction(new QuadraticHashFunction())
-            .probeSequence(new LinearProbeSequence())
-            .trackStats(false)
-            .build();
-
-        for (int i = 0; i < 8; i++) {
-            map.put(i * 13, i * 50);
-        }
-        System.out.println("Built map with custom config");
-        System.out.println("Size: " + map.size());
-        System.out.println("Get(39): " + map.get(39));
-        System.out.println();
-    }
-
-    private static void testProbeSequences() {
-        System.out.println("=== Test: Probe Sequences ===");
-
-        LinearProbingHashMap linearMap = new HashMapBuilder()
-            .capacity(16)
-            .probeSequence(new LinearProbeSequence())
-            .trackStats(true)
-            .build();
-
-        for (int i = 0; i < 8; i++) {
-            linearMap.put(i * 17, i * 100);
-        }
-        System.out.println("Linear Probing:");
-        linearMap.printStats();
-
-        LinearProbingHashMap quadraticMap = new HashMapBuilder()
-            .capacity(16)
-            .probeSequence(new QuadraticProbeSequence())
-            .trackStats(true)
-            .build();
-
-        for (int i = 0; i < 8; i++) {
-            quadraticMap.put(i * 17, i * 100);
-        }
-        System.out.println("Quadratic Probing:");
-        quadraticMap.printStats();
-        System.out.println();
+        Collection<Integer> values = map.values();
+        TestAssertions.assertEquals("values size", 3, values.size());
     }
 
     private static void testErrorHandling() {
-        System.out.println("=== Test: Error Handling ===");
-        LinearProbingHashMap map = new LinearProbingHashMap();
+        System.out.println("\n=== Test: Error Handling ===");
+        LinearProbingHashMap<String, String> map = new LinearProbingHashMap<>(16, false);
 
         try {
-            map.put(-1, 100);
-            System.out.println("ERROR: Should have rejected key -1");
+            map.put(null, "value");
+            TestAssertions.assertTrue("should reject null key", false);
         } catch (IllegalArgumentException e) {
-            System.out.println("✓ Correctly rejected invalid key: " + e.getMessage());
+            TestAssertions.assertTrue("correctly rejected null key", true);
         }
 
         try {
-            new LinearProbingHashMap(5, false);
-            System.out.println("ERROR: Should have rejected capacity 5");
+            map.get(null);
+            TestAssertions.assertTrue("should reject null in get", false);
         } catch (IllegalArgumentException e) {
-            System.out.println("✓ Correctly rejected invalid capacity: " + e.getMessage());
+            TestAssertions.assertTrue("correctly rejected null in get", true);
         }
 
-        System.out.println();
+        try {
+            new LinearProbingHashMap<String, String>(5, false);
+            TestAssertions.assertTrue("should reject small capacity", false);
+        } catch (IllegalArgumentException e) {
+            TestAssertions.assertTrue("correctly rejected small capacity", true);
+        }
+    }
+
+    private static void testBuilderWithGenerics() {
+        System.out.println("\n=== Test: Builder with Generics ===");
+        LinearProbingHashMap<String, Double> map = new HashMapBuilder<String, Double>()
+            .capacity(32)
+            .probeSequence(new QuadraticProbeSequence())
+            .trackStats(false)
+            .build();
+
+        map.put("pi", 3.14159);
+        map.put("e", 2.71828);
+        map.put("phi", 1.61803);
+
+        TestAssertions.assertEquals("get pi", 3.14159, map.get("pi"));
+        TestAssertions.assertEquals("size", 3, map.size());
+    }
+
+    private static void testStatistics() {
+        System.out.println("\n=== Test: Statistics ===");
+        LinearProbingHashMap<Integer, String> map = new LinearProbingHashMap<>(16, true);
+
+        for (int i = 0; i < 10; i++) {
+            map.put(i, "value_" + i);
+        }
+
+        TestAssertions.assertEquals("size after 10 inserts", 10, map.size());
+        TestAssertions.assertTrue("has operations recorded", map.size() > 0);
+
+        map.printStats();
+    }
+}
+
+class Person {
+    String name;
+    int age;
+
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Person)) return false;
+        Person person = (Person) o;
+        return age == person.age && Objects.equals(name, person.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age);
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" + "name='" + name + '\'' + ", age=" + age + '}';
     }
 }

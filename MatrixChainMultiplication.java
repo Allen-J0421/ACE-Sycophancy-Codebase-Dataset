@@ -1,6 +1,5 @@
 public final class MatrixChainMultiplication {
 
-    private static final int[] SAMPLE_DIMENSIONS = { 2, 1, 3, 4 };
     private static final int MINIMUM_DIMENSION_COUNT = 2;
 
     private MatrixChainMultiplication() {
@@ -83,7 +82,4 @@ public final class MatrixChainMultiplication {
                 + dimensions[start] * dimensions[split] * dimensions[end];
     }
 
-    public static void main(String[] args) {
-        System.out.println(minimumMultiplicationCost(SAMPLE_DIMENSIONS));
-    }
 }

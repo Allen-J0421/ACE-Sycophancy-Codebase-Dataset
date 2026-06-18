@@ -1,8 +1,8 @@
 import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.StringJoiner;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.StringJoiner;
 
 public final class DepthFirstSearch {
 
@@ -19,50 +19,12 @@ public final class DepthFirstSearch {
         System.out.println(formatTraversal(dfs(graph)));
     }
 
-    public static List<Integer> dfs(Graph graph) {
-        boolean[] visited = new boolean[graph.vertexCount()];
-        List<Integer> traversal = new ArrayList<>();
-
-        for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
-            if (!visited[vertex]) {
-                traverseComponent(graph, vertex, visited, traversal);
-            }
-        }
-
-        return traversal;
+    public static List<Integer> dfs(IntGraph graph) {
+        return new TraversalSession(graph).traverseAllComponents();
     }
 
-    public static List<Integer> dfsFrom(Graph graph, int startVertex) {
-        boolean[] visited = new boolean[graph.vertexCount()];
-        List<Integer> traversal = new ArrayList<>();
-        traverseComponent(graph, startVertex, visited, traversal);
-        return traversal;
-    }
-
-    private static void traverseComponent(Graph graph,
-                                          int startVertex,
-                                          boolean[] visited,
-                                          List<Integer> traversal) {
-        Deque<Integer> stack = new ArrayDeque<>();
-        stack.push(startVertex);
-
-        while (!stack.isEmpty()) {
-            int vertex = stack.pop();
-            if (visited[vertex]) {
-                continue;
-            }
-
-            visited[vertex] = true;
-            traversal.add(vertex);
-
-            List<Integer> neighbors = graph.neighborsOf(vertex);
-            for (int index = neighbors.size() - 1; index >= 0; index--) {
-                int neighbor = neighbors.get(index);
-                if (!visited[neighbor]) {
-                    stack.push(neighbor);
-                }
-            }
-        }
+    public static List<Integer> dfsFrom(IntGraph graph, int startVertex) {
+        return new TraversalSession(graph).traverseFrom(startVertex);
     }
 
     private static String formatTraversal(List<Integer> traversal) {
@@ -71,5 +33,61 @@ public final class DepthFirstSearch {
             joiner.add(Integer.toString(vertex));
         }
         return joiner.toString();
+    }
+
+    private static final class TraversalSession {
+        private final IntGraph graph;
+        private final boolean[] visited;
+        private final List<Integer> traversal = new ArrayList<>();
+
+        private TraversalSession(IntGraph graph) {
+            this.graph = graph;
+            this.visited = new boolean[graph.vertexCount()];
+        }
+
+        private List<Integer> traverseAllComponents() {
+            for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
+                if (!visited[vertex]) {
+                    traverseComponent(vertex);
+                }
+            }
+
+            return traversal;
+        }
+
+        private List<Integer> traverseFrom(int startVertex) {
+            validateVertex(startVertex);
+            traverseComponent(startVertex);
+            return traversal;
+        }
+
+        private void traverseComponent(int startVertex) {
+            Deque<Integer> stack = new ArrayDeque<>();
+            stack.push(startVertex);
+
+            while (!stack.isEmpty()) {
+                int vertex = stack.pop();
+                if (visited[vertex]) {
+                    continue;
+                }
+
+                visited[vertex] = true;
+                traversal.add(vertex);
+
+                List<Integer> neighbors = graph.neighborsOf(vertex);
+                for (int index = neighbors.size() - 1; index >= 0; index--) {
+                    int neighbor = neighbors.get(index);
+                    if (!visited[neighbor]) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+
+        private void validateVertex(int vertex) {
+            if (vertex < 0 || vertex >= visited.length) {
+                throw new IllegalArgumentException("vertex out of bounds: " + vertex);
+            }
+        }
     }
 }

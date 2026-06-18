@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class Graph {
+public final class Graph implements IntGraph {
     private final List<List<Integer>> adjacencyList;
 
     private Graph(List<List<Integer>> adjacencyList) {
@@ -30,10 +30,12 @@ public final class Graph {
         adjacencyList.get(to).add(from);
     }
 
+    @Override
     public int vertexCount() {
         return adjacencyList.size();
     }
 
+    @Override
     public List<Integer> neighborsOf(int vertex) {
         validateVertex(vertex);
         return Collections.unmodifiableList(adjacencyList.get(vertex));

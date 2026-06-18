@@ -1,8 +1,8 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Self-contained test suite for {@link Graph} and {@link BreadthFirstSearch}.
@@ -36,6 +36,12 @@ class BreadthFirstSearchTest {
         test("addEdge creates an undirected edge", BreadthFirstSearchTest::undirectedEdges);
         test("neighbors() returns a read-only view", BreadthFirstSearchTest::neighborsUnmodifiable);
         test("vertexCount reflects construction", BreadthFirstSearchTest::vertexCount);
+        // Generic-vertex behavior.
+        test("BFS works over String vertices", BreadthFirstSearchTest::stringVertices);
+        test("addEdge auto-creates missing vertices", BreadthFirstSearchTest::addEdgeCreatesVertices);
+        test("vertices() preserves insertion order", BreadthFirstSearchTest::verticesInInsertionOrder);
+        test("neighbors() of an absent vertex throws", BreadthFirstSearchTest::neighborsAbsentVertexThrows);
+        test("null vertices are rejected", BreadthFirstSearchTest::nullVerticesRejected);
 
         System.out.printf("%n%d run, %d passed, %d failed%n", run, run - failed, failed);
         System.exit(failed == 0 ? 0 : 1);
@@ -44,7 +50,7 @@ class BreadthFirstSearchTest {
     // ---------------------------------------------------------------- tests
 
     private static void sampleGraphOrder() {
-        Graph g = new Graph(6);
+        Graph<Integer> g = intGraph(6);
         g.addEdge(1, 2);
         g.addEdge(2, 0);
         g.addEdge(0, 3);
@@ -53,25 +59,24 @@ class BreadthFirstSearchTest {
     }
 
     private static void emptyGraph() {
-        assertEquals(Arrays.asList(), BreadthFirstSearch.bfs(new Graph(0)));
+        assertEquals(Arrays.asList(), BreadthFirstSearch.bfs(new Graph<Integer>()));
     }
 
     private static void singleVertex() {
-        assertEquals(Arrays.asList(0), BreadthFirstSearch.bfs(new Graph(1)));
+        assertEquals(Arrays.asList(0), BreadthFirstSearch.bfs(intGraph(1)));
     }
 
     private static void disconnectedComponents() {
-        Graph g = new Graph(5);
+        Graph<Integer> g = intGraph(5);
         g.addEdge(0, 1); // component {0,1}
         g.addEdge(2, 3); // component {2,3}
         // vertex 4 is isolated
-        List<Integer> order = BreadthFirstSearch.bfs(g);
-        assertEquals(Arrays.asList(0, 1, 2, 3, 4), order);
+        assertEquals(Arrays.asList(0, 1, 2, 3, 4), BreadthFirstSearch.bfs(g));
     }
 
     private static void insertionOrder() {
         // Neighbors of 0 are added as 3, then 1, then 2; BFS must preserve that.
-        Graph g = new Graph(4);
+        Graph<Integer> g = intGraph(4);
         g.addEdge(0, 3);
         g.addEdge(0, 1);
         g.addEdge(0, 2);
@@ -79,41 +84,82 @@ class BreadthFirstSearchTest {
     }
 
     private static void cycleVisitsEachOnce() {
-        Graph g = new Graph(3);
+        Graph<Integer> g = intGraph(3);
         g.addEdge(0, 1);
         g.addEdge(1, 2);
         g.addEdge(2, 0);
         List<Integer> order = BreadthFirstSearch.bfs(g);
         assertEquals(3, order.size());
         assertTrue("no duplicate visits", new HashSet<>(order).size() == order.size());
-        assertEquals(setOf(0, 1, 2), new HashSet<>(order));
+        assertEquals(new HashSet<>(Arrays.asList(0, 1, 2)), new HashSet<>(order));
     }
 
     private static void selfLoop() {
-        Graph g = new Graph(1);
+        Graph<Integer> g = intGraph(1);
         g.addEdge(0, 0);
         assertEquals(Arrays.asList(0), BreadthFirstSearch.bfs(g));
     }
 
     private static void undirectedEdges() {
-        Graph g = new Graph(2);
+        Graph<Integer> g = intGraph(2);
         g.addEdge(0, 1);
         assertTrue("0 -> 1 present", g.neighbors(0).contains(1));
         assertTrue("1 -> 0 present (undirected)", g.neighbors(1).contains(0));
     }
 
     private static void neighborsUnmodifiable() {
-        Graph g = new Graph(2);
+        Graph<Integer> g = intGraph(2);
         g.addEdge(0, 1);
         assertThrows(UnsupportedOperationException.class, () -> g.neighbors(0).add(99));
     }
 
     private static void vertexCount() {
-        assertEquals(0, new Graph(0).vertexCount());
-        assertEquals(7, new Graph(7).vertexCount());
+        assertEquals(0, new Graph<Integer>().vertexCount());
+        assertEquals(7, intGraph(7).vertexCount());
+    }
+
+    private static void stringVertices() {
+        Graph<String> g = new Graph<>();
+        g.addEdge("a", "b");
+        g.addEdge("b", "c");
+        g.addEdge("d", "e");
+        assertEquals(Arrays.asList("a", "b", "c", "d", "e"), BreadthFirstSearch.bfs(g));
+    }
+
+    private static void addEdgeCreatesVertices() {
+        Graph<String> g = new Graph<>();
+        g.addEdge("x", "y");
+        assertEquals(2, g.vertexCount());
+        assertEquals(new HashSet<>(Arrays.asList("x", "y")), new HashSet<>(g.vertices()));
+    }
+
+    private static void verticesInInsertionOrder() {
+        Graph<String> g = new Graph<>();
+        g.addEdge("a", "b");
+        g.addEdge("c", "a");
+        assertEquals(Arrays.asList("a", "b", "c"), new ArrayList<>(g.vertices()));
+    }
+
+    private static void neighborsAbsentVertexThrows() {
+        Graph<Integer> g = new Graph<>();
+        assertThrows(IllegalArgumentException.class, () -> g.neighbors(42));
+    }
+
+    private static void nullVerticesRejected() {
+        assertThrows(NullPointerException.class, () -> new Graph<String>().addVertex(null));
+        assertThrows(NullPointerException.class, () -> new Graph<String>().addEdge("a", null));
     }
 
     // ----------------------------------------------------------- harness
+
+    /** Builds an integer graph with vertices {@code 0..vertexCount-1} added in order. */
+    private static Graph<Integer> intGraph(int vertexCount) {
+        Graph<Integer> g = new Graph<>();
+        for (int i = 0; i < vertexCount; i++) {
+            g.addVertex(i);
+        }
+        return g;
+    }
 
     /** A test body that may throw; thrown errors fail the individual test. */
     private interface TestBody {
@@ -156,9 +202,5 @@ class BreadthFirstSearchTest {
             throw new AssertionError("expected " + expected.getSimpleName() + " but threw " + actual);
         }
         throw new AssertionError("expected " + expected.getSimpleName() + " but nothing was thrown");
-    }
-
-    private static Set<Integer> setOf(Integer... values) {
-        return new HashSet<>(Arrays.asList(values));
     }
 }

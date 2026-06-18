@@ -1,3 +1,5 @@
+package two_pointers;
+
 final class TwoPointersTechniqueSamples {
 
     private static final int[] UNSORTED_SAMPLE = {2, -3, 1, 0, -1};

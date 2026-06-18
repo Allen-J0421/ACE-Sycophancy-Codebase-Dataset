@@ -1,3 +1,5 @@
+package two_pointers;
+
 public final class TwoPointersTechniqueDemo {
 
     private TwoPointersTechniqueDemo() {

@@ -78,13 +78,91 @@
    - All `toString()` implementations use `String.format()` consistently
    - Better for debugging and logging
 
+## Iteration 4: Abstraction Layers, Path Tracking, and Polymorphism
+
+### Major Architectural Improvements
+
+1. **Interface-Based Design**
+   - New `WeightedGraphView` interface abstracts graph access
+   - `Graph` implements `WeightedGraphView` for flexible polymorphism
+   - Solver depends on abstraction, not concrete Graph class
+   - Enables alternative graph implementations without changing solver
+
+2. **Path Reconstruction**
+   - New `Path` class encapsulates path information
+   - Stores node sequence and total distance
+   - `ShortestPathResult.getPathTo(node)` returns `Optional<Path>`
+   - Reconstructs paths via predecessor array tracking
+   - `ResultFormatter.printPaths()` displays all paths with distances
+
+3. **Predecessor Tracking**
+   - `DijkstraShortestPathSolver` now maintains predecessor array
+   - Updated during relaxation: `predecessors[neighbor] = currentNode`
+   - Enables full path reconstruction without recomputation
+   - Passed to `ShortestPathResult` for lazy path building
+
+4. **Separation of Concerns: DistanceTable**
+   - New `DistanceTable` class encapsulates distance state management
+   - Hides distance array from solver implementation
+   - Provides `updateDistance()`, `getDistance()`, `toArray()` interface
+   - Makes solver code more readable and testable
+   - Easier to add features like distance bounds checking
+
+### Design Pattern Improvements
+
+1. **Strategy Pattern via Interfaces**
+   - `WeightedGraphView` allows different graph implementations
+   - Solver works with any graph adhering to interface
+   - Future: directed graphs, weighted vs unweighted, dynamic graphs
+
+2. **Value Object Completion**
+   - `Path` is complete value object with equals/hashCode
+   - Enables path caching and comparison in future versions
+   - Immutable with proper encapsulation
+
+3. **Optional for Safe Queries**
+   - `getPathTo()` returns `Optional<Path>` for unreachable nodes
+   - Safer than null pointers or exceptions
+   - Enables fluent chaining: `.ifPresent()`, `.map()`, etc.
+
+### Code Quality & Maintainability
+
+1. **Reduced Coupling**
+   - Solver depends on `WeightedGraphView`, not `Graph`
+   - Easy to test with mock graphs
+   - Easy to add new graph types
+
+2. **Encapsulation Layers**
+   - `DistanceTable` encapsulates raw array manipulation
+   - `Path` encapsulates path representation
+   - `ShortestPathResult` encapsulates all output information
+
+3. **Functional Consistency**
+   - `IntStream` for range operations
+   - `Optional` for safe nullable results
+   - Stream operations for batch processing in `ResultFormatter`
+
+4. **Extensibility Hooks**
+   - `Path` class can be extended with methods: `length()`, `reverseIterator()`, `contains(node)`
+   - `WeightedGraphView` can be extended for directed graphs
+   - `DistanceTable` can track updates for visualization
+
 ## Result
 
-All functionality preserved, output matches original (0 4 7 9 10). The code is now:
-- **Production-Ready**: Factory methods, equality, and hashing enable proper use in collections
-- **Type-Safe**: Value objects with complete equals/hashCode implementation
-- **Immutable**: Private constructors force controlled construction
-- **Validated**: Domain constraints enforced at boundaries
-- **Functional**: Stream operations and functional patterns for modern Java
-- **Testable**: Complete equality support enables assertion-based testing
-- **Extensible**: Optional types and functional approaches enable future features
+All functionality preserved and enhanced:
+- **Original output**: `0 4 7 9 10` ✓
+- **New capability**: Full path reconstruction with node sequences
+- **Paths found**:
+  - Node 0: [0] (distance=0)
+  - Node 1: [0, 1] (distance=4)
+  - Node 2: [0, 1, 2] (distance=7)
+  - Node 3: [0, 1, 2, 3] (distance=9)
+  - Node 4: [0, 1, 4] (distance=10)
+
+The code is now:
+- **Interface-Driven**: Polymorphic via `WeightedGraphView` abstraction
+- **Feature-Rich**: Path reconstruction without additional computation
+- **Well-Layered**: DistanceTable and Path separate concerns
+- **Testable**: Easy to mock graphs and verify paths
+- **Extensible**: New graph types or visualizations easy to add
+- **Maintainable**: Clear responsibilities across classes

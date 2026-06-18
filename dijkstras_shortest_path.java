@@ -1,11 +1,21 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+interface WeightedGraphView {
+    List<Edge> getAdjacencyListFor(int vertex);
+    int getVertexCount();
+}
 
 class Edge {
     private final int destination;
@@ -49,17 +59,63 @@ class Edge {
     }
 }
 
-class ShortestPathResult {
-    private final List<Integer> distances;
-    private final int sourceNode;
+class Path {
+    private final Deque<Integer> nodes;
+    private final int totalDistance;
 
-    private ShortestPathResult(List<Integer> distances, int sourceNode) {
-        this.distances = Collections.unmodifiableList(new ArrayList<>(distances));
-        this.sourceNode = sourceNode;
+    private Path(Deque<Integer> nodes, int totalDistance) {
+        this.nodes = new LinkedList<>(nodes);
+        this.totalDistance = totalDistance;
     }
 
-    static ShortestPathResult of(List<Integer> distances, int sourceNode) {
-        return new ShortestPathResult(distances, sourceNode);
+    static Path of(Deque<Integer> nodes, int totalDistance) {
+        return new Path(nodes, totalDistance);
+    }
+
+    List<Integer> getNodes() {
+        return Collections.unmodifiableList(new ArrayList<>(nodes));
+    }
+
+    int getTotalDistance() {
+        return totalDistance;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Path(nodes=%s, distance=%d)", nodes, totalDistance);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Path)) return false;
+        Path other = (Path) obj;
+        return nodes.equals(other.nodes) && totalDistance == other.totalDistance;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nodes, totalDistance);
+    }
+}
+
+class ShortestPathResult {
+    private final List<Integer> distances;
+    private final int[] predecessors;
+    private final int sourceNode;
+    private final WeightedGraphView graph;
+    private static final int INFINITY = Integer.MAX_VALUE;
+
+    private ShortestPathResult(List<Integer> distances, int[] predecessors,
+                               int sourceNode, WeightedGraphView graph) {
+        this.distances = Collections.unmodifiableList(new ArrayList<>(distances));
+        this.predecessors = predecessors.clone();
+        this.sourceNode = sourceNode;
+        this.graph = graph;
+    }
+
+    static ShortestPathResult of(List<Integer> distances, int[] predecessors,
+                                 int sourceNode, WeightedGraphView graph) {
+        return new ShortestPathResult(distances, predecessors, sourceNode, graph);
     }
 
     List<Integer> getDistances() {
@@ -73,13 +129,30 @@ class ShortestPathResult {
         return Optional.of(distances.get(node));
     }
 
+    Optional<Path> getPathTo(int destination) {
+        if (!isReachable(destination)) {
+            return Optional.empty();
+        }
+
+        Deque<Integer> path = new LinkedList<>();
+        int current = destination;
+
+        while (current != sourceNode) {
+            path.addFirst(current);
+            current = predecessors[current];
+        }
+        path.addFirst(sourceNode);
+
+        return Optional.of(Path.of(path, getDistanceTo(destination).orElse(INFINITY)));
+    }
+
     int getSourceNode() {
         return sourceNode;
     }
 
     boolean isReachable(int node) {
         return getDistanceTo(node)
-            .map(d -> !d.equals(Integer.MAX_VALUE))
+            .map(d -> !d.equals(INFINITY))
             .orElse(false);
     }
 
@@ -101,7 +174,7 @@ class ShortestPathResult {
     }
 }
 
-class Graph {
+class Graph implements WeightedGraphView {
     private final List<List<Edge>> adjacencyList;
     private final int vertexCount;
 
@@ -129,12 +202,14 @@ class Graph {
         adjacencyList.get(destination).add(Edge.of(source, weight));
     }
 
-    List<Edge> getAdjacencyListFor(int vertex) {
+    @Override
+    public List<Edge> getAdjacencyListFor(int vertex) {
         validateVertex(vertex);
         return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
-    int getVertexCount() {
+    @Override
+    public int getVertexCount() {
         return vertexCount;
     }
 
@@ -216,41 +291,77 @@ class PriorityQueueEntry implements Comparable<PriorityQueueEntry> {
     }
 }
 
+class DistanceTable {
+    private static final int INFINITY = Integer.MAX_VALUE;
+    private final int[] distances;
+    private final int sourceNode;
+
+    private DistanceTable(int vertexCount, int sourceNode) {
+        this.distances = new int[vertexCount];
+        Arrays.fill(distances, INFINITY);
+        this.sourceNode = sourceNode;
+        this.distances[sourceNode] = 0;
+    }
+
+    static DistanceTable create(int vertexCount, int sourceNode) {
+        return new DistanceTable(vertexCount, sourceNode);
+    }
+
+    void updateDistance(int node, int newDistance) {
+        distances[node] = newDistance;
+    }
+
+    int getDistance(int node) {
+        return distances[node];
+    }
+
+    int[] toArray() {
+        return distances.clone();
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(distances);
+    }
+}
+
 class DijkstraShortestPathSolver {
     private static final int INFINITY = Integer.MAX_VALUE;
 
-    ShortestPathResult solve(Graph graph, int sourceNode) {
+    ShortestPathResult solve(WeightedGraphView graph, int sourceNode) {
         Objects.requireNonNull(graph, "Graph cannot be null");
         validateSourceNode(graph, sourceNode);
 
-        int[] distances = initializeDistances(graph.getVertexCount(), sourceNode);
+        DistanceTable distanceTable = DistanceTable.create(graph.getVertexCount(), sourceNode);
+        int[] predecessors = initializePredecessors(graph.getVertexCount());
         PriorityQueue<PriorityQueueEntry> priorityQueue = new PriorityQueue<>();
         priorityQueue.offer(PriorityQueueEntry.of(0, sourceNode));
 
-        processQueue(graph, distances, priorityQueue);
+        processQueue(graph, distanceTable, predecessors, priorityQueue);
 
-        return ShortestPathResult.of(convertToList(distances), sourceNode);
+        List<Integer> distances = convertToList(distanceTable.toArray());
+        return ShortestPathResult.of(distances, predecessors, sourceNode, graph);
     }
 
-    private void processQueue(Graph graph, int[] distances,
-                              PriorityQueue<PriorityQueueEntry> priorityQueue) {
+    private void processQueue(WeightedGraphView graph, DistanceTable distanceTable,
+                              int[] predecessors, PriorityQueue<PriorityQueueEntry> priorityQueue) {
         while (!priorityQueue.isEmpty()) {
-            processQueueEntry(graph, distances, priorityQueue);
+            processQueueEntry(graph, distanceTable, predecessors, priorityQueue);
         }
     }
 
-    private void processQueueEntry(Graph graph, int[] distances,
-                                   PriorityQueue<PriorityQueueEntry> priorityQueue) {
+    private void processQueueEntry(WeightedGraphView graph, DistanceTable distanceTable,
+                                   int[] predecessors, PriorityQueue<PriorityQueueEntry> priorityQueue) {
         PriorityQueueEntry current = priorityQueue.poll();
         int currentNode = current.getNode();
         int currentDistance = current.getDistance();
 
-        if (isOutdatedEntry(currentDistance, distances[currentNode])) {
+        if (isOutdatedEntry(currentDistance, distanceTable.getDistance(currentNode))) {
             return;
         }
 
         graph.getAdjacencyListFor(currentNode).forEach(
-            edge -> relaxEdge(distances, currentNode, edge, priorityQueue)
+            edge -> relaxEdge(distanceTable, predecessors, currentNode, edge, priorityQueue)
         );
     }
 
@@ -258,23 +369,23 @@ class DijkstraShortestPathSolver {
         return entryDistance > currentDistance;
     }
 
-    private void relaxEdge(int[] distances, int currentNode, Edge edge,
-                          PriorityQueue<PriorityQueueEntry> priorityQueue) {
+    private void relaxEdge(DistanceTable distanceTable, int[] predecessors, int currentNode,
+                          Edge edge, PriorityQueue<PriorityQueueEntry> priorityQueue) {
         int neighbor = edge.getDestination();
         int weight = edge.getWeight();
-        int newDistance = distances[currentNode] + weight;
+        int newDistance = distanceTable.getDistance(currentNode) + weight;
 
-        if (newDistance < distances[neighbor]) {
-            distances[neighbor] = newDistance;
+        if (newDistance < distanceTable.getDistance(neighbor)) {
+            distanceTable.updateDistance(neighbor, newDistance);
+            predecessors[neighbor] = currentNode;
             priorityQueue.offer(PriorityQueueEntry.of(newDistance, neighbor));
         }
     }
 
-    private int[] initializeDistances(int vertexCount, int sourceNode) {
-        int[] distances = new int[vertexCount];
-        Arrays.fill(distances, INFINITY);
-        distances[sourceNode] = 0;
-        return distances;
+    private int[] initializePredecessors(int vertexCount) {
+        int[] predecessors = new int[vertexCount];
+        Arrays.fill(predecessors, -1);
+        return predecessors;
     }
 
     private List<Integer> convertToList(int[] distances) {
@@ -283,7 +394,7 @@ class DijkstraShortestPathSolver {
         ));
     }
 
-    private void validateSourceNode(Graph graph, int sourceNode) {
+    private void validateSourceNode(WeightedGraphView graph, int sourceNode) {
         if (sourceNode < 0 || sourceNode >= graph.getVertexCount()) {
             throw new IllegalArgumentException(
                 String.format("Source node %d is invalid for graph with %d vertices",
@@ -328,6 +439,15 @@ class ResultFormatter {
 
     static String formatResult(ShortestPathResult result) {
         return result.getDistances().toString();
+    }
+
+    static void printPaths(ShortestPathResult result) {
+        IntStream.range(0, result.getDistances().size())
+            .forEach(node -> result.getPathTo(node)
+                .ifPresent(path -> System.out.println(
+                    String.format("To node %d: %s (distance=%d)",
+                                node, path.getNodes(), path.getTotalDistance())
+                )));
     }
 }
 

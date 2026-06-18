@@ -102,6 +102,23 @@ class DefaultArrayValidator implements ArrayValidator {
 }
 
 /**
+ * Formats output for test results.
+ */
+interface ResultFormatter {
+    String format(int target, SearchResult result);
+}
+
+/**
+ * Default formatter for displaying search results.
+ */
+class DefaultResultFormatter implements ResultFormatter {
+    @Override
+    public String format(int target, SearchResult result) {
+        return String.format("\n=== Target: %d ===\n%s", target, result);
+    }
+}
+
+/**
  * Strategy interface for pair-finding algorithms in sorted arrays.
  */
 interface PairFinder {
@@ -125,7 +142,6 @@ class TwoPointersTechnique implements PairFinder {
 
     /**
      * Finds a pair of indices in a sorted array that sum to the target value.
-     * Uses the two-pointers technique with convergent pointers.
      *
      * @param sortedArray a sorted integer array
      * @param targetSum   the target sum to find
@@ -249,32 +265,7 @@ class TwoPointersTechnique implements PairFinder {
 }
 
 /**
- * Test runner for Two Pointers Technique demonstrations.
- */
-class TestRunner {
-    private final TwoPointersTechnique technique;
-    private final TestCase[] testCases;
-
-    TestRunner(TwoPointersTechnique technique, TestCase[] testCases) {
-        this.technique = technique;
-        this.testCases = testCases;
-    }
-
-    void runAll() {
-        for (TestCase testCase : testCases) {
-            run(testCase);
-        }
-    }
-
-    private void run(TestCase testCase) {
-        SearchResult result = technique.search(testCase.array, testCase.target, false);
-        System.out.println("\n=== Target: " + testCase.target + " ===");
-        System.out.println(result);
-    }
-}
-
-/**
- * Represents a single test case with array and target.
+ * Test case with array and target sum.
  */
 class TestCase {
     final int[] array;
@@ -283,6 +274,43 @@ class TestCase {
     TestCase(int[] array, int target) {
         this.array = array;
         this.target = target;
+    }
+}
+
+/**
+ * Executes and displays test results for pair-finding algorithms.
+ */
+class TestRunner {
+    private final PairFinder technique;
+    private final TestCase[] testCases;
+    private final ResultFormatter formatter;
+
+    TestRunner(PairFinder technique, TestCase[] testCases) {
+        this(technique, testCases, new DefaultResultFormatter());
+    }
+
+    TestRunner(PairFinder technique, TestCase[] testCases, ResultFormatter formatter) {
+        this.technique = technique;
+        this.testCases = testCases;
+        this.formatter = formatter;
+    }
+
+    void runAll() {
+        for (TestCase testCase : testCases) {
+            runCase(testCase);
+        }
+    }
+
+    private void runCase(TestCase testCase) {
+        if (technique instanceof TwoPointersTechnique) {
+            TwoPointersTechnique tpt = (TwoPointersTechnique) technique;
+            SearchResult result = tpt.search(testCase.array, testCase.target, false);
+            displayResult(testCase.target, result);
+        }
+    }
+
+    private void displayResult(int target, SearchResult result) {
+        System.out.println(formatter.format(target, result));
     }
 }
 
@@ -297,7 +325,7 @@ class TwoPointersTechniqueDemo {
     };
 
     public static void main(String[] args) {
-        TwoPointersTechnique technique = TwoPointersTechnique.getInstance();
+        PairFinder technique = TwoPointersTechnique.getInstance();
         TestRunner runner = new TestRunner(technique, TEST_CASES);
         runner.runAll();
     }

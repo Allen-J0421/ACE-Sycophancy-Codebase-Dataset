@@ -31,6 +31,11 @@ public class Trie {
         }
     }
 
+    @FunctionalInterface
+    private interface NodeTransition {
+        TrieNode next(TrieNode node, char c);
+    }
+
     private final TrieNode root = new TrieNode();
 
     public void insert(String key) {
@@ -54,17 +59,17 @@ public class Trie {
     }
 
     private TrieNode ensurePath(String key) {
-        TrieNode node = root;
-        for (int i = 0; i < key.length(); i++) {
-            node = node.ensureChild(key.charAt(i));
-        }
-        return node;
+        return walk(key, (node, c) -> node.ensureChild(c));
     }
 
     private TrieNode findNode(String key) {
+        return walk(key, (node, c) -> node.childAt(c));
+    }
+
+    private TrieNode walk(String key, NodeTransition transition) {
         TrieNode node = root;
         for (int i = 0; i < key.length(); i++) {
-            node = node.childAt(key.charAt(i));
+            node = transition.next(node, key.charAt(i));
             if (node == null) {
                 return null;
             }

@@ -30,10 +30,22 @@ final class Knapsack {
             Item item
     ) {
         for (int currentCapacity = capacity; currentCapacity >= item.weight; currentCapacity--) {
-            int valueWithoutItem = maxValueByCapacity[currentCapacity];
-            int valueWithItem = maxValueByCapacity[currentCapacity - item.weight] + item.value;
-            maxValueByCapacity[currentCapacity] = Math.max(valueWithoutItem, valueWithItem);
+            maxValueByCapacity[currentCapacity] = bestValueForCapacity(
+                    maxValueByCapacity,
+                    currentCapacity,
+                    item
+            );
         }
+    }
+
+    private static int bestValueForCapacity(
+            int[] maxValueByCapacity,
+            int currentCapacity,
+            Item item
+    ) {
+        int valueWithoutItem = maxValueByCapacity[currentCapacity];
+        int valueWithItem = maxValueByCapacity[currentCapacity - item.weight] + item.value;
+        return Math.max(valueWithoutItem, valueWithItem);
     }
 
     private static final class Item {

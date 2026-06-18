@@ -94,12 +94,4 @@ public final class BuildHeap {
         }
     }
 
-    public static void main(String[] args) {
-        int[] values = {1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17};
-        int[] heap = buildHeapCopy(values);
-
-        System.out.println("Input: " + Arrays.toString(values));
-        System.out.println("Heap: " + Arrays.toString(heap));
-        System.out.println("Valid max heap: " + isMaxHeap(heap));
-    }
 }

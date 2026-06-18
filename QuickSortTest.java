@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.List;
 
 public final class QuickSortTest {
     private QuickSortTest() {
@@ -6,12 +7,17 @@ public final class QuickSortTest {
     }
 
     public static void main(String[] args) {
-        runCase("sort whole array", QuickSortTest::shouldSortWholeArray);
-        runCase("sort requested range", QuickSortTest::shouldSortOnlyRequestedRange);
-        runCase("handle duplicates and empty input", QuickSortTest::shouldHandleDuplicatesAndEmptyInputs);
-        runCase("sort many duplicates", QuickSortTest::shouldSortManyDuplicates);
-        runCase("reject invalid ranges", QuickSortTest::shouldRejectInvalidRanges);
+        for (TestCase testCase : TEST_CASES) {
+            runCase(testCase);
+        }
     }
+
+    private static final List<TestCase> TEST_CASES = List.of(
+            new TestCase("sort whole array", QuickSortTest::shouldSortWholeArray),
+            new TestCase("sort requested range", QuickSortTest::shouldSortOnlyRequestedRange),
+            new TestCase("handle duplicates and empty input", QuickSortTest::shouldHandleDuplicatesAndEmptyInputs),
+            new TestCase("sort many duplicates", QuickSortTest::shouldSortManyDuplicates),
+            new TestCase("reject invalid ranges", QuickSortTest::shouldRejectInvalidRanges));
 
     private static void shouldSortWholeArray() {
         int[] values = {10, 7, 8, 9, 1, 5};
@@ -47,11 +53,11 @@ public final class QuickSortTest {
         expectThrows(IndexOutOfBoundsException.class, () -> QuickSort.sort(new int[] {1, 2, 3}, 2, 1));
     }
 
-    private static void runCase(String name, Runnable action) {
+    private static void runCase(TestCase testCase) {
         try {
-            action.run();
+            testCase.action().run();
         } catch (Throwable thrown) {
-            throw new AssertionError("Case failed: " + name, thrown);
+            throw new AssertionError("Case failed: " + testCase.name(), thrown);
         }
     }
 
@@ -77,4 +83,6 @@ public final class QuickSortTest {
 
         throw new AssertionError("Expected " + expectedType.getSimpleName() + " to be thrown");
     }
+
+    private record TestCase(String name, Runnable action) {}
 }

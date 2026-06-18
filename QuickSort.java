@@ -124,41 +124,9 @@ public final class QuickSort {
         values[second] = temp;
     }
 
-    private static final class Partition {
-        private final int lessThanEndExclusive;
-        private final int greaterThanStart;
+    private record Partition(int lessThanEndExclusive, int greaterThanStart) {}
 
-        private Partition(int lessThanEndExclusive, int greaterThanStart) {
-            this.lessThanEndExclusive = lessThanEndExclusive;
-            this.greaterThanStart = greaterThanStart;
-        }
-
-        private int lessThanEndExclusive() {
-            return lessThanEndExclusive;
-        }
-
-        private int greaterThanStart() {
-            return greaterThanStart;
-        }
-    }
-
-    private static final class Range {
-        private final int left;
-        private final int rightExclusive;
-
-        private Range(int left, int rightExclusive) {
-            this.left = left;
-            this.rightExclusive = rightExclusive;
-        }
-
-        private int left() {
-            return left;
-        }
-
-        private int rightExclusive() {
-            return rightExclusive;
-        }
-
+    private record Range(int left, int rightExclusive) {
         private int length() {
             return rightExclusive - left;
         }

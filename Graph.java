@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class Graph implements IntGraph {
@@ -36,9 +35,21 @@ public final class Graph implements IntGraph {
     }
 
     @Override
-    public List<Integer> neighborsOf(int vertex) {
+    public int neighborCount(int vertex) {
         validateVertex(vertex);
-        return Collections.unmodifiableList(adjacencyList.get(vertex));
+        return adjacencyList.get(vertex).size();
+    }
+
+    @Override
+    public int neighborAt(int vertex, int neighborIndex) {
+        validateVertex(vertex);
+
+        List<Integer> neighbors = adjacencyList.get(vertex);
+        if (neighborIndex < 0 || neighborIndex >= neighbors.size()) {
+            throw new IllegalArgumentException("neighbor index out of bounds: " + neighborIndex);
+        }
+
+        return neighbors.get(neighborIndex);
     }
 
     private void validateVertex(int vertex) {

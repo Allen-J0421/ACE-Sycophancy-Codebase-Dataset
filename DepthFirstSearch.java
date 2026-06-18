@@ -1,9 +1,9 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.IntConsumer;
+import java.util.List;
 
 public final class DepthFirstSearch {
 
@@ -67,9 +67,8 @@ public final class DepthFirstSearch {
                 visited[vertex] = true;
                 visitor.accept(vertex);
 
-                List<Integer> neighbors = graph.neighborsOf(vertex);
-                for (int index = neighbors.size() - 1; index >= 0; index--) {
-                    int neighbor = neighbors.get(index);
+                for (int index = graph.neighborCount(vertex) - 1; index >= 0; index--) {
+                    int neighbor = graph.neighborAt(vertex, index);
                     if (!visited[neighbor]) {
                         stack.push(neighbor);
                     }

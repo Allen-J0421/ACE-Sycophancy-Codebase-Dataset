@@ -1,7 +1,7 @@
-import java.util.List;
-
 public interface IntGraph {
     int vertexCount();
 
-    List<Integer> neighborsOf(int vertex);
+    int neighborCount(int vertex);
+
+    int neighborAt(int vertex, int neighborIndex);
 }

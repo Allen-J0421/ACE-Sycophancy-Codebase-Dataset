@@ -140,10 +140,11 @@ class MinHeap {
     }
 
     public void changeValueOnAKey(int index, int newValue) {
-        if (heap[index] == newValue) {
+        int currentValue = heap[index];
+        if (currentValue == newValue) {
             return;
         }
-        if (heap[index] < newValue) {
+        if (currentValue < newValue) {
             increaseKey(index, newValue);
         } else {
             decreaseKey(index, newValue);

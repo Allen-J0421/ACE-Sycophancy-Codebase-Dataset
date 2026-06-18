@@ -1,8 +1,10 @@
 import java.util.Optional;
 
-record PairResult(int left, int right) {}
-
 class TwoPointers {
+
+    record PairResult(int left, int right) {}
+
+    private TwoPointers() {}
 
     // arr must be sorted ascending. Returns indices of the pair summing to target.
     static Optional<PairResult> findPairWithSum(int[] arr, int target) {

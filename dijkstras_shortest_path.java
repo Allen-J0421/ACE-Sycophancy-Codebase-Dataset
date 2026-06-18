@@ -118,36 +118,68 @@ class Dijkstra {
         }
     }
 
+    private static final class Distances {
+        private final int[] values;
+
+        private Distances(int[] values) {
+            this.values = values;
+        }
+
+        private static Distances forSource(int vertexCount, int source) {
+            int[] values = new int[vertexCount];
+            Arrays.fill(values, UNREACHABLE);
+            values[source] = 0;
+            return new Distances(values);
+        }
+
+        private boolean isStale(QueueEntry entry) {
+            return entry.distance != values[entry.vertex];
+        }
+
+        private boolean tryUpdate(int vertex, int nextDistance) {
+            if (nextDistance >= values[vertex]) {
+                return false;
+            }
+
+            values[vertex] = nextDistance;
+            return true;
+        }
+
+        private ArrayList<Integer> toList() {
+            ArrayList<Integer> result = new ArrayList<>(values.length);
+            for (int distance : values) {
+                result.add(distance);
+            }
+            return result;
+        }
+    }
+
     private static final class ShortestPathSolver {
         private final Graph graph;
-        private final int[] distances;
+        private final Distances distances;
         private final PriorityQueue<QueueEntry> minHeap;
 
         private ShortestPathSolver(Graph graph, int source) {
             this.graph = graph;
-            this.distances = createDistances(graph.vertexCount(), source);
+            this.distances = Distances.forSource(graph.vertexCount(), source);
             this.minHeap = new PriorityQueue<>(Comparator.comparingInt(entry -> entry.distance));
             minHeap.offer(new QueueEntry(0, source));
         }
 
-        private static int[] solve(Graph graph, int source) {
+        private static Distances solve(Graph graph, int source) {
             return new ShortestPathSolver(graph, source).run();
         }
 
-        private int[] run() {
+        private Distances run() {
             while (!minHeap.isEmpty()) {
                 QueueEntry current = minHeap.poll();
-                if (isStale(current)) {
+                if (distances.isStale(current)) {
                     continue;
                 }
 
                 relaxNeighborsOf(current);
             }
             return distances;
-        }
-
-        private boolean isStale(QueueEntry entry) {
-            return entry.distance != distances[entry.vertex];
         }
 
         private void relaxNeighborsOf(QueueEntry current) {
@@ -158,17 +190,9 @@ class Dijkstra {
 
         private void tryRelax(QueueEntry current, Edge edge) {
             int nextDistance = addDistances(current.distance, edge.weight);
-            if (nextDistance < distances[edge.to]) {
-                distances[edge.to] = nextDistance;
+            if (distances.tryUpdate(edge.to, nextDistance)) {
                 minHeap.offer(new QueueEntry(nextDistance, edge.to));
             }
-        }
-
-        private static int[] createDistances(int vertexCount, int source) {
-            int[] distances = new int[vertexCount];
-            Arrays.fill(distances, UNREACHABLE);
-            distances[source] = 0;
-            return distances;
         }
     }
 
@@ -180,20 +204,11 @@ class Dijkstra {
         validateGraph(graph);
         validateSource(src, graph.vertexCount());
 
-        int[] distances = ShortestPathSolver.solve(graph, src);
-        return toArrayList(distances);
+        return ShortestPathSolver.solve(graph, src).toList();
     }
 
     static void addEdge(ArrayList<ArrayList<int[]>> adj, int u, int v, int w) {
         LegacyGraphAdapter.addUndirectedEdge(adj, u, v, w);
-    }
-
-    private static ArrayList<Integer> toArrayList(int[] distances) {
-        ArrayList<Integer> result = new ArrayList<>(distances.length);
-        for (int distance : distances) {
-            result.add(distance);
-        }
-        return result;
     }
 
     private static Graph createSampleGraph() {

@@ -1,59 +1,74 @@
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.LinkedList;
+import java.util.List;
 
 class BreadthFirstSearch {
 
-    static void bfsConnected(ArrayList<ArrayList<Integer>> adj, int src, boolean[] visited, ArrayList<Integer> res) {
-        Queue<Integer> q = new LinkedList<>();
-        visited[src] = true;
-        q.add(src);
+    private static final class Graph {
+        private final List<List<Integer>> adjacencyList;
 
-        while (!q.isEmpty()) {
-            int curr = q.poll();
-            res.add(curr);
+        Graph(int vertices) {
+            adjacencyList = new ArrayList<>(vertices);
+            for (int i = 0; i < vertices; i++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+        }
 
-            for (int x : adj.get(curr)) {
-                if (!visited[x]) {
-                    visited[x] = true;
-                    q.add(x);
+        void addEdge(int source, int destination) {
+            adjacencyList.get(source).add(destination);
+            adjacencyList.get(destination).add(source);
+        }
+
+        List<Integer> breadthFirstTraversal() {
+            boolean[] visited = new boolean[adjacencyList.size()];
+            List<Integer> traversal = new ArrayList<>();
+
+            for (int vertex = 0; vertex < adjacencyList.size(); vertex++) {
+                if (!visited[vertex]) {
+                    traverseComponent(vertex, visited, traversal);
+                }
+            }
+
+            return traversal;
+        }
+
+        private void traverseComponent(int source, boolean[] visited, List<Integer> traversal) {
+            Queue<Integer> queue = new ArrayDeque<>();
+            visited[source] = true;
+            queue.add(source);
+
+            while (!queue.isEmpty()) {
+                int current = queue.poll();
+                traversal.add(current);
+
+                for (int neighbor : adjacencyList.get(current)) {
+                    if (!visited[neighbor]) {
+                        visited[neighbor] = true;
+                        queue.add(neighbor);
+                    }
                 }
             }
         }
     }
 
-    static ArrayList<Integer> bfs(ArrayList<ArrayList<Integer>> adj) {
-        int V = adj.size();
-        boolean[] visited = new boolean[V];
-        ArrayList<Integer> res = new ArrayList<>();
-
-        for (int i = 0; i < V; i++) {
-            if (!visited[i])
-                bfsConnected(adj, i, visited, res);
-        }
-        return res;
-    }
-
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-        adj.get(v).add(u);
-    }
-
     public static void main(String[] args) {
-        int V = 6;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        Graph graph = createSampleGraph();
+        printTraversal(graph.breadthFirstTraversal());
+    }
 
-        for (int i = 0; i < V; i++)
-            adj.add(new ArrayList<>());
+    private static Graph createSampleGraph() {
+        Graph graph = new Graph(6);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 0);
+        graph.addEdge(0, 3);
+        graph.addEdge(4, 5);
+        return graph;
+    }
 
-        addEdge(adj, 1, 2);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 0, 3);
-        addEdge(adj, 4, 5);
-
-        ArrayList<Integer> res = bfs(adj);
-
-        for (int x : res)
-            System.out.print(x + " ");
+    private static void printTraversal(List<Integer> traversal) {
+        for (int vertex : traversal) {
+            System.out.print(vertex + " ");
+        }
     }
 }

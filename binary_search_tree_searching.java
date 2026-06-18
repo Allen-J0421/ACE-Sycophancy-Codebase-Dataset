@@ -15,7 +15,10 @@ final class BinarySearchTree {
         }
     }
 
-    private BinarySearchTree() {
+    private final Node root;
+
+    private BinarySearchTree(Node root) {
+        this.root = root;
     }
 
     static boolean search(Node root, int key) {
@@ -30,6 +33,10 @@ final class BinarySearchTree {
         return false;
     }
 
+    boolean contains(int key) {
+        return search(root, key);
+    }
+
     private static Node createSampleTree() {
         return new Node(
             6,
@@ -38,9 +45,12 @@ final class BinarySearchTree {
         );
     }
 
+    private static BinarySearchTree sampleTree() {
+        return new BinarySearchTree(createSampleTree());
+    }
+
     public static void main(String[] args) {
-        Node root = createSampleTree();
-        int key = 7;
-        System.out.println(search(root, key));
+        BinarySearchTree tree = sampleTree();
+        System.out.println(tree.contains(7));
     }
 }

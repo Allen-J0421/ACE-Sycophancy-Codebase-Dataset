@@ -155,15 +155,15 @@ class LinearProbingHashMap {
 
 class hashMap extends LinearProbingHashMap {
     public static void main(String[] args) {
-        hashMap h = new hashMap();
-        h.insertNode(1, 1);
-        h.insertNode(2, 2);
-        h.insertNode(2, 3);
-        h.display();
-        System.out.println(h.sizeofMap());
-        System.out.println(h.deleteNode(2));
-        System.out.println(h.sizeofMap());
-        System.out.println(h.isEmpty());
-        System.out.println(h.get(2));
+        LinearProbingHashMap map = new LinearProbingHashMap();
+        map.put(1, 1);
+        map.put(2, 2);
+        map.put(2, 3);
+        map.printEntries();
+        System.out.println(map.size());
+        System.out.println(map.remove(2));
+        System.out.println(map.size());
+        System.out.println(map.isEmpty());
+        System.out.println(map.get(2));
     }
 }

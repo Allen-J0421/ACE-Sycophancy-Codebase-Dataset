@@ -15,6 +15,11 @@ public class CoinChangeTest {
     testEventListeners();
     testLRUCaching();
     testBatchProcessing();
+    testCacheAnalytics();
+    testContextTracking();
+    testMiddlewarePipeline();
+    testLazyEvaluation();
+    testResultAggregation();
 
     System.out.println("\n=== Test Summary ===");
     System.out.println("Passed: " + testsPassed);
@@ -232,6 +237,129 @@ public class CoinChangeTest {
           request.addTask(new int[]{1, 2, 3}, 5);
           BatchSolveResult result = solver.solveBatch(request);
           return result.getTotalTimeMillis() >= 0;
+        });
+  }
+
+  private static void testCacheAnalytics() {
+    System.out.println("\nTesting Cache Analytics:");
+    test("Analytics: Tracks cache hits",
+        () -> {
+          CacheAnalytics analytics = new CacheAnalytics();
+          analytics.recordCacheHit();
+          analytics.recordCacheHit();
+          return analytics.getStatistics().getHits() == 2;
+        });
+    test("Analytics: Calculates hit rate",
+        () -> {
+          CacheAnalytics analytics = new CacheAnalytics();
+          analytics.recordCacheHit();
+          analytics.recordCacheMiss();
+          return analytics.getStatistics().getHitRate() == 0.5;
+        });
+    test("Analytics: Generates report",
+        () -> {
+          CacheAnalytics analytics = new CacheAnalytics();
+          analytics.recordCacheHit();
+          String report = analytics.generateReport();
+          return report.contains("Hit Rate");
+        });
+  }
+
+  private static void testContextTracking() {
+    System.out.println("\nTesting Context Tracking:");
+    test("Context: Stores request ID",
+        () -> {
+          SolveContext ctx = new SolveContext("REQ-123", new int[]{1, 2}, 5);
+          return "REQ-123".equals(ctx.getRequestId());
+        });
+    test("Context: Stores metadata",
+        () -> {
+          SolveContext ctx = new SolveContext("REQ-1", new int[]{1}, 1);
+          ctx.setAttribute("key", "value");
+          return "value".equals(ctx.getAttribute("key"));
+        });
+    test("Context: Provides coins and sum",
+        () -> {
+          SolveContext ctx = new SolveContext("REQ-1", new int[]{1, 2, 3}, 5);
+          return ctx.getTargetSum() == 5 && ctx.getCoins().length == 3;
+        });
+  }
+
+  private static void testMiddlewarePipeline() {
+    System.out.println("\nTesting Middleware Pipeline:");
+    test("Pipeline: Executes middleware chain",
+        () -> {
+          MiddlewarePipeline pipeline = new MiddlewarePipeline(ctx ->
+              CoinChange.solve(ctx.getCoins(), ctx.getTargetSum())
+          );
+          pipeline.use(new LoggingMiddleware());
+          SolveContext ctx = new SolveContext("REQ-1", new int[]{1, 2}, 3);
+          CoinChangeResult result = pipeline.execute(ctx);
+          return result.getWays() == 2;
+        });
+    test("Pipeline: Tracks middleware count",
+        () -> {
+          MiddlewarePipeline pipeline = new MiddlewarePipeline(ctx ->
+              CoinChange.solve(ctx.getCoins(), ctx.getTargetSum())
+          );
+          pipeline.use(new LoggingMiddleware());
+          pipeline.use(new CacheMiddleware());
+          return pipeline.getMiddlewareCount() == 2;
+        });
+  }
+
+  private static void testLazyEvaluation() {
+    System.out.println("\nTesting Lazy Evaluation:");
+    test("Lazy: Defers computation",
+        () -> {
+          LazyResult lazy = new LazyResult(() ->
+              CoinChange.solve(new int[]{1, 2}, 3)
+          );
+          return !lazy.isEvaluated();
+        });
+    test("Lazy: Evaluates on access",
+        () -> {
+          LazyResult lazy = new LazyResult(() ->
+              CoinChange.solve(new int[]{1, 2}, 3)
+          );
+          lazy.getWays();
+          return lazy.isEvaluated();
+        });
+    test("Lazy: Caches result",
+        () -> {
+          final int[] evalCount = {0};
+          LazyResult lazy = new LazyResult(() -> {
+            evalCount[0]++;
+            return CoinChange.solve(new int[]{1, 2}, 3);
+          });
+          lazy.getWays();
+          lazy.getWays();
+          return evalCount[0] == 1;
+        });
+  }
+
+  private static void testResultAggregation() {
+    System.out.println("\nTesting Result Aggregation:");
+    test("Aggregation: Collects results",
+        () -> {
+          ResultAggregator agg = new ResultAggregator();
+          agg.add(CoinChange.solve(new int[]{1, 2}, 3));
+          agg.add(CoinChange.solve(new int[]{1}, 5));
+          return agg.getTotalResults() == 2;
+        });
+    test("Aggregation: Calculates statistics",
+        () -> {
+          ResultAggregator agg = new ResultAggregator();
+          agg.add(CoinChange.solve(new int[]{1, 2, 3}, 5));
+          agg.add(CoinChange.solve(new int[]{1}, 10));
+          return agg.getTotalWays() > 0;
+        });
+    test("Aggregation: Generates summary",
+        () -> {
+          ResultAggregator agg = new ResultAggregator();
+          agg.add(CoinChange.solve(new int[]{1, 2}, 3));
+          String summary = agg.generateSummary();
+          return summary.contains("Average Ways");
         });
   }
 

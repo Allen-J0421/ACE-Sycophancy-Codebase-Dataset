@@ -8,11 +8,14 @@ public final class TwoPointersTest {
         shouldReturnEmptyWhenNoPairExists();
         shouldRejectUnsortedInput();
         shouldHandleIntegerOverflowSafely();
+        shouldSupportTargetsBeyondIntegerRange();
+        shouldDefensivelyCopyValidatedInput();
     }
 
     private static void shouldFindMatchingPair() {
+        SortedIntArray sortedValues = SortedIntArray.copyOf(new int[] {-3, -1, 0, 1, 2});
         TwoPointers.PairMatch match = TwoPointers.findPairWithSum(
-            new int[] {-3, -1, 0, 1, 2},
+            sortedValues,
             -2
         ).orElseThrow(() -> new AssertionError("Expected a matching pair"));
 
@@ -24,14 +27,14 @@ public final class TwoPointersTest {
     }
 
     private static void shouldReturnEmptyWhenNoPairExists() {
-        if (TwoPointers.findPairWithSum(new int[] {1, 4, 8}, 6).isPresent()) {
+        if (TwoPointers.findPairWithSum(SortedIntArray.copyOf(new int[] {1, 4, 8}), 6).isPresent()) {
             throw new AssertionError("Expected no matching pair");
         }
     }
 
     private static void shouldRejectUnsortedInput() {
         try {
-            TwoPointers.findPairWithSum(new int[] {3, 1, 2}, 4);
+            SortedIntArray.copyOf(new int[] {3, 1, 2});
             throw new AssertionError("Expected unsorted input to be rejected");
         } catch (IllegalArgumentException expected) {
             if (!expected.getMessage().contains("sorted")) {
@@ -42,11 +45,30 @@ public final class TwoPointersTest {
 
     private static void shouldHandleIntegerOverflowSafely() {
         TwoPointers.PairMatch match = TwoPointers.findPairWithSum(
-            new int[] {-1, Integer.MAX_VALUE},
+            SortedIntArray.copyOf(new int[] {-1, Integer.MAX_VALUE}),
             Integer.MAX_VALUE - 1
         ).orElseThrow(() -> new AssertionError("Expected overflow-safe matching pair"));
 
         assertEquals(Integer.MAX_VALUE - 1L, match.sum(), "overflow-safe sum");
+    }
+
+    private static void shouldSupportTargetsBeyondIntegerRange() {
+        TwoPointers.PairMatch match = TwoPointers.findPairWithSum(
+            SortedIntArray.copyOf(new int[] {Integer.MAX_VALUE, Integer.MAX_VALUE}),
+            4_294_967_294L
+        ).orElseThrow(() -> new AssertionError("Expected match for large long target"));
+
+        assertEquals(4_294_967_294L, match.sum(), "large target sum");
+    }
+
+    private static void shouldDefensivelyCopyValidatedInput() {
+        int[] sourceValues = {1, 2, 3, 9};
+        SortedIntArray sortedValues = SortedIntArray.copyOf(sourceValues);
+        sourceValues[3] = -10;
+
+        if (!TwoPointers.hasPairWithSum(sortedValues, 10)) {
+            throw new AssertionError("Expected validated copy to be isolated from caller mutations");
+        }
     }
 
     private static void assertEquals(long expected, long actual, String fieldName) {

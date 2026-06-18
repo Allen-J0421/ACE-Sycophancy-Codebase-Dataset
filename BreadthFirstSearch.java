@@ -4,6 +4,11 @@ import java.util.Queue;
 public class BreadthFirstSearch extends AbstractGraphTraversal {
 
     @Override
+    public String getAlgorithmName() {
+        return "BFS";
+    }
+
+    @Override
     protected void traverseFromVertex(int startVertex) {
         Queue<Integer> queue = new LinkedList<>();
         markVisited(startVertex);

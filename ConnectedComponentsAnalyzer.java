@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConnectedComponentsAnalyzer {
-    private final Graph graph;
+    private final IGraph graph;
     private final boolean[] visited;
     private final int[] componentId;
     private int componentCount;
 
-    public ConnectedComponentsAnalyzer(Graph graph) {
+    public ConnectedComponentsAnalyzer(IGraph graph) {
         this.graph = graph;
         this.visited = new boolean[graph.getVertexCount()];
         this.componentId = new int[graph.getVertexCount()];

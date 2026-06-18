@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CycleDetector {
-    private final Graph graph;
+    private final IGraph graph;
     private boolean[] visited;
     private boolean[] recursionStack;
     private List<Integer> cycleVertices;
 
-    public CycleDetector(Graph graph) {
+    public CycleDetector(IGraph graph) {
         this.graph = graph;
         this.visited = new boolean[graph.getVertexCount()];
         this.recursionStack = new boolean[graph.getVertexCount()];

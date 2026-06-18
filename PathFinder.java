@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class PathFinder {
-    private final Graph graph;
+    private final IGraph graph;
     private final boolean[] visited;
     private final int[] parent;
 
-    public PathFinder(Graph graph) {
+    public PathFinder(IGraph graph) {
         this.graph = graph;
         this.visited = new boolean[graph.getVertexCount()];
         this.parent = new int[graph.getVertexCount()];

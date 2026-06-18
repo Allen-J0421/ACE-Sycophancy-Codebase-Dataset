@@ -1,0 +1,142 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                 ADVANCED GRAPH FRAMEWORK ARCHITECTURE                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 1: APPLICATION LAYER                                                   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                  Main.java                                   │
+│  ├─ Demonstrates graph construction with logging                             │
+│  ├─ Shows comprehensive graph analysis                                       │
+│  ├─ Compares traversal algorithms                                            │
+│  └─ Displays performance statistics                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 2: FACADE & ANALYSIS ORCHESTRATION                                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                            GraphAnalyzer                                     │
+│  └─ AnalysisResult                                                           │
+│     ├─ Provides comprehensive API                                            │
+│     ├─ Generates detailed reports                                            │
+│     └─ Coordinates all analysis tools                                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+                                      │
+         ┌────────────────────────────┼────────────────────────────┐
+         │                            │                            │
+         ▼                            ▼                            ▼
+┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
+│ LAYER 3A: TRAVERSAL  │  │ LAYER 3B: ANALYSIS   │  │ LAYER 3C: METRICS   │
+├──────────────────────┤  ├──────────────────────┤  ├──────────────────────┤
+│ GraphTraversal (I)   │  │ ConnectedComponents  │  │ GraphStatistics     │
+│         │            │  │      Analyzer        │  │                     │
+│    ┌────┴────┐       │  │                      │  │ ├─ Density          │
+│    │          │       │  │ CycleDetector        │  │ ├─ Degree Dist.     │
+│    ▼          ▼       │  │                      │  │ ├─ Regularity       │
+│   DFS        BFS      │  │ PathFinder           │  │ ├─ Completeness     │
+│  ├─R/I              │  │                      │  │ └─ Sparsity         │
+│  └─Stats            │  │ TraversalStats       │  │                     │
+└──────────────────────┘  └──────────────────────┘  └──────────────────────┘
+         │                           │                        │
+         └───────────────────────────┼────────────────────────┘
+                                     │
+                                     ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 4: ABSTRACT TRAVERSAL BASE CLASS                                      │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                        AbstractGraphTraversal                                │
+│  ├─ Unified traverse() implementation                                        │
+│  ├─ Abstract traverseFromVertex()                                            │
+│  ├─ Visitor management (visited[], result)                                   │
+│  └─ Template Method pattern for algorithm consistency                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 5: DATA STRUCTURE & INTERFACE                                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                  IGraph (Interface)                                          │
+│                        │                                                     │
+│                        ▼                                                     │
+│             Graph (Implementation)                                           │
+│  ├─ Adjacency list representation                                            │
+│  ├─ Edge management (add/remove)                                             │
+│  ├─ Vertex/neighbor queries                                                  │
+│  ├─ Validation & bounds checking                                             │
+│  └─ Logger integration                                                       │
+│      └─ addEdge logging                                                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                    ┌─────────────────┼─────────────────┐
+                    │                 │                 │
+                    ▼                 ▼                 ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ LAYER 6: INFRASTRUCTURE & UTILITIES                                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  GraphBuilder      │      Logger           │       Result<T>                │
+│  ├─ Fluent API    │  ├─ ConsoleLogger   │  ├─ success(T)                  │
+│  ├─ Edge chaining │  ├─ NoOpLogger      │  ├─ failure(E)                  │
+│  └─ buildResult() │  └─ Interface       │  ├─ map/flatMap                │
+│                   │     for plugins      │  └─ functional composition      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        COMPONENT INTERACTION FLOW                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. GRAPH CONSTRUCTION
+   Main → GraphBuilder → Graph(with Logger) → IGraph interface
+
+2. ANALYSIS REQUEST
+   Main → GraphAnalyzer → creates analysis tools → AnalysisResult
+
+3. TRAVERSAL EXECUTION
+   GraphAnalyzer → DepthFirstSearch/BFS → AbstractGraphTraversal → IGraph
+
+4. STATISTICS COLLECTION
+   TraversalStats ← timing + vertex/edge counts
+   GraphStatistics ← degree analysis + density calculation
+
+5. ERROR HANDLING
+   Operations → Result<T> monad → map/flatMap/ifSuccess/ifFailure
+
+6. LOGGING
+   Graph.addEdge() → Logger.debug()
+   GraphBuilder.addEdge() → Logger.error() on failure
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           TYPE HIERARCHY                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+GraphTraversal (interface)
+    ├─ AbstractGraphTraversal (abstract class)
+    │   ├─ DepthFirstSearch
+    │   └─ BreadthFirstSearch
+
+IGraph (interface)
+    └─ Graph (implementation)
+
+Result<T> (abstract class)
+    ├─ Result.Success<T>
+    └─ Result.Failure<T>
+
+Logger (interface)
+    ├─ Logger.ConsoleLogger
+    └─ Logger.NoOpLogger
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                        FEATURE COMPLETENESS                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✓ Graph Construction        ✓ Traversal Algorithms    ✓ Analysis Tools
+  ├─ Validation              ├─ DFS (Recursive)        ├─ Components
+  ├─ Edge management         ├─ DFS (Iterative)        ├─ Cycles
+  └─ Fluent Builder          ├─ BFS                    └─ Paths
+                             └─ Statistics
+
+✓ Infrastructure           ✓ Error Handling          ✓ Monitoring
+  ├─ Logging                 ├─ Result<T> monad       ├─ Performance Stats
+  ├─ Statistics              ├─ Exception wrapping     ├─ Metrics reporting
+  └─ Builders                └─ Graceful degradation   └─ Debug tracing
+

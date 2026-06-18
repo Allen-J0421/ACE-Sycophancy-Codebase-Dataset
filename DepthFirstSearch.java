@@ -6,7 +6,17 @@ import java.util.List;
 public class DepthFirstSearch extends AbstractGraphTraversal {
 
     private enum TraversalMode {
-        RECURSIVE, ITERATIVE
+        RECURSIVE("DFS (Recursive)"), ITERATIVE("DFS (Iterative)");
+
+        private final String displayName;
+
+        TraversalMode(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     private final TraversalMode mode;
@@ -21,6 +31,11 @@ public class DepthFirstSearch extends AbstractGraphTraversal {
 
     public static DepthFirstSearch iterative() {
         return new DepthFirstSearch(TraversalMode.ITERATIVE);
+    }
+
+    @Override
+    public String getAlgorithmName() {
+        return mode.getDisplayName();
     }
 
     @Override

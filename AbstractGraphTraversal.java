@@ -5,7 +5,7 @@ public abstract class AbstractGraphTraversal implements GraphTraversal {
 
     protected boolean[] visited;
     protected List<Integer> result;
-    protected Graph graph;
+    protected IGraph graph;
 
     protected AbstractGraphTraversal() {
         this.visited = new boolean[0];
@@ -13,7 +13,7 @@ public abstract class AbstractGraphTraversal implements GraphTraversal {
     }
 
     @Override
-    public final List<Integer> traverse(Graph graph) {
+    public final List<Integer> traverse(IGraph graph) {
         this.graph = graph;
         this.visited = new boolean[graph.getVertexCount()];
         this.result = new ArrayList<>();
@@ -28,6 +28,9 @@ public abstract class AbstractGraphTraversal implements GraphTraversal {
     }
 
     protected abstract void traverseFromVertex(int startVertex);
+
+    @Override
+    public abstract String getAlgorithmName();
 
     protected void markVisited(int vertex) {
         visited[vertex] = true;

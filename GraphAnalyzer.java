@@ -1,14 +1,21 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class GraphAnalyzer {
-    private final Graph graph;
+    private final IGraph graph;
+    private final Logger logger;
     private ConnectedComponentsAnalyzer componentsAnalyzer;
     private CycleDetector cycleDetector;
     private PathFinder pathFinder;
 
-    public GraphAnalyzer(Graph graph) {
+    public GraphAnalyzer(IGraph graph) {
+        this(graph, new Logger.NoOpLogger());
+    }
+
+    public GraphAnalyzer(IGraph graph, Logger logger) {
         this.graph = graph;
+        this.logger = logger;
     }
 
     public AnalysisResult analyze() {
@@ -16,8 +23,19 @@ public class GraphAnalyzer {
                 graph,
                 getConnectedComponentsAnalyzer(),
                 getCycleDetector(),
-                getPathFinder()
+                getPathFinder(),
+                logger
         );
+    }
+
+    public TraversalStats traverseWithDFS(boolean useRecursive) {
+        DepthFirstSearch dfs = useRecursive ? DepthFirstSearch.recursive() : DepthFirstSearch.iterative();
+        return dfs.traverseWithStats(graph);
+    }
+
+    public TraversalStats traverseWithBFS() {
+        BreadthFirstSearch bfs = new BreadthFirstSearch();
+        return bfs.traverseWithStats(graph);
     }
 
     private ConnectedComponentsAnalyzer getConnectedComponentsAnalyzer() {
@@ -42,17 +60,20 @@ public class GraphAnalyzer {
     }
 
     public static class AnalysisResult {
-        private final Graph graph;
+        private final IGraph graph;
         private final ConnectedComponentsAnalyzer componentsAnalyzer;
         private final CycleDetector cycleDetector;
         private final PathFinder pathFinder;
+        private final Logger logger;
+        private GraphStatistics statistics;
 
-        AnalysisResult(Graph graph, ConnectedComponentsAnalyzer componentsAnalyzer,
-                      CycleDetector cycleDetector, PathFinder pathFinder) {
+        AnalysisResult(IGraph graph, ConnectedComponentsAnalyzer componentsAnalyzer,
+                      CycleDetector cycleDetector, PathFinder pathFinder, Logger logger) {
             this.graph = graph;
             this.componentsAnalyzer = componentsAnalyzer;
             this.cycleDetector = cycleDetector;
             this.pathFinder = pathFinder;
+            this.logger = logger;
         }
 
         public int getVertexCount() {
@@ -87,9 +108,15 @@ public class GraphAnalyzer {
             return pathFinder.getDistance(source, destination);
         }
 
+        public GraphStatistics getStatistics() {
+            if (statistics == null) {
+                statistics = new GraphStatistics(graph);
+            }
+            return statistics;
+        }
+
         public double getDensity() {
-            int maxEdges = graph.getVertexCount() * (graph.getVertexCount() - 1) / 2;
-            return maxEdges > 0 ? (double) graph.getEdgeCount() / maxEdges : 0;
+            return getStatistics().getDensity();
         }
 
         public List<Integer> traverseDFS() {
@@ -98,6 +125,31 @@ public class GraphAnalyzer {
 
         public List<Integer> traverseBFS() {
             return new BreadthFirstSearch().traverse(graph);
+        }
+
+        public String getComprehensiveReport() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("╔════════════════════════════════════════════════════════════╗\n");
+            sb.append("║            COMPREHENSIVE GRAPH ANALYSIS REPORT             ║\n");
+            sb.append("╚════════════════════════════════════════════════════════════╝\n\n");
+
+            sb.append("BASIC PROPERTIES:\n");
+            sb.append("  Vertices: ").append(getVertexCount()).append("\n");
+            sb.append("  Edges: ").append(getEdgeCount()).append("\n");
+            sb.append("  Connected: ").append(isConnected()).append("\n");
+            sb.append("  Has Cycle: ").append(hasCycle()).append("\n\n");
+
+            GraphStatistics stats = getStatistics();
+            sb.append(stats.getDescription()).append("\n");
+
+            sb.append("CONNECTIVITY:\n");
+            sb.append("  Components: ").append(getComponentCount()).append("\n");
+            List<List<Integer>> components = getConnectedComponents();
+            for (int i = 0; i < components.size(); i++) {
+                sb.append("    Component ").append(i).append(": ").append(components.get(i)).append("\n");
+            }
+
+            return sb.toString();
         }
     }
 }

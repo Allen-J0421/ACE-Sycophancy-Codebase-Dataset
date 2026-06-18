@@ -1,76 +1,84 @@
 import java.util.List;
-import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
-        Graph graph = buildSimpleGraph();
-        GraphAnalyzer analyzer = new GraphAnalyzer(graph);
+        Logger logger = new Logger.ConsoleLogger(false);
+
+        System.out.println("╔════════════════════════════════════════════════════════════╗");
+        System.out.println("║     Advanced Graph Traversal & Analysis Framework Demo     ║");
+        System.out.println("╚════════════════════════════════════════════════════════════╝\n");
+
+        demonstrateGraphConstruction(logger);
+        demonstrateGraphAnalysis(logger);
+        demonstrateTraversalComparison(logger);
+    }
+
+    private static void demonstrateGraphConstruction(Logger logger) {
+        System.out.println("─── GRAPH CONSTRUCTION WITH BUILDER ───\n");
+
+        Result<Graph> graphResult = new GraphBuilder(6, logger)
+                .addEdge(1, 2)
+                .addEdge(0, 3)
+                .addEdge(2, 0)
+                .addEdge(5, 4)
+                .buildResult();
+
+        if (graphResult.isSuccess()) {
+            System.out.println("✓ Graph successfully created\n");
+            demonstrateGraphAnalysis(logger, graphResult.getOrNull());
+        } else {
+            System.out.println("✗ Failed to create graph: " + graphResult.getErrorMessage() + "\n");
+        }
+    }
+
+    private static void demonstrateGraphAnalysis(Logger logger) {
+        Graph graph = buildSimpleGraph(logger);
+        demonstrateGraphAnalysis(logger, graph);
+    }
+
+    private static void demonstrateGraphAnalysis(Logger logger, Graph graph) {
+        System.out.println("─── COMPREHENSIVE GRAPH ANALYSIS ───\n");
+
+        GraphAnalyzer analyzer = new GraphAnalyzer(graph, logger);
         GraphAnalyzer.AnalysisResult result = analyzer.analyze();
 
-        System.out.println("╔═══════════════════════════════════════════════════════════╗");
-        System.out.println("║           Graph Traversal and Analysis Demo              ║");
-        System.out.println("╚═══════════════════════════════════════════════════════════╝\n");
-
-        demonstrateAnalysis(result);
-        demonstrateTraversals(result);
-        demonstratePathFinding(result);
-
-        System.out.println("\n╔═══════════════════════════════════════════════════════════╗");
-        System.out.println("║          Testing with Disconnected Graph                 ║");
-        System.out.println("╚═══════════════════════════════════════════════════════════╝\n");
-
-        Graph disconnectedGraph = buildDisconnectedGraph();
-        GraphAnalyzer.AnalysisResult disconnectedResult = new GraphAnalyzer(disconnectedGraph).analyze();
-        demonstrateAnalysis(disconnectedResult);
+        System.out.println(result.getComprehensiveReport());
     }
 
-    private static void demonstrateAnalysis(GraphAnalyzer.AnalysisResult result) {
-        System.out.println("─── GRAPH ANALYSIS ───\n");
+    private static void demonstrateTraversalComparison(Logger logger) {
+        System.out.println("\n─── TRAVERSAL ALGORITHM COMPARISON ───\n");
 
-        System.out.println("Vertices:              " + result.getVertexCount());
-        System.out.println("Edges:                 " + result.getEdgeCount());
-        System.out.println("Connected Components:  " + result.getComponentCount());
-        System.out.println("Is Connected:          " + result.isConnected());
-        System.out.println("Has Cycle:             " + result.hasCycle());
-        System.out.printf("Density:               %.3f%n", result.getDensity());
+        Graph simpleGraph = buildSimpleGraph(logger);
+        Graph largerGraph = buildLargerGraph(logger);
 
-        System.out.println("\nConnected Components:");
-        List<List<Integer>> components = result.getConnectedComponents();
-        for (int i = 0; i < components.size(); i++) {
-            System.out.println("  Component " + i + ": " + components.get(i));
-        }
+        compareTraversals(logger, simpleGraph, "Simple Graph");
+        System.out.println();
+        compareTraversals(logger, largerGraph, "Larger Graph");
     }
 
-    private static void demonstrateTraversals(GraphAnalyzer.AnalysisResult result) {
-        System.out.println("\n─── TRAVERSAL ALGORITHMS ───\n");
+    private static void compareTraversals(Logger logger, Graph graph, String graphName) {
+        System.out.println("Graph: " + graphName + " (" + graph.getVertexCount() + " vertices, " +
+                graph.getEdgeCount() + " edges)\n");
 
-        List<Integer> dfs = result.traverseDFS();
-        System.out.println("DFS: " + formatPath(dfs));
+        GraphAnalyzer analyzer = new GraphAnalyzer(graph, logger);
 
-        List<Integer> bfs = result.traverseBFS();
-        System.out.println("BFS: " + formatPath(bfs));
+        TraversalStats dfsRecursive = analyzer.traverseWithDFS(true);
+        TraversalStats dfsIterative = analyzer.traverseWithDFS(false);
+        TraversalStats bfs = analyzer.traverseWithBFS();
+
+        printTraversalStats(dfsRecursive);
+        printTraversalStats(dfsIterative);
+        printTraversalStats(bfs);
+
+        System.out.println();
     }
 
-    private static void demonstratePathFinding(GraphAnalyzer.AnalysisResult result) {
-        System.out.println("\n─── PATH FINDING ───\n");
-
-        testPath(result, 0, 1);
-        testPath(result, 0, 5);
-        testPath(result, 2, 3);
+    private static void printTraversalStats(TraversalStats stats) {
+        System.out.println(stats.getReport());
     }
 
-    private static void testPath(GraphAnalyzer.AnalysisResult result, int source, int dest) {
-        Optional<List<Integer>> path = result.findPath(source, dest);
-        if (path.isPresent()) {
-            System.out.println("Path " + source + "→" + dest + ": " + formatPath(path.get()) +
-                    " (distance: " + result.getDistance(source, dest) + ")");
-        } else {
-            System.out.println("No path from " + source + " to " + dest);
-        }
-    }
-
-    private static Graph buildSimpleGraph() {
-        return new GraphBuilder(6)
+    private static Graph buildSimpleGraph(Logger logger) {
+        return new GraphBuilder(6, logger)
                 .addEdge(1, 2)
                 .addEdge(0, 3)
                 .addEdge(2, 0)
@@ -78,22 +86,12 @@ public class Main {
                 .build();
     }
 
-    private static Graph buildDisconnectedGraph() {
-        return new GraphBuilder(5)
-                .addEdge(0, 1)
-                .addEdge(1, 2)
-                .addEdge(3, 4)
-                .build();
-    }
-
-    private static String formatPath(List<Integer> path) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < path.size(); i++) {
-            sb.append(path.get(i));
-            if (i < path.size() - 1) {
-                sb.append(" → ");
-            }
-        }
-        return sb.toString();
+    private static Graph buildLargerGraph(Logger logger) {
+        GraphBuilder builder = new GraphBuilder(10, logger);
+        // Create a more connected graph
+        builder.addEdge(0, 1).addEdge(0, 2).addEdge(1, 3).addEdge(2, 3)
+               .addEdge(3, 4).addEdge(4, 5).addEdge(5, 6).addEdge(6, 7)
+               .addEdge(7, 8).addEdge(8, 9).addEdge(9, 0);
+        return builder.build();
     }
 }

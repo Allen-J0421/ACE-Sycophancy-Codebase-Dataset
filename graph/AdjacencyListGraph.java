@@ -1,42 +1,22 @@
 package graph;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public final class AdjacencyListGraph implements MutableGraph {
-    private final List<List<Integer>> adjacencyList;
+final class AdjacencyListGraph implements Graph {
     private final List<List<Integer>> adjacencyViews;
 
-    public AdjacencyListGraph(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("Vertex count cannot be negative.");
-        }
-
-        adjacencyList = new ArrayList<>(vertexCount);
-        adjacencyViews = new ArrayList<>(vertexCount);
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            List<Integer> neighbors = new ArrayList<>();
-            adjacencyList.add(neighbors);
-            adjacencyViews.add(Collections.unmodifiableList(neighbors));
-        }
+    AdjacencyListGraph(List<List<Integer>> adjacencyViews) {
+        this.adjacencyViews = adjacencyViews;
     }
 
     @Override
     public int vertexCount() {
-        return adjacencyList.size();
+        return adjacencyViews.size();
     }
 
     @Override
     public List<Integer> neighborsOf(int vertex) {
         requireVertex(vertex);
         return adjacencyViews.get(vertex);
-    }
-
-    @Override
-    public void addDirectedEdge(int from, int to) {
-        requireVertex(from);
-        requireVertex(to);
-        adjacencyList.get(from).add(to);
     }
 }

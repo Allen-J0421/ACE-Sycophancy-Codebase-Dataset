@@ -7,11 +7,12 @@ public final class DepthFirstSearchDemo {
     }
 
     public static void main(String[] args) {
-        Graph graph = Graph.withVertices(6);
-        graph.addUndirectedEdge(1, 2);
-        graph.addUndirectedEdge(0, 3);
-        graph.addUndirectedEdge(2, 0);
-        graph.addUndirectedEdge(5, 4);
+        Graph graph = Graph.builder(6)
+                .addUndirectedEdge(1, 2)
+                .addUndirectedEdge(0, 3)
+                .addUndirectedEdge(2, 0)
+                .addUndirectedEdge(5, 4)
+                .build();
 
         System.out.println(formatTraversal(DepthFirstSearch.dfs(graph)));
     }

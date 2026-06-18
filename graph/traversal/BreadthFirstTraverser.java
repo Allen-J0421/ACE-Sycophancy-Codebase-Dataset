@@ -6,56 +6,65 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public final class BreadthFirstTraversal {
-    private BreadthFirstTraversal() {
+public final class BreadthFirstTraverser {
+    private final Graph graph;
+
+    private BreadthFirstTraverser(Graph graph) {
+        this.graph = graph;
+    }
+
+    public static BreadthFirstTraverser forGraph(Graph graph) {
+        if (graph == null) {
+            throw new IllegalArgumentException("Graph cannot be null.");
+        }
+        return new BreadthFirstTraverser(graph);
     }
 
     public static TraversalResult traverseFrom(Graph graph, int startVertex) {
-        TraversalState traversalState = TraversalState.create(graph);
-        graph.requireVertex(startVertex);
-        traversalState.traverseComponent(startVertex);
-        return traversalState.result();
+        return forGraph(graph).traverseFrom(startVertex);
     }
 
     public static TraversalResult traverseAllComponents(Graph graph) {
-        TraversalState traversalState = TraversalState.create(graph);
-
-        for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
-            if (!traversalState.hasVisited(vertex)) {
-                traversalState.traverseComponent(vertex);
-            }
-        }
-
-        return traversalState.result();
+        return forGraph(graph).traverseAllComponents();
     }
 
-    private static final class TraversalState {
+    public TraversalResult traverseFrom(int startVertex) {
+        graph.requireVertex(startVertex);
+        TraversalSession traversalSession = new TraversalSession(graph);
+        traversalSession.traverseComponent(startVertex);
+        return traversalSession.result();
+    }
+
+    public TraversalResult traverseAllComponents() {
+        TraversalSession traversalSession = new TraversalSession(graph);
+        for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
+            if (!traversalSession.hasVisited(vertex)) {
+                traversalSession.traverseComponent(vertex);
+            }
+        }
+        return traversalSession.result();
+    }
+
+    private static final class TraversalSession {
         private final Graph graph;
         private final boolean[] visited;
         private final List<Integer> traversalOrder;
 
-        private TraversalState(Graph graph) {
+        private TraversalSession(Graph graph) {
             this.graph = graph;
             visited = new boolean[graph.vertexCount()];
             traversalOrder = new ArrayList<>();
         }
 
-        static TraversalState create(Graph graph) {
-            if (graph == null) {
-                throw new IllegalArgumentException("Graph cannot be null.");
-            }
-            return new TraversalState(graph);
-        }
-
-        boolean hasVisited(int vertex) {
+        private boolean hasVisited(int vertex) {
             return visited[vertex];
         }
 
-        TraversalResult result() {
+        private TraversalResult result() {
             return TraversalResult.fromVisitOrder(traversalOrder);
         }
 
-        void traverseComponent(int startVertex) {
+        private void traverseComponent(int startVertex) {
             Deque<Integer> queue = new ArrayDeque<>();
             visited[startVertex] = true;
             queue.add(startVertex);

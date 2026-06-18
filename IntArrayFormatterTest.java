@@ -10,17 +10,11 @@ public final class IntArrayFormatterTest {
     private static void assertFormattedValues() {
         String formattedValues = IntArrayFormatter.format(new int[] {1, 5, 7});
 
-        if (!"1 5 7 ".equals(formattedValues)) {
-            throw new AssertionError("formatted values should preserve the legacy console output");
-        }
+        TestAssertions.assertStringEquals(
+                "formatted values should preserve the legacy console output", formattedValues, "1 5 7 ");
     }
 
     private static void assertNullRejected() {
-        try {
-            IntArrayFormatter.format(null);
-            throw new AssertionError("null values should be rejected for formatting");
-        } catch (NullPointerException expected) {
-            // Expected by the public formatting contract.
-        }
+        TestAssertions.assertThrowsNullPointer("format null values", () -> IntArrayFormatter.format(null));
     }
 }

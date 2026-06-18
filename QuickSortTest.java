@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public final class QuickSortTest {
     private QuickSortTest() {
     }
@@ -52,43 +50,22 @@ public final class QuickSortTest {
         int[] values = scenario.inputValues.clone();
         QuickSort.sort(values);
 
-        if (!Arrays.equals(values, scenario.expectedValues)) {
-            throw new AssertionError(
-                    scenario.name
-                            + ": expected "
-                            + Arrays.toString(scenario.expectedValues)
-                            + " but got "
-                            + Arrays.toString(values));
-        }
+        TestAssertions.assertIntArrayEquals(scenario.name, values, scenario.expectedValues);
     }
 
     private static void assertNullRejected() {
-        try {
-            QuickSort.sort(null);
-            throw new AssertionError("null values should be rejected");
-        } catch (NullPointerException expected) {
-            // Expected by the public sorting contract.
-        }
-
-        try {
-            QuickSort.sortedCopy(null);
-            throw new AssertionError("null values should be rejected for sorted copies");
-        } catch (NullPointerException expected) {
-            // Expected by the public sorting contract.
-        }
+        TestAssertions.assertThrowsNullPointer("sort null values", () -> QuickSort.sort(null));
+        TestAssertions.assertThrowsNullPointer("copy null values", () -> QuickSort.sortedCopy(null));
     }
 
     private static void assertSortedCopyDoesNotMutateInput() {
         int[] inputValues = {3, 1, 2};
         int[] sortedValues = QuickSort.sortedCopy(inputValues);
 
-        if (!Arrays.equals(sortedValues, new int[] {1, 2, 3})) {
-            throw new AssertionError("sorted copy should return sorted values");
-        }
-
-        if (!Arrays.equals(inputValues, new int[] {3, 1, 2})) {
-            throw new AssertionError("sorted copy should not mutate input values");
-        }
+        TestAssertions.assertIntArrayEquals(
+                "sorted copy should return sorted values", sortedValues, new int[] {1, 2, 3});
+        TestAssertions.assertIntArrayEquals(
+                "sorted copy should not mutate input values", inputValues, new int[] {3, 1, 2});
     }
 
     private static final class SortScenario {

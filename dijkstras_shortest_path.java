@@ -14,11 +14,9 @@ class Edge {
 }
 
 class Graph {
-    private final int numVertices;
     private final List<List<Edge>> adjacencyList;
 
     Graph(int numVertices) {
-        this.numVertices = numVertices;
         adjacencyList = new ArrayList<>(numVertices);
         for (int i = 0; i < numVertices; i++) {
             adjacencyList.add(new ArrayList<>());
@@ -35,11 +33,13 @@ class Graph {
     }
 
     int size() {
-        return numVertices;
+        return adjacencyList.size();
     }
 }
 
 class Dijkstra {
+
+    private Dijkstra() {}
 
     private static class QueueEntry implements Comparable<QueueEntry> {
         final int distance;

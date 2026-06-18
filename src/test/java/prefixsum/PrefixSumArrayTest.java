@@ -14,8 +14,11 @@ public final class PrefixSumArrayTest {
         shouldHandleNegativeValues();
         shouldHandleEmptyInput();
         shouldComputePrefixSumsAsLongArrayForLargeValues();
+        shouldParseCommandLineArguments();
+        shouldJoinPrefixSumsForDisplay();
         shouldRejectIntOverflow();
         shouldRejectIntOverflowWhenBoxing();
+        shouldRejectInvalidCommandLineArguments();
         shouldRejectNullInput();
         System.out.println("All PrefixSumArray tests passed.");
     }
@@ -50,6 +53,18 @@ public final class PrefixSumArrayTest {
             PrefixSumArray.prefixSumsAsLongArray(input));
     }
 
+    private static void shouldParseCommandLineArguments() {
+        int[] parsed = PrefixSumParser.parse(new String[] {"3", "1", "4", "1", "5"});
+        assertArrayEquals(new int[] {3, 1, 4, 1, 5}, parsed);
+    }
+
+    private static void shouldJoinPrefixSumsForDisplay() {
+        String joined = PrefixSumFormatter.join(Arrays.asList(10, 30, 40, 45, 60));
+        if (!"10 30 40 45 60".equals(joined)) {
+            throw new AssertionError("Unexpected joined prefix sums: " + joined);
+        }
+    }
+
     private static void shouldRejectIntOverflow() {
         assertThrows(ArithmeticException.class, new CheckedRunnable() {
             @Override
@@ -64,6 +79,15 @@ public final class PrefixSumArrayTest {
             @Override
             public void run() {
                 PrefixSumArray.prefixSums(new int[] {Integer.MAX_VALUE, 1});
+            }
+        });
+    }
+
+    private static void shouldRejectInvalidCommandLineArguments() {
+        assertThrows(IllegalArgumentException.class, new CheckedRunnable() {
+            @Override
+            public void run() {
+                PrefixSumParser.parse(new String[] {"10", "abc"});
             }
         });
     }

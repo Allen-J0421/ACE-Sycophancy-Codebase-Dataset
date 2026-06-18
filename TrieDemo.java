@@ -18,9 +18,7 @@ final class TrieDemo {
 
     private static Trie buildTrie(String[] words) {
         Trie trie = new Trie();
-        for (String word : words) {
-            trie.insert(word);
-        }
+        trie.insertAll(words);
         return trie;
     }
 

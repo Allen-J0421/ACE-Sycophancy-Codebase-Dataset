@@ -15,6 +15,17 @@ public final class Trie {
     }
 
     /**
+     * Adds each lowercase word to the trie.
+     */
+    public void insertAll(String... words) {
+        Objects.requireNonNull(words, "words must not be null");
+
+        for (String word : words) {
+            insert(word);
+        }
+    }
+
+    /**
      * Returns true when the trie contains the complete lowercase word.
      */
     public boolean contains(String word) {

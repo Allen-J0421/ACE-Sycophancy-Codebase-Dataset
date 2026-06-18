@@ -40,10 +40,7 @@ final class TrieTest {
 
     private static Trie sampleTrie() {
         Trie trie = new Trie();
-        trie.insert("and");
-        trie.insert("ant");
-        trie.insert("do");
-        trie.insert("dad");
+        trie.insertAll("and", "ant", "do", "dad");
         return trie;
     }
 

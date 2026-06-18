@@ -1,3 +1,5 @@
+import java.util.StringJoiner;
+
 public final class BuildHeapDemo {
 
     private BuildHeapDemo() {
@@ -17,15 +19,12 @@ public final class BuildHeapDemo {
     }
 
     private static String formatArray(int[] values) {
-        StringBuilder builder = new StringBuilder();
+        StringJoiner joiner = new StringJoiner(" ");
 
-        for (int i = 0; i < values.length; i++) {
-            if (i > 0) {
-                builder.append(' ');
-            }
-            builder.append(values[i]);
+        for (int value : values) {
+            joiner.add(Integer.toString(value));
         }
 
-        return builder.toString();
+        return joiner.toString();
     }
 }

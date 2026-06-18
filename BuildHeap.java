@@ -7,14 +7,15 @@ public final class BuildHeap {
     }
 
     public static void siftDown(int[] values, int heapSize, int rootIndex) {
-        validateHeapArguments(values, heapSize, rootIndex);
+        validateHeapRange(values, heapSize);
+        validateRootIndex(heapSize, rootIndex);
 
         int currentIndex = rootIndex;
 
         while (true) {
             int largestIndex = currentIndex;
-            int leftChildIndex = 2 * currentIndex + 1;
-            int rightChildIndex = 2 * currentIndex + 2;
+            int leftChildIndex = leftChildIndex(currentIndex);
+            int rightChildIndex = rightChildIndex(currentIndex);
 
             if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
                 largestIndex = leftChildIndex;
@@ -35,45 +36,39 @@ public final class BuildHeap {
 
     public static void buildMaxHeap(int[] values) {
         Objects.requireNonNull(values, "values");
-
         buildMaxHeap(values, values.length);
+    }
+
+    public static void buildMaxHeap(int[] values, int heapSize) {
+        validateHeapRange(values, heapSize);
+
+        for (int parentIndex = lastParentIndex(heapSize); parentIndex >= 0; parentIndex--) {
+            siftDown(values, heapSize, parentIndex);
+        }
     }
 
     public static boolean isMaxHeap(int[] values) {
         Objects.requireNonNull(values, "values");
+        return isMaxHeap(values, values.length);
+    }
 
-        for (int parentIndex = 0; parentIndex < values.length / 2; parentIndex++) {
-            int leftChildIndex = 2 * parentIndex + 1;
-            int rightChildIndex = 2 * parentIndex + 2;
+    public static boolean isMaxHeap(int[] values, int heapSize) {
+        validateHeapRange(values, heapSize);
 
-            if (leftChildIndex < values.length && values[parentIndex] < values[leftChildIndex]) {
+        for (int parentIndex = 0; parentIndex <= lastParentIndex(heapSize); parentIndex++) {
+            int leftChildIndex = leftChildIndex(parentIndex);
+            int rightChildIndex = rightChildIndex(parentIndex);
+
+            if (leftChildIndex < heapSize && values[parentIndex] < values[leftChildIndex]) {
                 return false;
             }
 
-            if (rightChildIndex < values.length && values[parentIndex] < values[rightChildIndex]) {
+            if (rightChildIndex < heapSize && values[parentIndex] < values[rightChildIndex]) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    public static void buildMaxHeap(int[] values, int heapSize) {
-        Objects.requireNonNull(values, "values");
-
-        if (heapSize == 0) {
-            return;
-        }
-
-        validateHeapArguments(values, heapSize, 0);
-
-        if (heapSize < 2) {
-            return;
-        }
-
-        for (int i = (heapSize / 2) - 1; i >= 0; i--) {
-            siftDown(values, heapSize, i);
-        }
     }
 
     private static void swap(int[] values, int i, int j) {
@@ -82,13 +77,27 @@ public final class BuildHeap {
         values[j] = temp;
     }
 
-    private static void validateHeapArguments(int[] values, int heapSize, int rootIndex) {
+    private static int leftChildIndex(int parentIndex) {
+        return 2 * parentIndex + 1;
+    }
+
+    private static int rightChildIndex(int parentIndex) {
+        return 2 * parentIndex + 2;
+    }
+
+    private static int lastParentIndex(int heapSize) {
+        return (heapSize / 2) - 1;
+    }
+
+    private static void validateHeapRange(int[] values, int heapSize) {
         Objects.requireNonNull(values, "values");
 
         if (heapSize < 0 || heapSize > values.length) {
             throw new IllegalArgumentException("heapSize must be between 0 and values.length");
         }
+    }
 
+    private static void validateRootIndex(int heapSize, int rootIndex) {
         if (rootIndex < 0 || rootIndex >= heapSize) {
             throw new IllegalArgumentException("rootIndex must be within the heap range");
         }

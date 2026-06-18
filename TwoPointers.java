@@ -1,19 +1,32 @@
+import java.util.Optional;
+
 public final class TwoPointers {
 
     private TwoPointers() {
     }
 
-    public static boolean hasPairWithSum(int[] sortedValues, int target) {
+    public static Optional<PairMatch> findPairWithSum(int[] sortedValues, int target) {
         validateSortedInput(sortedValues);
+        return findPairInSortedValues(sortedValues, target);
+    }
 
+    public static boolean hasPairWithSum(int[] sortedValues, int target) {
+        return findPairWithSum(sortedValues, target).isPresent();
+    }
+
+    private static Optional<PairMatch> findPairInSortedValues(int[] sortedValues, int target) {
         int left = 0;
         int right = sortedValues.length - 1;
 
         while (left < right) {
-            int sum = sortedValues[left] + sortedValues[right];
+            long sum = (long) sortedValues[left] + sortedValues[right];
 
             if (sum == target) {
-                return true;
+                return Optional.of(new PairMatch(
+                    left,
+                    right,
+                    sortedValues[left],
+                    sortedValues[right]));
             }
 
             if (sum < target) {
@@ -23,7 +36,7 @@ public final class TwoPointers {
             }
         }
 
-        return false;
+        return Optional.empty();
     }
 
     private static void validateSortedInput(int[] sortedValues) {
@@ -39,10 +52,9 @@ public final class TwoPointers {
         }
     }
 
-    public static void main(String[] args) {
-        int[] sortedValues = {-3, -1, 0, 1, 2};
-        int target = -2;
-
-        System.out.println(hasPairWithSum(sortedValues, target));
+    public record PairMatch(int leftIndex, int rightIndex, int leftValue, int rightValue) {
+        public long sum() {
+            return (long) leftValue + rightValue;
+        }
     }
 }

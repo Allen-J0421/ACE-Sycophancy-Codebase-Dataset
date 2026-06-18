@@ -15,10 +15,6 @@ public class Trie {
         return node != null && node.isWord;
     }
 
-    public boolean isPrefix(String prefix) {
-        return startsWith(prefix);
-    }
-
     public boolean startsWith(String prefix) {
         return walk(prefix, false) != null;
     }
@@ -27,7 +23,6 @@ public class Trie {
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
         }
-        validateText(text);
 
         TrieNode node = root;
         for (int i = 0; i < text.length(); i++) {
@@ -35,6 +30,7 @@ public class Trie {
             TrieNode next = node.children[index];
             if (next == null) {
                 if (!createMissing) {
+                    validateSuffix(text, i + 1);
                     return null;
                 }
                 next = new TrieNode();
@@ -45,8 +41,8 @@ public class Trie {
         return node;
     }
 
-    private static void validateText(String text) {
-        for (int i = 0; i < text.length(); i++) {
+    private static void validateSuffix(String text, int startIndex) {
+        for (int i = startIndex; i < text.length(); i++) {
             toIndex(text.charAt(i));
         }
     }

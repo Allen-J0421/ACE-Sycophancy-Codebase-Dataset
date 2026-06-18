@@ -28,9 +28,8 @@ final class TrieTest {
         trie.insert("dart");
 
         expectTrue(trie.startsWith("da"), "Expected 'da' to be a prefix");
-        expectTrue(trie.isPrefix("dar"), "Expected 'dar' to be a prefix");
         expectFalse(trie.startsWith("de"), "Expected 'de' not to be a prefix");
-        expectFalse(trie.isPrefix("dads"), "Expected 'dads' not to be a prefix");
+        expectFalse(trie.startsWith("dads"), "Expected 'dads' not to be a prefix");
     }
 
     private static void testMissingAndInvalidInputs() {

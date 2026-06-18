@@ -1,19 +1,20 @@
-class Node {
-    final int data;
-    final Node left;
-    final Node right;
-
-    public Node(int item) {
-        this(item, null, null);
-    }
-
-    public Node(int item, Node left, Node right) {
-        this.data = item;
-        this.left = left;
-        this.right = right;
-    }
-}
 final class BinarySearchTree {
+    private static final class Node {
+        final int data;
+        final Node left;
+        final Node right;
+
+        private Node(int item) {
+            this(item, null, null);
+        }
+
+        private Node(int item, Node left, Node right) {
+            this.data = item;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
     private BinarySearchTree() {
     }
 

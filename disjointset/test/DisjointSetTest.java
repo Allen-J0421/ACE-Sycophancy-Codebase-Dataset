@@ -1,4 +1,7 @@
-package disjointset;
+package disjointset.test;
+
+import disjointset.DisjointSet;
+import disjointset.DisjointSets;
 
 public final class DisjointSetTest {
     private DisjointSetTest() {

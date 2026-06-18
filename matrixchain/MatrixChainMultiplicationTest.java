@@ -7,8 +7,8 @@ final class MatrixChainMultiplicationTest {
     }
 
     public static void main(String[] args) {
-        MatrixChainResult sample =
-                MatrixChainMultiplication.optimize(new int[] { 2, 1, 3, 4 });
+        MatrixDimensions dimensions = new MatrixDimensions(new int[] { 2, 1, 3, 4 });
+        MatrixChainResult sample = MatrixChainMultiplication.optimize(dimensions);
         expectEquals(20L, sample.minimumCost(), "sample chain cost");
         expectEquals("(A1 * (A2 * A3))", sample.parenthesization(), "sample chain order");
 
@@ -22,6 +22,13 @@ final class MatrixChainMultiplicationTest {
         expectThrows(IllegalArgumentException.class,
                 () -> MatrixChainMultiplication.matrixMultiplication(new int[] { 2, 0, 3 }),
                 "non-positive dimension");
+        expectThrows(IllegalArgumentException.class,
+                () -> new MatrixDimensions(new int[] { 5 }),
+                "missing chain");
+
+        int[] copied = dimensions.values();
+        copied[0] = 99;
+        expectEquals(2, dimensions.values()[0], "defensive copy");
 
         System.out.println("All tests passed.");
     }

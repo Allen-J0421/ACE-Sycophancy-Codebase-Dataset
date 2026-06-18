@@ -1,17 +1,14 @@
 package matrixchain;
 
-import java.util.Objects;
-
 final class MatrixChainSolver {
 
     private MatrixChainSolver() {
         throw new AssertionError("No instances");
     }
 
-    static MatrixChainResult optimize(int[] dimensions) {
-        validateDimensions(dimensions);
-
-        int matrixCount = dimensions.length - 1;
+    static MatrixChainResult optimize(MatrixDimensions dimensions) {
+        int matrixCount = dimensions.matrixCount();
+        int[] values = dimensions.values();
         long[][] minCost = new long[matrixCount][matrixCount];
         int[][] split = new int[matrixCount][matrixCount];
 
@@ -23,7 +20,7 @@ final class MatrixChainSolver {
                 for (int pivot = start; pivot < end; pivot++) {
                     long cost = Math.addExact(
                             Math.addExact(minCost[start][pivot], minCost[pivot + 1][end]),
-                            multiplicationCost(dimensions, start, pivot, end));
+                            multiplicationCost(values, start, pivot, end));
                     if (cost < minCost[start][end]) {
                         minCost[start][end] = cost;
                         split[start][end] = pivot;
@@ -35,19 +32,6 @@ final class MatrixChainSolver {
         return new MatrixChainResult(
                 minCost[0][matrixCount - 1],
                 buildParenthesization(split, 0, matrixCount - 1));
-    }
-
-    private static void validateDimensions(int[] dimensions) {
-        Objects.requireNonNull(dimensions, "dimensions");
-        if (dimensions.length < 2) {
-            throw new IllegalArgumentException(
-                    "At least two dimensions are required to describe one matrix");
-        }
-        for (int dimension : dimensions) {
-            if (dimension <= 0) {
-                throw new IllegalArgumentException("Matrix dimensions must be positive");
-            }
-        }
     }
 
     private static long multiplicationCost(int[] dimensions, int start, int pivot, int end) {

@@ -11,6 +11,10 @@ public final class MatrixChainMultiplication {
     }
 
     public static MatrixChainResult optimize(int[] dimensions) {
+        return optimize(new MatrixDimensions(dimensions));
+    }
+
+    public static MatrixChainResult optimize(MatrixDimensions dimensions) {
         return MatrixChainSolver.optimize(dimensions);
     }
 }

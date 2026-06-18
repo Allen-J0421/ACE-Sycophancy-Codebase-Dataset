@@ -147,5 +147,9 @@ public class UnionFindTest {
                 () -> uf.connected(0, 5));
         t.assertThrows("union with invalid index throws", IllegalArgumentException.class,
                 () -> uf.union(0, 5));
+        t.assertThrows("componentSize with invalid index throws", IllegalArgumentException.class,
+                () -> uf.componentSize(5));
+        t.assertThrows("componentMembers with invalid index throws", IllegalArgumentException.class,
+                () -> uf.componentMembers(5));
     }
 }

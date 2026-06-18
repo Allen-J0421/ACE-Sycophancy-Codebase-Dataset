@@ -75,7 +75,8 @@ public class TestSupport {
     }
 
     public void printSummary() {
-        System.out.println("\nResults: " + passed + " passed, " + failed + " failed.");
+        System.out.println("\nResults: " + passed + " passed, " + failed + " failed"
+                + " (" + (passed + failed) + " total).");
     }
 
     public boolean allPassed() {

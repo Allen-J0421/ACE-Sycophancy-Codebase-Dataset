@@ -14,6 +14,12 @@ public class PrefixSumTest {
         testAbstractListener();
         testCompositeListener();
         testFactoryPattern();
+        testFluentBuilder();
+        testLambdaListener();
+        testStrategyDecorator();
+        testCachingStrategy();
+        testValidationStrategy();
+        testDecoratorChain();
         testInputValidator();
         testCacheClear();
         testStatistics();
@@ -111,6 +117,79 @@ public class PrefixSumTest {
         full.compute(new int[]{1, 2, 3});
         assert !full.getCachedResult().isEmpty() : "Full calculator should cache";
         assert full.getMetrics().getComputationCount() > 0 : "Full calculator should track metrics";
+    }
+
+    private static void testFluentBuilder() {
+        System.out.println("Testing fluent builder...");
+        PrefixSum calculator = new PrefixSumBuilder()
+            .withCaching()
+            .withMetrics()
+            .withLogging()
+            .build();
+        assert calculator != null : "Builder should create a calculator";
+        PrefixSum.PrefixSumResult result = calculator.compute(new int[]{1, 2, 3});
+        assert result.getTotalSum() == 6L : "Builder computation failed";
+        assert calculator.getMetrics().getComputationCount() > 0 : "Metrics should be tracked";
+    }
+
+    private static void testLambdaListener() {
+        System.out.println("Testing lambda listener...");
+        TestContainer container = new TestContainer();
+        LambdaListener listener = new LambdaListener.Builder()
+            .onStart(size -> container.startSize = size)
+            .onComplete(result -> container.completeCalled = true)
+            .onError(e -> container.errorCalled = true)
+            .build();
+        PrefixSum calculator = new PrefixSum();
+        calculator.addListener(listener);
+        calculator.compute(new int[]{1, 2, 3});
+        assert container.startSize == 3 : "Lambda onStart not called correctly";
+        assert container.completeCalled : "Lambda onComplete not called";
+        assert !container.errorCalled : "Lambda onError should not be called";
+    }
+
+    private static void testStrategyDecorator() {
+        System.out.println("Testing strategy decorator...");
+        ComputationStrategy base = new IterativeStrategy();
+        ComputationStrategy decorated = new CachingStrategy(base);
+        String name = decorated.getName();
+        assert name.contains("Cached") : "Decorator name should reflect decoration";
+    }
+
+    private static void testCachingStrategy() {
+        System.out.println("Testing caching strategy...");
+        CachingStrategy strategy = new CachingStrategy(new IterativeStrategy());
+        int[] arr1 = {1, 2, 3};
+        List<Long> result1 = strategy.compute(arr1);
+        assert strategy.getCacheSize() == 1 : "Cache should have one entry";
+
+        List<Long> result2 = strategy.compute(arr1);
+        assert strategy.getCacheSize() == 1 : "Cache should still have one entry";
+        assert result1.equals(result2) : "Cached results should be equal";
+
+        strategy.clearCache();
+        assert strategy.getCacheSize() == 0 : "Cache should be cleared";
+    }
+
+    private static void testValidationStrategy() {
+        System.out.println("Testing validation strategy...");
+        ValidationStrategy strategy = new ValidationStrategy(new IterativeStrategy());
+        PrefixSum.PrefixSumResult result = new PrefixSum(
+            PrefixSumConfig.defaults(),
+            strategy
+        ).compute(new int[]{1, 2, 3});
+        assert result.getValues().equals(List.of(1L, 3L, 6L)) : "Validation strategy computation failed";
+    }
+
+    private static void testDecoratorChain() {
+        System.out.println("Testing decorator chain...");
+        ComputationStrategy chain = new CachingStrategy(
+            new ValidationStrategy(new IterativeStrategy())
+        );
+        PrefixSum calculator = new PrefixSum(PrefixSumConfig.defaults(), chain);
+        PrefixSum.PrefixSumResult result1 = calculator.compute(new int[]{1, 2, 3});
+        PrefixSum.PrefixSumResult result2 = calculator.compute(new int[]{1, 2, 3});
+        assert result1.getValues().equals(result2.getValues()) : "Chain results should match";
     }
 
     private static void testInputValidator() {
@@ -236,5 +315,11 @@ public class PrefixSumTest {
         protected void handleComputationError(Exception exception) {
             // No op
         }
+    }
+
+    static class TestContainer {
+        int startSize = 0;
+        boolean completeCalled = false;
+        boolean errorCalled = false;
     }
 }

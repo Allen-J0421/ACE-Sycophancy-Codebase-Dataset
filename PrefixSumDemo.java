@@ -12,52 +12,71 @@ public class PrefixSumDemo {
         PrefixSum.PrefixSumResult result = PrefixSum.computePrefixSum(SAMPLE_ARRAY);
         System.out.println("Result: " + result);
 
-        System.out.println("\n=== Factory Pattern Demo (Simple) ===");
-        PrefixSum calculator1 = PrefixSumFactory.createSimple();
+        System.out.println("\n=== Fluent Builder Demo (Simple) ===");
+        PrefixSum calculator1 = new PrefixSumBuilder()
+            .withLogging()
+            .build();
         PrefixSum.PrefixSumResult result1 = calculator1.compute(SAMPLE_ARRAY);
-        System.out.println("Strategy: " + calculator1.getStrategyName());
         System.out.println("Result: " + result1.getValues());
 
-        System.out.println("\n=== Factory Pattern Demo (Cached) ===");
-        PrefixSum calculator2 = PrefixSumFactory.createCached();
-        PrefixSum.PrefixSumResult result2 = calculator2.compute(SAMPLE_ARRAY);
-        System.out.println("Cached result: " + calculator2.getCachedResult());
+        System.out.println("\n=== Fluent Builder Demo (Cached + Metrics) ===");
+        PrefixSum calculator2 = new PrefixSumBuilder()
+            .withCacheClear()
+            .withMetrics()
+            .withLogging()
+            .withTiming()
+            .build();
+        PrefixSum.PrefixSumResult result2a = calculator2.compute(SAMPLE_ARRAY);
+        PrefixSum.PrefixSumResult result2b = calculator2.compute(ANOTHER_ARRAY);
+        System.out.println("Metrics: " + calculator2.getMetrics());
 
-        System.out.println("\n=== Factory Pattern Demo (Monitored) ===");
-        PrefixSum calculator3 = PrefixSumFactory.createMonitored();
+        System.out.println("\n=== Lambda Listener Demo ===");
+        PrefixSum calculator3 = new PrefixSumBuilder()
+            .withLambdaListener(new LambdaListener.Builder()
+                .onStart(size -> System.out.println("[LAMBDA] Computing for " + size + " elements"))
+                .onComplete(result3 -> System.out.println("[LAMBDA] Sum = " + result3.getTotalSum()))
+                .build())
+            .build();
         PrefixSum.PrefixSumResult result3 = calculator3.compute(SAMPLE_ARRAY);
-        System.out.println("Metrics: " + calculator3.getMetrics());
 
-        System.out.println("\n=== Template Method + Listener Demo ===");
-        PrefixSum calculator4 = PrefixSumFactory.createSimple();
-        calculator4.addListener(new LoggingListener());
-        calculator4.addListener(new TimingListener());
-        PrefixSum.PrefixSumResult result4 = calculator4.compute(SAMPLE_ARRAY);
-        System.out.println("Result values: " + result4.getValues());
+        System.out.println("\n=== Decorator Strategy Demo (Caching) ===");
+        CachingStrategy cachingStrategy = new CachingStrategy(new IterativeStrategy());
+        PrefixSum calculator4 = new PrefixSum(PrefixSumConfig.defaults(), cachingStrategy);
+        System.out.println("Strategy: " + calculator4.getStrategyName());
+        PrefixSum.PrefixSumResult result4a = calculator4.compute(SAMPLE_ARRAY);
+        System.out.println("First call - Cache size: " + cachingStrategy.getCacheSize());
+        PrefixSum.PrefixSumResult result4b = calculator4.compute(SAMPLE_ARRAY);
+        System.out.println("Second call (cached) - Cache size: " + cachingStrategy.getCacheSize());
+        System.out.println("Results equal: " + result4a.getValues().equals(result4b.getValues()));
 
-        System.out.println("\n=== Composite Listener Demo ===");
-        PrefixSum calculator5 = new PrefixSum();
-        CompositeListener composite = new CompositeListener()
-            .add(new LoggingListener())
-            .add(new TimingListener());
-        calculator5.addListener(composite);
+        System.out.println("\n=== Decorator Strategy Demo (Validation) ===");
+        ValidationStrategy validatingStrategy = new ValidationStrategy(new IterativeStrategy());
+        PrefixSum calculator5 = new PrefixSum(PrefixSumConfig.defaults(), validatingStrategy);
+        System.out.println("Strategy: " + calculator5.getStrategyName());
         PrefixSum.PrefixSumResult result5 = calculator5.compute(SAMPLE_ARRAY);
         System.out.println("Result: " + result5.getValues());
 
-        System.out.println("\n=== Factory Pattern Demo (Full Featured) ===");
-        PrefixSum calculator6 = PrefixSumFactory.createFull();
-        PrefixSum.PrefixSumResult result6a = calculator6.compute(SAMPLE_ARRAY);
-        System.out.println("First computation cached: " + calculator6.getCachedResult());
-        PrefixSum.PrefixSumResult result6b = calculator6.compute(ANOTHER_ARRAY);
-        System.out.println("Second computation cached: " + calculator6.getCachedResult());
-        System.out.println("Overall metrics: " + calculator6.getMetrics());
+        System.out.println("\n=== Decorator Chain Demo (Validation + Caching) ===");
+        ComputationStrategy chain = new CachingStrategy(new ValidationStrategy(new IterativeStrategy()));
+        PrefixSum calculator6 = new PrefixSum(
+            PrefixSumConfig.builder().withMetrics().build(),
+            chain
+        );
+        calculator6.addListener(new LoggingListener());
+        System.out.println("Strategy: " + calculator6.getStrategyName());
+        PrefixSum.PrefixSumResult result6 = calculator6.compute(SAMPLE_ARRAY);
+        System.out.println("Result: " + result6.getValues());
 
-        System.out.println("\n=== Factory with Strategy Demo ===");
-        PrefixSum calculator7 = PrefixSumFactory.createWithStrategy(new IterativeStrategy());
+        System.out.println("\n=== Complex Builder Demo ===");
+        PrefixSum calculator7 = new PrefixSumBuilder()
+            .withAllFeatures()
+            .withStrategy(new CachingStrategy(new IterativeStrategy()))
+            .withLogging()
+            .withTiming()
+            .build();
         PrefixSum.PrefixSumResult result7 = calculator7.compute(LARGE_ARRAY);
         System.out.println("Large array: size=" + result7.getInputSize() +
-                ", sum=" + result7.getTotalSum() +
-                ", avg=" + String.format("%.2f", result7.getAverage()));
+                ", sum=" + result7.getTotalSum());
     }
 
     private static int[] createLargeArray(int size) {

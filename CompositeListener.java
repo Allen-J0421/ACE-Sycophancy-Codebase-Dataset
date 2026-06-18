@@ -61,4 +61,13 @@ public class CompositeListener implements ComputationListener {
             }
         }
     }
+
+    /**
+     * Checks if this composite has any listeners.
+     *
+     * @return true if listeners exist, false otherwise
+     */
+    public boolean hasListeners() {
+        return !listeners.isEmpty();
+    }
 }

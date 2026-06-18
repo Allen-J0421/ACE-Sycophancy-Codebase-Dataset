@@ -1,96 +1,71 @@
 public class UnionFind implements DisjointSet {
-    private int[] parent;
-    private int[] rank;
-    private int size;
-    private long findCount;
-    private long unionCount;
+    private DisjointSetStructure structure;
+    private IndexValidator validator;
+    private OperationCounter counter;
 
-    public UnionFind(int size) {
-        validateSize(size);
-        this.size = size;
-        parent = new int[size];
-        rank = new int[size];
-        findCount = 0;
-        unionCount = 0;
-        initializeStructure();
+    private UnionFind(int size) {
+        this.validator = new IndexValidator(size);
+        this.structure = new DisjointSetStructure(size);
+        this.counter = new OperationCounter();
     }
 
     @Override
     public int find(int i) {
-        validateIndex(i);
-        findCount++;
-        if (parent[i] != i) {
-            parent[i] = find(parent[i]);
-        }
-        return parent[i];
+        validator.validate(i);
+        counter.incrementFind();
+        return structure.find(i);
     }
 
     @Override
     public void union(int i, int j) {
-        validateIndex(i);
-        validateIndex(j);
-        unionCount++;
+        validator.validate(i);
+        validator.validate(j);
+        counter.incrementUnion();
 
-        int irep = find(i);
-        int jrep = find(j);
-
-        if (irep == jrep) {
-            return;
-        }
-
-        performUnion(irep, jrep);
+        int irep = structure.find(i);
+        int jrep = structure.find(j);
+        structure.union(irep, jrep);
     }
 
     @Override
     public boolean isConnected(int i, int j) {
-        validateIndex(i);
-        validateIndex(j);
+        validator.validate(i);
+        validator.validate(j);
         return find(i) == find(j);
     }
 
     @Override
     public int getSize() {
-        return size;
+        return validator.getSize();
     }
 
     @Override
     public Statistics getStatistics() {
-        return new Statistics(findCount, unionCount);
+        return counter.toStatistics();
     }
 
     public void reset() {
-        findCount = 0;
-        unionCount = 0;
-        initializeStructure();
+        structure.reset();
+        counter.reset();
     }
 
-    private void initializeStructure() {
-        for (int i = 0; i < size; i++) {
-            parent[i] = i;
-            rank[i] = 0;
+    public static UnionFindBuilder builder() {
+        return new UnionFindBuilder();
+    }
+
+    public static class UnionFindBuilder {
+        private int size;
+
+        public UnionFindBuilder withSize(int size) {
+            this.size = size;
+            return this;
         }
-    }
 
-    private void performUnion(int irep, int jrep) {
-        if (rank[irep] < rank[jrep]) {
-            parent[irep] = jrep;
-        } else if (rank[irep] > rank[jrep]) {
-            parent[jrep] = irep;
-        } else {
-            parent[jrep] = irep;
-            rank[irep]++;
-        }
-    }
-
-    private void validateSize(int size) {
-        if (size <= 0) {
-            throw new IllegalArgumentException("UnionFind size must be positive");
-        }
-    }
-
-    private void validateIndex(int i) {
-        if (i < 0 || i >= size) {
-            throw new IndexOutOfBoundsException("Index " + i + " out of bounds [0, " + size + ")");
+        public UnionFind build() {
+            if (size <= 0) {
+                throw new IllegalArgumentException("Size must be set and positive");
+            }
+            return new UnionFind(size);
         }
     }
 }

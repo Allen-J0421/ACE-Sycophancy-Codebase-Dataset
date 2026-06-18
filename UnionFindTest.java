@@ -7,11 +7,12 @@ public class UnionFindTest {
         testValidation();
         testStatistics();
         testReset();
+        testBuilder();
         System.out.println("\n✓ All tests passed");
     }
 
     private static void testBasicUnion() {
-        UnionFind uf = new UnionFind(5);
+        UnionFind uf = UnionFind.builder().withSize(5).build();
         uf.union(1, 2);
         uf.union(3, 4);
         assert uf.isConnected(1, 2) : "1 and 2 should be connected";
@@ -20,7 +21,7 @@ public class UnionFindTest {
     }
 
     private static void testConnectivity() {
-        UnionFind uf = new UnionFind(6);
+        UnionFind uf = UnionFind.builder().withSize(6).build();
         uf.union(0, 1);
         uf.union(1, 2);
         uf.union(3, 4);
@@ -30,7 +31,7 @@ public class UnionFindTest {
     }
 
     private static void testMultipleUnions() {
-        UnionFind uf = new UnionFind(10);
+        UnionFind uf = UnionFind.builder().withSize(10).build();
         uf.union(1, 2);
         uf.union(2, 3);
         uf.union(4, 5);
@@ -47,7 +48,7 @@ public class UnionFindTest {
     }
 
     private static void testInvalidIndex() {
-        UnionFind uf = new UnionFind(5);
+        UnionFind uf = UnionFind.builder().withSize(5).build();
         try {
             uf.find(-1);
             assert false : "Should throw IndexOutOfBoundsException";
@@ -65,14 +66,14 @@ public class UnionFindTest {
 
     private static void testInvalidSize() {
         try {
-            new UnionFind(0);
+            UnionFind.builder().withSize(0).build();
             assert false : "Should throw IllegalArgumentException";
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            new UnionFind(-1);
+            UnionFind.builder().withSize(-1).build();
             assert false : "Should throw IllegalArgumentException";
         } catch (IllegalArgumentException e) {
             // Expected
@@ -80,7 +81,7 @@ public class UnionFindTest {
     }
 
     private static void testStatistics() {
-        UnionFind uf = new UnionFind(5);
+        UnionFind uf = UnionFind.builder().withSize(5).build();
         uf.union(1, 2);
         uf.union(2, 3);
         uf.isConnected(1, 3);
@@ -91,7 +92,7 @@ public class UnionFindTest {
     }
 
     private static void testReset() {
-        UnionFind uf = new UnionFind(5);
+        UnionFind uf = UnionFind.builder().withSize(5).build();
         uf.union(1, 2);
         uf.union(2, 3);
         DisjointSet.Statistics statsBefore = uf.getStatistics();
@@ -103,5 +104,25 @@ public class UnionFindTest {
         assert statsAfter.unionOperations == 0 : "Statistics should be reset";
         assert !uf.isConnected(1, 2) : "Connections should be reset";
         System.out.println("✓ testReset passed");
+    }
+
+    private static void testBuilder() {
+        try {
+            UnionFind.builder().build();
+            assert false : "Should throw IllegalArgumentException when size not set";
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            UnionFind.builder().withSize(0).build();
+            assert false : "Should throw IllegalArgumentException for non-positive size";
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        UnionFind uf = UnionFind.builder().withSize(10).build();
+        assert uf.getSize() == 10 : "Builder should create UnionFind with correct size";
+        System.out.println("✓ testBuilder passed");
     }
 }

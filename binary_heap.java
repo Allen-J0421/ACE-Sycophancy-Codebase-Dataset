@@ -38,10 +38,6 @@ class MinHeap {
         return size <= 0;
     }
 
-    private boolean hasSingleElement() {
-        return size == 1;
-    }
-
     private void bubbleUp(int index) {
         while (index != 0) {
             int parent = parentIndex(index);
@@ -52,6 +48,11 @@ class MinHeap {
             swap(index, parent);
             index = parent;
         }
+    }
+
+    private int removeLastElement() {
+        size--;
+        return heapArray[size];
     }
 
     public boolean insertKey(int key) {
@@ -81,16 +82,12 @@ class MinHeap {
             return EMPTY_HEAP_VALUE;
         }
 
-        if (hasSingleElement()) {
-            size--;
-            return heapArray[0];
-        }
-
         int minValue = heapArray[0];
 
-        heapArray[0] = heapArray[size - 1];
-        size--;
-        bubbleDown(0);
+        heapArray[0] = removeLastElement();
+        if (!isEmpty()) {
+            bubbleDown(0);
+        }
 
         return minValue;
     }

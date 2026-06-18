@@ -1,14 +1,15 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-final class DirectedGraph {
+public final class DirectedGraph {
     private final List<List<Integer>> adjacencyList;
 
     private DirectedGraph(List<List<Integer>> adjacencyList) {
         this.adjacencyList = adjacencyList;
     }
 
-    static DirectedGraph withVertexCount(int vertexCount) {
+    public static DirectedGraph withVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count must be non-negative.");
         }
@@ -20,7 +21,7 @@ final class DirectedGraph {
         return new DirectedGraph(adjacencyList);
     }
 
-    static DirectedGraph fromEdges(int vertexCount, int[][] edges) {
+    public static DirectedGraph fromEdges(int vertexCount, int[][] edges) {
         DirectedGraph graph = withVertexCount(vertexCount);
         for (int[] edge : edges) {
             validateEdgeShape(edge);
@@ -29,26 +30,16 @@ final class DirectedGraph {
         return graph;
     }
 
-    int vertexCount() {
+    public int vertexCount() {
         return adjacencyList.size();
     }
 
-    List<Integer> neighborsOf(int vertex) {
+    public List<Integer> neighborsOf(int vertex) {
         validateVertex(vertex);
-        return adjacencyList.get(vertex);
+        return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
-    int[] buildIndegreeTable() {
-        int[] indegree = new int[vertexCount()];
-        for (int vertex = 0; vertex < vertexCount(); vertex++) {
-            for (int next : neighborsOf(vertex)) {
-                indegree[next]++;
-            }
-        }
-        return indegree;
-    }
-
-    void addEdge(int source, int destination) {
+    public void addEdge(int source, int destination) {
         validateVertex(source);
         validateVertex(destination);
         adjacencyList.get(source).add(destination);

@@ -3,9 +3,10 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-final class KahnTopologicalSorter {
-    List<Integer> sort(DirectedGraph graph) {
-        int[] indegree = graph.buildIndegreeTable();
+final class KahnTopologicalSorter implements TopologicalSorter {
+    @Override
+    public List<Integer> sort(DirectedGraph graph) {
+        int[] indegree = buildIndegreeTable(graph);
         Deque<Integer> readyVertices = collectZeroIndegreeVertices(indegree);
         List<Integer> order = new ArrayList<>(graph.vertexCount());
 
@@ -22,6 +23,16 @@ final class KahnTopologicalSorter {
 
         validateAcyclic(graph, order);
         return order;
+    }
+
+    private int[] buildIndegreeTable(DirectedGraph graph) {
+        int[] indegree = new int[graph.vertexCount()];
+        for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
+            for (int neighbor : graph.neighborsOf(vertex)) {
+                indegree[neighbor]++;
+            }
+        }
+        return indegree;
     }
 
     private Deque<Integer> collectZeroIndegreeVertices(int[] indegree) {

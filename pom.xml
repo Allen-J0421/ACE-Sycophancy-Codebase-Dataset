@@ -33,7 +33,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>DepthFirstSearchTest</mainClass>
+                            <mainClass>com.example.dfs.DepthFirstSearchTest</mainClass>
                             <classpathScope>test</classpathScope>
                         </configuration>
                     </execution>

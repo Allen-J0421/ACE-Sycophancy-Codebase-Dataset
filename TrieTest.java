@@ -3,20 +3,30 @@ final class TrieTest {
     }
 
     public static void main(String[] args) {
-        Trie trie = new Trie();
-        trie.insert("and");
-        trie.insert("ant");
-        trie.insert("do");
-        trie.insert("dad");
+        containsCompleteWords();
+        detectsPrefixes();
+        rejectsUnsupportedInput();
+    }
+
+    private static void containsCompleteWords() {
+        Trie trie = sampleTrie();
 
         assertTrue(trie.contains("do"), "contains finds inserted words");
         assertTrue(trie.search("and"), "search remains a contains alias");
         assertFalse(trie.contains("gee"), "contains rejects missing words");
         assertFalse(trie.contains("an"), "contains requires a complete word");
+    }
+
+    private static void detectsPrefixes() {
+        Trie trie = sampleTrie();
 
         assertTrue(trie.startsWith("an"), "startsWith finds inserted prefixes");
         assertTrue(trie.isPrefix("do"), "isPrefix remains a startsWith alias");
         assertFalse(trie.startsWith("de"), "startsWith rejects missing prefixes");
+    }
+
+    private static void rejectsUnsupportedInput() {
+        Trie trie = new Trie();
 
         assertThrows(
             IllegalArgumentException.class,
@@ -26,6 +36,15 @@ final class TrieTest {
             NullPointerException.class,
             () -> trie.contains(null),
             "contains rejects null words");
+    }
+
+    private static Trie sampleTrie() {
+        Trie trie = new Trie();
+        trie.insert("and");
+        trie.insert("ant");
+        trie.insert("do");
+        trie.insert("dad");
+        return trie;
     }
 
     private static void assertTrue(boolean condition, String message) {

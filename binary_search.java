@@ -7,13 +7,13 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] arr, int target) {
-        return search(arr, target).toLegacyIndex();
+        return toLegacyIndex(search(arr, target));
     }
 
     public static void main(String[] args) {
-        SearchResult result = search(SAMPLE_VALUES, SAMPLE_TARGET);
+        SearchResult result = runSampleSearch();
 
-        System.out.println(result.message());
+        System.out.println(formatSearchResult(result));
     }
 
     private static SearchResult search(int[] arr, int target) {
@@ -35,6 +35,20 @@ final class BinarySearch {
         }
 
         return SearchResult.notFound();
+    }
+
+    private static SearchResult runSampleSearch() {
+        return search(SAMPLE_VALUES, SAMPLE_TARGET);
+    }
+
+    private static int toLegacyIndex(SearchResult result) {
+        return result.wasFound() ? result.index() : NOT_FOUND;
+    }
+
+    private static String formatSearchResult(SearchResult result) {
+        return result.wasFound()
+                ? "Element is present at index " + result.index()
+                : "Element is not present in array";
     }
 
     private record SearchRange(int low, int high) {
@@ -70,16 +84,6 @@ final class BinarySearch {
 
         private boolean wasFound() {
             return index != NOT_FOUND;
-        }
-
-        private int toLegacyIndex() {
-            return index;
-        }
-
-        private String message() {
-            return wasFound()
-                    ? "Element is present at index " + index
-                    : "Element is not present in array";
         }
     }
 }

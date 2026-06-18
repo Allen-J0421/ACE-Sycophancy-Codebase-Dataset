@@ -31,6 +31,11 @@ public class CoinChangeTest {
     testCommandPattern();
     testCompositeSolver();
     testEventSourcing();
+    testResultTypes();
+    testRetryPolicy();
+    testStateMachine();
+    testAdaptiveStrategy();
+    testVisitorPattern();
 
     System.out.println("\n=== Test Summary ===");
     System.out.println("Passed: " + testsPassed);
@@ -662,6 +667,111 @@ public class CoinChangeTest {
           store.append("TEST", new java.util.HashMap<>());
           String log = store.generateEventLog();
           return log.contains("Event Log");
+        });
+  }
+
+  private static void testResultTypes() {
+    System.out.println("\nTesting Result Types:");
+    test("Result: Success type",
+        () -> {
+          Result<Integer> success = new Result.Success<>(42);
+          return success.isSuccess() && success.getOrElse(0) == 42;
+        });
+    test("Result: Failure type",
+        () -> {
+          Result<Integer> failure = new Result.Failure<>("error");
+          return !failure.isSuccess() && failure.getOrElse(0) == 0;
+        });
+    test("Result: Map transformation",
+        () -> {
+          Result<Integer> success = new Result.Success<>(42);
+          Result<Integer> mapped = success.map(x -> x * 2);
+          return mapped.isSuccess() && mapped.getOrElse(0) == 84;
+        });
+  }
+
+  private static void testRetryPolicy() {
+    System.out.println("\nTesting Retry Policy:");
+    test("Retry: Executes successfully",
+        () -> {
+          RetryPolicy policy = new RetryPolicy(3, 10);
+          Result<Integer> result = policy.execute(() -> 42);
+          return result.isSuccess();
+        });
+    test("Retry: Fails after max attempts",
+        () -> {
+          RetryPolicy policy = new RetryPolicy(2, 10);
+          Result<Integer> result = policy.execute(() -> {
+            throw new RuntimeException("fail");
+          });
+          return !result.isSuccess();
+        });
+  }
+
+  private static void testStateMachine() {
+    System.out.println("\nTesting State Machine:");
+    test("State: Transitions correctly",
+        () -> {
+          StateMachine machine = new StateMachine();
+          machine.transition(SolverState.VALIDATING);
+          return machine.getCurrentState() == SolverState.VALIDATING;
+        });
+    test("State: Tracks history",
+        () -> {
+          StateMachine machine = new StateMachine();
+          machine.transition(SolverState.VALIDATING);
+          return machine.getHistory().size() == 2;
+        });
+    test("State: Validates transitions",
+        () -> {
+          StateMachine machine = new StateMachine();
+          try {
+            machine.transition(SolverState.SOLVING);
+            return false;
+          } catch (IllegalStateException e) {
+            return true;
+          }
+        });
+  }
+
+  private static void testAdaptiveStrategy() {
+    System.out.println("\nTesting Adaptive Strategy:");
+    test("Adaptive: Creates strategies",
+        () -> {
+          CoinChangeStrategy s1 = StrategyFactory.createOptimal(new int[]{1}, 5);
+          CoinChangeStrategy s2 = StrategyFactory.createOptimal(new int[]{1}, 5000);
+          return s1 != null && s2 != null;
+        });
+    test("Adaptive: Selects based on size",
+        () -> {
+          CoinChangeStrategy small = StrategyFactory.createOptimal(new int[]{1, 2}, 10);
+          CoinChangeStrategy large = StrategyFactory.createOptimal(new int[]{1, 2}, 2000);
+          return small.getClass() != large.getClass();
+        });
+  }
+
+  private static void testVisitorPattern() {
+    System.out.println("\nTesting Visitor Pattern:");
+    test("Visitor: Visits result",
+        () -> {
+          FormattingVisitor visitor = new FormattingVisitor();
+          CoinChangeResult result = CoinChange.solve(new int[]{1}, 1);
+          visitor.visit(result);
+          return visitor.getFormattedOutput().contains("Result");
+        });
+    test("Visitor: Visits context",
+        () -> {
+          FormattingVisitor visitor = new FormattingVisitor();
+          SolveContext ctx = new SolveContext("REQ", new int[]{1}, 1);
+          visitor.visit(ctx);
+          return visitor.getFormattedOutput().contains("Context");
+        });
+    test("Visitor: Visits observation",
+        () -> {
+          FormattingVisitor visitor = new FormattingVisitor();
+          Observation obs = new Observation(Observation.Type.REQUEST, "test");
+          visitor.visit(obs);
+          return visitor.getFormattedOutput().contains("Observation");
         });
   }
 

@@ -7,6 +7,12 @@ public interface IntHeap {
 
     int removeMin();
 
+    default int replaceMin(int value) {
+        int previousMin = removeMin();
+        offer(value);
+        return previousMin;
+    }
+
     default OptionalInt pollMin() {
         if (isEmpty()) {
             return OptionalInt.empty();

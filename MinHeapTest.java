@@ -7,7 +7,9 @@ public class MinHeapTest {
         testFactoryBuildsHeapFromValues();
         testCopyFactoryDuplicatesHeapContents();
         testInterfaceContractSupportsBulkInsert();
+        testInterfaceCanMergeFromAnotherHeap();
         testPollMinReturnsOptionalValues();
+        testReplaceMinUpdatesRootEfficiently();
         testExampleFlow();
         testQueueStyleApi();
         testHeapGrowsBeyondInitialCapacity();
@@ -62,11 +64,38 @@ public class MinHeapTest {
         assertEquals("interface removeMin should return the minimum", 1, heap.removeMin());
     }
 
+    private static void testInterfaceCanMergeFromAnotherHeap() {
+        IntHeap target = MinHeap.from(5, 1);
+        IntHeap source = MinHeap.from(4, 2, 7);
+
+        target.addAll(source);
+
+        assertEquals("heap-to-heap addAll should preserve source size", 3, source.size());
+        assertEquals("heap-to-heap addAll should keep source minimum intact", 2, source.peek());
+        assertArrayEquals(
+            "heap-to-heap addAll should merge values into heap order",
+            new int[] {1, 2, 4, 5, 7},
+            target.drainToArray()
+        );
+    }
+
     private static void testPollMinReturnsOptionalValues() {
         IntHeap heap = MinHeap.from(4, 1);
         assertEquals("pollMin should return the minimum when present", 1, heap.pollMin().orElseThrow());
         assertEquals("pollMin should return the next minimum", 4, heap.pollMin().orElseThrow());
         assertOptionalEmpty("pollMin should return empty when the heap is drained", heap.pollMin());
+    }
+
+    private static void testReplaceMinUpdatesRootEfficiently() {
+        IntHeap heap = MinHeap.from(2, 4, 7, 9);
+
+        assertEquals("replaceMin should return the previous minimum", 2, heap.replaceMin(6));
+        assertEquals("replaceMin should install the next minimum at the root", 4, heap.peek());
+        assertArrayEquals(
+            "replaceMin should preserve heap ordering after replacement",
+            new int[] {4, 6, 7, 9},
+            heap.drainToArray()
+        );
     }
 
     @SuppressWarnings("deprecation")

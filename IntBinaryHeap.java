@@ -8,26 +8,23 @@ final class IntBinaryHeap {
     private int size;
 
     IntBinaryHeap() {
-        this(DEFAULT_CAPACITY);
+        this(new int[DEFAULT_CAPACITY], 0, false);
     }
 
     IntBinaryHeap(int initialCapacity) {
-        if (initialCapacity < 0) {
-            throw new IllegalArgumentException("initial capacity must be non-negative");
-        }
-
-        elements = new int[initialCapacity];
-        size = 0;
+        this(new int[validateInitialCapacity(initialCapacity)], 0, false);
     }
 
     IntBinaryHeap(int[] values) {
-        if (values == null) {
-            throw new IllegalArgumentException("values must not be null");
-        }
+        this(copyInput(values), values.length, true);
+    }
 
-        elements = copyOf(values);
-        size = values.length;
-        rebuildHeap();
+    private IntBinaryHeap(int[] elements, int size, boolean needsHeapify) {
+        this.elements = elements;
+        this.size = size;
+        if (needsHeapify) {
+            rebuildHeap();
+        }
     }
 
     boolean offer(int value) {
@@ -59,6 +56,14 @@ final class IntBinaryHeap {
     int removeMin() {
         ensureNotEmpty();
         return removeAt(0);
+    }
+
+    int replaceMin(int value) {
+        ensureNotEmpty();
+        int previousMin = elements[0];
+        elements[0] = value;
+        siftDown(0);
+        return previousMin;
     }
 
     int removeAt(int index) {
@@ -227,5 +232,21 @@ final class IntBinaryHeap {
 
     private static int[] copyOf(int[] values, int length) {
         return Arrays.copyOf(values, length);
+    }
+
+    private static int validateInitialCapacity(int initialCapacity) {
+        if (initialCapacity < 0) {
+            throw new IllegalArgumentException("initial capacity must be non-negative");
+        }
+
+        return initialCapacity;
+    }
+
+    private static int[] copyInput(int[] values) {
+        if (values == null) {
+            throw new IllegalArgumentException("values must not be null");
+        }
+
+        return copyOf(values);
     }
 }

@@ -45,6 +45,11 @@ public final class MinHeap implements LegacyMinHeapApi {
     }
 
     @Override
+    public int replaceMin(int value) {
+        return heap.replaceMin(value);
+    }
+
+    @Override
     public int removeAt(int index) {
         return heap.removeAt(index);
     }

@@ -6,6 +6,9 @@ import java.util.PriorityQueue;
 class Dijkstra {
     private static final int INFINITE_DISTANCE = Integer.MAX_VALUE;
 
+    private Dijkstra() {
+    }
+
     private static final class NodeDistance {
         private final int node;
         private final int distance;
@@ -93,25 +96,10 @@ class Dijkstra {
     }
 
     public static void main(String[] args) {
-        WeightedGraph graph = createSampleGraph();
-
-        List<Integer> result = shortestPathsFrom(graph, 0);
+        List<Integer> result = shortestPathsFrom(SampleGraphs.demoGraph(), 0);
         for (int distance : result) {
             System.out.print(distance + " ");
         }
         System.out.println();
-    }
-
-    private static WeightedGraph createSampleGraph() {
-        WeightedGraph graph = WeightedGraph.withVertexCount(5);
-
-        graph.addUndirectedEdge(0, 1, 4);
-        graph.addUndirectedEdge(0, 2, 8);
-        graph.addUndirectedEdge(1, 4, 6);
-        graph.addUndirectedEdge(1, 2, 3);
-        graph.addUndirectedEdge(2, 3, 2);
-        graph.addUndirectedEdge(3, 4, 10);
-
-        return graph;
     }
 }

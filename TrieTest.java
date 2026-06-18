@@ -1,3 +1,5 @@
+import java.util.function.Predicate;
+
 final class TrieTest {
     private static final QueryCase[] SEARCH_CASES = {
         new QueryCase("and", true),
@@ -58,7 +60,7 @@ final class TrieTest {
         }
     }
 
-    private static void assertQueries(QueryFunction query, QueryCase[] cases) {
+    private static void assertQueries(Predicate<String> query, QueryCase[] cases) {
         for (QueryCase testCase : cases) {
             boolean actual = query.test(testCase.value);
             if (actual != testCase.expected) {
@@ -82,7 +84,7 @@ final class TrieTest {
 
     private static void expectThrows(
         Class<? extends Throwable> expectedType,
-        CheckedRunnable action,
+        Runnable action,
         String message) {
         try {
             action.run();
@@ -98,16 +100,6 @@ final class TrieTest {
         throw new AssertionError(message);
     }
 
-    @FunctionalInterface
-    private interface CheckedRunnable {
-        void run();
-    }
-
-    @FunctionalInterface
-    private interface QueryFunction {
-        boolean test(String value);
-    }
-
     private static final class QueryCase {
         private final String value;
         private final boolean expected;
@@ -119,10 +111,10 @@ final class TrieTest {
     }
 
     private static final class ThrowCase {
-        private final CheckedRunnable action;
+        private final Runnable action;
         private final String message;
 
-        private ThrowCase(CheckedRunnable action, String message) {
+        private ThrowCase(Runnable action, String message) {
             this.action = action;
             this.message = message;
         }

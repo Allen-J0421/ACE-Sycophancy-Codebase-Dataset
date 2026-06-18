@@ -1,3 +1,5 @@
+import java.util.function.Predicate;
+
 final class TrieDemo {
     private TrieDemo() {
     }
@@ -15,15 +17,10 @@ final class TrieDemo {
         }
     }
 
-    private static void printResults(Lookup lookup, String... values) {
+    private static void printResults(Predicate<String> lookup, String... values) {
         for (String value : values) {
             System.out.print(lookup.test(value) + " ");
         }
         System.out.println();
-    }
-
-    @FunctionalInterface
-    private interface Lookup {
-        boolean test(String value);
     }
 }

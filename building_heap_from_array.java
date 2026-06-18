@@ -53,7 +53,7 @@ final class BuildHeap {
         buildMaxHeap(values);
     }
 
-    private static void buildMaxHeap(int[] values) {
+    static void buildMaxHeap(int[] values) {
         Objects.requireNonNull(values, "values");
 
         for (int index = lastParentIndex(values.length); index >= 0; index--) {
@@ -72,7 +72,7 @@ final class BuildHeap {
             output.add(Integer.toString(value));
         }
 
-        return output + " ";
+        return output.toString() + " ";
     }
 
     private static int[] sampleValues() {

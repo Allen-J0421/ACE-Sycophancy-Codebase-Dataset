@@ -18,8 +18,8 @@ public final class CoinChangeCli {
     }
 
     private static void run(String[] args) {
-        if (args.length < 2) {
-            throw new IllegalArgumentException("expected a sum and at least one coin");
+        if (args.length < 1) {
+            throw new IllegalArgumentException("expected at least a sum");
         }
 
         int sum = parseNonNegativeInt(args[0], "sum");
@@ -52,7 +52,8 @@ public final class CoinChangeCli {
     }
 
     private static void printUsage() {
-        System.err.println("Usage: java CoinChange <sum> <coin1> [coin2 ...]");
+        System.err.println("Usage: java CoinChange <sum> [coin1 coin2 ...]");
         System.err.println("Example: java CoinChange 5 1 2 3");
+        System.err.println("Example: java CoinChange 0");
     }
 }

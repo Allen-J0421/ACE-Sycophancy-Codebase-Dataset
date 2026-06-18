@@ -6,6 +6,8 @@ public final class TwoPointersTest {
     public static void main(String[] args) {
         shouldFindMatchingPair();
         shouldReturnEmptyWhenNoPairExists();
+        shouldReturnEmptyForArraysWithFewerThanTwoValues();
+        shouldReturnEmptyWhenTargetIsOutsidePossibleRange();
         shouldRejectUnsortedInput();
         shouldHandleIntegerOverflowSafely();
         shouldSupportTargetsBeyondIntegerRange();
@@ -24,6 +26,18 @@ public final class TwoPointersTest {
 
     private static void shouldReturnEmptyWhenNoPairExists() {
         assertNoMatch(SortedIntArray.of(1, 4, 8).findPairWithSum(6));
+    }
+
+    private static void shouldReturnEmptyForArraysWithFewerThanTwoValues() {
+        assertNoMatch(SortedIntArray.of().findPairWithSum(0));
+        assertNoMatch(SortedIntArray.of(5).findPairWithSum(10));
+    }
+
+    private static void shouldReturnEmptyWhenTargetIsOutsidePossibleRange() {
+        SortedIntArray sortedValues = SortedIntArray.of(2, 4, 8, 16);
+
+        assertNoMatch(sortedValues.findPairWithSum(5));
+        assertNoMatch(sortedValues.findPairWithSum(30));
     }
 
     private static void shouldRejectUnsortedInput() {

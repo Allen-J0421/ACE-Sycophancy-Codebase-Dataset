@@ -6,26 +6,30 @@ public final class TwoPointers {
     }
 
     public static Optional<PairMatch> findPairWithSum(int[] sortedValues, long target) {
-        return SortedIntArray.copyOf(sortedValues).findPairWithSum(target);
+        return copySortedValues(sortedValues).findPairWithSum(target);
     }
 
     public static Optional<PairMatch> findPairWithSum(SortedIntArray sortedValues, long target) {
-        requireSortedValues(sortedValues);
-        return sortedValues.findPairWithSum(target);
+        return requireSortedValues(sortedValues).findPairWithSum(target);
     }
 
     public static boolean hasPairWithSum(int[] sortedValues, long target) {
-        return SortedIntArray.copyOf(sortedValues).hasPairWithSum(target);
+        return copySortedValues(sortedValues).hasPairWithSum(target);
     }
 
     public static boolean hasPairWithSum(SortedIntArray sortedValues, long target) {
-        requireSortedValues(sortedValues);
-        return sortedValues.hasPairWithSum(target);
+        return requireSortedValues(sortedValues).hasPairWithSum(target);
     }
 
-    private static void requireSortedValues(SortedIntArray sortedValues) {
+    private static SortedIntArray copySortedValues(int[] sortedValues) {
+        return SortedIntArray.copyOf(sortedValues);
+    }
+
+    private static SortedIntArray requireSortedValues(SortedIntArray sortedValues) {
         if (sortedValues == null) {
             throw new IllegalArgumentException("sortedValues must not be null");
         }
+
+        return sortedValues;
     }
 }

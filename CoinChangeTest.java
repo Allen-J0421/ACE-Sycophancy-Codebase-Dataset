@@ -20,6 +20,11 @@ public class CoinChangeTest {
     testMiddlewarePipeline();
     testLazyEvaluation();
     testResultAggregation();
+    testHealthMonitoring();
+    testRateLimiting();
+    testTracing();
+    testServiceRegistry();
+    testObservability();
 
     System.out.println("\n=== Test Summary ===");
     System.out.println("Passed: " + testsPassed);
@@ -360,6 +365,131 @@ public class CoinChangeTest {
           agg.add(CoinChange.solve(new int[]{1, 2}, 3));
           String summary = agg.generateSummary();
           return summary.contains("Average Ways");
+        });
+  }
+
+  private static void testHealthMonitoring() {
+    System.out.println("\nTesting Health Monitoring:");
+    test("Health: Registers health checks",
+        () -> {
+          HealthMonitor monitor = new HealthMonitor(5000);
+          monitor.register("test", () ->
+              new HealthStatus(HealthStatus.Status.HEALTHY, "OK"));
+          return monitor.checkHealth("test").isHealthy();
+        });
+    test("Health: Determines overall status",
+        () -> {
+          HealthMonitor monitor = new HealthMonitor(5000);
+          monitor.register("check1", () ->
+              new HealthStatus(HealthStatus.Status.HEALTHY, "OK"));
+          monitor.register("check2", () ->
+              new HealthStatus(HealthStatus.Status.HEALTHY, "OK"));
+          return monitor.getOverallStatus() == HealthStatus.Status.HEALTHY;
+        });
+    test("Health: Generates health report",
+        () -> {
+          HealthMonitor monitor = new HealthMonitor(5000);
+          monitor.register("test", () ->
+              new HealthStatus(HealthStatus.Status.HEALTHY, "OK"));
+          String report = monitor.generateHealthReport();
+          return report.contains("System Health Report");
+        });
+  }
+
+  private static void testRateLimiting() {
+    System.out.println("\nTesting Rate Limiting:");
+    test("RateLimit: Enforces request limit",
+        () -> {
+          RateLimiter limiter = new RateLimiter(3);
+          boolean first = limiter.allowRequest();
+          boolean second = limiter.allowRequest();
+          boolean third = limiter.allowRequest();
+          boolean fourth = limiter.allowRequest();
+          return first && second && third && !fourth;
+        });
+    test("RateLimit: Tracks remaining requests",
+        () -> {
+          RateLimiter limiter = new RateLimiter(5);
+          limiter.allowRequest();
+          limiter.allowRequest();
+          return limiter.getRemainingRequests() == 3;
+        });
+    test("RateLimit: Works as middleware",
+        () -> {
+          RateLimitMiddleware middleware = new RateLimitMiddleware(10);
+          SolveContext ctx = new SolveContext("REQ-1", new int[]{1}, 1);
+          return middleware.getRateLimiter().allowRequest();
+        });
+  }
+
+  private static void testTracing() {
+    System.out.println("\nTesting Distributed Tracing:");
+    test("Tracing: Creates trace context",
+        () -> {
+          TracingContext tracing = new TracingContext("trace-1", "span-1");
+          return tracing.getTraceId().equals("trace-1") &&
+                 tracing.getSpanId().equals("span-1");
+        });
+    test("Tracing: Records tags",
+        () -> {
+          TracingContext tracing = new TracingContext("trace-1", "span-1");
+          tracing.addTag("key", "value");
+          return "value".equals(tracing.getTag("key"));
+        });
+    test("Tracing: Measures duration",
+        () -> {
+          TracingContext tracing = new TracingContext("trace-1", "span-1");
+          tracing.end();
+          return tracing.getDurationNanos() >= 0;
+        });
+  }
+
+  private static void testServiceRegistry() {
+    System.out.println("\nTesting Service Registry:");
+    test("Registry: Registers services",
+        () -> {
+          ServiceRegistry registry = new ServiceRegistry();
+          ServiceDescriptor desc = new ServiceDescriptor("service", "1.0", "desc");
+          registry.register(desc);
+          return registry.lookup("service") != null;
+        });
+    test("Registry: Lists all services",
+        () -> {
+          ServiceRegistry registry = new ServiceRegistry();
+          registry.register(new ServiceDescriptor("s1", "1.0", "d1"));
+          registry.register(new ServiceDescriptor("s2", "1.0", "d2"));
+          return registry.getServiceCount() == 2;
+        });
+    test("Registry: Generates service listing",
+        () -> {
+          ServiceRegistry registry = new ServiceRegistry();
+          registry.register(new ServiceDescriptor("test", "1.0", "desc"));
+          String listing = registry.generateRegistry();
+          return listing.contains("Service Registry");
+        });
+  }
+
+  private static void testObservability() {
+    System.out.println("\nTesting Observability:");
+    test("Observe: Collects observations",
+        () -> {
+          ObservationCollector collector = new ObservationCollector(10);
+          collector.collect(new Observation(Observation.Type.REQUEST, "test"));
+          return collector.getTotalObservations() == 1;
+        });
+    test("Observe: Filters by type",
+        () -> {
+          ObservationCollector collector = new ObservationCollector(10);
+          collector.collect(new Observation(Observation.Type.REQUEST, "r"));
+          collector.collect(new Observation(Observation.Type.CACHE, "c"));
+          return collector.getObservationsByType(Observation.Type.REQUEST).size() == 1;
+        });
+    test("Observe: Generates report",
+        () -> {
+          ObservationCollector collector = new ObservationCollector(10);
+          collector.collect(new Observation(Observation.Type.REQUEST, "test"));
+          String report = collector.generateReport();
+          return report.contains("Observations Report");
         });
   }
 

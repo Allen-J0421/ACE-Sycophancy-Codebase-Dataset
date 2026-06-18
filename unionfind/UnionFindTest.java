@@ -94,6 +94,7 @@ public class UnionFindTest {
         t.assertEquals("component count restored after reset", 5, uf.componentCount());
         t.assertFalse("elements disconnected after reset", uf.connected(0, 1));
         t.assertEquals("component size restored to 1 after reset", 1, uf.componentSize(0));
+        t.assertArrayEquals("componentMembers returns singleton after reset", new int[]{0}, uf.componentMembers(0));
 
         uf.union(0, 1);
         t.assertTrue("structure usable after reset", uf.connected(0, 1));

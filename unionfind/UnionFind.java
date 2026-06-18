@@ -14,6 +14,10 @@ public class UnionFind {
 
     public int find(int i) {
         validate(i);
+        return findRoot(i);
+    }
+
+    private int findRoot(int i) {
         while (parent[i] != i) {
             parent[i] = parent[parent[i]]; // path halving
             i = parent[i];
@@ -50,7 +54,7 @@ public class UnionFind {
         int[] members = new int[size[root]]; // size[root] is the exact component size
         int idx = 0;
         for (int k = 0; k < parent.length; k++) {
-            if (find(k) == root) members[idx++] = k;
+            if (findRoot(k) == root) members[idx++] = k; // k is always in bounds here
         }
         return members;
     }

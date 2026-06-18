@@ -33,8 +33,9 @@ import java.util.PriorityQueue;
  *
  * @see ShortestPathResult
  * @see Path
+ * @see PathfindingAlgorithm
  */
-class DijkstraShortestPathSolver {
+class DijkstraShortestPathSolver implements PathfindingAlgorithm {
     private static final int INFINITY = Integer.MAX_VALUE;
 
     /**
@@ -46,7 +47,8 @@ class DijkstraShortestPathSolver {
      * @throws NullPointerException if graph is null
      * @throws IllegalArgumentException if sourceNode is out of bounds
      */
-    ShortestPathResult solve(WeightedGraphView graph, int sourceNode) {
+    @Override
+    public ShortestPathResult solve(WeightedGraphView graph, int sourceNode) {
         Objects.requireNonNull(graph, "Graph cannot be null");
         validateSourceNode(graph, sourceNode);
 
@@ -119,5 +121,10 @@ class DijkstraShortestPathSolver {
                              sourceNode, graph.getVertexCount())
             );
         }
+    }
+
+    @Override
+    public String getName() {
+        return "Dijkstra";
     }
 }

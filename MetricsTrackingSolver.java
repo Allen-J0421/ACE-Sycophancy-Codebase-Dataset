@@ -5,102 +5,51 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 
 /**
- * Extended Dijkstra solver that tracks execution metrics.
- * Useful for performance analysis and algorithm validation.
+ * Wrapper for any PathfindingAlgorithm that tracks execution metrics.
+ * Useful for performance analysis and algorithm comparison.
  *
  * Overhead: Minimal, only tracking counts and timestamps
+ *
+ * Example:
+ * {@code
+ * PathfindingAlgorithm dijkstra = new DijkstraShortestPathSolver();
+ * MetricsTrackingSolver metrics = new MetricsTrackingSolver(dijkstra);
+ *
+ * ShortestPathResult result = metrics.solve(graph, 0);
+ * System.out.println(metrics.getMetrics());
+ * }
+ *
+ * @see PathfindingAlgorithm
+ * @see ExecutionMetrics
  */
-class MetricsTrackingSolver {
-    private static final int INFINITY = Integer.MAX_VALUE;
+class MetricsTrackingSolver implements PathfindingAlgorithm {
+    private final PathfindingAlgorithm delegate;
     private final ExecutionMetrics metrics;
+    private static final int INFINITY = Integer.MAX_VALUE;
 
-    MetricsTrackingSolver() {
+    MetricsTrackingSolver(PathfindingAlgorithm delegate) {
+        this.delegate = delegate;
         this.metrics = new ExecutionMetrics();
     }
 
     /**
-     * Solves shortest path problem while tracking metrics.
+     * Delegates to wrapped algorithm while tracking metrics.
      *
      * @param graph The weighted graph
      * @param sourceNode The source vertex
-     * @return Result containing distances, paths, and metrics
+     * @return Result containing distances and paths
      */
-    ShortestPathResult solveWithMetrics(WeightedGraphView graph, int sourceNode) {
-        Objects.requireNonNull(graph, "Graph cannot be null");
-        validateSourceNode(graph, sourceNode);
-
+    @Override
+    public ShortestPathResult solve(WeightedGraphView graph, int sourceNode) {
         metrics.recordStart();
-
-        DistanceTable distanceTable = DistanceTable.create(graph.getVertexCount(), sourceNode);
-        int[] predecessors = initializePredecessors(graph.getVertexCount());
-        PriorityQueue<PriorityQueueEntry> priorityQueue = new PriorityQueue<>();
-        priorityQueue.offer(PriorityQueueEntry.of(0, sourceNode));
-        metrics.incrementEnqueueCount();
-
-        processQueueWithMetrics(graph, distanceTable, predecessors, priorityQueue);
-
+        ShortestPathResult result = delegate.solve(graph, sourceNode);
         metrics.recordEnd();
-
-        List<Integer> distances = convertToList(distanceTable.toArray());
-        return ShortestPathResult.of(distances, predecessors, sourceNode, graph);
+        return result;
     }
 
-    private void processQueueWithMetrics(WeightedGraphView graph, DistanceTable distanceTable,
-                                        int[] predecessors, PriorityQueue<PriorityQueueEntry> priorityQueue) {
-        while (!priorityQueue.isEmpty()) {
-            PriorityQueueEntry current = priorityQueue.poll();
-            metrics.incrementDequeueCount();
-
-            int currentNode = current.getNode();
-            int currentDistance = current.getDistance();
-
-            if (isOutdatedEntry(currentDistance, distanceTable.getDistance(currentNode))) {
-                continue;
-            }
-
-            metrics.incrementVerticesProcessed();
-            List<Edge> edges = graph.getAdjacencyListFor(currentNode);
-            metrics.addEdgesProcessed(edges.size());
-
-            for (Edge edge : edges) {
-                int neighbor = edge.getDestination();
-                int weight = edge.getWeight();
-                int newDistance = distanceTable.getDistance(currentNode) + weight;
-
-                if (newDistance < distanceTable.getDistance(neighbor)) {
-                    distanceTable.updateDistance(neighbor, newDistance);
-                    predecessors[neighbor] = currentNode;
-                    priorityQueue.offer(PriorityQueueEntry.of(newDistance, neighbor));
-                    metrics.incrementEnqueueCount();
-                    metrics.incrementRelaxationCount();
-                }
-            }
-        }
-    }
-
-    private boolean isOutdatedEntry(int entryDistance, int currentDistance) {
-        return entryDistance > currentDistance;
-    }
-
-    private int[] initializePredecessors(int vertexCount) {
-        int[] predecessors = new int[vertexCount];
-        Arrays.fill(predecessors, -1);
-        return predecessors;
-    }
-
-    private List<Integer> convertToList(int[] distances) {
-        return new ArrayList<>(Arrays.asList(
-            Arrays.stream(distances).boxed().toArray(Integer[]::new)
-        ));
-    }
-
-    private void validateSourceNode(WeightedGraphView graph, int sourceNode) {
-        if (sourceNode < 0 || sourceNode >= graph.getVertexCount()) {
-            throw new IllegalArgumentException(
-                String.format("Source node %d is invalid for graph with %d vertices",
-                             sourceNode, graph.getVertexCount())
-            );
-        }
+    @Override
+    public String getName() {
+        return delegate.getName() + " (with metrics)";
     }
 
     ExecutionMetrics getMetrics() {

@@ -21,20 +21,20 @@ final class BinarySearchTree {
         this.root = root;
     }
 
-    static boolean search(Node root, int key) {
-        while (root != null) {
-            if (root.data == key) {
+    boolean contains(int key) {
+        return contains(root, key);
+    }
+
+    private boolean contains(Node node, int key) {
+        while (node != null) {
+            if (node.data == key) {
                 return true;
             }
 
-            root = key > root.data ? root.right : root.left;
+            node = key > node.data ? node.right : node.left;
         }
 
         return false;
-    }
-
-    boolean contains(int key) {
-        return search(root, key);
     }
 
     private static Node createSampleTree() {

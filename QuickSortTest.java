@@ -40,6 +40,7 @@ public class QuickSortTest {
         new SorterConfig("recursive + last-element",    new QuickSort()),
         new SorterConfig("recursive + median-of-three", new QuickSort(PivotSelector.MEDIAN_OF_THREE)),
         new SorterConfig("iterative + last-element",    new IterativeQuickSort()),
+        new SorterConfig("iterative + median-of-three", new IterativeQuickSort(PivotSelector.MEDIAN_OF_THREE)),
     };
 
     public static void main(String[] args) {

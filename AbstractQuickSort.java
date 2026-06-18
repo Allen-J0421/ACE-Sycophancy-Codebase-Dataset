@@ -8,7 +8,7 @@ abstract class AbstractQuickSort implements Sorter {
 
     protected int partition(int[] arr, int low, int high) {
         int pivotIndex = pivotSelector.selectPivot(arr, low, high);
-        swap(arr, pivotIndex, high);
+        if (pivotIndex != high) swap(arr, pivotIndex, high);
 
         int pivot = arr[high];
         int i = low - 1;

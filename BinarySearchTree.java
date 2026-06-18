@@ -1,4 +1,4 @@
-final class BinarySearchTree {
+public final class BinarySearchTree {
     private static final int SEARCH_KEY = 7;
     private static final int[] SAMPLE_VALUES = {6, 2, 8, 7, 9};
 

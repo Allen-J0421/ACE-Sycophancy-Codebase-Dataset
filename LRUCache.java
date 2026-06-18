@@ -3,7 +3,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class LRUCache<K, V> {
+public class LRUCache<K, V> implements Cache<K, V> {
     private static final float LOAD_FACTOR = 0.75f;
 
     private final int capacity;
@@ -19,31 +19,37 @@ public class LRUCache<K, V> {
         };
     }
 
+    @Override
     public Optional<V> get(K key) {
         return Optional.ofNullable(cache.get(requireKey(key)));
     }
 
-    public V getOrDefault(K key, V defaultValue) {
-        V value = cache.get(requireKey(key));
-        return value != null ? value : defaultValue;
-    }
-
+    @Override
     public boolean containsKey(K key) {
         return cache.containsKey(requireKey(key));
     }
 
+    @Override
     public void put(K key, V value) {
         cache.put(requireKey(key), requireValue(value));
     }
 
+    @Override
+    public Optional<V> remove(K key) {
+        return Optional.ofNullable(cache.remove(requireKey(key)));
+    }
+
+    @Override
     public int size() {
         return cache.size();
     }
 
+    @Override
     public int capacity() {
         return capacity;
     }
 
+    @Override
     public void clear() {
         cache.clear();
     }

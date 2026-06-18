@@ -4,14 +4,14 @@ public class Main {
     public static void main(String[] args) {
         runEvictionScenario();
         runUpdateScenario();
-        runCacheLifecycleScenario();
+        runSharedCacheApiScenario();
         runConstructorValidationScenario();
         runNullValidationScenario();
         System.out.println("All cache checks passed.");
     }
 
     private static void runEvictionScenario() {
-        LRUCache<Integer, Integer> cache = new LRUCache<>(2);
+        Cache<Integer, Integer> cache = new LRUCache<>(2);
 
         cache.put(1, 1);
         cache.put(2, 2);
@@ -27,7 +27,7 @@ public class Main {
     }
 
     private static void runUpdateScenario() {
-        LRUCache<Integer, Integer> cache = new LRUCache<>(2);
+        Cache<Integer, Integer> cache = new LRUCache<>(2);
 
         cache.put(1, 1);
         cache.put(2, 2);
@@ -39,18 +39,21 @@ public class Main {
         assertMissing("evicts the correct key after an update", cache, 2);
     }
 
-    private static void runCacheLifecycleScenario() {
-        LRUCache<String, String> cache = new LRUCache<>(3);
+    private static void runSharedCacheApiScenario() {
+        Cache<String, String> cache = new LRUCache<>(3);
 
         assertEquals("exposes configured capacity", 3, cache.capacity());
+        assertTrue("starts empty", cache.isEmpty());
         cache.put("a", "alpha");
         cache.put("b", "beta");
         assertTrue("reports existing key", cache.containsKey("a"));
         assertEquals("returns fallback for missing value", "missing", cache.getOrDefault("z", "missing"));
+        assertEquals("returns removed value", "alpha", cache.remove("a").orElse("missing"));
+        assertFalse("removed key is no longer present", cache.containsKey("a"));
 
         cache.clear();
         assertEquals("clears all entries", 0, cache.size());
-        assertFalse("does not report cleared key", cache.containsKey("a"));
+        assertTrue("is empty after clear", cache.isEmpty());
     }
 
     private static void runConstructorValidationScenario() {
@@ -58,23 +61,25 @@ public class Main {
     }
 
     private static void runNullValidationScenario() {
-        LRUCache<Integer, Integer> cache = new LRUCache<>(1);
+        Cache<Integer, Integer> cache = new LRUCache<>(1);
 
         assertThrowsNullPointer("null key on put", () -> cache.put(null, 1));
         assertThrowsNullPointer("null value on put", () -> cache.put(1, null));
         assertThrowsNullPointer("null key on get", () -> cache.get(null));
+        assertThrowsNullPointer("null key on containsKey", () -> cache.containsKey(null));
+        assertThrowsNullPointer("null key on remove", () -> cache.remove(null));
     }
 
     private static void assertValue(
         String description,
-        LRUCache<Integer, Integer> cache,
+        Cache<Integer, Integer> cache,
         int key,
         int expectedValue
     ) {
         assertEquals(description, Integer.valueOf(expectedValue), cache.get(key).orElse(MISSING));
     }
 
-    private static void assertMissing(String description, LRUCache<Integer, Integer> cache, int key) {
+    private static void assertMissing(String description, Cache<Integer, Integer> cache, int key) {
         assertFalse(description, cache.get(key).isPresent());
     }
 

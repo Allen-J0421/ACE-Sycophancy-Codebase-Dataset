@@ -4,22 +4,24 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Computes prefix sum arrays efficiently with caching, metrics, and statistics.
+ * Computes prefix sum arrays efficiently with caching, metrics, statistics, and pluggable strategies.
  * The prefix sum at index i is the sum of all elements from index 0 to i.
  */
 public class PrefixSum {
 
     private final List<Long> cache;
     private final PrefixSumConfig config;
+    private final ComputationStrategy strategy;
+    private final List<ComputationListener> listeners;
     private int computationCount;
     private long totalComputationTime;
     private long peakMemoryUsed;
 
     /**
-     * Creates a PrefixSum instance with default configuration.
+     * Creates a PrefixSum instance with default configuration and iterative strategy.
      */
     public PrefixSum() {
-        this(PrefixSumConfig.defaults());
+        this(PrefixSumConfig.defaults(), new IterativeStrategy());
     }
 
     /**
@@ -28,12 +30,43 @@ public class PrefixSum {
      * @param config the configuration object
      */
     public PrefixSum(PrefixSumConfig config) {
+        this(config, new IterativeStrategy());
+    }
+
+    /**
+     * Creates a PrefixSum instance with custom configuration and strategy.
+     *
+     * @param config the configuration object
+     * @param strategy the computation strategy
+     */
+    public PrefixSum(PrefixSumConfig config, ComputationStrategy strategy) {
         Objects.requireNonNull(config, "Configuration cannot be null");
+        Objects.requireNonNull(strategy, "Strategy cannot be null");
         this.config = config;
+        this.strategy = strategy;
         this.cache = config.isCacheEnabled() ? new ArrayList<>() : null;
+        this.listeners = new ArrayList<>();
         this.computationCount = 0;
         this.totalComputationTime = 0;
         this.peakMemoryUsed = 0;
+    }
+
+    /**
+     * Registers a listener for computation events.
+     *
+     * @param listener the listener to register
+     */
+    public void addListener(ComputationListener listener) {
+        listeners.add(Objects.requireNonNull(listener, "Listener cannot be null"));
+    }
+
+    /**
+     * Removes a listener.
+     *
+     * @param listener the listener to remove
+     */
+    public void removeListener(ComputationListener listener) {
+        listeners.remove(listener);
     }
 
     /**
@@ -44,41 +77,62 @@ public class PrefixSum {
      * @throws IllegalArgumentException if the array is null or empty
      */
     public PrefixSumResult compute(int[] arr) {
-        Objects.requireNonNull(arr, "Input array cannot be null");
-        if (arr.length == 0) {
-            throw new IllegalArgumentException("Input array cannot be empty");
+        InputValidator.validate(arr);
+
+        try {
+            notifyListenersStart(arr.length);
+
+            long startTime = config.isTrackMetricsEnabled() ? System.nanoTime() : 0;
+            Runtime runtime = config.isTrackMetricsEnabled() ? Runtime.getRuntime() : null;
+            long memBefore = config.isTrackMetricsEnabled() ? runtime.totalMemory() - runtime.freeMemory() : 0;
+
+            if (config.isCacheEnabled() && config.shouldClearCacheOnCompute()) {
+                cache.clear();
+            }
+
+            List<Long> result = strategy.compute(arr);
+            long sum = result.get(result.size() - 1);
+
+            if (config.isCacheEnabled()) {
+                cache.clear();
+                cache.addAll(result);
+            }
+
+            long memAfter = config.isTrackMetricsEnabled() ? runtime.totalMemory() - runtime.freeMemory() : 0;
+            long computationTime = config.isTrackMetricsEnabled() ? (System.nanoTime() - startTime) / 1_000_000 : 0;
+            long memUsed = config.isTrackMetricsEnabled() ? Math.abs(memAfter - memBefore) : 0;
+
+            computationCount++;
+            totalComputationTime += computationTime;
+            peakMemoryUsed = Math.max(peakMemoryUsed, memUsed);
+
+            PrefixSumResult prefixSumResult = new PrefixSumResult(result, arr.length, sum, computationTime, memUsed);
+            notifyListenersComplete(prefixSumResult);
+
+            return prefixSumResult;
+
+        } catch (Exception e) {
+            notifyListenersError(e);
+            throw e;
         }
+    }
 
-        long startTime = config.isTrackMetricsEnabled() ? System.nanoTime() : 0;
-        Runtime runtime = config.isTrackMetricsEnabled() ? Runtime.getRuntime() : null;
-        long memBefore = config.isTrackMetricsEnabled() ? runtime.totalMemory() - runtime.freeMemory() : 0;
-
-        if (config.isCacheEnabled() && config.shouldClearCacheOnCompute()) {
-            cache.clear();
+    private void notifyListenersStart(int arraySize) {
+        for (ComputationListener listener : listeners) {
+            listener.onComputationStart(arraySize);
         }
+    }
 
-        List<Long> result = new ArrayList<>(arr.length);
-        long sum = 0;
-
-        for (int value : arr) {
-            sum += value;
-            result.add(sum);
+    private void notifyListenersComplete(PrefixSumResult result) {
+        for (ComputationListener listener : listeners) {
+            listener.onComputationComplete(result);
         }
+    }
 
-        if (config.isCacheEnabled()) {
-            cache.clear();
-            cache.addAll(result);
+    private void notifyListenersError(Exception exception) {
+        for (ComputationListener listener : listeners) {
+            listener.onComputationError(exception);
         }
-
-        long memAfter = config.isTrackMetricsEnabled() ? runtime.totalMemory() - runtime.freeMemory() : 0;
-        long computationTime = config.isTrackMetricsEnabled() ? (System.nanoTime() - startTime) / 1_000_000 : 0;
-        long memUsed = config.isTrackMetricsEnabled() ? Math.abs(memAfter - memBefore) : 0;
-
-        computationCount++;
-        totalComputationTime += computationTime;
-        peakMemoryUsed = Math.max(peakMemoryUsed, memUsed);
-
-        return new PrefixSumResult(result, arr.length, sum, computationTime, memUsed);
     }
 
     /**
@@ -99,6 +153,15 @@ public class PrefixSum {
      */
     public ComputationMetrics getMetrics() {
         return new ComputationMetrics(totalComputationTime, computationCount, peakMemoryUsed);
+    }
+
+    /**
+     * Gets the computation strategy name.
+     *
+     * @return strategy name
+     */
+    public String getStrategyName() {
+        return strategy.getName();
     }
 
     /**

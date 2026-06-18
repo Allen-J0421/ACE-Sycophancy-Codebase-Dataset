@@ -7,8 +7,11 @@ public class PrefixSumTest {
 
     public static void main(String[] args) {
         testBasicComputation();
+        testStrategyPattern();
         testConfigBasedCaching();
         testConfigBasedMetrics();
+        testListenerPattern();
+        testInputValidator();
         testCacheClear();
         testStatistics();
         testResultImmutability();
@@ -22,6 +25,15 @@ public class PrefixSumTest {
         PrefixSum.PrefixSumResult result = PrefixSum.computePrefixSum(arr);
         assert result.getValues().equals(List.of(1L, 3L, 6L, 10L)) : "Basic computation failed";
         assert result.getTotalSum() == 10L : "Total sum mismatch";
+    }
+
+    private static void testStrategyPattern() {
+        System.out.println("Testing strategy pattern...");
+        ComputationStrategy strategy = new IterativeStrategy();
+        PrefixSum calculator = new PrefixSum(PrefixSumConfig.defaults(), strategy);
+        PrefixSum.PrefixSumResult result = calculator.compute(new int[]{1, 2, 3});
+        assert "Iterative".equals(calculator.getStrategyName()) : "Strategy name mismatch";
+        assert result.getValues().equals(List.of(1L, 3L, 6L)) : "Strategy computation failed";
     }
 
     private static void testConfigBasedCaching() {
@@ -42,6 +54,24 @@ public class PrefixSumTest {
         ComputationMetrics metrics = calculator.getMetrics();
         assert metrics.getComputationCount() == 1 : "Metrics computation count mismatch";
         assert metrics.getComputationTimeMs() >= 0 : "Computation time should be non-negative";
+    }
+
+    private static void testListenerPattern() {
+        System.out.println("Testing listener pattern...");
+        TestListener listener = new TestListener();
+        PrefixSum calculator = new PrefixSum();
+        calculator.addListener(listener);
+        calculator.compute(new int[]{1, 2, 3});
+        assert listener.startCalled : "onComputationStart not called";
+        assert listener.completeCalled : "onComputationComplete not called";
+        assert !listener.errorCalled : "onComputationError should not be called";
+    }
+
+    private static void testInputValidator() {
+        System.out.println("Testing input validator...");
+        assert InputValidator.isValid(new int[]{1, 2, 3}) : "Valid array check failed";
+        assert !InputValidator.isValid(null) : "Null array check failed";
+        assert !InputValidator.isValid(new int[]{}) : "Empty array check failed";
     }
 
     private static void testCacheClear() {
@@ -111,6 +141,34 @@ public class PrefixSumTest {
             assert false : "Should throw NullPointerException for null config";
         } catch (NullPointerException e) {
             // Expected
+        }
+
+        try {
+            new PrefixSum(PrefixSumConfig.defaults(), null);
+            assert false : "Should throw NullPointerException for null strategy";
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    static class TestListener implements ComputationListener {
+        boolean startCalled = false;
+        boolean completeCalled = false;
+        boolean errorCalled = false;
+
+        @Override
+        public void onComputationStart(int arraySize) {
+            startCalled = true;
+        }
+
+        @Override
+        public void onComputationComplete(PrefixSum.PrefixSumResult result) {
+            completeCalled = true;
+        }
+
+        @Override
+        public void onComputationError(Exception exception) {
+            errorCalled = true;
         }
     }
 }

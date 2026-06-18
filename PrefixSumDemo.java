@@ -12,36 +12,36 @@ public class PrefixSumDemo {
         PrefixSum.PrefixSumResult result = PrefixSum.computePrefixSum(SAMPLE_ARRAY);
         System.out.println("Result: " + result);
 
-        System.out.println("\n=== Config-based Demo (No Cache, No Metrics) ===");
-        PrefixSum calculator1 = new PrefixSum(PrefixSumConfig.defaults());
+        System.out.println("\n=== Strategy Pattern Demo (Default Iterative Strategy) ===");
+        PrefixSum calculator1 = new PrefixSum();
         PrefixSum.PrefixSumResult result1 = calculator1.compute(SAMPLE_ARRAY);
+        System.out.println("Strategy: " + calculator1.getStrategyName());
         System.out.println("Computed result: " + result1);
         System.out.println("Metrics: " + calculator1.getMetrics());
 
-        System.out.println("\n=== Config-based Demo (With Cache) ===");
-        PrefixSumConfig config2 = PrefixSumConfig.builder().withCache().build();
-        PrefixSum calculator2 = new PrefixSum(config2);
+        System.out.println("\n=== Listener Pattern Demo ===");
+        PrefixSumConfig config2 = PrefixSumConfig.builder().withMetrics().build();
+        PrefixSum calculator2 = new PrefixSum(config2, new IterativeStrategy());
+        calculator2.addListener(new LoggingListener());
         PrefixSum.PrefixSumResult result2 = calculator2.compute(SAMPLE_ARRAY);
-        System.out.println("Computed result: " + result2);
-        System.out.println("Cached result: " + calculator2.getCachedResult());
-        System.out.println("Metrics: " + calculator2.getMetrics());
+        System.out.println("Result values: " + result2.getValues());
 
-        System.out.println("\n=== Config-based Demo (With Cache Clear + Metrics) ===");
+        System.out.println("\n=== Config-based Demo (With Cache + Metrics + Listeners) ===");
         PrefixSumConfig config3 = PrefixSumConfig.builder()
             .withCache()
             .withCacheClear()
             .withMetrics()
             .build();
         PrefixSum calculator3 = new PrefixSum(config3);
+        calculator3.addListener(new LoggingListener());
         PrefixSum.PrefixSumResult result3a = calculator3.compute(SAMPLE_ARRAY);
-        System.out.println("First computation: " + result3a);
+        System.out.println("Cached after first computation: " + calculator3.getCachedResult());
         PrefixSum.PrefixSumResult result3b = calculator3.compute(ANOTHER_ARRAY);
-        System.out.println("Second computation (cache cleared): " + result3b);
-        System.out.println("Cached result (only latest): " + calculator3.getCachedResult());
+        System.out.println("Cached after second computation (cleared): " + calculator3.getCachedResult());
 
         System.out.println("\n=== Performance Demo (Large Array with Metrics) ===");
         PrefixSumConfig config4 = PrefixSumConfig.builder().withMetrics().build();
-        PrefixSum calculator4 = new PrefixSum(config4);
+        PrefixSum calculator4 = new PrefixSum(config4, new IterativeStrategy());
         PrefixSum.PrefixSumResult result4 = calculator4.compute(LARGE_ARRAY);
         System.out.println("Large array result: size=" + result4.getInputSize() +
                 ", totalSum=" + result4.getTotalSum() +

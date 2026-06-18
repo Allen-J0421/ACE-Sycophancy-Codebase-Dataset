@@ -21,7 +21,7 @@ public final class CoinChange {
      */
     public static long countLong(int[] coins, int sum) {
         validateSum(sum);
-        int[] normalizedCoins = normalizeCoins(coins);
+        int[] normalizedCoins = CoinChangeDenominations.normalize(coins);
         return countCombinations(normalizedCoins, sum);
     }
 
@@ -47,34 +47,6 @@ public final class CoinChange {
         if (sum < 0) {
             throw new IllegalArgumentException("sum must be non-negative");
         }
-    }
-
-    private static int[] normalizeCoins(int[] coins) {
-        if (coins == null) {
-            throw new IllegalArgumentException("coins must not be null");
-        }
-        if (coins.length == 0) {
-            return coins;
-        }
-
-        int[] normalized = coins.clone();
-        java.util.Arrays.sort(normalized);
-
-        int uniqueCount = 0;
-        int previous = 0;
-        for (int coin : normalized) {
-            if (coin <= 0) {
-                throw new IllegalArgumentException("coin values must be positive");
-            }
-            if (uniqueCount == 0 || coin != previous) {
-                normalized[uniqueCount++] = coin;
-                previous = coin;
-            }
-        }
-
-        int[] uniqueCoins = new int[uniqueCount];
-        System.arraycopy(normalized, 0, uniqueCoins, 0, uniqueCount);
-        return uniqueCoins;
     }
 
     private static long countCombinations(int[] coins, int sum) {

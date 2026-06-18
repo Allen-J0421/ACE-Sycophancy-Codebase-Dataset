@@ -12,6 +12,7 @@ public final class CoinChangeTest {
         assertCount(1, new int[] {2, 2}, 4);
         assertCountLong(5L, new int[] {1, 2, 3}, 5);
         assertCountWaysLong(5L, 5, 1, 2, 3);
+        assertInputUnchanged();
         assertCount(1, new int[] {}, 0);
         assertCount(0, new int[] {}, 5);
         assertParsedArgs(5, new int[] {1, 2, 3}, new String[] {"5", "1", "2", "3"});
@@ -49,6 +50,20 @@ public final class CoinChangeTest {
             throw new AssertionError(
                 "expected " + expected + " ways for sum " + sum + ", got " + actual
             );
+        }
+    }
+
+    private static void assertInputUnchanged() {
+        int[] coins = {3, 1, 2, 1};
+        int[] original = coins.clone();
+        CoinChange.count(coins, 5);
+        if (coins.length != original.length) {
+            throw new AssertionError("count should not change the input length");
+        }
+        for (int i = 0; i < coins.length; i++) {
+            if (coins[i] != original[i]) {
+                throw new AssertionError("count should not mutate the input array");
+            }
         }
     }
 

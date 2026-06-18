@@ -1,20 +1,13 @@
 /**
  * Parsed command-line arguments for the coin change utility.
  */
-public final class CoinChangeArgs {
+public record CoinChangeArgs(int sum, int[] coins) {
 
-    private final int sum;
-    private final int[] coins;
-
-    private CoinChangeArgs(int sum, int[] coins) {
-        this.sum = sum;
-        this.coins = coins;
+    public CoinChangeArgs {
+        coins = coins.clone();
     }
 
-    public int sum() {
-        return sum;
-    }
-
+    @Override
     public int[] coins() {
         return coins.clone();
     }
@@ -30,7 +23,7 @@ public final class CoinChangeArgs {
             coins[i - 1] = parsePositiveInt(args[i], "coin");
         }
 
-        return new CoinChangeArgs(sum, coins);
+        return new CoinChangeArgs(sum, CoinChangeDenominations.normalize(coins));
     }
 
     private static int parseNonNegativeInt(String value, String label) {

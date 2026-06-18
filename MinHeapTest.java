@@ -42,15 +42,15 @@ public class MinHeapTest {
         assertTrue(heap.offer(8), "Expected insert to succeed");
         assertTrue(heap.offer(3), "Expected insert to succeed");
         assertTrue(heap.offer(5), "Expected insert to succeed");
-        heap.updateKey(0, 1);
+        heap.decreaseKey(0, 1);
         assertEquals(heap.peek(), 1, "Key update should restore heap order");
         assertEquals(heap.size(), 3, "Heap size should reflect inserted elements");
         assertTrue(heap.offer(9), "Expected final insert to succeed before reaching capacity");
         assertFalse(heap.offer(11), "Insert should fail once the heap reaches capacity");
 
-        heap.removeAtIndex(1);
+        assertEquals(heap.poll(), 1, "Polling should remove the current minimum");
         assertEquals(heap.size(), 3, "Delete should reduce heap size");
-        assertEquals(heap.peek(), 1, "Delete should preserve the minimum element");
+        assertEquals(heap.peek(), 3, "Delete should preserve the next minimum element");
 
         assertThrowsIllegalArgument(
             () -> heap.decreaseKey(0, 99),
@@ -65,14 +65,7 @@ public class MinHeapTest {
     public static void main(String[] args) {
         runSanityChecks();
 
-        MinHeap h = new MinHeap(11);
-        h.offer(3);
-        h.offer(2);
-        h.removeAtIndex(1);
-        h.offer(15);
-        h.offer(5);
-        h.offer(4);
-        h.offer(45);
+        MinHeap h = new MinHeap(new int[] { 4, 2, 5, 15, 45 });
         System.out.print(h.poll() + " ");
         System.out.print(h.peek() + " ");
 

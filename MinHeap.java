@@ -94,7 +94,7 @@ public final class MinHeap {
         elements[index] = value;
     }
 
-    private void updateKeyInternal(int index, int newVal) {
+    private void replaceKey(int index, int newVal) {
         int oldVal = elements[index];
         if (newVal == oldVal) {
             return;
@@ -161,7 +161,7 @@ public final class MinHeap {
     public void decreaseKey(int key, int newVal) {
         validateIndex(key);
         validateKeyMovement(key, newVal, true);
-        updateKeyInternal(key, newVal);
+        replaceKey(key, newVal);
     }
 
     public int peek() {
@@ -184,7 +184,7 @@ public final class MinHeap {
     public void increaseKey(int key, int newVal) {
         validateIndex(key);
         validateKeyMovement(key, newVal, false);
-        updateKeyInternal(key, newVal);
+        replaceKey(key, newVal);
     }
 
     public int size() {
@@ -193,15 +193,6 @@ public final class MinHeap {
 
     public boolean isEmpty() {
         return isEmptyHeap();
-    }
-
-    public void updateKey(int key, int newVal) {
-        validateIndex(key);
-        updateKeyInternal(key, newVal);
-    }
-
-    public void removeAtIndex(int key) {
-        removeAtInternal(key);
     }
 
     public int capacity() {

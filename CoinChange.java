@@ -12,9 +12,17 @@ public final class CoinChange {
      * Duplicate coin denominations are ignored.
      */
     public static int count(int[] coins, int sum) {
+        return Math.toIntExact(countLong(coins, sum));
+    }
+
+    /**
+     * Returns the exact number of unique combinations that sum to {@code sum}.
+     * Duplicate coin denominations are ignored.
+     */
+    public static long countLong(int[] coins, int sum) {
         validateSum(sum);
         int[] normalizedCoins = normalizeCoins(coins);
-        return Math.toIntExact(countCombinations(normalizedCoins, sum));
+        return countCombinations(normalizedCoins, sum);
     }
 
     /**
@@ -22,6 +30,13 @@ public final class CoinChange {
      */
     public static int countWays(int sum, int... coins) {
         return count(coins, sum);
+    }
+
+    /**
+     * Convenience overload that returns the exact combination count as a long.
+     */
+    public static long countWaysLong(int sum, int... coins) {
+        return countLong(coins, sum);
     }
 
     public static void main(String[] args) {

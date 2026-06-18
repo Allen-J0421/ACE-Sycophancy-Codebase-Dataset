@@ -1,5 +1,5 @@
-class dijkstras_shortest_path {
-    private dijkstras_shortest_path() {
+public final class Main {
+    private Main() {
     }
 
     public static void main(String[] args) {

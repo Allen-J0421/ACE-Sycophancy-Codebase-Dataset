@@ -57,27 +57,36 @@ public class Trie {
     }
 
     public static void main(String[] args) {
-        Trie trie = new Trie();
-        trie.loadWords("and", "ant", "do", "dad");
-        trie.printLookups("do", "gee", "bat");
-        trie.printPrefixes("ge", "ba", "do", "de");
+        TrieDemo.main(args);
+    }
+}
+
+final class TrieDemo {
+    private TrieDemo() {
     }
 
-    private void loadWords(String... words) {
+    public static void main(String[] args) {
+        Trie trie = new Trie();
+        loadWords(trie, "and", "ant", "do", "dad");
+        printLookups(trie, "do", "gee", "bat");
+        printPrefixes(trie, "ge", "ba", "do", "de");
+    }
+
+    private static void loadWords(Trie trie, String... words) {
         for (String word : words) {
-            insert(word);
+            trie.insert(word);
         }
     }
 
-    private void printLookups(String... keys) {
-        printResults(keys, this::search);
+    private static void printLookups(Trie trie, String... keys) {
+        printResults(keys, trie::search);
     }
 
-    private void printPrefixes(String... prefixes) {
-        printResults(prefixes, this::startsWith);
+    private static void printPrefixes(Trie trie, String... prefixes) {
+        printResults(prefixes, trie::startsWith);
     }
 
-    private void printResults(String[] values, Lookup lookup) {
+    private static void printResults(String[] values, Lookup lookup) {
         for (String value : values) {
             System.out.print(lookup.test(value) + " ");
         }

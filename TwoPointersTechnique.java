@@ -1,7 +1,7 @@
 import java.util.HashSet;
 import java.util.Set;
 
-final class TwoPointersTechnique {
+public final class TwoPointersTechnique {
 
     private TwoPointersTechnique() {
         // Utility class.
@@ -11,7 +11,7 @@ final class TwoPointersTechnique {
      * Returns true when an array contains two values that add up to the target.
      * This version works on unsorted input in linear time and does not mutate the caller's array.
      */
-    static boolean hasPairWithSum(int[] values, int target) {
+    public static boolean hasPairWithSum(int[] values, int target) {
         if (!hasAtLeastTwoValues(values)) {
             return false;
         }
@@ -33,7 +33,7 @@ final class TwoPointersTechnique {
     /**
      * Two-pointer search over an already sorted array.
      */
-    static boolean hasPairWithSumSorted(int[] sortedValues, int target) {
+    public static boolean hasPairWithSumSorted(int[] sortedValues, int target) {
         if (!hasAtLeastTwoValues(sortedValues)) {
             return false;
         }
@@ -42,13 +42,11 @@ final class TwoPointersTechnique {
         int right = sortedValues.length - 1;
 
         while (left < right) {
-            long sum = (long) sortedValues[left] + sortedValues[right];
-
-            if (sum == target) {
+            if (sumMatchesTarget(sortedValues[left], sortedValues[right], target)) {
                 return true;
             }
 
-            if (sum < target) {
+            if (isSumLessThanTarget(sortedValues[left], sortedValues[right], target)) {
                 left++;
             } else {
                 right--;
@@ -60,5 +58,13 @@ final class TwoPointersTechnique {
 
     private static boolean hasAtLeastTwoValues(int[] values) {
         return values != null && values.length >= 2;
+    }
+
+    private static boolean sumMatchesTarget(int leftValue, int rightValue, int target) {
+        return (long) leftValue + rightValue == target;
+    }
+
+    private static boolean isSumLessThanTarget(int leftValue, int rightValue, int target) {
+        return (long) leftValue + rightValue < target;
     }
 }

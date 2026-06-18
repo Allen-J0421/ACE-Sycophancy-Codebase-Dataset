@@ -16,7 +16,7 @@
  * For small runs insertion sort's low constant factors beat the merge overhead.
  * Insertion sort is itself stable, so overall stability is preserved.
  */
-final class MergeSort {
+public final class MergeSort {
 
     /**
      * Initial run length: the array is first split into blocks of this many

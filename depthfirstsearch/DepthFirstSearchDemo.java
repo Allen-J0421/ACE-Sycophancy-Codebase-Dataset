@@ -3,6 +3,7 @@ package depthfirstsearch;
 import java.util.List;
 
 import depthfirstsearch.graph.Graph;
+import depthfirstsearch.graph.GraphBuilder;
 import depthfirstsearch.search.DepthFirstSearch;
 
 public final class DepthFirstSearchDemo {
@@ -12,7 +13,7 @@ public final class DepthFirstSearchDemo {
     }
 
     public static void main(String[] args) {
-        Graph graph = Graph.builder(6)
+        Graph graph = new GraphBuilder(6)
                 .addUndirectedEdge(1, 2)
                 .addUndirectedEdge(0, 3)
                 .addUndirectedEdge(2, 0)

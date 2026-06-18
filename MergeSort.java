@@ -1,8 +1,14 @@
+/**
+ * Sorts integer arrays in ascending order using merge sort.
+ */
 public final class MergeSort {
 
     private MergeSort() {
     }
 
+    /**
+     * Sorts the provided array in place. Null and single-element arrays are left unchanged.
+     */
     public static void sort(int[] values) {
         if (values == null || values.length < 2) {
             return;
@@ -22,11 +28,15 @@ public final class MergeSort {
         mergeSort(values, buffer, start, middle);
         mergeSort(values, buffer, middle, end);
 
-        if (values[middle - 1] <= values[middle]) {
+        if (isOrderedAcrossBoundary(values, middle)) {
             return;
         }
 
         merge(values, buffer, start, middle, end);
+    }
+
+    private static boolean isOrderedAcrossBoundary(int[] values, int middle) {
+        return values[middle - 1] <= values[middle];
     }
 
     private static void merge(int[] values, int[] buffer, int start, int middle, int end) {

@@ -42,28 +42,34 @@ class Dijkstra {
         }
     }
 
+    static class QueueEntry {
+        final int distance;
+        final int vertex;
+
+        QueueEntry(int distance, int vertex) {
+            this.distance = distance;
+            this.vertex = vertex;
+        }
+    }
+
     static int[] shortestPaths(Graph graph, int source) {
         int n = graph.size();
         int[] dist = new int[n];
         Arrays.fill(dist, Integer.MAX_VALUE);
         dist[source] = 0;
 
-        // Priority queue entries: [distance, vertex]
-        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e[0]));
-        pq.offer(new int[]{0, source});
+        PriorityQueue<QueueEntry> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e.distance));
+        pq.offer(new QueueEntry(0, source));
 
         while (!pq.isEmpty()) {
-            int[] entry = pq.poll();
-            int currentDist = entry[0];
-            int u = entry[1];
+            QueueEntry entry = pq.poll();
+            if (entry.distance > dist[entry.vertex]) continue;
 
-            if (currentDist > dist[u]) continue;
-
-            for (Edge edge : graph.neighbors(u)) {
-                int newDist = dist[u] + edge.weight;
+            for (Edge edge : graph.neighbors(entry.vertex)) {
+                int newDist = dist[entry.vertex] + edge.weight;
                 if (newDist < dist[edge.to]) {
                     dist[edge.to] = newDist;
-                    pq.offer(new int[]{newDist, edge.to});
+                    pq.offer(new QueueEntry(newDist, edge.to));
                 }
             }
         }

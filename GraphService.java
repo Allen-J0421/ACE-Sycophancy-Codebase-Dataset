@@ -2,11 +2,15 @@ public class GraphService {
     private final GraphQuery query;
     private final TraversalCache cache;
     private final TraversalEventBus eventBus;
+    private final Graph graph;
+    private TraversalProfile currentProfile;
 
     public GraphService(Graph graph) {
+        this.graph = graph;
         this.query = new GraphQuery(graph);
         this.cache = query.getCache();
         this.eventBus = query.getEventBus();
+        this.currentProfile = new TraversalProfile(TraversalProfile.Profile.PERFORMANCE);
     }
 
     public TraversalResult traverse(TraversalConfig config) {
@@ -41,7 +45,20 @@ public class GraphService {
             cache.put(cacheKey, result);
         }
 
+        if (currentProfile.getProfile().isValidationEnabled()) {
+            ResultValidator validator = new ResultValidator(result, graph);
+            currentProfile.setValidationReport(validator.validate());
+        }
+
+        currentProfile.setMetrics(result.getPerformanceMetrics());
+
         return result;
+    }
+
+    public TraversalResult traverseWithProfile(TraversalProfile.Profile profile) {
+        this.currentProfile = new TraversalProfile(profile);
+        TraversalConfig config = profile.toConfig();
+        return traverse(config);
     }
 
     private void setupEventListeners(TraversalConfig config) {
@@ -63,7 +80,15 @@ public class GraphService {
         return query.degree();
     }
 
+    public GraphOperations operations() {
+        return new GraphOperations(graph);
+    }
+
     public void clearCache() {
         cache.clear();
+    }
+
+    public TraversalProfile getCurrentProfile() {
+        return currentProfile;
     }
 }

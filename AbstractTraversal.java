@@ -5,15 +5,18 @@ public abstract class AbstractTraversal implements GraphTraversal {
     protected List<Integer> vertices;
     protected int componentCount;
     protected TraversalEventBus eventBus;
+    protected PerformanceMetrics metrics;
 
     protected AbstractTraversal() {
         this.vertices = new ArrayList<>();
         this.componentCount = 0;
         this.eventBus = null;
+        this.metrics = null;
     }
 
     @Override
     public TraversalResult traverse(Graph graph) {
+        PerformanceMetrics localMetrics = new PerformanceMetrics();
         boolean[] visitedArray = new boolean[graph.getVertexCount()];
         List<Integer> vertexList = new ArrayList<>();
         int components = 0;
@@ -29,7 +32,11 @@ public abstract class AbstractTraversal implements GraphTraversal {
         }
 
         publishEvent(TraversalEvent.traversalCompleted());
-        return new TraversalResult(vertexList, components);
+        localMetrics.stop();
+
+        TraversalResult result = new TraversalResult(vertexList, components);
+        result.setPerformanceMetrics(localMetrics);
+        return result;
     }
 
     protected void publishEvent(TraversalEvent event) {

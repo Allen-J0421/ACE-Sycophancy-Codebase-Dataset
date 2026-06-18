@@ -4,6 +4,7 @@ import java.util.Collections;
 public class TraversalResult {
     private final List<Integer> vertices;
     private final int componentCount;
+    private PerformanceMetrics performanceMetrics;
 
     public TraversalResult(List<Integer> vertices, int componentCount) {
         this.vertices = Collections.unmodifiableList(vertices);
@@ -18,6 +19,18 @@ public class TraversalResult {
         return componentCount;
     }
 
+    public VertexStream stream() {
+        return new VertexStream(vertices);
+    }
+
+    public void setPerformanceMetrics(PerformanceMetrics metrics) {
+        this.performanceMetrics = metrics;
+    }
+
+    public PerformanceMetrics getPerformanceMetrics() {
+        return performanceMetrics;
+    }
+
     public void print() {
         System.out.print("Traversal: ");
         for (int vertex : vertices) {
@@ -25,5 +38,9 @@ public class TraversalResult {
         }
         System.out.println();
         System.out.println("Connected components: " + componentCount);
+
+        if (performanceMetrics != null) {
+            System.out.println("Duration: " + performanceMetrics.getDurationMillis() + " ms");
+        }
     }
 }

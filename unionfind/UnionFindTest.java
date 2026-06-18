@@ -1,4 +1,6 @@
-public class UnionFindTest {
+package unionfind;
+
+public final class UnionFindTest {
     public static void main(String[] args) {
         shouldTrackConnectivity();
         shouldTrackComponentCount();

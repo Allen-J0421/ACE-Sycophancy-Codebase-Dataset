@@ -1,4 +1,6 @@
-public class UnionFindDemo {
+package unionfind;
+
+public final class UnionFindDemo {
     public static void main(String[] args) {
         UnionFind unionFind = new UnionFind(5);
         unionFind.union(1, 2);

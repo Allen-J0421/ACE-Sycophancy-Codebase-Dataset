@@ -1,6 +1,8 @@
-public class UnionFind {
+package unionfind;
+
+public final class UnionFind {
     private final int[] parent;
-    private final int[] subtreeSize;
+    private final int[] componentSize;
     private int componentCount;
 
     public UnionFind(int size) {
@@ -9,20 +11,23 @@ public class UnionFind {
         }
 
         parent = new int[size];
-        subtreeSize = new int[size];
+        componentSize = new int[size];
         componentCount = size;
         for (int i = 0; i < size; i++) {
             parent[i] = i;
-            subtreeSize[i] = 1;
+            componentSize[i] = 1;
         }
     }
 
     public int find(int element) {
         validateElement(element);
 
-        int root = findRoot(element);
-        compressPath(element, root);
-        return root;
+        while (element != parent[element]) {
+            parent[element] = parent[parent[element]];
+            element = parent[element];
+        }
+
+        return element;
     }
 
     public boolean union(int first, int second) {
@@ -33,10 +38,10 @@ public class UnionFind {
             return false;
         }
 
-        if (subtreeSize[rootFirst] < subtreeSize[rootSecond]) {
-            attachRoot(rootFirst, rootSecond);
+        if (componentSize[rootFirst] < componentSize[rootSecond]) {
+            linkRoots(rootFirst, rootSecond);
         } else {
-            attachRoot(rootSecond, rootFirst);
+            linkRoots(rootSecond, rootFirst);
         }
 
         componentCount--;
@@ -55,26 +60,10 @@ public class UnionFind {
         return parent.length;
     }
 
-    private int findRoot(int element) {
-        int root = element;
-        while (root != parent[root]) {
-            root = parent[root];
-        }
-        return root;
-    }
-
-    private void compressPath(int element, int root) {
-        while (element != root) {
-            int next = parent[element];
-            parent[element] = root;
-            element = next;
-        }
-    }
-
-    private void attachRoot(int childRoot, int parentRoot) {
+    private void linkRoots(int childRoot, int parentRoot) {
         parent[childRoot] = parentRoot;
-        subtreeSize[parentRoot] += subtreeSize[childRoot];
-        subtreeSize[childRoot] = 0;
+        componentSize[parentRoot] += componentSize[childRoot];
+        componentSize[childRoot] = 0;
     }
 
     private void validateElement(int element) {

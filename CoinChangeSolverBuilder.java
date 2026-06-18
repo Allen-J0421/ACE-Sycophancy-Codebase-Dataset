@@ -1,9 +1,14 @@
 public class CoinChangeSolverBuilder {
   private CoinChangeStrategy strategy;
   private boolean enableMetrics = false;
+  private boolean enableCaching = false;
+  private boolean useLRUCache = false;
+  private int cacheSize = 100;
+  private final java.util.List<SolveEventListener> listeners;
 
   public CoinChangeSolverBuilder() {
     this.strategy = StrategyFactory.createDefault();
+    this.listeners = new java.util.ArrayList<>();
   }
 
   public CoinChangeSolverBuilder withStrategy(CoinChangeStrategy strategy) {
@@ -20,7 +25,15 @@ public class CoinChangeSolverBuilder {
   }
 
   public CoinChangeSolverBuilder withCaching() {
-    this.strategy = new CachedStrategy(strategy);
+    this.enableCaching = true;
+    this.useLRUCache = false;
+    return this;
+  }
+
+  public CoinChangeSolverBuilder withLRUCaching(int maxSize) {
+    this.enableCaching = true;
+    this.useLRUCache = true;
+    this.cacheSize = maxSize;
     return this;
   }
 
@@ -29,7 +42,40 @@ public class CoinChangeSolverBuilder {
     return this;
   }
 
+  public CoinChangeSolverBuilder addListener(SolveEventListener listener) {
+    if (listener != null) {
+      listeners.add(listener);
+    }
+    return this;
+  }
+
   public CoinChangeSolver build() {
-    return new CoinChangeSolver(strategy, enableMetrics);
+    if (enableCaching) {
+      if (useLRUCache) {
+        strategy = new LRUCachedStrategy(strategy, cacheSize);
+      } else {
+        strategy = new CachedStrategy(strategy);
+      }
+    }
+
+    CoinChangeSolver solver = new CoinChangeSolver(strategy, enableMetrics);
+    for (SolveEventListener listener : listeners) {
+      solver.addListener(listener);
+    }
+    return solver;
+  }
+
+  public SolverConfiguration buildConfiguration() {
+    return new SolverConfiguration.Builder()
+        .strategyType(getStrategyType())
+        .enableMetrics()
+        .enableCaching()
+        .cacheSize(cacheSize)
+        .useLRUCache()
+        .build();
+  }
+
+  private StrategyType getStrategyType() {
+    return StrategyType.STANDARD;
   }
 }

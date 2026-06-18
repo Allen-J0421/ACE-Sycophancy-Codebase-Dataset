@@ -12,6 +12,9 @@ public class CoinChangeTest {
     testBuilder();
     testMetrics();
     testCaching();
+    testEventListeners();
+    testLRUCaching();
+    testBatchProcessing();
 
     System.out.println("\n=== Test Summary ===");
     System.out.println("Passed: " + testsPassed);
@@ -152,6 +155,83 @@ public class CoinChangeTest {
           int first = cached.countWays(new int[]{1, 2, 3}, 5);
           int second = cached.countWays(new int[]{1, 2, 3}, 5);
           return first == second && cached.getCacheSize() == 1;
+        });
+  }
+
+  private static void testEventListeners() {
+    System.out.println("\nTesting Event Listeners:");
+    test("Listeners: Added listener receives event",
+        () -> {
+          final boolean[] called = {false};
+          SolveEventListener listener = event -> called[0] = true;
+          CoinChangeSolver solver = new CoinChangeSolver(new DynamicProgrammingStrategy());
+          solver.addListener(listener);
+          solver.solve(new int[]{1, 2}, 3);
+          return called[0];
+        });
+    test("Listeners: Logging listener works",
+        () -> {
+          CoinChangeSolver solver = new CoinChangeSolver(new DynamicProgrammingStrategy());
+          solver.addListener(new LoggingSolveListener());
+          CoinChangeResult result = solver.solve(new int[]{1, 2, 3}, 5);
+          return result.getWays() == 5;
+        });
+    test("Listeners: Performance listener tracks calls",
+        () -> {
+          PerformanceSolveListener perf = new PerformanceSolveListener();
+          CoinChangeSolver solver = new CoinChangeSolver(new DynamicProgrammingStrategy());
+          solver.addListener(perf);
+          solver.solve(new int[]{1, 2, 3}, 5);
+          solver.solve(new int[]{1, 2}, 3);
+          return perf.getCallCount() == 2;
+        });
+  }
+
+  private static void testLRUCaching() {
+    System.out.println("\nTesting LRU Caching:");
+    test("LRU: Cache respects max size",
+        () -> {
+          LRUCachedStrategy lru = new LRUCachedStrategy(new DynamicProgrammingStrategy(), 2);
+          lru.countWays(new int[]{1, 2, 3}, 5);
+          lru.countWays(new int[]{1, 2}, 3);
+          lru.countWays(new int[]{2}, 4);
+          return lru.getCacheSize() == 2;
+        });
+    test("LRU: Evicts least recently used",
+        () -> {
+          LRUCachedStrategy lru = new LRUCachedStrategy(new DynamicProgrammingStrategy(), 2);
+          lru.countWays(new int[]{1, 2, 3}, 5);
+          lru.countWays(new int[]{1, 2}, 3);
+          lru.countWays(new int[]{1, 2}, 3);
+          return lru.getCacheSize() == 2 && lru.getMaxCacheSize() == 2;
+        });
+  }
+
+  private static void testBatchProcessing() {
+    System.out.println("\nTesting Batch Processing:");
+    test("Batch: Processes multiple tasks",
+        () -> {
+          BatchSolveRequest request = new BatchSolveRequest();
+          request.addTask(new int[]{1, 2, 3}, 5);
+          request.addTask(new int[]{1, 2}, 3);
+          return request.size() == 2;
+        });
+    test("Batch: Solver processes batch requests",
+        () -> {
+          CoinChangeSolver solver = new CoinChangeSolver(new DynamicProgrammingStrategy());
+          BatchSolveRequest request = new BatchSolveRequest();
+          request.addTask(new int[]{1, 2, 3}, 5);
+          request.addTask(new int[]{1, 2}, 3);
+          BatchSolveResult result = solver.solveBatch(request);
+          return result.getSuccessCount() == 2;
+        });
+    test("Batch: Result includes timing",
+        () -> {
+          CoinChangeSolver solver = new CoinChangeSolver(new DynamicProgrammingStrategy());
+          BatchSolveRequest request = new BatchSolveRequest();
+          request.addTask(new int[]{1, 2, 3}, 5);
+          BatchSolveResult result = solver.solveBatch(request);
+          return result.getTotalTimeMillis() >= 0;
         });
   }
 

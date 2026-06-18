@@ -12,6 +12,7 @@ public final class BreadthFirstSearchTest {
         testBfsFromSource();
         testNeighborsAreReadOnly();
         testDirectedEdges();
+        testContainsVertex();
         testInvalidInputs();
         System.out.println("All tests passed.");
     }
@@ -45,6 +46,14 @@ public final class BreadthFirstSearchTest {
         assertEquals(Arrays.asList(2), graph.neighbors(1), "directed edge from 1");
         assertEquals(List.of(), graph.neighbors(2), "directed edge from 2");
         assertEquals(Arrays.asList(0, 1, 2), BreadthFirstSearch.bfs(graph), "directed bfs traversal");
+    }
+
+    private static void testContainsVertex() {
+        Graph graph = Graph.create(3);
+        expectTrue(graph.containsVertex(0), "vertex 0 should exist");
+        expectTrue(graph.containsVertex(2), "vertex 2 should exist");
+        expectFalse(graph.containsVertex(-1), "negative vertex should not exist");
+        expectFalse(graph.containsVertex(3), "vertex 3 should not exist");
     }
 
     private static void testNeighborsAreReadOnly() {
@@ -81,6 +90,18 @@ public final class BreadthFirstSearchTest {
             if (!expectedType.isInstance(thrown)) {
                 throw new AssertionError("expected " + expectedType.getSimpleName() + " but was " + thrown.getClass().getSimpleName(), thrown);
             }
+        }
+    }
+
+    private static void expectTrue(boolean condition, String label) {
+        if (!condition) {
+            throw new AssertionError(label);
+        }
+    }
+
+    private static void expectFalse(boolean condition, String label) {
+        if (condition) {
+            throw new AssertionError(label);
         }
     }
 }

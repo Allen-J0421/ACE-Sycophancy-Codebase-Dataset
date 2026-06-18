@@ -23,6 +23,10 @@ public final class Graph {
         return adjacencyList.size();
     }
 
+    public boolean containsVertex(int vertex) {
+        return vertex >= 0 && vertex < adjacencyList.size();
+    }
+
     public void addUndirectedEdge(int u, int v) {
         validateVertex(u);
         validateVertex(v);
@@ -47,8 +51,8 @@ public final class Graph {
         return adjacencyList.get(vertex);
     }
 
-    void validateVertex(int vertex) {
-        if (vertex < 0 || vertex >= adjacencyList.size()) {
+    private void validateVertex(int vertex) {
+        if (!containsVertex(vertex)) {
             throw new IllegalArgumentException("vertex out of bounds: " + vertex);
         }
     }

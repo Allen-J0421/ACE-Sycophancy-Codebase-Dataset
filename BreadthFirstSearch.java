@@ -45,7 +45,9 @@ public final class BreadthFirstSearch {
 
     public static List<Integer> bfsFromSource(Graph graph, int source) {
         Objects.requireNonNull(graph, "graph");
-        graph.validateVertex(source);
+        if (!graph.containsVertex(source)) {
+            throw new IllegalArgumentException("vertex out of bounds: " + source);
+        }
 
         boolean[] visited = new boolean[graph.vertexCount()];
         List<Integer> result = new ArrayList<>(graph.vertexCount());

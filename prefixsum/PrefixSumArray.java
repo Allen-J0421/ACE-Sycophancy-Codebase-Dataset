@@ -17,20 +17,11 @@ public final class PrefixSumArray {
     }
 
     public static PrefixSumArray from(int[] values) {
-        int[] source = Objects.requireNonNull(values, "values must not be null");
-        if (source.length == 0) {
+        Objects.requireNonNull(values, "values must not be null");
+        if (values.length == 0) {
             return EMPTY;
         }
-
-        int[] prefixSums = new int[source.length];
-        int runningTotal = 0;
-
-        for (int i = 0; i < source.length; i++) {
-            runningTotal += source[i];
-            prefixSums[i] = runningTotal;
-        }
-
-        return new PrefixSumArray(prefixSums);
+        return new PrefixSumArray(PrefixSumCalculator.compute(values));
     }
 
     public static PrefixSumArray empty() {

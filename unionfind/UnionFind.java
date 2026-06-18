@@ -2,19 +2,21 @@ package unionfind;
 
 public class UnionFind {
     private final int[] parent;
-    private final int[] rank;
+    private final int[] size;
     private int componentCount;
 
-    public UnionFind(int size) {
-        parent = new int[size];
-        rank = new int[size];
-        componentCount = size;
-        for (int i = 0; i < size; i++) {
+    public UnionFind(int n) {
+        parent = new int[n];
+        size = new int[n];
+        componentCount = n;
+        for (int i = 0; i < n; i++) {
             parent[i] = i;
+            size[i] = 1;
         }
     }
 
     public int find(int i) {
+        validate(i);
         while (parent[i] != i) {
             parent[i] = parent[parent[i]]; // path halving
             i = parent[i];
@@ -27,13 +29,12 @@ public class UnionFind {
         int rj = find(j);
         if (ri == rj) return;
 
-        if (rank[ri] < rank[rj]) {
+        if (size[ri] < size[rj]) {
             parent[ri] = rj;
-        } else if (rank[ri] > rank[rj]) {
-            parent[rj] = ri;
+            size[rj] += size[ri];
         } else {
             parent[rj] = ri;
-            rank[ri]++;
+            size[ri] += size[rj];
         }
         componentCount--;
     }
@@ -44,5 +45,15 @@ public class UnionFind {
 
     public int getComponentCount() {
         return componentCount;
+    }
+
+    public int capacity() {
+        return parent.length;
+    }
+
+    private void validate(int i) {
+        if (i < 0 || i >= parent.length) {
+            throw new IllegalArgumentException("Index " + i + " out of bounds for capacity " + parent.length);
+        }
     }
 }

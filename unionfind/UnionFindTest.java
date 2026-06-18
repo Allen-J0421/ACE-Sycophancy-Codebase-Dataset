@@ -3,42 +3,64 @@ package unionfind;
 public class UnionFindTest {
     public static void main(String[] args) {
         TestSupport t = new TestSupport();
-
-        // Initial state: each element is its own component
-        UnionFind uf = new UnionFind(5);
-        t.assertEquals("initial component count", 5, uf.getComponentCount());
-        t.assertFalse("0 and 1 not connected initially", uf.connected(0, 1));
-
-        // Basic union
-        uf.union(0, 1);
-        t.assertTrue("0 and 1 connected after union", uf.connected(0, 1));
-        t.assertEquals("component count after one union", 4, uf.getComponentCount());
-
-        // Transitivity
-        uf.union(1, 2);
-        t.assertTrue("0 and 2 connected transitively", uf.connected(0, 2));
-        t.assertEquals("component count after two unions", 3, uf.getComponentCount());
-
-        // Redundant union doesn't change component count
-        uf.union(0, 2);
-        t.assertEquals("redundant union doesn't reduce count", 3, uf.getComponentCount());
-
-        // Separate component
-        t.assertFalse("3 not connected to 0", uf.connected(0, 3));
-
-        // Merge remaining components
-        uf.union(3, 4);
-        uf.union(2, 3);
-        t.assertTrue("all elements connected", uf.connected(0, 4));
-        t.assertEquals("final component count", 1, uf.getComponentCount());
-
-        // Self-connection
-        t.assertTrue("element connected to itself", uf.connected(0, 0));
-
-        // Out-of-bounds throws
-        t.assertThrows("find out-of-bounds throws", () -> uf.find(10));
-
+        testInitialState(t);
+        testUnionAndConnectivity(t);
+        testComponentCount(t);
+        testBoundaryConditions(t);
         t.printSummary();
         if (!t.allPassed()) System.exit(1);
+    }
+
+    private static void testInitialState(TestSupport t) {
+        UnionFind uf = new UnionFind(5);
+        t.assertEquals("initial component count", 5, uf.getComponentCount());
+        t.assertEquals("capacity", 5, uf.capacity());
+        t.assertFalse("distinct elements not connected initially", uf.connected(0, 1));
+        t.assertTrue("element is connected to itself", uf.connected(0, 0));
+    }
+
+    private static void testUnionAndConnectivity(TestSupport t) {
+        UnionFind uf = new UnionFind(5);
+        uf.union(0, 1);
+        t.assertTrue("connected after direct union", uf.connected(0, 1));
+
+        uf.union(1, 2);
+        t.assertTrue("connected transitively through chain", uf.connected(0, 2));
+
+        t.assertFalse("element in separate component not connected", uf.connected(0, 3));
+
+        uf.union(3, 4);
+        uf.union(2, 3);
+        t.assertTrue("all elements connected after full merge", uf.connected(0, 4));
+    }
+
+    private static void testComponentCount(TestSupport t) {
+        UnionFind uf = new UnionFind(5);
+        t.assertEquals("starts with n components", 5, uf.getComponentCount());
+
+        uf.union(0, 1);
+        t.assertEquals("one union reduces count by one", 4, uf.getComponentCount());
+
+        uf.union(1, 2);
+        t.assertEquals("second union reduces count again", 3, uf.getComponentCount());
+
+        uf.union(0, 2); // redundant — already in same component
+        t.assertEquals("redundant union leaves count unchanged", 3, uf.getComponentCount());
+
+        uf.union(3, 4);
+        uf.union(2, 3);
+        t.assertEquals("all merged into one component", 1, uf.getComponentCount());
+    }
+
+    private static void testBoundaryConditions(TestSupport t) {
+        UnionFind single = new UnionFind(1);
+        t.assertEquals("single-element structure has one component", 1, single.getComponentCount());
+        t.assertTrue("single element is connected to itself", single.connected(0, 0));
+
+        UnionFind uf = new UnionFind(5);
+        t.assertThrows("find with negative index throws", () -> uf.find(-1));
+        t.assertThrows("find with index equal to capacity throws", () -> uf.find(5));
+        t.assertThrows("connected with invalid second index throws", () -> uf.connected(0, 5));
+        t.assertThrows("union with invalid index throws", () -> uf.union(0, 5));
     }
 }

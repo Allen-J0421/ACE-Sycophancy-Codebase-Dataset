@@ -1,17 +1,18 @@
 import java.util.List;
+import java.util.stream.Collectors;
 
 class Main {
     public static void main(String[] args) {
-        Graph graph = new Graph(6);
-        graph.addEdge(1, 2);
-        graph.addEdge(2, 0);
-        graph.addEdge(0, 3);
-        graph.addEdge(4, 5);
+        Graph graph = new Graph.Builder(6)
+            .addEdge(1, 2)
+            .addEdge(2, 0)
+            .addEdge(0, 3)
+            .addEdge(4, 5)
+            .build();
 
         List<Integer> result = BreadthFirstSearch.traverse(graph);
-        for (int vertex : result) {
-            System.out.print(vertex + " ");
-        }
-        System.out.println();
+        System.out.println(result.stream()
+            .map(String::valueOf)
+            .collect(Collectors.joining(" ")));
     }
 }

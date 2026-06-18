@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 final class BreadthFirstSearch {
     private BreadthFirstSearch() {}
 
     static List<Integer> traverse(Graph graph) {
+        Objects.requireNonNull(graph, "graph must not be null");
         int n = graph.vertexCount();
         boolean[] visited = new boolean[n];
         List<Integer> result = new ArrayList<>();

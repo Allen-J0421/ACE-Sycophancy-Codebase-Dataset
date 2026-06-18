@@ -2,14 +2,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             Logger.setLevel(Logger.Level.INFO);
-            Logger.info("Starting Enterprise Graph Library - Level 8 Demo");
+            Logger.info("Starting Enterprise Graph Library - Level 9 Demo");
 
-            System.out.println("╔════════════════════════════════════════════════════════╗");
-            System.out.println("║   ENTERPRISE GRAPH LIBRARY - LEVEL 8 DEMO            ║");
-            System.out.println("║ (API Contracts + Rate Limiting + Tracing + Audit Log)║");
-            System.out.println("╚════════════════════════════════════════════════════════╝");
+            System.out.println("╔═══════════════════════════════════════════════════════════╗");
+            System.out.println("║   ENTERPRISE GRAPH LIBRARY - LEVEL 9 DEMO              ║");
+            System.out.println("║ (DI + Caching Strategies + Versioning + Validation)    ║");
+            System.out.println("╚═══════════════════════════════════════════════════════════╝");
 
-            demonstrateLevel8Features();
+            demonstrateLevel9Features();
 
             Graph graph = GraphBuilder.undirected(6)
                     .addEdge(1, 2)
@@ -126,6 +126,122 @@ public class Main {
             Logger.error("Graph error: " + e.getMessage());
             System.err.println("Graph error: " + e.getMessage());
         }
+    }
+
+    private static void demonstrateLevel9Features() {
+        System.out.println("\n--- Dependency Injection Container ---");
+        demonstrateDependencyInjection();
+
+        System.out.println("\n--- Caching Strategies ---");
+        demonstrateCachingStrategies();
+
+        System.out.println("\n--- API Versioning ---");
+        demonstrateAPIVersioning();
+
+        System.out.println("\n--- Request Validation ---");
+        demonstrateRequestValidation();
+
+        System.out.println("\n--- Caching Decorator ---");
+        demonstrateCachingDecorator();
+
+        System.out.println("\n--- Middleware Chain ---");
+        demonstrateMiddlewareChain();
+
+        System.out.println("\n--- Performance Optimization ---");
+        demonstratePerformanceOptimization();
+    }
+
+    private static void demonstrateDependencyInjection() {
+        ServiceContainer container = ServiceContainer.getInstance();
+
+        System.out.println("Registered services:");
+        System.out.println("  - ConfigurationManager: " + container.isRegistered("ConfigurationManager"));
+        System.out.println("  - MetricsCollector: " + container.isRegistered("MetricsCollector"));
+        System.out.println("  - AuditLog: " + container.isRegistered("AuditLog"));
+
+        ConfigurationManager config = container.resolve("ConfigurationManager");
+        System.out.println("Resolved ConfigurationManager: " + config.getClass().getSimpleName());
+    }
+
+    private static void demonstrateCachingStrategies() {
+        CacheStrategy<String, String> lruCache = new LRUCache<>(3);
+        lruCache.put("key1", "value1");
+        lruCache.put("key2", "value2");
+        lruCache.put("key3", "value3");
+
+        System.out.println("LRU Cache - Size: " + lruCache.getSize());
+        System.out.println("  key1: " + lruCache.get("key1"));
+        System.out.println("  key3: " + lruCache.get("key3"));
+
+        CacheStrategy<String, String> ttlCache = new TTLCache<>(1000);
+        ttlCache.put("temp", "expires in 1 second");
+        System.out.println("TTL Cache - Size: " + ttlCache.getSize());
+        System.out.println("  temp: " + ttlCache.get("temp"));
+    }
+
+    private static void demonstrateAPIVersioning() {
+        APIVersion v1_0 = APIVersion.V1_0;
+        APIVersion v1_1 = APIVersion.V1_1;
+        APIVersion v2_0 = APIVersion.V2_0;
+
+        System.out.println("Version: " + v1_0);
+        System.out.println("V1.0 compatible with V1.1? " + v1_0.isCompatible(v1_1));
+        System.out.println("V2.0 compatible with V1.1? " + v2_0.isCompatible(v1_1));
+        System.out.println("V2.0 >= V1.0? " + v2_0.isGreaterOrEqual(v1_0));
+    }
+
+    private static void demonstrateRequestValidation() {
+        RequestValidator validator = RequestValidator.createDefault();
+
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        GraphRequest validRequest = new GraphRequest("traverse", params, "client-001");
+        GraphRequest invalidRequest = new GraphRequest("", params, "");
+
+        RequestValidator.ValidationResult result1 = validator.validate(validRequest);
+        System.out.println("Valid request: " + result1);
+
+        RequestValidator.ValidationResult result2 = validator.validate(invalidRequest);
+        System.out.println("Invalid request: " + result2);
+    }
+
+    private static void demonstrateCachingDecorator() {
+        Graph graph = GraphBuilder.undirected(4).addEdge(0, 1).addEdge(1, 2).addEdge(2, 3).build();
+
+        GraphTraversal bfs = new BreadthFirstSearch();
+        CacheStrategy<String, TraversalResult> cache = new LRUCache<>(10);
+        CachingDecorator cached = new CachingDecorator(bfs, cache);
+
+        System.out.println("First call - computing...");
+        TraversalResult result1 = cached.traverse(graph);
+        System.out.println("Cache size: " + cached.getCacheSize());
+
+        System.out.println("Second call - from cache...");
+        TraversalResult result2 = cached.traverse(graph);
+        System.out.println("Cache size: " + cached.getCacheSize());
+    }
+
+    private static void demonstrateMiddlewareChain() {
+        MiddlewareChain chain = new MiddlewareChain()
+            .add(ctx -> System.out.println("  Middleware 1: Pre-processing"))
+            .add(ctx -> System.out.println("  Middleware 2: Validating"))
+            .add(ctx -> System.out.println("  Middleware 3: Authorizing"));
+
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        GraphRequest request = new GraphRequest("test", params, "client-001");
+
+        MiddlewareChain.MiddlewareContext ctx = chain.execute(request, req -> {
+            System.out.println("  Handler: Executing operation");
+            return "Operation result";
+        });
+
+        System.out.println("Execution complete. Abort: " + ctx.abort);
+    }
+
+    private static void demonstratePerformanceOptimization() {
+        Graph graph = GraphBuilder.undirected(10).addEdge(0, 1).addEdge(1, 2).addEdge(2, 3).build();
+        PerformanceOptimizer optimizer = new PerformanceOptimizer(graph);
+        PerformanceOptimizer.OptimizationReport report = optimizer.analyze();
+        report.print();
     }
 
     private static void demonstrateLevel8Features() {

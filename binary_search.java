@@ -1,3 +1,5 @@
+import java.util.OptionalInt;
+
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
 
@@ -5,21 +7,25 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] arr, int target) {
-        if (arr.length == 0) {
-            return NOT_FOUND;
-        }
-
-        return binarySearch(arr, target, 0, arr.length - 1);
+        return findIndex(arr, target).orElse(NOT_FOUND);
     }
 
-    private static int binarySearch(int[] arr, int target, int low, int high) {
+    private static OptionalInt findIndex(int[] arr, int target) {
+        if (arr.length == 0) {
+            return OptionalInt.empty();
+        }
+
+        return findIndex(arr, target, 0, arr.length - 1);
+    }
+
+    private static OptionalInt findIndex(int[] arr, int target, int low, int high) {
 
         while (low <= high) {
             int middleIndex = low + (high - low) / 2;
             int middleValue = arr[middleIndex];
 
             if (middleValue == target) {
-                return middleIndex;
+                return OptionalInt.of(middleIndex);
             }
 
             if (middleValue < target) {
@@ -29,7 +35,7 @@ final class BinarySearch {
             }
         }
 
-        return NOT_FOUND;
+        return OptionalInt.empty();
     }
 
     private static String formatSearchResult(int result) {

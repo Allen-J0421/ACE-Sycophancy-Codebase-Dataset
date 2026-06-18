@@ -10,7 +10,7 @@ final class TwoPointers {
         int rightIndex = sortedNumbers.length - 1;
 
         while (leftIndex < rightIndex) {
-            int currentSum = sortedNumbers[leftIndex] + sortedNumbers[rightIndex];
+            int currentSum = pairSum(sortedNumbers, leftIndex, rightIndex);
 
             if (currentSum == targetSum) {
                 return true;
@@ -24,6 +24,10 @@ final class TwoPointers {
         }
 
         return false;
+    }
+
+    private static int pairSum(int[] numbers, int leftIndex, int rightIndex) {
+        return numbers[leftIndex] + numbers[rightIndex];
     }
 
     public static void main(String[] args) {

@@ -2,10 +2,12 @@ import java.util.NoSuchElementException;
 
 public class MinHeapTest {
     public static void main(String[] args) {
+        testDefaultConstructorProvidesUsableHeap();
         testExampleFlow();
         testQueueStyleApi();
         testHeapGrowsBeyondInitialCapacity();
         testBulkConstructionHeapifiesInput();
+        testBulkConstructionDefensivelyCopiesInput();
         testRemoveAtRestoresHeapOrder();
         testChangeValueReordersBothDirections();
         testDirectionalUpdatesRejectInvalidValues();
@@ -14,6 +16,14 @@ public class MinHeapTest {
         testToArrayReturnsDefensiveCopy();
         testEmptyHeapBehavior();
         System.out.println("All MinHeap tests passed.");
+    }
+
+    private static void testDefaultConstructorProvidesUsableHeap() {
+        MinHeap heap = new MinHeap();
+        heap.offer(6);
+        heap.offer(2);
+
+        assertEquals("default constructor should create a working heap", 2, heap.peek());
     }
 
     private static void testExampleFlow() {
@@ -60,6 +70,14 @@ public class MinHeapTest {
         MinHeap heap = new MinHeap(new int[] {8, 3, 9, 1, 4});
         assertEquals("bulk constructor should heapify input", 1, heap.peek());
         assertRemovalOrder("bulk constructor should produce sorted removals", heap, 1, 3, 4, 8, 9);
+    }
+
+    private static void testBulkConstructionDefensivelyCopiesInput() {
+        int[] values = {8, 3, 9, 1, 4};
+        MinHeap heap = new MinHeap(values);
+        values[0] = -10;
+
+        assertEquals("constructor should copy input values", 1, heap.peek());
     }
 
     private static void testRemoveAtRestoresHeapOrder() {

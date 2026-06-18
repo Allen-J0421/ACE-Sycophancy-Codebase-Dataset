@@ -85,6 +85,24 @@ public class UnionFind implements DisjointSet {
             return this;
         }
 
+        public UnionFindBuilder withConfiguration(StrategyConfiguration config) {
+            this.unionStrategy = config.getUnionStrategy();
+            this.findStrategy = config.getFindStrategy();
+            return this;
+        }
+
+        public UnionFindBuilder withOptimal() {
+            return withConfiguration(StrategyConfiguration.Presets.optimal());
+        }
+
+        public UnionFindBuilder withMinimal() {
+            return withConfiguration(StrategyConfiguration.Presets.minimal());
+        }
+
+        public UnionFindBuilder withBalanced() {
+            return withConfiguration(StrategyConfiguration.Presets.balanced());
+        }
+
         public UnionFind build() {
             if (size <= 0) {
                 throw new IllegalArgumentException("Size must be set and positive");

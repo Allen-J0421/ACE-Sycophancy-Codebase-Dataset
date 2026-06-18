@@ -10,6 +10,7 @@ public class UnionFindTest {
         testBuilder();
         testStrategies();
         testFindStrategies();
+        testPresets();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -183,5 +184,44 @@ public class UnionFindTest {
         uf.union(1, 2);
         assert uf.isConnected(0, 2) : "Simple find should maintain connectivity";
         System.out.println("✓ testSimpleFindStrategy passed");
+    }
+
+    private static void testPresets() {
+        testOptimalPreset();
+        testMinimalPreset();
+        testBalancedPreset();
+    }
+
+    private static void testOptimalPreset() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withOptimal()
+            .build();
+        uf.union(1, 2);
+        uf.union(2, 3);
+        assert uf.isConnected(1, 3) : "Optimal preset should work";
+        System.out.println("✓ testOptimalPreset passed");
+    }
+
+    private static void testMinimalPreset() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withMinimal()
+            .build();
+        uf.union(1, 2);
+        uf.union(2, 3);
+        assert uf.isConnected(1, 3) : "Minimal preset should work";
+        System.out.println("✓ testMinimalPreset passed");
+    }
+
+    private static void testBalancedPreset() {
+        UnionFind uf = UnionFind.builder()
+            .withSize(5)
+            .withBalanced()
+            .build();
+        uf.union(1, 2);
+        uf.union(2, 3);
+        assert uf.isConnected(1, 3) : "Balanced preset should work";
+        System.out.println("✓ testBalancedPreset passed");
     }
 }

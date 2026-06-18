@@ -39,6 +39,6 @@ public final class BinarySearch {
     }
 
     public static void main(String[] args) {
-        BinarySearchDemo.main(args);
+        BinarySearchDemo.run();
     }
 }

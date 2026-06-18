@@ -13,9 +13,13 @@ final class BinarySearchDemo {
         return "Element is present at index " + index;
     }
 
-    public static void main(String[] args) {
+    static void run() {
         int result = BinarySearch.indexOf(SORTED_SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(describeSearchResult(result));
+    }
+
+    public static void main(String[] args) {
+        run();
     }
 }

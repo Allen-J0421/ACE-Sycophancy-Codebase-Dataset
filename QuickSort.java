@@ -16,38 +16,42 @@ public final class QuickSort {
 
     private static void quickSort(int[] values, int startIndex, int endIndex) {
         while (startIndex < endIndex) {
-            int pivotIndex = partition(values, startIndex, endIndex);
+            PartitionBounds partitionBounds = partition(values, startIndex, endIndex);
 
-            int leftPartitionSize = pivotIndex - startIndex;
-            int rightPartitionSize = endIndex - pivotIndex;
+            int leftPartitionSize = partitionBounds.leftPartitionSize(startIndex);
+            int rightPartitionSize = partitionBounds.rightPartitionSize(endIndex);
 
             // Recurse into the smaller partition first to limit stack growth.
             if (leftPartitionSize < rightPartitionSize) {
-                quickSort(values, startIndex, pivotIndex - 1);
-                startIndex = pivotIndex + 1;
+                quickSort(values, startIndex, partitionBounds.lessThanEndIndex);
+                startIndex = partitionBounds.greaterThanStartIndex;
             } else {
-                quickSort(values, pivotIndex + 1, endIndex);
-                endIndex = pivotIndex - 1;
+                quickSort(values, partitionBounds.greaterThanStartIndex, endIndex);
+                endIndex = partitionBounds.lessThanEndIndex;
             }
         }
     }
 
-    private static int partition(int[] values, int startIndex, int endIndex) {
-        int pivotIndex = choosePivotIndex(startIndex, endIndex);
-        int pivot = values[pivotIndex];
+    private static PartitionBounds partition(int[] values, int startIndex, int endIndex) {
+        int pivot = values[choosePivotIndex(startIndex, endIndex)];
         int nextLowerValueIndex = startIndex;
+        int currentIndex = startIndex;
+        int nextHigherValueIndex = endIndex;
 
-        swap(values, pivotIndex, endIndex);
-
-        for (int currentIndex = startIndex; currentIndex < endIndex; currentIndex++) {
+        while (currentIndex <= nextHigherValueIndex) {
             if (values[currentIndex] < pivot) {
                 swap(values, nextLowerValueIndex, currentIndex);
                 nextLowerValueIndex++;
+                currentIndex++;
+            } else if (values[currentIndex] > pivot) {
+                swap(values, currentIndex, nextHigherValueIndex);
+                nextHigherValueIndex--;
+            } else {
+                currentIndex++;
             }
         }
 
-        swap(values, nextLowerValueIndex, endIndex);
-        return nextLowerValueIndex;
+        return new PartitionBounds(nextLowerValueIndex - 1, nextHigherValueIndex + 1);
     }
 
     private static int choosePivotIndex(int startIndex, int endIndex) {
@@ -66,5 +70,23 @@ public final class QuickSort {
 
     public static void main(String[] args) {
         QuickSortDemo.main(args);
+    }
+
+    private static final class PartitionBounds {
+        private final int lessThanEndIndex;
+        private final int greaterThanStartIndex;
+
+        private PartitionBounds(int lessThanEndIndex, int greaterThanStartIndex) {
+            this.lessThanEndIndex = lessThanEndIndex;
+            this.greaterThanStartIndex = greaterThanStartIndex;
+        }
+
+        private int leftPartitionSize(int startIndex) {
+            return Math.max(0, lessThanEndIndex - startIndex + 1);
+        }
+
+        private int rightPartitionSize(int endIndex) {
+            return Math.max(0, endIndex - greaterThanStartIndex + 1);
+        }
     }
 }

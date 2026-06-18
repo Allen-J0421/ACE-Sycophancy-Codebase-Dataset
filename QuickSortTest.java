@@ -26,6 +26,14 @@ public final class QuickSortTest {
                     new int[] {3, 1, 3, 2, 1},
                     new int[] {1, 1, 2, 3, 3}),
             new SortScenario(
+                    "all equal values",
+                    new int[] {7, 7, 7, 7},
+                    new int[] {7, 7, 7, 7}),
+            new SortScenario(
+                    "many duplicate values",
+                    new int[] {4, 2, 4, 4, 1, 2, 4},
+                    new int[] {1, 2, 2, 4, 4, 4, 4}),
+            new SortScenario(
                     "negative values",
                     new int[] {0, -4, 8, -1},
                     new int[] {-4, -1, 0, 8}),
@@ -41,15 +49,16 @@ public final class QuickSortTest {
     }
 
     private static void assertSorted(SortScenario scenario) {
-        QuickSort.sort(scenario.values);
+        int[] values = scenario.inputValues.clone();
+        QuickSort.sort(values);
 
-        if (!Arrays.equals(scenario.values, scenario.expectedValues)) {
+        if (!Arrays.equals(values, scenario.expectedValues)) {
             throw new AssertionError(
                     scenario.name
                             + ": expected "
                             + Arrays.toString(scenario.expectedValues)
                             + " but got "
-                            + Arrays.toString(scenario.values));
+                            + Arrays.toString(values));
         }
     }
 
@@ -72,12 +81,12 @@ public final class QuickSortTest {
 
     private static final class SortScenario {
         private final String name;
-        private final int[] values;
+        private final int[] inputValues;
         private final int[] expectedValues;
 
-        private SortScenario(String name, int[] values, int[] expectedValues) {
+        private SortScenario(String name, int[] inputValues, int[] expectedValues) {
             this.name = name;
-            this.values = values;
+            this.inputValues = inputValues;
             this.expectedValues = expectedValues;
         }
     }

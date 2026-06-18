@@ -77,6 +77,13 @@ public final class QuickSortTest {
         } catch (NullPointerException expected) {
             // Expected by the public sorting contract.
         }
+
+        try {
+            IntArrayFormatter.format(null);
+            throw new AssertionError("null values should be rejected for formatting");
+        } catch (NullPointerException expected) {
+            // Expected by the public formatting contract.
+        }
     }
 
     private static void assertSortedCopyDoesNotMutateInput() {
@@ -93,7 +100,7 @@ public final class QuickSortTest {
     }
 
     private static void assertFormattedValues() {
-        String formattedValues = QuickSortDemo.formatValues(new int[] {1, 5, 7});
+        String formattedValues = IntArrayFormatter.format(new int[] {1, 5, 7});
 
         if (!"1 5 7 ".equals(formattedValues)) {
             throw new AssertionError("formatted values should preserve the legacy console output");

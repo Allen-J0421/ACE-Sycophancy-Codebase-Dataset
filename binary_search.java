@@ -14,24 +14,26 @@ final class BinarySearch {
     }
 
     private static SearchResult search(int[] arr, int target) {
-        SearchRange range = SearchRange.forArray(arr);
+        return search(arr, target, SearchRange.forArray(arr));
+    }
 
-        while (range.isValid()) {
-            int middleIndex = range.middleIndex();
-            int middleValue = arr[middleIndex];
-
-            if (middleValue == target) {
-                return SearchResult.foundAt(middleIndex);
-            }
-
-            if (middleValue < target) {
-                range = range.discardLowerHalf(middleIndex);
-            } else {
-                range = range.discardUpperHalf(middleIndex);
-            }
+    private static SearchResult search(int[] arr, int target, SearchRange range) {
+        if (!range.isValid()) {
+            return SearchResult.notFound();
         }
 
-        return SearchResult.notFound();
+        int middleIndex = range.middleIndex();
+        int middleValue = arr[middleIndex];
+
+        if (middleValue == target) {
+            return SearchResult.foundAt(middleIndex);
+        }
+
+        if (middleValue < target) {
+            return search(arr, target, range.discardLowerHalf(middleIndex));
+        }
+
+        return search(arr, target, range.discardUpperHalf(middleIndex));
     }
 
     private static int toLegacyIndex(SearchResult result) {

@@ -43,7 +43,7 @@ public final class Graph {
         return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
-    List<Integer> neighborsInternal(int vertex) {
+    List<Integer> adjacentVertices(int vertex) {
         return adjacencyList.get(vertex);
     }
 

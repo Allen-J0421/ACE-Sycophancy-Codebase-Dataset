@@ -27,13 +27,13 @@ public final class BreadthFirstSearchTest {
     }
 
     private static void testInvalidInputs() {
-        expectIllegalArgument(() -> Graph.create(-1));
+        expectThrows(IllegalArgumentException.class, () -> Graph.create(-1));
 
         Graph graph = Graph.create(2);
-        expectIllegalArgument(() -> graph.addUndirectedEdge(0, 2));
-        expectIllegalArgument(() -> graph.neighbors(2));
-        expectIllegalArgument(() -> BreadthFirstSearch.bfsFromSource(graph, -1));
-        expectNullPointer(() -> BreadthFirstSearch.bfs(null));
+        expectThrows(IllegalArgumentException.class, () -> graph.addUndirectedEdge(0, 2));
+        expectThrows(IllegalArgumentException.class, () -> graph.neighbors(2));
+        expectThrows(IllegalArgumentException.class, () -> BreadthFirstSearch.bfsFromSource(graph, -1));
+        expectThrows(NullPointerException.class, () -> BreadthFirstSearch.bfs(null));
     }
 
     private static void testDirectedEdges() {
@@ -55,7 +55,7 @@ public final class BreadthFirstSearchTest {
         if (!neighbors.equals(Arrays.asList(1))) {
             throw new AssertionError("neighbors expected [1] but was " + neighbors);
         }
-        expectUnsupportedOperation(() -> neighbors.add(2));
+        expectThrows(UnsupportedOperationException.class, () -> neighbors.add(2));
     }
 
     private static Graph sampleGraph() {
@@ -73,30 +73,14 @@ public final class BreadthFirstSearchTest {
         }
     }
 
-    private static void expectIllegalArgument(Runnable action) {
+    private static <T extends Throwable> void expectThrows(Class<T> expectedType, Runnable action) {
         try {
             action.run();
-            throw new AssertionError("expected IllegalArgumentException");
-        } catch (IllegalArgumentException expected) {
-            // Expected.
-        }
-    }
-
-    private static void expectNullPointer(Runnable action) {
-        try {
-            action.run();
-            throw new AssertionError("expected NullPointerException");
-        } catch (NullPointerException expected) {
-            // Expected.
-        }
-    }
-
-    private static void expectUnsupportedOperation(Runnable action) {
-        try {
-            action.run();
-            throw new AssertionError("expected UnsupportedOperationException");
-        } catch (UnsupportedOperationException expected) {
-            // Expected.
+            throw new AssertionError("expected " + expectedType.getSimpleName());
+        } catch (Throwable thrown) {
+            if (!expectedType.isInstance(thrown)) {
+                throw new AssertionError("expected " + expectedType.getSimpleName() + " but was " + thrown.getClass().getSimpleName(), thrown);
+            }
         }
     }
 }

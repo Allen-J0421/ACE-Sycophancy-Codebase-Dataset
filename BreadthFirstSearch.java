@@ -19,7 +19,7 @@ public final class BreadthFirstSearch {
             int current = queue.removeFirst();
             result.add(current);
 
-            for (int neighbor : graph.neighborsInternal(current)) {
+            for (int neighbor : graph.adjacentVertices(current)) {
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
                     queue.addLast(neighbor);
@@ -48,7 +48,7 @@ public final class BreadthFirstSearch {
         graph.validateVertex(source);
 
         boolean[] visited = new boolean[graph.vertexCount()];
-        List<Integer> result = new ArrayList<>();
+        List<Integer> result = new ArrayList<>(graph.vertexCount());
         bfsComponent(graph, source, visited, result);
         return result;
     }

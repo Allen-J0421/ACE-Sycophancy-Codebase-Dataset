@@ -8,6 +8,7 @@ public final class TwoPointersTechniqueTest {
 
     public static void main(String[] args) {
         shouldFindPairInUnsortedInput();
+        shouldFindPairInSortedInput();
         shouldRejectMissingPair();
         shouldHandleDuplicates();
         shouldNotMutateInput();
@@ -21,6 +22,13 @@ public final class TwoPointersTechniqueTest {
         assertTrue(
             TwoPointersTechnique.hasPairWithSum(new int[] {2, -3, 1, 0, -1}, -2),
             "expected to find -3 + 1"
+        );
+    }
+
+    private static void shouldFindPairInSortedInput() {
+        assertTrue(
+            TwoPointersTechnique.hasPairWithSumSorted(new int[] {-3, -1, 0, 1, 2}, -2),
+            "expected two-pointer helper to find -3 + 1"
         );
     }
 

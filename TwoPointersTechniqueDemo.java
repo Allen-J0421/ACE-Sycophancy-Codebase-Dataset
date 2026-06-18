@@ -5,9 +5,11 @@ public final class TwoPointersTechniqueDemo {
     }
 
     public static void main(String[] args) {
-        int[] values = {2, -3, 1, 0, -1};
+        int[] unsortedValues = {2, -3, 1, 0, -1};
+        int[] sortedValues = {-3, -1, 0, 1, 2};
         int target = -2;
 
-        System.out.println(TwoPointersTechnique.hasPairWithSum(values, target));
+        System.out.println(TwoPointersTechnique.hasPairWithSum(unsortedValues, target));
+        System.out.println(TwoPointersTechnique.hasPairWithSumSorted(sortedValues, target));
     }
 }

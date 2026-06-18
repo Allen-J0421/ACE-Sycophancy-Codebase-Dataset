@@ -1,15 +1,24 @@
 final class BinarySearchTree {
+    private static final int SEARCH_KEY = 7;
+    private static final int[] SAMPLE_VALUES = {6, 2, 8, 7, 9};
+
     private Node root;
 
     void insert(int value) {
         root = insert(root, value);
     }
 
-    boolean contains(int key) {
-        return search(root, key);
+    void insertAll(int... values) {
+        for (int value : values) {
+            insert(value);
+        }
     }
 
-    static boolean search(Node root, int key) {
+    boolean contains(int key) {
+        return contains(root, key);
+    }
+
+    private static boolean contains(Node root, int key) {
         Node current = root;
 
         while (current != null) {
@@ -39,30 +48,23 @@ final class BinarySearchTree {
 
     private static BinarySearchTree createSampleTree() {
         BinarySearchTree tree = new BinarySearchTree();
-
-        tree.insert(6);
-        tree.insert(2);
-        tree.insert(8);
-        tree.insert(7);
-        tree.insert(9);
-
+        tree.insertAll(SAMPLE_VALUES);
         return tree;
     }
 
     public static void main(String[] args) {
         BinarySearchTree tree = createSampleTree();
-        int key = 7;
 
-        System.out.println(tree.contains(key));
+        System.out.println(tree.contains(SEARCH_KEY));
     }
-}
 
-final class Node {
-    final int value;
-    Node left;
-    Node right;
+    private static final class Node {
+        private final int value;
+        private Node left;
+        private Node right;
 
-    Node(int value) {
-        this.value = value;
+        private Node(int value) {
+            this.value = value;
+        }
     }
 }

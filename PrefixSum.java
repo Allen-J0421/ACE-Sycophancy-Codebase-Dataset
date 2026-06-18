@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Computes prefix sum arrays efficiently.
@@ -11,22 +10,49 @@ public class PrefixSum {
 
     private final List<Long> cache;
     private final boolean cacheEnabled;
+    private final boolean clearCacheOnCompute;
 
     /**
-     * Creates a PrefixSum instance with optional caching.
+     * Creates a PrefixSum instance with configuration.
      *
      * @param cacheEnabled whether to cache computation results
+     * @param clearCacheOnCompute whether to clear cache before each computation
      */
-    public PrefixSum(boolean cacheEnabled) {
+    private PrefixSum(boolean cacheEnabled, boolean clearCacheOnCompute) {
         this.cacheEnabled = cacheEnabled;
+        this.clearCacheOnCompute = clearCacheOnCompute;
         this.cache = cacheEnabled ? new ArrayList<>() : null;
     }
 
     /**
-     * Creates a PrefixSum instance with caching disabled.
+     * Returns a builder for creating configured PrefixSum instances.
+     *
+     * @return a new Builder instance
      */
-    public PrefixSum() {
-        this(false);
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder class for fluent PrefixSum configuration.
+     */
+    public static class Builder {
+        private boolean cacheEnabled = false;
+        private boolean clearCacheOnCompute = false;
+
+        public Builder withCache() {
+            this.cacheEnabled = true;
+            return this;
+        }
+
+        public Builder withCacheClear() {
+            this.clearCacheOnCompute = true;
+            return this;
+        }
+
+        public PrefixSum build() {
+            return new PrefixSum(cacheEnabled, clearCacheOnCompute);
+        }
     }
 
     /**
@@ -40,6 +66,10 @@ public class PrefixSum {
         Objects.requireNonNull(arr, "Input array cannot be null");
         if (arr.length == 0) {
             throw new IllegalArgumentException("Input array cannot be empty");
+        }
+
+        if (cacheEnabled && clearCacheOnCompute) {
+            cache.clear();
         }
 
         List<Long> result = new ArrayList<>(arr.length);
@@ -73,6 +103,6 @@ public class PrefixSum {
      * @return a list where each element is the prefix sum up to that index
      */
     public static List<Long> computePrefixSum(int[] arr) {
-        return new PrefixSum().compute(arr);
+        return new PrefixSum(false, false).compute(arr);
     }
 }

@@ -29,7 +29,7 @@ public final class MatrixDimensions {
         int[] dimensions = new int[args.length];
 
         for (int index = 0; index < args.length; index++) {
-            dimensions[index] = Integer.parseInt(args[index]);
+            dimensions[index] = parseDimension(args[index], index);
         }
 
         return of(dimensions);
@@ -39,11 +39,30 @@ public final class MatrixDimensions {
         return size;
     }
 
+    public int matrixCount() {
+        return Math.max(0, size - 1);
+    }
+
+    public boolean isTrivialChain() {
+        return matrixCount() <= 1;
+    }
+
     public int valueAt(int index) {
         return values[index];
     }
 
     public int[] toArray() {
         return Arrays.copyOf(values, values.length);
+    }
+
+    private static int parseDimension(String value, int index) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(
+                "Invalid matrix dimension at argument " + index + ": " + value,
+                exception
+            );
+        }
     }
 }

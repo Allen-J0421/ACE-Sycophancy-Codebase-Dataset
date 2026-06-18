@@ -4,7 +4,7 @@ final class MatrixChainSolver {
     }
 
     static MatrixChainResult solve(MatrixDimensions dimensions) {
-        if (dimensions.size() < 2) {
+        if (dimensions.isTrivialChain()) {
             return MatrixChainResult.empty();
         }
 
@@ -16,12 +16,14 @@ final class MatrixChainSolver {
     private static final class SolverState {
         private final MatrixDimensions dimensions;
         private final int dimensionCount;
+        private final int matrixCount;
         private final int[][] minimumCosts;
         private final int[][] bestSplits;
 
         private SolverState(MatrixDimensions dimensions) {
             this.dimensions = dimensions;
             this.dimensionCount = dimensions.size();
+            this.matrixCount = dimensions.matrixCount();
             this.minimumCosts = new int[dimensionCount][dimensionCount];
             this.bestSplits = new int[dimensionCount][dimensionCount];
         }
@@ -40,7 +42,7 @@ final class MatrixChainSolver {
         private MatrixChainResult toResult() {
             return new MatrixChainResult(
                 minimumCosts[0][dimensionCount - 1],
-                buildParenthesization(0, dimensionCount - 1)
+                buildParenthesization()
             );
         }
 
@@ -72,17 +74,24 @@ final class MatrixChainSolver {
                 * dimensions.valueAt(end);
         }
 
-        private String buildParenthesization(int start, int end) {
+        private String buildParenthesization() {
+            StringBuilder parenthesization = new StringBuilder(matrixCount * 6);
+            appendParenthesization(parenthesization, 0, dimensionCount - 1);
+            return parenthesization.toString();
+        }
+
+        private void appendParenthesization(StringBuilder parenthesization, int start, int end) {
             if (end - start == 1) {
-                return "A" + (start + 1);
+                parenthesization.append('A').append(start + 1);
+                return;
             }
 
             int split = bestSplits[start][end];
-            return "("
-                + buildParenthesization(start, split)
-                + " x "
-                + buildParenthesization(split, end)
-                + ")";
+            parenthesization.append('(');
+            appendParenthesization(parenthesization, start, split);
+            parenthesization.append(" x ");
+            appendParenthesization(parenthesization, split, end);
+            parenthesization.append(')');
         }
     }
 

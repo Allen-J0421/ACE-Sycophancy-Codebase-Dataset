@@ -7,7 +7,15 @@ public final class MatrixChainMultiplication {
         return solve(dimensions).minimumCost();
     }
 
+    public static int matrixMultiplication(MatrixDimensions dimensions) {
+        return solve(dimensions).minimumCost();
+    }
+
     public static String optimalParenthesization(int[] dimensions) {
+        return solve(dimensions).optimalParenthesization();
+    }
+
+    public static String optimalParenthesization(MatrixDimensions dimensions) {
         return solve(dimensions).optimalParenthesization();
     }
 

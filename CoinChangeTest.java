@@ -22,6 +22,8 @@ public final class CoinChangeTest {
         assertThrows(() -> CoinChange.count(new int[] {1, 2}, -1));
         assertThrows(() -> CoinChangeArgs.parse(new String[] {}));
         assertThrows(() -> CoinChangeArgs.parse(new String[] {"-1"}));
+        assertThrows(() -> CoinChangeArgs.parse(new String[] {"5", "0"}));
+        assertThrows(() -> CoinChangeArgs.parse(new String[] {"5", "-2"}));
 
         System.out.println("All CoinChange tests passed.");
     }

@@ -20,28 +20,24 @@ public record CoinChangeArgs(int sum, int[] coins) {
         int sum = parseNonNegativeInt(args[0], "sum");
         int[] coins = new int[args.length - 1];
         for (int i = 1; i < args.length; i++) {
-            coins[i - 1] = parsePositiveInt(args[i], "coin");
+            coins[i - 1] = parseInt(args[i], "coin");
         }
 
         return new CoinChangeArgs(sum, CoinChangeDenominations.normalize(coins));
     }
 
-    private static int parseNonNegativeInt(String value, String label) {
+    private static int parseInt(String value, String label) {
         try {
-            int parsed = Integer.parseInt(value);
-            if (parsed < 0) {
-                throw new IllegalArgumentException(label + " must be non-negative");
-            }
-            return parsed;
+            return Integer.parseInt(value);
         } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("invalid " + label + ": " + value, ex);
         }
     }
 
-    private static int parsePositiveInt(String value, String label) {
-        int parsed = parseNonNegativeInt(value, label);
-        if (parsed == 0) {
-            throw new IllegalArgumentException(label + " values must be positive");
+    private static int parseNonNegativeInt(String value, String label) {
+        int parsed = parseInt(value, label);
+        if (parsed < 0) {
+            throw new IllegalArgumentException(label + " must be non-negative");
         }
         return parsed;
     }

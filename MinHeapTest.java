@@ -3,6 +3,7 @@ import java.util.NoSuchElementException;
 public class MinHeapTest {
     public static void main(String[] args) {
         testDefaultConstructorProvidesUsableHeap();
+        testInterfaceContractSupportsBulkInsert();
         testExampleFlow();
         testQueueStyleApi();
         testHeapGrowsBeyondInitialCapacity();
@@ -24,6 +25,15 @@ public class MinHeapTest {
         heap.offer(2);
 
         assertEquals("default constructor should create a working heap", 2, heap.peek());
+    }
+
+    private static void testInterfaceContractSupportsBulkInsert() {
+        IntHeap heap = new MinHeap();
+        heap.addAll(6, 2, 9, 1);
+
+        assertEquals("interface bulk insert should update size", 4, heap.size());
+        assertEquals("interface bulk insert should preserve minimum", 1, heap.peek());
+        assertEquals("interface removeMin should return the minimum", 1, heap.removeMin());
     }
 
     private static void testExampleFlow() {
@@ -56,7 +66,10 @@ public class MinHeapTest {
     private static void testHeapGrowsBeyondInitialCapacity() {
         MinHeap heap = new MinHeap(1);
         heap.offer(10);
-        assertTrue("single-slot heap should be full after one insert", heap.isFull());
+        assertTrue(
+            "legacy isFull should reflect when the current backing array is saturated",
+            heap.isFull()
+        );
 
         heap.offer(4);
         heap.offer(7);

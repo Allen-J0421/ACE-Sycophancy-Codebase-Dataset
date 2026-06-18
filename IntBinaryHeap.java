@@ -38,6 +38,17 @@ final class IntBinaryHeap {
         return true;
     }
 
+    void addAll(int... values) {
+        if (values == null) {
+            throw new IllegalArgumentException("values must not be null");
+        }
+
+        ensureCapacity(size + values.length);
+        for (int value : values) {
+            offer(value);
+        }
+    }
+
     int peek() {
         ensureNotEmpty();
         return elements[0];
@@ -109,7 +120,7 @@ final class IntBinaryHeap {
         return size == 0;
     }
 
-    boolean isFull() {
+    boolean isAtCapacity() {
         return size == elements.length;
     }
 

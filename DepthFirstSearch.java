@@ -1,36 +1,98 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
-public class DepthFirstSearch {
+public class DepthFirstSearch implements GraphTraversal {
 
-    private final Graph graph;
-    private boolean[] visited;
-    private List<Integer> result;
-
-    public DepthFirstSearch(Graph graph) {
-        this.graph = graph;
+    private enum TraversalMode {
+        RECURSIVE, ITERATIVE
     }
 
-    public List<Integer> traverse() {
-        visited = new boolean[graph.getVertexCount()];
-        result = new ArrayList<>();
+    private final TraversalMode mode;
+
+    public DepthFirstSearch() {
+        this(TraversalMode.RECURSIVE);
+    }
+
+    public DepthFirstSearch(boolean useIterative) {
+        this(useIterative ? TraversalMode.ITERATIVE : TraversalMode.RECURSIVE);
+    }
+
+    private DepthFirstSearch(TraversalMode mode) {
+        this.mode = mode;
+    }
+
+    public static DepthFirstSearch recursive() {
+        return new DepthFirstSearch(TraversalMode.RECURSIVE);
+    }
+
+    public static DepthFirstSearch iterative() {
+        return new DepthFirstSearch(TraversalMode.ITERATIVE);
+    }
+
+    @Override
+    public List<Integer> traverse(Graph graph) {
+        return mode == TraversalMode.RECURSIVE
+                ? traverseRecursive(graph)
+                : traverseIterative(graph);
+    }
+
+    private List<Integer> traverseRecursive(Graph graph) {
+        boolean[] visited = new boolean[graph.getVertexCount()];
+        List<Integer> result = new ArrayList<>();
 
         for (int i = 0; i < graph.getVertexCount(); i++) {
             if (!visited[i]) {
-                traverseRecursive(i);
+                dfsRecursive(graph, i, visited, result);
             }
         }
 
         return result;
     }
 
-    private void traverseRecursive(int vertex) {
+    private void dfsRecursive(Graph graph, int vertex, boolean[] visited, List<Integer> result) {
         visited[vertex] = true;
         result.add(vertex);
 
         for (int neighbor : graph.getNeighbors(vertex)) {
             if (!visited[neighbor]) {
-                traverseRecursive(neighbor);
+                dfsRecursive(graph, neighbor, visited, result);
+            }
+        }
+    }
+
+    private List<Integer> traverseIterative(Graph graph) {
+        boolean[] visited = new boolean[graph.getVertexCount()];
+        List<Integer> result = new ArrayList<>();
+        Deque<Integer> stack = new ArrayDeque<>();
+
+        for (int i = 0; i < graph.getVertexCount(); i++) {
+            if (!visited[i]) {
+                dfsIterative(graph, i, visited, result, stack);
+            }
+        }
+
+        return result;
+    }
+
+    private void dfsIterative(Graph graph, int start, boolean[] visited, List<Integer> result, Deque<Integer> stack) {
+        stack.push(start);
+
+        while (!stack.isEmpty()) {
+            int vertex = stack.pop();
+
+            if (!visited[vertex]) {
+                visited[vertex] = true;
+                result.add(vertex);
+
+                List<Integer> neighbors = new ArrayList<>(graph.getNeighbors(vertex));
+                for (int i = neighbors.size() - 1; i >= 0; i--) {
+                    int neighbor = neighbors.get(i);
+                    if (!visited[neighbor]) {
+                        stack.push(neighbor);
+                    }
+                }
             }
         }
     }

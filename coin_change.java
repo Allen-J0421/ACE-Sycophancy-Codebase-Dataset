@@ -10,6 +10,11 @@ final class CoinChange {
     }
 
     static int countWays(int[] coins, int targetAmount) {
+        int[] ways = buildWaysTable(coins, targetAmount);
+        return ways[targetAmount];
+    }
+
+    private static int[] buildWaysTable(int[] coins, int targetAmount) {
         int[] ways = new int[targetAmount + 1];
         ways[0] = 1;
 
@@ -19,7 +24,7 @@ final class CoinChange {
             }
         }
 
-        return ways[targetAmount];
+        return ways;
     }
 
     public static void main(String[] args) {

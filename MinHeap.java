@@ -82,7 +82,7 @@ public final class MinHeap {
         elements[index] = value;
     }
 
-    private void updateKeyAt(int index, int newVal) {
+    private void updateKeyInternal(int index, int newVal) {
         int oldVal = elements[index];
         if (newVal == oldVal) {
             return;
@@ -96,6 +96,18 @@ public final class MinHeap {
         }
     }
 
+    private void ensureCanDecrease(int index, int newVal) {
+        if (newVal > elements[index]) {
+            throw new IllegalArgumentException("New value must not be greater than the current value");
+        }
+    }
+
+    private void ensureCanIncrease(int index, int newVal) {
+        if (newVal < elements[index]) {
+            throw new IllegalArgumentException("New value must not be less than the current value");
+        }
+    }
+
     private void repairHeapAt(int index) {
         if (index > 0 && elements[index] < elements[parentIndex(index)]) {
             bubbleUp(index);
@@ -104,7 +116,7 @@ public final class MinHeap {
         }
     }
 
-    private void removeAtIndex(int index) {
+    private void removeAtInternal(int index) {
         validateIndex(index);
 
         int lastIndex = size - 1;
@@ -131,10 +143,8 @@ public final class MinHeap {
 
     public void decreaseKey(int key, int newVal) {
         validateIndex(key);
-        if (newVal > elements[key]) {
-            throw new IllegalArgumentException("New value must not be greater than the current value");
-        }
-        updateKeyAt(key, newVal);
+        ensureCanDecrease(key, newVal);
+        updateKeyInternal(key, newVal);
     }
 
     public int peek() {
@@ -150,16 +160,14 @@ public final class MinHeap {
         }
 
         int root = elements[0];
-        removeAtIndex(0);
+        removeAtInternal(0);
         return root;
     }
 
     public void increaseKey(int key, int newVal) {
         validateIndex(key);
-        if (newVal < elements[key]) {
-            throw new IllegalArgumentException("New value must not be less than the current value");
-        }
-        updateKeyAt(key, newVal);
+        ensureCanIncrease(key, newVal);
+        updateKeyInternal(key, newVal);
     }
 
     public int size() {
@@ -170,13 +178,13 @@ public final class MinHeap {
         return isEmptyHeap();
     }
 
-    public void setKey(int key, int newVal) {
+    public void updateKey(int key, int newVal) {
         validateIndex(key);
-        updateKeyAt(key, newVal);
+        updateKeyInternal(key, newVal);
     }
 
-    public void removeAt(int key) {
-        removeAtIndex(key);
+    public void removeAtIndex(int key) {
+        removeAtInternal(key);
     }
 
     public int capacity() {

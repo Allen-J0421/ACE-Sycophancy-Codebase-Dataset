@@ -1,22 +1,19 @@
 /**
- * In-place merge sort for arrays of {@code int}.
+ * Generic, stable merge sort over arrays of {@link Comparable} elements.
  *
- * <p>Merge sort is a stable, divide-and-conquer algorithm with guaranteed
- * {@code O(n log n)} time complexity and {@code O(n)} auxiliary space.
- * This implementation allocates a single scratch buffer for the whole sort
- * rather than allocating fresh temporaries on every merge.
+ * <p>This is the object-array counterpart of {@link MergeSort} (which is
+ * specialized for {@code int} to avoid boxing) and uses the same algorithm: a
+ * bottom-up, iterative merge sort with an insertion-sort cutoff for short runs.
+ * It uses no call stack, runs in {@code O(n log n)} time with {@code O(n)}
+ * auxiliary space, and is stable — equal elements keep their relative order.
  *
- * <p>The sort is <em>bottom-up</em> and iterative rather than recursive: it first
- * sorts short blocks with insertion sort, then repeatedly merges adjacent sorted
- * runs of doubling width until the whole array is one run. This uses no call stack,
- * so it cannot overflow on large inputs, while keeping the same time and space bounds.
+ * <p>Elements are compared with {@link Comparable#compareTo}; as with
+ * {@link java.util.Arrays#sort(Object[])}, {@code null} elements are not
+ * supported and cause a {@link NullPointerException}.
  *
- * <p>As a performance refinement, runs of at most {@link #INSERTION_SORT_CUTOFF}
- * elements are produced with insertion sort instead of being merged from singletons.
- * For small runs insertion sort's low constant factors beat the merge overhead.
- * Insertion sort is itself stable, so overall stability is preserved.
+ * @param <T> the element type, which must be comparable to itself
  */
-final class MergeSort {
+public final class MergeSorter<T extends Comparable<T>> implements Sorter<T> {
 
     /**
      * Initial run length: the array is first split into blocks of this many
@@ -25,22 +22,16 @@ final class MergeSort {
      */
     static final int INSERTION_SORT_CUTOFF = 7;
 
-    private MergeSort() {
-        // Utility class; not meant to be instantiated.
-    }
-
-    /**
-     * Sorts the given array into ascending order.
-     *
-     * @param array the array to sort; modified in place. A {@code null} or
-     *              single-element array is already sorted and left untouched.
-     */
-    public static void sort(int[] array) {
+    @Override
+    public void sort(T[] array) {
         if (array == null || array.length < 2) {
             return;
         }
         int n = array.length;
-        int[] buffer = new int[n];
+        // Generic arrays cannot be created directly; a Comparable[] backing store cast
+        // to T[] is the standard idiom (cf. java.util.ArrayList's Object[] backing).
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        T[] buffer = (T[]) new Comparable[n];
 
         // Phase 1: turn the array into a sequence of sorted runs of length CUTOFF
         // (the final run may be shorter) using insertion sort.
@@ -65,11 +56,11 @@ final class MergeSort {
      * insertion sort. Stable: each element stops shifting at the first element
      * that is not strictly greater, so equal elements keep their relative order.
      */
-    private static void insertionSort(int[] array, int low, int high) {
+    private void insertionSort(T[] array, int low, int high) {
         for (int i = low + 1; i <= high; i++) {
-            int key = array[i];
+            T key = array[i];
             int j = i - 1;
-            while (j >= low && array[j] > key) {
+            while (j >= low && array[j].compareTo(key) > 0) {
                 array[j + 1] = array[j];
                 j--;
             }
@@ -82,7 +73,7 @@ final class MergeSort {
      * {@code array[mid+1..high]} into a single sorted run, using {@code buffer}
      * as scratch space. The merge is stable: equal elements keep their order.
      */
-    private static void merge(int[] array, int[] buffer, int low, int mid, int high) {
+    private void merge(T[] array, T[] buffer, int low, int mid, int high) {
         System.arraycopy(array, low, buffer, low, high - low + 1);
 
         int left = low;        // next index in the lower run, buffer[low..mid]
@@ -93,32 +84,11 @@ final class MergeSort {
                 array[dest] = buffer[right++];
             } else if (right > high) {
                 array[dest] = buffer[left++];
-            } else if (buffer[left] <= buffer[right]) {
+            } else if (buffer[left].compareTo(buffer[right]) <= 0) {
                 array[dest] = buffer[left++];
             } else {
                 array[dest] = buffer[right++];
             }
         }
-    }
-
-    public static void main(String[] args) {
-        int[] array = {38, 27, 43, 10};
-
-        sort(array);
-
-        StringBuilder sb = new StringBuilder();
-        for (int value : array) {
-            if (sb.length() > 0) {
-                sb.append(' ');
-            }
-            sb.append(value);
-        }
-        System.out.println(sb);
-
-        // Demonstrate the generic Sorter API on a non-primitive type.
-        String[] words = {"pear", "apple", "fig", "banana"};
-        Sorter<String> sorter = new MergeSorter<>();
-        sorter.sort(words);
-        System.out.println(String.join(" ", words));
     }
 }

@@ -20,6 +20,7 @@ final class MergeSortTest {
         sortsEdgeCases();
         sortsAroundInsertionCutoff();
         matchesReferenceOnRandomInput();
+        genericSorterMatchesReference();
 
         if (failures == 0) {
             System.out.println("OK: all MergeSort tests passed");
@@ -95,6 +96,55 @@ final class MergeSortTest {
         fail("sort(" + Arrays.toString(input) + ") = " + Arrays.toString(actual)
                 + ", expected " + Arrays.toString(expected));
         return false;
+    }
+
+    /**
+     * Verifies the generic {@link MergeSorter} against {@link Arrays#sort}: null/empty
+     * inputs are no-ops, and randomized {@code Integer[]} and {@code String[]} arrays
+     * sort identically to the reference.
+     */
+    private static void genericSorterMatchesReference() {
+        Sorter<Integer> intSorter = new MergeSorter<>();
+        try {
+            intSorter.sort(null);
+            intSorter.sort(new Integer[] {});
+            intSorter.sort(new Integer[] {7});
+            pass("generic sorter: null/empty/single are no-ops");
+        } catch (RuntimeException e) {
+            fail("generic sorter threw on trivial input: " + e);
+            return;
+        }
+
+        Random rnd = new Random(2024);
+        for (int trial = 0; trial < 1000; trial++) {
+            Integer[] input = new Integer[rnd.nextInt(40)];
+            for (int i = 0; i < input.length; i++) {
+                input[i] = rnd.nextInt(15) - 7; // duplicates + negatives
+            }
+            Integer[] expected = input.clone();
+            Arrays.sort(expected);
+            Integer[] actual = input.clone();
+            intSorter.sort(actual);
+            if (!Arrays.equals(actual, expected)) {
+                fail("generic Integer sort: " + Arrays.toString(input)
+                        + " -> " + Arrays.toString(actual)
+                        + ", expected " + Arrays.toString(expected));
+                return;
+            }
+        }
+        pass("generic sorter: 1000 randomized Integer[] match Arrays.sort");
+
+        String[] words = {"pear", "apple", "fig", "banana", "apple", "kiwi", "date", "fig"};
+        String[] expected = words.clone();
+        Arrays.sort(expected);
+        String[] actual = words.clone();
+        new MergeSorter<String>().sort(actual);
+        if (Arrays.equals(actual, expected)) {
+            pass("generic sorter: String[] matches Arrays.sort");
+        } else {
+            fail("generic String sort: " + Arrays.toString(actual)
+                    + ", expected " + Arrays.toString(expected));
+        }
     }
 
     private static void pass(String name) {

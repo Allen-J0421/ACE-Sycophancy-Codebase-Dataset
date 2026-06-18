@@ -11,11 +11,8 @@ final class MatrixChainSolver {
         for (MatrixDimensions m : matrices) {
             if (m == null) throw new IllegalArgumentException("Matrix chain must not contain null elements");
         }
-        if (n == 1) return new MatrixChainResult(0, "A1");
 
-        validateChain(matrices);
-
-        int[] dims = buildDimsArray(matrices);
+        int[] dims = buildValidatedDimsArray(matrices);
         long[][] dp = new long[n + 1][n + 1];
         int[][] split = new int[n + 1][n + 1];
 
@@ -36,22 +33,17 @@ final class MatrixChainSolver {
         return new MatrixChainResult(dp[1][n], buildParenthesization(split, 1, n));
     }
 
-    private static void validateChain(MatrixDimensions[] matrices) {
-        for (int i = 0; i < matrices.length - 1; i++) {
-            if (!matrices[i].isCompatibleWith(matrices[i + 1])) {
-                throw new IllegalArgumentException(
-                        "Matrix " + (i + 1) + " (" + matrices[i] + ") is incompatible with matrix "
-                        + (i + 2) + " (" + matrices[i + 1] + "): inner dimensions must match");
-            }
-        }
-    }
-
-    private static int[] buildDimsArray(MatrixDimensions[] matrices) {
+    private static int[] buildValidatedDimsArray(MatrixDimensions[] matrices) {
         int n = matrices.length;
         int[] dims = new int[n + 1];
         dims[0] = matrices[0].rows;
         for (int i = 0; i < n; i++) {
             dims[i + 1] = matrices[i].cols;
+            if (i < n - 1 && !matrices[i].isCompatibleWith(matrices[i + 1])) {
+                throw new IllegalArgumentException(
+                        "Matrix " + (i + 1) + " (" + matrices[i] + ") is incompatible with matrix "
+                        + (i + 2) + " (" + matrices[i + 1] + "): inner dimensions must match");
+            }
         }
         return dims;
     }

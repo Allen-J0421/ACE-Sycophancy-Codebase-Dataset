@@ -19,20 +19,14 @@ public class MatrixChainSolverTest {
         }
     }
 
-    static void assertEquals(long expected, long actual) {
-        if (expected != actual) throw new AssertionError("Expected " + expected + " but got " + actual);
-    }
-
-    static void assertEquals(String expected, String actual) {
-        if (!expected.equals(actual)) {
-            throw new AssertionError("Expected '" + expected + "' but got '" + actual + "'");
-        }
-    }
-
     static void assertEquals(Object expected, Object actual) {
         if (!expected.equals(actual)) {
-            throw new AssertionError("Expected " + expected + " but got " + actual);
+            throw new AssertionError("Expected:\n  " + expected + "\nbut got:\n  " + actual);
         }
+    }
+
+    static void assertEquals(long expected, long actual) {
+        if (expected != actual) throw new AssertionError("Expected " + expected + " but got " + actual);
     }
 
     static void assertTrue(boolean condition, String message) {
@@ -62,45 +56,51 @@ public class MatrixChainSolverTest {
                 "Mismatched inner dimension should not be compatible");
     }
 
+    // --- MatrixChainResult ---
+
+    static void testResultEquality() {
+        MatrixChainResult a = new MatrixChainResult(42, "(A1 x A2)");
+        MatrixChainResult b = new MatrixChainResult(42, "(A1 x A2)");
+        MatrixChainResult c = new MatrixChainResult(99, "(A1 x A2)");
+        assertEquals(a, b);
+        assertTrue(!a.equals(c), "Results with different costs should not be equal");
+        assertTrue(a.hashCode() == b.hashCode(), "Equal results should have equal hash codes");
+    }
+
     // --- MatrixChainSolver ---
 
     static void testSingleMatrix() {
-        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
-            new MatrixDimensions(5, 10)
-        });
-        assertEquals(0, result.minCost);
-        assertEquals("A1", result.parenthesization);
+        assertEquals(new MatrixChainResult(0, "A1"),
+                MatrixChainSolver.solve(new MatrixDimensions[]{new MatrixDimensions(5, 10)}));
     }
 
     static void testTwoMatrices() {
-        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
-            new MatrixDimensions(10, 30),
-            new MatrixDimensions(30, 5)
-        });
-        assertEquals(1500, result.minCost);
-        assertEquals("(A1 x A2)", result.parenthesization);
+        assertEquals(new MatrixChainResult(1500, "(A1 x A2)"),
+                MatrixChainSolver.solve(new MatrixDimensions[]{
+                    new MatrixDimensions(10, 30),
+                    new MatrixDimensions(30, 5)
+                }));
     }
 
     static void testThreeMatrices() {
         // 2x1, 1x3, 3x4: optimal is A1x(A2xA3) = cost 12+8 = 20
-        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
-            new MatrixDimensions(2, 1),
-            new MatrixDimensions(1, 3),
-            new MatrixDimensions(3, 4)
-        });
-        assertEquals(20, result.minCost);
-        assertEquals("(A1 x (A2 x A3))", result.parenthesization);
+        assertEquals(new MatrixChainResult(20, "(A1 x (A2 x A3))"),
+                MatrixChainSolver.solve(new MatrixDimensions[]{
+                    new MatrixDimensions(2, 1),
+                    new MatrixDimensions(1, 3),
+                    new MatrixDimensions(3, 4)
+                }));
     }
 
     static void testFourMatrices() {
         // Classic example: arr={40,20,30,10,30}, answer=26000
-        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
-            new MatrixDimensions(40, 20),
-            new MatrixDimensions(20, 30),
-            new MatrixDimensions(30, 10),
-            new MatrixDimensions(10, 30)
-        });
-        assertEquals(26000, result.minCost);
+        assertEquals(new MatrixChainResult(26000, "((A1 x (A2 x A3)) x A4)"),
+                MatrixChainSolver.solve(new MatrixDimensions[]{
+                    new MatrixDimensions(40, 20),
+                    new MatrixDimensions(20, 30),
+                    new MatrixDimensions(30, 10),
+                    new MatrixDimensions(10, 30)
+                }));
     }
 
     static void testNullArray() {
@@ -148,6 +148,7 @@ public class MatrixChainSolverTest {
         testDimensionsValidation();
         testDimensionsEquality();
         testDimensionsCompatibility();
+        testResultEquality();
         testSingleMatrix();
         testTwoMatrices();
         testThreeMatrices();

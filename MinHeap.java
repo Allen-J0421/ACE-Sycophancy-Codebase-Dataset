@@ -17,6 +17,14 @@ public final class MinHeap implements LegacyMinHeapApi {
         return new MinHeap(values);
     }
 
+    public static MinHeap copyOf(IntHeap other) {
+        if (other == null) {
+            throw new IllegalArgumentException("other heap must not be null");
+        }
+
+        return new MinHeap(other.toArray());
+    }
+
     private MinHeap(IntBinaryHeap heap) {
         this.heap = heap;
     }

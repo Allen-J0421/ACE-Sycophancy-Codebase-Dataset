@@ -11,11 +11,7 @@ public interface LegacyMinHeapApi extends IntHeap {
 
     @Deprecated(forRemoval = false)
     default int extractMin() {
-        if (isEmpty()) {
-            return Integer.MAX_VALUE;
-        }
-
-        return removeMin();
+        return pollMin().orElse(Integer.MAX_VALUE);
     }
 
     @Deprecated(forRemoval = false)

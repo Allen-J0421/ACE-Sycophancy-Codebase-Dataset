@@ -1,10 +1,13 @@
 import java.util.NoSuchElementException;
+import java.util.OptionalInt;
 
 public class MinHeapTest {
     public static void main(String[] args) {
         testDefaultConstructorProvidesUsableHeap();
         testFactoryBuildsHeapFromValues();
+        testCopyFactoryDuplicatesHeapContents();
         testInterfaceContractSupportsBulkInsert();
+        testPollMinReturnsOptionalValues();
         testExampleFlow();
         testQueueStyleApi();
         testHeapGrowsBeyondInitialCapacity();
@@ -30,7 +33,24 @@ public class MinHeapTest {
 
     private static void testFactoryBuildsHeapFromValues() {
         MinHeap heap = MinHeap.from(6, 2, 9, 1);
-        assertRemovalOrder("factory should build a valid heap", heap, 1, 2, 6, 9);
+        assertArrayEquals(
+            "factory should build a valid heap",
+            new int[] {1, 2, 6, 9},
+            heap.drainToArray()
+        );
+    }
+
+    private static void testCopyFactoryDuplicatesHeapContents() {
+        MinHeap original = MinHeap.from(7, 3, 9, 1);
+        MinHeap copy = MinHeap.copyOf(original);
+
+        assertEquals("copy factory should preserve original size", 4, copy.size());
+        assertEquals("copy factory should not mutate the source heap", 1, original.peek());
+        assertArrayEquals(
+            "copy factory should preserve heap ordering",
+            new int[] {1, 3, 7, 9},
+            copy.drainToArray()
+        );
     }
 
     private static void testInterfaceContractSupportsBulkInsert() {
@@ -40,6 +60,13 @@ public class MinHeapTest {
         assertEquals("interface bulk insert should update size", 4, heap.size());
         assertEquals("interface bulk insert should preserve minimum", 1, heap.peek());
         assertEquals("interface removeMin should return the minimum", 1, heap.removeMin());
+    }
+
+    private static void testPollMinReturnsOptionalValues() {
+        IntHeap heap = MinHeap.from(4, 1);
+        assertEquals("pollMin should return the minimum when present", 1, heap.pollMin().orElseThrow());
+        assertEquals("pollMin should return the next minimum", 4, heap.pollMin().orElseThrow());
+        assertOptionalEmpty("pollMin should return empty when the heap is drained", heap.pollMin());
     }
 
     @SuppressWarnings("deprecation")
@@ -84,13 +111,21 @@ public class MinHeapTest {
 
         assertEquals("size should include all inserted values", 3, heap.size());
         assertTrue("capacity should grow to fit additional values", heap.capacity() >= 3);
-        assertRemovalOrder("growth should preserve heap ordering", heap, 4, 7, 10);
+        assertArrayEquals(
+            "growth should preserve heap ordering",
+            new int[] {4, 7, 10},
+            heap.drainToArray()
+        );
     }
 
     private static void testBulkConstructionHeapifiesInput() {
         MinHeap heap = new MinHeap(new int[] {8, 3, 9, 1, 4});
         assertEquals("bulk constructor should heapify input", 1, heap.peek());
-        assertRemovalOrder("bulk constructor should produce sorted removals", heap, 1, 3, 4, 8, 9);
+        assertArrayEquals(
+            "bulk constructor should produce sorted removals",
+            new int[] {1, 3, 4, 8, 9},
+            heap.drainToArray()
+        );
     }
 
     private static void testBulkConstructionDefensivelyCopiesInput() {
@@ -111,7 +146,11 @@ public class MinHeapTest {
 
         assertEquals("removeAt should return the removed value", 4, heap.removeAt(1));
         assertEquals("removal should preserve the heap minimum", 1, heap.peek());
-        assertRemovalOrder("heap order should remain valid after removeAt", heap, 1, 2, 7, 9);
+        assertArrayEquals(
+            "heap order should remain valid after removeAt",
+            new int[] {1, 2, 7, 9},
+            heap.drainToArray()
+        );
     }
 
     @SuppressWarnings("deprecation")
@@ -207,11 +246,27 @@ public class MinHeapTest {
         );
     }
 
-    private static void assertRemovalOrder(String message, IntHeap heap, int... expectedValues) {
-        for (int expectedValue : expectedValues) {
-            assertEquals(message, expectedValue, heap.removeMin());
+    private static void assertArrayEquals(String message, int[] expected, int[] actual) {
+        if (expected.length != actual.length) {
+            throw new AssertionError(
+                message + ": expected length " + expected.length + ", got " + actual.length
+            );
         }
-        assertTrue(message + ": heap should be empty after draining", heap.isEmpty());
+
+        for (int index = 0; index < expected.length; index++) {
+            if (expected[index] != actual[index]) {
+                throw new AssertionError(
+                    message + ": mismatch at index " + index + ", expected "
+                        + expected[index] + ", got " + actual[index]
+                );
+            }
+        }
+    }
+
+    private static void assertOptionalEmpty(String message, OptionalInt actual) {
+        if (actual.isPresent()) {
+            throw new AssertionError(message + ": expected empty optional, got " + actual.getAsInt());
+        }
     }
 
     private static void assertEquals(String message, int expected, int actual) {

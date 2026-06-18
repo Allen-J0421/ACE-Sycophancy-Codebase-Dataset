@@ -1,9 +1,14 @@
 package prefixsum;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.NoSuchElementException;
+import java.util.StringJoiner;
 
-public final class PrefixSumArray {
+public final class PrefixSumArray implements Iterable<Integer> {
+
+    private static final PrefixSumArray EMPTY = new PrefixSumArray(new int[0]);
 
     private final int[] values;
 
@@ -13,6 +18,10 @@ public final class PrefixSumArray {
 
     public static PrefixSumArray from(int[] values) {
         int[] source = Objects.requireNonNull(values, "values must not be null");
+        if (source.length == 0) {
+            return EMPTY;
+        }
+
         int[] prefixSums = new int[source.length];
         int runningTotal = 0;
 
@@ -24,8 +33,12 @@ public final class PrefixSumArray {
         return new PrefixSumArray(prefixSums);
     }
 
-    public int length() {
+    public int size() {
         return values.length;
+    }
+
+    public boolean isEmpty() {
+        return values.length == 0;
     }
 
     public int get(int index) {
@@ -47,16 +60,33 @@ public final class PrefixSumArray {
     }
 
     public String join(char separator) {
-        StringBuilder output = new StringBuilder(values.length * 2);
+        StringJoiner output = new StringJoiner(Character.toString(separator));
 
-        for (int i = 0; i < values.length; i++) {
-            if (i > 0) {
-                output.append(separator);
-            }
-            output.append(values[i]);
+        for (int value : values) {
+            output.add(Integer.toString(value));
         }
 
         return output.toString();
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return new Iterator<>() {
+            private int index;
+
+            @Override
+            public boolean hasNext() {
+                return index < values.length;
+            }
+
+            @Override
+            public Integer next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return values[index++];
+            }
+        };
     }
 
     @Override

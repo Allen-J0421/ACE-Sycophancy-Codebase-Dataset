@@ -103,7 +103,7 @@ public class LinearProbingHashMap {
     public void printEntries(PrintStream output) {
         for (int i = 0; i < table.length; i++) {
             if (isOccupied(i)) {
-                output.println(table[i].key + " " + table[i].value);
+                output.println(table[i]);
             }
         }
     }
@@ -116,7 +116,7 @@ public class LinearProbingHashMap {
             if (table[index] == null) {
                 return NOT_FOUND;
             }
-            if (isOccupied(index) && table[index].key == key) {
+            if (hasKeyAt(index, key)) {
                 return index;
             }
         }
@@ -135,7 +135,7 @@ public class LinearProbingHashMap {
             }
             if (isDeleted(index) && firstDeletedIndex == NOT_FOUND) {
                 firstDeletedIndex = index;
-            } else if (isOccupied(index) && table[index].key == key) {
+            } else if (hasKeyAt(index, key)) {
                 return index;
             }
         }
@@ -158,6 +158,10 @@ public class LinearProbingHashMap {
         return table[index] == DELETED_ENTRY;
     }
 
+    private boolean hasKeyAt(int index, int key) {
+        return isOccupied(index) && table[index].hasKey(key);
+    }
+
     private int indexFor(int key) {
         return Math.floorMod(key, table.length);
     }
@@ -173,6 +177,15 @@ public class LinearProbingHashMap {
         Entry(int key, int value) {
             this.key = key;
             this.value = value;
+        }
+
+        boolean hasKey(int candidateKey) {
+            return key == candidateKey;
+        }
+
+        @Override
+        public String toString() {
+            return key + " " + value;
         }
     }
 }

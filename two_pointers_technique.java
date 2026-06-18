@@ -20,7 +20,8 @@ class TwoPointers {
         int right = sortedArr.length - 1;
 
         while (left < right) {
-            int sum = sortedArr[left] + sortedArr[right];
+            // widen to long so values near Integer.MAX/MIN_VALUE can't overflow
+            long sum = (long) sortedArr[left] + sortedArr[right];
 
             if (sum == target) {
                 return true;

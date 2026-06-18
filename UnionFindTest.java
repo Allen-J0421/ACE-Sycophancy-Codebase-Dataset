@@ -48,6 +48,7 @@ public final class UnionFindTest {
 
     private static void testInvalidElementsAreRejected() {
         UnionFind unionFind = new UnionFind(1);
+        UnionFind emptyUnionFind = new UnionFind(0);
 
         assertThrows(
                 IndexOutOfBoundsException.class,
@@ -58,6 +59,16 @@ public final class UnionFindTest {
                 IndexOutOfBoundsException.class,
                 () -> unionFind.find(1),
                 "element beyond size should be rejected"
+        );
+        assertThrows(
+                IndexOutOfBoundsException.class,
+                () -> emptyUnionFind.find(0),
+                "empty union-find should reject every element"
+        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new UnionFind(-1),
+                "negative size should be rejected"
         );
     }
 

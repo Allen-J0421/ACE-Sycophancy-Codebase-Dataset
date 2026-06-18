@@ -6,15 +6,22 @@ public final class UnionFind {
     private int components;
 
     public UnionFind(int size) {
-        if (size < 0) {
-            throw new IllegalArgumentException("size must be non-negative");
-        }
-
+        validateSize(size);
         parent = new int[size];
         rank = new int[size];
         components = size;
 
-        for (int i = 0; i < size; i++) {
+        initializeParents();
+    }
+
+    private static void validateSize(int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("size must be non-negative");
+        }
+    }
+
+    private void initializeParents() {
+        for (int i = 0; i < parent.length; i++) {
             parent[i] = i;
         }
     }
@@ -38,10 +45,7 @@ public final class UnionFind {
     }
 
     public boolean connected(int first, int second) {
-        int firstRoot = find(first);
-        int secondRoot = find(second);
-
-        return firstRoot == secondRoot;
+        return find(first) == find(second);
     }
 
     public int size() {

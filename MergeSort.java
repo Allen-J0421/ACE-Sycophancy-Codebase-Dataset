@@ -1,22 +1,28 @@
 import java.util.Comparator;
 
 public class MergeSort<T extends Comparable<T>> implements Sorter<T> {
-    private static final int INSERTION_SORT_THRESHOLD = 10;
-
-    private final Comparator<T> defaultComparator;
+    private final SortConfiguration<T> config;
     private SortStatistics statistics;
 
     public MergeSort() {
-        this.defaultComparator = Comparable::compareTo;
+        this(SortConfiguration.<T>builder()
+                .withComparator(Comparable::compareTo)
+                .build());
     }
 
     public MergeSort(Comparator<T> comparator) {
-        this.defaultComparator = comparator;
+        this(SortConfiguration.<T>builder()
+                .withComparator(comparator)
+                .build());
+    }
+
+    public MergeSort(SortConfiguration<T> config) {
+        this.config = config;
     }
 
     @Override
     public void sort(T[] array) {
-        sort(array, this.defaultComparator);
+        sort(array, config.getComparator());
     }
 
     @Override
@@ -24,9 +30,28 @@ public class MergeSort<T extends Comparable<T>> implements Sorter<T> {
         if (array == null || array.length == 0) {
             return;
         }
-        statistics = new SortStatistics();
+
+        if (config.isValidateInput()) {
+            SortValidator.validateBeforeSort(array);
+        }
+
+        config.getLogger().log("Starting sort of " + array.length + " elements");
+
+        if (config.isTrackStatistics()) {
+            statistics = new SortStatistics();
+        }
+
         mergeSort(array, 0, array.length - 1, comparator);
-        statistics.end();
+
+        if (config.isTrackStatistics()) {
+            statistics.end();
+        }
+
+        if (config.isValidateInput()) {
+            SortValidator.validateAfterSort(array, comparator);
+        }
+
+        config.getLogger().log("Sort completed successfully");
     }
 
     @Override
@@ -35,7 +60,7 @@ public class MergeSort<T extends Comparable<T>> implements Sorter<T> {
     }
 
     private void mergeSort(T[] array, int left, int right, Comparator<T> comparator) {
-        if (right - left < INSERTION_SORT_THRESHOLD) {
+        if (right - left < config.getInsertionSortThreshold()) {
             insertionSort(array, left, right, comparator);
             return;
         }
@@ -53,9 +78,9 @@ public class MergeSort<T extends Comparable<T>> implements Sorter<T> {
             T key = array[i];
             int j = i - 1;
             while (j >= left && comparator.compare(array[j], key) > 0) {
-                statistics.recordComparison();
+                recordComparison();
                 array[j + 1] = array[j];
-                statistics.recordSwap();
+                recordSwap();
                 j--;
             }
             array[j + 1] = key;
@@ -69,22 +94,34 @@ public class MergeSort<T extends Comparable<T>> implements Sorter<T> {
         int leftIdx = 0, rightIdx = 0, currentIdx = left;
 
         while (leftIdx < leftArray.length && rightIdx < rightArray.length) {
-            statistics.recordComparison();
+            recordComparison();
             if (comparator.compare(leftArray[leftIdx], rightArray[rightIdx]) <= 0) {
                 array[currentIdx++] = leftArray[leftIdx++];
             } else {
                 array[currentIdx++] = rightArray[rightIdx++];
             }
-            statistics.recordSwap();
+            recordSwap();
         }
 
         while (leftIdx < leftArray.length) {
             array[currentIdx++] = leftArray[leftIdx++];
-            statistics.recordSwap();
+            recordSwap();
         }
 
         while (rightIdx < rightArray.length) {
             array[currentIdx++] = rightArray[rightIdx++];
+            recordSwap();
+        }
+    }
+
+    private void recordComparison() {
+        if (config.isTrackStatistics() && statistics != null) {
+            statistics.recordComparison();
+        }
+    }
+
+    private void recordSwap() {
+        if (config.isTrackStatistics() && statistics != null) {
             statistics.recordSwap();
         }
     }

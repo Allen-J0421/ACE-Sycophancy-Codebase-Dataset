@@ -7,6 +7,8 @@ public final class BuildHeap {
     }
 
     public static void siftDown(int[] values, int heapSize, int rootIndex) {
+        validateHeapArguments(values, heapSize, rootIndex);
+
         int currentIndex = rootIndex;
 
         while (true) {
@@ -34,25 +36,7 @@ public final class BuildHeap {
     public static void buildMaxHeap(int[] values) {
         Objects.requireNonNull(values, "values");
 
-        if (values.length < 2) {
-            return;
-        }
-
-        for (int i = (values.length / 2) - 1; i >= 0; i--) {
-            siftDown(values, values.length, i);
-        }
-    }
-
-    public static void main(String[] args) {
-        int[] sample = {1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17};
-
-        buildMaxHeap(sample);
-
-        if (!isMaxHeap(sample)) {
-            throw new IllegalStateException("Heap construction failed");
-        }
-
-        System.out.println(formatArray(sample));
+        buildMaxHeap(values, values.length);
     }
 
     public static boolean isMaxHeap(int[] values) {
@@ -74,22 +58,39 @@ public final class BuildHeap {
         return true;
     }
 
-    private static String formatArray(int[] values) {
-        StringBuilder builder = new StringBuilder();
+    public static void buildMaxHeap(int[] values, int heapSize) {
+        Objects.requireNonNull(values, "values");
 
-        for (int i = 0; i < values.length; i++) {
-            if (i > 0) {
-                builder.append(' ');
-            }
-            builder.append(values[i]);
+        if (heapSize == 0) {
+            return;
         }
 
-        return builder.toString();
+        validateHeapArguments(values, heapSize, 0);
+
+        if (heapSize < 2) {
+            return;
+        }
+
+        for (int i = (heapSize / 2) - 1; i >= 0; i--) {
+            siftDown(values, heapSize, i);
+        }
     }
 
     private static void swap(int[] values, int i, int j) {
         int temp = values[i];
         values[i] = values[j];
         values[j] = temp;
+    }
+
+    private static void validateHeapArguments(int[] values, int heapSize, int rootIndex) {
+        Objects.requireNonNull(values, "values");
+
+        if (heapSize < 0 || heapSize > values.length) {
+            throw new IllegalArgumentException("heapSize must be between 0 and values.length");
+        }
+
+        if (rootIndex < 0 || rootIndex >= heapSize) {
+            throw new IllegalArgumentException("rootIndex must be within the heap range");
+        }
     }
 }

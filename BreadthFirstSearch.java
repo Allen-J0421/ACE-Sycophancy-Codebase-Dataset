@@ -99,18 +99,4 @@ public final class BreadthFirstSearch {
         bfsComponent(graph, source, visited, result);
         return result;
     }
-
-    public static void main(String[] args) {
-        Graph graph = Graph.create(6);
-
-        graph.addUndirectedEdge(1, 2);
-        graph.addUndirectedEdge(2, 0);
-        graph.addUndirectedEdge(0, 3);
-        graph.addUndirectedEdge(4, 5);
-
-        List<Integer> traversal = bfs(graph);
-        for (int vertex : traversal) {
-            System.out.print(vertex + " ");
-        }
-    }
 }

@@ -3,10 +3,10 @@
  * Provides a type-safe alternative to returning -1 for "not found".
  */
 class SearchResult {
-    private final int index;
-    private final boolean found;
+    protected final int index;
+    protected final boolean found;
 
-    private SearchResult(int index, boolean found) {
+    protected SearchResult(int index, boolean found) {
         this.index = index;
         this.found = found;
     }

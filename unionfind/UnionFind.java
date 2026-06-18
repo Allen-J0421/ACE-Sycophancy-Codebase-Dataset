@@ -1,5 +1,8 @@
 package unionfind;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public final class UnionFind {
     private final int[] parent;
     private int componentCount;
@@ -11,13 +14,11 @@ public final class UnionFind {
 
         parent = new int[size];
         componentCount = size;
-        for (int i = 0; i < size; i++) {
-            parent[i] = -1;
-        }
+        Arrays.fill(parent, -1);
     }
 
     public int find(int element) {
-        validateElement(element);
+        Objects.checkIndex(element, parent.length);
 
         int root = element;
         while (parent[root] >= 0) {
@@ -66,11 +67,5 @@ public final class UnionFind {
     private void linkRoots(int childRoot, int parentRoot) {
         parent[parentRoot] += parent[childRoot];
         parent[childRoot] = parentRoot;
-    }
-
-    private void validateElement(int element) {
-        if (element < 0 || element >= parent.length) {
-            throw new IndexOutOfBoundsException("element out of bounds: " + element);
-        }
     }
 }

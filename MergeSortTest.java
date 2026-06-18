@@ -3,27 +3,37 @@ import java.util.Comparator;
 
 public final class MergeSortTest {
 
+    private static final TestCase[] TESTS = {
+        test("sorts primitive arrays", MergeSortTest::sortsPrimitiveArrays),
+        test("sorts primitive subranges", MergeSortTest::sortsPrimitiveSubranges),
+        test("sorts comparable arrays", MergeSortTest::sortsComparableArrays),
+        test("sorts with comparator", MergeSortTest::sortsWithComparator),
+        test("preserves stability", MergeSortTest::preservesStability),
+        test("handles empty and singleton arrays", MergeSortTest::handlesEmptyAndSingletonArrays),
+        test("rejects invalid primitive ranges", MergeSortTest::rejectsInvalidPrimitiveRanges),
+        test("rejects null inputs", MergeSortTest::rejectsNullInputs),
+    };
+
     private MergeSortTest() {
         // Test suite.
     }
 
     public static void main(String[] args) {
-        run("sorts primitive arrays", MergeSortTest::sortsPrimitiveArrays);
-        run("sorts primitive subranges", MergeSortTest::sortsPrimitiveSubranges);
-        run("sorts comparable arrays", MergeSortTest::sortsComparableArrays);
-        run("sorts with comparator", MergeSortTest::sortsWithComparator);
-        run("preserves stability", MergeSortTest::preservesStability);
-        run("handles empty and singleton arrays", MergeSortTest::handlesEmptyAndSingletonArrays);
-        run("rejects invalid primitive ranges", MergeSortTest::rejectsInvalidPrimitiveRanges);
-        run("rejects null inputs", MergeSortTest::rejectsNullInputs);
+        for (TestCase test : TESTS) {
+            test.run();
+        }
 
         System.out.println("All MergeSort tests passed.");
     }
 
-    private static void run(String name, TestCase testCase) {
+    private static TestCase test(String name, ThrowingRunnable action) {
+        return new TestCase(name, action);
+    }
+
+    private static void run(String name, ThrowingRunnable action) {
         try {
-            testCase.run();
-        } catch (RuntimeException | AssertionError error) {
+            action.run();
+        } catch (Throwable error) {
             throw new AssertionError("Test failed: " + name, error);
         }
     }
@@ -140,8 +150,18 @@ public final class MergeSortTest {
         throw new AssertionError("Expected " + expectedType.getSimpleName() + " but nothing was thrown");
     }
 
-    private interface TestCase {
-        void run();
+    private static final class TestCase {
+        private final String name;
+        private final ThrowingRunnable action;
+
+        private TestCase(String name, ThrowingRunnable action) {
+            this.name = name;
+            this.action = action;
+        }
+
+        private void run() {
+            MergeSortTest.run(name, action);
+        }
     }
 
     private interface ThrowingRunnable {

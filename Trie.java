@@ -6,33 +6,30 @@ public class Trie {
     private final TrieNode root = new TrieNode();
 
     public void insert(String word) {
-        TrieNode node = walk(word, true);
+        requireValidText(word);
+
+        TrieNode node = findOrCreateNode(word);
         node.isWord = true;
     }
 
     public boolean search(String word) {
-        TrieNode node = walk(word, false);
+        requireValidText(word);
+
+        TrieNode node = findNode(word);
         return node != null && node.isWord;
     }
 
     public boolean startsWith(String prefix) {
-        return walk(prefix, false) != null;
+        requireValidText(prefix);
+        return findNode(prefix) != null;
     }
 
-    private TrieNode walk(String text, boolean createMissing) {
-        if (text == null) {
-            throw new IllegalArgumentException("Text cannot be null");
-        }
-
+    private TrieNode findOrCreateNode(String text) {
         TrieNode node = root;
         for (int i = 0; i < text.length(); i++) {
             int index = toIndex(text.charAt(i));
             TrieNode next = node.children[index];
             if (next == null) {
-                if (!createMissing) {
-                    validateSuffix(text, i + 1);
-                    return null;
-                }
                 next = new TrieNode();
                 node.children[index] = next;
             }
@@ -41,8 +38,24 @@ public class Trie {
         return node;
     }
 
-    private static void validateSuffix(String text, int startIndex) {
-        for (int i = startIndex; i < text.length(); i++) {
+    private TrieNode findNode(String text) {
+        TrieNode node = root;
+        for (int i = 0; i < text.length(); i++) {
+            int index = toIndex(text.charAt(i));
+            node = node.children[index];
+            if (node == null) {
+                return null;
+            }
+        }
+        return node;
+    }
+
+    private static void requireValidText(String text) {
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+
+        for (int i = 0; i < text.length(); i++) {
             toIndex(text.charAt(i));
         }
     }

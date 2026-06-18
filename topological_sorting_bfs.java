@@ -15,9 +15,7 @@ class TopologicalSort {
     }
 
     static List<Integer> topologicalSort(List<? extends List<Integer>> graph) {
-        validateGraph(graph);
-
-        int[] indegree = computeIndegrees(graph);
+        int[] indegree = buildIndegrees(graph);
         Deque<Integer> queue = new ArrayDeque<>();
         ArrayList<Integer> order = new ArrayList<>(graph.size());
 
@@ -42,37 +40,24 @@ class TopologicalSort {
         return order;
     }
 
-    private static int[] computeIndegrees(List<? extends List<Integer>> graph) {
-        int[] indegree = new int[graph.size()];
-        for (int vertex = 0; vertex < graph.size(); vertex++) {
-            for (int neighbor : graph.get(vertex)) {
+    private static int[] buildIndegrees(List<? extends List<Integer>> graph) {
+        Objects.requireNonNull(graph, "graph");
+
+        int vertexCount = graph.size();
+        int[] indegree = new int[vertexCount];
+
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            List<Integer> neighbors = Objects.requireNonNull(graph.get(vertex),
+                    "graph[" + vertex + "]");
+            for (int neighbor : neighbors) {
+                if (neighbor < 0 || neighbor >= vertexCount) {
+                    throw new IllegalArgumentException(
+                            "Invalid edge from " + vertex + " to " + neighbor);
+                }
                 indegree[neighbor]++;
             }
         }
         return indegree;
-    }
-
-    private static void validateGraph(List<? extends List<Integer>> graph) {
-        Objects.requireNonNull(graph, "graph");
-
-        for (int vertex = 0; vertex < graph.size(); vertex++) {
-            List<Integer> neighbors = Objects.requireNonNull(graph.get(vertex),
-                    "graph[" + vertex + "]");
-            for (int neighbor : neighbors) {
-                if (neighbor < 0 || neighbor >= graph.size()) {
-                    throw new IllegalArgumentException(
-                            "Invalid edge from " + vertex + " to " + neighbor);
-                }
-            }
-        }
-    }
-
-    private static void enqueueZeroIndegreeVertices(int[] indegree, Deque<Integer> queue) {
-        for (int vertex = 0; vertex < indegree.length; vertex++) {
-            if (indegree[vertex] == 0) {
-                queue.addLast(vertex);
-            }
-        }
     }
 
     static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
@@ -85,6 +70,14 @@ class TopologicalSort {
             graph.add(new ArrayList<>());
         }
         return graph;
+    }
+
+    private static void enqueueZeroIndegreeVertices(int[] indegree, Deque<Integer> queue) {
+        for (int vertex = 0; vertex < indegree.length; vertex++) {
+            if (indegree[vertex] == 0) {
+                queue.addLast(vertex);
+            }
+        }
     }
 
     public static void main(String[] args) {

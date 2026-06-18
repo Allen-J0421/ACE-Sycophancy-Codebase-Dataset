@@ -4,8 +4,7 @@ import java.util.Objects;
 record Problem(int capacity, List<Item> items) {
     Problem {
         Validation.requireNonNegative(capacity, "capacity");
-        Objects.requireNonNull(items, "items must not be null");
-        items = List.copyOf(items);
+        items = Validation.copyNonNullElements(items, "items");
     }
 
     static Problem of(int capacity, List<Item> items) {

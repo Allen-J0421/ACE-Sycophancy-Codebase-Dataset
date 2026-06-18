@@ -1,10 +1,13 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Graph {
     private final List<List<Integer>> adjacencyList;
     private final int vertexCount;
+    private int edgeCount;
 
     public Graph(int vertexCount) {
         if (vertexCount < 0) {
@@ -12,6 +15,8 @@ public class Graph {
         }
         this.vertexCount = vertexCount;
         this.adjacencyList = new ArrayList<>();
+        this.edgeCount = 0;
+
         for (int i = 0; i < vertexCount; i++) {
             adjacencyList.add(new ArrayList<>());
         }
@@ -23,8 +28,20 @@ public class Graph {
         if (u == v) {
             throw new IllegalArgumentException("Self-loops are not allowed");
         }
-        adjacencyList.get(u).add(v);
-        adjacencyList.get(v).add(u);
+        if (!hasEdge(u, v)) {
+            adjacencyList.get(u).add(v);
+            adjacencyList.get(v).add(u);
+            edgeCount++;
+        }
+    }
+
+    public void removeEdge(int u, int v) {
+        validateVertexIndex(u);
+        validateVertexIndex(v);
+        if (adjacencyList.get(u).remove(Integer.valueOf(v))) {
+            adjacencyList.get(v).remove(Integer.valueOf(u));
+            edgeCount--;
+        }
     }
 
     public List<Integer> getNeighbors(int vertex) {
@@ -37,9 +54,7 @@ public class Graph {
     }
 
     public int getEdgeCount() {
-        return adjacencyList.stream()
-                .mapToInt(List::size)
-                .sum() / 2;
+        return edgeCount;
     }
 
     public boolean hasEdge(int u, int v) {
@@ -51,6 +66,28 @@ public class Graph {
     public int getDegree(int vertex) {
         validateVertexIndex(vertex);
         return adjacencyList.get(vertex).size();
+    }
+
+    public boolean isEmpty() {
+        return vertexCount == 0;
+    }
+
+    public List<Integer> getAllVertices() {
+        List<Integer> vertices = new ArrayList<>();
+        for (int i = 0; i < vertexCount; i++) {
+            vertices.add(i);
+        }
+        return vertices;
+    }
+
+    public Set<Integer> getVerticesWithDegree(int degree) {
+        Set<Integer> vertices = new HashSet<>();
+        for (int i = 0; i < vertexCount; i++) {
+            if (getDegree(i) == degree) {
+                vertices.add(i);
+            }
+        }
+        return vertices;
     }
 
     private void validateVertexIndex(int vertex) {

@@ -25,6 +25,20 @@ final class MatrixChainMultiplicationTest {
         expectThrows(IllegalArgumentException.class,
                 () -> new MatrixDimensions(new int[] { 5 }),
                 "missing chain");
+        expectEquals(3, MatrixChainCli.parseDimensions(new String[0]).matrixCount(),
+                "cli default sample chain");
+        expectEquals(3, MatrixChainCli.parseDimensions(new String[] { "10", "20", "30", "40" }).matrixCount(),
+                "cli parsed chain");
+        expectThrows(IllegalArgumentException.class,
+                () -> MatrixChainCli.parseDimensions(new String[] { "10" }),
+                "cli too few dimensions");
+        expectThrows(IllegalArgumentException.class,
+                () -> MatrixChainCli.parseDimensions(new String[] { "10", "x" }),
+                "cli invalid number");
+        expectEquals(
+                new MatrixDimensions(new int[] { 2, 1, 3, 4 }),
+                new MatrixDimensions(new int[] { 2, 1, 3, 4 }),
+                "dimension equality");
 
         int[] copied = dimensions.values();
         copied[0] = 99;
@@ -40,6 +54,12 @@ final class MatrixChainMultiplicationTest {
     }
 
     private static void expectEquals(String expected, String actual, String label) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError(label + ": expected " + expected + " but was " + actual);
+        }
+    }
+
+    private static void expectEquals(Object expected, Object actual, String label) {
         if (!expected.equals(actual)) {
             throw new AssertionError(label + ": expected " + expected + " but was " + actual);
         }

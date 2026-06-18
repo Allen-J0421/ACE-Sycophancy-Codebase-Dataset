@@ -47,6 +47,12 @@ final class BuildHeap {
     }
 
     static void buildHeap(int[] values) {
+        buildMaxHeap(values);
+    }
+
+    private static void buildMaxHeap(int[] values) {
+        java.util.Objects.requireNonNull(values, "values");
+
         for (int index = lastParentIndex(values.length); index >= 0; index--) {
             siftDown(values, values.length, index);
         }
@@ -73,7 +79,7 @@ final class BuildHeap {
     public static void main(String[] args) {
         int[] values = sampleValues();
 
-        buildHeap(values);
+        buildMaxHeap(values);
         System.out.println(formatValues(values));
     }
 }

@@ -18,9 +18,10 @@ final class TwoPointers {
 
             if (currentSum < targetSum) {
                 leftIndex++;
-            } else {
-                rightIndex--;
+                continue;
             }
+
+            rightIndex--;
         }
 
         return false;

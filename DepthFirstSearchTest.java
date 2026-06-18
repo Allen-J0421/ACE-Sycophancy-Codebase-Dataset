@@ -41,7 +41,7 @@ public final class DepthFirstSearchTest {
         Graph graph = sampleGraph();
 
         try {
-            graph.neighborsOf(0).add(99);
+            graph.neighbors(0).add(99);
             throw new AssertionError("Expected neighbors to be immutable");
         } catch (UnsupportedOperationException expected) {
             // Expected.

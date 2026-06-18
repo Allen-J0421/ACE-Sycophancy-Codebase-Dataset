@@ -12,10 +12,6 @@ public final class Graph {
         this.adjacencyList = adjacencyList;
     }
 
-    public static Graph undirected(int vertices) {
-        return builder(vertices).build();
-    }
-
     public static Graph fromUndirectedEdges(int vertices, int[][] edges) {
         Objects.requireNonNull(edges, "edges");
 
@@ -35,21 +31,13 @@ public final class Graph {
         return new Builder(vertices);
     }
 
-    public int size() {
+    public int vertexCount() {
         return adjacencyList.size();
     }
 
-    public int vertexCount() {
-        return size();
-    }
-
-    public List<Integer> neighborsOf(int vertex) {
+    public List<Integer> neighbors(int vertex) {
         checkVertex(vertex);
         return adjacencyList.get(vertex);
-    }
-
-    public List<Integer> neighbors(int vertex) {
-        return neighborsOf(vertex);
     }
 
     private void checkVertex(int vertex) {

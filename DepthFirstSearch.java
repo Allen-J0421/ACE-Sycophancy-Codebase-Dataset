@@ -31,9 +31,9 @@ public final class DepthFirstSearch {
 
     public static List<Integer> traverseFrom(Graph graph, int startVertex) {
         Objects.requireNonNull(graph, "graph");
-        graph.neighborsOf(startVertex);
 
         int vertexCount = graph.vertexCount();
+        Objects.checkIndex(startVertex, vertexCount);
         boolean[] visited = new boolean[vertexCount];
         List<Integer> order = new ArrayList<>(vertexCount);
         Deque<Integer> stack = new ArrayDeque<>();
@@ -58,7 +58,7 @@ public final class DepthFirstSearch {
             visited[vertex] = true;
             order.add(vertex);
 
-            List<Integer> neighbors = graph.neighborsOf(vertex);
+            List<Integer> neighbors = graph.neighbors(vertex);
             for (int index = neighbors.size() - 1; index >= 0; index--) {
                 int neighbor = neighbors.get(index);
                 if (!visited[neighbor]) {

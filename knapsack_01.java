@@ -9,22 +9,40 @@ final class Knapsack {
     static int knapsack(int capacity, int[] values, int[] weights) {
         int[] maxValueByCapacity = new int[capacity + 1];
 
-        for (int itemIndex = 0; itemIndex < weights.length; itemIndex++) {
-            includeItem(maxValueByCapacity, capacity, weights[itemIndex], values[itemIndex]);
+        for (Item item : toItems(values, weights)) {
+            includeItem(maxValueByCapacity, capacity, item);
         }
         return maxValueByCapacity[capacity];
+    }
+
+    private static Item[] toItems(int[] values, int[] weights) {
+        Item[] items = new Item[weights.length];
+
+        for (int itemIndex = 0; itemIndex < weights.length; itemIndex++) {
+            items[itemIndex] = new Item(weights[itemIndex], values[itemIndex]);
+        }
+        return items;
     }
 
     private static void includeItem(
             int[] maxValueByCapacity,
             int capacity,
-            int itemWeight,
-            int itemValue
+            Item item
     ) {
-        for (int currentCapacity = capacity; currentCapacity >= itemWeight; currentCapacity--) {
+        for (int currentCapacity = capacity; currentCapacity >= item.weight; currentCapacity--) {
             int valueWithoutItem = maxValueByCapacity[currentCapacity];
-            int valueWithItem = maxValueByCapacity[currentCapacity - itemWeight] + itemValue;
+            int valueWithItem = maxValueByCapacity[currentCapacity - item.weight] + item.value;
             maxValueByCapacity[currentCapacity] = Math.max(valueWithoutItem, valueWithItem);
+        }
+    }
+
+    private static final class Item {
+        private final int weight;
+        private final int value;
+
+        private Item(int weight, int value) {
+            this.weight = weight;
+            this.value = value;
         }
     }
 

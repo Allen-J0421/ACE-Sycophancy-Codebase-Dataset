@@ -3,9 +3,6 @@ import java.util.function.Predicate;
 
 public class Trie {
     private static final int ALPHABET_SIZE = 26;
-    private static final String[] WORDS = {"and", "ant", "do", "dad"};
-    private static final String[] SEARCH_KEYS = {"do", "gee", "bat"};
-    private static final String[] PREFIX_KEYS = {"ge", "ba", "do", "de"};
 
     private static final class TrieNode {
         private final TrieNode[] children = new TrieNode[ALPHABET_SIZE];
@@ -100,18 +97,28 @@ public class Trie {
     }
 
     public static void main(String[] args) {
-        Trie trie = new Trie();
-        trie.insertAll(WORDS);
-
-        System.out.println(formatMatches(SEARCH_KEYS, trie::search));
-        System.out.print(formatMatches(PREFIX_KEYS, trie::isPrefix));
+        Demo.run();
     }
 
-    private static String formatMatches(String[] keys, Predicate<String> predicate) {
-        StringBuilder output = new StringBuilder();
-        for (String key : keys) {
-            output.append(predicate.test(key) ? "true " : "false ");
+    private static final class Demo {
+        private static final String[] WORDS = {"and", "ant", "do", "dad"};
+        private static final String[] SEARCH_KEYS = {"do", "gee", "bat"};
+        private static final String[] PREFIX_KEYS = {"ge", "ba", "do", "de"};
+
+        private static void run() {
+            Trie trie = new Trie();
+            trie.insertAll(WORDS);
+
+            System.out.println(formatMatches(SEARCH_KEYS, trie::search));
+            System.out.print(formatMatches(PREFIX_KEYS, trie::isPrefix));
         }
-        return output.toString();
+
+        private static String formatMatches(String[] keys, Predicate<String> predicate) {
+            StringBuilder output = new StringBuilder();
+            for (String key : keys) {
+                output.append(predicate.test(key) ? "true " : "false ");
+            }
+            return output.toString();
+        }
     }
 }

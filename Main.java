@@ -1,5 +1,6 @@
 /**
- * Application entry point demonstrating pluggable pathfinding algorithms.
+ * Application entry point demonstrating pluggable pathfinding algorithms
+ * and observer patterns for graph and algorithm observability.
  *
  * Command-line options:
  * - (no args): Run with default Dijkstra
@@ -7,16 +8,24 @@
  * - --bellman-ford: Use Bellman-Ford
  * - --metrics: Show metrics for chosen algorithm
  * - --all: Compare all available algorithms
+ * - --observe: Enable graph and algorithm observers (logging, statistics)
  * - --help: Show usage information
  *
  * The main application logic doesn't change when switching algorithms—
  * only the algorithm instance changes via AlgorithmFactory.
+ *
+ * Observer Pattern enables:
+ * - Real-time logging of graph modifications
+ * - Algorithm progress tracking
+ * - Statistics collection
+ * - Side effects without core logic coupling
  */
 class Main {
     public static void main(String[] args) {
         String algorithmName = "dijkstra";
         boolean showMetrics = false;
         boolean compareAll = false;
+        boolean enableObservers = false;
 
         // Parse command-line arguments
         for (String arg : args) {
@@ -24,6 +33,8 @@ class Main {
                 showMetrics = true;
             } else if (arg.equals("--all")) {
                 compareAll = true;
+            } else if (arg.equals("--observe")) {
+                enableObservers = true;
             } else if (arg.equals("--help")) {
                 printHelp();
                 return;
@@ -33,12 +44,16 @@ class Main {
         }
 
         Graph graph = buildExampleGraph();
-        AlgorithmConfig config = AlgorithmConfig.create(0);
-        ResultFormatter formatter = new ResultFormatter(config);
 
-        if (compareAll) {
+        if (enableObservers) {
+            runWithObservers(graph, algorithmName);
+        } else if (compareAll) {
+            AlgorithmConfig config = AlgorithmConfig.create(0);
+            ResultFormatter formatter = new ResultFormatter(config);
             runAllAlgorithms(graph, formatter);
         } else {
+            AlgorithmConfig config = AlgorithmConfig.create(0);
+            ResultFormatter formatter = new ResultFormatter(config);
             runAlgorithm(algorithmName, graph, formatter, showMetrics);
         }
     }
@@ -117,6 +132,62 @@ class Main {
     }
 
     /**
+     * Demonstrates observer pattern with logging and statistics.
+     */
+    private static void runWithObservers(Graph graph, String algorithmName) {
+        System.out.println("=== Running with Observers ===");
+        System.out.println();
+
+        // Create observable graph and attach observers
+        ObservableGraph observableGraph = new ObservableGraph(graph);
+        LoggingGraphObserver graphLogger = new LoggingGraphObserver();
+        StatisticsGraphObserver graphStats = new StatisticsGraphObserver();
+
+        observableGraph.subscribe(graphLogger);
+        observableGraph.subscribe(graphStats);
+
+        System.out.println("Building graph with observers:");
+        rebuildGraphWithObservers(observableGraph);
+
+        System.out.println();
+        System.out.println("Graph Statistics: " + graphStats);
+        System.out.println();
+
+        // Run algorithm with observers
+        System.out.println("Running algorithm with observers:");
+        PathfindingAlgorithm algorithm = AlgorithmFactory.create(algorithmName);
+        ObservablePathfindingAlgorithm observableAlgorithm = new ObservablePathfindingAlgorithm(algorithm);
+
+        LoggingAlgorithmObserver algoLogger = new LoggingAlgorithmObserver();
+        StatisticsAlgorithmObserver algoStats = new StatisticsAlgorithmObserver();
+
+        observableAlgorithm.subscribe(algoLogger);
+        observableAlgorithm.subscribe(algoStats);
+
+        ShortestPathResult result = observableAlgorithm.solve(observableGraph, 0);
+
+        System.out.println();
+        System.out.println("Algorithm Statistics: " + algoStats);
+
+        System.out.println();
+        System.out.println("Final Distances: ");
+        ResultFormatter formatter = new ResultFormatter(AlgorithmConfig.create(0));
+        formatter.printDistances(result);
+    }
+
+    /**
+     * Rebuilds graph with observers attached.
+     */
+    private static void rebuildGraphWithObservers(ObservableGraph graph) {
+        graph.addEdge(0, 1, 4);
+        graph.addEdge(0, 2, 8);
+        graph.addEdge(1, 4, 6);
+        graph.addEdge(1, 2, 3);
+        graph.addEdge(2, 3, 2);
+        graph.addEdge(3, 4, 10);
+    }
+
+    /**
      * Prints help message with usage information.
      */
     private static void printHelp() {
@@ -130,12 +201,14 @@ class Main {
         System.out.println("  --bellman-ford   Use Bellman-Ford algorithm");
         System.out.println("  --metrics        Show execution metrics");
         System.out.println("  --all            Compare all available algorithms");
+        System.out.println("  --observe        Enable observers (logging, statistics)");
         System.out.println("  --help           Show this message");
         System.out.println();
         System.out.println("Examples:");
         System.out.println("  java Main                    # Default: Dijkstra");
         System.out.println("  java Main --bellman-ford     # Use Bellman-Ford");
         System.out.println("  java Main --dijkstra --metrics");
+        System.out.println("  java Main --observe          # With observers");
         System.out.println("  java Main --all              # Compare all algorithms");
     }
 }

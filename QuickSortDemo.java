@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class QuickSortDemo {
 
     public static void main(String[] args) {
@@ -6,8 +8,6 @@ public class QuickSortDemo {
         Sorter sorter = new QuickSort();
         sorter.sort(arr);
 
-        for (int val : arr) {
-            System.out.print(val + " ");
-        }
+        System.out.println(Arrays.toString(arr));
     }
 }

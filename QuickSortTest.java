@@ -14,6 +14,16 @@ public class QuickSortTest {
         }
     }
 
+    private static class SorterConfig {
+        final String label;
+        final Sorter sorter;
+
+        SorterConfig(String label, Sorter sorter) {
+            this.label  = label;
+            this.sorter = sorter;
+        }
+    }
+
     private static final TestCase[] CASES = {
         new TestCase("typical case",     new int[]{10, 7, 8, 9, 1, 5}, new int[]{1, 5, 7, 8, 9, 10}),
         new TestCase("already sorted",   new int[]{1, 2, 3, 4, 5},     new int[]{1, 2, 3, 4, 5}),
@@ -26,11 +36,17 @@ public class QuickSortTest {
         new TestCase("negative numbers", new int[]{-3, 1, -7, 0, 5},   new int[]{-7, -3, 0, 1, 5}),
     };
 
+    private static final SorterConfig[] SORTERS = {
+        new SorterConfig("recursive + last-element",    new QuickSort()),
+        new SorterConfig("recursive + median-of-three", new QuickSort(PivotSelector.MEDIAN_OF_THREE)),
+        new SorterConfig("iterative + last-element",    new IterativeQuickSort()),
+    };
+
     public static void main(String[] args) {
         boolean ok = true;
-        ok &= runSuite("recursive + last-element",    new QuickSort());
-        ok &= runSuite("recursive + median-of-three", new QuickSort(PivotSelector.MEDIAN_OF_THREE));
-        ok &= runSuite("iterative + last-element",    new IterativeQuickSort());
+        for (SorterConfig sc : SORTERS) {
+            ok &= runSuite(sc.label, sc.sorter);
+        }
         if (!ok) System.exit(1);
     }
 

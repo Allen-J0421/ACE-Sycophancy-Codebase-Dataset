@@ -9,6 +9,8 @@ public class DepthFirstSearch {
     }
 
     public static List<Integer> dfs(List<List<Integer>> adjacencyList) {
+        validateAdjacencyList(adjacencyList);
+
         boolean[] visitedVertices = new boolean[adjacencyList.size()];
         List<Integer> traversalOrder = new ArrayList<>();
 
@@ -19,6 +21,30 @@ public class DepthFirstSearch {
         }
 
         return traversalOrder;
+    }
+
+    private static void validateAdjacencyList(List<List<Integer>> adjacencyList) {
+        if (adjacencyList == null) {
+            throw new IllegalArgumentException("adjacencyList must not be null");
+        }
+
+        int vertexCount = adjacencyList.size();
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            List<Integer> neighbors = adjacencyList.get(vertex);
+            if (neighbors == null) {
+                throw new IllegalArgumentException("Neighbors for vertex " + vertex + " must not be null");
+            }
+
+            for (Integer neighbor : neighbors) {
+                if (neighbor == null) {
+                    throw new IllegalArgumentException("Neighbor for vertex " + vertex + " must not be null");
+                }
+                if (neighbor < 0 || neighbor >= vertexCount) {
+                    throw new IllegalArgumentException(
+                            "Neighbor " + neighbor + " for vertex " + vertex + " is outside the graph");
+                }
+            }
+        }
     }
 
     private static void traverseComponent(

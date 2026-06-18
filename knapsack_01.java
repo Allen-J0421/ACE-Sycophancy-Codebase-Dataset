@@ -30,13 +30,24 @@ final class Knapsack {
                 throw new IllegalArgumentException("values and weights must have the same length");
             }
 
-            Item[] items = new Item[values.length];
+            int feasibleItemCount = 0;
             for (int index = 0; index < values.length; index++) {
                 int weight = weights[index];
                 if (weight < 0) {
                     throw new IllegalArgumentException("weights must be non-negative");
                 }
-                items[index] = new Item(weight, values[index]);
+                if (weight <= capacity) {
+                    feasibleItemCount++;
+                }
+            }
+
+            Item[] items = new Item[feasibleItemCount];
+            int itemIndex = 0;
+            for (int index = 0; index < values.length; index++) {
+                int weight = weights[index];
+                if (weight <= capacity) {
+                    items[itemIndex++] = new Item(weight, values[index]);
+                }
             }
             return new Problem(capacity, items);
         }

@@ -1,6 +1,9 @@
-class CoinChange {
+final class CoinChange {
     private static final int[] EXAMPLE_COINS = {1, 2, 3};
     private static final int EXAMPLE_AMOUNT = 5;
+
+    private CoinChange() {
+    }
 
     static int count(int[] coins, int amount) {
         return countWays(coins, amount);

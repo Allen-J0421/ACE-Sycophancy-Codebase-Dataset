@@ -1,5 +1,5 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -23,7 +23,7 @@ final class BreadthFirstSearch {
 
     private static List<Integer> traverseComponent(Graph graph, int source, boolean[] visited) {
         List<Integer> component = new ArrayList<>();
-        Queue<Integer> queue = new LinkedList<>();
+        Queue<Integer> queue = new ArrayDeque<>();
         visited[source] = true;
         queue.add(source);
 

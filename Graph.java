@@ -16,11 +16,11 @@ final class Graph {
     }
 
     List<Integer> neighbors(int vertex) {
-        validateVertex(vertex);
+        validateVertex(vertex, vertexCount);
         return adjacencyList.get(vertex);
     }
 
-    private void validateVertex(int vertex) {
+    private static void validateVertex(int vertex, int vertexCount) {
         if (vertex < 0 || vertex >= vertexCount) {
             throw new IllegalArgumentException(
                 "Vertex " + vertex + " is out of range [0, " + (vertexCount - 1) + "]");
@@ -43,8 +43,8 @@ final class Graph {
         }
 
         Builder addEdge(int u, int v) {
-            validateVertex(u);
-            validateVertex(v);
+            validateVertex(u, vertexCount);
+            validateVertex(v, vertexCount);
             adjacencyList.get(u).add(v);
             adjacencyList.get(v).add(u);
             return this;
@@ -56,13 +56,6 @@ final class Graph {
                 frozen.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
             }
             return new Graph(vertexCount, Collections.unmodifiableList(frozen));
-        }
-
-        private void validateVertex(int vertex) {
-            if (vertex < 0 || vertex >= vertexCount) {
-                throw new IllegalArgumentException(
-                    "Vertex " + vertex + " is out of range [0, " + (vertexCount - 1) + "]");
-            }
         }
     }
 }

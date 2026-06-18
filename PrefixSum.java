@@ -1,9 +1,10 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Computes prefix sum arrays efficiently.
+ * Computes prefix sum arrays efficiently with caching and statistics.
  * The prefix sum at index i is the sum of all elements from index 0 to i.
  */
 public class PrefixSum {
@@ -11,6 +12,7 @@ public class PrefixSum {
     private final List<Long> cache;
     private final boolean cacheEnabled;
     private final boolean clearCacheOnCompute;
+    private int computationCount;
 
     /**
      * Creates a PrefixSum instance with configuration.
@@ -22,6 +24,7 @@ public class PrefixSum {
         this.cacheEnabled = cacheEnabled;
         this.clearCacheOnCompute = clearCacheOnCompute;
         this.cache = cacheEnabled ? new ArrayList<>() : null;
+        this.computationCount = 0;
     }
 
     /**
@@ -59,10 +62,10 @@ public class PrefixSum {
      * Computes the prefix sum of an array.
      *
      * @param arr the input array
-     * @return a list where each element is the prefix sum up to that index
+     * @return an immutable result containing the prefix sums
      * @throws IllegalArgumentException if the array is null or empty
      */
-    public List<Long> compute(int[] arr) {
+    public PrefixSumResult compute(int[] arr) {
         Objects.requireNonNull(arr, "Input array cannot be null");
         if (arr.length == 0) {
             throw new IllegalArgumentException("Input array cannot be empty");
@@ -81,28 +84,79 @@ public class PrefixSum {
         }
 
         if (cacheEnabled) {
+            cache.clear();
             cache.addAll(result);
         }
 
-        return result;
+        computationCount++;
+        return new PrefixSumResult(result, arr.length, sum);
     }
 
     /**
      * Gets cached results from the most recent computation.
      *
-     * @return the cached prefix sum, or an empty list if caching is disabled or no computation has been done
+     * @return an unmodifiable cached result, or an empty list if caching is disabled
      */
     public List<Long> getCachedResult() {
-        return cacheEnabled ? new ArrayList<>(cache) : new ArrayList<>();
+        return cacheEnabled && cache != null ? Collections.unmodifiableList(new ArrayList<>(cache)) : Collections.emptyList();
+    }
+
+    /**
+     * Gets the number of computations performed.
+     *
+     * @return the computation count
+     */
+    public int getComputationCount() {
+        return computationCount;
     }
 
     /**
      * Static convenience method for single computation without caching.
      *
      * @param arr the input array
-     * @return a list where each element is the prefix sum up to that index
+     * @return the result of the prefix sum computation
      */
-    public static List<Long> computePrefixSum(int[] arr) {
+    public static PrefixSumResult computePrefixSum(int[] arr) {
         return new PrefixSum(false, false).compute(arr);
+    }
+
+    /**
+     * Immutable result wrapper for prefix sum computations.
+     */
+    public static class PrefixSumResult {
+        private final List<Long> values;
+        private final int inputSize;
+        private final long totalSum;
+
+        private PrefixSumResult(List<Long> values, int inputSize, long totalSum) {
+            this.values = Collections.unmodifiableList(new ArrayList<>(values));
+            this.inputSize = inputSize;
+            this.totalSum = totalSum;
+        }
+
+        public List<Long> getValues() {
+            return values;
+        }
+
+        public int getInputSize() {
+            return inputSize;
+        }
+
+        public long getTotalSum() {
+            return totalSum;
+        }
+
+        public double getAverage() {
+            return inputSize > 0 ? (double) totalSum / inputSize : 0.0;
+        }
+
+        @Override
+        public String toString() {
+            return "PrefixSumResult{" +
+                    "values=" + values +
+                    ", totalSum=" + totalSum +
+                    ", average=" + String.format("%.2f", getAverage()) +
+                    '}';
+        }
     }
 }

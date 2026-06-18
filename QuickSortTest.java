@@ -15,6 +15,7 @@ public final class QuickSortTest {
     private static final List<TestCase> TEST_CASES = List.of(
             new TestCase("sort whole array", QuickSortTest::shouldSortWholeArray),
             new TestCase("sort requested range", QuickSortTest::shouldSortOnlyRequestedRange),
+            new TestCase("sorted copy does not mutate input", QuickSortTest::shouldReturnSortedCopyWithoutMutatingInput),
             new TestCase("handle duplicates and empty input", QuickSortTest::shouldHandleDuplicatesAndEmptyInputs),
             new TestCase("sort many duplicates", QuickSortTest::shouldSortManyDuplicates),
             new TestCase("reject invalid ranges", QuickSortTest::shouldRejectInvalidRanges));
@@ -29,6 +30,14 @@ public final class QuickSortTest {
         int[] values = {9, 4, 3, 8, 1, 7};
         QuickSort.sort(values, 1, 5);
         assertArrayEquals(new int[] {9, 1, 3, 4, 8, 7}, values);
+    }
+
+    private static void shouldReturnSortedCopyWithoutMutatingInput() {
+        int[] values = {7, 2, 5, 1};
+        int[] sorted = QuickSort.sortedCopy(values);
+
+        assertArrayEquals(new int[] {7, 2, 5, 1}, values);
+        assertArrayEquals(new int[] {1, 2, 5, 7}, sorted);
     }
 
     private static void shouldHandleDuplicatesAndEmptyInputs() {

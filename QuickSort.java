@@ -18,6 +18,13 @@ public final class QuickSort {
         sortRange(values, fromIndex, toIndexExclusive);
     }
 
+    public static int[] sortedCopy(int[] values) {
+        Objects.requireNonNull(values, "values");
+        int[] copy = Arrays.copyOf(values, values.length);
+        sort(copy);
+        return copy;
+    }
+
     private static void sortRange(int[] values, int fromIndex, int toIndexExclusive) {
         Objects.checkFromToIndex(fromIndex, toIndexExclusive, values.length);
         if (toIndexExclusive - fromIndex < 2) {

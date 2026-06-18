@@ -2,6 +2,8 @@ SRC_DIR := src/two_pointers
 OUT_DIR := out
 SOURCES := $(wildcard $(SRC_DIR)/*.java)
 
+.DEFAULT_GOAL := test
+
 .PHONY: build test run clean
 
 build:

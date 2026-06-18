@@ -4,11 +4,15 @@ import java.util.List;
 
 public final class Graph {
     private final List<List<Integer>> adjacencyList;
+    private final List<List<Integer>> neighborViews;
 
     private Graph(int vertexCount) {
         adjacencyList = new ArrayList<>(vertexCount);
+        neighborViews = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
+            List<Integer> neighbors = new ArrayList<>();
+            adjacencyList.add(neighbors);
+            neighborViews.add(Collections.unmodifiableList(neighbors));
         }
     }
 
@@ -31,24 +35,24 @@ public final class Graph {
         validateVertex(u);
         validateVertex(v);
 
-        adjacencyList.get(u).add(v);
-        adjacencyList.get(v).add(u);
+        connectVertices(u, v);
+        connectVertices(v, u);
     }
 
     public void addDirectedEdge(int from, int to) {
         validateVertex(from);
         validateVertex(to);
 
-        adjacencyList.get(from).add(to);
+        connectVertices(from, to);
     }
 
     public List<Integer> neighbors(int vertex) {
         validateVertex(vertex);
-        return Collections.unmodifiableList(adjacencyList.get(vertex));
+        return neighborViews.get(vertex);
     }
 
-    List<Integer> adjacentVertices(int vertex) {
-        return adjacencyList.get(vertex);
+    private void connectVertices(int from, int to) {
+        adjacencyList.get(from).add(to);
     }
 
     private void validateVertex(int vertex) {

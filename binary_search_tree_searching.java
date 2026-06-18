@@ -19,7 +19,31 @@ final class BinarySearchTree {
     }
 
     void insert(int key) {
-        root = insert(root, key);
+        if (root == null) {
+            root = new Node(key);
+            return;
+        }
+
+        Node current = root;
+        while (true) {
+            if (key == current.data) {
+                return;
+            }
+
+            if (key < current.data) {
+                if (current.left == null) {
+                    current.left = new Node(key);
+                    return;
+                }
+                current = current.left;
+            } else {
+                if (current.right == null) {
+                    current.right = new Node(key);
+                    return;
+                }
+                current = current.right;
+            }
+        }
     }
 
     private static Node findNode(Node node, int key) {
@@ -32,20 +56,6 @@ final class BinarySearchTree {
         }
 
         return null;
-    }
-
-    private static Node insert(Node node, int key) {
-        if (node == null) {
-            return new Node(key);
-        }
-
-        if (key < node.data) {
-            node.left = insert(node.left, key);
-        } else if (key > node.data) {
-            node.right = insert(node.right, key);
-        }
-
-        return node;
     }
 
     public static void main(String[] args) {

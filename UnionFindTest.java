@@ -1,16 +1,18 @@
 public final class UnionFindTest {
+    private static int testsRun;
+
     private UnionFindTest() {
     }
 
     public static void main(String[] args) {
-        testNewElementsStartDisconnected();
-        testUnionConnectsElements();
-        testUnionReturnsWhetherMergeHappened();
-        testComponentCountTracksMerges();
-        testComponentSizeTracksMerges();
-        testInvalidElementsAreRejected();
+        runTest("new elements start disconnected", UnionFindTest::testNewElementsStartDisconnected);
+        runTest("union connects elements", UnionFindTest::testUnionConnectsElements);
+        runTest("union reports merge status", UnionFindTest::testUnionReturnsWhetherMergeHappened);
+        runTest("component count tracks merges", UnionFindTest::testComponentCountTracksMerges);
+        runTest("component size tracks merges", UnionFindTest::testComponentSizeTracksMerges);
+        runTest("invalid elements are rejected", UnionFindTest::testInvalidElementsAreRejected);
 
-        System.out.println("All UnionFind tests passed.");
+        System.out.println("All " + testsRun + " UnionFind tests passed.");
     }
 
     private static void testNewElementsStartDisconnected() {
@@ -92,6 +94,15 @@ public final class UnionFindTest {
     private static void assertTrue(boolean condition, String message) {
         if (!condition) {
             throw new AssertionError(message);
+        }
+    }
+
+    private static void runTest(String name, Runnable test) {
+        try {
+            test.run();
+            testsRun++;
+        } catch (AssertionError error) {
+            throw new AssertionError(name + " failed: " + error.getMessage(), error);
         }
     }
 

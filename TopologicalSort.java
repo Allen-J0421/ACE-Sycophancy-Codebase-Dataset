@@ -3,33 +3,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-class TopologicalSort {
+class Graph {
+    private final int n;
+    private final List<List<Integer>> adj;
 
-    static class Graph {
-        private final int n;
-        private final List<List<Integer>> adj;
-
-        Graph(int n) {
-            this.n = n;
-            adj = new ArrayList<>(n);
-            for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
-        }
-
-        void addEdge(int u, int v) {
-            adj.get(u).add(v);
-        }
-
-        int size() { return n; }
-
-        List<Integer> neighbors(int u) { return adj.get(u); }
+    Graph(int n) {
+        this.n = n;
+        adj = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
     }
 
-    static List<Integer> topoSort(Graph graph) {
-        int n = graph.size();
+    void addEdge(int u, int v) {
+        adj.get(u).add(v);
+    }
+
+    List<Integer> topoSort() {
         int[] indegree = new int[n];
 
         for (int u = 0; u < n; u++) {
-            for (int v : graph.neighbors(u)) {
+            for (int v : adj.get(u)) {
                 indegree[v]++;
             }
         }
@@ -39,11 +31,11 @@ class TopologicalSort {
             if (indegree[i] == 0) queue.add(i);
         }
 
-        List<Integer> result = new ArrayList<>();
+        List<Integer> result = new ArrayList<>(n);
         while (!queue.isEmpty()) {
             int node = queue.poll();
             result.add(node);
-            for (int neighbor : graph.neighbors(node)) {
+            for (int neighbor : adj.get(node)) {
                 if (--indegree[neighbor] == 0) queue.add(neighbor);
             }
         }
@@ -54,7 +46,9 @@ class TopologicalSort {
 
         return result;
     }
+}
 
+class TopologicalSort {
     public static void main(String[] args) {
         Graph g = new Graph(6);
         g.addEdge(0, 1);
@@ -64,6 +58,6 @@ class TopologicalSort {
         g.addEdge(5, 1);
         g.addEdge(5, 2);
 
-        System.out.println(topoSort(g));
+        System.out.println(g.topoSort());
     }
 }

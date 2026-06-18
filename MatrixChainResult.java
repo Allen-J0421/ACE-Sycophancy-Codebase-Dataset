@@ -1,18 +1,16 @@
 public final class MatrixChainResult {
-    private static final MatrixChainResult EMPTY = new MatrixChainResult(0, new int[0][0], 0);
+    private static final MatrixChainResult EMPTY = new MatrixChainResult(0, "A1");
 
     private final int minimumCost;
-    private final int[][] bestSplits;
-    private final int matrixCount;
+    private final String optimalParenthesization;
 
     static MatrixChainResult empty() {
         return EMPTY;
     }
 
-    MatrixChainResult(int minimumCost, int[][] bestSplits, int matrixCount) {
+    MatrixChainResult(int minimumCost, String optimalParenthesization) {
         this.minimumCost = minimumCost;
-        this.bestSplits = bestSplits;
-        this.matrixCount = matrixCount;
+        this.optimalParenthesization = optimalParenthesization;
     }
 
     public int minimumCost() {
@@ -20,23 +18,6 @@ public final class MatrixChainResult {
     }
 
     public String optimalParenthesization() {
-        if (matrixCount <= 1) {
-            return "A1";
-        }
-
-        return buildParenthesization(0, matrixCount);
-    }
-
-    private String buildParenthesization(int start, int end) {
-        if (end - start == 1) {
-            return "A" + (start + 1);
-        }
-
-        int split = bestSplits[start][end];
-        return "("
-            + buildParenthesization(start, split)
-            + " x "
-            + buildParenthesization(split, end)
-            + ")";
+        return optimalParenthesization;
     }
 }

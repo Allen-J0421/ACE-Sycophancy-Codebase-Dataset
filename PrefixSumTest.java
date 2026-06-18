@@ -11,6 +11,9 @@ public class PrefixSumTest {
         testConfigBasedCaching();
         testConfigBasedMetrics();
         testListenerPattern();
+        testAbstractListener();
+        testCompositeListener();
+        testFactoryPattern();
         testInputValidator();
         testCacheClear();
         testStatistics();
@@ -65,6 +68,49 @@ public class PrefixSumTest {
         assert listener.startCalled : "onComputationStart not called";
         assert listener.completeCalled : "onComputationComplete not called";
         assert !listener.errorCalled : "onComputationError should not be called";
+    }
+
+    private static void testAbstractListener() {
+        System.out.println("Testing abstract listener...");
+        TestAbstractListener listener = new TestAbstractListener();
+        PrefixSum calculator = new PrefixSum();
+        calculator.addListener(listener);
+        calculator.compute(new int[]{1, 2, 3});
+        assert listener.handleStartCalled : "handleComputationStart not called";
+        assert listener.handleCompleteCalled : "handleComputationComplete not called";
+    }
+
+    private static void testCompositeListener() {
+        System.out.println("Testing composite listener...");
+        TestListener listener1 = new TestListener();
+        TestListener listener2 = new TestListener();
+        CompositeListener composite = new CompositeListener()
+            .add(listener1)
+            .add(listener2);
+        PrefixSum calculator = new PrefixSum();
+        calculator.addListener(composite);
+        calculator.compute(new int[]{1, 2, 3});
+        assert listener1.startCalled : "First listener not called";
+        assert listener2.startCalled : "Second listener not called";
+    }
+
+    private static void testFactoryPattern() {
+        System.out.println("Testing factory pattern...");
+        PrefixSum simple = PrefixSumFactory.createSimple();
+        assert simple != null : "Factory should not return null";
+
+        PrefixSum cached = PrefixSumFactory.createCached();
+        cached.compute(new int[]{1, 2, 3});
+        assert !cached.getCachedResult().isEmpty() : "Cached result should not be empty";
+
+        PrefixSum monitored = PrefixSumFactory.createMonitored();
+        monitored.compute(new int[]{1, 2, 3});
+        assert monitored.getMetrics().getComputationCount() > 0 : "Metrics should be tracked";
+
+        PrefixSum full = PrefixSumFactory.createFull();
+        full.compute(new int[]{1, 2, 3});
+        assert !full.getCachedResult().isEmpty() : "Full calculator should cache";
+        assert full.getMetrics().getComputationCount() > 0 : "Full calculator should track metrics";
     }
 
     private static void testInputValidator() {
@@ -169,6 +215,26 @@ public class PrefixSumTest {
         @Override
         public void onComputationError(Exception exception) {
             errorCalled = true;
+        }
+    }
+
+    static class TestAbstractListener extends AbstractListener {
+        boolean handleStartCalled = false;
+        boolean handleCompleteCalled = false;
+
+        @Override
+        protected void handleComputationStart(int arraySize) {
+            handleStartCalled = true;
+        }
+
+        @Override
+        protected void handleComputationComplete(PrefixSum.PrefixSumResult result) {
+            handleCompleteCalled = true;
+        }
+
+        @Override
+        protected void handleComputationError(Exception exception) {
+            // No op
         }
     }
 }

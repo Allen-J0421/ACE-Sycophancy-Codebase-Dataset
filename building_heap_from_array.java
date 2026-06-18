@@ -1,3 +1,6 @@
+import java.util.Objects;
+import java.util.StringJoiner;
+
 final class BuildHeap {
     private BuildHeap() {
     }
@@ -51,7 +54,7 @@ final class BuildHeap {
     }
 
     private static void buildMaxHeap(int[] values) {
-        java.util.Objects.requireNonNull(values, "values");
+        Objects.requireNonNull(values, "values");
 
         for (int index = lastParentIndex(values.length); index >= 0; index--) {
             siftDown(values, values.length, index);
@@ -63,13 +66,13 @@ final class BuildHeap {
     }
 
     private static String formatValues(int[] values) {
-        StringBuilder output = new StringBuilder();
+        StringJoiner output = new StringJoiner(" ");
 
         for (int value : values) {
-            output.append(value).append(' ');
+            output.add(Integer.toString(value));
         }
 
-        return output.toString();
+        return output + " ";
     }
 
     private static int[] sampleValues() {

@@ -1,4 +1,6 @@
 public final class UnionFind implements DisjointSet {
+    private static final String NEGATIVE_SIZE_MESSAGE = "size must be non-negative";
+
     private final int[] parent;
     private final int[] rank;
     private final int[] componentSize;
@@ -97,15 +99,17 @@ public final class UnionFind implements DisjointSet {
 
     private static void validateSize(int size) {
         if (size < 0) {
-            throw new IllegalArgumentException("size must be non-negative");
+            throw new IllegalArgumentException(NEGATIVE_SIZE_MESSAGE);
         }
     }
 
     private void validateIndex(int element) {
         if (element < 0 || element >= parent.length) {
-            throw new IndexOutOfBoundsException(
-                "index " + element + " is out of bounds for size " + parent.length
-            );
+            throw new IndexOutOfBoundsException(outOfBoundsMessage(element));
         }
+    }
+
+    private String outOfBoundsMessage(int element) {
+        return "index " + element + " is out of bounds for size " + parent.length;
     }
 }

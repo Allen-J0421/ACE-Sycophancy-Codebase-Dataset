@@ -19,13 +19,13 @@ public class CoinChange {
         if (coins == null || coins.length == 0) {
             throw new IllegalArgumentException("coins must be non-null and non-empty");
         }
+        if (sum < 0) {
+            throw new IllegalArgumentException("sum must be non-negative");
+        }
         for (int coin : coins) {
             if (coin <= 0) {
                 throw new IllegalArgumentException("each coin must be a positive integer, got: " + coin);
             }
-        }
-        if (sum < 0) {
-            throw new IllegalArgumentException("sum must be non-negative");
         }
 
         long[] dp = new long[sum + 1];
@@ -43,9 +43,9 @@ public class CoinChange {
     private static int[] uniqueSorted(int[] coins) {
         int[] sorted = coins.clone();
         Arrays.sort(sorted);
-        int n = 0;
-        for (int i = 0; i < sorted.length; i++) {
-            if (i == 0 || sorted[i] != sorted[i - 1]) {
+        int n = 1;
+        for (int i = 1; i < sorted.length; i++) {
+            if (sorted[i] != sorted[i - 1]) {
                 sorted[n++] = sorted[i];
             }
         }

@@ -1,6 +1,7 @@
 public class UnionFind {
     private final int[] parent;
     private final int[] rank;
+    private int componentCount;
 
     public UnionFind(int size) {
         if (size < 0) {
@@ -9,6 +10,7 @@ public class UnionFind {
 
         parent = new int[size];
         rank = new int[size];
+        componentCount = size;
         for (int i = 0; i < size; i++) {
             parent[i] = i;
         }
@@ -17,11 +19,18 @@ public class UnionFind {
     public int find(int element) {
         validateElement(element);
 
-        if (parent[element] != element) {
-            parent[element] = find(parent[element]);
+        int root = element;
+        while (root != parent[root]) {
+            root = parent[root];
         }
 
-        return parent[element];
+        while (element != root) {
+            int next = parent[element];
+            parent[element] = root;
+            element = next;
+        }
+
+        return root;
     }
 
     public boolean union(int first, int second) {
@@ -41,11 +50,16 @@ public class UnionFind {
             rank[rootFirst]++;
         }
 
+        componentCount--;
         return true;
     }
 
     public boolean connected(int first, int second) {
         return find(first) == find(second);
+    }
+
+    public int componentCount() {
+        return componentCount;
     }
 
     public int size() {
@@ -56,14 +70,5 @@ public class UnionFind {
         if (element < 0 || element >= parent.length) {
             throw new IndexOutOfBoundsException("element out of bounds: " + element);
         }
-    }
-
-    public static void main(String[] args) {
-        UnionFind unionFind = new UnionFind(5);
-        unionFind.union(1, 2);
-        unionFind.union(3, 4);
-
-        boolean inSameSet = unionFind.connected(1, 2);
-        System.out.println("Are 1 and 2 in the same set? " + inSameSet);
     }
 }

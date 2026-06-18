@@ -18,13 +18,7 @@ class Graph {
     }
 
     List<Integer> topoSort() {
-        int[] indegree = new int[n];
-
-        for (int u = 0; u < n; u++) {
-            for (int v : adj.get(u)) {
-                indegree[v]++;
-            }
-        }
+        int[] indegree = computeIndegrees();
 
         Queue<Integer> queue = new ArrayDeque<>();
         for (int i = 0; i < n; i++) {
@@ -45,6 +39,16 @@ class Graph {
         }
 
         return result;
+    }
+
+    private int[] computeIndegrees() {
+        int[] indegree = new int[n];
+        for (int u = 0; u < n; u++) {
+            for (int v : adj.get(u)) {
+                indegree[v]++;
+            }
+        }
+        return indegree;
     }
 }
 

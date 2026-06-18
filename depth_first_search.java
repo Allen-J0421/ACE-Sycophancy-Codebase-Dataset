@@ -47,6 +47,8 @@ class Graph {
 
 public class DepthFirstSearch {
 
+    private DepthFirstSearch() {}
+
     public static List<Integer> dfs(Graph graph) {
         boolean[] visited = new boolean[graph.size()];
         List<Integer> result = new ArrayList<>();
@@ -91,8 +93,8 @@ public class DepthFirstSearch {
 
         List<Integer> result = dfs(graph);
 
-        for (int node : result) {
-            System.out.print(node + " ");
-        }
+        System.out.println(result.stream()
+                .map(String::valueOf)
+                .collect(java.util.stream.Collectors.joining(" ")));
     }
 }

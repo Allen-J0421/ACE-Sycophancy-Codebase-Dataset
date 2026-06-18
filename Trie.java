@@ -44,22 +44,20 @@ public final class Trie {
     }
 
     private TrieNode findNode(String value) {
-        return walk(value, false);
+        return walk(value, MissingNodePolicy.STOP);
     }
 
     private TrieNode findOrCreateNode(String value) {
-        return walk(value, true);
+        return walk(value, MissingNodePolicy.CREATE);
     }
 
-    private TrieNode walk(String value, boolean createMissingNodes) {
+    private TrieNode walk(String value, MissingNodePolicy missingNodePolicy) {
         Objects.requireNonNull(value, "value must not be null");
         TrieNode current = root;
 
         for (int position = 0; position < value.length(); position++) {
             int index = toIndex(value.charAt(position), value);
-            current = createMissingNodes
-                ? current.getOrCreateChild(index)
-                : current.getChild(index);
+            current = missingNodePolicy.next(current, index);
             if (current == null) {
                 return null;
             }
@@ -75,6 +73,23 @@ public final class Trie {
         }
 
         return letter - FIRST_LETTER;
+    }
+
+    private enum MissingNodePolicy {
+        CREATE {
+            @Override
+            TrieNode next(TrieNode node, int index) {
+                return node.getOrCreateChild(index);
+            }
+        },
+        STOP {
+            @Override
+            TrieNode next(TrieNode node, int index) {
+                return node.getChild(index);
+            }
+        };
+
+        abstract TrieNode next(TrieNode node, int index);
     }
 
     private static final class TrieNode {

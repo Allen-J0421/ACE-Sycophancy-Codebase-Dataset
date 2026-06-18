@@ -2,6 +2,9 @@ package depthfirstsearch;
 
 import java.util.List;
 
+import depthfirstsearch.graph.Graph;
+import depthfirstsearch.search.DepthFirstSearch;
+
 public final class DepthFirstSearchTest {
 
     private DepthFirstSearchTest() {

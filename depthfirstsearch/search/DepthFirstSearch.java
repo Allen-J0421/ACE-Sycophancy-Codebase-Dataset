@@ -1,4 +1,4 @@
-package depthfirstsearch;
+package depthfirstsearch.search;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -6,6 +6,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.IntConsumer;
+
+import depthfirstsearch.graph.Graph;
 
 public final class DepthFirstSearch {
 

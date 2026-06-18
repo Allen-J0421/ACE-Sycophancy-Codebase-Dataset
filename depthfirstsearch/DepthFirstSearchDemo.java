@@ -1,3 +1,5 @@
+package depthfirstsearch;
+
 import java.util.List;
 
 public final class DepthFirstSearchDemo {

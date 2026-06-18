@@ -1,49 +1,66 @@
-import java.util.Arrays;
-
 class QuickSort {
+    private static final int[] SAMPLE_VALUES = {10, 7, 8, 9, 1, 5};
 
-    static int partition(int[] arr, int low, int high) {
+    private QuickSort() {
+    }
 
-        int pivot = arr[high];
+    static void sort(int[] values) {
+        if (values == null) {
+            throw new IllegalArgumentException("values must not be null");
+        }
 
-        int i = low - 1;
+        sortRange(values, 0, values.length - 1);
+    }
 
-        for (int j = low; j <= high - 1; j++) {
-            if (arr[j] < pivot) {
-                i++;
-                swap(arr, i, j);
+    private static void sortRange(int[] values, int startIndex, int endIndex) {
+        if (startIndex >= endIndex) {
+            return;
+        }
+
+        int pivotIndex = partition(values, startIndex, endIndex);
+
+        sortRange(values, startIndex, pivotIndex - 1);
+        sortRange(values, pivotIndex + 1, endIndex);
+    }
+
+    private static int partition(int[] values, int startIndex, int endIndex) {
+        int pivot = values[endIndex];
+        int partitionIndex = startIndex - 1;
+
+        for (int currentIndex = startIndex; currentIndex < endIndex; currentIndex++) {
+            if (values[currentIndex] < pivot) {
+                partitionIndex++;
+                swap(values, partitionIndex, currentIndex);
             }
         }
 
-        swap(arr, i + 1, high);
+        int pivotIndex = partitionIndex + 1;
+        swap(values, pivotIndex, endIndex);
 
-        return i + 1;
+        return pivotIndex;
     }
 
-    static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
+    private static void swap(int[] values, int firstIndex, int secondIndex) {
+        if (firstIndex == secondIndex) {
+            return;
+        }
+
+        int temporaryValue = values[firstIndex];
+        values[firstIndex] = values[secondIndex];
+        values[secondIndex] = temporaryValue;
     }
 
-    static void quickSort(int[] arr, int low, int high) {
-        if (low < high) {
-
-            int pi = partition(arr, low, high);
-
-            quickSort(arr, low, pi - 1);
-            quickSort(arr, pi + 1, high);
+    private static void printValues(int[] values) {
+        for (int value : values) {
+            System.out.print(value + " ");
         }
     }
 
     public static void main(String[] args) {
-        int[] arr = {10, 7, 8, 9, 1, 5};
-        int n = arr.length;
+        int[] values = SAMPLE_VALUES.clone();
 
-        quickSort(arr, 0, n - 1);
+        sort(values);
 
-        for (int val : arr) {
-            System.out.print(val + " ");
-        }
+        printValues(values);
     }
 }

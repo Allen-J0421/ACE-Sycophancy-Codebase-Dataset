@@ -1,70 +1,64 @@
-import java.io.*;
-
 class MergeSort {
 
-    static void merge(int arr[], int l, int m, int r){
-
-        int n1 = m - l + 1;
-        int n2 = r - m;
-
-        int L[] = new int[n1];
-        int R[] = new int[n2];
-
-        for (int i = 0; i < n1; ++i)
-            L[i] = arr[l + i];
-        for (int j = 0; j < n2; ++j)
-            R[j] = arr[m + 1 + j];
-
-        int i = 0, j = 0;
-
-        int k = l;
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
-                arr[k] = L[i];
-                i++;
-            }
-            else {
-                arr[k] = R[j];
-                j++;
-            }
-            k++;
+    static void sort(int[] array) {
+        if (array == null || array.length == 0) {
+            return;
         }
+        mergeSort(array, 0, array.length - 1);
+    }
 
-        while (i < n1) {
-            arr[k] = L[i];
-            i++;
-            k++;
-        }
-
-        while (j < n2) {
-            arr[k] = R[j];
-            j++;
-            k++;
+    private static void mergeSort(int[] array, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            mergeSort(array, left, mid);
+            mergeSort(array, mid + 1, right);
+            merge(array, left, mid, right);
         }
     }
 
-    static void mergeSort(int arr[], int l, int r){
+    private static void merge(int[] array, int left, int mid, int right) {
+        int[] leftArray = copyRange(array, left, mid);
+        int[] rightArray = copyRange(array, mid + 1, right);
 
-        if (l < r) {
+        int leftIndex = 0;
+        int rightIndex = 0;
+        int currentIndex = left;
 
-            int m = l + (r - l) / 2;
+        while (leftIndex < leftArray.length && rightIndex < rightArray.length) {
+            if (leftArray[leftIndex] <= rightArray[rightIndex]) {
+                array[currentIndex++] = leftArray[leftIndex++];
+            } else {
+                array[currentIndex++] = rightArray[rightIndex++];
+            }
+        }
 
-            mergeSort(arr, l, m);
-            mergeSort(arr, m + 1, r);
+        while (leftIndex < leftArray.length) {
+            array[currentIndex++] = leftArray[leftIndex++];
+        }
 
-            merge(arr, l, m, r);
+        while (rightIndex < rightArray.length) {
+            array[currentIndex++] = rightArray[rightIndex++];
         }
     }
 
-    public static void main(String args[]){
+    private static int[] copyRange(int[] array, int from, int to) {
+        int[] result = new int[to - from + 1];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = array[from + i];
+        }
+        return result;
+    }
 
-        int arr[] = {38, 27, 43, 10};
+    public static void main(String[] args) {
+        int[] array = {38, 27, 43, 10};
+        sort(array);
+        printArray(array);
+    }
 
-        mergeSort(arr, 0, arr.length - 1);
-
-        int n = arr.length;
-        for (int i = 0; i < n; ++i)
-            System.out.print(arr[i] + " ");
+    private static void printArray(int[] array) {
+        for (int value : array) {
+            System.out.print(value + " ");
+        }
         System.out.println();
     }
 }

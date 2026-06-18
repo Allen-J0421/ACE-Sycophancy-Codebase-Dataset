@@ -5,6 +5,11 @@ final class MatrixChainMultiplicationTest {
     }
 
     public static void main(String[] args) {
+        MatrixChainMultiplication.OptimizationResult sample =
+                MatrixChainMultiplication.optimize(new int[] { 2, 1, 3, 4 });
+        expectEquals(20L, sample.minimumCost(), "sample chain cost");
+        expectEquals("(A1 * (A2 * A3))", sample.parenthesization(), "sample chain order");
+
         expectEquals(20, MatrixChainMultiplication.matrixMultiplication(new int[] { 2, 1, 3, 4 }),
                 "sample chain");
         expectEquals(0, MatrixChainMultiplication.matrixMultiplication(new int[] { 5, 10 }),
@@ -17,6 +22,18 @@ final class MatrixChainMultiplicationTest {
                 "non-positive dimension");
 
         System.out.println("All tests passed.");
+    }
+
+    private static void expectEquals(long expected, long actual, String label) {
+        if (expected != actual) {
+            throw new AssertionError(label + ": expected " + expected + " but was " + actual);
+        }
+    }
+
+    private static void expectEquals(String expected, String actual, String label) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError(label + ": expected " + expected + " but was " + actual);
+        }
     }
 
     private static void expectEquals(int expected, int actual, String label) {

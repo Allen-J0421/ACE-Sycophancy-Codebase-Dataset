@@ -7,9 +7,9 @@ import java.util.Objects;
 /**
  * A least-recently-used cache with access-order eviction.
  */
-public final class LRUCache<K, V> {
+public final class LRUCache<K, V> implements Cache<K, V> {
     private final int capacity;
-    private final LinkedHashMap<K, V> entries;
+    private final EvictingLinkedHashMap<K, V> entries;
 
     public LRUCache(int capacity) {
         if (capacity < 0) {
@@ -17,48 +17,55 @@ public final class LRUCache<K, V> {
         }
 
         this.capacity = capacity;
-        this.entries = new LinkedHashMap<K, V>(16, 0.75f, true) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-                return size() > LRUCache.this.capacity;
-            }
-        };
+        this.entries = new EvictingLinkedHashMap<>(capacity);
     }
 
+    @Override
     public int capacity() {
         return capacity;
     }
 
+    @Override
     public V get(K key) {
         return entries.get(Objects.requireNonNull(key, "key"));
     }
 
-    public V getOrDefault(K key, V defaultValue) {
-        V value = get(key);
-        return value != null ? value : defaultValue;
-    }
-
+    @Override
     public void put(K key, V value) {
         entries.put(Objects.requireNonNull(key, "key"), Objects.requireNonNull(value, "value"));
     }
 
+    @Override
     public V remove(K key) {
         return entries.remove(Objects.requireNonNull(key, "key"));
     }
 
+    @Override
     public boolean containsKey(K key) {
         return entries.containsKey(Objects.requireNonNull(key, "key"));
     }
 
+    @Override
     public void clear() {
         entries.clear();
     }
 
+    @Override
     public int size() {
         return entries.size();
     }
 
-    public boolean isEmpty() {
-        return entries.isEmpty();
+    private static final class EvictingLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
+        private final int capacity;
+
+        EvictingLinkedHashMap(int capacity) {
+            super(16, 0.75f, true);
+            this.capacity = capacity;
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() > capacity;
+        }
     }
 }

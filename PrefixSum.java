@@ -6,7 +6,6 @@ import java.util.StringJoiner;
 
 public final class PrefixSum {
 
-    private static final int[] SAMPLE_VALUES = {10, 20, 10, 5, 15};
     private static final String VALUE_SEPARATOR = " ";
 
     private PrefixSum() {
@@ -27,7 +26,11 @@ public final class PrefixSum {
     }
 
     public static void main(String[] args) {
-        printPrefixSums(SAMPLE_VALUES);
+        printPrefixSums(sampleValues());
+    }
+
+    private static int[] sampleValues() {
+        return new int[] {10, 20, 10, 5, 15};
     }
 
     private static void printPrefixSums(int[] values) {

@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class GraphBuilder {
+public final class GraphBuilder implements Graph {
     private final List<List<Integer>> adjacencyList;
+    private final List<List<Integer>> adjacencyViews;
 
     private GraphBuilder(int vertexCount) {
         if (vertexCount < 0) {
@@ -13,13 +14,27 @@ public final class GraphBuilder {
         }
 
         adjacencyList = new ArrayList<>(vertexCount);
+        adjacencyViews = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
+            List<Integer> neighbors = new ArrayList<>();
+            adjacencyList.add(neighbors);
+            adjacencyViews.add(Collections.unmodifiableList(neighbors));
         }
     }
 
     public static GraphBuilder withVertices(int vertexCount) {
         return new GraphBuilder(vertexCount);
+    }
+
+    @Override
+    public int vertexCount() {
+        return adjacencyList.size();
+    }
+
+    @Override
+    public List<Integer> neighborsOf(int vertex) {
+        requireVertex(vertex);
+        return adjacencyViews.get(vertex);
     }
 
     public GraphBuilder addDirectedEdge(int from, int to) {
@@ -39,11 +54,5 @@ public final class GraphBuilder {
             adjacencyViews.add(List.copyOf(neighbors));
         }
         return new AdjacencyListGraph(Collections.unmodifiableList(adjacencyViews));
-    }
-
-    private void requireVertex(int vertex) {
-        if (vertex < 0 || vertex >= adjacencyList.size()) {
-            throw new IllegalArgumentException("Vertex out of range: " + vertex);
-        }
     }
 }

@@ -1,17 +1,17 @@
-class Node {
-    final int data;
-    Node left, right;
-
-    Node(int data) {
-        this.data = data;
-    }
-}
-
 class BinarySearchTree {
     private Node root;
 
     void insert(int value) {
         root = insert(root, value);
+    }
+
+    boolean contains(int key) {
+        Node current = root;
+        while (current != null) {
+            if (key == current.data) return true;
+            current = key < current.data ? current.left : current.right;
+        }
+        return false;
     }
 
     private Node insert(Node node, int value) {
@@ -21,13 +21,13 @@ class BinarySearchTree {
         return node;
     }
 
-    boolean search(int key) {
-        Node current = root;
-        while (current != null) {
-            if (key == current.data) return true;
-            current = key < current.data ? current.left : current.right;
+    private static class Node {
+        final int data;
+        Node left, right;
+
+        Node(int data) {
+            this.data = data;
         }
-        return false;
     }
 
     public static void main(String[] args) {
@@ -36,8 +36,8 @@ class BinarySearchTree {
             bst.insert(value);
         }
 
-        System.out.println(bst.search(7));  // true
-        System.out.println(bst.search(5));  // false
-        System.out.println(bst.search(6));  // true (root)
+        System.out.println(bst.contains(7));  // true
+        System.out.println(bst.contains(5));  // false
+        System.out.println(bst.contains(6));  // true (root)
     }
 }

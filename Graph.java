@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-final class Graph<V> implements Iterable<V> {
+final class Graph<V> implements GraphView<V> {
     private final Map<V, List<V>> adjacencyMap;
 
     private Graph(Map<V, List<V>> adjacencyMap) {
@@ -19,15 +19,18 @@ final class Graph<V> implements Iterable<V> {
         return adjacencyMap.keySet().iterator();
     }
 
-    Set<V> vertices() {
+    @Override
+    public Set<V> vertices() {
         return adjacencyMap.keySet();
     }
 
-    int vertexCount() {
+    @Override
+    public int vertexCount() {
         return adjacencyMap.size();
     }
 
-    List<V> neighbors(V vertex) {
+    @Override
+    public List<V> neighbors(V vertex) {
         List<V> neighbors = adjacencyMap.get(vertex);
         if (neighbors == null) {
             throw new VertexNotFoundException(vertex);

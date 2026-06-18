@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 final class BreadthFirstSearch {
     private BreadthFirstSearch() {}
 
-    static <V> Stream<V> stream(Graph<V> graph) {
+    static <V> Stream<V> stream(GraphView<V> graph) {
         Objects.requireNonNull(graph, "graph must not be null");
         return StreamSupport.stream(
             Spliterators.spliteratorUnknownSize(
@@ -26,17 +26,17 @@ final class BreadthFirstSearch {
         );
     }
 
-    static <V> List<V> traverse(Graph<V> graph) {
+    static <V> List<V> traverse(GraphView<V> graph) {
         return stream(graph).collect(Collectors.toList());
     }
 
     private static final class BfsIterator<V> implements Iterator<V> {
-        private final Graph<V> graph;
+        private final GraphView<V> graph;
         private final Set<V> visited = new HashSet<>();
         private final Queue<V> queue = new ArrayDeque<>();
         private final Iterator<V> vertexIterator;
 
-        BfsIterator(Graph<V> graph) {
+        BfsIterator(GraphView<V> graph) {
             this.graph = graph;
             this.vertexIterator = graph.iterator();
             seedNextComponent();

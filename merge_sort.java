@@ -9,40 +9,53 @@ class MergeSort {
             return;
         }
 
-        int[] scratch = values.clone();
-        mergeSort(scratch, values, 0, values.length);
+        new MergeSorter(values).sort();
     }
 
-    private static void mergeSort(int[] source, int[] target, int start, int end) {
-        if (end - start < 2) {
-            return;
+    private static final class MergeSorter {
+        private final int[] values;
+        private final int[] scratch;
+
+        private MergeSorter(int[] values) {
+            this.values = values;
+            this.scratch = values.clone();
         }
 
-        int middle = start + (end - start) / 2;
-        mergeSort(target, source, start, middle);
-        mergeSort(target, source, middle, end);
-        merge(source, target, start, middle, end);
-    }
+        private void sort() {
+            sortRange(scratch, values, 0, values.length);
+        }
 
-    private static void merge(int[] source, int[] target, int start, int middle, int end) {
-        int leftIndex = start;
-        int rightIndex = middle;
-        int targetIndex = start;
+        private void sortRange(int[] source, int[] target, int start, int end) {
+            if (end - start < 2) {
+                return;
+            }
 
-        while (leftIndex < middle && rightIndex < end) {
-            if (source[leftIndex] <= source[rightIndex]) {
+            int middle = start + (end - start) / 2;
+            sortRange(target, source, start, middle);
+            sortRange(target, source, middle, end);
+            mergeRange(source, target, start, middle, end);
+        }
+
+        private void mergeRange(int[] source, int[] target, int start, int middle, int end) {
+            int leftIndex = start;
+            int rightIndex = middle;
+            int targetIndex = start;
+
+            while (leftIndex < middle && rightIndex < end) {
+                if (source[leftIndex] <= source[rightIndex]) {
+                    target[targetIndex++] = source[leftIndex++];
+                } else {
+                    target[targetIndex++] = source[rightIndex++];
+                }
+            }
+
+            while (leftIndex < middle) {
                 target[targetIndex++] = source[leftIndex++];
-            } else {
+            }
+
+            while (rightIndex < end) {
                 target[targetIndex++] = source[rightIndex++];
             }
-        }
-
-        while (leftIndex < middle) {
-            target[targetIndex++] = source[leftIndex++];
-        }
-
-        while (rightIndex < end) {
-            target[targetIndex++] = source[rightIndex++];
         }
     }
 

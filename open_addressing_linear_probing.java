@@ -1,80 +1,76 @@
-import java.lang.*;
-
 class hashNode {
-    int key;
-    int value;
+    final int key;
+    final int value;
+    final boolean deleted;
 
-    public hashNode(int key, int value) {
+    hashNode(int key, int value) {
+        this(key, value, false);
+    }
+
+    private hashNode(int key, int value, boolean deleted) {
         this.key = key;
         this.value = value;
+        this.deleted = deleted;
+    }
+
+    static hashNode deletedNode() {
+        return new hashNode(0, 0, true);
     }
 }
 
 class hashMap {
-    hashNode[] arr;
-    int capacity;
-    int size;
-    hashNode dummy;
+    private static final int DEFAULT_CAPACITY = 20;
+    private static final double MAX_LOAD_FACTOR = 0.6;
 
-    public hashMap() {
-        capacity = 20;
-        size = 0;
+    private hashNode[] arr;
+    private int capacity;
+    private int size;
+    private final hashNode dummy;
+
+    hashMap() {
+        this(DEFAULT_CAPACITY);
+    }
+
+    hashMap(int initialCapacity) {
+        capacity = Math.max(1, initialCapacity);
         arr = new hashNode[capacity];
-        dummy = new hashNode(-1, -1);
+        dummy = hashNode.deletedNode();
     }
 
     int hashCode(int key) {
-        return key % capacity;
+        return Math.floorMod(key, capacity);
     }
 
     void insertNode(int key, int value) {
-        hashNode temp = new hashNode(key, value);
-        int hashIndex = hashCode(key);
+        ensureCapacity(size + 1);
 
-        while (arr[hashIndex] != null &&
-               arr[hashIndex].key != key &&
-               arr[hashIndex].key != -1) {
-            hashIndex++;
-            hashIndex %= capacity;
+        int index = findSlotForInsert(key);
+        if (index == -1) {
+            resize(capacity * 2);
+            index = findSlotForInsert(key);
         }
 
-        if (arr[hashIndex] == null || arr[hashIndex].key == -1)
+        if (arr[index] == null || arr[index].deleted) {
             size++;
-        arr[hashIndex] = temp;
+        }
+        arr[index] = new hashNode(key, value);
     }
 
     int deleteNode(int key) {
-        int hashIndex = hashCode(key);
-
-        while (arr[hashIndex] != null) {
-            if (arr[hashIndex].key == key) {
-                hashNode temp = arr[hashIndex];
-                arr[hashIndex] = dummy;
-                size--;
-                return temp.value;
-            }
-            hashIndex++;
-            hashIndex %= capacity;
+        int index = findExistingIndex(key);
+        if (index == -1) {
+            return -1;
         }
 
-        return -1;
+        int value = arr[index].value;
+        arr[index] = dummy;
+        size--;
+        return value;
     }
 
     int get(int key) {
-        int hashIndex = hashCode(key);
-        int counter = 0;
-
-        while (arr[hashIndex] != null) {
-            if (counter++ > capacity)
-                return -1;
-
-            if (arr[hashIndex].key == key)
-                return arr[hashIndex].value;
-            hashIndex++;
-            hashIndex %= capacity;
-        }
-
-        return -1;
+        int index = findExistingIndex(key);
+        return index == -1 ? -1 : arr[index].value;
     }
 
     int sizeofMap() {
@@ -86,10 +82,74 @@ class hashMap {
     }
 
     void display() {
-        for (int i = 0; i < capacity; i++) {
-            if (arr[i] != null && arr[i].key != -1) {
-                System.out.println(arr[i].key +
-                " " + arr[i].value);
+        for (hashNode node : arr) {
+            if (node != null && !node.deleted) {
+                System.out.println(node.key + " " + node.value);
+            }
+        }
+    }
+
+    private void ensureCapacity(int targetSize) {
+        if ((double) targetSize / capacity > MAX_LOAD_FACTOR) {
+            resize(capacity * 2);
+        }
+    }
+
+    private int findExistingIndex(int key) {
+        int hashIndex = hashCode(key);
+
+        for (int probes = 0; probes < capacity; probes++) {
+            hashNode node = arr[hashIndex];
+            if (node == null) {
+                return -1;
+            }
+            if (!node.deleted && node.key == key) {
+                return hashIndex;
+            }
+            hashIndex = nextIndex(hashIndex);
+        }
+
+        return -1;
+    }
+
+    private int findSlotForInsert(int key) {
+        int hashIndex = hashCode(key);
+        int firstDeletedIndex = -1;
+
+        for (int probes = 0; probes < capacity; probes++) {
+            hashNode node = arr[hashIndex];
+
+            if (node == null) {
+                return firstDeletedIndex != -1 ? firstDeletedIndex : hashIndex;
+            }
+            if (node.deleted) {
+                if (firstDeletedIndex == -1) {
+                    firstDeletedIndex = hashIndex;
+                }
+            } else if (node.key == key) {
+                return hashIndex;
+            }
+
+            hashIndex = nextIndex(hashIndex);
+        }
+
+        return firstDeletedIndex;
+    }
+
+    private int nextIndex(int index) {
+        return (index + 1) % capacity;
+    }
+
+    private void resize(int newCapacity) {
+        hashNode[] oldEntries = arr;
+
+        capacity = Math.max(1, newCapacity);
+        arr = new hashNode[capacity];
+        size = 0;
+
+        for (hashNode node : oldEntries) {
+            if (node != null && !node.deleted) {
+                insertNode(node.key, node.value);
             }
         }
     }

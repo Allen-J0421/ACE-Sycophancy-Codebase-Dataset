@@ -89,17 +89,15 @@ public class UnionFind {
 
     private void validateElement(int element) {
         if (element < 0 || element >= parent.length) {
-            throw new IndexOutOfBoundsException(
-                    "element must be between 0 and " + (parent.length - 1) + ": " + element
-            );
+            throw new IndexOutOfBoundsException(invalidElementMessage(element));
         }
     }
 
-    public static void main(String[] args) {
-        UnionFind unionFind = new UnionFind(5);
-        unionFind.union(1, 2);
-        unionFind.union(3, 4);
+    private String invalidElementMessage(int element) {
+        if (parent.length == 0) {
+            return "element is out of bounds for an empty UnionFind: " + element;
+        }
 
-        System.out.println("Are 1 and 2 in the same set? " + unionFind.connected(1, 2));
+        return "element must be between 0 and " + (parent.length - 1) + ": " + element;
     }
 }

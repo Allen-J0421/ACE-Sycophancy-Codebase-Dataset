@@ -3,64 +3,67 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class DepthFirstSearch {
+class Graph {
+    private final int vertices;
+    private final List<List<Integer>> adj;
 
-    static class Graph {
-        private final int vertices;
-        private final List<List<Integer>> adj;
-
-        Graph(int vertices) {
-            this.vertices = vertices;
-            this.adj = new ArrayList<>();
-            for (int i = 0; i < vertices; i++) {
-                adj.add(new ArrayList<>());
-            }
-        }
-
-        void addEdge(int u, int v) {
-            adj.get(u).add(v);
-            adj.get(v).add(u);
-        }
-
-        int size() {
-            return vertices;
-        }
-
-        List<Integer> neighbors(int node) {
-            return adj.get(node);
-        }
-
-        List<Integer> dfs() {
-            boolean[] visited = new boolean[vertices];
-            List<Integer> result = new ArrayList<>();
-
-            for (int start = 0; start < vertices; start++) {
-                if (!visited[start]) {
-                    traverseFrom(start, visited, result);
-                }
-            }
-
-            return result;
-        }
-
-        private void traverseFrom(int start, boolean[] visited, List<Integer> result) {
-            Deque<Integer> stack = new ArrayDeque<>();
-            stack.push(start);
-            visited[start] = true;
-
-            while (!stack.isEmpty()) {
-                int node = stack.pop();
-                result.add(node);
-
-                for (int neighbor : neighbors(node)) {
-                    if (!visited[neighbor]) {
-                        visited[neighbor] = true;
-                        stack.push(neighbor);
-                    }
-                }
-            }
+    Graph(int vertices) {
+        this.vertices = vertices;
+        this.adj = new ArrayList<>();
+        for (int i = 0; i < vertices; i++) {
+            adj.add(new ArrayList<>());
         }
     }
+
+    void addEdge(int u, int v) {
+        adj.get(u).add(v);
+        adj.get(v).add(u);
+    }
+
+    int size() {
+        return vertices;
+    }
+
+    List<Integer> neighbors(int node) {
+        return adj.get(node);
+    }
+
+    List<Integer> dfs() {
+        boolean[] visited = new boolean[vertices];
+        List<Integer> result = new ArrayList<>();
+
+        for (int start = 0; start < vertices; start++) {
+            if (!visited[start]) {
+                result.addAll(traverseFrom(start, visited));
+            }
+        }
+
+        return result;
+    }
+
+    private List<Integer> traverseFrom(int start, boolean[] visited) {
+        List<Integer> component = new ArrayList<>();
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(start);
+        visited[start] = true;
+
+        while (!stack.isEmpty()) {
+            int node = stack.pop();
+            component.add(node);
+
+            for (int neighbor : neighbors(node)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    stack.push(neighbor);
+                }
+            }
+        }
+
+        return component;
+    }
+}
+
+public class DepthFirstSearch {
 
     public static void main(String[] args) {
         Graph graph = new Graph(6);

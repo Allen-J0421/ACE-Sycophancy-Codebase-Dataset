@@ -63,6 +63,12 @@ class Dijkstra {
      *         when no path exists.
      */
     static int[] shortestDistances(Graph graph, int source) {
+        if (source < 0 || source >= graph.vertexCount()) {
+            throw new IllegalArgumentException(
+                    "source vertex " + source + " is out of range [0, "
+                            + graph.vertexCount() + ")");
+        }
+
         int[] dist = new int[graph.vertexCount()];
         Arrays.fill(dist, UNREACHABLE);
         dist[source] = 0;

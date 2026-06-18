@@ -7,6 +7,7 @@ public final class BuildHeapTest {
     }
 
     public static void main(String[] args) {
+        testSiftDown();
         testBuildMaxHeap();
         testBuildMaxHeapPrefix();
         testIsMaxHeap();
@@ -24,6 +25,15 @@ public final class BuildHeapTest {
 
         assertArrayEquals(expected, values, "buildMaxHeap should rearrange the full array");
         assertTrue(BuildHeap.isMaxHeap(values), "Result should satisfy the max-heap property");
+    }
+
+    private static void testSiftDown() {
+        int[] values = {1, 3, 2};
+        int[] expected = {3, 1, 2};
+
+        BuildHeap.siftDown(values, values.length, 0);
+
+        assertArrayEquals(expected, values, "siftDown should restore the heap property below the root");
     }
 
     private static void testBuildMaxHeapPrefix() {

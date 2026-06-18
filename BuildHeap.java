@@ -35,8 +35,7 @@ public final class BuildHeap {
     }
 
     public static void buildMaxHeap(int[] values) {
-        Objects.requireNonNull(values, "values");
-        buildMaxHeap(values, values.length);
+        buildMaxHeap(values, arrayLength(values));
     }
 
     static void buildMaxHeap(int[] values, int heapSize) {
@@ -48,14 +47,15 @@ public final class BuildHeap {
     }
 
     public static boolean isMaxHeap(int[] values) {
-        Objects.requireNonNull(values, "values");
-        return isMaxHeap(values, values.length);
+        return isMaxHeap(values, arrayLength(values));
     }
 
     static boolean isMaxHeap(int[] values, int heapSize) {
         validateHeapRange(values, heapSize);
 
-        for (int parentIndex = 0; parentIndex <= lastParentIndex(heapSize); parentIndex++) {
+        for (int parentIndex = 0, lastParentIndex = lastParentIndex(heapSize);
+                parentIndex <= lastParentIndex;
+                parentIndex++) {
             int leftChildIndex = leftChildIndex(parentIndex);
             int rightChildIndex = rightChildIndex(parentIndex);
 
@@ -75,6 +75,11 @@ public final class BuildHeap {
         int temp = values[i];
         values[i] = values[j];
         values[j] = temp;
+    }
+
+    private static int arrayLength(int[] values) {
+        Objects.requireNonNull(values, "values");
+        return values.length;
     }
 
     private static int leftChildIndex(int parentIndex) {

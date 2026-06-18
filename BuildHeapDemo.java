@@ -1,4 +1,4 @@
-import java.util.StringJoiner;
+import java.util.Arrays;
 
 public final class BuildHeapDemo {
 
@@ -15,16 +15,6 @@ public final class BuildHeapDemo {
             throw new IllegalStateException("Heap construction failed");
         }
 
-        System.out.println(formatArray(sample));
-    }
-
-    private static String formatArray(int[] values) {
-        StringJoiner joiner = new StringJoiner(" ");
-
-        for (int value : values) {
-            joiner.add(Integer.toString(value));
-        }
-
-        return joiner.toString();
+        System.out.println(Arrays.toString(sample));
     }
 }

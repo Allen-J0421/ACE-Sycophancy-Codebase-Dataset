@@ -2,12 +2,16 @@ package matrixchain;
 
 final class MatrixChainSolver {
 
-    MatrixChainResult solve(MatrixDimensions[] matrices) {
+    private MatrixChainSolver() {}
+
+    static MatrixChainResult solve(MatrixDimensions[] matrices) {
         int n = matrices.length;
         if (n == 0) throw new IllegalArgumentException("At least one matrix is required");
         if (n == 1) return new MatrixChainResult(0, "A1");
 
-        int[] dims = buildDimsArray(matrices, n);
+        validateChain(matrices);
+
+        int[] dims = buildDimsArray(matrices);
         int[][] dp = new int[n + 1][n + 1];
         int[][] split = new int[n + 1][n + 1];
 
@@ -28,7 +32,18 @@ final class MatrixChainSolver {
         return new MatrixChainResult(dp[1][n], buildParenthesization(split, 1, n));
     }
 
-    private int[] buildDimsArray(MatrixDimensions[] matrices, int n) {
+    private static void validateChain(MatrixDimensions[] matrices) {
+        for (int i = 0; i < matrices.length - 1; i++) {
+            if (!matrices[i].isCompatibleWith(matrices[i + 1])) {
+                throw new IllegalArgumentException(
+                        "Matrix " + (i + 1) + " (" + matrices[i] + ") is incompatible with matrix "
+                        + (i + 2) + " (" + matrices[i + 1] + "): inner dimensions must match");
+            }
+        }
+    }
+
+    private static int[] buildDimsArray(MatrixDimensions[] matrices) {
+        int n = matrices.length;
         int[] dims = new int[n + 1];
         dims[0] = matrices[0].rows;
         for (int i = 0; i < n; i++) {
@@ -37,7 +52,7 @@ final class MatrixChainSolver {
         return dims;
     }
 
-    private String buildParenthesization(int[][] split, int i, int j) {
+    private static String buildParenthesization(int[][] split, int i, int j) {
         if (i == j) return "A" + i;
         int k = split[i][j];
         return "(" + buildParenthesization(split, i, k)

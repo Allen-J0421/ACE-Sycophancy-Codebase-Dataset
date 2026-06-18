@@ -32,12 +32,17 @@ public class MatrixChainMultiplicationTest {
     }
 
     static void testBasicCase() {
-        // arr={2,1,3,4}: optimal is A1x(A2xA3) = 12+8 = 20
-        assertEquals(20, MatrixChainMultiplication.matrixMultiplication(new int[]{2, 1, 3, 4}));
+        // matrices 2x1, 1x3, 3x4: optimal is A1x(A2xA3) = 12+8 = 20
+        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
+            new MatrixDimensions(2, 1),
+            new MatrixDimensions(1, 3),
+            new MatrixDimensions(3, 4)
+        });
+        assertEquals(20, result.minCost);
     }
 
     static void testSingleMatrix() {
-        MatrixChainResult result = new MatrixChainSolver().solve(new MatrixDimensions[]{
+        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
             new MatrixDimensions(5, 10)
         });
         assertEquals(0, result.minCost);
@@ -45,7 +50,7 @@ public class MatrixChainMultiplicationTest {
     }
 
     static void testTwoMatrices() {
-        MatrixChainResult result = new MatrixChainSolver().solve(new MatrixDimensions[]{
+        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
             new MatrixDimensions(10, 30),
             new MatrixDimensions(30, 5)
         });
@@ -55,7 +60,7 @@ public class MatrixChainMultiplicationTest {
 
     static void testFourMatrices() {
         // Classic example: arr={40,20,30,10,30}, answer=26000
-        MatrixChainResult result = new MatrixChainSolver().solve(new MatrixDimensions[]{
+        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
             new MatrixDimensions(40, 20),
             new MatrixDimensions(20, 30),
             new MatrixDimensions(30, 10),
@@ -65,8 +70,8 @@ public class MatrixChainMultiplicationTest {
     }
 
     static void testParenthesization() {
-        // arr={2,1,3,4}: optimal split is at k=1, giving (A1 x (A2 x A3))
-        MatrixChainResult result = new MatrixChainSolver().solve(new MatrixDimensions[]{
+        // 2x1, 1x3, 3x4: optimal split at k=1 gives (A1 x (A2 x A3))
+        MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
             new MatrixDimensions(2, 1),
             new MatrixDimensions(1, 3),
             new MatrixDimensions(3, 4)
@@ -81,7 +86,14 @@ public class MatrixChainMultiplicationTest {
 
     static void testEmptyInput() {
         assertThrows(IllegalArgumentException.class,
-                () -> new MatrixChainSolver().solve(new MatrixDimensions[0]));
+                () -> MatrixChainSolver.solve(new MatrixDimensions[0]));
+    }
+
+    static void testIncompatibleChain() {
+        assertThrows(IllegalArgumentException.class, () -> MatrixChainSolver.solve(new MatrixDimensions[]{
+            new MatrixDimensions(2, 3),
+            new MatrixDimensions(5, 4)  // 3 != 5: inner dimensions do not match
+        }));
     }
 
     static void testArgumentParsing() {
@@ -110,6 +122,7 @@ public class MatrixChainMultiplicationTest {
         testParenthesization();
         testInvalidDimensions();
         testEmptyInput();
+        testIncompatibleChain();
         testArgumentParsing();
         testArgumentParsingInvalid();
         System.out.println("All tests passed!");

@@ -12,6 +12,10 @@ final class MatrixDimensions {
         this.cols = cols;
     }
 
+    boolean isCompatibleWith(MatrixDimensions next) {
+        return this.cols == next.rows;
+    }
+
     @Override
     public String toString() {
         return rows + "x" + cols;

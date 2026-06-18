@@ -2,10 +2,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
-    private final int capacity;
+    private final CacheCapacity capacity;
 
-    protected AbstractCache(int capacity) {
-        this.capacity = validateCapacity(capacity);
+    protected AbstractCache(CacheCapacity capacity) {
+        this.capacity = Objects.requireNonNull(capacity, "capacity must not be null");
     }
 
     @Override
@@ -30,7 +30,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     @Override
     public final int capacity() {
-        return capacity;
+        return capacity.value();
     }
 
     protected abstract V getValue(K key);
@@ -49,11 +49,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
         return Objects.requireNonNull(value, "value must not be null");
     }
 
-    private static int validateCapacity(int capacity) {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException("capacity must be greater than 0");
-        }
-
+    protected final CacheCapacity capacityValue() {
         return capacity;
     }
 }

@@ -4,7 +4,7 @@ import java.util.Objects;
 public abstract class MapBackedCache<K, V> extends AbstractCache<K, V> {
     private final Map<K, V> entries;
 
-    protected MapBackedCache(int capacity, Map<K, V> entries) {
+    protected MapBackedCache(CacheCapacity capacity, Map<K, V> entries) {
         super(capacity);
         this.entries = Objects.requireNonNull(entries, "entries must not be null");
     }

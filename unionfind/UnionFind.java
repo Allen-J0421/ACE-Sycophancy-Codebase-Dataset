@@ -1,7 +1,5 @@
 package unionfind;
 
-import java.util.Arrays;
-
 public class UnionFind {
     private final int[] parent;
     private final int[] size;
@@ -49,12 +47,12 @@ public class UnionFind {
 
     public int[] componentMembers(int i) {
         int root = find(i);
-        int[] temp = new int[parent.length];
-        int count = 0;
+        int[] members = new int[size[root]]; // size[root] is the exact component size
+        int idx = 0;
         for (int k = 0; k < parent.length; k++) {
-            if (find(k) == root) temp[count++] = k;
+            if (find(k) == root) members[idx++] = k;
         }
-        return Arrays.copyOf(temp, count);
+        return members;
     }
 
     public void reset() {

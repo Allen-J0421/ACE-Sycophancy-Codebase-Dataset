@@ -1,5 +1,7 @@
 package unionfind;
 
+import java.util.Arrays;
+
 public class TestSupport {
     interface ThrowingRunnable {
         void run() throws Exception;
@@ -33,27 +35,15 @@ public class TestSupport {
     }
 
     public void assertArrayEquals(String label, int[] expected, int[] actual) {
-        if (java.util.Arrays.equals(expected, actual)) {
+        if (Arrays.equals(expected, actual)) {
             System.out.println("PASS: " + label);
             passed++;
         } else {
             System.out.println("FAIL: " + label
-                    + " (expected " + java.util.Arrays.toString(expected)
-                    + ", got " + java.util.Arrays.toString(actual) + ")");
+                    + " (expected " + Arrays.toString(expected)
+                    + ", got " + Arrays.toString(actual) + ")");
             failed++;
         }
-    }
-
-    public void assertContains(String label, int[] arr, int value) {
-        for (int x : arr) {
-            if (x == value) {
-                System.out.println("PASS: " + label);
-                passed++;
-                return;
-            }
-        }
-        System.out.println("FAIL: " + label + " (value " + value + " not found in array)");
-        failed++;
     }
 
     public void assertThrows(String label, Class<? extends Exception> expectedType, ThrowingRunnable runnable) {

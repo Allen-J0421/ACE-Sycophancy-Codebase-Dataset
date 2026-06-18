@@ -96,15 +96,14 @@ public final class MinHeap {
         }
     }
 
-    private void ensureCanDecrease(int index, int newVal) {
-        if (newVal > elements[index]) {
-            throw new IllegalArgumentException("New value must not be greater than the current value");
-        }
-    }
-
-    private void ensureCanIncrease(int index, int newVal) {
-        if (newVal < elements[index]) {
-            throw new IllegalArgumentException("New value must not be less than the current value");
+    private void validateKeyMovement(int index, int newVal, boolean decreasing) {
+        int currentValue = elements[index];
+        if (decreasing ? newVal > currentValue : newVal < currentValue) {
+            throw new IllegalArgumentException(
+                decreasing
+                    ? "New value must not be greater than the current value"
+                    : "New value must not be less than the current value"
+            );
         }
     }
 
@@ -143,7 +142,7 @@ public final class MinHeap {
 
     public void decreaseKey(int key, int newVal) {
         validateIndex(key);
-        ensureCanDecrease(key, newVal);
+        validateKeyMovement(key, newVal, true);
         updateKeyInternal(key, newVal);
     }
 
@@ -166,7 +165,7 @@ public final class MinHeap {
 
     public void increaseKey(int key, int newVal) {
         validateIndex(key);
-        ensureCanIncrease(key, newVal);
+        validateKeyMovement(key, newVal, false);
         updateKeyInternal(key, newVal);
     }
 

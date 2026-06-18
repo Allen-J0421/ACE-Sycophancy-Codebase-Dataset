@@ -5,6 +5,10 @@ public class MinHeapTest {
         }
     }
 
+    private static void assertFalse(boolean condition, String message) {
+        assertTrue(!condition, message);
+    }
+
     private static void assertEquals(int actual, int expected, String message) {
         if (actual != expected) {
             throw new AssertionError(message);
@@ -35,7 +39,7 @@ public class MinHeapTest {
         assertEquals(heap.peek(), 1, "Key update should restore heap order");
         assertEquals(heap.size(), 3, "Heap size should reflect inserted elements");
         assertTrue(heap.offer(9), "Expected final insert to succeed before reaching capacity");
-        assertTrue(!heap.offer(11), "Insert should fail once the heap reaches capacity");
+        assertFalse(heap.offer(11), "Insert should fail once the heap reaches capacity");
 
         heap.removeAtIndex(1);
         assertEquals(heap.size(), 3, "Delete should reduce heap size");

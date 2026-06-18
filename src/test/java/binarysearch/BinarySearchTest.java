@@ -1,3 +1,5 @@
+package binarysearch;
+
 import java.util.Comparator;
 
 public final class BinarySearchTest {
@@ -19,6 +21,7 @@ public final class BinarySearchTest {
         expectEquals(3, BinarySearch.binarySearch(values, 10), "int search finds existing value");
         expectEquals(-1, BinarySearch.binarySearch(values, 7), "int search returns -1 for missing value");
         expectEquals(0, BinarySearch.binarySearch(new int[] { 1 }, 1), "int search handles single-element arrays");
+        expectEquals(-1, BinarySearch.binarySearch(new int[0], 1), "int search handles empty arrays");
     }
 
     private static void testGenericSearch() {
@@ -26,6 +29,7 @@ public final class BinarySearchTest {
 
         expectEquals(3, BinarySearch.binarySearch(values, 10), "generic search finds existing value");
         expectEquals(-1, BinarySearch.binarySearch(values, 7), "generic search returns -1 for missing value");
+        expectEquals(-1, BinarySearch.binarySearch(new Integer[0], 1), "generic search handles empty arrays");
     }
 
     private static void testComparatorSearch() {

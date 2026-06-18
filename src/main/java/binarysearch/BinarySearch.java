@@ -1,3 +1,5 @@
+package binarysearch;
+
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -9,6 +11,16 @@ public final class BinarySearch {
     public static int binarySearch(int[] array, int target) {
         Objects.requireNonNull(array, "array");
         return binarySearch(array, target, 0, array.length - 1);
+    }
+
+    public static <T extends Comparable<? super T>> int binarySearch(T[] array, T target) {
+        return binarySearch(array, target, Comparator.naturalOrder());
+    }
+
+    public static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator) {
+        Objects.requireNonNull(array, "array");
+        Objects.requireNonNull(comparator, "comparator");
+        return binarySearch(array, target, comparator, 0, array.length - 1);
     }
 
     private static int binarySearch(int[] array, int target, int left, int right) {
@@ -28,16 +40,6 @@ public final class BinarySearch {
         }
 
         return -1;
-    }
-
-    public static <T extends Comparable<? super T>> int binarySearch(T[] array, T target) {
-        return binarySearch(array, target, Comparator.naturalOrder());
-    }
-
-    public static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
-        return binarySearch(array, target, comparator, 0, array.length - 1);
     }
 
     private static <T> int binarySearch(T[] array, T target, Comparator<? super T> comparator, int left, int right) {

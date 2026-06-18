@@ -7,11 +7,19 @@ public final class CoinChange {
         // Utility class.
     }
 
+    /**
+     * Counts the number of unique combinations that sum to {@code sum}.
+     * Duplicate coin denominations are ignored.
+     */
     public static int count(int[] coins, int sum) {
-        validateInput(coins, sum);
-        return Math.toIntExact(countCombinations(coins, sum));
+        validateSum(sum);
+        int[] normalizedCoins = normalizeCoins(coins);
+        return Math.toIntExact(countCombinations(normalizedCoins, sum));
     }
 
+    /**
+     * Convenience overload for callers that already have coins as varargs.
+     */
     public static int countWays(int sum, int... coins) {
         return count(coins, sum);
     }
@@ -20,18 +28,38 @@ public final class CoinChange {
         CoinChangeCli.main(args);
     }
 
-    private static void validateInput(int[] coins, int sum) {
-        if (coins == null) {
-            throw new IllegalArgumentException("coins must not be null");
-        }
+    private static void validateSum(int sum) {
         if (sum < 0) {
             throw new IllegalArgumentException("sum must be non-negative");
         }
-        for (int coin : coins) {
+    }
+
+    private static int[] normalizeCoins(int[] coins) {
+        if (coins == null) {
+            throw new IllegalArgumentException("coins must not be null");
+        }
+        if (coins.length == 0) {
+            return coins;
+        }
+
+        int[] normalized = coins.clone();
+        java.util.Arrays.sort(normalized);
+
+        int uniqueCount = 0;
+        int previous = 0;
+        for (int coin : normalized) {
             if (coin <= 0) {
                 throw new IllegalArgumentException("coin values must be positive");
             }
+            if (uniqueCount == 0 || coin != previous) {
+                normalized[uniqueCount++] = coin;
+                previous = coin;
+            }
         }
+
+        int[] uniqueCoins = new int[uniqueCount];
+        System.arraycopy(normalized, 0, uniqueCoins, 0, uniqueCount);
+        return uniqueCoins;
     }
 
     private static long countCombinations(int[] coins, int sum) {

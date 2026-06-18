@@ -8,6 +8,8 @@ public final class CoinChangeTest {
         assertCount(5, new int[] {1, 2, 3}, 5);
         assertCount(1, new int[] {1, 2, 3}, 0);
         assertCount(5, new int[] {2, 5, 3, 6}, 10);
+        assertCount(2, new int[] {1, 1, 2}, 3);
+        assertCount(1, new int[] {2, 2}, 4);
         assertCount(1, new int[] {}, 0);
         assertCount(0, new int[] {}, 5);
         assertThrows(() -> CoinChange.count(null, 5));

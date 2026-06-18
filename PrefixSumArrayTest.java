@@ -13,6 +13,7 @@ public final class PrefixSumArrayTest {
         shouldHandleEmptyInput();
         shouldComputePrefixSumsAsLongArrayForLargeValues();
         shouldRejectIntOverflow();
+        shouldRejectIntOverflowWhenBoxing();
         shouldRejectNullInput();
         System.out.println("All PrefixSumArray tests passed.");
     }
@@ -48,21 +49,30 @@ public final class PrefixSumArrayTest {
     }
 
     private static void shouldRejectIntOverflow() {
-        try {
-            PrefixSumArray.prefixSumsAsArray(new int[] {Integer.MAX_VALUE, 1});
-            throw new AssertionError("Expected ArithmeticException for int overflow");
-        } catch (ArithmeticException expected) {
-            // Expected path.
-        }
+        assertThrows(ArithmeticException.class, new CheckedRunnable() {
+            @Override
+            public void run() {
+                PrefixSumArray.prefixSumsAsArray(new int[] {Integer.MAX_VALUE, 1});
+            }
+        });
+    }
+
+    private static void shouldRejectIntOverflowWhenBoxing() {
+        assertThrows(ArithmeticException.class, new CheckedRunnable() {
+            @Override
+            public void run() {
+                PrefixSumArray.prefixSums(new int[] {Integer.MAX_VALUE, 1});
+            }
+        });
     }
 
     private static void shouldRejectNullInput() {
-        try {
-            PrefixSumArray.prefixSumsAsArray(null);
-            throw new AssertionError("Expected IllegalArgumentException for null input");
-        } catch (IllegalArgumentException expected) {
-            // Expected path.
-        }
+        assertThrows(IllegalArgumentException.class, new CheckedRunnable() {
+            @Override
+            public void run() {
+                PrefixSumArray.prefixSumsAsArray(null);
+            }
+        });
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual) {
@@ -74,7 +84,7 @@ public final class PrefixSumArrayTest {
         for (int i = 0; i < expected.length; i++) {
             if (expected[i] != actual[i]) {
                 throw new AssertionError(
-                "Mismatch at index " + i + ": expected " + expected[i] + ", got " + actual[i]);
+                    "Mismatch at index " + i + ": expected " + expected[i] + ", got " + actual[i]);
             }
         }
     }
@@ -91,5 +101,27 @@ public final class PrefixSumArrayTest {
                     "Mismatch at index " + i + ": expected " + expected[i] + ", got " + actual[i]);
             }
         }
+    }
+
+    private static <T extends Throwable> void assertThrows(
+        Class<T> expectedType,
+        CheckedRunnable action) {
+        try {
+            action.run();
+        } catch (Throwable thrown) {
+            if (expectedType.isInstance(thrown)) {
+                return;
+            }
+
+            throw new AssertionError(
+                "Expected " + expectedType.getSimpleName() + " but got " + thrown.getClass().getSimpleName(),
+                thrown);
+        }
+
+        throw new AssertionError("Expected " + expectedType.getSimpleName() + " to be thrown");
+    }
+
+    private interface CheckedRunnable {
+        void run();
     }
 }

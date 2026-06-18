@@ -34,7 +34,7 @@ class Graph {
     }
 
     List<Edge> neighbors(int vertex) {
-        return adjacencyList.get(vertex);
+        return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
     int size() {
@@ -42,40 +42,40 @@ class Graph {
     }
 }
 
+class ShortestPathResult {
+    private final int[] dist;
+    private final int[] prev;
+    private final int source;
+
+    ShortestPathResult(int[] dist, int[] prev, int source) {
+        this.dist = dist;
+        this.prev = prev;
+        this.source = source;
+    }
+
+    int distanceTo(int vertex) {
+        return dist[vertex];
+    }
+
+    boolean isReachable(int vertex) {
+        return dist[vertex] != Integer.MAX_VALUE;
+    }
+
+    List<Integer> pathTo(int vertex) {
+        if (!isReachable(vertex)) return Collections.emptyList();
+        List<Integer> path = new ArrayList<>();
+        for (int v = vertex; v != source; v = prev[v]) {
+            path.add(v);
+        }
+        path.add(source);
+        Collections.reverse(path);
+        return path;
+    }
+}
+
 class Dijkstra {
 
     private Dijkstra() {}
-
-    static class ShortestPathResult {
-        private final int[] dist;
-        private final int[] prev;
-        private final int source;
-
-        ShortestPathResult(int[] dist, int[] prev, int source) {
-            this.dist = dist;
-            this.prev = prev;
-            this.source = source;
-        }
-
-        int distanceTo(int vertex) {
-            return dist[vertex];
-        }
-
-        boolean isReachable(int vertex) {
-            return dist[vertex] != Integer.MAX_VALUE;
-        }
-
-        List<Integer> pathTo(int vertex) {
-            if (!isReachable(vertex)) return Collections.emptyList();
-            List<Integer> path = new ArrayList<>();
-            for (int v = vertex; v != source; v = prev[v]) {
-                path.add(v);
-            }
-            path.add(source);
-            Collections.reverse(path);
-            return path;
-        }
-    }
 
     private static class QueueEntry implements Comparable<QueueEntry> {
         final int distance;

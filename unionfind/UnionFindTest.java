@@ -73,8 +73,8 @@ public class UnionFindTest {
         t.assertEquals("singleton component has size 1", 1, uf.componentSize(0));
 
         uf.union(0, 1);
-        t.assertEquals("component size after merging 2", 2, uf.componentSize(0));
-        t.assertEquals("both members report same size", uf.componentSize(0), uf.componentSize(1));
+        t.assertEquals("element 0 reports component size 2", 2, uf.componentSize(0));
+        t.assertEquals("element 1 reports component size 2", 2, uf.componentSize(1));
 
         uf.union(1, 2);
         t.assertEquals("component size after merging 3", 3, uf.componentSize(2));
@@ -101,25 +101,17 @@ public class UnionFindTest {
 
     private static void testComponentMembers(TestSupport t) {
         UnionFind uf = new UnionFind(5);
-        int[] solo = uf.componentMembers(2);
-        t.assertEquals("isolated element has 1 member", 1, solo.length);
-        t.assertEquals("isolated element's only member is itself", 2, solo[0]);
+        t.assertArrayEquals("isolated element is its own member", new int[]{2}, uf.componentMembers(2));
 
         uf.union(0, 1);
         uf.union(1, 3);
-        int[] group = uf.componentMembers(0);
-        t.assertEquals("merged component has correct member count", 3, group.length);
-
-        t.assertContains("component members contains 0", group, 0);
-        t.assertContains("component members contains 1", group, 1);
-        t.assertContains("component members contains 3", group, 3);
-
-        // any member of the component returns the same set
-        t.assertEquals("componentMembers(1) same size as componentMembers(0)",
-                uf.componentMembers(0).length, uf.componentMembers(1).length);
-
-        // isolated elements are not included
-        t.assertEquals("isolated element 2 has 1 member after merges", 1, uf.componentMembers(2).length);
+        // componentMembers iterates k=0..n-1, so results are in ascending order
+        t.assertArrayEquals("merged component contains exactly {0,1,3}",
+                new int[]{0, 1, 3}, uf.componentMembers(0));
+        t.assertArrayEquals("any member of the component returns the same result",
+                new int[]{0, 1, 3}, uf.componentMembers(1));
+        t.assertArrayEquals("isolated element excluded from merged component",
+                new int[]{2}, uf.componentMembers(2));
     }
 
     private static void testLargeStructure(TestSupport t) {

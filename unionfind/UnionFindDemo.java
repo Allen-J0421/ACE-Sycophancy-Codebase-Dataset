@@ -7,8 +7,8 @@ public class UnionFindDemo {
     static class Edge implements Comparable<Edge> {
         final int u, v, weight;
         Edge(int u, int v, int weight) { this.u = u; this.v = v; this.weight = weight; }
-        public int compareTo(Edge other) { return Integer.compare(this.weight, other.weight); }
-        public String toString() { return u + "-" + v + " (weight " + weight + ")"; }
+        @Override public int compareTo(Edge other) { return Integer.compare(this.weight, other.weight); }
+        @Override public String toString() { return u + "-" + v + " (weight " + weight + ")"; }
     }
 
     public static void main(String[] args) {

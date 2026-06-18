@@ -32,6 +32,18 @@ public class TestSupport {
         }
     }
 
+    public void assertArrayEquals(String label, int[] expected, int[] actual) {
+        if (java.util.Arrays.equals(expected, actual)) {
+            System.out.println("PASS: " + label);
+            passed++;
+        } else {
+            System.out.println("FAIL: " + label
+                    + " (expected " + java.util.Arrays.toString(expected)
+                    + ", got " + java.util.Arrays.toString(actual) + ")");
+            failed++;
+        }
+    }
+
     public void assertContains(String label, int[] arr, int value) {
         for (int x : arr) {
             if (x == value) {

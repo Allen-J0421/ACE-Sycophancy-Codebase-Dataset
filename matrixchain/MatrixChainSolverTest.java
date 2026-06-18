@@ -1,6 +1,6 @@
 package matrixchain;
 
-public class MatrixChainMultiplicationTest {
+public class MatrixChainSolverTest {
 
     @FunctionalInterface
     interface ThrowingRunnable {
@@ -20,9 +20,7 @@ public class MatrixChainMultiplicationTest {
     }
 
     static void assertEquals(long expected, long actual) {
-        if (expected != actual) {
-            throw new AssertionError("Expected " + expected + " but got " + actual);
-        }
+        if (expected != actual) throw new AssertionError("Expected " + expected + " but got " + actual);
     }
 
     static void assertEquals(String expected, String actual) {
@@ -30,6 +28,41 @@ public class MatrixChainMultiplicationTest {
             throw new AssertionError("Expected '" + expected + "' but got '" + actual + "'");
         }
     }
+
+    static void assertEquals(Object expected, Object actual) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError("Expected " + expected + " but got " + actual);
+        }
+    }
+
+    static void assertTrue(boolean condition, String message) {
+        if (!condition) throw new AssertionError(message);
+    }
+
+    // --- MatrixDimensions ---
+
+    static void testDimensionsValidation() {
+        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(0, 5));
+        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(5, -1));
+    }
+
+    static void testDimensionsEquality() {
+        MatrixDimensions a = new MatrixDimensions(3, 4);
+        MatrixDimensions b = new MatrixDimensions(3, 4);
+        MatrixDimensions c = new MatrixDimensions(3, 5);
+        assertEquals(a, b);
+        assertTrue(!a.equals(c), "Different dimensions should not be equal");
+        assertTrue(a.hashCode() == b.hashCode(), "Equal dimensions should have equal hash codes");
+    }
+
+    static void testDimensionsCompatibility() {
+        assertTrue(new MatrixDimensions(2, 3).isCompatibleWith(new MatrixDimensions(3, 4)),
+                "Matching inner dimension should be compatible");
+        assertTrue(!new MatrixDimensions(2, 3).isCompatibleWith(new MatrixDimensions(5, 4)),
+                "Mismatched inner dimension should not be compatible");
+    }
+
+    // --- MatrixChainSolver ---
 
     static void testSingleMatrix() {
         MatrixChainResult result = MatrixChainSolver.solve(new MatrixDimensions[]{
@@ -70,34 +103,36 @@ public class MatrixChainMultiplicationTest {
         assertEquals(26000, result.minCost);
     }
 
-    static void testNullInput() {
+    static void testNullArray() {
         assertThrows(IllegalArgumentException.class, () -> MatrixChainSolver.solve(null));
     }
 
-    static void testEmptyInput() {
-        assertThrows(IllegalArgumentException.class,
-                () -> MatrixChainSolver.solve(new MatrixDimensions[0]));
+    static void testNullElementInChain() {
+        assertThrows(IllegalArgumentException.class, () -> MatrixChainSolver.solve(new MatrixDimensions[]{
+            new MatrixDimensions(2, 3),
+            null
+        }));
     }
 
-    static void testInvalidDimensions() {
-        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(0, 5));
-        assertThrows(IllegalArgumentException.class, () -> new MatrixDimensions(5, -1));
+    static void testEmptyChain() {
+        assertThrows(IllegalArgumentException.class,
+                () -> MatrixChainSolver.solve(new MatrixDimensions[0]));
     }
 
     static void testIncompatibleChain() {
         assertThrows(IllegalArgumentException.class, () -> MatrixChainSolver.solve(new MatrixDimensions[]{
             new MatrixDimensions(2, 3),
-            new MatrixDimensions(5, 4)  // 3 != 5: inner dimensions do not match
+            new MatrixDimensions(5, 4)  // 3 != 5
         }));
     }
+
+    // --- MatrixChainArguments ---
 
     static void testArgumentParsing() {
         MatrixDimensions[] matrices = MatrixChainArguments.parse(new String[]{"10", "30", "5"}).matrices();
         assertEquals(2, matrices.length);
-        assertEquals(10, matrices[0].rows);
-        assertEquals(30, matrices[0].cols);
-        assertEquals(30, matrices[1].rows);
-        assertEquals(5, matrices[1].cols);
+        assertEquals(new MatrixDimensions(10, 30), matrices[0]);
+        assertEquals(new MatrixDimensions(30, 5), matrices[1]);
     }
 
     static void testArgumentParsingInvalid() {
@@ -110,13 +145,16 @@ public class MatrixChainMultiplicationTest {
     }
 
     public static void main(String[] args) {
+        testDimensionsValidation();
+        testDimensionsEquality();
+        testDimensionsCompatibility();
         testSingleMatrix();
         testTwoMatrices();
         testThreeMatrices();
         testFourMatrices();
-        testNullInput();
-        testEmptyInput();
-        testInvalidDimensions();
+        testNullArray();
+        testNullElementInChain();
+        testEmptyChain();
         testIncompatibleChain();
         testArgumentParsing();
         testArgumentParsingInvalid();

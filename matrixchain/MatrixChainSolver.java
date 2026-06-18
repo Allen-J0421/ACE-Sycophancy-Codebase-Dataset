@@ -8,6 +8,9 @@ final class MatrixChainSolver {
         if (matrices == null) throw new IllegalArgumentException("matrices must not be null");
         int n = matrices.length;
         if (n == 0) throw new IllegalArgumentException("At least one matrix is required");
+        for (MatrixDimensions m : matrices) {
+            if (m == null) throw new IllegalArgumentException("Matrix chain must not contain null elements");
+        }
         if (n == 1) return new MatrixChainResult(0, "A1");
 
         validateChain(matrices);

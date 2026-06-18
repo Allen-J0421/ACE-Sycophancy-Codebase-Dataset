@@ -17,6 +17,19 @@ final class MatrixDimensions {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof MatrixDimensions)) return false;
+        MatrixDimensions other = (MatrixDimensions) obj;
+        return rows == other.rows && cols == other.cols;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * rows + cols;
+    }
+
+    @Override
     public String toString() {
         return rows + "x" + cols;
     }

@@ -8,10 +8,11 @@ public final class Trie {
     private final TrieNode root = new TrieNode();
 
     public void insert(String key) {
+        Objects.requireNonNull(key, "key must not be null");
         TrieNode current = root;
 
-        for (char letter : requireLowercaseKey(key).toCharArray()) {
-            int index = toIndex(letter);
+        for (int position = 0; position < key.length(); position++) {
+            int index = toIndex(key.charAt(position), key);
             if (current.children[index] == null) {
                 current.children[index] = new TrieNode();
             }
@@ -26,15 +27,20 @@ public final class Trie {
         return node != null && node.isWord;
     }
 
-    public boolean isPrefix(String prefix) {
+    public boolean startsWith(String prefix) {
         return findNode(prefix) != null;
     }
 
+    public boolean isPrefix(String prefix) {
+        return startsWith(prefix);
+    }
+
     private TrieNode findNode(String key) {
+        Objects.requireNonNull(key, "key must not be null");
         TrieNode current = root;
 
-        for (char letter : requireLowercaseKey(key).toCharArray()) {
-            current = current.children[toIndex(letter)];
+        for (int position = 0; position < key.length(); position++) {
+            current = current.children[toIndex(key.charAt(position), key)];
             if (current == null) {
                 return null;
             }
@@ -43,20 +49,12 @@ public final class Trie {
         return current;
     }
 
-    private static String requireLowercaseKey(String key) {
-        Objects.requireNonNull(key, "key must not be null");
-
-        for (char letter : key.toCharArray()) {
-            if (letter < FIRST_LETTER || letter > LAST_LETTER) {
-                throw new IllegalArgumentException(
-                    "Trie keys may only contain lowercase letters a-z: " + key);
-            }
+    private static int toIndex(char letter, String key) {
+        if (letter < FIRST_LETTER || letter > LAST_LETTER) {
+            throw new IllegalArgumentException(
+                "Trie keys may only contain lowercase letters a-z: " + key);
         }
 
-        return key;
-    }
-
-    private static int toIndex(char letter) {
         return letter - FIRST_LETTER;
     }
 

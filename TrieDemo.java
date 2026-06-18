@@ -13,7 +13,7 @@ final class TrieDemo {
 
         printResults(SEARCH_KEYS, trie::search);
         System.out.println();
-        printResults(PREFIX_KEYS, trie::isPrefix);
+        printResults(PREFIX_KEYS, trie::startsWith);
     }
 
     private static Trie buildTrie(String[] words) {

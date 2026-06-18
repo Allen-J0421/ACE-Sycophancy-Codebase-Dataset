@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
 
 /**
  * An undirected graph over vertices of arbitrary type {@code V}, backed by an
@@ -66,15 +65,33 @@ final class Graph<V> implements Iterable<V> {
     }
 
     /**
-     * Applies {@code action} to each neighbor of {@code vertex} in insertion order.
-     * A functional alternative to iterating {@link #neighbors(Object)}.
+     * Applies {@code visitor} to each neighbor of {@code vertex} in insertion
+     * order, stopping early if a visit returns {@code false}. A functional,
+     * short-circuitable alternative to iterating {@link #neighbors(Object)}.
      *
+     * @return {@code true} if every neighbor was visited, {@code false} if the
+     *         visitor interrupted the traversal
      * @throws IllegalArgumentException if {@code vertex} is not in the graph
-     * @throws NullPointerException     if {@code action} is null
+     * @throws NullPointerException     if {@code visitor} is null
      */
-    void forEachNeighbor(V vertex, Consumer<? super V> action) {
-        Objects.requireNonNull(action, "action");
-        neighbors(vertex).forEach(action);
+    boolean forEachNeighbor(V vertex, NeighborVisitor<? super V> visitor) {
+        Objects.requireNonNull(visitor, "visitor");
+        for (V neighbor : neighbors(vertex)) {
+            if (!visitor.visit(neighbor)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Receives neighbors during {@link #forEachNeighbor}. Returning {@code false}
+     * stops the traversal before the remaining neighbors are visited.
+     */
+    @FunctionalInterface
+    interface NeighborVisitor<V> {
+        /** @return {@code true} to continue to the next neighbor, {@code false} to stop */
+        boolean visit(V neighbor);
     }
 
     /** Iterates the graph's vertices in insertion order; the iterator is read-only. */
@@ -129,6 +146,7 @@ final class BreadthFirstSearch {
                 if (visited.add(neighbor)) {
                     queue.add(neighbor);
                 }
+                return true; // BFS never interrupts; it visits every neighbor
             });
         }
     }

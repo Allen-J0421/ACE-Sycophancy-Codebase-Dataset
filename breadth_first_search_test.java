@@ -46,8 +46,10 @@ class BreadthFirstSearchTest {
         test("graph is iterable over vertices in insertion order", BreadthFirstSearchTest::graphIsIterable);
         test("graph iterator is read-only", BreadthFirstSearchTest::graphIteratorReadOnly);
         test("forEachNeighbor visits neighbors in insertion order", BreadthFirstSearchTest::forEachNeighborOrder);
+        test("forEachNeighbor returns true when not interrupted", BreadthFirstSearchTest::forEachNeighborCompletes);
+        test("forEachNeighbor stops early and returns false", BreadthFirstSearchTest::forEachNeighborInterrupts);
         test("forEachNeighbor on an absent vertex throws", BreadthFirstSearchTest::forEachNeighborAbsentVertexThrows);
-        test("forEachNeighbor rejects a null action", BreadthFirstSearchTest::forEachNeighborNullAction);
+        test("forEachNeighbor rejects a null visitor", BreadthFirstSearchTest::forEachNeighborNullVisitor);
 
         System.out.printf("%n%d run, %d passed, %d failed%n", run, run - failed, failed);
         System.exit(failed == 0 ? 0 : 1);
@@ -181,17 +183,43 @@ class BreadthFirstSearchTest {
         g.addEdge(0, 1);
         g.addEdge(0, 2);
         List<Integer> collected = new ArrayList<>();
-        g.forEachNeighbor(0, collected::add);
+        g.forEachNeighbor(0, neighbor -> {
+            collected.add(neighbor);
+            return true;
+        });
         assertEquals(Arrays.asList(3, 1, 2), collected);
         assertEquals(g.neighbors(0), collected); // same contents as the list view
     }
 
-    private static void forEachNeighborAbsentVertexThrows() {
-        Graph<Integer> g = new Graph<>();
-        assertThrows(IllegalArgumentException.class, () -> g.forEachNeighbor(42, v -> { }));
+    private static void forEachNeighborCompletes() {
+        Graph<Integer> g = intGraph(3);
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        boolean completed = g.forEachNeighbor(0, neighbor -> true);
+        assertTrue("traversal reported completion", completed);
     }
 
-    private static void forEachNeighborNullAction() {
+    private static void forEachNeighborInterrupts() {
+        Graph<Integer> g = intGraph(4);
+        g.addEdge(0, 3);
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        List<Integer> collected = new ArrayList<>();
+        // Stop right after the first neighbor.
+        boolean completed = g.forEachNeighbor(0, neighbor -> {
+            collected.add(neighbor);
+            return false;
+        });
+        assertTrue("traversal reported interruption", !completed);
+        assertEquals(Arrays.asList(3), collected); // remaining neighbors were skipped
+    }
+
+    private static void forEachNeighborAbsentVertexThrows() {
+        Graph<Integer> g = new Graph<>();
+        assertThrows(IllegalArgumentException.class, () -> g.forEachNeighbor(42, v -> true));
+    }
+
+    private static void forEachNeighborNullVisitor() {
         Graph<Integer> g = intGraph(1);
         assertThrows(NullPointerException.class, () -> g.forEachNeighbor(0, null));
     }

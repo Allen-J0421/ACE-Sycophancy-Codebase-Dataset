@@ -8,6 +8,18 @@ final class BuildHeap {
     private BuildHeap() {
     }
 
+    static void buildHeap(int[] values) {
+        buildMaxHeap(values);
+    }
+
+    static void buildMaxHeap(int[] values) {
+        Objects.requireNonNull(values, "values");
+
+        for (int index = lastParentIndex(values.length); index >= 0; index--) {
+            siftDown(values, values.length, index);
+        }
+    }
+
     private static void siftDown(int[] values, int heapSize, int startIndex) {
         int currentIndex = startIndex;
 
@@ -62,18 +74,6 @@ final class BuildHeap {
         int temp = values[firstIndex];
         values[firstIndex] = values[secondIndex];
         values[secondIndex] = temp;
-    }
-
-    static void buildHeap(int[] values) {
-        buildMaxHeap(values);
-    }
-
-    static void buildMaxHeap(int[] values) {
-        Objects.requireNonNull(values, "values");
-
-        for (int index = lastParentIndex(values.length); index >= 0; index--) {
-            siftDown(values, values.length, index);
-        }
     }
 
     private static int lastParentIndex(int heapSize) {

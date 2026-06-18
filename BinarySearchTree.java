@@ -1,35 +1,47 @@
-public final class BinarySearchTree {
-    private static final class Node {
-        private final int data;
-        private Node left;
-        private Node right;
+import java.util.Comparator;
+import java.util.Objects;
 
-        private Node(int data) {
+public final class BinarySearchTree<T> {
+    private static final class Node<T> {
+        private final T data;
+        private Node<T> left;
+        private Node<T> right;
+
+        private Node(T data) {
             this.data = data;
         }
     }
 
-    private Node root;
+    private final Comparator<? super T> comparator;
+    private Node<T> root;
 
-    public void insert(int value) {
+    public BinarySearchTree(Comparator<? super T> comparator) {
+        this.comparator = Objects.requireNonNull(comparator, "comparator");
+    }
+
+    public void insert(T value) {
+        Objects.requireNonNull(value, "value");
+
         if (root == null) {
-            root = new Node(value);
+            root = new Node<>(value);
             return;
         }
 
-        Node current = root;
+        Node<T> current = root;
 
         while (true) {
-            if (value < current.data) {
+            int comparison = compare(value, current.data);
+
+            if (comparison < 0) {
                 if (current.left == null) {
-                    current.left = new Node(value);
+                    current.left = new Node<>(value);
                     return;
                 }
 
                 current = current.left;
-            } else if (value > current.data) {
+            } else if (comparison > 0) {
                 if (current.right == null) {
-                    current.right = new Node(value);
+                    current.right = new Node<>(value);
                     return;
                 }
 
@@ -40,13 +52,16 @@ public final class BinarySearchTree {
         }
     }
 
-    public void insertAll(int... values) {
-        for (int value : values) {
+    public void insertAll(Iterable<? extends T> values) {
+        Objects.requireNonNull(values, "values");
+
+        for (T value : values) {
             insert(value);
         }
     }
 
-    public boolean contains(int value) {
+    public boolean contains(T value) {
+        Objects.requireNonNull(value, "value");
         return findNode(value) != null;
     }
 
@@ -54,21 +69,32 @@ public final class BinarySearchTree {
         return root == null;
     }
 
-    public static BinarySearchTree fromValues(int... values) {
-        BinarySearchTree tree = new BinarySearchTree();
-        tree.insertAll(values);
+    @SafeVarargs
+    public static <T extends Comparable<? super T>> BinarySearchTree<T> fromValues(T... values) {
+        BinarySearchTree<T> tree = new BinarySearchTree<>(Comparator.naturalOrder());
+
+        for (T value : values) {
+            tree.insert(value);
+        }
+
         return tree;
     }
 
-    private Node findNode(int value) {
-        Node current = root;
+    private int compare(T left, T right) {
+        return comparator.compare(left, right);
+    }
+
+    private Node<T> findNode(T value) {
+        Node<T> current = root;
 
         while (current != null) {
-            if (current.data == value) {
+            int comparison = compare(value, current.data);
+
+            if (comparison == 0) {
                 return current;
             }
 
-            current = value > current.data ? current.right : current.left;
+            current = comparison > 0 ? current.right : current.left;
         }
 
         return null;

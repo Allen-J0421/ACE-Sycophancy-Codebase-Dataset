@@ -1,6 +1,6 @@
 package lru;
 
-public class Main {
+public final class Main {
     public static void main(String[] args) {
         Cache<Integer, Integer> cache = new LRUCache<>(2);
 
@@ -15,5 +15,9 @@ public class Main {
         System.out.println(cache.getOrDefault(1, -1));
         System.out.println(cache.getOrDefault(3, -1));
         System.out.println(cache.getOrDefault(4, -1));
+    }
+
+    private Main() {
+        // No instances.
     }
 }

@@ -1,6 +1,7 @@
 package binarysearch;
 
 import java.util.Comparator;
+import java.util.function.IntUnaryOperator;
 import java.util.Objects;
 
 public final class BinarySearch {
@@ -23,11 +24,11 @@ public final class BinarySearch {
         return binarySearch(array.length - 1, mid -> comparator.compare(array[mid], target));
     }
 
-    private static int binarySearch(int right, MidpointComparator comparator) {
+    private static int binarySearch(int right, IntUnaryOperator comparisonAtIndex) {
         int left = 0;
         while (left <= right) {
             int mid = left + (right - left) / 2;
-            int comparison = comparator.compare(mid);
+            int comparison = comparisonAtIndex.applyAsInt(mid);
 
             if (comparison == 0) {
                 return mid;
@@ -41,10 +42,5 @@ public final class BinarySearch {
         }
 
         return -1;
-    }
-
-    @FunctionalInterface
-    private interface MidpointComparator {
-        int compare(int mid);
     }
 }

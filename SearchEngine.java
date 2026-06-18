@@ -75,34 +75,13 @@ class SearchEngine<T extends Comparable<T>> {
         long startTime = config.isTrackStats() ? System.nanoTime() : 0;
         int comparisons = 0;
 
-        if (strategy instanceof StandardSearchStrategy) {
-            StandardSearchStrategy<T> std = (StandardSearchStrategy<T>) strategy;
-            while (std.getLow() <= std.getHigh()) {
-                int mid = std.getLow() + (std.getHigh() - std.getLow()) / 2;
-                int comparison = array[mid].compareTo(target);
-                comparisons++;
+        while (strategy.isValid()) {
+            int mid = strategy.getLow() + (strategy.getHigh() - strategy.getLow()) / 2;
+            int comparison = array[mid].compareTo(target);
+            comparisons++;
 
-                if (!std.processBoundary(comparison, mid)) {
-                    break;
-                }
-            }
-        } else if (strategy instanceof FirstOccurrenceStrategy) {
-            FirstOccurrenceStrategy<T> first = (FirstOccurrenceStrategy<T>) strategy;
-            while (first.getLow() <= first.getHigh()) {
-                int mid = first.getLow() + (first.getHigh() - first.getLow()) / 2;
-                int comparison = array[mid].compareTo(target);
-                comparisons++;
-
-                first.processBoundary(comparison, mid);
-            }
-        } else if (strategy instanceof LastOccurrenceStrategy) {
-            LastOccurrenceStrategy<T> last = (LastOccurrenceStrategy<T>) strategy;
-            while (last.getLow() <= last.getHigh()) {
-                int mid = last.getLow() + (last.getHigh() - last.getLow()) / 2;
-                int comparison = array[mid].compareTo(target);
-                comparisons++;
-
-                last.processBoundary(comparison, mid);
+            if (!strategy.processBoundary(comparison, mid)) {
+                break;
             }
         }
 

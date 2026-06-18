@@ -25,20 +25,24 @@ final class MatrixChainMultiplicationTest {
         expectThrows(IllegalArgumentException.class,
                 () -> MatrixDimensions.of(5),
                 "missing chain");
-        expectEquals(3, MatrixChainCli.parseDimensions(new String[0]).matrixCount(),
+        expectEquals(3, MatrixChainArguments.parse(new String[0]).matrixCount(),
                 "cli default sample chain");
-        expectEquals(3, MatrixChainCli.parseDimensions(new String[] { "10", "20", "30", "40" }).matrixCount(),
+        expectEquals(3, MatrixChainArguments.parse(new String[] { "10", "20", "30", "40" }).matrixCount(),
                 "cli parsed chain");
         expectThrows(IllegalArgumentException.class,
-                () -> MatrixChainCli.parseDimensions(new String[] { "10" }),
+                () -> MatrixChainArguments.parse(new String[] { "10" }),
                 "cli too few dimensions");
         expectThrows(IllegalArgumentException.class,
-                () -> MatrixChainCli.parseDimensions(new String[] { "10", "x" }),
+                () -> MatrixChainArguments.parse(new String[] { "10", "x" }),
                 "cli invalid number");
         expectEquals(
                 MatrixDimensions.of(2, 1, 3, 4),
                 MatrixDimensions.of(2, 1, 3, 4),
                 "dimension equality");
+        expectEquals(
+                "Usage: java matrixchain.MatrixChainCli <d1> <d2> ... <dn>",
+                MatrixChainArguments.usage(),
+                "cli usage");
 
         int[] copied = dimensions.values();
         copied[0] = 99;

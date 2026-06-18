@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +43,8 @@ class BreadthFirstSearchTest {
         test("vertices() preserves insertion order", BreadthFirstSearchTest::verticesInInsertionOrder);
         test("neighbors() of an absent vertex throws", BreadthFirstSearchTest::neighborsAbsentVertexThrows);
         test("null vertices are rejected", BreadthFirstSearchTest::nullVerticesRejected);
+        test("graph is iterable over vertices in insertion order", BreadthFirstSearchTest::graphIsIterable);
+        test("graph iterator is read-only", BreadthFirstSearchTest::graphIteratorReadOnly);
 
         System.out.printf("%n%d run, %d passed, %d failed%n", run, run - failed, failed);
         System.exit(failed == 0 ? 0 : 1);
@@ -148,6 +151,25 @@ class BreadthFirstSearchTest {
     private static void nullVerticesRejected() {
         assertThrows(NullPointerException.class, () -> new Graph<String>().addVertex(null));
         assertThrows(NullPointerException.class, () -> new Graph<String>().addEdge("a", null));
+    }
+
+    private static void graphIsIterable() {
+        Graph<String> g = new Graph<>();
+        g.addEdge("a", "b");
+        g.addEdge("c", "a");
+        List<String> iterated = new ArrayList<>();
+        for (String vertex : g) { // exercises Iterable<V> directly
+            iterated.add(vertex);
+        }
+        assertEquals(Arrays.asList("a", "b", "c"), iterated);
+        assertEquals(new ArrayList<>(g.vertices()), iterated);
+    }
+
+    private static void graphIteratorReadOnly() {
+        Graph<Integer> g = intGraph(1);
+        Iterator<Integer> it = g.iterator();
+        it.next();
+        assertThrows(UnsupportedOperationException.class, it::remove);
     }
 
     // ----------------------------------------------------------- harness

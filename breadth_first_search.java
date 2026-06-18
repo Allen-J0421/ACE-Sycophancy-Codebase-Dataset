@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,11 @@ import java.util.StringJoiner;
  * {@code equals}/{@code hashCode}; they need not be dense integer indices.
  *
  * <p>{@link #vertices()} iterates in insertion order, which keeps whole-graph
- * traversals deterministic.
+ * traversals deterministic. The graph is itself {@link Iterable} over its
+ * vertices, so {@code for (V v : graph)} is equivalent to iterating
+ * {@code graph.vertices()}.
  */
-final class Graph<V> {
+final class Graph<V> implements Iterable<V> {
 
     private final Map<V, List<V>> adjacency = new LinkedHashMap<>();
 
@@ -60,6 +63,12 @@ final class Graph<V> {
         }
         return Collections.unmodifiableList(adjacent);
     }
+
+    /** Iterates the graph's vertices in insertion order; the iterator is read-only. */
+    @Override
+    public Iterator<V> iterator() {
+        return vertices().iterator();
+    }
 }
 
 /**
@@ -81,7 +90,7 @@ final class BreadthFirstSearch {
         Set<V> visited = new HashSet<>();
         List<V> order = new ArrayList<>();
 
-        for (V vertex : graph.vertices()) {
+        for (V vertex : graph) {
             if (!visited.contains(vertex)) {
                 bfsFromSource(graph, vertex, visited, order);
             }

@@ -2,8 +2,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
-final class BreadthFirstSearch {
+public final class BreadthFirstSearch {
 
     private BreadthFirstSearch() {
         // Utility class.
@@ -27,7 +28,9 @@ final class BreadthFirstSearch {
         }
     }
 
-    static List<Integer> bfs(List<List<Integer>> adjacencyList) {
+    public static List<Integer> bfs(List<List<Integer>> adjacencyList) {
+        Objects.requireNonNull(adjacencyList, "adjacencyList");
+
         int vertexCount = adjacencyList.size();
         boolean[] visited = new boolean[vertexCount];
         List<Integer> result = new ArrayList<>(vertexCount);
@@ -40,12 +43,21 @@ final class BreadthFirstSearch {
         return result;
     }
 
-    static void addUndirectedEdge(List<List<Integer>> adjacencyList, int u, int v) {
+    public static void addUndirectedEdge(List<List<Integer>> adjacencyList, int u, int v) {
+        Objects.requireNonNull(adjacencyList, "adjacencyList");
         validateVertex(adjacencyList, u);
         validateVertex(adjacencyList, v);
 
         adjacencyList.get(u).add(v);
         adjacencyList.get(v).add(u);
+    }
+
+    public static void addDirectedEdge(List<List<Integer>> adjacencyList, int from, int to) {
+        Objects.requireNonNull(adjacencyList, "adjacencyList");
+        validateVertex(adjacencyList, from);
+        validateVertex(adjacencyList, to);
+
+        adjacencyList.get(from).add(to);
     }
 
     private static void validateVertex(List<List<Integer>> adjacencyList, int vertex) {
@@ -54,7 +66,11 @@ final class BreadthFirstSearch {
         }
     }
 
-    private static List<List<Integer>> createGraph(int vertexCount) {
+    public static List<List<Integer>> createGraph(int vertexCount) {
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("vertexCount must be non-negative: " + vertexCount);
+        }
+
         List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             adjacencyList.add(new ArrayList<>());

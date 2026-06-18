@@ -117,7 +117,7 @@ public class UnionFind implements DisjointSet {
 
         public UnionFind build() {
             if (size <= 0) {
-                throw new IllegalArgumentException("Size must be set and positive");
+                throw new UnionFindException.InvalidSizeException(size);
             }
             return new UnionFind(size, unionStrategy, findStrategy);
         }

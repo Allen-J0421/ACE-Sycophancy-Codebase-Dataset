@@ -13,6 +13,8 @@ public class UnionFindTest {
         testPresets();
         testPerformanceMetrics();
         testOperationListeners();
+        testExceptionHandling();
+        testSafeUnionFind();
         System.out.println("\n✓ All tests passed");
     }
 
@@ -56,15 +58,15 @@ public class UnionFindTest {
         UnionFind uf = UnionFind.builder().withSize(5).build();
         try {
             uf.find(-1);
-            assert false : "Should throw IndexOutOfBoundsException";
-        } catch (IndexOutOfBoundsException e) {
+            assert false : "Should throw InvalidIndexException";
+        } catch (UnionFindException.InvalidIndexException e) {
             // Expected
         }
 
         try {
             uf.union(0, 5);
-            assert false : "Should throw IndexOutOfBoundsException";
-        } catch (IndexOutOfBoundsException e) {
+            assert false : "Should throw InvalidIndexException";
+        } catch (UnionFindException.InvalidIndexException e) {
             // Expected
         }
     }
@@ -72,15 +74,15 @@ public class UnionFindTest {
     private static void testInvalidSize() {
         try {
             UnionFind.builder().withSize(0).build();
-            assert false : "Should throw IllegalArgumentException";
-        } catch (IllegalArgumentException e) {
+            assert false : "Should throw InvalidSizeException";
+        } catch (UnionFindException.InvalidSizeException e) {
             // Expected
         }
 
         try {
             UnionFind.builder().withSize(-1).build();
-            assert false : "Should throw IllegalArgumentException";
-        } catch (IllegalArgumentException e) {
+            assert false : "Should throw InvalidSizeException";
+        } catch (UnionFindException.InvalidSizeException e) {
             // Expected
         }
     }
@@ -114,15 +116,15 @@ public class UnionFindTest {
     private static void testBuilder() {
         try {
             UnionFind.builder().build();
-            assert false : "Should throw IllegalArgumentException when size not set";
-        } catch (IllegalArgumentException e) {
+            assert false : "Should throw InvalidSizeException when size not set";
+        } catch (UnionFindException.InvalidSizeException e) {
             // Expected
         }
 
         try {
             UnionFind.builder().withSize(0).build();
-            assert false : "Should throw IllegalArgumentException for non-positive size";
-        } catch (IllegalArgumentException e) {
+            assert false : "Should throw InvalidSizeException for non-positive size";
+        } catch (UnionFindException.InvalidSizeException e) {
             // Expected
         }
 
@@ -277,5 +279,78 @@ public class UnionFindTest {
         assert listener.unionCalls == 0 : "Removed listener should not be notified";
 
         System.out.println("✓ testOperationListeners passed");
+    }
+
+    private static void testExceptionHandling() {
+        testInvalidIndexException();
+        testInvalidSizeException();
+    }
+
+    private static void testInvalidIndexException() {
+        try {
+            UnionFind uf = UnionFind.builder().withSize(5).build();
+            uf.find(-1);
+            assert false : "Should throw InvalidIndexException";
+        } catch (UnionFindException.InvalidIndexException e) {
+            assert e.getMessage().contains("Invalid index") : "Exception message should contain 'Invalid index'";
+        }
+    }
+
+    private static void testInvalidSizeException() {
+        try {
+            UnionFind.builder().withSize(-5).build();
+            assert false : "Should throw InvalidSizeException";
+        } catch (UnionFindException.InvalidSizeException e) {
+            assert e.getMessage().contains("must be positive") : "Exception message should contain 'must be positive'";
+        }
+    }
+
+    private static void testSafeUnionFind() {
+        testSafeFind();
+        testSafeUnion();
+        testSafeIsConnected();
+    }
+
+    private static void testSafeFind() {
+        UnionFind uf = UnionFind.builder().withSize(5).build();
+        SafeUnionFind safe = SafeUnionFind.wrap(uf);
+
+        Result<Integer> validFind = safe.find(0);
+        assert validFind.isSuccess() : "Valid find should succeed";
+        assert validFind.getValue() == 0 : "Find should return correct root";
+
+        Result<Integer> invalidFind = safe.find(10);
+        assert invalidFind.isError() : "Invalid find should fail";
+        assert invalidFind.getError() instanceof UnionFindException : "Error should be UnionFindException";
+
+        System.out.println("✓ testSafeFind passed");
+    }
+
+    private static void testSafeUnion() {
+        UnionFind uf = UnionFind.builder().withSize(5).build();
+        SafeUnionFind safe = SafeUnionFind.wrap(uf);
+
+        Result<Void> validUnion = safe.union(1, 2);
+        assert validUnion.isSuccess() : "Valid union should succeed";
+
+        Result<Void> invalidUnion = safe.union(-1, 5);
+        assert invalidUnion.isError() : "Invalid union should fail";
+
+        System.out.println("✓ testSafeUnion passed");
+    }
+
+    private static void testSafeIsConnected() {
+        UnionFind uf = UnionFind.builder().withSize(5).build();
+        uf.union(1, 2);
+        SafeUnionFind safe = SafeUnionFind.wrap(uf);
+
+        Result<Boolean> validCheck = safe.isConnected(1, 2);
+        assert validCheck.isSuccess() : "Valid check should succeed";
+        assert validCheck.getValue() : "1 and 2 should be connected";
+
+        Result<Boolean> invalidCheck = safe.isConnected(1, 10);
+        assert invalidCheck.isError() : "Invalid check should fail";
+
+        System.out.println("✓ testSafeIsConnected passed");
     }
 }

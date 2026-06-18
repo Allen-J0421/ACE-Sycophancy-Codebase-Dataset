@@ -43,25 +43,25 @@ class MergeSort {
         }
 
         private void mergeRange(int[] source, int[] target, int start, int middle, int end) {
-            int leftIndex = start;
-            int rightIndex = middle;
+            Run left = new Run(source, start, middle);
+            Run right = new Run(source, middle, end);
             int targetIndex = start;
 
-            while (leftIndex < middle && rightIndex < end) {
-                if (source[leftIndex] <= source[rightIndex]) {
-                    target[targetIndex++] = source[leftIndex++];
+            while (left.hasRemaining() && right.hasRemaining()) {
+                if (left.peek() <= right.peek()) {
+                    target[targetIndex++] = left.take();
                 } else {
-                    target[targetIndex++] = source[rightIndex++];
+                    target[targetIndex++] = right.take();
                 }
             }
 
-            copyRemaining(source, target, leftIndex, middle, targetIndex);
-            copyRemaining(source, target, rightIndex, end, targetIndex + (middle - leftIndex));
+            copyRemaining(left, target, targetIndex);
+            copyRemaining(right, target, targetIndex + left.remainingLength());
         }
 
-        private void copyRemaining(int[] source, int[] target, int start, int end, int targetIndex) {
-            if (start < end) {
-                System.arraycopy(source, start, target, targetIndex, end - start);
+        private void copyRemaining(Run run, int[] target, int targetIndex) {
+            if (run.hasRemaining()) {
+                System.arraycopy(run.source, run.index, target, targetIndex, run.remainingLength());
             }
         }
 
@@ -84,6 +84,34 @@ class MergeSort {
                 int[] nextSource = target;
                 target = source;
                 source = nextSource;
+            }
+        }
+
+        private static final class Run {
+            private final int[] source;
+            private final int end;
+            private int index;
+
+            private Run(int[] source, int start, int end) {
+                this.source = source;
+                this.index = start;
+                this.end = end;
+            }
+
+            private boolean hasRemaining() {
+                return index < end;
+            }
+
+            private int peek() {
+                return source[index];
+            }
+
+            private int take() {
+                return source[index++];
+            }
+
+            private int remainingLength() {
+                return end - index;
             }
         }
     }

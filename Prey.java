@@ -34,15 +34,11 @@ public abstract class Prey extends Animal {
 	private void findFood() {
 		Field field = getField();
 		Location where = getLocation();
-		Object plant = field.getPlantAt(where);
+		Plant plant = field.getPlantAt(where);
 
-		if (plant instanceof Plant) {
-			Plant nearPlant = (Plant) plant;
-
-			if (nearPlant.canEat()) {
-				nearPlant.reduceStage();
-				setFoodLevel(8);
-			}
+		if (plant != null && plant.canEat()) {
+			plant.reduceStage();
+			setFoodLevel(8);
 		}
 	}
 

@@ -50,19 +50,15 @@ public abstract class Predator extends Animal {
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
 		for (Location where : adjacent) {
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal nearAnimal = (Animal) animal;
-
+			Animal nearAnimal = field.getAnimalAt(where);
+			if (nearAnimal != null) {
 				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
-
 					if (nearAnimal.isAlive()) {
 						nearAnimal.setDead();
 						setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
 						return where;
 					}
 				}
-
 
 				if (nearAnimal.getFoodChainLevel() == this.getFoodChainLevel()) {
 					if (nearAnimal.isAlive() && this.isCannibal()) {

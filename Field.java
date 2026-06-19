@@ -1,5 +1,5 @@
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -8,70 +8,69 @@ public class Field {
 
 	private static final Random rand = Randomizer.getRandom();
 
-
 	private final int depth;
 	private final int width;
-
-	private final Object[][] animalField;
-
-	private final Object[][] plantField;
+	private final Cell[][] cells;
 
 
 	public Field(int depth, int width) {
 		this.depth = depth;
 		this.width = width;
-		animalField = new Object[depth][width];
-		plantField = new Object[depth][width];
+		cells = new Cell[depth][width];
+		for (int row = 0; row < depth; row++) {
+			for (int col = 0; col < width; col++) {
+				cells[row][col] = new Cell();
+			}
+		}
 	}
 
 
 	public void clear() {
 		for (int row = 0; row < depth; row++) {
 			for (int col = 0; col < width; col++) {
-				animalField[row][col] = null;
-				plantField[row][col] = null;
+				cells[row][col].clear();
 			}
 		}
 	}
 
 
 	public void clear(Location location) {
-		animalField[location.getRow()][location.getCol()] = null;
+		cellAt(location).clearAnimal();
 	}
 
 
-	public void placeAnimal(Object animal, int row, int col) {
+	public void placeAnimal(Animal animal, int row, int col) {
 		placeAnimal(animal, new Location(row, col));
 	}
 
 
-	public void placeAnimal(Object animal, Location location) {
-		animalField[location.getRow()][location.getCol()] = animal;
+	public void placeAnimal(Animal animal, Location location) {
+		cellAt(location).setAnimal(animal);
 	}
 
 
-	public void placePlant(Object plant, Location location) {
-		plantField[location.getRow()][location.getCol()] = plant;
+	public void placePlant(Plant plant, Location location) {
+		cellAt(location).setPlant(plant);
 	}
 
 
-	public Object getAnimalAt(Location location) {
-		return getAnimalAt(location.getRow(), location.getCol());
+	public Animal getAnimalAt(Location location) {
+		return cellAt(location).getAnimal();
 	}
 
 
-	public Object getAnimalAt(int row, int col) {
-		return animalField[row][col];
+	public Animal getAnimalAt(int row, int col) {
+		return cellAt(row, col).getAnimal();
 	}
 
 
-	public Object getPlantAt(Location location) {
-		return getPlantAt(location.getRow(), location.getCol());
+	public Plant getPlantAt(Location location) {
+		return cellAt(location).getPlant();
 	}
 
 
-	public Object getPlantAt(int row, int col) {
-		return plantField[row][col];
+	public Plant getPlantAt(int row, int col) {
+		return cellAt(row, col).getPlant();
 	}
 
 
@@ -83,8 +82,7 @@ public class Field {
 
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
 		List<Location> free = new ArrayList<>();
-		List<Location> adjacent = adjacentAnimalLocations(location);
-		for (Location next : adjacent) {
+		for (Location next : adjacentAnimalLocations(location)) {
 			if (getAnimalAt(next) == null) {
 				free.add(next);
 			}
@@ -94,13 +92,8 @@ public class Field {
 
 
 	public Location freeAnimalAdjacentLocation(Location location) {
-
 		List<Location> free = getFreeAnimalAdjacentLocations(location);
-		if (!free.isEmpty()) {
-			return free.get(0);
-		} else {
-			return null;
-		}
+		return free.isEmpty() ? null : free.get(0);
 	}
 
 
@@ -111,13 +104,12 @@ public class Field {
 		if (location != null) {
 			int row = location.getRow();
 			int col = location.getCol();
-			for (int roffset = -1; roffset <= 1; roffset++) {
-				int nextRow = row + roffset;
+			for (int rowOffset = -1; rowOffset <= 1; rowOffset++) {
+				int nextRow = row + rowOffset;
 				if (nextRow >= 0 && nextRow < depth) {
-					for (int coffset = -1; coffset <= 1; coffset++) {
-						int nextCol = col + coffset;
-
-						if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
+					for (int colOffset = -1; colOffset <= 1; colOffset++) {
+						int nextCol = col + colOffset;
+						if (nextCol >= 0 && nextCol < width && (rowOffset != 0 || colOffset != 0)) {
 							locations.add(new Location(nextRow, nextCol));
 						}
 					}
@@ -136,5 +128,52 @@ public class Field {
 
 	public int getWidth() {
 		return width;
+	}
+
+
+	private Cell cellAt(Location location) {
+		return cells[location.getRow()][location.getCol()];
+	}
+
+
+	private Cell cellAt(int row, int col) {
+		return cells[row][col];
+	}
+
+
+	private static final class Cell {
+		private Animal animal;
+		private Plant plant;
+
+
+		private void clear() {
+			animal = null;
+			plant = null;
+		}
+
+
+		private void clearAnimal() {
+			animal = null;
+		}
+
+
+		private Animal getAnimal() {
+			return animal;
+		}
+
+
+		private Plant getPlant() {
+			return plant;
+		}
+
+
+		private void setAnimal(Animal animal) {
+			this.animal = animal;
+		}
+
+
+		private void setPlant(Plant plant) {
+			this.plant = plant;
+		}
 	}
 }

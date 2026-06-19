@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 /**
  * Computes the Longest Common Subsequence (LCS) of two strings using
  * classic bottom-up dynamic programming.
@@ -17,7 +19,8 @@ class LongestCommonSubsequence {
      * @throws NullPointerException if either argument is null
      */
     static int length(String first, String second) {
-        requireNonNull(first, second);
+        Objects.requireNonNull(first, "first must not be null");
+        Objects.requireNonNull(second, "second must not be null");
 
         int m = first.length();
         int n = second.length();
@@ -52,7 +55,8 @@ class LongestCommonSubsequence {
      * @throws NullPointerException if either argument is null
      */
     static String subsequence(String first, String second) {
-        requireNonNull(first, second);
+        Objects.requireNonNull(first, "first must not be null");
+        Objects.requireNonNull(second, "second must not be null");
 
         int m = first.length();
         int n = second.length();
@@ -85,12 +89,6 @@ class LongestCommonSubsequence {
         }
 
         return reversed.reverse().toString();
-    }
-
-    private static void requireNonNull(String first, String second) {
-        if (first == null || second == null) {
-            throw new NullPointerException("input strings must not be null");
-        }
     }
 
     public static void main(String[] args) {

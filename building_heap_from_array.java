@@ -3,13 +3,13 @@ import java.util.Arrays;
 public class BuildHeap {
 
     public static void buildHeap(int[] arr) {
-        int n = arr.length;
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(arr, n, i);
+        for (int i = arr.length / 2 - 1; i >= 0; i--) {
+            heapify(arr, i);
         }
     }
 
-    private static void heapify(int[] arr, int n, int i) {
+    private static void heapify(int[] arr, int i) {
+        int n = arr.length;
         while (true) {
             int largest = i;
             int left = 2 * i + 1;

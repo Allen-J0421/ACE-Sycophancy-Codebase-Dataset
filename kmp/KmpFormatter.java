@@ -1,6 +1,7 @@
 package kmp;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 final class KmpFormatter {
 
@@ -8,22 +9,15 @@ final class KmpFormatter {
         // Utility class.
     }
 
-    static String formatMatches(KmpSearchResult result) {
-        return joinMatches(result.matches());
-    }
-
     static String joinMatches(List<Integer> matches) {
         if (matches.isEmpty()) {
             return "";
         }
 
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < matches.size(); i++) {
-            if (i > 0) {
-                builder.append(' ');
-            }
-            builder.append(matches.get(i));
+        StringJoiner joiner = new StringJoiner(" ");
+        for (Integer match : matches) {
+            joiner.add(String.valueOf(match));
         }
-        return builder.toString();
+        return joiner.toString();
     }
 }

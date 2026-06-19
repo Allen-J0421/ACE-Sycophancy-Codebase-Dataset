@@ -1,6 +1,7 @@
 package kmp;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 final class KmpMatcher {
@@ -9,28 +10,25 @@ final class KmpMatcher {
         // Utility class.
     }
 
-    static KmpSearchResult search(KmpSearchRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Search request must not be null.");
+    static List<Integer> findAllMatches(CharSequence pattern, CharSequence text) {
+        if (pattern == null || text == null) {
+            throw new IllegalArgumentException("Pattern and text must not be null.");
+        }
+        if (pattern.length() == 0 || text.length() == 0 || pattern.length() > text.length()) {
+            return Collections.emptyList();
         }
 
-        if (request.patternLength() == 0
-            || request.textLength() == 0
-            || request.patternLength() > request.textLength()) {
-            return KmpSearchResult.of(request, new ArrayList<Integer>());
-        }
-
-        int[] lps = buildLps(request.pattern());
-        List<Integer> matches = new ArrayList<>();
+        int[] lps = buildLps(pattern);
+        List<Integer> matches = new ArrayList<Integer>();
         int textIndex = 0;
         int patternIndex = 0;
 
-        while (textIndex < request.textLength()) {
-            if (request.text().charAt(textIndex) == request.pattern().charAt(patternIndex)) {
+        while (textIndex < text.length()) {
+            if (text.charAt(textIndex) == pattern.charAt(patternIndex)) {
                 textIndex++;
                 patternIndex++;
 
-                if (patternIndex == request.patternLength()) {
+                if (patternIndex == pattern.length()) {
                     matches.add(textIndex - patternIndex);
                     patternIndex = lps[patternIndex - 1];
                 }
@@ -41,7 +39,9 @@ final class KmpMatcher {
             }
         }
 
-        return KmpSearchResult.of(request, matches);
+        return matches.isEmpty()
+            ? Collections.<Integer>emptyList()
+            : Collections.unmodifiableList(new ArrayList<Integer>(matches));
     }
 
     private static int[] buildLps(CharSequence pattern) {

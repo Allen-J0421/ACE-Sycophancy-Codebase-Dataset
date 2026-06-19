@@ -8,34 +8,24 @@ public final class KMPSearch {
         // Utility class.
     }
 
-    public static KmpSearchResult search(KmpSearchRequest request) {
-        return KmpMatcher.search(request);
-    }
-
-    public static KmpSearchResult search(CharSequence pattern, CharSequence text) {
-        return search(KmpSearchRequest.of(pattern, text));
-    }
-
     public static List<Integer> findAllMatches(CharSequence pattern, CharSequence text) {
-        return search(pattern, text).matches();
+        return KmpMatcher.findAllMatches(pattern, text);
     }
 
     public static void main(String[] args) {
-        KmpSearchRequest request = parseRequest(args);
-        KmpSearchResult result = search(request);
+        String pattern;
+        String text;
 
-        System.out.println(KmpFormatter.formatMatches(result));
-    }
-
-    private static KmpSearchRequest parseRequest(String[] args) {
         if (args == null || args.length == 0) {
-            return KmpExamples.SAMPLE_REQUEST;
+            pattern = KmpExamples.SAMPLE_PATTERN;
+            text = KmpExamples.SAMPLE_TEXT;
+        } else if (args.length == 2) {
+            pattern = args[0];
+            text = args[1];
+        } else {
+            throw new IllegalArgumentException("Usage: java kmp.KMPSearch [pattern text]");
         }
 
-        if (args.length == 2) {
-            return KmpSearchRequest.of(args[0], args[1]);
-        }
-
-        throw new IllegalArgumentException("Usage: java kmp.KMPSearch [pattern text]");
+        System.out.println(KmpFormatter.joinMatches(findAllMatches(pattern, text)));
     }
 }

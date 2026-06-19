@@ -17,8 +17,6 @@ class MinHeap<T> implements Iterable<T> {
         this.size = 0;
     }
 
-    // --- Factory methods ---
-
     public static <T extends Comparable<T>> MinHeap<T> naturalOrder() {
         return new MinHeap<>(Comparator.<T>naturalOrder(), DEFAULT_CAPACITY);
     }
@@ -50,8 +48,6 @@ class MinHeap<T> implements Iterable<T> {
         return h;
     }
 
-    // --- Static sort ---
-
     public static <T extends Comparable<T>> void sort(T[] arr) {
         sort(arr, Comparator.<T>naturalOrder());
     }
@@ -62,8 +58,6 @@ class MinHeap<T> implements Iterable<T> {
             arr[i] = h.extractMin();
         }
     }
-
-    // --- Internal helpers ---
 
     @SuppressWarnings("unchecked")
     private T at(int i) {
@@ -114,8 +108,6 @@ class MinHeap<T> implements Iterable<T> {
         }
     }
 
-    // --- Mutation ---
-
     public void insert(T value) {
         if (size == heap.length) grow();
         int i = size++;
@@ -161,8 +153,6 @@ class MinHeap<T> implements Iterable<T> {
         }
     }
 
-    // --- Access ---
-
     public T getMin() {
         if (size == 0) throw new NoSuchElementException("Heap is empty");
         return at(0);
@@ -201,8 +191,6 @@ class MinHeap<T> implements Iterable<T> {
         Arrays.sort(result, 0, size, (a, b) -> comparator.compare((T) a, (T) b));
         return result;
     }
-
-    // --- Utility ---
 
     public boolean isEmpty() { return size == 0; }
     public int size()        { return size; }

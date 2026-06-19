@@ -41,6 +41,12 @@ public abstract class Animal extends Entity {
 	abstract protected void normalAct(List<Animal> newAnimals);
 
 
+	@Override
+	protected void place(Field field, Location location) {
+		field.placeAnimal(this, location);
+	}
+
+
 	public void act(List<Animal> newAnimals, TimeCycle time) {
 		incrementAge();
 		incrementHunger();

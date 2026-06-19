@@ -4,6 +4,8 @@ public final class LongestCommonSubsequenceTest {
     }
 
     public static void main(String[] args) {
+        assertLcs(null, "ABC", NullPointerException.class);
+        assertLcs("ABC", null, NullPointerException.class);
         assertLcs("", "", 0);
         assertLcs("", "ABC", 0);
         assertLcs("ABC", "", 0);
@@ -16,6 +18,19 @@ public final class LongestCommonSubsequenceTest {
         assertLcs("HELLO", "YELLOW", 4);
 
         System.out.println("All LCS tests passed.");
+    }
+
+    private static void assertLcs(String first, String second, Class<? extends Throwable> expected) {
+        try {
+            LongestCommonSubsequence.lcs(first, second);
+            throw new AssertionError("Expected " + expected.getSimpleName() + " for LCS(" + first + ", " + second + ")");
+        } catch (Throwable actual) {
+            if (!expected.isInstance(actual)) {
+                throw new AssertionError(
+                        "Expected " + expected.getSimpleName() + " but got " + actual.getClass().getSimpleName(),
+                        actual);
+            }
+        }
     }
 
     private static void assertLcs(String first, String second, int expected) {

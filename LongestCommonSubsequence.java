@@ -43,25 +43,4 @@ public final class LongestCommonSubsequence {
 
         return lengths[shorter.length()];
     }
-
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            runSample();
-            return;
-        }
-
-        if (args.length == 2) {
-            System.out.println(lcs(args[0], args[1]));
-            return;
-        }
-
-        System.err.println("Usage: java LongestCommonSubsequence <first> <second>");
-        System.exit(1);
-    }
-
-    static void runSample() {
-        String first = "AGGTAB";
-        String second = "GXTXAYB";
-        System.out.println(lcs(first, second));
-    }
 }

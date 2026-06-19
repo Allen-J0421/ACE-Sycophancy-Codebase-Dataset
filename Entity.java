@@ -37,7 +37,7 @@ public abstract class Entity implements Movable {
 
 	protected void setLocation(Location newLocation) {
 		if (field != null) {
-			field.updateOccupancy(this, location, newLocation);
+			field.relocate(this, location, newLocation);
 		}
 		location = newLocation;
 	}

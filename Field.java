@@ -34,22 +34,12 @@ public class Field {
 	}
 
 
-	public void place(Movable movable, int row, int col) {
-		place(movable, new Location(row, col));
-	}
-
-
-	public void place(Movable movable, Location location) {
-		cellAt(location).set(movable);
-	}
-
-
-	public void updateOccupancy(Movable movable, Location from, Location to) {
+	public void relocate(Movable movable, Location from, Location to) {
 		if (from != null) {
 			cellAt(from).clear(movable.getOccupancyLayer());
 		}
 		if (to != null) {
-			place(movable, to);
+			cellAt(to).set(movable);
 		}
 	}
 

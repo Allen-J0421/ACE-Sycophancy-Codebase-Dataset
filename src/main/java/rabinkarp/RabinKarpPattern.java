@@ -1,6 +1,7 @@
 package rabinkarp;
 
 import java.util.Objects;
+import java.util.List;
 
 public final class RabinKarpPattern {
 
@@ -8,17 +9,19 @@ public final class RabinKarpPattern {
     private final int length;
     private final int hash;
     private final int highOrderFactor;
-    private final int radix;
-    private final int modulus;
+    private final RabinKarpMatcher matcher;
 
     private RabinKarpPattern(
-            CharSequence pattern, int length, int hash, int highOrderFactor, int radix, int modulus) {
+            CharSequence pattern,
+            int length,
+            int hash,
+            int highOrderFactor,
+            RabinKarpMatcher matcher) {
         this.pattern = pattern;
         this.length = length;
         this.hash = hash;
         this.highOrderFactor = highOrderFactor;
-        this.radix = radix;
-        this.modulus = modulus;
+        this.matcher = matcher;
     }
 
     public static RabinKarpPattern compile(CharSequence pattern, int radix, int modulus) {
@@ -41,7 +44,8 @@ public final class RabinKarpPattern {
             hash = (radix * hash + pattern.charAt(i)) % modulus;
         }
 
-        return new RabinKarpPattern(pattern, length, hash, highOrderFactor, radix, modulus);
+        return new RabinKarpPattern(
+                pattern, length, hash, highOrderFactor, new RabinKarpMatcher(radix, modulus));
     }
 
     public static RabinKarpPattern compile(CharSequence pattern) {
@@ -51,8 +55,8 @@ public final class RabinKarpPattern {
                 RabinKarpMatcher.DEFAULT_MODULUS);
     }
 
-    public java.util.List<Integer> searchIn(CharSequence text) {
-        return new RabinKarpMatcher(radix, modulus).search(this, text);
+    public List<Integer> searchIn(CharSequence text) {
+        return matcher.search(this, text);
     }
 
     CharSequence pattern() {

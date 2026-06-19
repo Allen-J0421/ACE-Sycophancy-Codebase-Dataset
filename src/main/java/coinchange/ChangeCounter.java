@@ -6,7 +6,7 @@ final class ChangeCounter {
     }
 
     static int countWays(CoinChangeRequest request) {
-        int[] coins = request.coins();
+        int[] coins = request.denominations().rawValues();
         int targetSum = request.targetSum();
         int[] waysBySum = new int[targetSum + 1];
         waysBySum[0] = 1;

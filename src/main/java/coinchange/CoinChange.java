@@ -9,6 +9,10 @@ public final class CoinChange {
         return count(new CoinChangeRequest(coins, targetSum));
     }
 
+    public static int count(CoinDenominations denominations, int targetSum) {
+        return count(new CoinChangeRequest(denominations, targetSum));
+    }
+
     public static int count(CoinChangeRequest request) {
         return ChangeCounter.countWays(request);
     }

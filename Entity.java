@@ -34,20 +34,11 @@ public abstract class Entity {
 
 
 	protected void setLocation(Location newLocation) {
-		if (location == null) {
-			location = null;
-		}
-
 		if (location != null) {
-			field.clear(location);
+			clearFieldLocation(field, location);
 		}
 		location = newLocation;
-
-		if (this instanceof Animal) {
-			field.placeAnimal(this, newLocation);
-		} else {
-			field.placePlant(this, newLocation);
-		}
+		placeInField(field, newLocation);
 	}
 
 
@@ -55,4 +46,9 @@ public abstract class Entity {
 		location = null;
 	}
 
+
+	protected abstract void placeInField(Field field, Location location);
+
+
+	protected abstract void clearFieldLocation(Field field, Location location);
 }

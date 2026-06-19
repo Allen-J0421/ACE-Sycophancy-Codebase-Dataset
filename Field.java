@@ -9,18 +9,19 @@ public class Field {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	private int depth, width;
+	private final int depth;
+	private final int width;
 
-	private Object[][] animalField;
+	private final Animal[][] animalField;
 
-	private Object[][] plantField;
+	private final Plant[][] plantField;
 
 
 	public Field(int depth, int width) {
 		this.depth = depth;
 		this.width = width;
-		animalField = new Object[depth][width];
-		plantField = new Object[depth][width];
+		animalField = new Animal[depth][width];
+		plantField = new Plant[depth][width];
 	}
 
 
@@ -34,55 +35,55 @@ public class Field {
 	}
 
 
-	public void clear(Location location) {
+	public void clearAnimalAt(Location location) {
 		animalField[location.getRow()][location.getCol()] = null;
 	}
 
 
-	public void placeAnimal(Object animal, int row, int col) {
-		placeAnimal(animal, new Location(row, col));
+	public void clearPlantAt(Location location) {
+		plantField[location.getRow()][location.getCol()] = null;
 	}
 
 
-	public void placeAnimal(Object animal, Location location) {
+	public void placeAnimal(Animal animal, Location location) {
 		animalField[location.getRow()][location.getCol()] = animal;
 	}
 
 
-	public void placePlant(Object plant, Location location) {
+	public void placePlant(Plant plant, Location location) {
 		plantField[location.getRow()][location.getCol()] = plant;
 	}
 
 
-	public Object getAnimalAt(Location location) {
+	public Animal getAnimalAt(Location location) {
 		return getAnimalAt(location.getRow(), location.getCol());
 	}
 
 
-	public Object getAnimalAt(int row, int col) {
+	public Animal getAnimalAt(int row, int col) {
 		return animalField[row][col];
 	}
 
 
-	public Object getPlantAt(Location location) {
+	public Plant getPlantAt(Location location) {
 		return getPlantAt(location.getRow(), location.getCol());
 	}
 
 
-	public Object getPlantAt(int row, int col) {
+	public Plant getPlantAt(int row, int col) {
 		return plantField[row][col];
 	}
 
 
 	public Location randomAnimalAdjacentLocation(Location location) {
-		List<Location> adjacent = adjacentAnimalLocations(location);
+		List<Location> adjacent = getAdjacentAnimalLocations(location);
 		return adjacent.get(0);
 	}
 
 
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
 		List<Location> free = new LinkedList<>();
-		List<Location> adjacent = adjacentAnimalLocations(location);
+		List<Location> adjacent = getAdjacentAnimalLocations(location);
 		for (Location next : adjacent) {
 			if (getAnimalAt(next) == null) {
 				free.add(next);
@@ -95,7 +96,7 @@ public class Field {
 	public Location freeAnimalAdjacentLocation(Location location) {
 
 		List<Location> free = getFreeAnimalAdjacentLocations(location);
-		if (free.size() > 0) {
+		if (!free.isEmpty()) {
 			return free.get(0);
 		} else {
 			return null;
@@ -103,8 +104,8 @@ public class Field {
 	}
 
 
-	public List<Location> adjacentAnimalLocations(Location location) {
-		assert location != null : "Null location passed to adjacentLocations";
+	public List<Location> getAdjacentAnimalLocations(Location location) {
+		assert location != null : "Null location passed to getAdjacentAnimalLocations";
 
 		List<Location> locations = new LinkedList<>();
 		if (location != null) {

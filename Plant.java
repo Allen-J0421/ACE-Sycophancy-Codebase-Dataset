@@ -55,4 +55,16 @@ public abstract class Plant extends Entity {
 	protected void setStage(int stage) {
 		this.stage = stage;
 	}
+
+
+	@Override
+	protected void placeInField(Field field, Location location) {
+		field.placePlant(this, location);
+	}
+
+
+	@Override
+	protected void clearFieldLocation(Field field, Location location) {
+		field.clearPlantAt(location);
+	}
 }

@@ -1,8 +1,8 @@
 
 public class Location {
 
-	private int row;
-	private int col;
+	private final int row;
+	private final int col;
 
 
 	public Location(int row, int col) {
@@ -11,6 +11,7 @@ public class Location {
 	}
 
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location other = (Location) obj;
@@ -21,11 +22,13 @@ public class Location {
 	}
 
 
+	@Override
 	public String toString() {
 		return row + "," + col;
 	}
 
 
+	@Override
 	public int hashCode() {
 		return (row << 16) + col;
 	}

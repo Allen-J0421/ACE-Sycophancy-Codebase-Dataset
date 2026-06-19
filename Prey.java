@@ -25,7 +25,6 @@ public abstract class Prey extends Animal {
 		if (newLocation != null) {
 			setLocation(newLocation);
 		} else {
-
 			setDead();
 		}
 	}

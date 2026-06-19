@@ -139,7 +139,7 @@ public class Simulator {
 		step = 0;
 		animals.clear();
 		populate();
-		currentTimeCycle = TimeCycle.DAY;
+		currentTimeCycle = DEFAULT_TIMECYCLE;
 		climate.setCurrentWeather(Weather.SUN);
 
 		sickPercentage = 0;

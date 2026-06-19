@@ -42,9 +42,7 @@ public class FieldStats {
 	public void incrementCount(Class<?> animalClass) {
 		Counter count = counters.get(animalClass);
 		if (count == null) {
-
-
-			count = new Counter(animalClass.getName());
+			count = new Counter(animalClass.getSimpleName());
 			counters.put(animalClass, count);
 		}
 		count.increment();

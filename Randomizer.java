@@ -7,25 +7,17 @@ public class Randomizer {
 
 	private static final Random rand = new Random(SEED);
 
-	private static final boolean useShared = true;
-
 
 	private Randomizer() {
 	}
 
 
 	public static Random getRandom() {
-		if (useShared) {
-			return rand;
-		} else {
-			return new Random();
-		}
+		return rand;
 	}
 
 
 	public static void reset() {
-		if (useShared) {
-			rand.setSeed(SEED);
-		}
+		rand.setSeed(SEED);
 	}
 }

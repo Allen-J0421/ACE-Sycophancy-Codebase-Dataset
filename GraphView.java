@@ -22,8 +22,8 @@ public class GraphView extends JFrame {
 
 	public GraphView(int width, int height, int startMax) {
 		stats = new FieldStats();
-		classes = new HashSet<>();
 		colors = new HashMap<>();
+		classes = colors.keySet();
 
 		if (frame == null) {
 			frame = makeFrame(width, height, startMax);
@@ -36,7 +36,6 @@ public class GraphView extends JFrame {
 
 	public void setColor(Class<?> animalClass, Color color) {
 		colors.put(animalClass, color);
-		classes = colors.keySet();
 	}
 
 
@@ -147,7 +146,7 @@ public class GraphView extends JFrame {
 
 			repaint();
 
-			stepLabel.setText("" + step);
+			stepLabel.setText(String.valueOf(step));
 			countLabel.setText(stats.getPopulationDetails(field));
 
 		}

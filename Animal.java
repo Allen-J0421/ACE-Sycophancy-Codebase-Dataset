@@ -42,6 +42,12 @@ public abstract class Animal extends Entity {
 	}
 
 
+	@Override
+	protected void placeInField(Field field, Location location) {
+		field.placeAnimal(this, location);
+	}
+
+
 	protected abstract void normalAct(List<Animal> newAnimals);
 
 
@@ -181,13 +187,11 @@ public abstract class Animal extends Entity {
 
 	protected void toggleNocturnal() {
 		nocturnal = !nocturnal;
-
 	}
 
 
 	protected void toggleSick() {
 		sick = !sick;
-
 	}
 
 

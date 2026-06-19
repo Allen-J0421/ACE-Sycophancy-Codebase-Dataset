@@ -33,14 +33,11 @@ public abstract class Predator extends Animal {
 		Location newLocation = findFood();
 		if (isAlive()) {
 			if (newLocation == null) {
-
 				newLocation = getField().freeAnimalAdjacentLocation(getLocation());
 			}
-
 			if (newLocation != null) {
 				setLocation(newLocation);
 			} else {
-
 				setDead();
 			}
 		}

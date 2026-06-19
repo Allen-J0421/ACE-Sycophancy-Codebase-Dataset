@@ -1,3 +1,5 @@
+package coinchange;
+
 final class ChangeCounter {
 
     private ChangeCounter() {

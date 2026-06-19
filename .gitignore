@@ -26,6 +26,7 @@ Thumbs.db
 *.war
 bin/
 out/
+src/**/out/
 target/
 build/
 hs_err_pid*.log

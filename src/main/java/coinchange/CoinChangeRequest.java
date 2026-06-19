@@ -1,22 +1,18 @@
+package coinchange;
+
 import java.util.Arrays;
 
-final class CoinChangeRequest {
-    private final int[] coins;
-    private final int targetSum;
+public record CoinChangeRequest(int[] coins, int targetSum) {
 
-    CoinChangeRequest(int[] coins, int targetSum) {
+    public CoinChangeRequest {
         validateCoins(coins);
         validateTargetSum(targetSum);
-        this.coins = Arrays.copyOf(coins, coins.length);
-        this.targetSum = targetSum;
+        coins = Arrays.copyOf(coins, coins.length);
     }
 
-    int[] coins() {
+    @Override
+    public int[] coins() {
         return Arrays.copyOf(coins, coins.length);
-    }
-
-    int targetSum() {
-        return targetSum;
     }
 
     private static void validateCoins(int[] coins) {

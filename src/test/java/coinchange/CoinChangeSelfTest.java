@@ -1,3 +1,5 @@
+package coinchange;
+
 public final class CoinChangeSelfTest {
 
     private CoinChangeSelfTest() {

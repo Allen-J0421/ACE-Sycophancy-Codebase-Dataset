@@ -5,11 +5,12 @@ searching.
 
 ## Structure
 
-- `KMPSearch.java` contains the reusable search API.
-- `KmpPatternSearchingDemo.java` contains the demo runner.
-- `kmp_pattern_searching.java` keeps the original lowercase launcher working.
-- `KMPSearchTest.java` contains lightweight regression tests with no external
-  dependencies.
+- `src/main/java/KMPSearch.java` contains the reusable search API.
+- `src/main/java/KmpPatternSearchingDemo.java` contains the demo runner.
+- `src/main/java/kmp_pattern_searching.java` keeps the original lowercase
+  launcher working.
+- `src/test/java/KMPSearchTest.java` contains lightweight regression tests with
+  no external dependencies.
 
 ## Commands
 

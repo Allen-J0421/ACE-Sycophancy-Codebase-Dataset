@@ -23,25 +23,47 @@ public final class RabinKarp {
             return Collections.emptyList();
         }
 
+        return searchNonEmptyPattern(pattern, text);
+    }
+
+    private static List<Integer> searchNonEmptyPattern(String pattern, String text) {
+        int patternLength = pattern.length();
+        int lastStart = text.length() - patternLength;
         int patternHash = RollingHash.hash(pattern, patternLength);
         RollingHash textWindow = RollingHash.from(text, patternLength);
         List<Integer> matches = new ArrayList<>();
 
-        for (int start = 0; start <= textLength - patternLength; start++) {
-            if (patternHash == textWindow.value()
-                    && text.regionMatches(start, pattern, 0, patternLength)) {
+        for (int start = 0; start <= lastStart; start++) {
+            if (windowMatches(patternHash, textWindow, text, pattern, start)) {
                 matches.add(start);
             }
 
-            if (start < textLength - patternLength) {
-                textWindow.roll(
-                    text.charAt(start),
-                    text.charAt(start + patternLength)
-                );
+            if (start < lastStart) {
+                advanceWindow(textWindow, text, start, patternLength);
             }
         }
 
         return matches;
+    }
+
+    private static boolean windowMatches(
+        int patternHash,
+        RollingHash textWindow,
+        String text,
+        String pattern,
+        int start
+    ) {
+        return patternHash == textWindow.value()
+            && text.regionMatches(start, pattern, 0, pattern.length());
+    }
+
+    private static void advanceWindow(
+        RollingHash textWindow,
+        String text,
+        int start,
+        int patternLength
+    ) {
+        textWindow.roll(text.charAt(start), text.charAt(start + patternLength));
     }
 
     private static void validateInputs(String pattern, String text) {

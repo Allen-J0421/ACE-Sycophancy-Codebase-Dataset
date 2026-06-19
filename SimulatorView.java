@@ -41,7 +41,7 @@ public class SimulatorView extends JFrame {
 		}
 
 		statusPanel.updateStatus(step, currentTimeCycle, climate, infectionPercentage);
-		stats.reset();
+		stats.clearCounts();
 
 		fieldView.preparePaint();
 
@@ -51,7 +51,7 @@ public class SimulatorView extends JFrame {
 				Animal animal = field.getAnimalAt(row, col);
 				Plant plant = field.getPlantAt(row, col);
 				if (animal != null) {
-					stats.incrementCount(animal.getClass());
+					stats.countAnimal(animal.getClass());
 					fieldView.drawMark(col, row, animal.getObjectColor(climate));
 				} else if (plant != null) {
 					fieldView.drawMark(col, row, plant.getObjectColor(climate));
@@ -60,15 +60,14 @@ public class SimulatorView extends JFrame {
 				}
 			}
 		}
-		stats.countFinished();
-
-		statusPanel.updatePopulation(stats.getPopulationDetails(field));
+		statusPanel.updatePopulation(stats.getPopulationDetails());
 		fieldView.repaint();
 	}
 
 
 	public boolean isViable(Field field) {
-		return stats.isViable(field);
+		stats.countField(field);
+		return stats.isViable();
 	}
 
 

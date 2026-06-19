@@ -2,28 +2,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public class FieldStats {
+public final class FieldStats {
 
-	private Map<Class<?>, Counter> counters;
-
-	private boolean countsValid;
+	private final Map<Class<?>, Counter> counters;
 
 
 	public FieldStats() {
-
-
 		counters = new LinkedHashMap<>();
-		countsValid = true;
 	}
 
 
-	public String getPopulationDetails(Field field) {
-		StringBuffer buffer = new StringBuffer();
-		if (!countsValid) {
-			generateCounts(field);
-		}
-		for (Class<?> key : counters.keySet()) {
-			Counter info = counters.get(key);
+	public String getPopulationDetails() {
+		StringBuilder buffer = new StringBuilder();
+		for (Counter info : counters.values()) {
 			buffer.append(info.getName());
 			buffer.append(": ");
 			buffer.append(info.getCount());
@@ -33,20 +24,16 @@ public class FieldStats {
 	}
 
 
-	public void reset() {
-		countsValid = false;
-		for (Class<?> key : counters.keySet()) {
-			Counter count = counters.get(key);
+	public void clearCounts() {
+		for (Counter count : counters.values()) {
 			count.reset();
 		}
 	}
 
 
-	public void incrementCount(Class<?> animalClass) {
+	public void countAnimal(Class<?> animalClass) {
 		Counter count = counters.get(animalClass);
 		if (count == null) {
-
-
 			count = new Counter(animalClass.getName());
 			counters.put(animalClass, count);
 		}
@@ -54,19 +41,9 @@ public class FieldStats {
 	}
 
 
-	public void countFinished() {
-		countsValid = true;
-	}
-
-
-	public boolean isViable(Field field) {
-
+	public boolean isViable() {
 		int nonZero = 0;
-		if (!countsValid) {
-			generateCounts(field);
-		}
-		for (Class<?> key : counters.keySet()) {
-			Counter info = counters.get(key);
+		for (Counter info : counters.values()) {
 			if (info.getCount() > 0) {
 				nonZero++;
 			}
@@ -75,31 +52,24 @@ public class FieldStats {
 	}
 
 
-	private void generateCounts(Field field) {
-		reset();
+	public void countField(Field field) {
+		clearCounts();
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Animal animal = field.getAnimalAt(row, col);
 				if (animal != null) {
-					incrementCount(animal.getClass());
+					countAnimal(animal.getClass());
 				}
 			}
 		}
-		countsValid = true;
 	}
 
 
-	public int getPopulationCount(Field field, Class<?> key) {
-		if (!countsValid) {
-			generateCounts(field);
+	public int getPopulationCount(Class<?> key) {
+		Counter counter = counters.get(key);
+		if (counter == null) {
+			return 0;
 		}
-		int total = 0;
-		for (Class<?> currentKey : counters.keySet()) {
-			if (currentKey.equals(key)) {
-				Counter counter = counters.get(currentKey);
-				total = total + counter.getCount();
-			}
-		}
-		return total;
+		return counter.getCount();
 	}
 }

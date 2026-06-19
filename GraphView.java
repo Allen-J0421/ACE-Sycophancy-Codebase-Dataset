@@ -42,12 +42,13 @@ public class GraphView extends JFrame {
 
 
 	public boolean isViable(Field field) {
-		return stats.isViable(field);
+		stats.countField(field);
+		return stats.isViable();
 	}
 
 
 	public void reset() {
-		stats.reset();
+		stats.clearCounts();
 		graph.newRun();
 	}
 
@@ -115,12 +116,12 @@ public class GraphView extends JFrame {
 
 			g.copyArea(1, 0, width - 1, height, -1, 0);
 
-			stats.reset();
+			stats.countField(field);
 			ensureSeriesCount(height);
 
 			int i = 0;
 			for (Class<?> nextClass : colors.keySet()) {
-				int count = stats.getPopulationCount(field, nextClass);
+				int count = stats.getPopulationCount(nextClass);
 
 
 				int y = height - ((height * count) / yMax) - 1;
@@ -139,7 +140,7 @@ public class GraphView extends JFrame {
 			repaint();
 
 			stepLabel.setText("" + step);
-			countLabel.setText(stats.getPopulationDetails(field));
+			countLabel.setText(stats.getPopulationDetails());
 
 		}
 

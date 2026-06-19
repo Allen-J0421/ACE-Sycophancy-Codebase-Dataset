@@ -18,6 +18,7 @@ public final class LongestCommonSubsequenceTest {
         }
 
         assertSymmetric("abcde", "ace");
+        assertSymmetric("XMJYAUZ", "MZJAWXU");
         assertNullRejected();
 
         System.out.println("All tests passed.");

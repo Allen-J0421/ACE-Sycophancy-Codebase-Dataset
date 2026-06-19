@@ -1,10 +1,6 @@
 import java.util.Objects;
 
 public final class LongestCommonSubsequence {
-    private static final String SAMPLE_FIRST = "AGGTAB";
-    private static final String SAMPLE_SECOND = "GXTXAYB";
-    private static final int REQUIRED_ARGUMENT_COUNT = 2;
-
     private LongestCommonSubsequence() {
     }
 
@@ -22,16 +18,6 @@ public final class LongestCommonSubsequence {
 
         return new Solver(first, second).solve();
     }
-
-    public static void main(String[] args) {
-        if (args.length == REQUIRED_ARGUMENT_COUNT) {
-            System.out.println(lcs(args[0], args[1]));
-            return;
-        }
-
-        System.out.println(lcs(SAMPLE_FIRST, SAMPLE_SECOND));
-    }
-
     private static final class Solver {
         private final char[] longer;
         private final char[] shorter;

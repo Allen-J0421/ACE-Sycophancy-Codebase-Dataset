@@ -5,6 +5,10 @@ public class Climate {
 
 	private static final int SEASON_LENGTH = 16;
 
+	private static final int MIN_HUMIDITY_CHANGE = 10;
+
+	private static final int MAX_HUMIDITY_CHANGE = 20;
+
 	private static final Random rand = Randomizer.getRandom();
 
 	private Weather currentWeather;
@@ -24,7 +28,7 @@ public class Climate {
 		updateSeason(step);
 
 
-		int humidityIncrease = rand.nextInt((20 - 10) + 1) + 10;
+		int humidityIncrease = rand.nextInt(MAX_HUMIDITY_CHANGE - MIN_HUMIDITY_CHANGE + 1) + MIN_HUMIDITY_CHANGE;
 
 		if (humidity < 80 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
 			humidity += humidityIncrease;

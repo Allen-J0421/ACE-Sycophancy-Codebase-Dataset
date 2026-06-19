@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class FieldStats {
 
-	private HashMap<Class, Counter> counters;
+	private HashMap<Class<?>, Counter> counters;
 
 	private boolean countsValid;
 
@@ -39,7 +39,7 @@ public class FieldStats {
 	}
 
 
-	public void incrementCount(Class animalClass) {
+	public void incrementCount(Class<?> animalClass) {
 		Counter count = counters.get(animalClass);
 		if (count == null) {
 
@@ -84,7 +84,7 @@ public class FieldStats {
 	}
 
 
-	public int getPopulationCount(Field field, Class key) {
+	public int getPopulationCount(Field field, Class<?> key) {
 		if (!countsValid) {
 			generateCounts(field);
 		}

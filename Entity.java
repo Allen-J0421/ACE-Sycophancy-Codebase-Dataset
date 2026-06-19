@@ -23,11 +23,6 @@ public abstract class Entity {
 	}
 
 
-	protected void setFieldNull() {
-		field = null;
-	}
-
-
 	protected Location getLocation() {
 		return location;
 	}
@@ -47,8 +42,9 @@ public abstract class Entity {
 	}
 
 
-	protected void setLocationNull() {
+	protected void detach() {
 		location = null;
+		field = null;
 	}
 
 }

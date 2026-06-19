@@ -4,11 +4,7 @@ public enum TimeCycle {
 	NIGHT;
 
 
-	public TimeCycle toggleTimeCycle(TimeCycle currentTimeCycle) {
-		if (currentTimeCycle == TimeCycle.DAY) {
-			return TimeCycle.NIGHT;
-		} else {
-			return TimeCycle.DAY;
-		}
+	public TimeCycle toggle() {
+		return this == DAY ? NIGHT : DAY;
 	}
 }

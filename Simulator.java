@@ -119,7 +119,7 @@ public class Simulator {
 
 
 		if (step % TIMECYCLE_LENGTH == 0) {
-			currentTimeCycle = currentTimeCycle.toggleTimeCycle(currentTimeCycle);
+			currentTimeCycle = currentTimeCycle.toggle();
 		}
 
 

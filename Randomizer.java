@@ -10,7 +10,7 @@ public class Randomizer {
 	private static final boolean useShared = true;
 
 
-	public Randomizer() {
+	private Randomizer() {
 	}
 
 

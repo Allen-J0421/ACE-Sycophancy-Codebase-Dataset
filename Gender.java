@@ -6,11 +6,8 @@ public enum Gender {
 	MALE;
 
 
-	public Gender randomGender() {
+	public static Gender randomGender() {
 		Random rand = Randomizer.getRandom();
-		if (rand.nextInt(2) == 0) {
-			return Gender.FEMALE;
-		}
-		return Gender.MALE;
+		return rand.nextInt(2) == 0 ? FEMALE : MALE;
 	}
 }

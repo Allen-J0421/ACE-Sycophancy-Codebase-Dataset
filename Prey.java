@@ -6,7 +6,6 @@ public abstract class Prey extends Animal {
 
 	private static final Random rand = Randomizer.getRandom();
 
-
 	public Prey(boolean randomAge, Field field, Location location) {
 		super(field, location);
 		setAge(0);
@@ -33,13 +32,9 @@ public abstract class Prey extends Animal {
 
 
 	private void findFood() {
-		Field field = getField();
-		Location where = getLocation();
-		Object plant = field.getPlantAt(where);
-
+		Object plant = getField().getPlantAt(getLocation());
 		if (plant instanceof Plant) {
 			Plant nearPlant = (Plant) plant;
-
 			if (nearPlant.canEat()) {
 				nearPlant.reduceStage();
 				setFoodLevel(8);

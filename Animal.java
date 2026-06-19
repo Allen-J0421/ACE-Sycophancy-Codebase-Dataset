@@ -35,14 +35,14 @@ public abstract class Animal extends Entity {
 	public Animal(Field field, Location location) {
 		super(field, location);
 		alive = true;
-		gender = gender.randomGender();
+		gender = Gender.randomGender();
 		nocturnal = false;
 		sick = false;
 		sickProbability = 16;
 	}
 
 
-	abstract protected void normalAct(List<Animal> newAnimals);
+	protected abstract void normalAct(List<Animal> newAnimals);
 
 
 	public void act(List<Animal> newAnimals, TimeCycle time) {
@@ -98,7 +98,7 @@ public abstract class Animal extends Entity {
 	protected void giveBirth(List<Animal> newAnimals) {
 
 
-		if (this.getGender() == Gender.FEMALE) {
+		if (getGender() == Gender.FEMALE) {
 			Field field = getField();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
 			int births = breed();
@@ -120,8 +120,7 @@ public abstract class Animal extends Entity {
 		alive = false;
 		if (getLocation() != null) {
 			getField().clear(getLocation());
-			setLocationNull();
-			setFieldNull();
+			detach();
 		}
 	}
 
@@ -283,17 +282,17 @@ public abstract class Animal extends Entity {
 	}
 
 
-	abstract protected int getBreedingAge();
+	protected abstract int getBreedingAge();
 
 
-	abstract protected int getMaxAge();
+	protected abstract int getMaxAge();
 
 
-	abstract protected double getBreedingProbability();
+	protected abstract double getBreedingProbability();
 
 
-	abstract protected int getMaxLitterSize();
+	protected abstract int getMaxLitterSize();
 
 
-	abstract protected Animal createNewAnimal(boolean randomAge, Field field, Location loc);
+	protected abstract Animal createNewAnimal(boolean randomAge, Field field, Location loc);
 }

@@ -41,10 +41,6 @@ public abstract class Entity {
 		controller.remove(this);
 	}
 
-
-	abstract void accept(EntityVisitor visitor);
-
-
 	void updateLocation(Location newLocation) {
 		location = newLocation;
 	}

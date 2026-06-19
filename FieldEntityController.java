@@ -1,10 +1,24 @@
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+
 public class FieldEntityController implements EntityController {
 
 	private final FieldEnvironment fieldEnvironment;
 
+	private final Map<Class<? extends Entity>, EntityHandler<? extends Entity>> handlers;
+
 
 	public FieldEntityController(FieldEnvironment fieldEnvironment) {
+		this(fieldEnvironment, List.of(new AnimalEntityHandler(), new PlantEntityHandler()));
+	}
+
+
+	public FieldEntityController(FieldEnvironment fieldEnvironment, List<EntityHandler<? extends Entity>> handlers) {
 		this.fieldEnvironment = fieldEnvironment;
+		this.handlers = new LinkedHashMap<>();
+		handlers.forEach(handler -> this.handlers.put(handler.getEntityType(), handler));
 	}
 
 
@@ -17,7 +31,7 @@ public class FieldEntityController implements EntityController {
 	@Override
 	public void place(Entity entity, Location location) {
 		entity.updateLocation(location);
-		entity.accept(new PlacementVisitor(location));
+		resolveHandler(entity).place(fieldEnvironment, entity, location);
 	}
 
 
@@ -25,10 +39,10 @@ public class FieldEntityController implements EntityController {
 	public void move(Entity entity, Location location) {
 		Location currentLocation = entity.getLocation();
 		if (currentLocation != null) {
-			entity.accept(new ClearingVisitor(currentLocation));
+			resolveHandler(entity).clear(fieldEnvironment, currentLocation);
 		}
 		entity.updateLocation(location);
-		entity.accept(new PlacementVisitor(location));
+		resolveHandler(entity).place(fieldEnvironment, entity, location);
 	}
 
 
@@ -36,52 +50,18 @@ public class FieldEntityController implements EntityController {
 	public void remove(Entity entity) {
 		Location currentLocation = entity.getLocation();
 		if (currentLocation != null) {
-			entity.accept(new ClearingVisitor(currentLocation));
+			resolveHandler(entity).clear(fieldEnvironment, currentLocation);
 			entity.updateLocation(null);
 		}
 	}
 
 
-	private class PlacementVisitor implements EntityVisitor {
-		private final Location location;
-
-
-		private PlacementVisitor(Location location) {
-			this.location = location;
-		}
-
-
-		@Override
-		public void visitAnimal(Animal animal) {
-			fieldEnvironment.placeAnimal(animal, location);
-		}
-
-
-		@Override
-		public void visitPlant(Plant plant) {
-			fieldEnvironment.placePlant(plant, location);
-		}
-	}
-
-
-	private class ClearingVisitor implements EntityVisitor {
-		private final Location location;
-
-
-		private ClearingVisitor(Location location) {
-			this.location = location;
-		}
-
-
-		@Override
-		public void visitAnimal(Animal animal) {
-			fieldEnvironment.clearAnimalAt(location);
-		}
-
-
-		@Override
-		public void visitPlant(Plant plant) {
-			fieldEnvironment.clearPlantAt(location);
-		}
+	@SuppressWarnings("unchecked")
+	private <T extends Entity> EntityHandler<T> resolveHandler(T entity) {
+		return handlers.values().stream()
+				.filter(handler -> handler.getEntityType().isAssignableFrom(entity.getClass()))
+				.map(handler -> (EntityHandler<T>) handler)
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("No handler registered for " + entity.getClass().getName()));
 	}
 }

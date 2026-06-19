@@ -192,12 +192,6 @@ public abstract class Animal extends Entity {
 	}
 
 
-	@Override
-	void accept(EntityVisitor visitor) {
-		visitor.visitAnimal(this);
-	}
-
-
 	protected void setAge(int age) {
 		this.age = age;
 	}

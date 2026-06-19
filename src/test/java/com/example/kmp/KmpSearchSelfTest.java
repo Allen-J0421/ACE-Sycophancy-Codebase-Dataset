@@ -14,6 +14,7 @@ public final class KmpSearchSelfTest {
         assertEquals(List.of(), KmpSearch.search("xyz", "aaaa"), "no matches");
         assertEquals(List.of(), KmpSearch.search("longer-pattern", "short"), "pattern longer than text");
         assertAnalysis(KmpSearch.analyze("aaba", "aabaacaadaabaaba"), "aaba", "aabaacaadaabaaba", List.of(0, 9, 12), "analysis through facade");
+        assertView(KmpSearch.analyze("aaba", "aabaacaadaabaaba"), "aaba", "aabaacaadaabaaba", List.of(0, 9, 12), "result view through facade");
         assertMatcher(KmpSearch.matcher("aaba", "aabaacaadaabaaba"), "aaba", "aabaacaadaabaaba", List.of(0, 9, 12), "matcher through facade");
         assertEquals(List.of(0, 2), collectMatches(KmpSearch.matchIterator("aba", "ababa")), "iterator through facade");
         assertEquals(OptionalInt.of(2), KmpSearch.findFirst("aaba", "xxaabaacaadaabaaba"), "first match through facade");
@@ -26,6 +27,7 @@ public final class KmpSearchSelfTest {
         assertEquals("aba", compiledPattern.value(), "compiled pattern preserves source value");
         assertMatcher(compiledPattern.matcher("ababa"), "aba", "ababa", List.of(0, 2), "compiled pattern matcher");
         assertAnalysis(compiledPattern.analyzeIn("ababa"), "aba", "ababa", List.of(0, 2), "compiled pattern analysis");
+        assertView(compiledPattern.analyzeIn("ababa"), "aba", "ababa", List.of(0, 2), "compiled pattern result view");
         assertEquals(List.of(0, 2), collectMatches(compiledPattern.matchIteratorIn("ababa")), "pattern iterator search");
         assertEquals(List.of(0, 2), compiledPattern.findMatchesIn("ababa"), "compiled pattern search");
         assertEquals(List.of(0, 2), compiledPattern.findMatchesIn(new StringBuilder("ababa")), "char sequence search");
@@ -63,6 +65,7 @@ public final class KmpSearchSelfTest {
             CharSequence expectedText,
             List<Integer> expectedMatches,
             String scenario) {
+        assertView(matcher, expectedPattern, expectedText.toString(), expectedMatches, scenario + " view");
         assertEquals(expectedPattern, matcher.pattern().value(), scenario + " pattern");
         assertEquals(expectedText.toString(), matcher.text().toString(), scenario + " text");
         assertEquals(expectedMatches, matcher.findMatches(), scenario + " matches");
@@ -78,7 +81,7 @@ public final class KmpSearchSelfTest {
             String expectedText,
             List<Integer> expectedMatches,
             String scenario) {
-        assertEquals(expectedPattern, result.pattern(), scenario + " pattern");
+        assertEquals(expectedPattern, result.pattern().value(), scenario + " pattern");
         assertEquals(expectedText, result.text(), scenario + " text");
         assertEquals(expectedMatches, result.matchIndices(), scenario + " indices");
         assertEquals(expectedMatches.size(), result.count(), scenario + " count");
@@ -90,6 +93,29 @@ public final class KmpSearchSelfTest {
                 scenario + " last");
         assertEquals(expectedMatches, List.copyOf(result.matchIndices()), scenario + " iterable");
         assertEquals(expectedMatches.toString(), result.toString(), scenario + " string");
+    }
+
+    private static void assertView(
+            KmpMatchView view,
+            String expectedPattern,
+            String expectedText,
+            List<Integer> expectedMatches,
+            String scenario) {
+        assertEquals(expectedPattern, view.pattern().value(), scenario + " pattern");
+        assertEquals(expectedText, view.text(), scenario + " text");
+        assertEquals(expectedMatches, view.matchIndices(), scenario + " indices");
+        assertEquals(expectedMatches, view.findMatches(), scenario + " matches");
+        assertEquals(expectedMatches.size(), view.count(), scenario + " count");
+        assertEquals(expectedMatches.size(), view.countMatches(), scenario + " count alias");
+        assertEquals(!expectedMatches.isEmpty(), view.hasMatches(), scenario + " presence");
+        assertEquals(!expectedMatches.isEmpty(), view.contains(), scenario + " contains");
+        assertEquals(toOptional(expectedMatches.isEmpty() ? null : expectedMatches.get(0)), view.firstMatch(), scenario + " first");
+        assertEquals(toOptional(expectedMatches.isEmpty() ? null : expectedMatches.get(0)), view.findFirst(), scenario + " first alias");
+        assertEquals(
+                toOptional(expectedMatches.isEmpty() ? null : expectedMatches.get(expectedMatches.size() - 1)),
+                view.lastMatch(),
+                scenario + " last");
+        assertEquals(expectedMatches, collectMatches(view), scenario + " iterator");
     }
 
     private static List<Integer> collectMatches(KmpPattern pattern, CharSequence text) {
@@ -109,6 +135,16 @@ public final class KmpSearchSelfTest {
 
         while (iterator.hasNext()) {
             matches.add(iterator.nextInt());
+        }
+
+        return List.copyOf(matches);
+    }
+
+    private static List<Integer> collectMatches(KmpMatchView view) {
+        List<Integer> matches = new java.util.ArrayList<>();
+
+        for (int matchIndex : view) {
+            matches.add(matchIndex);
         }
 
         return List.copyOf(matches);

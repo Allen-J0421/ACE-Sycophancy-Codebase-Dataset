@@ -24,7 +24,7 @@ public final class KmpSearchDemo {
         System.out.println("Count: " + result.count());
         System.out.println("First: " + formatOptional(result.firstMatch()));
         System.out.println("Last: " + formatOptional(result.lastMatch()));
-        System.out.println("Pattern: " + result.pattern());
+        System.out.println("Pattern: " + result.pattern().value());
         System.out.println("Text: " + result.text());
         System.out.println("Contains: " + result.hasMatches());
 

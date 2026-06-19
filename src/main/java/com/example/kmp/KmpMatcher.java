@@ -3,13 +3,11 @@ package com.example.kmp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.OptionalInt;
-import java.util.function.IntConsumer;
 
 /**
  * Search session for one compiled pattern and one text input.
  */
-public final class KmpMatcher {
+public final class KmpMatcher implements KmpMatchView {
     private final KmpPattern pattern;
     private final String text;
 
@@ -20,10 +18,12 @@ public final class KmpMatcher {
         this.text = Objects.requireNonNull(text, "text must not be null").toString();
     }
 
+    @Override
     public KmpPattern pattern() {
         return pattern;
     }
 
+    @Override
     public String text() {
         return text;
     }
@@ -37,32 +37,19 @@ public final class KmpMatcher {
             List<Integer> matches = new ArrayList<>();
             KmpMatchIterator iterator = matchIterator();
             iterator.forEachRemaining((int matchIndex) -> matches.add(matchIndex));
-            cachedAnalysis = KmpMatchResult.from(pattern.value(), text, matches);
+            cachedAnalysis = KmpMatchResult.from(pattern, text, matches);
         }
 
         return cachedAnalysis;
     }
 
+    @Override
     public List<Integer> findMatches() {
         return analyze().matchIndices();
     }
 
-    public OptionalInt findFirst() {
-        return analyze().firstMatch();
-    }
-
-    public int countMatches() {
-        return analyze().count();
-    }
-
-    public boolean contains() {
-        return analyze().hasMatches();
-    }
-
-    public void forEachMatch(IntConsumer matchConsumer) {
-        Objects.requireNonNull(matchConsumer, "matchConsumer must not be null");
-        for (int matchIndex : analyze()) {
-            matchConsumer.accept(matchIndex);
-        }
+    @Override
+    public List<Integer> matchIndices() {
+        return analyze().matchIndices();
     }
 }

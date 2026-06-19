@@ -7,6 +7,9 @@ public abstract class Animal extends Entity {
 
 	private static final Random rand = Randomizer.getRandom();
 
+	/** Default odds of catching an illness, before a species tunes them. */
+	private static final int DEFAULT_INFECTION_RESISTANCE = 16;
+
 	private boolean alive;
 
 	private int age;
@@ -21,22 +24,13 @@ public abstract class Animal extends Entity {
 
 	private int foodLevel;
 
-	private boolean sick;
-
-	private int sickProbability;
-
-	private int recoverProbability;
-
-	private int sickStep;
-
-	private int maxSickStep;
+	private final Disease disease = new Disease(DEFAULT_INFECTION_RESISTANCE);
 
 
 	public Animal(Field field, Location location) {
 		super(field, location);
 		alive = true;
 		gender = Gender.random();
-		sickProbability = 16;
 	}
 
 
@@ -111,32 +105,17 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void becomeSick() {
-		if (!isSick() && rand.nextInt(getSickProbability()) == 1) {
-			toggleSick();
-		}
-	}
-
-
-	protected void notSick() {
-		if (isSick() && rand.nextInt(getRecoverProbability()) == 1) {
-			toggleSick();
-			sickStep = 0;
-		}
-	}
-
-
 	protected void battleSickness() {
-		if (!sick) {
-			becomeSick();
+		if (!disease.isActive()) {
+			disease.tryInfect();
 			return;
 		}
 
-		if (sickStep >= maxSickStep) {
+		if (disease.isTerminal()) {
 			setDead();
 			return;
 		}
-		sickStep++;
+		disease.advance();
 
 		Field field = getField();
 		if (field == null) {
@@ -146,10 +125,10 @@ public abstract class Animal extends Entity {
 		for (Location where : field.adjacentAnimalLocations(getLocation())) {
 			Animal neighbour = field.getAnimalAt(where);
 			if (neighbour != null && neighbour.getClass().equals(getClass())) {
-				neighbour.becomeSick();
+				neighbour.disease.tryInfect();
 			}
 		}
-		notSick();
+		disease.tryRecover();
 	}
 
 
@@ -166,28 +145,13 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void toggleSick() {
-		sick = !sick;
-	}
-
-
-	protected int getSickProbability() {
-		return sickProbability;
-	}
-
-
 	protected void setSickProbability(int inputValue) {
-		sickProbability = inputValue;
-	}
-
-
-	protected int getRecoverProbability() {
-		return recoverProbability;
+		disease.setInfectionResistance(inputValue);
 	}
 
 
 	protected void setRecoverProbability(int inputValue) {
-		recoverProbability = inputValue;
+		disease.setRecoveryResistance(inputValue);
 	}
 
 
@@ -222,7 +186,7 @@ public abstract class Animal extends Entity {
 
 
 	protected boolean isSick() {
-		return sick;
+		return disease.isActive();
 	}
 
 
@@ -241,23 +205,8 @@ public abstract class Animal extends Entity {
 	}
 
 
-	public int getSickStep() {
-		return sickStep;
-	}
-
-
-	public void setSickStep(int inputValue) {
-		this.sickStep = inputValue;
-	}
-
-
-	public int getMaxSickStep() {
-		return maxSickStep;
-	}
-
-
 	public void setMaxSickStep(int inputValue) {
-		this.maxSickStep = inputValue;
+		disease.setMaxDuration(inputValue);
 	}
 
 

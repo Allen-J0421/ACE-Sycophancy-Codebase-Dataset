@@ -5,6 +5,10 @@ public class Climate {
 
 	private static final int SEASON_LENGTH = 16;
 
+	/** Each step, humidity drifts by a random amount in this inclusive range. */
+	private static final int MIN_HUMIDITY_CHANGE = 10;
+	private static final int MAX_HUMIDITY_CHANGE = 20;
+
 	private static final Random rand = Randomizer.getRandom();
 
 	private Weather currentWeather;
@@ -23,8 +27,8 @@ public class Climate {
 	public void updateClimate(int step) {
 		updateSeason(step);
 
-
-		int humidityIncrease = rand.nextInt((20 - 10) + 1) + 10;
+		int humidityIncrease = MIN_HUMIDITY_CHANGE
+				+ rand.nextInt(MAX_HUMIDITY_CHANGE - MIN_HUMIDITY_CHANGE + 1);
 
 		if (humidity < 80 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
 			humidity += humidityIncrease;
@@ -43,20 +47,8 @@ public class Climate {
 
 
 	private void updateSeason(int step) {
-		switch ((step / SEASON_LENGTH) % 4) {
-			case 0:
-				currentSeason = Season.SPRING;
-				break;
-			case 1:
-				currentSeason = Season.SUMMER;
-				break;
-			case 2:
-				currentSeason = Season.AUTUMN;
-				break;
-			case 3:
-				currentSeason = Season.WINTER;
-				break;
-		}
+		// Season.values() is declared in calendar order, one season per SEASON_LENGTH steps.
+		currentSeason = Season.values()[(step / SEASON_LENGTH) % Season.values().length];
 	}
 
 

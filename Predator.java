@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -50,32 +49,23 @@ public abstract class Predator extends Animal {
 
 	private Location findFood() {
 		Field field = getField();
-		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		while (it.hasNext()) {
-			Location where = it.next();
+		for (Location where : field.adjacentAnimalLocations(getLocation())) {
 			Object animal = field.getAnimalAt(where);
 			if (animal instanceof Animal) {
 				Animal nearAnimal = (Animal) animal;
 
-				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
-
-					if (nearAnimal.isAlive()) {
-						nearAnimal.setDead();
-						setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
-						return where;
-					}
+				if (nearAnimal.getFoodChainLevel() < getFoodChainLevel() && nearAnimal.isAlive()) {
+					nearAnimal.setDead();
+					setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
+					return where;
 				}
 
-
-				if (nearAnimal.getFoodChainLevel() == this.getFoodChainLevel()) {
-					if (nearAnimal.isAlive() && this.isCannibal()) {
-						if (getFoodLevel() < 2 && nearAnimal.getClass().equals(this.getClass())) {
-							nearAnimal.setDead();
-							setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
-							return where;
-						}
-					}
+				if (nearAnimal.getFoodChainLevel() == getFoodChainLevel()
+						&& nearAnimal.isAlive() && isCannibal()
+						&& getFoodLevel() < 2 && nearAnimal.getClass() == this.getClass()) {
+					nearAnimal.setDead();
+					setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
+					return where;
 				}
 			}
 		}

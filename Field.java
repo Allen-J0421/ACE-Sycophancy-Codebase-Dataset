@@ -93,13 +93,8 @@ public class Field {
 
 
 	public Location freeAnimalAdjacentLocation(Location location) {
-
 		List<Location> free = getFreeAnimalAdjacentLocations(location);
-		if (free.size() > 0) {
-			return free.get(0);
-		} else {
-			return null;
-		}
+		return free.isEmpty() ? null : free.get(0);
 	}
 
 
@@ -107,25 +102,20 @@ public class Field {
 		assert location != null : "Null location passed to adjacentLocations";
 
 		List<Location> locations = new LinkedList<>();
-		if (location != null) {
-			int row = location.getRow();
-			int col = location.getCol();
-			for (int roffset = -1; roffset <= 1; roffset++) {
-				int nextRow = row + roffset;
-				if (nextRow >= 0 && nextRow < depth) {
-					for (int coffset = -1; coffset <= 1; coffset++) {
-						int nextCol = col + coffset;
-
-						if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-							locations.add(new Location(nextRow, nextCol));
-						}
+		int row = location.getRow();
+		int col = location.getCol();
+		for (int roffset = -1; roffset <= 1; roffset++) {
+			int nextRow = row + roffset;
+			if (nextRow >= 0 && nextRow < depth) {
+				for (int coffset = -1; coffset <= 1; coffset++) {
+					int nextCol = col + coffset;
+					if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
+						locations.add(new Location(nextRow, nextCol));
 					}
 				}
 			}
-
-
-			Collections.shuffle(locations, rand);
 		}
+		Collections.shuffle(locations, rand);
 		return locations;
 	}
 

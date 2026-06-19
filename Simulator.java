@@ -99,8 +99,7 @@ public class Simulator {
 		climate.updateClimate(step);
 
 
-		for (Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-			Plant plant = it.next();
+		for (Plant plant : plants) {
 			plant.increaseStage(climate);
 		}
 

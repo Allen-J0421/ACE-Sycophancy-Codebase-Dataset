@@ -17,12 +17,11 @@ public class FieldStats {
 
 
 	public String getPopulationDetails(Field field) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		if (!countsValid) {
 			generateCounts(field);
 		}
-		for (Class key : counters.keySet()) {
-			Counter info = counters.get(key);
+		for (Counter info : counters.values()) {
 			buffer.append(info.getName());
 			buffer.append(": ");
 			buffer.append(info.getCount());
@@ -34,8 +33,7 @@ public class FieldStats {
 
 	public void reset() {
 		countsValid = false;
-		for (Class key : counters.keySet()) {
-			Counter count = counters.get(key);
+		for (Counter count : counters.values()) {
 			count.reset();
 		}
 	}
@@ -59,13 +57,11 @@ public class FieldStats {
 
 
 	public boolean isViable(Field field) {
-
 		int nonZero = 0;
 		if (!countsValid) {
 			generateCounts(field);
 		}
-		for (Class key : counters.keySet()) {
-			Counter info = counters.get(key);
+		for (Counter info : counters.values()) {
 			if (info.getCount() > 0) {
 				nonZero++;
 			}
@@ -92,13 +88,7 @@ public class FieldStats {
 		if (!countsValid) {
 			generateCounts(field);
 		}
-		int total = 0;
-		for (Class currentKey : counters.keySet()) {
-			if (currentKey.equals(key)) {
-				Counter counter = counters.get(currentKey);
-				total = total + counter.getCount();
-			}
-		}
-		return total;
+		Counter counter = counters.get(key);
+		return counter == null ? 0 : counter.getCount();
 	}
 }

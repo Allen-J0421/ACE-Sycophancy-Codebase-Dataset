@@ -11,7 +11,7 @@ public abstract class Animal extends Entity {
 
 	private int age;
 
-	private Gender gender = Gender.MALE;
+	private Gender gender;
 
 	private boolean nocturnal;
 
@@ -102,7 +102,7 @@ public abstract class Animal extends Entity {
 			Field field = getField();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
 			int births = breed();
-			for (int b = 0; b < births && free.size() > 0; b++) {
+			for (int b = 0; b < births && !free.isEmpty(); b++) {
 				Location loc = free.remove(0);
 				Animal young = createNewAnimal(false, field, loc);
 				newAnimals.add(young);
@@ -156,19 +156,16 @@ public abstract class Animal extends Entity {
 			sickStep++;
 			Field field = getField();
 			if (field != null) {
-				List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-				Iterator<Location> it = adjacent.iterator();
-				while (it.hasNext()) {
-					Location where = it.next();
+				for (Location where : field.adjacentAnimalLocations(getLocation())) {
 					Object animal = field.getAnimalAt(where);
 					if (animal instanceof Animal) {
 						Animal nearAnimal = (Animal) animal;
-						if (nearAnimal.getClass().equals(this.getClass())) {
+						if (nearAnimal.getClass() == this.getClass()) {
 							nearAnimal.becomeSick();
 						}
 					}
 				}
-				this.notSick();
+				notSick();
 			}
 		} else {
 			becomeSick();

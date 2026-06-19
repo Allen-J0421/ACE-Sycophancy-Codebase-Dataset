@@ -50,18 +50,14 @@ public abstract class Animal extends Entity {
 		incrementAge();
 		incrementHunger();
 		battleSickness();
-		if (isAlive()) {
-			if (time == TimeCycle.NIGHT && isNocturnal()) {
-
-				normalAct(newAnimals);
-			} else if (time == TimeCycle.DAY && isNocturnal()) {
-
-				normalAct(newAnimals);
-			} else if (time == TimeCycle.DAY && !isNocturnal()) {
-
-				normalAct(newAnimals);
-			}
+		if (isAlive() && canActDuring(time)) {
+			normalAct(newAnimals);
 		}
+	}
+
+
+	private boolean canActDuring(TimeCycle time) {
+		return time == TimeCycle.DAY || isNocturnal();
 	}
 
 
@@ -80,10 +76,8 @@ public abstract class Animal extends Entity {
 		boolean returnValue = age >= getBreedingAge();
 		while (it.hasNext()) {
 			Location where = it.next();
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal animalNear = (Animal) animal;
-
+			Animal animalNear = field.getAnimalAt(where);
+			if (animalNear != null) {
 				if (animalNear.getClass().equals(this.getClass()) && getGender() != animalNear.getGender()) {
 					return returnValue;
 				}
@@ -167,9 +161,8 @@ public abstract class Animal extends Entity {
 				Iterator<Location> it = adjacent.iterator();
 				while (it.hasNext()) {
 					Location where = it.next();
-					Object animal = field.getAnimalAt(where);
-					if (animal instanceof Animal) {
-						Animal nearAnimal = (Animal) animal;
+					Animal nearAnimal = field.getAnimalAt(where);
+					if (nearAnimal != null) {
 						if (nearAnimal.getClass().equals(this.getClass())) {
 							nearAnimal.becomeSick();
 						}

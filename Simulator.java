@@ -29,6 +29,34 @@ public class Simulator {
 
 	private static final int TIMECYCLE_LENGTH = 4;
 
+	private static final AnimalPopulation[] ANIMAL_POPULATIONS = {
+			new AnimalPopulation(BIRD_CREATION_PROBABILITY, Bird.class, new AnimalFactory() {
+				public Animal create(Field field, Location location) {
+					return new Bird(true, field, location);
+				}
+			}),
+			new AnimalPopulation(MOUSE_CREATION_PROBABILITY, Mouse.class, new AnimalFactory() {
+				public Animal create(Field field, Location location) {
+					return new Mouse(true, field, location);
+				}
+			}),
+			new AnimalPopulation(DUCK_CREATION_PROBABILITY, Duck.class, new AnimalFactory() {
+				public Animal create(Field field, Location location) {
+					return new Duck(true, field, location);
+				}
+			}),
+			new AnimalPopulation(WOLF_CREATION_PROBABILITY, Wolf.class, new AnimalFactory() {
+				public Animal create(Field field, Location location) {
+					return new Wolf(true, field, location);
+				}
+			}),
+			new AnimalPopulation(BEAR_CREATION_PROBABILITY, Bear.class, new AnimalFactory() {
+				public Animal create(Field field, Location location) {
+					return new Bear(true, field, location);
+				}
+			})
+	};
+
 
 	private List<Animal> animals;
 
@@ -98,13 +126,7 @@ public class Simulator {
 		step++;
 		climate.updateClimate(step);
 
-
-		for (Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-			Plant plant = it.next();
-			plant.increaseStage(climate);
-		}
-
-
+		updatePlants();
 		List<Animal> newAnimals = new ArrayList<>();
 
 		for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
@@ -118,20 +140,11 @@ public class Simulator {
 
 		animals.addAll(newAnimals);
 
-
 		if (step % TIMECYCLE_LENGTH == 0) {
-			currentTimeCycle = currentTimeCycle.toggleTimeCycle(currentTimeCycle);
+			currentTimeCycle = currentTimeCycle.toggle();
 		}
 
-
-		int count = 0;
-		for (Animal i : animals) {
-			if (i.isSick()) {
-				count++;
-			}
-		}
-
-		sickPercentage = (count * 100) / animals.size();
+		sickPercentage = calculateSickPercentage();
 		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
 		graphView.showStatus(step, field);
 	}
@@ -140,6 +153,7 @@ public class Simulator {
 	public void reset() {
 		step = 0;
 		animals.clear();
+		plants.clear();
 		populate();
 		currentTimeCycle = TimeCycle.DAY;
 		climate.setCurrentWeather(Weather.SUN);
@@ -168,31 +182,43 @@ public class Simulator {
 					plants.add(grass);
 				}
 
-
-				if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
-					Bird bird = new Bird(true, field, location);
-					animals.add(bird);
-					graphView.setColor(Bird.class, bird.getObjectColor(climate));
-				} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-					Mouse mouse = new Mouse(true, field, location);
-					animals.add(mouse);
-					graphView.setColor(Mouse.class, mouse.getObjectColor(climate));
-				} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
-					Duck duck = new Duck(true, field, location);
-					animals.add(duck);
-					graphView.setColor(Duck.class, duck.getObjectColor(climate));
-				} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-					Wolf wolf = new Wolf(true, field, location);
-					animals.add(wolf);
-					graphView.setColor(Wolf.class, wolf.getObjectColor(climate));
-				} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-					Bear bear = new Bear(true, field, location);
-					animals.add(bear);
-					graphView.setColor(Bear.class, bear.getObjectColor(climate));
-				}
-
+				populateAnimal(rand, location);
 			}
 		}
+	}
+
+
+	private void populateAnimal(Random rand, Location location) {
+		for (AnimalPopulation population : ANIMAL_POPULATIONS) {
+			if (rand.nextDouble() <= population.probability) {
+				Animal animal = population.factory.create(field, location);
+				animals.add(animal);
+				graphView.setColor(population.animalClass, animal.getObjectColor(climate));
+				return;
+			}
+		}
+	}
+
+
+	private void updatePlants() {
+		for (Plant plant : plants) {
+			plant.increaseStage(climate);
+		}
+	}
+
+
+	private int calculateSickPercentage() {
+		if (animals.isEmpty()) {
+			return 0;
+		}
+
+		int sickCount = 0;
+		for (Animal animal : animals) {
+			if (animal.isSick()) {
+				sickCount++;
+			}
+		}
+		return (sickCount * 100) / animals.size();
 	}
 
 
@@ -200,7 +226,26 @@ public class Simulator {
 		try {
 			Thread.sleep(millisec);
 		} catch (InterruptedException ie) {
+			Thread.currentThread().interrupt();
+		}
+	}
 
+
+	private interface AnimalFactory {
+		Animal create(Field field, Location location);
+	}
+
+
+	private static class AnimalPopulation {
+		private final double probability;
+		private final Class<? extends Animal> animalClass;
+		private final AnimalFactory factory;
+
+
+		private AnimalPopulation(double probability, Class<? extends Animal> animalClass, AnimalFactory factory) {
+			this.probability = probability;
+			this.animalClass = animalClass;
+			this.factory = factory;
 		}
 	}
 }

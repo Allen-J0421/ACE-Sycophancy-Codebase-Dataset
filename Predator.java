@@ -54,10 +54,8 @@ public abstract class Predator extends Animal {
 		Iterator<Location> it = adjacent.iterator();
 		while (it.hasNext()) {
 			Location where = it.next();
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal nearAnimal = (Animal) animal;
-
+			Animal nearAnimal = field.getAnimalAt(where);
+			if (nearAnimal != null) {
 				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
 
 					if (nearAnimal.isAlive()) {

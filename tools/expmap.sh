@@ -26,16 +26,20 @@ norm() { sed 's#^origin/##'; }
 # algorithm a branch belongs to, via its root commit -> algo branch tip
 algo_of() {
   local root
+  # Resolve the branch's root commit; if the bare name isn't a local head
+  # (experiments often exist only as origin/* refs), retry the origin/ form.
   root=$(git rev-list --max-parents=0 "$1" 2>/dev/null | tail -1) || true
+  [ -n "${root:-}" ] || root=$(git rev-list --max-parents=0 "origin/$1" 2>/dev/null | tail -1) || true
   [ -n "${root:-}" ] || return 0
   git for-each-ref --points-at "$root" --format='%(refname:short)' "${REFSCOPE[@]}" \
     | norm | grep -E '^(R?[0-9]{3})_' | sort -u | head -1 || true
 }
 
-# all experiment branch short-names (deduped across local + origin)
+# all experiment branch refs (full short-names, e.g. "origin/claude-exp/...").
+# Kept un-normalized so they resolve via git rev-list; norm() is for display only.
 exp_branches() {
   git for-each-ref --format='%(refname:short)' "${REFSCOPE[@]}" \
-    | norm | grep -E '^(claude|codex)-exp/' | sort -u || true
+    | grep -E '(^|/)(claude|codex)-exp/' | sort -u || true
 }
 
 # branch short-name -> "model<TAB>timestamp" (matches the map header / cut -f2=model)
@@ -49,13 +53,16 @@ parse() {
 }
 
 # emit one row per experiment: algorithm \t model \t timestamp \t branch
+# $e is the full ref (e.g. "origin/claude-exp/...") so algo_of can resolve its
+# root commit; display columns use the normalized (origin/-stripped) name.
 table() {
-  local e a tm
+  local e disp a tm
   while read -r e; do
     [ -n "$e" ] || continue
+    disp=$(printf '%s' "$e" | norm)
     a=$(algo_of "$e")
-    tm=$(parse "$e")
-    printf '%s\t%s\t%s\n' "${a:-UNMAPPED}" "$tm" "$e"
+    tm=$(parse "$disp")
+    printf '%s\t%s\t%s\n' "${a:-UNMAPPED}" "$tm" "$disp"
   done < <(exp_branches)
 }
 

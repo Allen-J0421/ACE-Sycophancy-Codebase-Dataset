@@ -1,56 +1,24 @@
-import java.awt.*;
+import java.awt.Color;
 
 
 public class Wolf extends Predator {
 
-
-	private static final int BREEDING_AGE = 20;
-
-	private static final int MAX_AGE = 250;
-
-	private static final double BREEDING_PROBABILITY = 0.17;
-
-	private static final int MAX_LITTER_SIZE = 6;
+	private static final AnimalTraits TRAITS = AnimalTraits.builder()
+			.breedingAge(20).maxAge(250).breedingProbability(0.17).maxLitterSize(6)
+			.foodChainLevel(2).foodValue(10)
+			.infectionResistance(15).recoveryResistance(4).maxSickStep(30)
+			.nocturnal(true).cannibal(true).additionalFoodValue(9)
+			.color(new Color(50, 50, 47))
+			.build();
 
 
 	public Wolf(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
-		toggleNocturnal();
-		setFoodChainLevel(2);
-		setFoodValue(10);
-		toggleCannibal();
-		setSickProbability(15);
-		setRecoverProbability(4);
-		setAdditionalFoodValue(9);
+		super(TRAITS, randomAge, field, location);
 	}
 
 
-	protected int getBreedingAge() {
-		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
-	}
-
-
-	protected double getBreedingProbability() {
-		return BREEDING_PROBABILITY;
-	}
-
-
-	protected int getMaxLitterSize() {
-		return MAX_LITTER_SIZE;
-	}
-
-
+	@Override
 	protected Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
 		return new Wolf(randomAge, field, loc);
-	}
-
-
-	protected Color getObjectColor(Climate climate) {
-		return new Color(50, 50, 47);
 	}
 }

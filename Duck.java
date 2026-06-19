@@ -1,53 +1,23 @@
-import java.awt.*;
+import java.awt.Color;
 
 
 public class Duck extends Prey {
 
-
-	private static final int BREEDING_AGE = 4;
-
-	private static final int MAX_AGE = 50;
-
-	private static final double BREEDING_PROBABILITY = 0.20;
-
-	private static final int MAX_LITTER_SIZE = 5;
+	private static final AnimalTraits TRAITS = AnimalTraits.builder()
+			.breedingAge(4).maxAge(50).breedingProbability(0.20).maxLitterSize(5)
+			.foodChainLevel(1).foodValue(5)
+			.infectionResistance(10).recoveryResistance(2).maxSickStep(20)
+			.color(new Color(241, 200, 23))
+			.build();
 
 
 	public Duck(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
-		setFoodChainLevel(1);
-		setFoodValue(5);
-		setSickProbability(10);
-		setRecoverProbability(2);
+		super(TRAITS, randomAge, field, location);
 	}
 
 
-	protected int getBreedingAge() {
-		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
-	}
-
-
-	protected double getBreedingProbability() {
-		return BREEDING_PROBABILITY;
-	}
-
-
-	protected int getMaxLitterSize() {
-		return MAX_LITTER_SIZE;
-	}
-
-
+	@Override
 	protected Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
 		return new Duck(randomAge, field, loc);
-	}
-
-
-	protected Color getObjectColor(Climate climate) {
-		return new Color(241, 200, 23);
 	}
 }

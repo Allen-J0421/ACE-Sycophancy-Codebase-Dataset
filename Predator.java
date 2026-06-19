@@ -7,13 +7,9 @@ public abstract class Predator extends Animal {
 
 	private static final Random rand = Randomizer.getRandom();
 
-	private boolean cannibal;
 
-	private int additionalFoodValue;
-
-
-	public Predator(boolean randomAge, Field field, Location location) {
-		super(field, location);
+	public Predator(AnimalTraits traits, boolean randomAge, Field field, Location location) {
+		super(traits, field, location);
 		if (randomAge) {
 			setAge(rand.nextInt(getMaxAge()));
 			setFoodLevel(rand.nextInt(5));
@@ -21,9 +17,6 @@ public abstract class Predator extends Animal {
 			setAge(0);
 			setFoodLevel(6);
 		}
-		cannibal = false;
-		additionalFoodValue = 0;
-		setMaxSickStep(30);
 	}
 
 
@@ -55,7 +48,7 @@ public abstract class Predator extends Animal {
 				continue;
 			}
 			prey.setDead();
-			setFoodLevel(prey.getFoodValue() + additionalFoodValue);
+			setFoodLevel(prey.getFoodValue() + getAdditionalFoodValue());
 			return where;
 		}
 		return null;
@@ -78,21 +71,11 @@ public abstract class Predator extends Animal {
 
 
 	public boolean isCannibal() {
-		return cannibal;
-	}
-
-
-	public void toggleCannibal() {
-		cannibal = !cannibal;
+		return getTraits().cannibal();
 	}
 
 
 	protected int getAdditionalFoodValue() {
-		return additionalFoodValue;
-	}
-
-
-	protected void setAdditionalFoodValue(int inputValue) {
-		additionalFoodValue = inputValue;
+		return getTraits().additionalFoodValue();
 	}
 }

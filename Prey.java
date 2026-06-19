@@ -7,14 +7,13 @@ public abstract class Prey extends Animal {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	public Prey(boolean randomAge, Field field, Location location) {
-		super(field, location);
+	public Prey(AnimalTraits traits, boolean randomAge, Field field, Location location) {
+		super(traits, field, location);
 		setAge(0);
 		setFoodLevel(6);
 		if (randomAge) {
 			setAge(rand.nextInt(getMaxAge()));
 		}
-		setMaxSickStep(20);
 	}
 
 

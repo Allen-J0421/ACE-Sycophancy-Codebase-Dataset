@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
@@ -7,8 +8,10 @@ public abstract class Animal extends Entity {
 
 	private static final Random rand = Randomizer.getRandom();
 
-	/** Default odds of catching an illness, before a species tunes them. */
-	private static final int DEFAULT_INFECTION_RESISTANCE = 16;
+	/** Immutable per-species configuration; the single source of these constants. */
+	private final AnimalTraits traits;
+
+	private final Disease disease;
 
 	private boolean alive;
 
@@ -16,21 +19,17 @@ public abstract class Animal extends Entity {
 
 	private Gender gender;
 
-	private boolean nocturnal;
-
-	private int foodChainLevel;
-
-	private int foodValue;
-
 	private int foodLevel;
 
-	private final Disease disease = new Disease(DEFAULT_INFECTION_RESISTANCE);
 
-
-	public Animal(Field field, Location location) {
+	public Animal(AnimalTraits traits, Field field, Location location) {
 		super(field, location);
+		this.traits = traits;
 		alive = true;
 		gender = Gender.random();
+		disease = new Disease(traits.infectionResistance());
+		disease.setRecoveryResistance(traits.recoveryResistance());
+		disease.setMaxDuration(traits.maxSickStep());
 	}
 
 
@@ -51,6 +50,12 @@ public abstract class Animal extends Entity {
 	@Override
 	protected void placeInField(Field field, Location location) {
 		field.placeAnimal(this, location);
+	}
+
+
+	@Override
+	protected Color getObjectColor(Climate climate) {
+		return traits.color();
 	}
 
 
@@ -140,18 +145,8 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void toggleNocturnal() {
-		nocturnal = !nocturnal;
-	}
-
-
-	protected void setSickProbability(int inputValue) {
-		disease.setInfectionResistance(inputValue);
-	}
-
-
-	protected void setRecoverProbability(int inputValue) {
-		disease.setRecoveryResistance(inputValue);
+	protected AnimalTraits getTraits() {
+		return traits;
 	}
 
 
@@ -161,27 +156,37 @@ public abstract class Animal extends Entity {
 
 
 	protected int getFoodChainLevel() {
-		return foodChainLevel;
-	}
-
-
-	protected void setFoodChainLevel(int level) {
-		foodChainLevel = level;
+		return traits.foodChainLevel();
 	}
 
 
 	protected int getFoodValue() {
-		return foodValue;
-	}
-
-
-	protected void setFoodValue(int value) {
-		foodValue = value;
+		return traits.foodValue();
 	}
 
 
 	protected boolean isNocturnal() {
-		return nocturnal;
+		return traits.nocturnal();
+	}
+
+
+	protected int getBreedingAge() {
+		return traits.breedingAge();
+	}
+
+
+	protected int getMaxAge() {
+		return traits.maxAge();
+	}
+
+
+	protected double getBreedingProbability() {
+		return traits.breedingProbability();
+	}
+
+
+	protected int getMaxLitterSize() {
+		return traits.maxLitterSize();
 	}
 
 
@@ -203,23 +208,6 @@ public abstract class Animal extends Entity {
 	public void setFoodLevel(int foodLevel) {
 		this.foodLevel = foodLevel;
 	}
-
-
-	public void setMaxSickStep(int inputValue) {
-		disease.setMaxDuration(inputValue);
-	}
-
-
-	abstract protected int getBreedingAge();
-
-
-	abstract protected int getMaxAge();
-
-
-	abstract protected double getBreedingProbability();
-
-
-	abstract protected int getMaxLitterSize();
 
 
 	abstract protected Animal createNewAnimal(boolean randomAge, Field field, Location loc);

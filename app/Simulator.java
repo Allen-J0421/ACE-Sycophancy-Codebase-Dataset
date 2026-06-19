@@ -39,9 +39,11 @@ public class Simulator {
 
 	private int step;
 
-	private final SimulatorView gridView;
+	/** Every view observing the simulation; notified uniformly each step. */
+	private final List<SimulationView> views;
 
-	private final GraphView graphView;
+	/** Reused to test whether the simulation is still viable. */
+	private final FieldStats stats = new FieldStats();
 
 	private TimeCycle currentTimeCycle;
 
@@ -70,8 +72,9 @@ public class Simulator {
 		climate = new Climate(DEFAULT_WEATHER);
 		currentTimeCycle = DEFAULT_TIMECYCLE;
 
-		gridView = new SimulatorView(depth, width);
-		graphView = new GraphView(1000, 500, 500);
+		views = List.of(
+				new SimulatorView(depth, width),
+				new GraphView(1000, 500, 500));
 
 		reset();
 	}
@@ -83,10 +86,17 @@ public class Simulator {
 
 
 	public void simulate(int numSteps) {
-		for (int s = 1; s <= numSteps && gridView.isViable(field); s++) {
+		for (int s = 1; s <= numSteps && isViable(); s++) {
 			simulateOneStep();
 			delay(60);
 		}
+	}
+
+
+	/** The simulation is viable while more than one species survives. */
+	private boolean isViable() {
+		stats.reset();
+		return stats.isViable(field);
 	}
 
 
@@ -110,8 +120,16 @@ public class Simulator {
 		}
 
 		sickPercentage = computeSickPercentage();
-		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
-		graphView.showStatus(step, field);
+		publish();
+	}
+
+
+	/** Publish the current state to every view. */
+	private void publish() {
+		SimulationState state = new SimulationState(step, currentTimeCycle, field, climate, sickPercentage);
+		for (SimulationView view : views) {
+			view.showStatus(state);
+		}
 	}
 
 
@@ -137,9 +155,10 @@ public class Simulator {
 		climate.setCurrentWeather(Weather.SUN);
 
 		sickPercentage = 0;
-		graphView.reset();
-		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
-		graphView.showStatus(step, field);
+		for (SimulationView view : views) {
+			view.reset();
+		}
+		publish();
 	}
 
 
@@ -155,9 +174,17 @@ public class Simulator {
 				Animal animal = registry.spawnAnimal(rand, field, location);
 				if (animal != null) {
 					animals.add(animal);
-					graphView.setColor(animal.getClass(), animal.getObjectColor(climate));
+					registerSpecies(animal);
 				}
 			}
+		}
+	}
+
+
+	/** Tell every view which colour represents a newly seen species. */
+	private void registerSpecies(Animal animal) {
+		for (SimulationView view : views) {
+			view.setColor(animal.getClass(), animal.getObjectColor(climate));
 		}
 	}
 

@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class SimulatorView extends JFrame {
+public class SimulatorView extends JFrame implements SimulationView {
 
 	private static final Color EMPTY_COLOR = Color.white;
 
@@ -60,16 +60,20 @@ public class SimulatorView extends JFrame {
 	}
 
 
-	public void showStatus(int step, TimeCycle currentTimeCycle, Field field, Climate climate, int infect) {
+	@Override
+	public void showStatus(SimulationState state) {
 		if (!isVisible()) {
 			setVisible(true);
 		}
 
-		stepLabel.setText(STEP_PREFIX + step);
-		dayCycleLabel.setText(DAYCYCLE_PREFIX + currentTimeCycle + " ");
+		Field field = state.field();
+		Climate climate = state.climate();
+
+		stepLabel.setText(STEP_PREFIX + state.step());
+		dayCycleLabel.setText(DAYCYCLE_PREFIX + state.timeCycle() + " ");
 		this.climateLabel.setText(CLIMATE_PREFIX + climate.getCurrentSeason());
 		this.weatherLabel.setText(WEATHER_PREFIX + climate.getCurrentWeather());
-		this.infectLabel.setText(INFECTION_PREFIX + infect + "%");
+		this.infectLabel.setText(INFECTION_PREFIX + state.sickPercentage() + "%");
 		this.humidityLabel.setText(HUMIDITY_PREFIX + climate.getHumidity() + "%");
 		stats.reset();
 
@@ -94,11 +98,6 @@ public class SimulatorView extends JFrame {
 
 		populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
 		fieldView.repaint();
-	}
-
-
-	public boolean isViable(Field field) {
-		return stats.isViable(field);
 	}
 
 

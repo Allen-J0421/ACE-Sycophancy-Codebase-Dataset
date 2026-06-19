@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 
 
-public class GraphView extends JFrame {
+public class GraphView extends JFrame implements SimulationView {
 	private static final Color LIGHT_GRAY = new Color(0, 0, 0, 40);
 
 	private JFrame frame;
@@ -33,22 +33,20 @@ public class GraphView extends JFrame {
 	}
 
 
+	@Override
 	public void setColor(Class<?> animalClass, Color color) {
 		colors.put(animalClass, color);
 		classes = colors.keySet();
 	}
 
 
-	public void showStatus(int step, Field field) {
-		graph.update(step, field, stats);
+	@Override
+	public void showStatus(SimulationState state) {
+		graph.update(state.step(), state.field(), stats);
 	}
 
 
-	public boolean isViable(Field field) {
-		return stats.isViable(field);
-	}
-
-
+	@Override
 	public void reset() {
 		stats.reset();
 		graph.newRun();

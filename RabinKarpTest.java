@@ -18,6 +18,9 @@ public final class RabinKarpTest {
             0,
             2
         );
+        assertMatches("supports empty text", "a", "");
+        assertThrowsNullPointer("rejects null pattern", () -> RabinKarp.search(null, "abc"));
+        assertThrowsNullPointer("rejects null text", () -> RabinKarp.search("abc", null));
     }
 
     private static void assertMatches(
@@ -32,6 +35,14 @@ public final class RabinKarpTest {
             throw new AssertionError(
                 scenario + ": expected " + expectedMatches + " but got " + actual
             );
+        }
+    }
+
+    private static void assertThrowsNullPointer(String scenario, Runnable action) {
+        try {
+            action.run();
+            throw new AssertionError(scenario + ": expected NullPointerException");
+        } catch (NullPointerException expected) {
         }
     }
 }

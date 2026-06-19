@@ -11,22 +11,17 @@ public final class RabinKarp {
     }
 
     public static List<Integer> search(CharSequence pattern, CharSequence text) {
-        String normalizedPattern = Objects.requireNonNull(pattern, "Pattern must be non-null.")
-            .toString();
-        String normalizedText = Objects.requireNonNull(text, "Text must be non-null.")
-            .toString();
+        SearchInput input = SearchInput.of(pattern, text);
 
-        SearchPattern searchPattern = new SearchPattern(normalizedPattern);
-
-        if (searchPattern.isEmpty()) {
-            return allStartIndexes(normalizedText.length());
+        if (input.hasEmptyPattern()) {
+            return allStartIndexes(input.textLength());
         }
 
-        if (!searchPattern.canMatch(normalizedText)) {
+        if (!input.hasMatchableWindow()) {
             return noMatches();
         }
 
-        SearchState searchState = new SearchState(normalizedText, searchPattern);
+        SearchState searchState = input.newSearchState();
         return collectMatches(searchState);
     }
 
@@ -53,6 +48,45 @@ public final class RabinKarp {
         return matches;
     }
 
+    private static final class SearchInput {
+        private final String text;
+        private final SearchPattern pattern;
+
+        private SearchInput(String text, SearchPattern pattern) {
+            this.text = text;
+            this.pattern = pattern;
+        }
+
+        private static SearchInput of(CharSequence pattern, CharSequence text) {
+            String normalizedPattern = Objects.requireNonNull(
+                pattern,
+                "Pattern must be non-null."
+            ).toString();
+            String normalizedText = Objects.requireNonNull(
+                text,
+                "Text must be non-null."
+            ).toString();
+
+            return new SearchInput(normalizedText, new SearchPattern(normalizedPattern));
+        }
+
+        private boolean hasEmptyPattern() {
+            return pattern.isEmpty();
+        }
+
+        private boolean hasMatchableWindow() {
+            return pattern.length() <= text.length();
+        }
+
+        private int textLength() {
+            return text.length();
+        }
+
+        private SearchState newSearchState() {
+            return new SearchState(text, pattern);
+        }
+    }
+
     private static final class SearchPattern {
         private final String value;
         private final int length;
@@ -68,10 +102,6 @@ public final class RabinKarp {
 
         private boolean isEmpty() {
             return length == 0;
-        }
-
-        private boolean canMatch(String text) {
-            return length <= text.length();
         }
 
         private int length() {

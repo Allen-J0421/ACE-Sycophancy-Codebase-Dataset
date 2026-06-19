@@ -22,6 +22,9 @@ public final class QuickSortTest {
         adversarialInputsDoNotOverflow();
         randomizedAgainstReference();
         heapSortFallbackPath();
+        longOverload();
+        doubleOverload();
+        floatOverload();
         genericNaturalOrder();
         genericWithComparator();
         nullArgumentsRejected();
@@ -127,6 +130,117 @@ public final class QuickSortTest {
         Arrays.sort(boxedExpected, 2, 8); // indices [2, 7] inclusive
         QuickSort.heapSort(boxed, 2, 7, Comparator.naturalOrder());
         check("heapSort fallback (generic, windowed)", Arrays.equals(boxed, boxedExpected));
+    }
+
+    private static void longOverload() {
+        long[] empty = {};
+        QuickSort.sort(empty);
+        check("long empty", empty.length == 0);
+
+        long[] known = {3L, -7L, Long.MAX_VALUE, 0L, Long.MIN_VALUE, 42L};
+        long[] knownExpected = known.clone();
+        Arrays.sort(knownExpected);
+        QuickSort.sort(known);
+        check("long known case (incl. MIN/MAX)", Arrays.equals(known, knownExpected));
+
+        Random rng = new Random(7L);
+        for (int trial = 0; trial < 300; trial++) {
+            long[] data = new long[rng.nextInt(400)];
+            for (int i = 0; i < data.length; i++) {
+                data[i] = rng.nextLong();
+            }
+            long[] expected = data.clone();
+            Arrays.sort(expected);
+            QuickSort.sort(data);
+            if (!Arrays.equals(data, expected)) {
+                check("long randomized trial " + trial, false);
+                return;
+            }
+        }
+        check("long randomized vs Arrays.sort (300 trials)", true);
+
+        // Exercise the heapsort fallback directly on a windowed range.
+        long[] fb = {9, 3, 7, 1, 8, 2, 6, 4, 5, 0};
+        long[] fbExpected = fb.clone();
+        Arrays.sort(fbExpected, 2, 8);
+        QuickSort.heapSort(fb, 2, 7);
+        check("long heapSort fallback (windowed)", Arrays.equals(fb, fbExpected));
+    }
+
+    private static void doubleOverload() {
+        // NaN, both signed zeros, and infinities must match Arrays.sort semantics.
+        double[] special = {Double.NaN, 0.0, -0.0, Double.POSITIVE_INFINITY,
+                Double.NEGATIVE_INFINITY, 1.5, -1.5, Double.NaN, 0.0, -0.0};
+        double[] specialExpected = special.clone();
+        Arrays.sort(specialExpected);
+        QuickSort.sort(special);
+        // Use deep equality so NaN==NaN and -0.0 != 0.0 are compared bit-wise, as Arrays.equals does.
+        check("double NaN / signed-zero / infinity ordering", Arrays.equals(special, specialExpected));
+
+        Random rng = new Random(99L);
+        for (int trial = 0; trial < 300; trial++) {
+            double[] data = new double[rng.nextInt(400)];
+            for (int i = 0; i < data.length; i++) {
+                data[i] = sometimesSpecial(rng, rng.nextGaussian() * 1000);
+            }
+            double[] expected = data.clone();
+            Arrays.sort(expected);
+            QuickSort.sort(data);
+            if (!Arrays.equals(data, expected)) {
+                check("double randomized trial " + trial, false);
+                return;
+            }
+        }
+        check("double randomized vs Arrays.sort (300 trials, incl. NaN)", true);
+
+        double[] fb = {9, 3, 7, 1, 8, 2, 6, 4, 5, 0};
+        double[] fbExpected = fb.clone();
+        Arrays.sort(fbExpected, 2, 8);
+        QuickSort.heapSort(fb, 2, 7);
+        check("double heapSort fallback (windowed)", Arrays.equals(fb, fbExpected));
+    }
+
+    private static void floatOverload() {
+        float[] special = {Float.NaN, 0.0f, -0.0f, Float.POSITIVE_INFINITY,
+                Float.NEGATIVE_INFINITY, 1.5f, -1.5f, Float.NaN, 0.0f, -0.0f};
+        float[] specialExpected = special.clone();
+        Arrays.sort(specialExpected);
+        QuickSort.sort(special);
+        check("float NaN / signed-zero / infinity ordering", Arrays.equals(special, specialExpected));
+
+        Random rng = new Random(123L);
+        for (int trial = 0; trial < 300; trial++) {
+            float[] data = new float[rng.nextInt(400)];
+            for (int i = 0; i < data.length; i++) {
+                data[i] = (float) sometimesSpecial(rng, rng.nextGaussian() * 1000);
+            }
+            float[] expected = data.clone();
+            Arrays.sort(expected);
+            QuickSort.sort(data);
+            if (!Arrays.equals(data, expected)) {
+                check("float randomized trial " + trial, false);
+                return;
+            }
+        }
+        check("float randomized vs Arrays.sort (300 trials, incl. NaN)", true);
+
+        float[] fb = {9, 3, 7, 1, 8, 2, 6, 4, 5, 0};
+        float[] fbExpected = fb.clone();
+        Arrays.sort(fbExpected, 2, 8);
+        QuickSort.heapSort(fb, 2, 7);
+        check("float heapSort fallback (windowed)", Arrays.equals(fb, fbExpected));
+    }
+
+    /** Occasionally returns NaN / +-0.0 / +-Infinity so the floating-point paths see edge values. */
+    private static double sometimesSpecial(Random rng, double normal) {
+        switch (rng.nextInt(12)) {
+            case 0: return Double.NaN;
+            case 1: return 0.0;
+            case 2: return -0.0;
+            case 3: return Double.POSITIVE_INFINITY;
+            case 4: return Double.NEGATIVE_INFINITY;
+            default: return normal;
+        }
     }
 
     private static void genericNaturalOrder() {

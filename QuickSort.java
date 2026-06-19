@@ -173,6 +173,336 @@ public final class QuickSort {
     }
 
     // ------------------------------------------------------------------
+    // Primitive long[] API (optimized, no boxing)
+    // ------------------------------------------------------------------
+
+    /**
+     * Sorts the given array of longs into ascending order, in place.
+     *
+     * @param array the array to sort; must not be {@code null}
+     * @throws NullPointerException if {@code array} is {@code null}
+     */
+    public static void sort(long[] array) {
+        Objects.requireNonNull(array, "array must not be null");
+        if (array.length > 1) {
+            sortRange(array, 0, array.length - 1, maxDepth(array.length));
+        }
+    }
+
+    private static void sortRange(long[] a, int low, int high, int depthLimit) {
+        while (low < high) {
+            if (high - low < INSERTION_SORT_THRESHOLD) {
+                insertionSort(a, low, high);
+                return;
+            }
+            if (depthLimit == 0) {
+                heapSort(a, low, high);
+                return;
+            }
+            depthLimit--;
+            int p = partition(a, low, high);
+            if (p - low < high - p) {
+                sortRange(a, low, p - 1, depthLimit);
+                low = p + 1;
+            } else {
+                sortRange(a, p + 1, high, depthLimit);
+                high = p - 1;
+            }
+        }
+    }
+
+    private static int partition(long[] a, int low, int high) {
+        int mid = low + (high - low) / 2;
+        if (a[mid] < a[low]) swap(a, low, mid);
+        if (a[high] < a[low]) swap(a, low, high);
+        if (a[high] < a[mid]) swap(a, mid, high);
+        swap(a, mid, high - 1);
+        long pivot = a[high - 1];
+
+        int i = low;
+        int j = high - 1;
+        while (true) {
+            while (a[++i] < pivot) { /* advance */ }
+            while (a[--j] > pivot) { /* advance */ }
+            if (i >= j) {
+                break;
+            }
+            swap(a, i, j);
+        }
+        swap(a, i, high - 1);
+        return i;
+    }
+
+    /** Heapsort fallback for {@code long[]}; package-private for white-box testing. */
+    static void heapSort(long[] a, int low, int high) {
+        int n = high - low + 1;
+        for (int root = n / 2 - 1; root >= 0; root--) {
+            siftDown(a, low, root, n);
+        }
+        for (int end = n - 1; end > 0; end--) {
+            swap(a, low, low + end);
+            siftDown(a, low, 0, end);
+        }
+    }
+
+    private static void siftDown(long[] a, int low, int root, int size) {
+        while (true) {
+            int child = 2 * root + 1;
+            if (child >= size) {
+                break;
+            }
+            if (child + 1 < size && a[low + child + 1] > a[low + child]) {
+                child++;
+            }
+            if (a[low + root] >= a[low + child]) {
+                break;
+            }
+            swap(a, low + root, low + child);
+            root = child;
+        }
+    }
+
+    private static void insertionSort(long[] a, int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            long key = a[i];
+            int j = i - 1;
+            while (j >= low && a[j] > key) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
+        }
+    }
+
+    private static void swap(long[] a, int i, int j) {
+        long temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+
+    // ------------------------------------------------------------------
+    // Primitive double[] API (optimized, no boxing)
+    // ------------------------------------------------------------------
+
+    /**
+     * Sorts the given array of doubles into ascending order, in place.
+     *
+     * <p>Ordering follows {@link Double#compare}, matching {@link java.util.Arrays#sort(double[])}:
+     * {@code -0.0} sorts before {@code 0.0} and {@code NaN} sorts after all other values.
+     *
+     * @param array the array to sort; must not be {@code null}
+     * @throws NullPointerException if {@code array} is {@code null}
+     */
+    public static void sort(double[] array) {
+        Objects.requireNonNull(array, "array must not be null");
+        if (array.length > 1) {
+            sortRange(array, 0, array.length - 1, maxDepth(array.length));
+        }
+    }
+
+    private static void sortRange(double[] a, int low, int high, int depthLimit) {
+        while (low < high) {
+            if (high - low < INSERTION_SORT_THRESHOLD) {
+                insertionSort(a, low, high);
+                return;
+            }
+            if (depthLimit == 0) {
+                heapSort(a, low, high);
+                return;
+            }
+            depthLimit--;
+            int p = partition(a, low, high);
+            if (p - low < high - p) {
+                sortRange(a, low, p - 1, depthLimit);
+                low = p + 1;
+            } else {
+                sortRange(a, p + 1, high, depthLimit);
+                high = p - 1;
+            }
+        }
+    }
+
+    private static int partition(double[] a, int low, int high) {
+        int mid = low + (high - low) / 2;
+        if (Double.compare(a[mid], a[low]) < 0) swap(a, low, mid);
+        if (Double.compare(a[high], a[low]) < 0) swap(a, low, high);
+        if (Double.compare(a[high], a[mid]) < 0) swap(a, mid, high);
+        swap(a, mid, high - 1);
+        double pivot = a[high - 1];
+
+        int i = low;
+        int j = high - 1;
+        while (true) {
+            while (Double.compare(a[++i], pivot) < 0) { /* advance */ }
+            while (Double.compare(a[--j], pivot) > 0) { /* advance */ }
+            if (i >= j) {
+                break;
+            }
+            swap(a, i, j);
+        }
+        swap(a, i, high - 1);
+        return i;
+    }
+
+    /** Heapsort fallback for {@code double[]}; package-private for white-box testing. */
+    static void heapSort(double[] a, int low, int high) {
+        int n = high - low + 1;
+        for (int root = n / 2 - 1; root >= 0; root--) {
+            siftDown(a, low, root, n);
+        }
+        for (int end = n - 1; end > 0; end--) {
+            swap(a, low, low + end);
+            siftDown(a, low, 0, end);
+        }
+    }
+
+    private static void siftDown(double[] a, int low, int root, int size) {
+        while (true) {
+            int child = 2 * root + 1;
+            if (child >= size) {
+                break;
+            }
+            if (child + 1 < size && Double.compare(a[low + child + 1], a[low + child]) > 0) {
+                child++;
+            }
+            if (Double.compare(a[low + root], a[low + child]) >= 0) {
+                break;
+            }
+            swap(a, low + root, low + child);
+            root = child;
+        }
+    }
+
+    private static void insertionSort(double[] a, int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            double key = a[i];
+            int j = i - 1;
+            while (j >= low && Double.compare(a[j], key) > 0) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
+        }
+    }
+
+    private static void swap(double[] a, int i, int j) {
+        double temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+
+    // ------------------------------------------------------------------
+    // Primitive float[] API (optimized, no boxing)
+    // ------------------------------------------------------------------
+
+    /**
+     * Sorts the given array of floats into ascending order, in place.
+     *
+     * <p>Ordering follows {@link Float#compare}, matching {@link java.util.Arrays#sort(float[])}:
+     * {@code -0.0f} sorts before {@code 0.0f} and {@code NaN} sorts after all other values.
+     *
+     * @param array the array to sort; must not be {@code null}
+     * @throws NullPointerException if {@code array} is {@code null}
+     */
+    public static void sort(float[] array) {
+        Objects.requireNonNull(array, "array must not be null");
+        if (array.length > 1) {
+            sortRange(array, 0, array.length - 1, maxDepth(array.length));
+        }
+    }
+
+    private static void sortRange(float[] a, int low, int high, int depthLimit) {
+        while (low < high) {
+            if (high - low < INSERTION_SORT_THRESHOLD) {
+                insertionSort(a, low, high);
+                return;
+            }
+            if (depthLimit == 0) {
+                heapSort(a, low, high);
+                return;
+            }
+            depthLimit--;
+            int p = partition(a, low, high);
+            if (p - low < high - p) {
+                sortRange(a, low, p - 1, depthLimit);
+                low = p + 1;
+            } else {
+                sortRange(a, p + 1, high, depthLimit);
+                high = p - 1;
+            }
+        }
+    }
+
+    private static int partition(float[] a, int low, int high) {
+        int mid = low + (high - low) / 2;
+        if (Float.compare(a[mid], a[low]) < 0) swap(a, low, mid);
+        if (Float.compare(a[high], a[low]) < 0) swap(a, low, high);
+        if (Float.compare(a[high], a[mid]) < 0) swap(a, mid, high);
+        swap(a, mid, high - 1);
+        float pivot = a[high - 1];
+
+        int i = low;
+        int j = high - 1;
+        while (true) {
+            while (Float.compare(a[++i], pivot) < 0) { /* advance */ }
+            while (Float.compare(a[--j], pivot) > 0) { /* advance */ }
+            if (i >= j) {
+                break;
+            }
+            swap(a, i, j);
+        }
+        swap(a, i, high - 1);
+        return i;
+    }
+
+    /** Heapsort fallback for {@code float[]}; package-private for white-box testing. */
+    static void heapSort(float[] a, int low, int high) {
+        int n = high - low + 1;
+        for (int root = n / 2 - 1; root >= 0; root--) {
+            siftDown(a, low, root, n);
+        }
+        for (int end = n - 1; end > 0; end--) {
+            swap(a, low, low + end);
+            siftDown(a, low, 0, end);
+        }
+    }
+
+    private static void siftDown(float[] a, int low, int root, int size) {
+        while (true) {
+            int child = 2 * root + 1;
+            if (child >= size) {
+                break;
+            }
+            if (child + 1 < size && Float.compare(a[low + child + 1], a[low + child]) > 0) {
+                child++;
+            }
+            if (Float.compare(a[low + root], a[low + child]) >= 0) {
+                break;
+            }
+            swap(a, low + root, low + child);
+            root = child;
+        }
+    }
+
+    private static void insertionSort(float[] a, int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            float key = a[i];
+            int j = i - 1;
+            while (j >= low && Float.compare(a[j], key) > 0) {
+                a[j + 1] = a[j];
+                j--;
+            }
+            a[j + 1] = key;
+        }
+    }
+
+    private static void swap(float[] a, int i, int j) {
+        float temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+
+    // ------------------------------------------------------------------
     // Generic object API
     // ------------------------------------------------------------------
 

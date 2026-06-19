@@ -3,6 +3,7 @@ package app;
 import events.EventPublisher;
 import events.SimulationEvent;
 import events.SimulationState;
+import logging.Logger;
 import model.*;
 import config.Randomizer;
 
@@ -37,6 +38,9 @@ public class Simulator {
 	/** Where the engine announces everything observers might care about. */
 	private final EventPublisher events;
 
+	/** Sink for diagnostic messages that aren't simulation events. */
+	private final Logger logger;
+
 	private final List<Animal> animals;
 
 	private final List<Plant> plants;
@@ -55,15 +59,16 @@ public class Simulator {
 	private int sickPercentage;
 
 
-	public Simulator(SpeciesRegistry registry, EventPublisher events) {
-		this(registry, events, DEFAULT_DEPTH, DEFAULT_WIDTH);
+	public Simulator(SpeciesRegistry registry, EventPublisher events, Logger logger) {
+		this(registry, events, logger, DEFAULT_DEPTH, DEFAULT_WIDTH);
 	}
 
 
-	public Simulator(SpeciesRegistry registry, EventPublisher events, int depth, int width) {
+	public Simulator(SpeciesRegistry registry, EventPublisher events, Logger logger, int depth, int width) {
+		this.logger = logger;
 		if (width <= 0 || depth <= 0) {
-			System.out.println("The dimensions must be greater than zero.");
-			System.out.println("Using default values.");
+			logger.log("The dimensions must be greater than zero.");
+			logger.log("Using default values.");
 			depth = DEFAULT_DEPTH;
 			width = DEFAULT_WIDTH;
 		}

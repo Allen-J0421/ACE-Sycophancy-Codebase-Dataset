@@ -1,6 +1,9 @@
 package app;
 
 import events.EventBus;
+import logging.ConsoleLogger;
+import logging.EventLogger;
+import logging.Logger;
 import model.Bear;
 import model.Bird;
 import model.Duck;
@@ -15,10 +18,11 @@ import view.SimulatorView;
 
 /**
  * Entry point and composition root: the one place that knows the concrete
- * species and views. It wires the species into a {@link SpeciesRegistry},
- * subscribes the views to an {@link EventBus}, and hands the simulator only the
- * registry and the publish side of the bus — so the engine stays oblivious to
- * both which creatures exist and who is watching.
+ * species, views, and log destination. It wires the species into a
+ * {@link SpeciesRegistry}, subscribes the views and an {@link EventLogger} to an
+ * {@link EventBus}, and hands the simulator only the registry, the publish side
+ * of the bus, and a {@link Logger} — so the engine stays oblivious to which
+ * creatures exist, who is watching, and where output goes.
  */
 public class Main {
 
@@ -26,11 +30,14 @@ public class Main {
 	private static final int WIDTH = 320;
 
 	public static void main(String[] args) {
+		Logger logger = new ConsoleLogger();
+
 		EventBus events = new EventBus();
 		events.register(new SimulatorView(DEPTH, WIDTH));
 		events.register(new GraphView(1000, 500, 500));
+		events.register(new EventLogger(logger));
 
-		Simulator simulator = new Simulator(standardSpecies(), events, DEPTH, WIDTH);
+		Simulator simulator = new Simulator(standardSpecies(), events, logger, DEPTH, WIDTH);
 		simulator.runLongSimulation();
 	}
 

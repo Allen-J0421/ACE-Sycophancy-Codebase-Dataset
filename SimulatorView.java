@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Set;
 
 
 public class SimulatorView extends JFrame implements SimulationObserver {
@@ -57,7 +58,18 @@ public class SimulatorView extends JFrame implements SimulationObserver {
 
 
 	@Override
-	public void onSimulationStateChanged(SimulationSnapshot snapshot) {
+	public Set<Class<? extends SimulationEvent>> getSubscribedEventTypes() {
+		return Set.of(SimulationResetEvent.class, SimulationStepCompletedEvent.class);
+	}
+
+
+	@Override
+	public void onSimulationEvent(SimulationEvent event) {
+		renderSnapshot(event.getSnapshot());
+	}
+
+
+	private void renderSnapshot(SimulationSnapshot snapshot) {
 		if (!isVisible()) {
 			setVisible(true);
 		}

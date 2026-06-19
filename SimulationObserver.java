@@ -1,4 +1,16 @@
+import java.util.Set;
+
+
 public interface SimulationObserver {
 
-	void onSimulationStateChanged(SimulationSnapshot snapshot);
+	Set<Class<? extends SimulationEvent>> getSubscribedEventTypes();
+
+
+	void onSimulationEvent(SimulationEvent event);
+
+
+	default boolean supports(SimulationEvent event) {
+		return getSubscribedEventTypes().stream()
+				.anyMatch(eventType -> eventType.isInstance(event));
+	}
 }

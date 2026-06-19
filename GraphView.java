@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 
@@ -41,9 +42,21 @@ public class GraphView extends JFrame implements SimulationObserver {
 
 
 	@Override
-	public void onSimulationStateChanged(SimulationSnapshot snapshot) {
+	public Set<Class<? extends SimulationEvent>> getSubscribedEventTypes() {
+		return Set.of(SimulationResetEvent.class, SimulationStepCompletedEvent.class, PopulationChangedEvent.class);
+	}
+
+
+	@Override
+	public void onSimulationEvent(SimulationEvent event) {
+		if (event instanceof PopulationChangedEvent) {
+			registerColors(event.getSnapshot());
+			return;
+		}
+
+		SimulationSnapshot snapshot = event.getSnapshot();
 		registerColors(snapshot);
-		if (snapshot.getStep() == 0) {
+		if (event instanceof SimulationResetEvent) {
 			reset();
 		}
 		graph.update(snapshot.getStep(), snapshot.getField(), stats);

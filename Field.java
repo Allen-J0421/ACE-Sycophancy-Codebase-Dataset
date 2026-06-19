@@ -40,14 +40,9 @@ public class Field {
 		}
 		if (to != null) {
 			cellAt(to).set(movable);
-		}
-	}
-
-
-	public void spawn(Movable movable, Location location) {
-		relocate(movable, null, location);
-		if (movable instanceof Entity) {
-			((Entity) movable).bindLocation(location);
+			if (from == null && movable instanceof Entity) {
+				((Entity) movable).bindLocation(to);
+			}
 		}
 	}
 

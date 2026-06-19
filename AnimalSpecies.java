@@ -66,7 +66,7 @@ public enum AnimalSpecies {
 			default:
 				throw new IllegalStateException("Unhandled species: " + this);
 		}
-		field.spawn(animal, location);
+		field.relocate(animal, null, location);
 		return animal;
 	}
 

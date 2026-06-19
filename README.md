@@ -22,3 +22,26 @@ git branch                              # main + 50 algorithm branches
 git log --oneline 001_binary_search     # single root commit per branch
 cd _worktrees/001_binary_search         # work on one algorithm in isolation
 ```
+
+## Experiment branches
+
+Model runs live on `claude-exp/*` and `codex-exp/*` branches, named
+`<tool>-exp/<timestamp>-<model>-high-Agent`. The experiment's
+**root commit equals that algorithm branch's tip**, and the shared commit is the
+join key.
+
+### `tools/expmap.sh`
+
+A read-only helper that recovers the algorithm ↔ experiment mapping live from the
+graph. It prints terminal output only and scans both local branches and their `origin/*` mirrors.
+
+```sh
+tools/expmap.sh map                     # full table: algorithm  model  timestamp  branch
+tools/expmap.sh ls dijkstra             # experiments for an algorithm (match by name or NNN)
+tools/expmap.sh of <exp-branch>         # the algorithm a given experiment belongs to
+tools/expmap.sh algos                   # algorithms with experiment counts
+tools/expmap.sh models                  # experiment counts per model
+```
+
+After cloning, make sure the branches are present locally or fetched
+(`git fetch origin`); the tool reads `origin/*` automatically.

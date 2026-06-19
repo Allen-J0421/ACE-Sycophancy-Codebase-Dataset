@@ -84,12 +84,6 @@ public abstract class Predator extends Animal {
 		cannibal = !cannibal;
 	}
 
-	@Override
-	protected void placeAt(Location location) {
-		getField().placeAnimal(this, location);
-	}
-
-
 	protected int getAdditionalFoodValue() {
 		return additionalFoodValue;
 	}

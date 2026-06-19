@@ -1,7 +1,7 @@
 import java.awt.*;
 
 
-public abstract class Entity {
+public abstract class Entity implements Movable {
 
 
 	private Field field;
@@ -17,7 +17,7 @@ public abstract class Entity {
 
 	protected abstract Color getObjectColor(Climate climate);
 
-	protected abstract void placeAt(Location location);
+	public abstract OccupancyLayer getOccupancyLayer();
 
 
 	protected Field getField() {
@@ -36,14 +36,10 @@ public abstract class Entity {
 
 
 	protected void setLocation(Location newLocation) {
-		if (location != null && field != null) {
-			field.clear(location);
+		if (field != null) {
+			field.move(this, location, newLocation);
 		}
 		location = newLocation;
-
-		if (field != null && newLocation != null) {
-			placeAt(newLocation);
-		}
 	}
 
 

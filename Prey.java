@@ -42,8 +42,4 @@ public abstract class Prey extends Animal {
 		}
 	}
 
-	@Override
-	protected void placeAt(Location location) {
-		getField().placeAnimal(this, location);
-	}
 }

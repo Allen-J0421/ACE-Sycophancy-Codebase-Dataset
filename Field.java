@@ -39,18 +39,33 @@ public class Field {
 	}
 
 
+	public void clear(Movable movable, Location location) {
+		cellAt(location).clear(movable.getOccupancyLayer());
+	}
+
+
 	public void placeAnimal(Animal animal, int row, int col) {
 		placeAnimal(animal, new Location(row, col));
 	}
 
 
 	public void placeAnimal(Animal animal, Location location) {
-		cellAt(location).setAnimal(animal);
+		cellAt(location).set(animal);
 	}
 
 
 	public void placePlant(Plant plant, Location location) {
-		cellAt(location).setPlant(plant);
+		cellAt(location).set(plant);
+	}
+
+
+	public void move(Movable movable, Location from, Location to) {
+		if (from != null) {
+			clear(movable, from);
+		}
+		if (to != null) {
+			cellAt(to).set(movable);
+		}
 	}
 
 
@@ -157,6 +172,20 @@ public class Field {
 		}
 
 
+		private void clear(OccupancyLayer layer) {
+			switch (layer) {
+				case ANIMAL:
+					animal = null;
+					break;
+				case PLANT:
+					plant = null;
+					break;
+				default:
+					throw new IllegalStateException("Unhandled layer: " + layer);
+			}
+		}
+
+
 		private Animal getAnimal() {
 			return animal;
 		}
@@ -167,13 +196,12 @@ public class Field {
 		}
 
 
-		private void setAnimal(Animal animal) {
-			this.animal = animal;
-		}
-
-
-		private void setPlant(Plant plant) {
-			this.plant = plant;
+		private void set(Movable occupant) {
+			if (occupant.getOccupancyLayer() == OccupancyLayer.ANIMAL) {
+				animal = (Animal) occupant;
+			} else {
+				plant = (Plant) occupant;
+			}
 		}
 	}
 }

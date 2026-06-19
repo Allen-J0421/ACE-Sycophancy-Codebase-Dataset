@@ -16,8 +16,8 @@ public abstract class Plant extends Entity {
 	}
 
 	@Override
-	protected void placeAt(Location location) {
-		getField().placePlant(this, location);
+	public final OccupancyLayer getOccupancyLayer() {
+		return OccupancyLayer.PLANT;
 	}
 
 

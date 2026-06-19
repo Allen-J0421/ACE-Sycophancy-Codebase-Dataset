@@ -118,7 +118,7 @@ public abstract class Animal extends Entity {
 	protected void setDead() {
 		alive = false;
 		if (getLocation() != null) {
-			getField().clear(getLocation());
+			getField().clear(this, getLocation());
 			setLocationNull();
 			setFieldNull();
 		}
@@ -289,6 +289,12 @@ public abstract class Animal extends Entity {
 	@Override
 	protected final Color getObjectColor(Climate climate) {
 		return species.getColor();
+	}
+
+
+	@Override
+	public final OccupancyLayer getOccupancyLayer() {
+		return OccupancyLayer.ANIMAL;
 	}
 
 

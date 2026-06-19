@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 class KMPSearch {
 
@@ -67,8 +66,6 @@ class KMPSearch {
     public static void main(String[] args) {
         KMPSearch searcher = new KMPSearch("aaba");
         List<Integer> result = searcher.search("aabaacaadaabaaba");
-        System.out.println(result.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(" ")));
+        System.out.println(result);
     }
 }

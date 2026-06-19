@@ -1,7 +1,5 @@
 package lcs;
 
-import java.util.Objects;
-
 /**
  * Computes the length of the longest common subsequence between two strings.
  */

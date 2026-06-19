@@ -22,6 +22,7 @@ public final class LongestCommonSubsequenceTest {
         assertLength("HELLO", "YELLOW", 4);
 
         assertAnalysis("", "ABC", 0);
+        assertAnalysis(new StringBuilder("ABCD"), new StringBuilder("ACBD"), 3);
         assertAnalysis("AGGTAB", "GXTXAYB", 4);
         assertAnalysis("XMJYAUZ", "MZJAWXU", 4);
         assertAnalysis("ABCBDAB", "BDCABA", 4);

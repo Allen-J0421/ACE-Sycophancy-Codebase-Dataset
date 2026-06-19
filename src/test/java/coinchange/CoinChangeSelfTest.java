@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class CoinChangeSelfTest {
     private static final CoinChangeSolver SOLVER = new DynamicProgrammingCoinChangeSolver();
-    private static final CoinChange SERVICE = CoinChange.using(SOLVER);
+    private static final CoinChange SERVICE = CoinChanges.using(SOLVER);
 
     private CoinChangeSelfTest() {
     }
@@ -31,7 +31,7 @@ public final class CoinChangeSelfTest {
     }
 
     private static void assertCount(CountCase countCase) {
-        int actualWays = CoinChange.count(countCase.coins(), countCase.targetSum());
+        int actualWays = CoinChanges.count(countCase.coins(), countCase.targetSum());
         if (actualWays != countCase.expectedWays()) {
             throw new AssertionError(
                 "Expected " + countCase.expectedWays()
@@ -60,7 +60,7 @@ public final class CoinChangeSelfTest {
     }
 
     private static void assertCount(CoinDenominations denominations, int targetSum, int expectedWays) {
-        int actualWays = CoinChange.count(denominations, targetSum);
+        int actualWays = CoinChanges.count(denominations, targetSum);
         if (actualWays != expectedWays) {
             throw new AssertionError(
                 "Expected " + expectedWays + " ways for target " + targetSum + " but got " + actualWays
@@ -70,7 +70,7 @@ public final class CoinChangeSelfTest {
 
     private static void assertRejects(int[] coins, int targetSum) {
         try {
-            CoinChange.count(coins, targetSum);
+            CoinChanges.count(coins, targetSum);
             throw new AssertionError("Expected invalid input to be rejected");
         } catch (IllegalArgumentException expected) {
             // Expected path.
@@ -79,7 +79,7 @@ public final class CoinChangeSelfTest {
 
     private static void assertRejects(CoinDenominations denominations, int targetSum) {
         try {
-            CoinChange.count(denominations, targetSum);
+            CoinChanges.count(denominations, targetSum);
             throw new AssertionError("Expected invalid input to be rejected");
         } catch (IllegalArgumentException expected) {
             // Expected path.
@@ -102,14 +102,14 @@ public final class CoinChangeSelfTest {
     }
 
     private static void assertStandardUsesDynamicProgrammingSolver() {
-        if (!(CoinChange.standard().solver() instanceof DynamicProgrammingCoinChangeSolver)) {
+        if (!(CoinChanges.standard().solver() instanceof DynamicProgrammingCoinChangeSolver)) {
             throw new AssertionError("Expected standard CoinChange service to use the DP solver");
         }
     }
 
     private static void assertSolutionCarriesProblemContext() {
         CoinChangeProblem problem = new CoinChangeProblem(new int[] {1, 2, 3}, 5);
-        CoinChangeSolution solution = CoinChange.solveProblem(problem);
+        CoinChangeSolution solution = CoinChanges.solve(problem);
         if (!solution.problem().equals(problem)) {
             throw new AssertionError("Expected solution to retain the originating problem");
         }
@@ -117,7 +117,7 @@ public final class CoinChangeSelfTest {
 
     private static void assertRejectsNullSolver() {
         try {
-            CoinChange.using(null);
+            CoinChanges.using(null);
             throw new AssertionError("Expected null solver to be rejected");
         } catch (NullPointerException expected) {
             // Expected path.

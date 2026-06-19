@@ -3,47 +3,22 @@ import java.awt.*;
 
 public class Bird extends Prey {
 
-
-	private static final int BREEDING_AGE = 3;
-
-	private static final int MAX_AGE = 50;
-
-	private static final double BREEDING_PROBABILITY = 0.17;
-
-	private static final int MAX_LITTER_SIZE = 7;
-
-
-	public Bird(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
-		setFoodChainLevel(1);
-		setFoodValue(5);
-		setSickProbability(10);
-		setRecoverProbability(6);
-	}
+	private static final AnimalSpecies SPECIES = AnimalSpecies.builder()
+			.breedingAge(3)
+			.maxAge(50)
+			.breedingProbability(0.17)
+			.maxLitterSize(7)
+			.foodChainLevel(1)
+			.foodValue(5)
+			.sickProbability(10)
+			.recoverProbability(6)
+			.maxSickStep(20)
+			.factory(Bird::new)
+			.build();
 
 
-	protected int getBreedingAge() {
-		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
-	}
-
-
-	protected double getBreedingProbability() {
-		return BREEDING_PROBABILITY;
-	}
-
-
-	protected int getMaxLitterSize() {
-		return MAX_LITTER_SIZE;
-	}
-
-
-	protected Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
-		return new Bird(randomAge, field, loc);
+	public Bird(boolean randomAge, FieldEnvironment field, Location location) {
+		super(randomAge, field, location, SPECIES);
 	}
 
 

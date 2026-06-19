@@ -35,7 +35,7 @@ public class FieldPopulator {
 	}
 
 
-	public void populate(Field field, List<Animal> animals, List<Plant> plants) {
+	public void populate(FieldEnvironment field, List<Animal> animals, List<Plant> plants) {
 		field.clear();
 		animals.clear();
 		plants.clear();
@@ -55,7 +55,7 @@ public class FieldPopulator {
 	}
 
 
-	private Plant createPlant(Field field, Location location) {
+	private Plant createPlant(FieldEnvironment field, Location location) {
 		if (random.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
 			return new Flower(field, location);
 		}
@@ -63,7 +63,7 @@ public class FieldPopulator {
 	}
 
 
-	private Animal createAnimal(Field field, Location location) {
+	private Animal createAnimal(FieldEnvironment field, Location location) {
 		for (AnimalSpawnRule rule : animalSpawnRules) {
 			if (rule.shouldSpawn(random)) {
 				return rule.createAnimal(field, location);
@@ -76,31 +76,31 @@ public class FieldPopulator {
 	private void registerAnimalSpawnRules() {
 		animalSpawnRules.add(new AnimalSpawnRule(BIRD_CREATION_PROBABILITY) {
 			@Override
-			Animal createAnimal(Field field, Location location) {
+			Animal createAnimal(FieldEnvironment field, Location location) {
 				return new Bird(true, field, location);
 			}
 		});
 		animalSpawnRules.add(new AnimalSpawnRule(MOUSE_CREATION_PROBABILITY) {
 			@Override
-			Animal createAnimal(Field field, Location location) {
+			Animal createAnimal(FieldEnvironment field, Location location) {
 				return new Mouse(true, field, location);
 			}
 		});
 		animalSpawnRules.add(new AnimalSpawnRule(DUCK_CREATION_PROBABILITY) {
 			@Override
-			Animal createAnimal(Field field, Location location) {
+			Animal createAnimal(FieldEnvironment field, Location location) {
 				return new Duck(true, field, location);
 			}
 		});
 		animalSpawnRules.add(new AnimalSpawnRule(WOLF_CREATION_PROBABILITY) {
 			@Override
-			Animal createAnimal(Field field, Location location) {
+			Animal createAnimal(FieldEnvironment field, Location location) {
 				return new Wolf(true, field, location);
 			}
 		});
 		animalSpawnRules.add(new AnimalSpawnRule(BEAR_CREATION_PROBABILITY) {
 			@Override
-			Animal createAnimal(Field field, Location location) {
+			Animal createAnimal(FieldEnvironment field, Location location) {
 				return new Bear(true, field, location);
 			}
 		});
@@ -121,6 +121,6 @@ public class FieldPopulator {
 		}
 
 
-		abstract Animal createAnimal(Field field, Location location);
+		abstract Animal createAnimal(FieldEnvironment field, Location location);
 	}
 }

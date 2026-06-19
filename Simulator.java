@@ -21,7 +21,7 @@ public class Simulator {
 
 	private List<Plant> plants;
 
-	private Field field;
+	private FieldEnvironment field;
 
 	private int step;
 

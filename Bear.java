@@ -3,48 +3,23 @@ import java.awt.*;
 
 public class Bear extends Predator {
 
-
-	private static final int BREEDING_AGE = 40;
-
-	private static final int MAX_AGE = 300;
-
-	private static final double BREEDING_PROBABILITY = 0.18;
-
-	private static final int MAX_LITTER_SIZE = 5;
-
-
-	public Bear(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
-		setFoodChainLevel(3);
-		setFoodValue(30);
-		setSickProbability(10);
-		setRecoverProbability(4);
-		setAdditionalFoodValue(40);
-	}
+	private static final AnimalSpecies SPECIES = AnimalSpecies.builder()
+			.breedingAge(40)
+			.maxAge(300)
+			.breedingProbability(0.18)
+			.maxLitterSize(5)
+			.foodChainLevel(3)
+			.foodValue(30)
+			.sickProbability(10)
+			.recoverProbability(4)
+			.maxSickStep(30)
+			.additionalFoodValue(40)
+			.factory(Bear::new)
+			.build();
 
 
-	protected int getBreedingAge() {
-		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
-	}
-
-
-	protected double getBreedingProbability() {
-		return BREEDING_PROBABILITY;
-	}
-
-
-	protected int getMaxLitterSize() {
-		return MAX_LITTER_SIZE;
-	}
-
-
-	protected Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
-		return new Bear(randomAge, field, loc);
+	public Bear(boolean randomAge, FieldEnvironment field, Location location) {
+		super(randomAge, field, location, SPECIES);
 	}
 
 

@@ -8,23 +8,15 @@ public abstract class Predator extends Animal {
 
 	private static final Random rand = Randomizer.getRandom();
 
-	private boolean cannibal;
-
-	private int additionalFoodValue;
-
-
-	public Predator(boolean randomAge, Field field, Location location) {
-		super(field, location);
+	public Predator(boolean randomAge, FieldEnvironment field, Location location, AnimalSpecies species) {
+		super(field, location, species);
 		if (randomAge) {
-			setAge(rand.nextInt(getMaxAge()));
+			setAge(rand.nextInt(getSpecies().getMaxAge()));
 			setFoodLevel(rand.nextInt(5));
 		} else {
 			setAge(0);
 			setFoodLevel(6);
 		}
-		cannibal = false;
-		additionalFoodValue = 0;
-		setMaxSickStep(30);
 	}
 
 
@@ -34,22 +26,15 @@ public abstract class Predator extends Animal {
 		Location newLocation = findFood();
 		if (isAlive()) {
 			if (newLocation == null) {
-
 				newLocation = getField().freeAnimalAdjacentLocation(getLocation());
 			}
-
-			if (newLocation != null) {
-				setLocation(newLocation);
-			} else {
-
-				setDead();
-			}
+			moveTo(newLocation);
 		}
 	}
 
 
 	private Location findFood() {
-		Field field = getField();
+		FieldEnvironment field = getField();
 		List<Location> adjacent = field.getAdjacentAnimalLocations(getLocation());
 		Iterator<Location> it = adjacent.iterator();
 		while (it.hasNext()) {
@@ -59,16 +44,16 @@ public abstract class Predator extends Animal {
 				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
 					if (nearAnimal.isAlive()) {
 						nearAnimal.setDead();
-						setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
+						setFoodLevel(nearAnimal.getFoodValue() + getSpecies().getAdditionalFoodValue());
 						return where;
 					}
 				}
 
 				if (nearAnimal.getFoodChainLevel() == this.getFoodChainLevel()) {
-					if (nearAnimal.isAlive() && this.isCannibal()) {
+					if (nearAnimal.isAlive() && getSpecies().isCannibal()) {
 						if (getFoodLevel() < 2 && nearAnimal.getClass().equals(this.getClass())) {
 							nearAnimal.setDead();
-							setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
+							setFoodLevel(nearAnimal.getFoodValue() + getSpecies().getAdditionalFoodValue());
 							return where;
 						}
 					}
@@ -76,25 +61,5 @@ public abstract class Predator extends Animal {
 			}
 		}
 		return null;
-	}
-
-
-	public boolean isCannibal() {
-		return cannibal;
-	}
-
-
-	public void toggleCannibal() {
-		cannibal = !cannibal;
-	}
-
-
-	protected int getAdditionalFoodValue() {
-		return additionalFoodValue;
-	}
-
-
-	protected void setAdditionalFoodValue(int inputValue) {
-		additionalFoodValue = inputValue;
 	}
 }

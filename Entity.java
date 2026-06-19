@@ -4,12 +4,12 @@ import java.awt.*;
 public abstract class Entity {
 
 
-	private Field field;
+	private FieldEnvironment field;
 
 	private Location location;
 
 
-	public Entity(Field field, Location location) {
+	public Entity(FieldEnvironment field, Location location) {
 		this.field = field;
 		setLocation(location);
 	}
@@ -18,7 +18,7 @@ public abstract class Entity {
 	protected abstract Color getObjectColor(Climate climate);
 
 
-	protected Field getField() {
+	protected FieldEnvironment getField() {
 		return field;
 	}
 
@@ -47,8 +47,8 @@ public abstract class Entity {
 	}
 
 
-	protected abstract void placeInField(Field field, Location location);
+	protected abstract void placeInField(FieldEnvironment field, Location location);
 
 
-	protected abstract void clearFieldLocation(Field field, Location location);
+	protected abstract void clearFieldLocation(FieldEnvironment field, Location location);
 }

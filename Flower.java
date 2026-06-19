@@ -9,7 +9,7 @@ public class Flower extends Plant {
 	private Color plantColour;
 
 
-	public Flower(Field field, Location location) {
+	public Flower(FieldEnvironment field, Location location) {
 		super(field, location);
 		setMaxStage(1);
 		setStage(getMaxStage());

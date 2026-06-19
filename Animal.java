@@ -8,38 +8,27 @@ public abstract class Animal extends Entity {
 
 	private static final Random rand = Randomizer.getRandom();
 
+	private final AnimalSpecies species;
+
 	private boolean alive;
 
 	private int age;
 
-	private Gender gender = Gender.MALE;
-
-	private boolean nocturnal;
-
-	private int foodChainLevel;
-
-	private int foodValue;
+	private final Gender gender;
 
 	private int foodLevel;
 
 	private boolean sick;
 
-	private int sickProbability;
-
-	private int recoverProbability;
-
 	private int sickStep;
 
-	private int maxSickStep;
 
-
-	public Animal(Field field, Location location) {
+	public Animal(FieldEnvironment field, Location location, AnimalSpecies species) {
 		super(field, location);
+		this.species = species;
 		alive = true;
 		gender = Gender.randomGender();
-		nocturnal = false;
 		sick = false;
-		sickProbability = 16;
 	}
 
 
@@ -69,7 +58,7 @@ public abstract class Animal extends Entity {
 			return false;
 		}
 
-		Field field = getField();
+		FieldEnvironment field = getField();
 		List<Location> adjacent = field.getAdjacentAnimalLocations(getLocation());
 		Iterator<Location> it = adjacent.iterator();
 		while (it.hasNext()) {
@@ -98,12 +87,12 @@ public abstract class Animal extends Entity {
 
 
 		if (this.getGender() == Gender.FEMALE) {
-			Field field = getField();
+			FieldEnvironment field = getField();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
 			int births = breed();
 			for (int b = 0; b < births && free.size() > 0; b++) {
 				Location loc = free.remove(0);
-				Animal young = createNewAnimal(false, field, loc);
+				Animal young = species.createAnimal(false, field, loc);
 				newAnimals.add(young);
 			}
 		}
@@ -148,12 +137,12 @@ public abstract class Animal extends Entity {
 
 	protected void battleSickness() {
 		if (sick) {
-			if (sickStep >= maxSickStep) {
+			if (sickStep >= species.getMaxSickStep()) {
 				setDead();
 				return;
 			}
 			sickStep++;
-			Field field = getField();
+			FieldEnvironment field = getField();
 			if (field != null) {
 				List<Location> adjacent = field.getAdjacentAnimalLocations(getLocation());
 				Iterator<Location> it = adjacent.iterator();
@@ -180,9 +169,12 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void toggleNocturnal() {
-		nocturnal = !nocturnal;
-
+	protected void moveTo(Location newLocation) {
+		if (newLocation != null) {
+			setLocation(newLocation);
+		} else {
+			setDead();
+		}
 	}
 
 
@@ -193,22 +185,12 @@ public abstract class Animal extends Entity {
 
 
 	protected int getSickProbability() {
-		return sickProbability;
-	}
-
-
-	protected void setSickProbability(int inputValue) {
-		sickProbability = inputValue;
+		return species.getSickProbability();
 	}
 
 
 	protected int getRecoverProbability() {
-		return recoverProbability;
-	}
-
-
-	protected void setRecoverProbability(int inputValue) {
-		recoverProbability = inputValue;
+		return species.getRecoverProbability();
 	}
 
 
@@ -218,27 +200,17 @@ public abstract class Animal extends Entity {
 
 
 	protected int getFoodChainLevel() {
-		return foodChainLevel;
-	}
-
-
-	protected void setFoodChainLevel(int level) {
-		foodChainLevel = level;
+		return species.getFoodChainLevel();
 	}
 
 
 	protected int getFoodValue() {
-		return foodValue;
-	}
-
-
-	protected void setFoodValue(int value) {
-		foodValue = value;
+		return species.getFoodValue();
 	}
 
 
 	protected boolean isNocturnal() {
-		return nocturnal;
+		return species.isNocturnal();
 	}
 
 
@@ -248,13 +220,13 @@ public abstract class Animal extends Entity {
 
 
 	@Override
-	protected void placeInField(Field field, Location location) {
+	protected void placeInField(FieldEnvironment field, Location location) {
 		field.placeAnimal(this, location);
 	}
 
 
 	@Override
-	protected void clearFieldLocation(Field field, Location location) {
+	protected void clearFieldLocation(FieldEnvironment field, Location location) {
 		field.clearAnimalAt(location);
 	}
 
@@ -284,13 +256,8 @@ public abstract class Animal extends Entity {
 	}
 
 
-	public int getMaxSickStep() {
-		return maxSickStep;
-	}
-
-
-	public void setMaxSickStep(int inputValue) {
-		this.maxSickStep = inputValue;
+	protected AnimalSpecies getSpecies() {
+		return species;
 	}
 
 
@@ -299,17 +266,22 @@ public abstract class Animal extends Entity {
 	}
 
 
-	abstract protected int getBreedingAge();
+	private int getBreedingAge() {
+		return species.getBreedingAge();
+	}
 
 
-	abstract protected int getMaxAge();
+	private int getMaxAge() {
+		return species.getMaxAge();
+	}
 
 
-	abstract protected double getBreedingProbability();
+	private double getBreedingProbability() {
+		return species.getBreedingProbability();
+	}
 
 
-	abstract protected int getMaxLitterSize();
-
-
-	abstract protected Animal createNewAnimal(boolean randomAge, Field field, Location loc);
+	private int getMaxLitterSize() {
+		return species.getMaxLitterSize();
+	}
 }

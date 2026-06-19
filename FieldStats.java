@@ -15,7 +15,7 @@ public class FieldStats {
 	}
 
 
-	public String getPopulationDetails(Field field) {
+	public String getPopulationDetails(FieldEnvironment field) {
 		StringBuilder buffer = new StringBuilder();
 		if (!countsValid) {
 			generateCounts(field);
@@ -55,7 +55,7 @@ public class FieldStats {
 	}
 
 
-	public boolean isViable(Field field) {
+	public boolean isViable(FieldEnvironment field) {
 
 		int nonZero = 0;
 		if (!countsValid) {
@@ -71,7 +71,7 @@ public class FieldStats {
 	}
 
 
-	private void generateCounts(Field field) {
+	private void generateCounts(FieldEnvironment field) {
 		reset();
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
@@ -85,7 +85,7 @@ public class FieldStats {
 	}
 
 
-	public int getPopulationCount(Field field, Class<?> key) {
+	public int getPopulationCount(FieldEnvironment field, Class<?> key) {
 		if (!countsValid) {
 			generateCounts(field);
 		}

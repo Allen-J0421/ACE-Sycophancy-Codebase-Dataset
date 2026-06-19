@@ -7,7 +7,7 @@ public class Grass extends Plant {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	public Grass(Field field, Location location) {
+	public Grass(FieldEnvironment field, Location location) {
 		super(field, location);
 
 

@@ -11,7 +11,7 @@ public abstract class Plant extends Entity {
 	private int maxStage;
 
 
-	public Plant(Field field, Location location) {
+	public Plant(FieldEnvironment field, Location location) {
 		super(field, location);
 	}
 
@@ -58,13 +58,13 @@ public abstract class Plant extends Entity {
 
 
 	@Override
-	protected void placeInField(Field field, Location location) {
+	protected void placeInField(FieldEnvironment field, Location location) {
 		field.placePlant(this, location);
 	}
 
 
 	@Override
-	protected void clearFieldLocation(Field field, Location location) {
+	protected void clearFieldLocation(FieldEnvironment field, Location location) {
 		field.clearPlantAt(location);
 	}
 }

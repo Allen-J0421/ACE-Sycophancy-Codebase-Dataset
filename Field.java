@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class Field {
+public class Field implements FieldEnvironment {
 
 	private static final Random rand = Randomizer.getRandom();
 
@@ -25,6 +25,7 @@ public class Field {
 	}
 
 
+	@Override
 	public void clear() {
 		for (int row = 0; row < depth; row++) {
 			for (int col = 0; col < width; col++) {
@@ -35,52 +36,55 @@ public class Field {
 	}
 
 
+	@Override
 	public void clearAnimalAt(Location location) {
 		animalField[location.getRow()][location.getCol()] = null;
 	}
 
 
+	@Override
 	public void clearPlantAt(Location location) {
 		plantField[location.getRow()][location.getCol()] = null;
 	}
 
 
+	@Override
 	public void placeAnimal(Animal animal, Location location) {
 		animalField[location.getRow()][location.getCol()] = animal;
 	}
 
 
+	@Override
 	public void placePlant(Plant plant, Location location) {
 		plantField[location.getRow()][location.getCol()] = plant;
 	}
 
 
+	@Override
 	public Animal getAnimalAt(Location location) {
 		return getAnimalAt(location.getRow(), location.getCol());
 	}
 
 
+	@Override
 	public Animal getAnimalAt(int row, int col) {
 		return animalField[row][col];
 	}
 
 
+	@Override
 	public Plant getPlantAt(Location location) {
 		return getPlantAt(location.getRow(), location.getCol());
 	}
 
 
+	@Override
 	public Plant getPlantAt(int row, int col) {
 		return plantField[row][col];
 	}
 
 
-	public Location randomAnimalAdjacentLocation(Location location) {
-		List<Location> adjacent = getAdjacentAnimalLocations(location);
-		return adjacent.get(0);
-	}
-
-
+	@Override
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
 		List<Location> free = new LinkedList<>();
 		List<Location> adjacent = getAdjacentAnimalLocations(location);
@@ -93,6 +97,7 @@ public class Field {
 	}
 
 
+	@Override
 	public Location freeAnimalAdjacentLocation(Location location) {
 
 		List<Location> free = getFreeAnimalAdjacentLocations(location);
@@ -104,6 +109,7 @@ public class Field {
 	}
 
 
+	@Override
 	public List<Location> getAdjacentAnimalLocations(Location location) {
 		assert location != null : "Null location passed to getAdjacentAnimalLocations";
 
@@ -131,11 +137,13 @@ public class Field {
 	}
 
 
+	@Override
 	public int getDepth() {
 		return depth;
 	}
 
 
+	@Override
 	public int getWidth() {
 		return width;
 	}

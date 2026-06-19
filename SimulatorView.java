@@ -56,7 +56,7 @@ public class SimulatorView extends JFrame {
 	}
 
 
-	public void showStatus(int step, TimeCycle currentTimeCycle, Field field, Climate climate, int infect) {
+	public void showStatus(int step, TimeCycle currentTimeCycle, FieldEnvironment field, Climate climate, int infect) {
 		if (!isVisible()) {
 			setVisible(true);
 		}
@@ -93,7 +93,7 @@ public class SimulatorView extends JFrame {
 	}
 
 
-	public boolean isViable(Field field) {
+	public boolean isViable(FieldEnvironment field) {
 		return stats.isViable(field);
 	}
 

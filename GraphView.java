@@ -40,12 +40,12 @@ public class GraphView extends JFrame {
 	}
 
 
-	public void showStatus(int step, Field field) {
+	public void showStatus(int step, FieldEnvironment field) {
 		graph.update(step, field, stats);
 	}
 
 
-	public boolean isViable(Field field) {
+	public boolean isViable(FieldEnvironment field) {
 		return stats.isViable(field);
 	}
 
@@ -115,7 +115,7 @@ public class GraphView extends JFrame {
 		}
 
 
-		public void update(int step, Field field, FieldStats stats) {
+		public void update(int step, FieldEnvironment field, FieldStats stats) {
 
 			Graphics g = graphImage.getGraphics();
 

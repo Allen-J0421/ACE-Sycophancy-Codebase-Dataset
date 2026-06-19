@@ -3,47 +3,22 @@ import java.awt.*;
 
 public class Mouse extends Prey {
 
-
-	private static final int BREEDING_AGE = 3;
-
-	private static final int MAX_AGE = 40;
-
-	private static final double BREEDING_PROBABILITY = 0.20;
-
-	private static final int MAX_LITTER_SIZE = 8;
-
-
-	public Mouse(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
-		setFoodChainLevel(1);
-		setFoodValue(7);
-		setSickProbability(50);
-		setRecoverProbability(7);
-	}
+	private static final AnimalSpecies SPECIES = AnimalSpecies.builder()
+			.breedingAge(3)
+			.maxAge(40)
+			.breedingProbability(0.20)
+			.maxLitterSize(8)
+			.foodChainLevel(1)
+			.foodValue(7)
+			.sickProbability(50)
+			.recoverProbability(7)
+			.maxSickStep(20)
+			.factory(Mouse::new)
+			.build();
 
 
-	protected int getBreedingAge() {
-		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
-	}
-
-
-	protected double getBreedingProbability() {
-		return BREEDING_PROBABILITY;
-	}
-
-
-	protected int getMaxLitterSize() {
-		return MAX_LITTER_SIZE;
-	}
-
-
-	protected Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
-		return new Mouse(randomAge, field, loc);
+	public Mouse(boolean randomAge, FieldEnvironment field, Location location) {
+		super(randomAge, field, location, SPECIES);
 	}
 
 

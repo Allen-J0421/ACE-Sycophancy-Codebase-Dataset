@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class RabinKarp {
@@ -10,14 +11,14 @@ public final class RabinKarp {
         // Utility class.
     }
 
-    static ArrayList<Integer> search(String pattern, String text) {
+    public static List<Integer> search(String pattern, String text) {
         Objects.requireNonNull(pattern, "pattern");
         Objects.requireNonNull(text, "text");
 
         int patternLength = pattern.length();
         int textLength = text.length();
 
-        ArrayList<Integer> matches = new ArrayList<>();
+        List<Integer> matches = new ArrayList<>();
         if (patternLength == 0) {
             for (int i = 0; i <= textLength; i++) {
                 matches.add(i);
@@ -76,13 +77,4 @@ public final class RabinKarp {
         return nextHash;
     }
 
-    public static void main(String[] args) {
-        String text = "geeksforgeeks";
-        String pattern = "geeks";
-        ArrayList<Integer> matches = search(pattern, text);
-        for (int index : matches) {
-            System.out.print(index + " ");
-        }
-        System.out.println();
-    }
 }

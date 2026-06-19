@@ -1,23 +1,20 @@
 final class LcsSolver {
-    private final char[] longer;
-    private final char[] shorter;
-    private final int[] lengths;
-
-    LcsSolver(LcsRequest request) {
-        this.longer = request.longer();
-        this.shorter = request.shorter();
-        this.lengths = new int[shorter.length + 1];
+    private LcsSolver() {
     }
 
-    int solve() {
+    static int solve(NormalizedSequences sequences) {
+        char[] longer = sequences.longer();
+        char[] shorter = sequences.shorter();
+        int[] lengths = new int[shorter.length + 1];
+
         for (char current : longer) {
-            updateLengths(current);
+            updateLengths(current, shorter, lengths);
         }
 
         return lengths[shorter.length];
     }
 
-    private void updateLengths(char current) {
+    private static void updateLengths(char current, char[] shorter, int[] lengths) {
         int diagonal = 0;
 
         for (int j = 1; j <= shorter.length; j++) {

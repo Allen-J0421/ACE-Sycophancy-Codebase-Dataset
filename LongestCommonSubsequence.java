@@ -5,12 +5,12 @@ public final class LongestCommonSubsequence {
     }
 
     public static int lcs(String first, String second) {
-        LcsRequest request = LcsRequest.from(first, second);
+        LcsInput input = LcsInput.from(first, second);
 
-        if (request.hasKnownResult()) {
-            return request.knownResult();
+        if (input.hasKnownResult()) {
+            return input.knownResult();
         }
 
-        return new LcsSolver(request).solve();
+        return LcsSolver.solve(input.normalizedSequences());
     }
 }

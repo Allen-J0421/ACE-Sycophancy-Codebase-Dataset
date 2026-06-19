@@ -1,3 +1,5 @@
+package kmp;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,7 +10,7 @@ public final class KmpMatcherTest {
     }
 
     public static void main(String[] args) {
-        expectMatches("aaba", "aabaacaadaabaaba", Arrays.asList(0, 9, 12));
+        expectMatches(KmpExamples.SAMPLE_PATTERN, KmpExamples.SAMPLE_TEXT, KmpExamples.SAMPLE_MATCHES);
         expectMatches("aa", "aaaa", Arrays.asList(0, 1, 2));
         expectMatches("needle", "haystack", Arrays.<Integer>asList());
         expectMatches("", "haystack", Arrays.<Integer>asList());

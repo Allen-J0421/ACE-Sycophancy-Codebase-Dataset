@@ -1,3 +1,5 @@
+package kmp;
+
 import java.util.List;
 
 public final class KmpFormatter {

@@ -1,3 +1,5 @@
+package kmp;
+
 import java.util.List;
 
 public final class KMPSearch {
@@ -7,10 +9,11 @@ public final class KMPSearch {
     }
 
     public static void main(String[] args) {
-        String text = "aabaacaadaabaaba";
-        String pattern = "aaba";
+        List<Integer> matches = KmpMatcher.findAllMatches(
+            KmpExamples.SAMPLE_PATTERN,
+            KmpExamples.SAMPLE_TEXT
+        );
 
-        List<Integer> matches = KmpMatcher.findAllMatches(pattern, text);
         System.out.println(KmpFormatter.joinMatches(matches));
     }
 }

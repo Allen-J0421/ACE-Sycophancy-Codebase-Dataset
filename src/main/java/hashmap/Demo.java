@@ -63,5 +63,14 @@ public final class Demo {
         copy.putIfAbsent("Germany", "Berlin");
         copy.merge("Germany", "!", (a, b) -> a + b);
         System.out.println("Copy with default methods: " + new TreeMap<>(copy));
+
+        // A Set<E> backed by the same map machinery.
+        System.out.println();
+        java.util.Set<String> tags = new OpenAddressingHashSet<>();
+        tags.add("red");
+        tags.add("green");
+        System.out.println("Set add duplicate 'red': " + tags.add("red")); // false
+        System.out.println("Set contents: " + new java.util.TreeSet<>(tags));
+        System.out.println("Set equals a HashSet: " + tags.equals(java.util.Set.of("red", "green")));
     }
 }

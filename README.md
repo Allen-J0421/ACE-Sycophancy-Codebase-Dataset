@@ -8,9 +8,11 @@ A generic hash map implemented with open addressing and linear probing.
 src/
   main/java/hashmap/
     OpenAddressingHashMap.java        # the data structure
+    OpenAddressingHashSet.java        # Set<E> backed by the map
     Demo.java                         # runnable demonstration (main)
   test/java/hashmap/
     OpenAddressingHashMapTest.java    # dependency-free self-checking tests
+    OpenAddressingHashSetTest.java    # self-checking tests for the set
   jmh/java/hashmap/bench/
     HashMapBenchmark.java             # JMH benchmarks vs java.util.HashMap
 benchmarks/
@@ -26,6 +28,7 @@ javac -d out src/main/java/hashmap/*.java src/test/java/hashmap/*.java
 
 # run the tests (exits non-zero on failure)
 java -cp out hashmap.OpenAddressingHashMapTest
+java -cp out hashmap.OpenAddressingHashSetTest
 
 # run the demo
 java -cp out hashmap.Demo
@@ -101,6 +104,13 @@ trustworthy.
 - **Value semantics**: equality and hash code follow the `Map` contract, so an
   `OpenAddressingHashMap` compares equal to any other `Map` (e.g. a `TreeMap`)
   with the same mappings.
+- **`OpenAddressingHashSet<E>`**: a complete `java.util.Set` implementation backed
+  by the map — exactly how `java.util.HashSet` wraps `HashMap`. Each element is a
+  key mapped to a shared sentinel, so the set reuses the map's open addressing,
+  resizing, and struct-of-arrays storage instead of reimplementing them. It
+  extends `AbstractSet`, so `equals`/`hashCode`/`addAll`/`removeAll`/`retainAll`/
+  `toArray` come for free, and it compares equal to any `Set` (e.g. a `TreeSet`)
+  with the same elements.
 - `null` keys are rejected; `null` values are allowed and distinguished from
   absence via `containsKey`/`getOrDefault`.
 

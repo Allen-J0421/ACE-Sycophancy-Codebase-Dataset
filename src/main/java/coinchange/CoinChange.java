@@ -2,12 +2,12 @@ package coinchange;
 
 import java.util.Objects;
 
-public final class CoinChange {
-    private static final CoinChange DEFAULT_INSTANCE = new CoinChange(new DynamicProgrammingCoinChangeSolver());
+public final class CoinChange implements CoinChangeSolver {
+    private static final CoinChange DEFAULT_INSTANCE = using(new DynamicProgrammingCoinChangeSolver());
     private final CoinChangeSolver solver;
 
-    public CoinChange(CoinChangeSolver solver) {
-        this.solver = Objects.requireNonNull(solver, "solver must not be null");
+    private CoinChange(CoinChangeSolver solver) {
+        this.solver = solver;
     }
 
     public static int count(int[] coins, int targetSum) {
@@ -26,14 +26,11 @@ public final class CoinChange {
         return DEFAULT_INSTANCE;
     }
 
-    public int countWays(int[] coins, int targetSum) {
-        return countWays(new CoinChangeRequest(coins, targetSum));
+    public static CoinChange using(CoinChangeSolver solver) {
+        return new CoinChange(Objects.requireNonNull(solver, "solver must not be null"));
     }
 
-    public int countWays(CoinDenominations denominations, int targetSum) {
-        return countWays(new CoinChangeRequest(denominations, targetSum));
-    }
-
+    @Override
     public int countWays(CoinChangeRequest request) {
         return solver.countWays(request);
     }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class CoinChangeSelfTest {
     private static final CoinChangeSolver SOLVER = new DynamicProgrammingCoinChangeSolver();
-    private static final CoinChange SERVICE = new CoinChange(SOLVER);
+    private static final CoinChange SERVICE = CoinChange.using(SOLVER);
 
     private CoinChangeSelfTest() {
     }
@@ -19,6 +19,7 @@ public final class CoinChangeSelfTest {
         assertCount(new CountCase(new int[] {}, 4, 0));
         assertCount(new CoinDenominations(new int[] {1, 2, 3}), 5, 5);
         assertStandardUsesDynamicProgrammingSolver();
+        assertRejectsNullSolver();
         assertDenominationsAreNormalized();
         assertDenominationsUseValueEquality();
         assertRejects(new int[] {1, 0, 3}, 4);
@@ -93,6 +94,15 @@ public final class CoinChangeSelfTest {
     private static void assertStandardUsesDynamicProgrammingSolver() {
         if (!(CoinChange.standard().solver() instanceof DynamicProgrammingCoinChangeSolver)) {
             throw new AssertionError("Expected standard CoinChange service to use the DP solver");
+        }
+    }
+
+    private static void assertRejectsNullSolver() {
+        try {
+            CoinChange.using(null);
+            throw new AssertionError("Expected null solver to be rejected");
+        } catch (NullPointerException expected) {
+            // Expected path.
         }
     }
 

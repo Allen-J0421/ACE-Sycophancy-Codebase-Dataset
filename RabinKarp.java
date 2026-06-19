@@ -52,10 +52,6 @@ public final class RabinKarp {
             return pattern.isEmpty();
         }
 
-        private boolean hasMatchableWindow() {
-            return pattern.length() <= text.length();
-        }
-
         private int textLength() {
             return text.length();
         }
@@ -65,31 +61,11 @@ public final class RabinKarp {
                 return allStartIndexes(textLength());
             }
 
-            if (!hasMatchableWindow()) {
+            if (!pattern.canMatch(text)) {
                 return noMatches();
             }
 
-            return collectMatches();
-        }
-
-        private List<Integer> collectMatches() {
-            TextWindow window = new TextWindow(text, pattern.rollingHash());
-            List<Integer> matches = new ArrayList<>(window.windowCount());
-            int startIndex = 0;
-
-            while (startIndex <= window.lastStartIndex()) {
-                if (pattern.hash() == window.hash() && pattern.matches(text, startIndex)) {
-                    matches.add(startIndex);
-                }
-
-                if (startIndex < window.lastStartIndex()) {
-                    window.slide(startIndex);
-                }
-
-                startIndex++;
-            }
-
-            return matches;
+            return pattern.findMatchesIn(text);
         }
     }
 
@@ -110,20 +86,32 @@ public final class RabinKarp {
             return length == 0;
         }
 
-        private int length() {
-            return length;
-        }
-
-        private int hash() {
-            return hash;
-        }
-
-        private RollingHash rollingHash() {
-            return rollingHash;
+        private boolean canMatch(String text) {
+            return length <= text.length();
         }
 
         private boolean matches(String text, int startIndex) {
             return text.startsWith(value, startIndex);
+        }
+
+        private List<Integer> findMatchesIn(String text) {
+            TextWindow window = new TextWindow(text, rollingHash);
+            List<Integer> matches = new ArrayList<>(window.windowCount());
+            int startIndex = 0;
+
+            while (startIndex <= window.lastStartIndex()) {
+                if (hash == window.hash() && matches(text, startIndex)) {
+                    matches.add(startIndex);
+                }
+
+                if (startIndex < window.lastStartIndex()) {
+                    window.slide(startIndex);
+                }
+
+                startIndex++;
+            }
+
+            return matches;
         }
     }
 

@@ -41,6 +41,12 @@ public abstract class Plant extends Entity {
 	}
 
 
+	@Override
+	void accept(EntityVisitor visitor) {
+		visitor.visitPlant(this);
+	}
+
+
 	protected int getStage() {
 		return stage;
 	}

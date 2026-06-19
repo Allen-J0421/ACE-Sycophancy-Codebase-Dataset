@@ -17,7 +17,7 @@ public class FieldEntityController implements EntityController {
 	@Override
 	public void place(Entity entity, Location location) {
 		entity.updateLocation(location);
-		placeInField(entity, location);
+		entity.accept(new PlacementVisitor(location));
 	}
 
 
@@ -25,10 +25,10 @@ public class FieldEntityController implements EntityController {
 	public void move(Entity entity, Location location) {
 		Location currentLocation = entity.getLocation();
 		if (currentLocation != null) {
-			clearFromField(entity, currentLocation);
+			entity.accept(new ClearingVisitor(currentLocation));
 		}
 		entity.updateLocation(location);
-		placeInField(entity, location);
+		entity.accept(new PlacementVisitor(location));
 	}
 
 
@@ -36,25 +36,51 @@ public class FieldEntityController implements EntityController {
 	public void remove(Entity entity) {
 		Location currentLocation = entity.getLocation();
 		if (currentLocation != null) {
-			clearFromField(entity, currentLocation);
+			entity.accept(new ClearingVisitor(currentLocation));
 			entity.updateLocation(null);
 		}
 	}
 
 
-	private void placeInField(Entity entity, Location location) {
-		if (entity instanceof Animal) {
-			fieldEnvironment.placeAnimal((Animal) entity, location);
-		} else if (entity instanceof Plant) {
-			fieldEnvironment.placePlant((Plant) entity, location);
+	private class PlacementVisitor implements EntityVisitor {
+		private final Location location;
+
+
+		private PlacementVisitor(Location location) {
+			this.location = location;
+		}
+
+
+		@Override
+		public void visitAnimal(Animal animal) {
+			fieldEnvironment.placeAnimal(animal, location);
+		}
+
+
+		@Override
+		public void visitPlant(Plant plant) {
+			fieldEnvironment.placePlant(plant, location);
 		}
 	}
 
 
-	private void clearFromField(Entity entity, Location location) {
-		if (entity instanceof Animal) {
+	private class ClearingVisitor implements EntityVisitor {
+		private final Location location;
+
+
+		private ClearingVisitor(Location location) {
+			this.location = location;
+		}
+
+
+		@Override
+		public void visitAnimal(Animal animal) {
 			fieldEnvironment.clearAnimalAt(location);
-		} else if (entity instanceof Plant) {
+		}
+
+
+		@Override
+		public void visitPlant(Plant plant) {
 			fieldEnvironment.clearPlantAt(location);
 		}
 	}

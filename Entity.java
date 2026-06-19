@@ -42,6 +42,9 @@ public abstract class Entity {
 	}
 
 
+	abstract void accept(EntityVisitor visitor);
+
+
 	void updateLocation(Location newLocation) {
 		location = newLocation;
 	}

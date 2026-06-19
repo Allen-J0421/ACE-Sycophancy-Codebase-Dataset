@@ -191,6 +191,13 @@ public abstract class Animal extends Entity {
 		return sick;
 	}
 
+
+	@Override
+	void accept(EntityVisitor visitor) {
+		visitor.visitAnimal(this);
+	}
+
+
 	protected void setAge(int age) {
 		this.age = age;
 	}

@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -89,6 +90,40 @@ class MinHeap<T> {
         this.heap = new Object[initialCapacity];
         this.size = 0;
         this.comparator = comparator;
+    }
+
+    /**
+     * Builds a heap from {@code elements} in O(n) time, using natural ordering.
+     *
+     * @throws NullPointerException if {@code elements} or any element is {@code null}
+     */
+    public MinHeap(Collection<? extends T> elements) {
+        this(elements, null);
+    }
+
+    /**
+     * Builds a heap from {@code elements} in O(n) time, ordered by
+     * {@code comparator} (or natural ordering when it is {@code null}).
+     *
+     * <p>This is asymptotically faster than inserting the elements one by one
+     * (O(n) vs. O(n log n)). Elements added this way are not individually
+     * handle-addressable; use {@link #insertKey(Object)} when you need a
+     * {@link Handle} for later updates.
+     *
+     * @throws NullPointerException if {@code elements} or any element is {@code null}
+     */
+    public MinHeap(Collection<? extends T> elements, Comparator<? super T> comparator) {
+        Objects.requireNonNull(elements, "elements");
+        this.comparator = comparator;
+        this.heap = new Object[elements.size()];
+        int n = 0;
+        for (T element : elements) {
+            Objects.requireNonNull(element, "elements must not contain null");
+            place(new Handle<>(this, element), n);
+            n++;
+        }
+        this.size = n;
+        buildHeap();
     }
 
     /** Returns the number of elements currently stored. */
@@ -186,6 +221,13 @@ class MinHeap<T> {
             }
             swap(i, smallest);
             i = smallest;
+        }
+    }
+
+    /** Bottom-up heap construction: sift down every internal node, O(n) overall. */
+    private void buildHeap() {
+        for (int i = (size / 2) - 1; i >= 0; i--) {
+            siftDown(i);
         }
     }
 
@@ -326,6 +368,10 @@ class MinHeapTest {
 
     public static void main(String[] args) {
         testNaturalOrdering();
+        testHeapifyFromCollection();
+        testHeapifyWithComparator();
+        testHeapifyEdgeCases();
+        testHeapifyThenMutate();
         testAutoGrowsBeyondInitialCapacity();
         testCustomComparator();
         testHandleTracksElementAcrossMoves();
@@ -356,6 +402,51 @@ class MinHeapTest {
             assertEquals(e, h.extractMin(), "natural order extraction");
         }
         assertTrue(h.isEmpty(), "empty after draining");
+    }
+
+    private static void testHeapifyFromCollection() {
+        // A deliberately unsorted collection must come out in sorted order.
+        MinHeap<Integer> h = new MinHeap<>(Arrays.asList(9, 4, 7, 1, 8, 3, 6, 2, 5));
+        assertEquals(9, h.size(), "size after heapify");
+        assertEquals(1, h.getMin(), "min after heapify");
+        for (int e = 1; e <= 9; e++) {
+            assertEquals(e, h.extractMin(), "heapified order extraction");
+        }
+        assertTrue(h.isEmpty(), "empty after draining heapified heap");
+    }
+
+    private static void testHeapifyWithComparator() {
+        MinHeap<Integer> h = new MinHeap<>(Arrays.asList(5, 1, 9, 3), Comparator.reverseOrder());
+        for (int e : new int[] {9, 5, 3, 1}) {
+            assertEquals(e, h.extractMin(), "heapify honours the comparator");
+        }
+    }
+
+    private static void testHeapifyEdgeCases() {
+        MinHeap<Integer> empty = new MinHeap<>(Arrays.asList());
+        assertTrue(empty.isEmpty(), "heapify of empty collection is empty");
+        assertThrows(NoSuchElementException.class, empty::getMin, "empty heapified getMin");
+
+        MinHeap<Integer> single = new MinHeap<>(Arrays.asList(42));
+        assertEquals(42, single.getMin(), "heapify of singleton");
+
+        assertThrows(NullPointerException.class,
+            () -> new MinHeap<Integer>((Collection<Integer>) null), "null collection");
+        assertThrows(NullPointerException.class,
+            () -> new MinHeap<>(Arrays.asList(1, null, 3)), "null element in collection");
+    }
+
+    private static void testHeapifyThenMutate() {
+        // A heapified heap must behave like any other: support inserts (with
+        // handles), growth, and handle-based updates afterwards.
+        MinHeap<Integer> h = new MinHeap<>(Arrays.asList(10, 20, 30));
+        MinHeap.Handle<Integer> handle = h.insertKey(25);
+        h.insertKey(5);
+        h.decreaseKey(handle, 1); // 25 -> 1 via a handle obtained after heapify
+        assertEquals(1, h.extractMin(), "handle update works on a heapified heap");
+        for (int e : new int[] {5, 10, 20, 30}) {
+            assertEquals(e, h.extractMin(), "post-heapify order");
+        }
     }
 
     private static void testAutoGrowsBeyondInitialCapacity() {

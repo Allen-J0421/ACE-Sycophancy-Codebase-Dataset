@@ -1,8 +1,9 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-class MinHeap<T> {
+class MinHeap<T> implements Iterable<T> {
 
     private static final int DEFAULT_CAPACITY = 16;
 
@@ -55,7 +56,6 @@ class MinHeap<T> {
         sort(arr, Comparator.<T>naturalOrder());
     }
 
-    // Sorts arr in-place according to comparator order.
     public static <T> void sort(T[] arr, Comparator<T> comparator) {
         MinHeap<T> h = from(arr, comparator);
         for (int i = 0; i < arr.length; i++) {
@@ -135,6 +135,21 @@ class MinHeap<T> {
         else decreaseKey(i, newVal);
     }
 
+    public boolean remove(T value) {
+        for (int i = 0; i < size; i++) {
+            if (comparator.compare(at(i), value) == 0) {
+                deleteKey(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void clear() {
+        Arrays.fill(heap, 0, size, null);
+        size = 0;
+    }
+
     public void deleteKey(int i) {
         if (i == size - 1) {
             heap[size - 1] = null;
@@ -144,7 +159,6 @@ class MinHeap<T> {
         heap[i] = heap[size - 1];
         heap[size - 1] = null;
         size--;
-        // Replacement element may need to move up or down.
         if (i > 0 && compare(i, parent(i)) < 0) {
             while (i != 0 && compare(i, parent(i)) < 0) {
                 swap(i, parent(i));
@@ -178,6 +192,13 @@ class MinHeap<T> {
         return root;
     }
 
+    public boolean contains(T value) {
+        for (int i = 0; i < size; i++) {
+            if (comparator.compare(at(i), value) == 0) return true;
+        }
+        return false;
+    }
+
     // Returns the heap elements in heap order (not sorted).
     public Object[] toArray() {
         return Arrays.copyOf(heap, size);
@@ -199,6 +220,24 @@ class MinHeap<T> {
 
     public boolean isEmpty() { return size == 0; }
     public int size()        { return size; }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private int cursor = 0;
+
+            @Override
+            public boolean hasNext() {
+                return cursor < size;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) throw new NoSuchElementException();
+                return at(cursor++);
+            }
+        };
+    }
 
     @Override
     public String toString() {

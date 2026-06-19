@@ -26,6 +26,11 @@ class MinHeapTest {
         testToArray();
         testToSortedArray();
         testSort();
+        testContains();
+        testRemove();
+        testClear();
+        testIterable();
+        testEmptyArray();
         testOriginalScenario();
 
         System.out.println("\n" + passed + " passed, " + failed + " failed.");
@@ -285,6 +290,84 @@ class MinHeapTest {
         MinHeap.sort(strings, Comparator.comparingInt(String::length));
         assertEqual("fig", strings[0], "sort strings by length: shortest first");
         assertEqual("banana", strings[3], "sort strings by length: longest last");
+    }
+
+    private static void testContains() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        assertTrue(!h.contains(5), "contains: empty heap returns false");
+
+        h.insertKey(3);
+        h.insertKey(1);
+        h.insertKey(5);
+        assertTrue(h.contains(1), "contains: finds minimum");
+        assertTrue(h.contains(5), "contains: finds non-root element");
+        assertTrue(!h.contains(7), "contains: absent element returns false");
+    }
+
+    private static void testRemove() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        assertTrue(!h.remove(5), "remove: empty heap returns false");
+
+        h.insertKey(3);
+        h.insertKey(1);
+        h.insertKey(5);
+        h.insertKey(2);
+        assertTrue(h.remove(1), "remove: can remove minimum");
+        assertEqual(3, h.size(), "remove: size decremented");
+        assertEqual(2, h.getMin(), "remove: heap property maintained after removing min");
+
+        assertTrue(h.remove(5), "remove: can remove non-root element");
+        assertEqual(2, h.size(), "remove: size decremented again");
+        assertTrue(!h.contains(5), "remove: element no longer present");
+
+        assertTrue(!h.remove(99), "remove: absent element returns false");
+    }
+
+    private static void testClear() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        h.insertKey(3);
+        h.insertKey(1);
+        h.insertKey(2);
+        h.clear();
+        assertTrue(h.isEmpty(), "clear: heap is empty");
+        assertEqual(0, h.size(), "clear: size is 0");
+        assertThrows(() -> h.getMin(), NoSuchElementException.class, "clear: getMin throws after clear");
+
+        h.insertKey(10);
+        assertEqual(10, h.getMin(), "clear: can insert after clear");
+    }
+
+    private static void testIterable() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        int count = 0;
+        for (int x : h) count++;
+        assertEqual(0, count, "iterable: empty heap yields no elements");
+
+        h.insertKey(3);
+        h.insertKey(1);
+        h.insertKey(2);
+        int sum = 0;
+        for (int x : h) sum += x;
+        assertEqual(6, sum, "iterable: visits all elements");
+        assertEqual(3, h.size(), "iterable: non-destructive");
+
+        MinHeap<String> sh = MinHeap.naturalOrder();
+        sh.insertKey("b");
+        sh.insertKey("a");
+        StringBuilder sb = new StringBuilder();
+        for (String s : sh) sb.append(s);
+        assertTrue(sb.toString().contains("a") && sb.toString().contains("b"),
+            "iterable: works with String heap");
+    }
+
+    private static void testEmptyArray() {
+        Integer[] empty = {};
+        MinHeap<Integer> h = MinHeap.from(empty);
+        assertTrue(h.isEmpty(), "from empty array: heap is empty");
+        assertEqual(0, h.toSortedArray().length, "toSortedArray of empty heap");
+
+        MinHeap.sort(empty);
+        assertEqual(0, empty.length, "sort empty array: no-op");
     }
 
     private static void testOriginalScenario() {

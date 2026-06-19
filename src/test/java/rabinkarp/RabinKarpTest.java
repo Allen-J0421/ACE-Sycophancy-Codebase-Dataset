@@ -1,32 +1,43 @@
 package rabinkarp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
-public final class RabinKarpTest {
+class RabinKarpTest {
 
-    private RabinKarpTest() {
-        // Test harness only.
+    @Test
+    void findsBasicMatches() {
+        assertEquals(List.of(0, 8), RabinKarp.search("geeks", "geeksforgeeks"));
     }
 
-    public static void main(String[] args) {
-        expect(List.of(0, 8), RabinKarp.search("geeks", "geeksforgeeks"), "basic match");
-        expect(List.of(0, 1, 2, 3), RabinKarp.search("", "abc"), "empty pattern");
-        expect(List.of(), RabinKarp.search("abcd", "abc"), "pattern longer than text");
-        expect(List.of(), RabinKarp.search("xyz", "abcdef"), "no match");
-        expect(
-                List.of(0, 8),
-                RabinKarp.search(new StringBuilder("geeks"), new StringBuilder("geeksforgeeks")),
-                "char sequence input");
-        expect(
-                List.of(0, 8),
-                new RabinKarpMatcher(256, 101).search("geeks", "geeksforgeeks"),
-                "custom matcher");
+    @Test
+    void returnsAllPositionsForEmptyPattern() {
+        assertEquals(List.of(0, 1, 2, 3), RabinKarp.search("", "abc"));
     }
 
-    private static void expect(List<Integer> expected, List<Integer> actual, String label) {
-        if (!expected.equals(actual)) {
-            throw new AssertionError(
-                    label + " failed: expected " + expected + " but got " + actual);
-        }
+    @Test
+    void returnsEmptyListWhenPatternIsLongerThanText() {
+        assertEquals(List.of(), RabinKarp.search("abcd", "abc"));
+    }
+
+    @Test
+    void returnsEmptyListWhenNoMatchExists() {
+        assertEquals(List.of(), RabinKarp.search("xyz", "abcdef"));
+    }
+
+    @Test
+    void acceptsAnyCharSequence() {
+        assertEquals(
+                List.of(0, 8),
+                RabinKarp.search(new StringBuilder("geeks"), new StringBuilder("geeksforgeeks")));
+    }
+
+    @Test
+    void supportsCustomMatcherConfiguration() {
+        assertEquals(
+                List.of(0, 8),
+                new RabinKarpMatcher(256, 101).search("geeks", "geeksforgeeks"));
     }
 }

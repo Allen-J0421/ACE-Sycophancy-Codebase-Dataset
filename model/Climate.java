@@ -1,3 +1,7 @@
+package model;
+
+import config.Randomizer;
+
 import java.util.Random;
 
 

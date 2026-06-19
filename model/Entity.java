@@ -1,3 +1,5 @@
+package model;
+
 import java.awt.Color;
 
 
@@ -18,7 +20,7 @@ public abstract class Entity {
 	}
 
 
-	protected abstract Color getObjectColor(Climate climate);
+	public abstract Color getObjectColor(Climate climate);
 
 
 	/** Record this entity's presence on the appropriate layer of the field. */

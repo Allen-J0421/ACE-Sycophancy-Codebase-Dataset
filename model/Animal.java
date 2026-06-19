@@ -1,3 +1,8 @@
+package model;
+
+import config.AnimalTraits;
+import config.Randomizer;
+
 import java.awt.Color;
 import java.util.List;
 import java.util.Random;
@@ -54,7 +59,7 @@ public abstract class Animal extends Entity {
 
 
 	@Override
-	protected Color getObjectColor(Climate climate) {
+	public Color getObjectColor(Climate climate) {
 		return traits.color();
 	}
 
@@ -95,7 +100,7 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected boolean isAlive() {
+	public boolean isAlive() {
 		return alive;
 	}
 
@@ -190,7 +195,7 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected boolean isSick() {
+	public boolean isSick() {
 		return disease.isActive();
 	}
 

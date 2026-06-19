@@ -1,3 +1,9 @@
+package app;
+
+import model.*;
+import view.*;
+import config.Randomizer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

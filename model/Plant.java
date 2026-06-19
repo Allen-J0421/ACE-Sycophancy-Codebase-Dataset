@@ -1,3 +1,7 @@
+package model;
+
+import config.Randomizer;
+
 import java.util.Random;
 
 
@@ -22,7 +26,7 @@ public abstract class Plant extends Entity {
 	}
 
 
-	protected void increaseStage(Climate climate) {
+	public void increaseStage(Climate climate) {
 		if (stage < getMaxStage()) {
 			if (climate.getCurrentWeather() == Weather.RAIN) {
 				if (rand.nextDouble() <= 0.33) {

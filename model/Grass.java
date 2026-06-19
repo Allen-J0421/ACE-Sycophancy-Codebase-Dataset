@@ -1,3 +1,7 @@
+package model;
+
+import config.Randomizer;
+
 import java.awt.*;
 import java.util.Random;
 
@@ -22,7 +26,7 @@ public class Grass extends Plant {
 	}
 
 
-	protected void increaseStage(Climate climate) {
+	public void increaseStage(Climate climate) {
 		super.increaseStage(climate);
 		if (climate.getCurrentSeason() == Season.SPRING && getStage() > 2) {
 			setStage(2);
@@ -36,7 +40,7 @@ public class Grass extends Plant {
 	}
 
 
-	protected Color getObjectColor(Climate climate) {
+	public Color getObjectColor(Climate climate) {
 		switch (climate.getCurrentSeason()) {
 			case SPRING:
 				if (getStage() == 2) {

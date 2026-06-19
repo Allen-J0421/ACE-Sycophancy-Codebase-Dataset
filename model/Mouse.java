@@ -1,3 +1,7 @@
+package model;
+
+import config.AnimalTraits;
+
 import java.awt.Color;
 
 

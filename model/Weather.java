@@ -1,3 +1,4 @@
+package model;
 
 public enum Weather {
 	SUN,

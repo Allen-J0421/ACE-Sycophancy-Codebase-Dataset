@@ -1,3 +1,7 @@
+package model;
+
+import config.Randomizer;
+
 import java.awt.*;
 import java.util.Random;
 
@@ -25,7 +29,7 @@ public class Flower extends Plant {
 	}
 
 
-	protected Color getObjectColor(Climate climate) {
+	public Color getObjectColor(Climate climate) {
 		if (getStage() == 1) {
 			return plantColour;
 		} else {

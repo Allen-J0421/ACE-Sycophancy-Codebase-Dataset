@@ -1,3 +1,5 @@
+package config;
+
 import java.awt.Color;
 
 

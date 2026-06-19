@@ -1,3 +1,8 @@
+package model;
+
+import config.AnimalTraits;
+import config.Randomizer;
+
 import java.util.List;
 import java.util.Random;
 

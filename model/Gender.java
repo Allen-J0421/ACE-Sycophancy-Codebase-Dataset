@@ -1,3 +1,6 @@
+package model;
+
+import config.Randomizer;
 
 public enum Gender {
 	FEMALE,

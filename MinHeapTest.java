@@ -1,3 +1,4 @@
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 class MinHeapTest {
@@ -15,10 +16,13 @@ class MinHeapTest {
         testDecreaseKey();
         testIncreaseKey();
         testChangeKey();
-        testCapacityLimit();
+        testAutoResize();
         testEmptyHeap();
         testFromArray();
         testWithStrings();
+        testMaxHeap();
+        testCustomComparator();
+        testToString();
         testOriginalScenario();
 
         System.out.println("\n" + passed + " passed, " + failed + " failed.");
@@ -62,7 +66,7 @@ class MinHeapTest {
     }
 
     private static void testInsertAndExtract() {
-        MinHeap<Integer> h = new MinHeap<>(10);
+        MinHeap<Integer> h = MinHeap.naturalOrder();
         h.insertKey(5);
         h.insertKey(3);
         h.insertKey(8);
@@ -75,7 +79,7 @@ class MinHeapTest {
     }
 
     private static void testDeleteKey() {
-        MinHeap<Integer> h = new MinHeap<>(11);
+        MinHeap<Integer> h = MinHeap.naturalOrder(11);
         h.insertKey(3);
         h.insertKey(2);
         h.deleteKey(1);
@@ -86,8 +90,7 @@ class MinHeapTest {
         assertEqual(2, h.extractMin(), "extractMin after deleteKey");
         assertEqual(4, h.getMin(), "getMin after extract");
 
-        // Delete last element
-        MinHeap<Integer> h2 = new MinHeap<>(5);
+        MinHeap<Integer> h2 = MinHeap.naturalOrder();
         h2.insertKey(1);
         h2.insertKey(3);
         h2.insertKey(5);
@@ -95,8 +98,7 @@ class MinHeapTest {
         assertEqual(2, h2.size(), "size after deleting last element");
         assertEqual(1, h2.extractMin(), "min unchanged after deleting last");
 
-        // Delete root
-        MinHeap<Integer> h3 = new MinHeap<>(5);
+        MinHeap<Integer> h3 = MinHeap.naturalOrder();
         h3.insertKey(1);
         h3.insertKey(3);
         h3.insertKey(5);
@@ -105,7 +107,7 @@ class MinHeapTest {
     }
 
     private static void testDecreaseKey() {
-        MinHeap<Integer> h = new MinHeap<>(10);
+        MinHeap<Integer> h = MinHeap.naturalOrder();
         h.insertKey(10);
         h.insertKey(20);
         h.insertKey(30);
@@ -114,7 +116,7 @@ class MinHeapTest {
     }
 
     private static void testIncreaseKey() {
-        MinHeap<Integer> h = new MinHeap<>(10);
+        MinHeap<Integer> h = MinHeap.naturalOrder();
         h.insertKey(1);
         h.insertKey(5);
         h.insertKey(10);
@@ -123,35 +125,36 @@ class MinHeapTest {
     }
 
     private static void testChangeKey() {
-        MinHeap<Integer> h = new MinHeap<>(10);
+        MinHeap<Integer> h = MinHeap.naturalOrder();
         h.insertKey(5);
         h.insertKey(10);
         h.changeKey(1, 1);
         assertEqual(1, h.extractMin(), "changeKey decrease works");
 
-        MinHeap<Integer> h2 = new MinHeap<>(10);
+        MinHeap<Integer> h2 = MinHeap.naturalOrder();
         h2.insertKey(3);
         h2.insertKey(8);
         h2.changeKey(0, 20);
         assertEqual(8, h2.extractMin(), "changeKey increase works");
 
-        // No-op when value unchanged
-        MinHeap<Integer> h3 = new MinHeap<>(5);
+        MinHeap<Integer> h3 = MinHeap.naturalOrder();
         h3.insertKey(7);
         h3.changeKey(0, 7);
         assertEqual(7, h3.getMin(), "changeKey no-op when value unchanged");
     }
 
-    private static void testCapacityLimit() {
-        MinHeap<Integer> h = new MinHeap<>(2);
-        assertTrue(h.insertKey(1), "insert succeeds when not full");
-        assertTrue(h.insertKey(2), "insert succeeds when not full");
-        assertTrue(!h.insertKey(3), "insert fails when full");
-        assertEqual(2, h.size(), "size correct when full");
+    private static void testAutoResize() {
+        MinHeap<Integer> h = MinHeap.naturalOrder(2);
+        for (int i = 10; i >= 1; i--) {
+            h.insertKey(i);
+        }
+        assertEqual(10, h.size(), "auto-resize: correct size after growing beyond initial capacity");
+        assertEqual(1, h.extractMin(), "auto-resize: extracts minimum correctly");
+        assertEqual(2, h.extractMin(), "auto-resize: maintains order after resize");
     }
 
     private static void testEmptyHeap() {
-        MinHeap<Integer> h = new MinHeap<>(5);
+        MinHeap<Integer> h = MinHeap.naturalOrder();
         assertTrue(h.isEmpty(), "new heap is empty");
         assertEqual(0, h.size(), "new heap has size 0");
         assertThrows(() -> h.extractMin(), NoSuchElementException.class, "extractMin on empty throws");
@@ -160,21 +163,24 @@ class MinHeapTest {
 
     private static void testFromArray() {
         Integer[] arr = {5, 3, 8, 1, 9, 2};
+
         MinHeap<Integer> h = MinHeap.from(arr);
         assertEqual(6, h.size(), "from: correct size");
         assertEqual(1, h.extractMin(), "from: extracts minimum");
         assertEqual(2, h.extractMin(), "from: extracts next");
         assertEqual(3, h.extractMin(), "from: extracts in sorted order");
 
-        // Single-element array
         Integer[] single = {42};
         MinHeap<Integer> h2 = MinHeap.from(single);
         assertEqual(42, h2.extractMin(), "from single-element array");
         assertTrue(h2.isEmpty(), "empty after extracting sole element");
+
+        MinHeap<Integer> h3 = MinHeap.from(arr, Comparator.reverseOrder());
+        assertEqual(9, h3.extractMin(), "from with reverse comparator extracts maximum");
     }
 
     private static void testWithStrings() {
-        MinHeap<String> h = new MinHeap<>(5);
+        MinHeap<String> h = MinHeap.naturalOrder();
         h.insertKey("banana");
         h.insertKey("apple");
         h.insertKey("cherry");
@@ -182,8 +188,39 @@ class MinHeapTest {
         assertEqual("banana", h.extractMin(), "string heap extracts next");
     }
 
+    private static void testMaxHeap() {
+        MinHeap<Integer> h = MinHeap.reverseOrder();
+        h.insertKey(5);
+        h.insertKey(3);
+        h.insertKey(8);
+        h.insertKey(1);
+        assertEqual(8, h.extractMin(), "max-heap: extracts largest first");
+        assertEqual(5, h.extractMin(), "max-heap: extracts next largest");
+    }
+
+    private static void testCustomComparator() {
+        MinHeap<String> byLength = MinHeap.withComparator(Comparator.comparingInt(String::length));
+        byLength.insertKey("banana");
+        byLength.insertKey("fig");
+        byLength.insertKey("kiwi");
+        assertEqual("fig", byLength.extractMin(), "custom comparator: shortest string first");
+        assertEqual("kiwi", byLength.extractMin(), "custom comparator: next shortest");
+    }
+
+    private static void testToString() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        assertEqual("[]", h.toString(), "toString on empty heap");
+        h.insertKey(3);
+        h.insertKey(1);
+        h.insertKey(2);
+        // The root (index 0) is always the minimum; other positions reflect heap structure.
+        assertTrue(h.toString().startsWith("[1"), "toString: root is minimum");
+        assertTrue(h.toString().contains("2"), "toString: contains 2");
+        assertTrue(h.toString().contains("3"), "toString: contains 3");
+    }
+
     private static void testOriginalScenario() {
-        MinHeap<Integer> h = new MinHeap<>(11);
+        MinHeap<Integer> h = MinHeap.naturalOrder(11);
         h.insertKey(3);
         h.insertKey(2);
         h.deleteKey(1);

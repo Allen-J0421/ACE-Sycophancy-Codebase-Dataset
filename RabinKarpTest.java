@@ -15,6 +15,10 @@ public final class RabinKarpTest {
                 List.of(0, 8),
                 RabinKarp.search(new StringBuilder("geeks"), new StringBuilder("geeksforgeeks")),
                 "char sequence input");
+        expect(
+                List.of(0, 8),
+                new RabinKarpMatcher(256, 101).search("geeks", "geeksforgeeks"),
+                "custom matcher");
     }
 
     private static void expect(List<Integer> expected, List<Integer> actual, String label) {

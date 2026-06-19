@@ -118,7 +118,7 @@ public abstract class Animal extends Entity {
 	protected void setDead() {
 		alive = false;
 		if (getLocation() != null) {
-			getField().clear(this, getLocation());
+			getField().updateOccupancy(this, getLocation(), null);
 			setLocationNull();
 			setFieldNull();
 		}

@@ -34,11 +34,6 @@ public class Field {
 	}
 
 
-	public void clear(Movable movable, Location location) {
-		cellAt(location).clear(movable.getOccupancyLayer());
-	}
-
-
 	public void place(Movable movable, int row, int col) {
 		place(movable, new Location(row, col));
 	}
@@ -49,9 +44,9 @@ public class Field {
 	}
 
 
-	public void move(Movable movable, Location from, Location to) {
+	public void updateOccupancy(Movable movable, Location from, Location to) {
 		if (from != null) {
-			clear(movable, from);
+			cellAt(from).clear(movable.getOccupancyLayer());
 		}
 		if (to != null) {
 			place(movable, to);

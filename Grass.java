@@ -5,8 +5,8 @@ public class Grass extends Plant {
 	private static final RandomService RANDOM = RandomService.shared();
 
 
-	public Grass(FieldEnvironment field, Location location) {
-		super(field, location);
+	public Grass(EntityController controller, Location location) {
+		super(controller, location);
 
 
 		if (RANDOM.chance(0.5)) {

@@ -6,8 +6,8 @@ public abstract class Prey extends Animal {
 	private static final RandomService RANDOM = RandomService.shared();
 
 
-	public Prey(boolean randomAge, FieldEnvironment field, Location location, AnimalSpecies species) {
-		super(field, location, species);
+	public Prey(boolean randomAge, EntityController controller, Location location, AnimalSpecies species) {
+		super(controller, location, species);
 		setAge(0);
 		setFoodLevel(6);
 		if (randomAge) {

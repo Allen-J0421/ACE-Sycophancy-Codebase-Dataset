@@ -7,8 +7,8 @@ public class Flower extends Plant {
 	private Color plantColour;
 
 
-	public Flower(FieldEnvironment field, Location location) {
-		super(field, location);
+	public Flower(EntityController controller, Location location) {
+		super(controller, location);
 		setMaxStage(1);
 		setStage(getMaxStage());
 

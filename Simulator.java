@@ -24,6 +24,8 @@ public class Simulator {
 
 	private FieldEnvironment field;
 
+	private EntityController entityController;
+
 	private int step;
 
 	private TimeCycle currentTimeCycle;
@@ -56,12 +58,13 @@ public class Simulator {
 
 		animals = new ArrayList<>();
 
-		plants = new ArrayList<>();
-		observers = new ArrayList<>();
-		fieldStats = new FieldStats();
-		field = new Field(depth, width);
-		climate = new Climate(DEFAULT_WEATHER);
-		fieldPopulator = new FieldPopulator();
+			plants = new ArrayList<>();
+			observers = new ArrayList<>();
+			fieldStats = new FieldStats();
+			field = new Field(depth, width);
+			entityController = new FieldEntityController(field);
+			climate = new Climate(DEFAULT_WEATHER);
+			fieldPopulator = new FieldPopulator();
 
 
 		reset();
@@ -106,7 +109,7 @@ public class Simulator {
 
 	public void reset() {
 		step = 0;
-		fieldPopulator.populate(field, animals, plants);
+		fieldPopulator.populate(entityController, animals, plants);
 		currentTimeCycle = DEFAULT_TIMECYCLE;
 		climate.setCurrentWeather(Weather.SUN);
 

@@ -20,8 +20,8 @@ public class Wolf extends Predator {
 			.build();
 
 
-	public Wolf(boolean randomAge, FieldEnvironment field, Location location) {
-		super(randomAge, field, location, SPECIES);
+	public Wolf(boolean randomAge, EntityController controller, Location location) {
+		super(randomAge, controller, location, SPECIES);
 	}
 
 

@@ -3,15 +3,14 @@ import java.awt.*;
 
 public abstract class Entity {
 
-
-	private FieldEnvironment field;
+	private final EntityController controller;
 
 	private Location location;
 
 
-	public Entity(FieldEnvironment field, Location location) {
-		this.field = field;
-		setLocation(location);
+	public Entity(EntityController controller, Location location) {
+		this.controller = controller;
+		controller.place(this, location);
 	}
 
 
@@ -19,12 +18,12 @@ public abstract class Entity {
 
 
 	protected FieldEnvironment getField() {
-		return field;
+		return controller.getFieldEnvironment();
 	}
 
 
-	protected void setFieldNull() {
-		field = null;
+	protected EntityController getController() {
+		return controller;
 	}
 
 
@@ -33,22 +32,17 @@ public abstract class Entity {
 	}
 
 
-	protected void setLocation(Location newLocation) {
-		if (location != null) {
-			clearFieldLocation(field, location);
-		}
+	protected void requestMove(Location newLocation) {
+		controller.move(this, newLocation);
+	}
+
+
+	protected void requestRemoval() {
+		controller.remove(this);
+	}
+
+
+	void updateLocation(Location newLocation) {
 		location = newLocation;
-		placeInField(field, newLocation);
 	}
-
-
-	protected void setLocationNull() {
-		location = null;
-	}
-
-
-	protected abstract void placeInField(FieldEnvironment field, Location location);
-
-
-	protected abstract void clearFieldLocation(FieldEnvironment field, Location location);
 }

@@ -17,8 +17,8 @@ public class Bird extends Prey {
 			.build();
 
 
-	public Bird(boolean randomAge, FieldEnvironment field, Location location) {
-		super(randomAge, field, location, SPECIES);
+	public Bird(boolean randomAge, EntityController controller, Location location) {
+		super(randomAge, controller, location, SPECIES);
 	}
 
 

@@ -100,8 +100,8 @@ public class AnimalSpecies {
 	}
 
 
-	public Animal createAnimal(boolean randomAge, FieldEnvironment environment, Location location) {
-		return factory.create(randomAge, environment, location);
+	public Animal createAnimal(boolean randomAge, EntityController controller, Location location) {
+		return factory.create(randomAge, controller, location);
 	}
 
 

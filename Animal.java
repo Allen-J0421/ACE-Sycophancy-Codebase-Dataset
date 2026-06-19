@@ -23,8 +23,8 @@ public abstract class Animal extends Entity {
 	private int sickStep;
 
 
-	public Animal(FieldEnvironment field, Location location, AnimalSpecies species) {
-		super(field, location);
+	public Animal(EntityController controller, Location location, AnimalSpecies species) {
+		super(controller, location);
 		this.species = species;
 		alive = true;
 		gender = Gender.randomGender();
@@ -75,11 +75,12 @@ public abstract class Animal extends Entity {
 
 		if (this.getGender() == Gender.FEMALE) {
 			FieldEnvironment field = getField();
+			EntityController controller = getController();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
 			int births = breed();
 			newAnimals.addAll(IntStream.range(0, Math.min(births, free.size()))
 					.mapToObj(free::get)
-					.map(location -> species.createAnimal(false, field, location))
+					.map(location -> species.createAnimal(false, controller, location))
 					.collect(Collectors.toList()));
 		}
 	}
@@ -93,9 +94,7 @@ public abstract class Animal extends Entity {
 	protected void setDead() {
 		alive = false;
 		if (getLocation() != null) {
-			clearFieldLocation(getField(), getLocation());
-			setLocationNull();
-			setFieldNull();
+			requestRemoval();
 		}
 	}
 
@@ -145,7 +144,7 @@ public abstract class Animal extends Entity {
 
 	protected void moveTo(Location newLocation) {
 		if (newLocation != null) {
-			setLocation(newLocation);
+			requestMove(newLocation);
 		} else {
 			setDead();
 		}
@@ -191,19 +190,6 @@ public abstract class Animal extends Entity {
 	protected boolean isSick() {
 		return sick;
 	}
-
-
-	@Override
-	protected void placeInField(FieldEnvironment field, Location location) {
-		field.placeAnimal(this, location);
-	}
-
-
-	@Override
-	protected void clearFieldLocation(FieldEnvironment field, Location location) {
-		field.clearAnimalAt(location);
-	}
-
 
 	protected void setAge(int age) {
 		this.age = age;

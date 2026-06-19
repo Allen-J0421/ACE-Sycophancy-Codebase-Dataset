@@ -29,28 +29,29 @@ public class FieldPopulator {
 	}
 
 
-	public void populate(FieldEnvironment field, List<Animal> animals, List<Plant> plants) {
+	public void populate(EntityController controller, List<Animal> animals, List<Plant> plants) {
+		FieldEnvironment field = controller.getFieldEnvironment();
 		field.clear();
 		animals.clear();
 		plants.clear();
 
-		field.streamLocations().forEach(location -> populateLocation(field, location, animals, plants));
+		field.streamLocations().forEach(location -> populateLocation(controller, location, animals, plants));
 	}
 
 
-	private Plant createPlant(FieldEnvironment field, Location location) {
+	private Plant createPlant(EntityController controller, Location location) {
 		if (random.chance(FLOWER_CREATION_PROBABILITY)) {
-			return new Flower(field, location);
+			return new Flower(controller, location);
 		}
-		return new Grass(field, location);
+		return new Grass(controller, location);
 	}
 
 
-	private Animal createAnimal(FieldEnvironment field, Location location) {
+	private Animal createAnimal(EntityController controller, Location location) {
 		return animalSpawnRules.stream()
 				.filter(rule -> rule.shouldSpawn(random))
 				.findFirst()
-				.map(rule -> rule.createAnimal(field, location))
+				.map(rule -> rule.createAnimal(controller, location))
 				.orElse(null);
 	}
 
@@ -66,10 +67,10 @@ public class FieldPopulator {
 	}
 
 
-	private void populateLocation(FieldEnvironment field, Location location, List<Animal> animals, List<Plant> plants) {
-		plants.add(createPlant(field, location));
+	private void populateLocation(EntityController controller, Location location, List<Animal> animals, List<Plant> plants) {
+		plants.add(createPlant(controller, location));
 
-		Animal animal = createAnimal(field, location);
+		Animal animal = createAnimal(controller, location);
 		if (animal != null) {
 			animals.add(animal);
 		}
@@ -93,8 +94,8 @@ public class FieldPopulator {
 		}
 
 
-		private Animal createAnimal(FieldEnvironment field, Location location) {
-			return animalFactory.create(true, field, location);
+		private Animal createAnimal(EntityController controller, Location location) {
+			return animalFactory.create(true, controller, location);
 		}
 	}
 }

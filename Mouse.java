@@ -17,8 +17,8 @@ public class Mouse extends Prey {
 			.build();
 
 
-	public Mouse(boolean randomAge, FieldEnvironment field, Location location) {
-		super(randomAge, field, location, SPECIES);
+	public Mouse(boolean randomAge, EntityController controller, Location location) {
+		super(randomAge, controller, location, SPECIES);
 	}
 
 

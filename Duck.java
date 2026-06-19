@@ -17,8 +17,8 @@ public class Duck extends Prey {
 			.build();
 
 
-	public Duck(boolean randomAge, FieldEnvironment field, Location location) {
-		super(randomAge, field, location, SPECIES);
+	public Duck(boolean randomAge, EntityController controller, Location location) {
+		super(randomAge, controller, location, SPECIES);
 	}
 
 

@@ -6,8 +6,8 @@ public abstract class Predator extends Animal {
 
 	private static final RandomService RANDOM = RandomService.shared();
 
-	public Predator(boolean randomAge, FieldEnvironment field, Location location, AnimalSpecies species) {
-		super(field, location, species);
+	public Predator(boolean randomAge, EntityController controller, Location location, AnimalSpecies species) {
+		super(controller, location, species);
 		if (randomAge) {
 			setAge(RANDOM.nextInt(getSpecies().getMaxAge()));
 			setFoodLevel(RANDOM.nextInt(5));

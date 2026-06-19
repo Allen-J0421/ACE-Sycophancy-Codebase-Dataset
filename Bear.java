@@ -18,8 +18,8 @@ public class Bear extends Predator {
 			.build();
 
 
-	public Bear(boolean randomAge, FieldEnvironment field, Location location) {
-		super(randomAge, field, location, SPECIES);
+	public Bear(boolean randomAge, EntityController controller, Location location) {
+		super(randomAge, controller, location, SPECIES);
 	}
 
 

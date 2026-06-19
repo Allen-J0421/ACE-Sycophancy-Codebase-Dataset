@@ -3,9 +3,6 @@ import java.util.Collections;
 import java.util.List;
 
 public final class RabinKarp {
-    private static final int RADIX = 256;
-    private static final int MODULUS = 101;
-
     private RabinKarp() {
     }
 
@@ -112,6 +109,9 @@ public final class RabinKarp {
     }
 
     private static final class RollingHash {
+        private static final int RADIX = 256;
+        private static final int MODULUS = 101;
+
         private final int highOrderMultiplier;
         private int value;
 

@@ -5,6 +5,42 @@
  */
 class TestData {
 
+    // ===== EXAMPLE/DEFAULT CONSTANTS =====
+
+    /**
+     * Standard example from algorithm literature.
+     * Used in quick demos and default CLI examples.
+     */
+    static final String EXAMPLE_S1 = "AGGTAB";
+    static final String EXAMPLE_S2 = "GXTXAYB";
+    static final int EXAMPLE_LCS_LENGTH = 4;
+    static final String EXAMPLE_LCS_SEQUENCE = "GTAB";
+
+    /**
+     * Simple example for easy understanding.
+     */
+    static final String SIMPLE_CASE_S1 = "ABCDEF";
+    static final String SIMPLE_CASE_S2 = "FBDAMN";
+    static final int SIMPLE_CASE_LCS_LENGTH = 2;
+    static final String SIMPLE_CASE_LCS_SEQUENCE = "BD";
+
+    /**
+     * Identical strings (trivial case).
+     */
+    static final String IDENTICAL_STRING = "ABCDEF";
+    static final int IDENTICAL_LCS_LENGTH = 6;
+    static final String IDENTICAL_LCS_SEQUENCE = "ABCDEF";
+
+    /**
+     * No match case (opposite of identical).
+     */
+    static final String NO_MATCH_S1 = "ABC";
+    static final String NO_MATCH_S2 = "DEF";
+    static final int NO_MATCH_LCS_LENGTH = 0;
+    static final String NO_MATCH_LCS_SEQUENCE = "";
+
+    // ===== TEST CASE ARRAYS =====
+
     /**
      * Standard test cases covering common scenarios.
      * Format: {string1, string2, expected_lcs_length}

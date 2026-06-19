@@ -18,7 +18,7 @@ public class LongestCommonSubsequence implements LcsSolver {
             }
         }
 
-        return new LcsResult(dp[m][n], backtrack(dp, s1, s2, m, n));
+        return new LcsResult(backtrack(dp, s1, s2, m, n));
     }
 
     private String backtrack(int[][] dp, String s1, String s2, int i, int j) {

@@ -12,4 +12,17 @@ public class LcsInput {
 
     public String getFirst() { return first; }
     public String getSecond() { return second; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LcsInput)) return false;
+        LcsInput other = (LcsInput) o;
+        return first.equals(other.first) && second.equals(other.second);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * first.hashCode() + second.hashCode();
+    }
 }

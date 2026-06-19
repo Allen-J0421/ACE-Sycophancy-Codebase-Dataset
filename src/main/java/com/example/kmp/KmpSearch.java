@@ -20,31 +20,35 @@ public final class KmpSearch {
      * @throws IllegalArgumentException if {@code pattern} is empty
      */
     public static List<Integer> search(CharSequence pattern, CharSequence text) {
-        return compile(pattern).findMatchesIn(text);
+        return matcher(pattern, text).findMatches();
     }
 
     public static KmpMatchResult analyze(CharSequence pattern, CharSequence text) {
-        return compile(pattern).analyzeIn(text);
+        return matcher(pattern, text).analyze();
+    }
+
+    public static KmpMatcher matcher(CharSequence pattern, CharSequence text) {
+        return compile(pattern).matcher(text);
     }
 
     public static KmpMatchIterator matchIterator(CharSequence pattern, CharSequence text) {
-        return compile(pattern).matchIteratorIn(text);
+        return matcher(pattern, text).matchIterator();
     }
 
     public static OptionalInt findFirst(CharSequence pattern, CharSequence text) {
-        return compile(pattern).findFirstIn(text);
+        return matcher(pattern, text).findFirst();
     }
 
     public static int countMatches(CharSequence pattern, CharSequence text) {
-        return compile(pattern).countMatchesIn(text);
+        return matcher(pattern, text).countMatches();
     }
 
     public static boolean contains(CharSequence pattern, CharSequence text) {
-        return compile(pattern).occursIn(text);
+        return matcher(pattern, text).contains();
     }
 
     public static void forEachMatch(CharSequence pattern, CharSequence text, IntConsumer matchConsumer) {
-        compile(pattern).forEachMatchIn(text, matchConsumer);
+        matcher(pattern, text).forEachMatch(matchConsumer);
     }
 
     public static KmpPattern compile(CharSequence pattern) {

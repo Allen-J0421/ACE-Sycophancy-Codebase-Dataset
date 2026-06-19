@@ -44,16 +44,14 @@ class KMPSearch {
         if (pattern.length() > text.length()) {
             return List.of();
         }
-        int n = text.length();
-        int m = pattern.length();
         List<Integer> result = new ArrayList<>();
         int textIdx = 0;
         int patternIdx = 0;
-        while (textIdx < n) {
+        while (textIdx < text.length()) {
             if (text.charAt(textIdx) == pattern.charAt(patternIdx)) {
                 textIdx++;
                 patternIdx++;
-                if (patternIdx == m) {
+                if (patternIdx == lps.length) {
                     result.add(textIdx - patternIdx);
                     patternIdx = lps[patternIdx - 1];
                 }
@@ -63,7 +61,7 @@ class KMPSearch {
                 textIdx++;
             }
         }
-        return result;
+        return List.copyOf(result);
     }
 
     public static void main(String[] args) {

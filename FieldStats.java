@@ -1,28 +1,26 @@
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class FieldStats {
 
-	private HashMap<Class, Counter> counters;
+	private final Map<Class<?>, Counter> counters;
 
 	private boolean countsValid;
 
 
 	public FieldStats() {
-
-
-		counters = new HashMap<>();
+		counters = new LinkedHashMap<>();
 		countsValid = true;
 	}
 
 
 	public String getPopulationDetails(Field field) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		if (!countsValid) {
 			generateCounts(field);
 		}
-		for (Class key : counters.keySet()) {
-			Counter info = counters.get(key);
+		for (Counter info : counters.values()) {
 			buffer.append(info.getName());
 			buffer.append(": ");
 			buffer.append(info.getCount());
@@ -34,18 +32,15 @@ public class FieldStats {
 
 	public void reset() {
 		countsValid = false;
-		for (Class key : counters.keySet()) {
-			Counter count = counters.get(key);
+		for (Counter count : counters.values()) {
 			count.reset();
 		}
 	}
 
 
-	public void incrementCount(Class animalClass) {
+	public void incrementCount(Class<?> animalClass) {
 		Counter count = counters.get(animalClass);
 		if (count == null) {
-
-
 			count = new Counter(animalClass.getName());
 			counters.put(animalClass, count);
 		}
@@ -59,13 +54,11 @@ public class FieldStats {
 
 
 	public boolean isViable(Field field) {
-
-		int nonZero = 0;
 		if (!countsValid) {
 			generateCounts(field);
 		}
-		for (Class key : counters.keySet()) {
-			Counter info = counters.get(key);
+		int nonZero = 0;
+		for (Counter info : counters.values()) {
 			if (info.getCount() > 0) {
 				nonZero++;
 			}
@@ -75,7 +68,7 @@ public class FieldStats {
 
 
 	private void generateCounts(Field field) {
-		reset();
+		counters.clear();
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Object animal = field.getAnimalAt(row, col);
@@ -88,17 +81,11 @@ public class FieldStats {
 	}
 
 
-	public int getPopulationCount(Field field, Class key) {
+	public int getPopulationCount(Field field, Class<?> key) {
 		if (!countsValid) {
 			generateCounts(field);
 		}
-		int total = 0;
-		for (Class currentKey : counters.keySet()) {
-			if (currentKey.equals(key)) {
-				Counter counter = counters.get(currentKey);
-				total = total + counter.getCount();
-			}
-		}
-		return total;
+		Counter counter = counters.get(key);
+		return counter == null ? 0 : counter.getCount();
 	}
 }

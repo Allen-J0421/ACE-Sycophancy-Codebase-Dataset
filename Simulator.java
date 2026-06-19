@@ -27,7 +27,7 @@ public class Simulator {
 
 	private static final Weather DEFAULT_WEATHER = Weather.SUN;
 
-	private static final int TIMECYCLE_LENGTH = 4;
+	private static final int TIME_CYCLE_LENGTH = 4;
 
 
 	private List<Animal> animals;
@@ -87,7 +87,7 @@ public class Simulator {
 
 
 	public void simulate(int numSteps) {
-		for (int step = 1; step <= numSteps && gridView.isViable(field); step++) {
+		for (int i = 0; i < numSteps && gridView.isViable(field); i++) {
 			simulateOneStep();
 			delay(60);
 		}
@@ -97,41 +97,12 @@ public class Simulator {
 	public void simulateOneStep() {
 		step++;
 		climate.updateClimate(step);
-
-
-		for (Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-			Plant plant = it.next();
-			plant.increaseStage(climate);
-		}
-
-
+		updatePlants();
 		List<Animal> newAnimals = new ArrayList<>();
-
-		for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-			Animal animal = it.next();
-			animal.act(newAnimals, currentTimeCycle);
-			if (!animal.isAlive()) {
-				it.remove();
-			}
-		}
-
-
+		updateAnimals(newAnimals);
 		animals.addAll(newAnimals);
-
-
-		if (step % TIMECYCLE_LENGTH == 0) {
-			currentTimeCycle = currentTimeCycle.toggleTimeCycle(currentTimeCycle);
-		}
-
-
-		int count = 0;
-		for (Animal i : animals) {
-			if (i.isSick()) {
-				count++;
-			}
-		}
-
-		sickPercentage = (count * 100) / animals.size();
+		updateTimeCycle();
+		sickPercentage = calculateSickPercentage();
 		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
 		graphView.showStatus(step, field);
 	}
@@ -140,6 +111,7 @@ public class Simulator {
 	public void reset() {
 		step = 0;
 		animals.clear();
+		plants.clear();
 		populate();
 		currentTimeCycle = TimeCycle.DAY;
 		climate.setCurrentWeather(Weather.SUN);
@@ -158,41 +130,72 @@ public class Simulator {
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Location location = new Location(row, col);
-
-
-				if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
-					Flower flower = new Flower(field, location);
-					plants.add(flower);
-				} else {
-					Grass grass = new Grass(field, location);
-					plants.add(grass);
-				}
-
-
-				if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
-					Bird bird = new Bird(true, field, location);
-					animals.add(bird);
-					graphView.setColor(Bird.class, bird.getObjectColor(climate));
-				} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-					Mouse mouse = new Mouse(true, field, location);
-					animals.add(mouse);
-					graphView.setColor(Mouse.class, mouse.getObjectColor(climate));
-				} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
-					Duck duck = new Duck(true, field, location);
-					animals.add(duck);
-					graphView.setColor(Duck.class, duck.getObjectColor(climate));
-				} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-					Wolf wolf = new Wolf(true, field, location);
-					animals.add(wolf);
-					graphView.setColor(Wolf.class, wolf.getObjectColor(climate));
-				} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-					Bear bear = new Bear(true, field, location);
-					animals.add(bear);
-					graphView.setColor(Bear.class, bear.getObjectColor(climate));
-				}
-
+				populatePlant(rand, location);
+				populateAnimal(rand, location);
 			}
 		}
+	}
+
+	private void populatePlant(Random rand, Location location) {
+		if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
+			plants.add(new Flower(field, location));
+		} else {
+			plants.add(new Grass(field, location));
+		}
+	}
+
+	private void populateAnimal(Random rand, Location location) {
+		if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
+			addAnimal(new Bird(true, field, location));
+		} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
+			addAnimal(new Mouse(true, field, location));
+		} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
+			addAnimal(new Duck(true, field, location));
+		} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
+			addAnimal(new Wolf(true, field, location));
+		} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
+			addAnimal(new Bear(true, field, location));
+		}
+	}
+
+	private void addAnimal(Animal animal) {
+		animals.add(animal);
+		graphView.setColor(animal.getClass(), animal.getObjectColor(climate));
+	}
+
+	private void updatePlants() {
+		for (Plant plant : plants) {
+			plant.increaseStage(climate);
+		}
+	}
+
+	private void updateAnimals(List<Animal> newAnimals) {
+		for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
+			Animal animal = it.next();
+			animal.act(newAnimals, currentTimeCycle);
+			if (!animal.isAlive()) {
+				it.remove();
+			}
+		}
+	}
+
+	private void updateTimeCycle() {
+		if (step % TIME_CYCLE_LENGTH == 0) {
+			currentTimeCycle = currentTimeCycle.toggle();
+		}
+	}
+
+	private int calculateSickPercentage() {
+		if (animals.isEmpty()) {
+			return 0;
+		}
+		int count = 0;
+		for (Animal animal : animals) {
+			if (animal.isSick()) {
+				count++;
+			}
+		}
+		return (count * 100) / animals.size();
 	}
 
 
@@ -200,7 +203,7 @@ public class Simulator {
 		try {
 			Thread.sleep(millisec);
 		} catch (InterruptedException ie) {
-
+			Thread.currentThread().interrupt();
 		}
 	}
 }

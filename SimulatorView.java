@@ -1,35 +1,26 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 
 public class SimulatorView extends JFrame {
 
 	private static final Color EMPTY_COLOR = Color.white;
 
-
-	private static final Color UNKNOWN_COLOR = Color.gray;
-
-	private final String STEP_PREFIX = "Step: ";
-	private final String POPULATION_PREFIX = "Population: ";
-	private final String DAYCYCLE_PREFIX = "Day cycle: ";
-	private final String CLIMATE_PREFIX = "Season: ";
-	private final String WEATHER_PREFIX = "Weather: ";
-	private final String INFECTION_PREFIX = "Infection: ";
-	private final String HUMIDITY_PREFIX = "Humidity: ";
+	private static final String STEP_PREFIX = "Step: ";
+	private static final String POPULATION_PREFIX = "Population: ";
+	private static final String DAYCYCLE_PREFIX = "Day cycle: ";
+	private static final String CLIMATE_PREFIX = "Season: ";
+	private static final String WEATHER_PREFIX = "Weather: ";
+	private static final String INFECTION_PREFIX = "Infection: ";
+	private static final String HUMIDITY_PREFIX = "Humidity: ";
 	private JLabel stepLabel, populationLabel, dayCycleLabel, climateLabel, infectLabel, weatherLabel, humidityLabel;
 	private FieldView fieldView;
-
-
-	private Map<Class, Color> colors;
 
 	private FieldStats stats;
 
 
 	public SimulatorView(int height, int width) {
 		stats = new FieldStats();
-		colors = new LinkedHashMap<>();
 
 		setTitle("Predator-Prey Simulation");
 		stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -109,9 +100,10 @@ public class SimulatorView extends JFrame {
 
 
 	private class FieldView extends JPanel {
-		private final int GRID_VIEW_SCALING_FACTOR = 5;
-		Dimension size;
-		private int gridWidth, gridHeight;
+		private static final int GRID_VIEW_SCALING_FACTOR = 5;
+		private Dimension size;
+		private final int gridWidth;
+		private final int gridHeight;
 		private int xScale, yScale;
 		private Graphics g;
 		private Image fieldImage;
@@ -124,6 +116,7 @@ public class SimulatorView extends JFrame {
 		}
 
 
+		@Override
 		public Dimension getPreferredSize() {
 			return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
 					gridHeight * GRID_VIEW_SCALING_FACTOR);
@@ -155,7 +148,9 @@ public class SimulatorView extends JFrame {
 		}
 
 
+		@Override
 		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
 			if (fieldImage != null) {
 				Dimension currentSize = getSize();
 				if (size.equals(currentSize)) {

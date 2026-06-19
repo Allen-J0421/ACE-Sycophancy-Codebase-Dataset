@@ -15,6 +15,11 @@ public abstract class Plant extends Entity {
 		super(field, location);
 	}
 
+	@Override
+	protected void placeAt(Location location) {
+		getField().placePlant(this, location);
+	}
+
 
 	protected void increaseStage(Climate climate) {
 		if (stage < getMaxStage()) {

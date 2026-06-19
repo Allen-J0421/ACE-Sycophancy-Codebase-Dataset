@@ -17,6 +17,8 @@ public abstract class Entity {
 
 	protected abstract Color getObjectColor(Climate climate);
 
+	protected abstract void placeAt(Location location);
+
 
 	protected Field getField() {
 		return field;
@@ -34,19 +36,13 @@ public abstract class Entity {
 
 
 	protected void setLocation(Location newLocation) {
-		if (location == null) {
-			location = null;
-		}
-
-		if (location != null) {
+		if (location != null && field != null) {
 			field.clear(location);
 		}
 		location = newLocation;
 
-		if (this instanceof Animal) {
-			field.placeAnimal(this, newLocation);
-		} else {
-			field.placePlant(this, newLocation);
+		if (field != null && newLocation != null) {
+			placeAt(newLocation);
 		}
 	}
 

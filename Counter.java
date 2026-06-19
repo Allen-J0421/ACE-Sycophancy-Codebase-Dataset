@@ -1,7 +1,7 @@
 
 public class Counter {
 
-	private String name;
+	private final String name;
 
 	private int count;
 

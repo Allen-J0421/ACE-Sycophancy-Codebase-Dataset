@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class GraphView extends JFrame {
@@ -12,31 +14,25 @@ public class GraphView extends JFrame {
 	private static JLabel stepLabel;
 	private static JLabel countLabel;
 
+	private final Map<Class<?>, Color> colors;
 
-	private Set<Class<?>> classes;
-
-	private Map<Class<?>, Color> colors;
-
-	private FieldStats stats;
+	private final FieldStats stats;
 
 
 	public GraphView(int width, int height, int startMax) {
 		stats = new FieldStats();
-		classes = new HashSet<>();
-		colors = new HashMap<>();
+		colors = new LinkedHashMap<>();
 
 		if (frame == null) {
 			frame = makeFrame(width, height, startMax);
 		} else {
 			graph.newRun();
 		}
-
 	}
 
 
 	public void setColor(Class<?> animalClass, Color color) {
 		colors.put(animalClass, color);
-		classes = colors.keySet();
 	}
 
 
@@ -75,7 +71,6 @@ public class GraphView extends JFrame {
 
 		frame.pack();
 		frame.setLocation(20, 600);
-
 		frame.setVisible(true);
 
 		return frame;
@@ -85,7 +80,6 @@ public class GraphView extends JFrame {
 	class GraphPanel extends JComponent {
 		private static final double SCALE_FACTOR = 0.8;
 
-
 		private BufferedImage graphImage;
 		private int[] lastVal;
 		private int yMax;
@@ -94,7 +88,7 @@ public class GraphView extends JFrame {
 		public GraphPanel(int width, int height, int startMax) {
 			graphImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			clearImage();
-			lastVal = new int[classes.size()];
+			lastVal = new int[colors.size()];
 			Arrays.fill(lastVal, height);
 			yMax = startMax;
 		}
@@ -109,29 +103,26 @@ public class GraphView extends JFrame {
 			g.setColor(Color.BLACK);
 			g.drawLine(width - 4, 0, width - 4, height);
 			g.drawLine(width - 2, 0, width - 2, height);
-			lastVal = new int[classes.size()];
+			lastVal = new int[colors.size()];
 			Arrays.fill(lastVal, height);
 			repaint();
 		}
 
 
 		public void update(int step, Field field, FieldStats stats) {
-
 			Graphics g = graphImage.getGraphics();
 
 			int height = graphImage.getHeight();
 			int width = graphImage.getWidth();
-
 
 			g.copyArea(1, 0, width - 1, height, -1, 0);
 
 			stats.reset();
 
 			int i = 0;
-			for (Iterator<Class<?>> it = classes.iterator(); it.hasNext(); i++) {
-				Class<?> nextClass = it.next();
+			for (Map.Entry<Class<?>, Color> entry : colors.entrySet()) {
+				Class<?> nextClass = entry.getKey();
 				int count = stats.getPopulationCount(field, nextClass);
-
 
 				int y = height - ((height * count) / yMax) - 1;
 				while (y < 0) {
@@ -140,16 +131,16 @@ public class GraphView extends JFrame {
 				}
 				g.setColor(LIGHT_GRAY);
 				g.drawLine(width - 2, y, width - 2, height);
-				g.setColor(colors.get(nextClass));
+				g.setColor(entry.getValue());
 				g.drawLine(width - 3, lastVal[i], width - 2, y);
 				lastVal[i] = y;
+				i++;
 			}
 
 			repaint();
 
-			stepLabel.setText("" + step);
+			stepLabel.setText(Integer.toString(step));
 			countLabel.setText(stats.getPopulationDetails(field));
-
 		}
 
 
@@ -181,7 +172,7 @@ public class GraphView extends JFrame {
 		}
 
 
-		final public void clearImage() {
+		public void clearImage() {
 			Graphics g = graphImage.getGraphics();
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, graphImage.getWidth(), graphImage.getHeight());
@@ -189,16 +180,19 @@ public class GraphView extends JFrame {
 		}
 
 
+		@Override
 		public Dimension getPreferredSize() {
 			return new Dimension(graphImage.getWidth(), graphImage.getHeight());
 		}
 
 
+		@Override
 		public boolean isOpaque() {
 			return true;
 		}
 
 
+		@Override
 		public void paintComponent(Graphics g) {
 			if (graphImage != null) {
 				g.drawImage(graphImage, 0, 0, null);

@@ -1,5 +1,5 @@
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -9,11 +9,12 @@ public class Field {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	private int depth, width;
+	private final int depth;
+	private final int width;
 
-	private Object[][] animalField;
+	private final Object[][] animalField;
 
-	private Object[][] plantField;
+	private final Object[][] plantField;
 
 
 	public Field(int depth, int width) {
@@ -76,12 +77,12 @@ public class Field {
 
 	public Location randomAnimalAdjacentLocation(Location location) {
 		List<Location> adjacent = adjacentAnimalLocations(location);
-		return adjacent.get(0);
+		return adjacent.isEmpty() ? null : adjacent.get(0);
 	}
 
 
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
-		List<Location> free = new LinkedList<>();
+		List<Location> free = new ArrayList<>();
 		List<Location> adjacent = adjacentAnimalLocations(location);
 		for (Location next : adjacent) {
 			if (getAnimalAt(next) == null) {
@@ -95,7 +96,7 @@ public class Field {
 	public Location freeAnimalAdjacentLocation(Location location) {
 
 		List<Location> free = getFreeAnimalAdjacentLocations(location);
-		if (free.size() > 0) {
+		if (!free.isEmpty()) {
 			return free.get(0);
 		} else {
 			return null;
@@ -106,7 +107,7 @@ public class Field {
 	public List<Location> adjacentAnimalLocations(Location location) {
 		assert location != null : "Null location passed to adjacentLocations";
 
-		List<Location> locations = new LinkedList<>();
+		List<Location> locations = new ArrayList<>();
 		if (location != null) {
 			int row = location.getRow();
 			int col = location.getCol();
@@ -122,8 +123,6 @@ public class Field {
 					}
 				}
 			}
-
-
 			Collections.shuffle(locations, rand);
 		}
 		return locations;

@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -36,7 +35,7 @@ public abstract class Animal extends Entity {
 	public Animal(Field field, Location location) {
 		super(field, location);
 		alive = true;
-		gender = gender.randomGender();
+		gender = Gender.randomGender();
 		nocturnal = false;
 		sick = false;
 		sickProbability = 16;
@@ -74,22 +73,7 @@ public abstract class Animal extends Entity {
 
 
 	private boolean canBreed() {
-		Field field = getField();
-		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		boolean returnValue = age >= getBreedingAge();
-		while (it.hasNext()) {
-			Location where = it.next();
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal animalNear = (Animal) animal;
-
-				if (animalNear.getClass().equals(this.getClass()) && getGender() != animalNear.getGender()) {
-					return returnValue;
-				}
-			}
-		}
-		return returnValue;
+		return age >= getBreedingAge();
 	}
 
 
@@ -163,22 +147,23 @@ public abstract class Animal extends Entity {
 			sickStep++;
 			Field field = getField();
 			if (field != null) {
-				List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-				Iterator<Location> it = adjacent.iterator();
-				while (it.hasNext()) {
-					Location where = it.next();
-					Object animal = field.getAnimalAt(where);
-					if (animal instanceof Animal) {
-						Animal nearAnimal = (Animal) animal;
-						if (nearAnimal.getClass().equals(this.getClass())) {
-							nearAnimal.becomeSick();
-						}
-					}
-				}
-				this.notSick();
+				spreadSickness(field);
+				notSick();
 			}
 		} else {
 			becomeSick();
+		}
+	}
+
+	private void spreadSickness(Field field) {
+		for (Location where : field.adjacentAnimalLocations(getLocation())) {
+			Object animal = field.getAnimalAt(where);
+			if (animal instanceof Animal) {
+				Animal nearAnimal = (Animal) animal;
+				if (nearAnimal.getClass().equals(getClass())) {
+					nearAnimal.becomeSick();
+				}
+			}
 		}
 	}
 

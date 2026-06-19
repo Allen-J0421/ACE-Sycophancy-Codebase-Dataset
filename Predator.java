@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -51,9 +50,7 @@ public abstract class Predator extends Animal {
 	private Location findFood() {
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		while (it.hasNext()) {
-			Location where = it.next();
+		for (Location where : adjacent) {
 			Object animal = field.getAnimalAt(where);
 			if (animal instanceof Animal) {
 				Animal nearAnimal = (Animal) animal;
@@ -90,6 +87,11 @@ public abstract class Predator extends Animal {
 
 	public void toggleCannibal() {
 		cannibal = !cannibal;
+	}
+
+	@Override
+	protected void placeAt(Location location) {
+		getField().placeAnimal(this, location);
 	}
 
 

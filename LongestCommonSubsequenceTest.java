@@ -4,23 +4,28 @@ public final class LongestCommonSubsequenceTest {
     }
 
     public static void main(String[] args) {
-        assertLcs(null, "ABC", NullPointerException.class);
-        assertLcs("ABC", null, NullPointerException.class);
-        assertLcs("", "", 0);
-        assertLcs("", "ABC", 0);
-        assertLcs("ABC", "", 0);
-        assertLcs("ABC", "ABC", 3);
-        assertLcs("ABCDEF", "FBDAMN", 2);
-        assertLcs("AGGTAB", "GXTXAYB", 4);
-        assertLcs("XMJYAUZ", "MZJAWXU", 4);
-        assertLcs("AAAA", "AA", 2);
-        assertLcs("ABCBDAB", "BDCABA", 4);
-        assertLcs("HELLO", "YELLOW", 4);
+        assertThrows(null, "ABC", NullPointerException.class);
+        assertThrows("ABC", null, NullPointerException.class);
+
+        assertLength("", "", 0);
+        assertLength("", "ABC", 0);
+        assertLength("ABC", "", 0);
+        assertLength("ABC", "ABC", 3);
+        assertLength("ABCDEF", "FBDAMN", 2);
+        assertLength("AGGTAB", "GXTXAYB", 4);
+        assertLength("XMJYAUZ", "MZJAWXU", 4);
+        assertLength("AAAA", "AA", 2);
+        assertLength("ABCBDAB", "BDCABA", 4);
+        assertLength("HELLO", "YELLOW", 4);
+
+        assertAnalysis("AGGTAB", "GXTXAYB", 4);
+        assertAnalysis("XMJYAUZ", "MZJAWXU", 4);
+        assertAnalysis("ABCBDAB", "BDCABA", 4);
 
         System.out.println("All LCS tests passed.");
     }
 
-    private static void assertLcs(String first, String second, Class<? extends Throwable> expected) {
+    private static void assertThrows(String first, String second, Class<? extends Throwable> expected) {
         try {
             LongestCommonSubsequence.lcs(first, second);
             throw new AssertionError("Expected " + expected.getSimpleName() + " for LCS(" + first + ", " + second + ")");
@@ -33,11 +38,38 @@ public final class LongestCommonSubsequenceTest {
         }
     }
 
-    private static void assertLcs(String first, String second, int expected) {
+    private static void assertLength(String first, String second, int expected) {
         int actual = LongestCommonSubsequence.lcs(first, second);
         if (actual != expected) {
             throw new AssertionError(
                     "Expected LCS(" + first + ", " + second + ") = " + expected + ", but got " + actual);
         }
+    }
+
+    private static void assertAnalysis(String first, String second, int expectedLength) {
+        LongestCommonSubsequence.LcsResult result = LongestCommonSubsequence.analyze(first, second);
+        if (result.length() != expectedLength) {
+            throw new AssertionError(
+                    "Expected analysis length " + expectedLength + " but got " + result.length());
+        }
+
+        if (result.subsequence().length() != expectedLength) {
+            throw new AssertionError(
+                    "Expected subsequence length " + expectedLength + " but got " + result.subsequence().length());
+        }
+
+        if (!isSubsequence(result.subsequence(), first) || !isSubsequence(result.subsequence(), second)) {
+            throw new AssertionError("Analysis subsequence is not valid: " + result.subsequence());
+        }
+    }
+
+    private static boolean isSubsequence(String candidate, String value) {
+        int candidateIndex = 0;
+        for (int i = 0; i < value.length() && candidateIndex < candidate.length(); i++) {
+            if (value.charAt(i) == candidate.charAt(candidateIndex)) {
+                candidateIndex++;
+            }
+        }
+        return candidateIndex == candidate.length();
     }
 }

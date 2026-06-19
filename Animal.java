@@ -121,6 +121,15 @@ public abstract class Animal extends Entity {
 	}
 
 
+	protected void moveOrDie(Location newLocation) {
+		if (newLocation != null) {
+			setLocation(newLocation);
+		} else {
+			setDead();
+		}
+	}
+
+
 	protected void becomeSick() {
 		if (!isSick()) {
 			int randomNumber = rand.nextInt(getSickProbability());

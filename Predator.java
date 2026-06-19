@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -7,6 +6,14 @@ public abstract class Predator extends Animal {
 
 
 	private static final Random rand = Randomizer.getRandom();
+
+	private static final int RANDOM_INITIAL_FOOD_BOUND = 5;
+
+	private static final int DEFAULT_INITIAL_FOOD_LEVEL = 6;
+
+	private static final int CANNIBAL_HUNGER_THRESHOLD = 2;
+
+	private static final int MAX_SICK_STEPS = 30;
 
 	private boolean cannibal;
 
@@ -17,14 +24,14 @@ public abstract class Predator extends Animal {
 		super(field, location, traits);
 		if (randomAge) {
 			setAge(rand.nextInt(getMaxAge()));
-			setFoodLevel(rand.nextInt(5));
+			setFoodLevel(rand.nextInt(RANDOM_INITIAL_FOOD_BOUND));
 		} else {
 			setAge(0);
-			setFoodLevel(6);
+			setFoodLevel(DEFAULT_INITIAL_FOOD_LEVEL);
 		}
 		cannibal = false;
 		additionalFoodValue = 0;
-		setMaxSickStep(30);
+		setMaxSickStep(MAX_SICK_STEPS);
 	}
 
 
@@ -34,16 +41,9 @@ public abstract class Predator extends Animal {
 		Location newLocation = findFood();
 		if (isAlive()) {
 			if (newLocation == null) {
-
 				newLocation = getField().freeAnimalAdjacentLocation(getLocation());
 			}
-
-			if (newLocation != null) {
-				setLocation(newLocation);
-			} else {
-
-				setDead();
-			}
+			moveOrDie(newLocation);
 		}
 	}
 
@@ -51,33 +51,39 @@ public abstract class Predator extends Animal {
 	private Location findFood() {
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		while (it.hasNext()) {
-			Location where = it.next();
+		for (Location where : adjacent) {
 			Animal nearAnimal = field.getAnimalAt(where);
-			if (nearAnimal != null) {
-				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
-
-					if (nearAnimal.isAlive()) {
-						nearAnimal.setDead();
-						setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
-						return where;
-					}
-				}
-
-
-				if (nearAnimal.getFoodChainLevel() == this.getFoodChainLevel()) {
-					if (nearAnimal.isAlive() && this.isCannibal()) {
-						if (getFoodLevel() < 2 && nearAnimal.getClass().equals(this.getClass())) {
-							nearAnimal.setDead();
-							setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
-							return where;
-						}
-					}
-				}
+			if (canEat(nearAnimal)) {
+				eat(nearAnimal);
+				return where;
 			}
 		}
 		return null;
+	}
+
+
+	private boolean canEat(Animal animal) {
+		if (animal == null || !animal.isAlive()) {
+			return false;
+		}
+		if (animal.getFoodChainLevel() < getFoodChainLevel()) {
+			return true;
+		}
+		return canCannibalize(animal);
+	}
+
+
+	private boolean canCannibalize(Animal animal) {
+		return animal.getFoodChainLevel() == getFoodChainLevel()
+				&& isCannibal()
+				&& getFoodLevel() < CANNIBAL_HUNGER_THRESHOLD
+				&& animal.getClass().equals(getClass());
+	}
+
+
+	private void eat(Animal animal) {
+		animal.setDead();
+		setFoodLevel(animal.getFoodValue() + additionalFoodValue);
 	}
 
 

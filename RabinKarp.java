@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,21 +15,21 @@ public final class RabinKarp {
         Objects.requireNonNull(text, "Text must be non-null.");
 
         SearchPattern searchPattern = new SearchPattern(pattern);
-        SearchState searchState = new SearchState(text, searchPattern);
 
         if (searchPattern.isEmpty()) {
             return allStartIndexes(text.length());
         }
 
-        if (!searchState.hasSearchWindow()) {
-            return Collections.emptyList();
+        if (!searchPattern.canMatch(text)) {
+            return noMatches();
         }
 
+        SearchState searchState = new SearchState(text, searchPattern);
         return collectMatches(searchState);
     }
 
     private static List<Integer> collectMatches(SearchState searchState) {
-        List<Integer> matches = new ArrayList<>();
+        List<Integer> matches = new ArrayList<>(searchState.windowCount());
         while (searchState.hasCurrentWindow()) {
             if (searchState.isMatch()) {
                 matches.add(searchState.currentStart());
@@ -38,6 +37,10 @@ public final class RabinKarp {
             searchState.advance();
         }
         return matches;
+    }
+
+    private static List<Integer> noMatches() {
+        return new ArrayList<>();
     }
 
     private static List<Integer> allStartIndexes(int textLength) {
@@ -61,6 +64,10 @@ public final class RabinKarp {
 
         private boolean isEmpty() {
             return value.isEmpty();
+        }
+
+        private boolean canMatch(CharSequence text) {
+            return length() <= text.length();
         }
 
         private int length() {
@@ -95,12 +102,12 @@ public final class RabinKarp {
             this.window = new TextWindow(text, pattern.length());
         }
 
-        private boolean hasSearchWindow() {
-            return window.exists();
-        }
-
         private boolean hasCurrentWindow() {
             return startIndex <= window.lastStartIndex();
+        }
+
+        private int windowCount() {
+            return window.lastStartIndex() + 1;
         }
 
         private int currentStart() {
@@ -128,14 +135,7 @@ public final class RabinKarp {
         private TextWindow(CharSequence text, int windowLength) {
             this.text = text;
             this.windowLength = windowLength;
-
-            if (exists()) {
-                this.hash = RollingHash.compute(text, windowLength);
-            }
-        }
-
-        private boolean exists() {
-            return text.length() >= windowLength;
+            this.hash = RollingHash.compute(text, windowLength);
         }
 
         private int lastStartIndex() {

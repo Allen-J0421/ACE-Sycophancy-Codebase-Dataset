@@ -27,19 +27,16 @@ public final class RabinKarp {
     }
 
     private static List<Integer> searchNonEmptyPattern(String pattern, String text) {
-        SearchPattern searchPattern = SearchPattern.from(pattern);
-        int patternLength = searchPattern.length();
-        int lastStart = text.length() - patternLength;
-        TextWindow textWindow = TextWindow.from(text, patternLength);
+        SearchState searchState = SearchState.from(pattern, text);
         List<Integer> matches = new ArrayList<>();
 
-        for (int start = 0; start <= lastStart; start++) {
-            if (searchPattern.matches(textWindow, start)) {
+        for (int start = 0; start <= searchState.lastStart(); start++) {
+            if (searchState.matchesAt(start)) {
                 matches.add(start);
             }
 
-            if (start < lastStart) {
-                textWindow.advanceFrom(start);
+            if (searchState.canAdvanceFrom(start)) {
+                searchState.advanceFrom(start);
             }
         }
 
@@ -58,6 +55,44 @@ public final class RabinKarp {
             positions.add(index);
         }
         return positions;
+    }
+
+    private static final class SearchState {
+        private final SearchPattern pattern;
+        private final TextWindow textWindow;
+        private final int lastStart;
+
+        private SearchState(SearchPattern pattern, TextWindow textWindow, int lastStart) {
+            this.pattern = pattern;
+            this.textWindow = textWindow;
+            this.lastStart = lastStart;
+        }
+
+        private static SearchState from(String pattern, String text) {
+            SearchPattern searchPattern = SearchPattern.from(pattern);
+            int patternLength = searchPattern.length();
+            return new SearchState(
+                searchPattern,
+                TextWindow.from(text, patternLength),
+                text.length() - patternLength
+            );
+        }
+
+        private int lastStart() {
+            return lastStart;
+        }
+
+        private boolean matchesAt(int start) {
+            return pattern.matches(textWindow, start);
+        }
+
+        private boolean canAdvanceFrom(int start) {
+            return start < lastStart;
+        }
+
+        private void advanceFrom(int start) {
+            textWindow.advanceFrom(start);
+        }
     }
 
     private static final class SearchPattern {

@@ -11,9 +11,10 @@ public class Grass extends Plant {
 		super(field, location);
 
 
-		if (rand.nextDouble() <= 0.5) {
+		double stageRoll = rand.nextDouble();
+		if (stageRoll < 0.5) {
 			setMaxStage(3);
-		} else if (rand.nextDouble() <= 0.3) {
+		} else if (stageRoll < 0.8) {
 			setMaxStage(2);
 		} else {
 			setMaxStage(1);

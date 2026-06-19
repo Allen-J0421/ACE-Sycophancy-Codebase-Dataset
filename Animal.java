@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -51,14 +50,9 @@ public abstract class Animal extends Entity {
 		incrementHunger();
 		battleSickness();
 		if (isAlive()) {
-			if (time == TimeCycle.NIGHT && isNocturnal()) {
-
-				normalAct(newAnimals);
-			} else if (time == TimeCycle.DAY && isNocturnal()) {
-
-				normalAct(newAnimals);
-			} else if (time == TimeCycle.DAY && !isNocturnal()) {
-
+			boolean shouldAct = (time == TimeCycle.NIGHT && isNocturnal())
+					|| (time == TimeCycle.DAY && !isNocturnal());
+			if (shouldAct) {
 				normalAct(newAnimals);
 			}
 		}
@@ -74,22 +68,21 @@ public abstract class Animal extends Entity {
 
 
 	private boolean canBreed() {
+		if (age < getBreedingAge()) {
+			return false;
+		}
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		boolean returnValue = age >= getBreedingAge();
-		while (it.hasNext()) {
-			Location where = it.next();
+		for (Location where : adjacent) {
 			Object animal = field.getAnimalAt(where);
 			if (animal instanceof Animal) {
 				Animal animalNear = (Animal) animal;
-
-				if (animalNear.getClass().equals(this.getClass()) && getGender() != animalNear.getGender()) {
-					return returnValue;
+				if (animalNear.getClass() == this.getClass() && getGender() != animalNear.getGender()) {
+					return true;
 				}
 			}
 		}
-		return returnValue;
+		return false;
 	}
 
 

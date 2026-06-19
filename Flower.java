@@ -15,9 +15,10 @@ public class Flower extends Plant {
 		setStage(getMaxStage());
 
 
-		if (rand.nextDouble() <= 0.33) {
+		double colorRoll = rand.nextDouble();
+		if (colorRoll < 0.33) {
 			plantColour = new Color(236, 0, 0);
-		} else if (rand.nextDouble() <= 0.33) {
+		} else if (colorRoll < 0.66) {
 			plantColour = new Color(236, 98, 2);
 		} else {
 			plantColour = new Color(122, 0, 236);

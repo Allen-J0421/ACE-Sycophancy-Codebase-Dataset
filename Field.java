@@ -76,7 +76,7 @@ public class Field {
 
 	public Location randomAnimalAdjacentLocation(Location location) {
 		List<Location> adjacent = adjacentAnimalLocations(location);
-		return adjacent.get(0);
+		return adjacent.isEmpty() ? null : adjacent.get(0);
 	}
 
 

@@ -34,10 +34,6 @@ public abstract class Entity {
 
 
 	protected void setLocation(Location newLocation) {
-		if (location == null) {
-			location = null;
-		}
-
 		if (location != null) {
 			field.clear(location);
 		}

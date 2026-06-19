@@ -131,7 +131,7 @@ public class Simulator {
 			}
 		}
 
-		sickPercentage = (count * 100) / animals.size();
+		sickPercentage = animals.isEmpty() ? 0 : (count * 100) / animals.size();
 		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
 		graphView.showStatus(step, field);
 	}
@@ -155,10 +155,14 @@ public class Simulator {
 		Random rand = Randomizer.getRandom();
 		field.clear();
 
+		double mouseThreshold = BIRD_CREATION_PROBABILITY + MOUSE_CREATION_PROBABILITY;
+		double duckThreshold = mouseThreshold + DUCK_CREATION_PROBABILITY;
+		double wolfThreshold = duckThreshold + WOLF_CREATION_PROBABILITY;
+		double bearThreshold = wolfThreshold + BEAR_CREATION_PROBABILITY;
+
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Location location = new Location(row, col);
-
 
 				if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
 					Flower flower = new Flower(field, location);
@@ -168,29 +172,28 @@ public class Simulator {
 					plants.add(grass);
 				}
 
-
-				if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
+				double animalRoll = rand.nextDouble();
+				if (animalRoll < BIRD_CREATION_PROBABILITY) {
 					Bird bird = new Bird(true, field, location);
 					animals.add(bird);
 					graphView.setColor(Bird.class, bird.getObjectColor(climate));
-				} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
+				} else if (animalRoll < mouseThreshold) {
 					Mouse mouse = new Mouse(true, field, location);
 					animals.add(mouse);
 					graphView.setColor(Mouse.class, mouse.getObjectColor(climate));
-				} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
+				} else if (animalRoll < duckThreshold) {
 					Duck duck = new Duck(true, field, location);
 					animals.add(duck);
 					graphView.setColor(Duck.class, duck.getObjectColor(climate));
-				} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
+				} else if (animalRoll < wolfThreshold) {
 					Wolf wolf = new Wolf(true, field, location);
 					animals.add(wolf);
 					graphView.setColor(Wolf.class, wolf.getObjectColor(climate));
-				} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
+				} else if (animalRoll < bearThreshold) {
 					Bear bear = new Bear(true, field, location);
 					animals.add(bear);
 					graphView.setColor(Bear.class, bear.getObjectColor(climate));
 				}
-
 			}
 		}
 	}

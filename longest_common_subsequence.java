@@ -10,15 +10,15 @@ class LcsInput {
      *
      * @param firstString  the first string (non-null)
      * @param secondString the second string (non-null)
-     * @throws IllegalArgumentException if firstString is null
-     * @throws IllegalArgumentException if secondString is null
+     * @throws InvalidInputException if firstString is null
+     * @throws InvalidInputException if secondString is null
      */
     public LcsInput(String firstString, String secondString) {
         if (firstString == null) {
-            throw new IllegalArgumentException("First string cannot be null");
+            throw new InvalidInputException("First string cannot be null");
         }
         if (secondString == null) {
-            throw new IllegalArgumentException("Second string cannot be null");
+            throw new InvalidInputException("Second string cannot be null");
         }
         this.firstString = firstString;
         this.secondString = secondString;

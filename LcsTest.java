@@ -118,14 +118,14 @@ class LcsTest {
         try {
             new LcsInput(null, "test");
             assert false : "Should throw on null first string";
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidInputException e) {
             assert e.getMessage().contains("First") : "Error message should identify first string";
         }
 
         try {
             new LcsInput("test", null);
             assert false : "Should throw on null second string";
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidInputException e) {
             assert e.getMessage().contains("Second") : "Error message should identify second string";
         }
     }

@@ -15,10 +15,9 @@ public final class RabinKarp {
         Objects.requireNonNull(pattern, "pattern");
         Objects.requireNonNull(text, "text");
 
+        List<Integer> matches = new ArrayList<>();
         int patternLength = pattern.length();
         int textLength = text.length();
-
-        List<Integer> matches = new ArrayList<>();
         if (patternLength == 0) {
             for (int i = 0; i <= textLength; i++) {
                 matches.add(i);
@@ -29,30 +28,17 @@ public final class RabinKarp {
             return matches;
         }
 
-        int patternHash = 0;
-        int windowHash = 0;
-        int highOrderFactor = 1;
+        RollingHash patternHash = RollingHash.forSequence(pattern, patternLength);
+        RollingHash windowHash = RollingHash.forSequence(text, patternLength);
+        int lastStart = textLength - patternLength;
 
-        for (int i = 0; i < patternLength - 1; i++) {
-            highOrderFactor = (highOrderFactor * RADIX) % PRIME_MODULUS;
-        }
-
-        for (int i = 0; i < patternLength; i++) {
-            patternHash = (RADIX * patternHash + pattern.charAt(i)) % PRIME_MODULUS;
-            windowHash = (RADIX * windowHash + text.charAt(i)) % PRIME_MODULUS;
-        }
-
-        for (int offset = 0; offset <= textLength - patternLength; offset++) {
-            if (patternHash == windowHash && matchesAt(text, pattern, offset)) {
+        for (int offset = 0; offset <= lastStart; offset++) {
+            if (patternHash.matches(windowHash) && matchesAt(text, pattern, offset)) {
                 matches.add(offset);
             }
 
-            if (offset < textLength - patternLength) {
-                windowHash = rollHash(
-                        windowHash,
-                        text.charAt(offset),
-                        text.charAt(offset + patternLength),
-                        highOrderFactor);
+            if (offset < lastStart) {
+                windowHash.roll(text.charAt(offset), text.charAt(offset + patternLength));
             }
         }
 
@@ -68,13 +54,43 @@ public final class RabinKarp {
         return true;
     }
 
-    private static int rollHash(int currentHash, char outgoing, char incoming, int highOrderFactor) {
-        int nextHash = RADIX * (currentHash - outgoing * highOrderFactor) + incoming;
-        nextHash %= PRIME_MODULUS;
-        if (nextHash < 0) {
-            nextHash += PRIME_MODULUS;
+    private static final class RollingHash {
+
+        private final int highOrderFactor;
+        private int hash;
+
+        private RollingHash(int hash, int highOrderFactor) {
+            this.hash = hash;
+            this.highOrderFactor = highOrderFactor;
         }
-        return nextHash;
+
+        static RollingHash forSequence(CharSequence sequence, int length) {
+            int hash = 0;
+            int highOrderFactor = 1;
+
+            for (int i = 0; i < length - 1; i++) {
+                highOrderFactor = (highOrderFactor * RADIX) % PRIME_MODULUS;
+            }
+
+            for (int i = 0; i < length; i++) {
+                hash = (RADIX * hash + sequence.charAt(i)) % PRIME_MODULUS;
+            }
+
+            return new RollingHash(hash, highOrderFactor);
+        }
+
+        void roll(char outgoing, char incoming) {
+            int nextHash = RADIX * (hash - outgoing * highOrderFactor) + incoming;
+            nextHash %= PRIME_MODULUS;
+            if (nextHash < 0) {
+                nextHash += PRIME_MODULUS;
+            }
+            hash = nextHash;
+        }
+
+        boolean matches(RollingHash other) {
+            return hash == other.hash;
+        }
     }
 
 }

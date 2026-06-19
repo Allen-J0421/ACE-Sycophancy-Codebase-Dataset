@@ -7,8 +7,8 @@ public final class RabinKarpDemo {
     }
 
     public static void main(String[] args) {
-        String text = "geeksforgeeks";
-        String pattern = "geeks";
+        String text = args.length > 0 ? args[0] : "geeksforgeeks";
+        String pattern = args.length > 1 ? args[1] : "geeks";
 
         List<Integer> matches = RabinKarp.search(pattern, text);
         for (int index : matches) {

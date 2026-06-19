@@ -21,6 +21,10 @@ public final class KmpSearch {
         return compile(pattern).findMatchesIn(text);
     }
 
+    public static KmpMatchResult analyze(CharSequence pattern, CharSequence text) {
+        return compile(pattern).analyzeIn(text);
+    }
+
     public static OptionalInt findFirst(CharSequence pattern, CharSequence text) {
         return compile(pattern).findFirstIn(text);
     }

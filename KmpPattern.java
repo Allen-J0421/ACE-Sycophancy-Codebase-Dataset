@@ -32,11 +32,11 @@ public final class KmpPattern {
         return value;
     }
 
-    public List<Integer> findMatchesIn(CharSequence text) {
+    public KmpMatchResult analyzeIn(CharSequence text) {
         validateText(text);
 
         if (value.length() > text.length()) {
-            return List.of();
+            return KmpMatchResult.noMatches();
         }
 
         List<Integer> matches = new ArrayList<>();
@@ -44,7 +44,11 @@ public final class KmpPattern {
             matches.add(matchIndex);
             return true;
         });
-        return List.copyOf(matches);
+        return KmpMatchResult.from(matches);
+    }
+
+    public List<Integer> findMatchesIn(CharSequence text) {
+        return analyzeIn(text).matchIndices();
     }
 
     public OptionalInt findFirstIn(CharSequence text) {

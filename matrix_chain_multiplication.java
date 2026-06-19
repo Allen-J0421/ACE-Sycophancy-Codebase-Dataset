@@ -1,10 +1,10 @@
 /**
- * Factory and entry point for matrix chain multiplication solving.
+ * Fluent API and entry point for matrix chain multiplication solving.
  */
 public class MatrixChainMultiplication {
 
-    public static Solver createSolver(int[] dimensions) {
-        return new DynamicProgrammingSolver(dimensions);
+    public static SolverBuilder builder() {
+        return new SolverBuilder();
     }
 
     /**
@@ -15,6 +15,33 @@ public class MatrixChainMultiplication {
     }
 
     /**
+     * Fluent builder for configuring and creating solvers.
+     */
+    public static class SolverBuilder {
+        private int[] dimensions;
+        private boolean cachingEnabled = false;
+
+        public SolverBuilder withDimensions(int[] dimensions) {
+            this.dimensions = dimensions;
+            return this;
+        }
+
+        public SolverBuilder enableCaching() {
+            this.cachingEnabled = true;
+            return this;
+        }
+
+        public Solver build() {
+            Solver solver = new DynamicProgrammingSolver(dimensions);
+            return cachingEnabled ? new CachingSolver(solver) : solver;
+        }
+
+        public Solution solve() {
+            return build().solve();
+        }
+    }
+
+    /**
      * Immutable result object containing the solution and metadata.
      */
     public static class Solution {
@@ -22,12 +49,14 @@ public class MatrixChainMultiplication {
         private final int[][] splitPoints;
         private final long computationTimeMs;
         private final int matrixCount;
+        private final ParenthesizationBuilder parenthesizer;
 
         Solution(int minimumCost, int[][] splitPoints, long computationTimeMs, int matrixCount) {
             this.minimumCost = minimumCost;
             this.splitPoints = splitPoints;
             this.computationTimeMs = computationTimeMs;
             this.matrixCount = matrixCount;
+            this.parenthesizer = new ParenthesizationBuilder(splitPoints, matrixCount);
         }
 
         public int getMinimumCost() {
@@ -39,23 +68,70 @@ public class MatrixChainMultiplication {
         }
 
         public String getOptimalParenthesization() {
-            return buildParenthesization(0, matrixCount - 2);
+            return parenthesizer.build();
         }
 
-        private String buildParenthesization(int start, int end) {
-            if (start == end) {
-                return "M" + start;
-            }
-            int split = splitPoints[start][end];
-            String left = buildParenthesization(start, split);
-            String right = buildParenthesization(split + 1, end);
-            return "(" + left + " × " + right + ")";
+        public String getOptimalParenthesization(char matrixPrefix) {
+            return parenthesizer.buildWithPrefix(matrixPrefix);
         }
 
         @Override
         public String toString() {
             return String.format("Minimum multiplications: %d (computed in %dms), Optimal order: %s",
                     minimumCost, computationTimeMs, getOptimalParenthesization());
+        }
+    }
+
+    /**
+     * Builds optimal parenthesization strings from split point data.
+     */
+    static class ParenthesizationBuilder {
+        private final int[][] splitPoints;
+        private final int matrixCount;
+        private char matrixPrefix = 'M';
+
+        ParenthesizationBuilder(int[][] splitPoints, int matrixCount) {
+            this.splitPoints = splitPoints;
+            this.matrixCount = matrixCount;
+        }
+
+        String build() {
+            return buildWithPrefix('M');
+        }
+
+        String buildWithPrefix(char prefix) {
+            this.matrixPrefix = prefix;
+            return reconstruct(0, matrixCount - 2);
+        }
+
+        private String reconstruct(int start, int end) {
+            if (start == end) {
+                return String.valueOf(matrixPrefix) + start;
+            }
+            int split = splitPoints[start][end];
+            String left = reconstruct(start, split);
+            String right = reconstruct(split + 1, end);
+            return "(" + left + " × " + right + ")";
+        }
+    }
+
+    /**
+     * Decorator pattern: caches solver results for identical inputs.
+     */
+    static class CachingSolver implements Solver {
+        private final Solver delegate;
+        private Solution cachedResult;
+
+        CachingSolver(Solver delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Solution solve() {
+            if (cachedResult == null) {
+                cachedResult = delegate.solve();
+            }
+            return cachedResult;
         }
     }
 
@@ -120,8 +196,10 @@ public class MatrixChainMultiplication {
     }
 
     public static void main(String[] args) {
-        int[] matrixDimensions = { 2, 1, 3, 4 };
-        Solution solution = createSolver(matrixDimensions).solve();
+        Solution solution = builder()
+                .withDimensions(new int[] { 2, 1, 3, 4 })
+                .enableCaching()
+                .solve();
         System.out.println(solution);
     }
 }

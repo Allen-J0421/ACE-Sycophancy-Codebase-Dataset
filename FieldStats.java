@@ -71,7 +71,7 @@ public class FieldStats {
 		counters.clear();
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
-				Animal animal = field.getAnimalAt(row, col);
+				Animal animal = field.getOccupantAt(row, col, OccupancyLayer.ANIMAL);
 				if (animal != null) {
 					incrementCount(animal.getClass());
 				}

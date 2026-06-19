@@ -50,7 +50,7 @@ public abstract class Predator extends Animal {
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
 		for (Location where : adjacent) {
-			Animal nearAnimal = field.getAnimalAt(where);
+			Animal nearAnimal = field.getOccupantAt(where, OccupancyLayer.ANIMAL);
 			if (nearAnimal != null) {
 				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
 					if (nearAnimal.isAlive()) {

@@ -59,23 +59,13 @@ public class Field {
 	}
 
 
-	public Animal getAnimalAt(Location location) {
-		return cellAt(location).getAnimal();
+	public <T extends Movable> T getOccupantAt(Location location, OccupancyLayer layer) {
+		return cellAt(location).get(layer);
 	}
 
 
-	public Animal getAnimalAt(int row, int col) {
-		return cellAt(row, col).getAnimal();
-	}
-
-
-	public Plant getPlantAt(Location location) {
-		return cellAt(location).getPlant();
-	}
-
-
-	public Plant getPlantAt(int row, int col) {
-		return cellAt(row, col).getPlant();
+	public <T extends Movable> T getOccupantAt(int row, int col, OccupancyLayer layer) {
+		return cellAt(row, col).get(layer);
 	}
 
 
@@ -88,7 +78,7 @@ public class Field {
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
 		List<Location> free = new ArrayList<>();
 		for (Location next : adjacentAnimalLocations(location)) {
-			if (getAnimalAt(next) == null) {
+			if (getOccupantAt(next, OccupancyLayer.ANIMAL) == null) {
 				free.add(next);
 			}
 		}
@@ -171,16 +161,6 @@ public class Field {
 		}
 
 
-		private Animal getAnimal() {
-			return animal;
-		}
-
-
-		private Plant getPlant() {
-			return plant;
-		}
-
-
 		private void set(Movable occupant) {
 			switch (occupant.getOccupancyLayer()) {
 				case ANIMAL:
@@ -191,6 +171,19 @@ public class Field {
 					break;
 				default:
 					throw new IllegalStateException("Unhandled layer: " + occupant.getOccupancyLayer());
+			}
+		}
+
+
+		@SuppressWarnings("unchecked")
+		private <T extends Movable> T get(OccupancyLayer layer) {
+			switch (layer) {
+				case ANIMAL:
+					return (T) animal;
+				case PLANT:
+					return (T) plant;
+				default:
+					throw new IllegalStateException("Unhandled layer: " + layer);
 			}
 		}
 	}

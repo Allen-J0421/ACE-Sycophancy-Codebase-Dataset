@@ -34,7 +34,7 @@ public abstract class Prey extends Animal {
 	private void findFood() {
 		Field field = getField();
 		Location where = getLocation();
-		Plant plant = field.getPlantAt(where);
+		Plant plant = field.getOccupantAt(where, OccupancyLayer.PLANT);
 
 		if (plant != null && plant.canEat()) {
 			plant.reduceStage();

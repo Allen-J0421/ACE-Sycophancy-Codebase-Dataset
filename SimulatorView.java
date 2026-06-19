@@ -74,8 +74,8 @@ public class SimulatorView extends JFrame {
 
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
-				Animal animal = field.getAnimalAt(row, col);
-				Plant plant = field.getPlantAt(row, col);
+				Animal animal = field.getOccupantAt(row, col, OccupancyLayer.ANIMAL);
+				Plant plant = field.getOccupantAt(row, col, OccupancyLayer.PLANT);
 				if (animal != null) {
 					stats.incrementCount(animal.getClass());
 					fieldView.drawMark(col, row, animal.getObjectColor(climate));

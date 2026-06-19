@@ -165,12 +165,9 @@ public abstract class Animal extends Entity {
 
 	private void spreadSickness(Field field) {
 		for (Location where : field.adjacentAnimalLocations(getLocation())) {
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal nearAnimal = (Animal) animal;
-				if (nearAnimal.getClass().equals(getClass())) {
-					nearAnimal.becomeSick();
-				}
+			Animal nearAnimal = field.getOccupantAt(where, OccupancyLayer.ANIMAL);
+			if (nearAnimal != null && nearAnimal.getClass().equals(getClass())) {
+				nearAnimal.becomeSick();
 			}
 		}
 	}

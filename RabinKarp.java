@@ -30,29 +30,20 @@ public final class RabinKarp {
         SearchPattern searchPattern = SearchPattern.from(pattern);
         int patternLength = searchPattern.length();
         int lastStart = text.length() - patternLength;
-        RollingHash textWindow = RollingHash.from(text, patternLength);
+        TextWindow textWindow = TextWindow.from(text, patternLength);
         List<Integer> matches = new ArrayList<>();
 
         for (int start = 0; start <= lastStart; start++) {
-            if (searchPattern.matches(textWindow, text, start)) {
+            if (searchPattern.matches(textWindow, start)) {
                 matches.add(start);
             }
 
             if (start < lastStart) {
-                advanceWindow(textWindow, text, start, patternLength);
+                textWindow.advanceFrom(start);
             }
         }
 
         return matches;
-    }
-
-    private static void advanceWindow(
-        RollingHash textWindow,
-        String text,
-        int start,
-        int patternLength
-    ) {
-        textWindow.roll(text.charAt(start), text.charAt(start + patternLength));
     }
 
     private static void validateInputs(String pattern, String text) {
@@ -86,9 +77,37 @@ public final class RabinKarp {
             return value.length();
         }
 
-        private boolean matches(RollingHash textWindow, String text, int start) {
-            return hash == textWindow.value()
-                && text.regionMatches(start, value, 0, value.length());
+        private boolean matches(TextWindow textWindow, int start) {
+            return hash == textWindow.hash()
+                && textWindow.matches(value, start);
+        }
+    }
+
+    private static final class TextWindow {
+        private final String text;
+        private final int length;
+        private final RollingHash rollingHash;
+
+        private TextWindow(String text, int length, RollingHash rollingHash) {
+            this.text = text;
+            this.length = length;
+            this.rollingHash = rollingHash;
+        }
+
+        private static TextWindow from(String text, int length) {
+            return new TextWindow(text, length, RollingHash.from(text, length));
+        }
+
+        private int hash() {
+            return rollingHash.value();
+        }
+
+        private boolean matches(String pattern, int start) {
+            return text.regionMatches(start, pattern, 0, length);
+        }
+
+        private void advanceFrom(int start) {
+            rollingHash.roll(text.charAt(start), text.charAt(start + length));
         }
     }
 

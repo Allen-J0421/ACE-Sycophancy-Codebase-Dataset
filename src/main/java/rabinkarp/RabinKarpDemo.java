@@ -12,7 +12,7 @@ public final class RabinKarpDemo {
         String text = args.length > 0 ? args[0] : "geeksforgeeks";
         String pattern = args.length > 1 ? args[1] : "geeks";
 
-        List<Integer> matches = RabinKarp.search(pattern, text);
+        List<Integer> matches = RabinKarpPattern.compile(pattern).searchIn(text);
         for (int index : matches) {
             System.out.print(index + " ");
         }

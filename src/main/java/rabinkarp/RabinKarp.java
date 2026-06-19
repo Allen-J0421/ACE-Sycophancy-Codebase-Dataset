@@ -4,7 +4,8 @@ import java.util.List;
 
 public final class RabinKarp {
 
-    private static final RabinKarpMatcher DEFAULT_MATCHER = new RabinKarpMatcher(256, 101);
+    private static final RabinKarpMatcher DEFAULT_MATCHER =
+            new RabinKarpMatcher(RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS);
 
     private RabinKarp() {
         // Utility class.

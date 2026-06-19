@@ -38,15 +38,16 @@ class RabinKarpTest {
     void supportsCustomMatcherConfiguration() {
         assertEquals(
                 List.of(0, 8),
-                new RabinKarpMatcher(256, 101).search("geeks", "geeksforgeeks"));
+                new RabinKarpMatcher(
+                                RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS)
+                        .search("geeks", "geeksforgeeks"));
     }
 
     @Test
     void reusesCompiledPatternsAcrossSearches() {
-        RabinKarpMatcher matcher = new RabinKarpMatcher(256, 101);
-        CompiledPattern compiledPattern = CompiledPattern.compile("ana", 256, 101);
+        RabinKarpPattern compiledPattern = RabinKarpPattern.compile("ana");
 
-        assertEquals(List.of(1, 3), matcher.search(compiledPattern, "banana"));
-        assertEquals(List.of(), matcher.search(compiledPattern, "cab"));
+        assertEquals(List.of(1, 3), compiledPattern.searchIn("banana"));
+        assertEquals(List.of(), compiledPattern.searchIn("cab"));
     }
 }

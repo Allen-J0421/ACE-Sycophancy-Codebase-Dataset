@@ -6,6 +6,9 @@ import java.util.Objects;
 
 public final class RabinKarpMatcher {
 
+    public static final int DEFAULT_RADIX = 256;
+    public static final int DEFAULT_MODULUS = 101;
+
     private final int radix;
     private final int modulus;
 
@@ -21,14 +24,10 @@ public final class RabinKarpMatcher {
     }
 
     public List<Integer> search(CharSequence pattern, CharSequence text) {
-        Objects.requireNonNull(pattern, "pattern");
-        Objects.requireNonNull(text, "text");
-
-        CompiledPattern compiledPattern = CompiledPattern.compile(pattern, radix, modulus);
-        return search(compiledPattern, text);
+        return search(RabinKarpPattern.compile(pattern, radix, modulus), text);
     }
 
-    List<Integer> search(CompiledPattern compiledPattern, CharSequence text) {
+    List<Integer> search(RabinKarpPattern compiledPattern, CharSequence text) {
         Objects.requireNonNull(compiledPattern, "compiledPattern");
         Objects.requireNonNull(text, "text");
 

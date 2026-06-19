@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 
 public class Simulator {
@@ -11,51 +10,11 @@ public class Simulator {
 
 	private static final int DEFAULT_DEPTH = 200;
 
-	private static final double FLOWER_CREATION_PROBABILITY = 0.07;
-
-	private static final double MOUSE_CREATION_PROBABILITY = 0.07;
-
-	private static final double DUCK_CREATION_PROBABILITY = 0.07;
-
-	private static final double BIRD_CREATION_PROBABILITY = 0.07;
-
-	private static final double WOLF_CREATION_PROBABILITY = 0.03;
-
-	private static final double BEAR_CREATION_PROBABILITY = 0.03;
-
 	private static final TimeCycle DEFAULT_TIMECYCLE = TimeCycle.DAY;
 
 	private static final Weather DEFAULT_WEATHER = Weather.SUN;
 
 	private static final int TIMECYCLE_LENGTH = 4;
-
-	private static final AnimalPopulation[] ANIMAL_POPULATIONS = {
-			new AnimalPopulation(BIRD_CREATION_PROBABILITY, Bird.class, new AnimalFactory() {
-				public Animal create(Field field, Location location) {
-					return new Bird(true, field, location);
-				}
-			}),
-			new AnimalPopulation(MOUSE_CREATION_PROBABILITY, Mouse.class, new AnimalFactory() {
-				public Animal create(Field field, Location location) {
-					return new Mouse(true, field, location);
-				}
-			}),
-			new AnimalPopulation(DUCK_CREATION_PROBABILITY, Duck.class, new AnimalFactory() {
-				public Animal create(Field field, Location location) {
-					return new Duck(true, field, location);
-				}
-			}),
-			new AnimalPopulation(WOLF_CREATION_PROBABILITY, Wolf.class, new AnimalFactory() {
-				public Animal create(Field field, Location location) {
-					return new Wolf(true, field, location);
-				}
-			}),
-			new AnimalPopulation(BEAR_CREATION_PROBABILITY, Bear.class, new AnimalFactory() {
-				public Animal create(Field field, Location location) {
-					return new Bear(true, field, location);
-				}
-			})
-	};
 
 
 	private List<Animal> animals;
@@ -166,37 +125,7 @@ public class Simulator {
 
 
 	private void populate() {
-		Random rand = Randomizer.getRandom();
-		field.clear();
-
-		for (int row = 0; row < field.getDepth(); row++) {
-			for (int col = 0; col < field.getWidth(); col++) {
-				Location location = new Location(row, col);
-
-
-				if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
-					Flower flower = new Flower(field, location);
-					plants.add(flower);
-				} else {
-					Grass grass = new Grass(field, location);
-					plants.add(grass);
-				}
-
-				populateAnimal(rand, location);
-			}
-		}
-	}
-
-
-	private void populateAnimal(Random rand, Location location) {
-		for (AnimalPopulation population : ANIMAL_POPULATIONS) {
-			if (rand.nextDouble() <= population.probability) {
-				Animal animal = population.factory.create(field, location);
-				animals.add(animal);
-				graphView.setColor(population.animalClass, animal.getObjectColor(climate));
-				return;
-			}
-		}
+		WorldPopulator.populate(field, animals, plants, climate, graphView);
 	}
 
 
@@ -230,22 +159,4 @@ public class Simulator {
 		}
 	}
 
-
-	private interface AnimalFactory {
-		Animal create(Field field, Location location);
-	}
-
-
-	private static class AnimalPopulation {
-		private final double probability;
-		private final Class<? extends Animal> animalClass;
-		private final AnimalFactory factory;
-
-
-		private AnimalPopulation(double probability, Class<? extends Animal> animalClass, AnimalFactory factory) {
-			this.probability = probability;
-			this.animalClass = animalClass;
-			this.factory = factory;
-		}
-	}
 }

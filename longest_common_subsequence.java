@@ -7,21 +7,20 @@ class LongestCommonSubsequence {
     }
 
     static int longestCommonSubsequenceLength(String first, String second) {
-        String rows = longerOf(first, second);
-        String columns = shorterOf(first, second);
-        int columnCount = columns.length();
+        char[] rows = longerOf(first, second).toCharArray();
+        char[] columns = shorterOf(first, second).toCharArray();
+        int columnCount = columns.length;
 
         int[] subsequenceLengths = new int[columnCount + 1];
 
-        for (int rowIndex = 0; rowIndex < rows.length(); rowIndex++) {
-            char rowCharacter = rows.charAt(rowIndex);
+        for (char rowCharacter : rows) {
             int previousDiagonal = 0;
 
             for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
                 int currentColumn = columnIndex + 1;
                 int previousColumnLength = subsequenceLengths[currentColumn];
 
-                if (rowCharacter == columns.charAt(columnIndex)) {
+                if (rowCharacter == columns[columnIndex]) {
                     subsequenceLengths[currentColumn] = previousDiagonal + 1;
                 } else {
                     subsequenceLengths[currentColumn] = Math.max(

@@ -250,21 +250,6 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected int getSickStep() {
-		return sickStep;
-	}
-
-
-	protected void setSickStep(int inputValue) {
-		this.sickStep = inputValue;
-	}
-
-
-	protected int getMaxSickStep() {
-		return maxSickStep;
-	}
-
-
 	protected void setMaxSickStep(int inputValue) {
 		this.maxSickStep = inputValue;
 	}

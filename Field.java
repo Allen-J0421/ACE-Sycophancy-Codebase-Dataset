@@ -9,7 +9,8 @@ public class Field {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	private int depth, width;
+	private int depth;
+	private int width;
 
 	private Object[][] animalField;
 

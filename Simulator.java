@@ -62,7 +62,6 @@ public class Simulator {
 			width = DEFAULT_WIDTH;
 		}
 
-
 		animals = new ArrayList<>();
 		plants = new ArrayList<>();
 		field = new Field(depth, width);
@@ -92,11 +91,9 @@ public class Simulator {
 		step++;
 		climate.updateClimate(step);
 
-
 		for (Plant plant : plants) {
 			plant.increaseStage(climate);
 		}
-
 
 		List<Animal> newAnimals = new ArrayList<>();
 
@@ -108,14 +105,11 @@ public class Simulator {
 			}
 		}
 
-
 		animals.addAll(newAnimals);
-
 
 		if (step % TIMECYCLE_LENGTH == 0) {
 			currentTimeCycle = currentTimeCycle.toggle();
 		}
-
 
 		int count = 0;
 		for (Animal animal : animals) {
@@ -133,6 +127,7 @@ public class Simulator {
 	public void reset() {
 		step = 0;
 		animals.clear();
+		plants.clear();
 		populate();
 		currentTimeCycle = DEFAULT_TIMECYCLE;
 		climate.setCurrentWeather(DEFAULT_WEATHER);
@@ -158,11 +153,9 @@ public class Simulator {
 				Location location = new Location(row, col);
 
 				if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
-					Flower flower = new Flower(field, location);
-					plants.add(flower);
+					plants.add(new Flower(field, location));
 				} else {
-					Grass grass = new Grass(field, location);
-					plants.add(grass);
+					plants.add(new Grass(field, location));
 				}
 
 				double animalRoll = rand.nextDouble();

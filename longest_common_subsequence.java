@@ -1,34 +1,41 @@
 class LongestCommonSubsequence {
 
     static int lcs(String first, String second) {
-        String rows = first.length() >= second.length() ? first : second;
-        String columns = first.length() < second.length() ? first : second;
+        String rows = longerOf(first, second);
+        String columns = shorterOf(first, second);
         int columnCount = columns.length();
 
-        int[] previousRow = new int[columnCount + 1];
-        int[] currentRow = new int[columnCount + 1];
+        int[] subsequenceLengths = new int[columnCount + 1];
 
         for (int rowIndex = 0; rowIndex < rows.length(); rowIndex++) {
             char rowCharacter = rows.charAt(rowIndex);
+            int previousDiagonal = 0;
 
             for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
                 int currentColumn = columnIndex + 1;
+                int previousColumnLength = subsequenceLengths[currentColumn];
 
                 if (rowCharacter == columns.charAt(columnIndex)) {
-                    currentRow[currentColumn] = previousRow[columnIndex] + 1;
+                    subsequenceLengths[currentColumn] = previousDiagonal + 1;
                 } else {
-                    currentRow[currentColumn] = Math.max(
-                            previousRow[currentColumn],
-                            currentRow[columnIndex]);
+                    subsequenceLengths[currentColumn] = Math.max(
+                            subsequenceLengths[currentColumn],
+                            subsequenceLengths[columnIndex]);
                 }
-            }
 
-            int[] completedRow = previousRow;
-            previousRow = currentRow;
-            currentRow = completedRow;
+                previousDiagonal = previousColumnLength;
+            }
         }
 
-        return previousRow[columnCount];
+        return subsequenceLengths[columnCount];
+    }
+
+    private static String longerOf(String first, String second) {
+        return first.length() >= second.length() ? first : second;
+    }
+
+    private static String shorterOf(String first, String second) {
+        return first.length() < second.length() ? first : second;
     }
 
     public static void main(String[] args) {

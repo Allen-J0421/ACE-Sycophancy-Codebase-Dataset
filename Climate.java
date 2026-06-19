@@ -5,6 +5,14 @@ public class Climate {
 
 	private static final int SEASON_LENGTH = 16;
 
+	private static final int MIN_HUMIDITY_CHANGE = 10;
+
+	private static final int MAX_HUMIDITY_CHANGE = 20;
+
+	private static final int CLOUD_HUMIDITY_THRESHOLD = 80;
+
+	private static final int RAIN_HUMIDITY_THRESHOLD = 100;
+
 	private static final Random rand = Randomizer.getRandom();
 
 	private Weather currentWeather;
@@ -15,48 +23,52 @@ public class Climate {
 
 
 	public Climate(Weather currentWeather) {
-		this.currentWeather = currentWeather;
-		currentSeason = Season.SPRING;
+		reset(currentWeather);
 	}
 
 
 	public void updateClimate(int step) {
 		updateSeason(step);
+		updateWeather(randomHumidityChange());
+	}
 
 
-		int humidityIncrease = rand.nextInt((20 - 10) + 1) + 10;
+	private int randomHumidityChange() {
+		return rand.nextInt((MAX_HUMIDITY_CHANGE - MIN_HUMIDITY_CHANGE) + 1) + MIN_HUMIDITY_CHANGE;
+	}
 
-		if (humidity < 80 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
-			humidity += humidityIncrease;
-		} else if (humidity < 100 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
-			humidity += humidityIncrease;
+
+	private void updateWeather(int humidityChange) {
+		if (humidity < CLOUD_HUMIDITY_THRESHOLD && currentWeather.buildsHumidity()) {
+			humidity += humidityChange;
+		} else if (humidity < RAIN_HUMIDITY_THRESHOLD && currentWeather.buildsHumidity()) {
+			humidity += humidityChange;
 			currentWeather = Weather.CLOUD;
-		} else if (humidity > 100 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD) && currentSeason != Season.WINTER) {
+		} else if (canStartRaining()) {
 			currentWeather = Weather.RAIN;
-		} else if (humidity > 80 && currentWeather == Weather.RAIN) {
-			humidity -= humidityIncrease;
+		} else if (humidity > CLOUD_HUMIDITY_THRESHOLD && currentWeather == Weather.RAIN) {
+			humidity -= humidityChange;
 		} else {
-			humidity = 0;
-			currentWeather = Weather.SUN;
+			resetWeather();
 		}
 	}
 
 
 	private void updateSeason(int step) {
-		switch ((step / SEASON_LENGTH) % 4) {
-			case 0:
-				currentSeason = Season.SPRING;
-				break;
-			case 1:
-				currentSeason = Season.SUMMER;
-				break;
-			case 2:
-				currentSeason = Season.AUTUMN;
-				break;
-			case 3:
-				currentSeason = Season.WINTER;
-				break;
-		}
+		currentSeason = Season.forStep(step, SEASON_LENGTH);
+	}
+
+
+	private boolean canStartRaining() {
+		return humidity > RAIN_HUMIDITY_THRESHOLD
+				&& currentWeather.buildsHumidity()
+				&& currentSeason != Season.WINTER;
+	}
+
+
+	private void resetWeather() {
+		humidity = 0;
+		currentWeather = Weather.SUN;
 	}
 
 
@@ -65,8 +77,10 @@ public class Climate {
 	}
 
 
-	public void setCurrentWeather(Weather currentWeather) {
-		this.currentWeather = currentWeather;
+	public void reset(Weather weather) {
+		currentWeather = weather;
+		currentSeason = Season.SPRING;
+		humidity = 0;
 	}
 
 

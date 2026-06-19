@@ -115,7 +115,7 @@ public class Simulator {
 		plants.clear();
 		populate();
 		currentTimeCycle = TimeCycle.DAY;
-		climate.setCurrentWeather(Weather.SUN);
+		climate.reset(DEFAULT_WEATHER);
 
 		sickPercentage = 0;
 		graphView.reset();

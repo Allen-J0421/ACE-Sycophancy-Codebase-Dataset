@@ -1,5 +1,8 @@
-class LongestCommonSubsequence {
+final class LongestCommonSubsequence {
     private static final SequencePair SAMPLE_INPUT = new SequencePair("AGGTAB", "GXTXAYB");
+
+    private LongestCommonSubsequence() {
+    }
 
     static int lcs(String first, String second) {
         return longestCommonSubsequenceLength(first, second);

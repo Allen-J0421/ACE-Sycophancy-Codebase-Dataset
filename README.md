@@ -7,8 +7,9 @@ A generic hash map implemented with open addressing and linear probing.
 ```
 src/
   main/java/hashmap/
-    OpenAddressingHashMap.java        # the data structure
-    OpenAddressingHashSet.java        # Set<E> backed by the map
+    OpenAddressingTable.java          # shared open-addressing storage core (internal)
+    OpenAddressingHashMap.java        # Map<K,V> adapter over the core
+    OpenAddressingHashSet.java        # Set<E> adapter over the core
     Demo.java                         # runnable demonstration (main)
   test/java/hashmap/
     OpenAddressingHashMapTest.java    # dependency-free self-checking tests
@@ -104,13 +105,18 @@ trustworthy.
 - **Value semantics**: equality and hash code follow the `Map` contract, so an
   `OpenAddressingHashMap` compares equal to any other `Map` (e.g. a `TreeMap`)
   with the same mappings.
-- **`OpenAddressingHashSet<E>`**: a complete `java.util.Set` implementation backed
-  by the map — exactly how `java.util.HashSet` wraps `HashMap`. Each element is a
-  key mapped to a shared sentinel, so the set reuses the map's open addressing,
-  resizing, and struct-of-arrays storage instead of reimplementing them. It
-  extends `AbstractSet`, so `equals`/`hashCode`/`addAll`/`removeAll`/`retainAll`/
-  `toArray` come for free, and it compares equal to any `Set` (e.g. a `TreeSet`)
-  with the same elements.
+- **Shared core, two adapters**: the storage mechanics (keys/values arrays,
+  hashing, probing, tombstones, resizing, fail-fast iteration) live in one
+  package-private class, `OpenAddressingTable`. `OpenAddressingHashMap` and
+  `OpenAddressingHashSet` are thin adapters that **compose** it and present it as a
+  `Map` or `Set`. Composition is used rather than a shared superclass because both
+  already extend `AbstractMap`/`AbstractSet` and Java has single inheritance.
+- **`OpenAddressingHashSet<E>`**: a complete `java.util.Set` over the shared core.
+  It constructs its table with value-tracking *disabled*, so — unlike a set that
+  wraps a map with a dummy value (the `java.util.HashSet` approach) — it allocates
+  **no** per-element value storage at all. It extends `AbstractSet`, so
+  `equals`/`hashCode`/`addAll`/`removeAll`/`retainAll`/`toArray` come for free, and
+  it compares equal to any `Set` (e.g. a `TreeSet`) with the same elements.
 - `null` keys are rejected; `null` values are allowed and distinguished from
   absence via `containsKey`/`getOrDefault`.
 

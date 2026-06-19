@@ -1,6 +1,12 @@
 class LongestCommonSubsequence {
+    private static final String SAMPLE_FIRST = "AGGTAB";
+    private static final String SAMPLE_SECOND = "GXTXAYB";
 
     static int lcs(String first, String second) {
+        return longestCommonSubsequenceLength(first, second);
+    }
+
+    static int longestCommonSubsequenceLength(String first, String second) {
         String rows = longerOf(first, second);
         String columns = shorterOf(first, second);
         int columnCount = columns.length();
@@ -39,8 +45,6 @@ class LongestCommonSubsequence {
     }
 
     public static void main(String[] args) {
-        String first = "AGGTAB";
-        String second = "GXTXAYB";
-        System.out.println(lcs(first, second));
+        System.out.println(longestCommonSubsequenceLength(SAMPLE_FIRST, SAMPLE_SECOND));
     }
 }

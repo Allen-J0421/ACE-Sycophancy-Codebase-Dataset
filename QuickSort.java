@@ -26,6 +26,12 @@ import java.util.Objects;
  *       overhead there.</li>
  * </ul>
  *
+ * <p><b>Structure.</b> The introsort control flow (recursion, depth limiting and
+ * the heapsort fallback) lives in a single generic {@link #sortRange} method. The
+ * only type-specific work — partitioning, heapsort and insertion sort — is
+ * supplied per element type through the {@link RangeSorter} strategy, whose
+ * adapters capture the backing array so elements stay primitive (no boxing).
+ *
  * <p>This is a stateless utility class: every entry point is static and operates
  * only on its argument array, so concurrent calls on distinct arrays are safe.
  */
@@ -48,6 +54,55 @@ public final class QuickSort {
     }
 
     // ------------------------------------------------------------------
+    // Unified introsort control flow
+    // ------------------------------------------------------------------
+
+    /**
+     * The per-element operations the introsort needs, expressed purely in terms
+     * of array indices. Each implementation closes over a concrete (primitive or
+     * object) array, so the shared {@link #sortRange} algorithm can drive any
+     * element type without boxing.
+     */
+    private interface RangeSorter {
+        /** Partitions {@code [low, high]} (with {@code high - low >= 2}) and returns the pivot's final index. */
+        int partition(int low, int high);
+
+        /** Sorts {@code [low, high]} with heapsort (the introsort fallback). */
+        void heapSort(int low, int high);
+
+        /** Sorts {@code [low, high]} with insertion sort. */
+        void insertionSort(int low, int high);
+    }
+
+    /**
+     * The shared introsort: median-of-three quicksort with an insertion-sort
+     * cutoff for small ranges and a heapsort fallback once the depth limit is
+     * exhausted. Recurses into the smaller partition and loops on the larger to
+     * bound live recursion depth to O(log n).
+     */
+    private static void sortRange(RangeSorter s, int low, int high, int depthLimit) {
+        while (low < high) {
+            if (high - low < INSERTION_SORT_THRESHOLD) {
+                s.insertionSort(low, high);
+                return;
+            }
+            if (depthLimit == 0) {
+                s.heapSort(low, high); // quicksort is misbehaving here — bail out
+                return;
+            }
+            depthLimit--;
+            int p = s.partition(low, high);
+            if (p - low < high - p) {
+                sortRange(s, low, p - 1, depthLimit);
+                low = p + 1;
+            } else {
+                sortRange(s, p + 1, high, depthLimit);
+                high = p - 1;
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
     // Primitive int[] API (optimized, no boxing)
     // ------------------------------------------------------------------
 
@@ -60,31 +115,7 @@ public final class QuickSort {
     public static void sort(int[] array) {
         Objects.requireNonNull(array, "array must not be null");
         if (array.length > 1) {
-            sortRange(array, 0, array.length - 1, maxDepth(array.length));
-        }
-    }
-
-    private static void sortRange(int[] a, int low, int high, int depthLimit) {
-        while (low < high) {
-            if (high - low < INSERTION_SORT_THRESHOLD) {
-                insertionSort(a, low, high);
-                return;
-            }
-            if (depthLimit == 0) {
-                heapSort(a, low, high); // quicksort is misbehaving here — bail out
-                return;
-            }
-            depthLimit--;
-            int p = partition(a, low, high);
-            // Recurse into the smaller side, then loop on the larger side.
-            // This bounds the live recursion depth to O(log n).
-            if (p - low < high - p) {
-                sortRange(a, low, p - 1, depthLimit);
-                low = p + 1;
-            } else {
-                sortRange(a, p + 1, high, depthLimit);
-                high = p - 1;
-            }
+            sortRange(new IntSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
     }
 
@@ -172,6 +203,18 @@ public final class QuickSort {
         a[j] = temp;
     }
 
+    private static final class IntSorter implements RangeSorter {
+        private final int[] a;
+
+        IntSorter(int[] a) {
+            this.a = a;
+        }
+
+        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
+        @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
+        @Override public void insertionSort(int low, int high) { QuickSort.insertionSort(a, low, high); }
+    }
+
     // ------------------------------------------------------------------
     // Primitive long[] API (optimized, no boxing)
     // ------------------------------------------------------------------
@@ -185,29 +228,7 @@ public final class QuickSort {
     public static void sort(long[] array) {
         Objects.requireNonNull(array, "array must not be null");
         if (array.length > 1) {
-            sortRange(array, 0, array.length - 1, maxDepth(array.length));
-        }
-    }
-
-    private static void sortRange(long[] a, int low, int high, int depthLimit) {
-        while (low < high) {
-            if (high - low < INSERTION_SORT_THRESHOLD) {
-                insertionSort(a, low, high);
-                return;
-            }
-            if (depthLimit == 0) {
-                heapSort(a, low, high);
-                return;
-            }
-            depthLimit--;
-            int p = partition(a, low, high);
-            if (p - low < high - p) {
-                sortRange(a, low, p - 1, depthLimit);
-                low = p + 1;
-            } else {
-                sortRange(a, p + 1, high, depthLimit);
-                high = p - 1;
-            }
+            sortRange(new LongSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
     }
 
@@ -280,6 +301,18 @@ public final class QuickSort {
         a[j] = temp;
     }
 
+    private static final class LongSorter implements RangeSorter {
+        private final long[] a;
+
+        LongSorter(long[] a) {
+            this.a = a;
+        }
+
+        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
+        @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
+        @Override public void insertionSort(int low, int high) { QuickSort.insertionSort(a, low, high); }
+    }
+
     // ------------------------------------------------------------------
     // Primitive double[] API (optimized, no boxing)
     // ------------------------------------------------------------------
@@ -296,29 +329,7 @@ public final class QuickSort {
     public static void sort(double[] array) {
         Objects.requireNonNull(array, "array must not be null");
         if (array.length > 1) {
-            sortRange(array, 0, array.length - 1, maxDepth(array.length));
-        }
-    }
-
-    private static void sortRange(double[] a, int low, int high, int depthLimit) {
-        while (low < high) {
-            if (high - low < INSERTION_SORT_THRESHOLD) {
-                insertionSort(a, low, high);
-                return;
-            }
-            if (depthLimit == 0) {
-                heapSort(a, low, high);
-                return;
-            }
-            depthLimit--;
-            int p = partition(a, low, high);
-            if (p - low < high - p) {
-                sortRange(a, low, p - 1, depthLimit);
-                low = p + 1;
-            } else {
-                sortRange(a, p + 1, high, depthLimit);
-                high = p - 1;
-            }
+            sortRange(new DoubleSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
     }
 
@@ -391,6 +402,18 @@ public final class QuickSort {
         a[j] = temp;
     }
 
+    private static final class DoubleSorter implements RangeSorter {
+        private final double[] a;
+
+        DoubleSorter(double[] a) {
+            this.a = a;
+        }
+
+        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
+        @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
+        @Override public void insertionSort(int low, int high) { QuickSort.insertionSort(a, low, high); }
+    }
+
     // ------------------------------------------------------------------
     // Primitive float[] API (optimized, no boxing)
     // ------------------------------------------------------------------
@@ -407,29 +430,7 @@ public final class QuickSort {
     public static void sort(float[] array) {
         Objects.requireNonNull(array, "array must not be null");
         if (array.length > 1) {
-            sortRange(array, 0, array.length - 1, maxDepth(array.length));
-        }
-    }
-
-    private static void sortRange(float[] a, int low, int high, int depthLimit) {
-        while (low < high) {
-            if (high - low < INSERTION_SORT_THRESHOLD) {
-                insertionSort(a, low, high);
-                return;
-            }
-            if (depthLimit == 0) {
-                heapSort(a, low, high);
-                return;
-            }
-            depthLimit--;
-            int p = partition(a, low, high);
-            if (p - low < high - p) {
-                sortRange(a, low, p - 1, depthLimit);
-                low = p + 1;
-            } else {
-                sortRange(a, p + 1, high, depthLimit);
-                high = p - 1;
-            }
+            sortRange(new FloatSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
     }
 
@@ -502,6 +503,18 @@ public final class QuickSort {
         a[j] = temp;
     }
 
+    private static final class FloatSorter implements RangeSorter {
+        private final float[] a;
+
+        FloatSorter(float[] a) {
+            this.a = a;
+        }
+
+        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
+        @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
+        @Override public void insertionSort(int low, int high) { QuickSort.insertionSort(a, low, high); }
+    }
+
     // ------------------------------------------------------------------
     // Generic object API
     // ------------------------------------------------------------------
@@ -530,29 +543,7 @@ public final class QuickSort {
         Objects.requireNonNull(array, "array must not be null");
         Objects.requireNonNull(comparator, "comparator must not be null");
         if (array.length > 1) {
-            sortRange(array, 0, array.length - 1, maxDepth(array.length), comparator);
-        }
-    }
-
-    private static <T> void sortRange(T[] a, int low, int high, int depthLimit, Comparator<? super T> cmp) {
-        while (low < high) {
-            if (high - low < INSERTION_SORT_THRESHOLD) {
-                insertionSort(a, low, high, cmp);
-                return;
-            }
-            if (depthLimit == 0) {
-                heapSort(a, low, high, cmp);
-                return;
-            }
-            depthLimit--;
-            int p = partition(a, low, high, cmp);
-            if (p - low < high - p) {
-                sortRange(a, low, p - 1, depthLimit, cmp);
-                low = p + 1;
-            } else {
-                sortRange(a, p + 1, high, depthLimit, cmp);
-                high = p - 1;
-            }
+            sortRange(new ComparatorSorter<>(array, comparator), 0, array.length - 1, maxDepth(array.length));
         }
     }
 
@@ -623,5 +614,19 @@ public final class QuickSort {
         T temp = a[i];
         a[i] = a[j];
         a[j] = temp;
+    }
+
+    private static final class ComparatorSorter<T> implements RangeSorter {
+        private final T[] a;
+        private final Comparator<? super T> cmp;
+
+        ComparatorSorter(T[] a, Comparator<? super T> cmp) {
+            this.a = a;
+            this.cmp = cmp;
+        }
+
+        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high, cmp); }
+        @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high, cmp); }
+        @Override public void insertionSort(int low, int high) { QuickSort.insertionSort(a, low, high, cmp); }
     }
 }

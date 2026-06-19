@@ -27,7 +27,6 @@ public class Climate {
 	public void updateClimate(int step) {
 		updateSeason(step);
 
-
 		int humidityIncrease = rand.nextInt(MAX_HUMIDITY_CHANGE - MIN_HUMIDITY_CHANGE + 1) + MIN_HUMIDITY_CHANGE;
 
 		if (humidity < 80 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {

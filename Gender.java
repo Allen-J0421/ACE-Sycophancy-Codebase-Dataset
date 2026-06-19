@@ -5,9 +5,9 @@ public enum Gender {
 	FEMALE,
 	MALE;
 
+	private static final Random rand = Randomizer.getRandom();
 
 	public static Gender randomGender() {
-		Random rand = Randomizer.getRandom();
 		return rand.nextInt(2) == 0 ? FEMALE : MALE;
 	}
 }

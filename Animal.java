@@ -127,28 +127,22 @@ public abstract class Animal extends Entity {
 
 
 	protected void becomeSick() {
-		if (!isSick()) {
-			int randomNumber = rand.nextInt(getSickProbability());
-			if (randomNumber == 1) {
-				toggleSick();
-			}
+		if (!isSick() && rand.nextInt(getSickProbability()) == 1) {
+			sick = true;
 		}
 	}
 
 
 	protected void notSick() {
-		if (isSick()) {
-			int randomNumber = rand.nextInt(getRecoverProbability());
-			if (randomNumber == 1) {
-				toggleSick();
-				sickStep = 0;
-			}
+		if (isSick() && rand.nextInt(getRecoverProbability()) == 1) {
+			sick = false;
+			sickStep = 0;
 		}
 	}
 
 
 	protected void battleSickness() {
-		if (sick) {
+		if (isSick()) {
 			if (sickStep >= maxSickStep) {
 				setDead();
 				return;
@@ -183,11 +177,6 @@ public abstract class Animal extends Entity {
 
 	protected void setNocturnal(boolean value) {
 		nocturnal = value;
-	}
-
-
-	protected void toggleSick() {
-		sick = !sick;
 	}
 
 

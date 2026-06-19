@@ -116,6 +116,7 @@ public class SimulatorView extends JFrame {
 		}
 
 
+		@Override
 		public Dimension getPreferredSize() {
 			return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
 					gridHeight * GRID_VIEW_SCALING_FACTOR);
@@ -147,13 +148,13 @@ public class SimulatorView extends JFrame {
 		}
 
 
+		@Override
 		public void paintComponent(Graphics g) {
 			if (fieldImage != null) {
 				Dimension currentSize = getSize();
 				if (size.equals(currentSize)) {
 					g.drawImage(fieldImage, 0, 0, null);
 				} else {
-
 					g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);
 				}
 			}

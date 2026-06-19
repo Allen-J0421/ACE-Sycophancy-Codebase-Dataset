@@ -8,7 +8,6 @@ public class Counter {
 
 	public Counter(String name) {
 		this.name = name;
-		count = 0;
 	}
 
 

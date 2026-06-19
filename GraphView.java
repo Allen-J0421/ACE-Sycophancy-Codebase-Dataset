@@ -7,10 +7,10 @@ import java.util.*;
 public class GraphView extends JFrame {
 	private static final Color LIGHT_GRAY = new Color(0, 0, 0, 40);
 
-	private static JFrame frame;
-	private static GraphPanel graph;
-	private static JLabel stepLabel;
-	private static JLabel countLabel;
+	private JFrame frame;
+	private GraphPanel graph;
+	private JLabel stepLabel;
+	private JLabel countLabel;
 
 
 	private Set<Class<?>> classes;
@@ -25,11 +25,7 @@ public class GraphView extends JFrame {
 		colors = new HashMap<>();
 		classes = colors.keySet();
 
-		if (frame == null) {
-			frame = makeFrame(width, height, startMax);
-		} else {
-			graph.newRun();
-		}
+		frame = makeFrame(width, height, startMax);
 
 	}
 
@@ -188,16 +184,19 @@ public class GraphView extends JFrame {
 		}
 
 
+		@Override
 		public Dimension getPreferredSize() {
 			return new Dimension(graphImage.getWidth(), graphImage.getHeight());
 		}
 
 
+		@Override
 		public boolean isOpaque() {
 			return true;
 		}
 
 
+		@Override
 		public void paintComponent(Graphics g) {
 			if (graphImage != null) {
 				g.drawImage(graphImage, 0, 0, null);

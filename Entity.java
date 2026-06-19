@@ -43,5 +43,4 @@ public abstract class Entity {
 		location = null;
 		field = null;
 	}
-
 }

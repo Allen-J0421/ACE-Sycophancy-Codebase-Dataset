@@ -11,41 +11,68 @@ public final class RabinKarp {
         // Utility class.
     }
 
-    public static List<Integer> search(String pattern, String text) {
+    public static List<Integer> search(CharSequence pattern, CharSequence text) {
         Objects.requireNonNull(pattern, "pattern");
         Objects.requireNonNull(text, "text");
 
-        List<Integer> matches = new ArrayList<>();
         int patternLength = pattern.length();
         int textLength = text.length();
+
         if (patternLength == 0) {
-            for (int i = 0; i <= textLength; i++) {
-                matches.add(i);
-            }
-            return matches;
+            return allMatchPositions(textLength);
         }
         if (patternLength > textLength) {
-            return matches;
+            return List.of();
         }
 
-        RollingHash patternHash = RollingHash.forSequence(pattern, patternLength);
-        RollingHash windowHash = RollingHash.forSequence(text, patternLength);
+        int patternHash = hashOf(pattern, patternLength);
+        int windowHash = hashOf(text, patternLength);
+        int highOrderFactor = highOrderFactorFor(patternLength);
         int lastStart = textLength - patternLength;
+        List<Integer> matches = new ArrayList<>();
 
         for (int offset = 0; offset <= lastStart; offset++) {
-            if (patternHash.matches(windowHash) && matchesAt(text, pattern, offset)) {
+            if (patternHash == windowHash && matchesAt(text, pattern, offset)) {
                 matches.add(offset);
             }
 
             if (offset < lastStart) {
-                windowHash.roll(text.charAt(offset), text.charAt(offset + patternLength));
+                windowHash = rollHash(
+                        windowHash,
+                        text.charAt(offset),
+                        text.charAt(offset + patternLength),
+                        highOrderFactor);
             }
         }
 
-        return matches;
+        return List.copyOf(matches);
     }
 
-    private static boolean matchesAt(String text, String pattern, int offset) {
+    private static List<Integer> allMatchPositions(int textLength) {
+        List<Integer> matches = new ArrayList<>(textLength + 1);
+        for (int i = 0; i <= textLength; i++) {
+            matches.add(i);
+        }
+        return List.copyOf(matches);
+    }
+
+    private static int hashOf(CharSequence sequence, int length) {
+        int hash = 0;
+        for (int i = 0; i < length; i++) {
+            hash = (RADIX * hash + sequence.charAt(i)) % PRIME_MODULUS;
+        }
+        return hash;
+    }
+
+    private static int highOrderFactorFor(int length) {
+        int factor = 1;
+        for (int i = 0; i < length - 1; i++) {
+            factor = (factor * RADIX) % PRIME_MODULUS;
+        }
+        return factor;
+    }
+
+    private static boolean matchesAt(CharSequence text, CharSequence pattern, int offset) {
         for (int i = 0; i < pattern.length(); i++) {
             if (text.charAt(offset + i) != pattern.charAt(i)) {
                 return false;
@@ -54,43 +81,13 @@ public final class RabinKarp {
         return true;
     }
 
-    private static final class RollingHash {
-
-        private final int highOrderFactor;
-        private int hash;
-
-        private RollingHash(int hash, int highOrderFactor) {
-            this.hash = hash;
-            this.highOrderFactor = highOrderFactor;
+    private static int rollHash(int currentHash, char outgoing, char incoming, int highOrderFactor) {
+        int nextHash = RADIX * (currentHash - outgoing * highOrderFactor) + incoming;
+        nextHash %= PRIME_MODULUS;
+        if (nextHash < 0) {
+            nextHash += PRIME_MODULUS;
         }
-
-        static RollingHash forSequence(CharSequence sequence, int length) {
-            int hash = 0;
-            int highOrderFactor = 1;
-
-            for (int i = 0; i < length - 1; i++) {
-                highOrderFactor = (highOrderFactor * RADIX) % PRIME_MODULUS;
-            }
-
-            for (int i = 0; i < length; i++) {
-                hash = (RADIX * hash + sequence.charAt(i)) % PRIME_MODULUS;
-            }
-
-            return new RollingHash(hash, highOrderFactor);
-        }
-
-        void roll(char outgoing, char incoming) {
-            int nextHash = RADIX * (hash - outgoing * highOrderFactor) + incoming;
-            nextHash %= PRIME_MODULUS;
-            if (nextHash < 0) {
-                nextHash += PRIME_MODULUS;
-            }
-            hash = nextHash;
-        }
-
-        boolean matches(RollingHash other) {
-            return hash == other.hash;
-        }
+        return nextHash;
     }
 
 }

@@ -11,6 +11,10 @@ public final class RabinKarpTest {
         expect(List.of(0, 1, 2, 3), RabinKarp.search("", "abc"), "empty pattern");
         expect(List.of(), RabinKarp.search("abcd", "abc"), "pattern longer than text");
         expect(List.of(), RabinKarp.search("xyz", "abcdef"), "no match");
+        expect(
+                List.of(0, 8),
+                RabinKarp.search(new StringBuilder("geeks"), new StringBuilder("geeksforgeeks")),
+                "char sequence input");
     }
 
     private static void expect(List<Integer> expected, List<Integer> actual, String label) {

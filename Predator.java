@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -50,36 +49,31 @@ public abstract class Predator extends Animal {
 
 	private Location findFood() {
 		Field field = getField();
-		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		while (it.hasNext()) {
-			Location where = it.next();
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal nearAnimal = (Animal) animal;
-
-				if (nearAnimal.getFoodChainLevel() < this.getFoodChainLevel()) {
-
-					if (nearAnimal.isAlive()) {
-						nearAnimal.setDead();
-						setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
-						return where;
-					}
-				}
-
-
-				if (nearAnimal.getFoodChainLevel() == this.getFoodChainLevel()) {
-					if (nearAnimal.isAlive() && this.isCannibal()) {
-						if (getFoodLevel() < 2 && nearAnimal.getClass().equals(this.getClass())) {
-							nearAnimal.setDead();
-							setFoodLevel(nearAnimal.getFoodValue() + additionalFoodValue);
-							return where;
-						}
-					}
-				}
+		for (Location where : field.adjacentAnimalLocations(getLocation())) {
+			Animal prey = field.getAnimalAt(where);
+			if (prey == null || !prey.isAlive() || !canEat(prey)) {
+				continue;
 			}
+			prey.setDead();
+			setFoodLevel(prey.getFoodValue() + additionalFoodValue);
+			return where;
 		}
 		return null;
+	}
+
+
+	/**
+	 * Whether this predator may eat the given animal: anything lower in the food
+	 * chain, or — when starving and cannibalistic — its own kind.
+	 */
+	private boolean canEat(Animal other) {
+		if (other.getFoodChainLevel() < getFoodChainLevel()) {
+			return true;
+		}
+		return other.getFoodChainLevel() == getFoodChainLevel()
+				&& isCannibal()
+				&& getFoodLevel() < 2
+				&& other.getClass().equals(getClass());
 	}
 
 

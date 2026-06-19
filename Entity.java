@@ -1,6 +1,9 @@
-import java.awt.*;
+import java.awt.Color;
 
 
+/**
+ * Something that occupies a location on the field: an {@link Animal} or a {@link Plant}.
+ */
 public abstract class Entity {
 
 
@@ -16,6 +19,10 @@ public abstract class Entity {
 
 
 	protected abstract Color getObjectColor(Climate climate);
+
+
+	/** Record this entity's presence on the appropriate layer of the field. */
+	protected abstract void placeInField(Field field, Location location);
 
 
 	protected Field getField() {
@@ -34,20 +41,11 @@ public abstract class Entity {
 
 
 	protected void setLocation(Location newLocation) {
-		if (location == null) {
-			location = null;
-		}
-
 		if (location != null) {
 			field.clear(location);
 		}
 		location = newLocation;
-
-		if (this instanceof Animal) {
-			field.placeAnimal(this, newLocation);
-		} else {
-			field.placePlant(this, newLocation);
-		}
+		placeInField(field, newLocation);
 	}
 
 

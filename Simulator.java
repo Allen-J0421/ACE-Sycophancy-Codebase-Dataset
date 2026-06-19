@@ -1,9 +1,13 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 
+/**
+ * The engine of the predator-prey simulation. It owns the field, the live
+ * animals and plants, and drives the world forward one step at a time while
+ * keeping the grid and graph views in sync.
+ */
 public class Simulator {
 
 
@@ -13,16 +17,6 @@ public class Simulator {
 
 	private static final double FLOWER_CREATION_PROBABILITY = 0.07;
 
-	private static final double MOUSE_CREATION_PROBABILITY = 0.07;
-
-	private static final double DUCK_CREATION_PROBABILITY = 0.07;
-
-	private static final double BIRD_CREATION_PROBABILITY = 0.07;
-
-	private static final double WOLF_CREATION_PROBABILITY = 0.03;
-
-	private static final double BEAR_CREATION_PROBABILITY = 0.03;
-
 	private static final TimeCycle DEFAULT_TIMECYCLE = TimeCycle.DAY;
 
 	private static final Weather DEFAULT_WEATHER = Weather.SUN;
@@ -30,28 +24,49 @@ public class Simulator {
 	private static final int TIMECYCLE_LENGTH = 4;
 
 
-	private List<Animal> animals;
+	/** A factory that creates a freshly spawned animal at a location. */
+	@FunctionalInterface
+	private interface AnimalFactory {
+		Animal create(Field field, Location location);
+	}
 
-	private List<Plant> plants;
+	/** The chance of spawning a given animal in an empty cell, and how to build it. */
+	private record SpawnRule(double probability, AnimalFactory factory) {
+	}
 
-	private Field field;
+	/**
+	 * Animal spawn rules, evaluated in order: the first rule that wins its dice
+	 * roll claims the cell. Earlier rules therefore have priority.
+	 */
+	private static final List<SpawnRule> ANIMAL_SPAWN_RULES = List.of(
+			new SpawnRule(0.07, (field, location) -> new Bird(true, field, location)),
+			new SpawnRule(0.07, (field, location) -> new Mouse(true, field, location)),
+			new SpawnRule(0.07, (field, location) -> new Duck(true, field, location)),
+			new SpawnRule(0.03, (field, location) -> new Wolf(true, field, location)),
+			new SpawnRule(0.03, (field, location) -> new Bear(true, field, location)));
+
+
+	private final List<Animal> animals;
+
+	private final List<Plant> plants;
+
+	private final Field field;
 
 	private int step;
 
-	private SimulatorView gridView;
+	private final SimulatorView gridView;
 
-	private GraphView graphView;
+	private final GraphView graphView;
 
 	private TimeCycle currentTimeCycle;
 
-	private Climate climate;
+	private final Climate climate;
 
 	private int sickPercentage;
 
 
 	public Simulator() {
 		this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-		currentTimeCycle = DEFAULT_TIMECYCLE;
 	}
 
 
@@ -63,19 +78,14 @@ public class Simulator {
 			width = DEFAULT_WIDTH;
 		}
 
-
 		animals = new ArrayList<>();
-
 		plants = new ArrayList<>();
 		field = new Field(depth, width);
 		climate = new Climate(DEFAULT_WEATHER);
-
+		currentTimeCycle = DEFAULT_TIMECYCLE;
 
 		gridView = new SimulatorView(depth, width);
-
-
 		graphView = new GraphView(1000, 500, 500);
-
 
 		reset();
 	}
@@ -87,7 +97,7 @@ public class Simulator {
 
 
 	public void simulate(int numSteps) {
-		for (int step = 1; step <= numSteps && gridView.isViable(field); step++) {
+		for (int s = 1; s <= numSteps && gridView.isViable(field); s++) {
 			simulateOneStep();
 			delay(60);
 		}
@@ -98,42 +108,38 @@ public class Simulator {
 		step++;
 		climate.updateClimate(step);
 
-
-		for (Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-			Plant plant = it.next();
+		for (Plant plant : plants) {
 			plant.increaseStage(climate);
 		}
 
-
 		List<Animal> newAnimals = new ArrayList<>();
-
-		for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-			Animal animal = it.next();
+		for (Animal animal : animals) {
 			animal.act(newAnimals, currentTimeCycle);
-			if (!animal.isAlive()) {
-				it.remove();
-			}
 		}
-
-
+		animals.removeIf(animal -> !animal.isAlive());
 		animals.addAll(newAnimals);
 
-
 		if (step % TIMECYCLE_LENGTH == 0) {
-			currentTimeCycle = currentTimeCycle.toggleTimeCycle(currentTimeCycle);
+			currentTimeCycle = currentTimeCycle.next();
 		}
 
-
-		int count = 0;
-		for (Animal i : animals) {
-			if (i.isSick()) {
-				count++;
-			}
-		}
-
-		sickPercentage = (count * 100) / animals.size();
+		sickPercentage = computeSickPercentage();
 		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
 		graphView.showStatus(step, field);
+	}
+
+
+	private int computeSickPercentage() {
+		if (animals.isEmpty()) {
+			return 0;
+		}
+		int sick = 0;
+		for (Animal animal : animals) {
+			if (animal.isSick()) {
+				sick++;
+			}
+		}
+		return (sick * 100) / animals.size();
 	}
 
 
@@ -158,39 +164,28 @@ public class Simulator {
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Location location = new Location(row, col);
+				spawnPlant(rand, location);
+				spawnAnimal(rand, location);
+			}
+		}
+	}
 
 
-				if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
-					Flower flower = new Flower(field, location);
-					plants.add(flower);
-				} else {
-					Grass grass = new Grass(field, location);
-					plants.add(grass);
-				}
+	private void spawnPlant(Random rand, Location location) {
+		Plant plant = rand.nextDouble() <= FLOWER_CREATION_PROBABILITY
+				? new Flower(field, location)
+				: new Grass(field, location);
+		plants.add(plant);
+	}
 
 
-				if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
-					Bird bird = new Bird(true, field, location);
-					animals.add(bird);
-					graphView.setColor(Bird.class, bird.getObjectColor(climate));
-				} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-					Mouse mouse = new Mouse(true, field, location);
-					animals.add(mouse);
-					graphView.setColor(Mouse.class, mouse.getObjectColor(climate));
-				} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
-					Duck duck = new Duck(true, field, location);
-					animals.add(duck);
-					graphView.setColor(Duck.class, duck.getObjectColor(climate));
-				} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-					Wolf wolf = new Wolf(true, field, location);
-					animals.add(wolf);
-					graphView.setColor(Wolf.class, wolf.getObjectColor(climate));
-				} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-					Bear bear = new Bear(true, field, location);
-					animals.add(bear);
-					graphView.setColor(Bear.class, bear.getObjectColor(climate));
-				}
-
+	private void spawnAnimal(Random rand, Location location) {
+		for (SpawnRule rule : ANIMAL_SPAWN_RULES) {
+			if (rand.nextDouble() <= rule.probability()) {
+				Animal animal = rule.factory().create(field, location);
+				animals.add(animal);
+				graphView.setColor(animal.getClass(), animal.getObjectColor(climate));
+				return;
 			}
 		}
 	}
@@ -200,7 +195,7 @@ public class Simulator {
 		try {
 			Thread.sleep(millisec);
 		} catch (InterruptedException ie) {
-
+			Thread.currentThread().interrupt();
 		}
 	}
 }

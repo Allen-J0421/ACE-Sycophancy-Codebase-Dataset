@@ -1,15 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 
 public class SimulatorView extends JFrame {
 
 	private static final Color EMPTY_COLOR = Color.white;
-
-
-	private static final Color UNKNOWN_COLOR = Color.gray;
 
 	private final String STEP_PREFIX = "Step: ";
 	private final String POPULATION_PREFIX = "Population: ";
@@ -21,15 +16,11 @@ public class SimulatorView extends JFrame {
 	private JLabel stepLabel, populationLabel, dayCycleLabel, climateLabel, infectLabel, weatherLabel, humidityLabel;
 	private FieldView fieldView;
 
-
-	private Map<Class, Color> colors;
-
 	private FieldStats stats;
 
 
 	public SimulatorView(int height, int width) {
 		stats = new FieldStats();
-		colors = new LinkedHashMap<>();
 
 		setTitle("Predator-Prey Simulation");
 		stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -83,14 +74,13 @@ public class SimulatorView extends JFrame {
 
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
-				Animal animal = (Animal) field.getAnimalAt(row, col);
-				Object plant = field.getPlantAt(row, col);
+				Animal animal = field.getAnimalAt(row, col);
+				Plant plant = field.getPlantAt(row, col);
 				if (animal != null) {
 					stats.incrementCount(animal.getClass());
 					fieldView.drawMark(col, row, animal.getObjectColor(climate));
 				} else if (plant != null) {
-					Plant newPlant = (Plant) plant;
-					fieldView.drawMark(col, row, newPlant.getObjectColor(climate));
+					fieldView.drawMark(col, row, plant.getObjectColor(climate));
 				} else {
 					fieldView.drawMark(col, row, EMPTY_COLOR);
 				}

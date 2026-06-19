@@ -181,7 +181,7 @@ public class GraphView extends JFrame {
 		}
 
 
-		final public void clearImage() {
+		public final void clearImage() {
 			Graphics g = graphImage.getGraphics();
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, graphImage.getWidth(), graphImage.getHeight());

@@ -51,7 +51,6 @@ public class Simulator {
 
 	public Simulator() {
 		this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-		currentTimeCycle = DEFAULT_TIMECYCLE;
 	}
 
 
@@ -202,7 +201,7 @@ public class Simulator {
 		try {
 			Thread.sleep(millisec);
 		} catch (InterruptedException ie) {
-
+			Thread.currentThread().interrupt();
 		}
 	}
 }

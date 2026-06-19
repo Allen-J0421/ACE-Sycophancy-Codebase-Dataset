@@ -83,11 +83,6 @@ public abstract class Predator extends Animal {
 	}
 
 
-	protected int getAdditionalFoodValue() {
-		return additionalFoodValue;
-	}
-
-
 	protected void setAdditionalFoodValue(int inputValue) {
 		additionalFoodValue = inputValue;
 	}

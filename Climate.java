@@ -47,20 +47,7 @@ public class Climate {
 
 
 	private void updateSeason(int step) {
-		switch ((step / SEASON_LENGTH) % 4) {
-			case 0:
-				currentSeason = Season.SPRING;
-				break;
-			case 1:
-				currentSeason = Season.SUMMER;
-				break;
-			case 2:
-				currentSeason = Season.AUTUMN;
-				break;
-			case 3:
-				currentSeason = Season.WINTER;
-				break;
-		}
+		currentSeason = Season.values()[(step / SEASON_LENGTH) % Season.values().length];
 	}
 
 

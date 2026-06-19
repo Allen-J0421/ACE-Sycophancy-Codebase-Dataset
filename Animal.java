@@ -87,11 +87,10 @@ public abstract class Animal extends Entity {
 
 
 	private int breed() {
-		int births = 0;
 		if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-			births = rand.nextInt(getMaxLitterSize()) + 1;
+			return rand.nextInt(getMaxLitterSize()) + 1;
 		}
-		return births;
+		return 0;
 	}
 
 

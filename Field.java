@@ -39,11 +39,6 @@ public class Field {
 	}
 
 
-	public void placeAnimal(Object animal, int row, int col) {
-		placeAnimal(animal, new Location(row, col));
-	}
-
-
 	public void placeAnimal(Object animal, Location location) {
 		animalField[location.getRow()][location.getCol()] = animal;
 	}
@@ -71,12 +66,6 @@ public class Field {
 
 	public Object getPlantAt(int row, int col) {
 		return plantField[row][col];
-	}
-
-
-	public Location randomAnimalAdjacentLocation(Location location) {
-		List<Location> adjacent = adjacentAnimalLocations(location);
-		return adjacent.isEmpty() ? null : adjacent.get(0);
 	}
 
 

@@ -6,23 +6,23 @@ import java.util.List;
  * Immutable description of the matches found for a single search operation.
  */
 public final class KmpMatchResult implements KmpMatchView {
-    private final KmpPattern pattern;
+    private final String patternText;
     private final String text;
     private final List<Integer> matchIndices;
 
-    private KmpMatchResult(KmpPattern pattern, String text, List<Integer> matchIndices) {
-        this.pattern = pattern;
+    private KmpMatchResult(String patternText, String text, List<Integer> matchIndices) {
+        this.patternText = patternText;
         this.text = text;
         this.matchIndices = matchIndices;
     }
 
-    public static KmpMatchResult from(KmpPattern pattern, String text, List<Integer> matchIndices) {
-        return new KmpMatchResult(pattern, text, List.copyOf(matchIndices));
+    public static KmpMatchResult from(String patternText, String text, List<Integer> matchIndices) {
+        return new KmpMatchResult(patternText, text, List.copyOf(matchIndices));
     }
 
     @Override
-    public KmpPattern pattern() {
-        return pattern;
+    public String patternText() {
+        return patternText;
     }
 
     @Override

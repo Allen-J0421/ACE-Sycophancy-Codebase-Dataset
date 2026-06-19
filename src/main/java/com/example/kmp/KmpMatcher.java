@@ -18,7 +18,6 @@ public final class KmpMatcher implements KmpMatchView {
         this.text = Objects.requireNonNull(text, "text must not be null").toString();
     }
 
-    @Override
     public KmpPattern pattern() {
         return pattern;
     }
@@ -26,6 +25,11 @@ public final class KmpMatcher implements KmpMatchView {
     @Override
     public String text() {
         return text;
+    }
+
+    @Override
+    public String patternText() {
+        return pattern.value();
     }
 
     public KmpMatchIterator matchIterator() {
@@ -37,7 +41,7 @@ public final class KmpMatcher implements KmpMatchView {
             List<Integer> matches = new ArrayList<>();
             KmpMatchIterator iterator = matchIterator();
             iterator.forEachRemaining((int matchIndex) -> matches.add(matchIndex));
-            cachedAnalysis = KmpMatchResult.from(pattern, text, matches);
+            cachedAnalysis = KmpMatchResult.from(pattern.value(), text, matches);
         }
 
         return cachedAnalysis;

@@ -10,7 +10,7 @@ import java.util.function.IntConsumer;
  * Shared read-only view of KMP matches for one pattern/text pair.
  */
 public interface KmpMatchView extends Iterable<Integer> {
-    KmpPattern pattern();
+    String patternText();
 
     String text();
 

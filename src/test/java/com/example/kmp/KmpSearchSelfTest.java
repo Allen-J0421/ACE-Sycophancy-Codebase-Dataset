@@ -81,7 +81,7 @@ public final class KmpSearchSelfTest {
             String expectedText,
             List<Integer> expectedMatches,
             String scenario) {
-        assertEquals(expectedPattern, result.pattern().value(), scenario + " pattern");
+        assertEquals(expectedPattern, result.patternText(), scenario + " pattern");
         assertEquals(expectedText, result.text(), scenario + " text");
         assertEquals(expectedMatches, result.matchIndices(), scenario + " indices");
         assertEquals(expectedMatches.size(), result.count(), scenario + " count");
@@ -101,7 +101,7 @@ public final class KmpSearchSelfTest {
             String expectedText,
             List<Integer> expectedMatches,
             String scenario) {
-        assertEquals(expectedPattern, view.pattern().value(), scenario + " pattern");
+        assertEquals(expectedPattern, view.patternText(), scenario + " pattern");
         assertEquals(expectedText, view.text(), scenario + " text");
         assertEquals(expectedMatches, view.matchIndices(), scenario + " indices");
         assertEquals(expectedMatches, view.findMatches(), scenario + " matches");

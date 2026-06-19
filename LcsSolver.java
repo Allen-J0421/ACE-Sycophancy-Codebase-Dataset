@@ -3,19 +3,10 @@ final class LcsSolver {
     private final char[] shorter;
     private final int[] lengths;
 
-    LcsSolver(String first, String second) {
-        char[] firstChars = first.toCharArray();
-        char[] secondChars = second.toCharArray();
-
-        if (firstChars.length >= secondChars.length) {
-            this.longer = firstChars;
-            this.shorter = secondChars;
-        } else {
-            this.longer = secondChars;
-            this.shorter = firstChars;
-        }
-
-        this.lengths = new int[this.shorter.length + 1];
+    LcsSolver(LcsRequest request) {
+        this.longer = request.longer();
+        this.shorter = request.shorter();
+        this.lengths = new int[shorter.length + 1];
     }
 
     int solve() {

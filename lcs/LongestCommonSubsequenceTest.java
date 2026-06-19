@@ -12,6 +12,7 @@ public final class LongestCommonSubsequenceTest {
         assertLength("", "", 0);
         assertLength("", "ABC", 0);
         assertLength("ABC", "", 0);
+        assertLength(new StringBuilder("ABC"), new StringBuilder("AC"), 2);
         assertLength("ABC", "ABC", 3);
         assertLength("ABCDEF", "FBDAMN", 2);
         assertLength("AGGTAB", "GXTXAYB", 4);
@@ -20,6 +21,7 @@ public final class LongestCommonSubsequenceTest {
         assertLength("ABCBDAB", "BDCABA", 4);
         assertLength("HELLO", "YELLOW", 4);
 
+        assertAnalysis("", "ABC", 0);
         assertAnalysis("AGGTAB", "GXTXAYB", 4);
         assertAnalysis("XMJYAUZ", "MZJAWXU", 4);
         assertAnalysis("ABCBDAB", "BDCABA", 4);
@@ -40,7 +42,7 @@ public final class LongestCommonSubsequenceTest {
         }
     }
 
-    private static void assertLength(String first, String second, int expected) {
+    private static void assertLength(CharSequence first, CharSequence second, int expected) {
         int actual = LongestCommonSubsequence.lcs(first, second);
         if (actual != expected) {
             throw new AssertionError(
@@ -48,7 +50,7 @@ public final class LongestCommonSubsequenceTest {
         }
     }
 
-    private static void assertAnalysis(String first, String second, int expectedLength) {
+    private static void assertAnalysis(CharSequence first, CharSequence second, int expectedLength) {
         LcsResult result = LongestCommonSubsequence.analyze(first, second);
         if (result.length() != expectedLength) {
             throw new AssertionError(
@@ -65,7 +67,7 @@ public final class LongestCommonSubsequenceTest {
         }
     }
 
-    private static boolean isSubsequence(String candidate, String value) {
+    private static boolean isSubsequence(CharSequence candidate, CharSequence value) {
         int candidateIndex = 0;
         for (int i = 0; i < value.length() && candidateIndex < candidate.length(); i++) {
             if (value.charAt(i) == candidate.charAt(candidateIndex)) {

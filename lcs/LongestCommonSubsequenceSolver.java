@@ -1,14 +1,12 @@
 package lcs;
 
-import java.util.Objects;
-
 final class LongestCommonSubsequenceSolver {
     private LongestCommonSubsequenceSolver() {
         // Utility class.
     }
 
     static int length(CharSequence first, CharSequence second) {
-        Input input = Input.of(first, second);
+        LcsInput input = LcsInput.of(first, second);
         if (input.isEmpty()) {
             return 0;
         }
@@ -17,7 +15,7 @@ final class LongestCommonSubsequenceSolver {
     }
 
     static LcsResult analyze(CharSequence first, CharSequence second) {
-        Input input = Input.of(first, second);
+        LcsInput input = LcsInput.of(first, second);
         if (input.isEmpty()) {
             return new LcsResult(0, "");
         }
@@ -76,28 +74,5 @@ final class LongestCommonSubsequenceSolver {
         }
 
         return new LcsResult(lengths[first.length()][second.length()], subsequence.reverse().toString());
-    }
-
-    private record Input(CharSequence first, CharSequence second) {
-        private Input {
-            Objects.requireNonNull(first, "first");
-            Objects.requireNonNull(second, "second");
-        }
-
-        static Input of(CharSequence first, CharSequence second) {
-            return new Input(first, second);
-        }
-
-        boolean isEmpty() {
-            return first.isEmpty() || second.isEmpty();
-        }
-
-        CharSequence longer() {
-            return first.length() >= second.length() ? first : second;
-        }
-
-        CharSequence shorter() {
-            return first.length() < second.length() ? first : second;
-        }
     }
 }

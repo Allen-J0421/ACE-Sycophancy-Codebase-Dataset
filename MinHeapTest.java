@@ -14,8 +14,6 @@ class MinHeapTest {
     public static void main(String[] args) {
         testInsertAndExtract();
         testRemoveAt();
-        testDecreaseKey();
-        testIncreaseKey();
         testChangeKey();
         testAutoResize();
         testEmptyHeap();
@@ -115,24 +113,6 @@ class MinHeapTest {
         h3.insert(5);
         h3.removeAt(0);
         assertEqual(3, h3.extractMin(), "new root after removing old root");
-    }
-
-    private static void testDecreaseKey() {
-        MinHeap<Integer> h = MinHeap.naturalOrder();
-        h.insert(10);
-        h.insert(20);
-        h.insert(30);
-        h.decreaseKey(2, 5);
-        assertEqual(5, h.extractMin(), "decreaseKey moves element up correctly");
-    }
-
-    private static void testIncreaseKey() {
-        MinHeap<Integer> h = MinHeap.naturalOrder();
-        h.insert(1);
-        h.insert(5);
-        h.insert(10);
-        h.increaseKey(0, 15);
-        assertEqual(5, h.extractMin(), "increaseKey on root restores heap property");
     }
 
     private static void testChangeKey() {
@@ -394,10 +374,6 @@ class MinHeapTest {
 
         assertThrows(() -> h.removeAt(-1),    IndexOutOfBoundsException.class, "removeAt: negative index");
         assertThrows(() -> h.removeAt(2),     IndexOutOfBoundsException.class, "removeAt: index >= size");
-        assertThrows(() -> h.decreaseKey(-1, 5),  IndexOutOfBoundsException.class, "decreaseKey: negative index");
-        assertThrows(() -> h.decreaseKey(2, 5),   IndexOutOfBoundsException.class, "decreaseKey: index >= size");
-        assertThrows(() -> h.increaseKey(-1, 30), IndexOutOfBoundsException.class, "increaseKey: negative index");
-        assertThrows(() -> h.increaseKey(2, 30),  IndexOutOfBoundsException.class, "increaseKey: index >= size");
         assertThrows(() -> h.changeKey(-1, 5),    IndexOutOfBoundsException.class, "changeKey: negative index");
         assertThrows(() -> h.changeKey(2, 5),     IndexOutOfBoundsException.class, "changeKey: index >= size");
 
@@ -415,7 +391,7 @@ class MinHeapTest {
         h.insert(45);
         assertEqual(2, h.extractMin(), "original scenario: extractMin");
         assertEqual(4, h.getMin(), "original scenario: getMin");
-        h.decreaseKey(2, 1);
-        assertEqual(1, h.getMin(), "original scenario: getMin after decreaseKey");
+        h.changeKey(2, 1);
+        assertEqual(1, h.getMin(), "original scenario: getMin after changeKey");
     }
 }

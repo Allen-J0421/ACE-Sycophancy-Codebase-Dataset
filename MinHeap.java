@@ -127,18 +127,6 @@ class MinHeap<T> implements Iterable<T> {
         for (T value : values) insert(value);
     }
 
-    public void decreaseKey(int i, T newVal) {
-        requireValidIndex(i);
-        heap[i] = newVal;
-        siftUp(i);
-    }
-
-    public void increaseKey(int i, T newVal) {
-        requireValidIndex(i);
-        heap[i] = newVal;
-        heapify(i);
-    }
-
     public void changeKey(int i, T newVal) {
         requireValidIndex(i);
         int cmp = comparator.compare(at(i), newVal);

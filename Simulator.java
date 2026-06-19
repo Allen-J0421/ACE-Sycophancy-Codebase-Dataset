@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,11 +48,16 @@ public class Simulator {
 
 	public Simulator() {
 		this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-		currentTimeCycle = DEFAULT_TIMECYCLE;
 	}
 
 
 	public Simulator(int depth, int width) {
+		this(depth, width, new DefaultSimulationComponentFactory());
+	}
+
+
+	public Simulator(int depth, int width, SimulationComponentFactory componentFactory) {
+		SimulationComponentFactory factory = Objects.requireNonNull(componentFactory, "componentFactory");
 		if (width <= 0 || depth <= 0) {
 			System.out.println("The dimensions must be greater than zero.");
 			System.out.println("Using default values.");
@@ -62,15 +67,15 @@ public class Simulator {
 
 
 		animals = new ArrayList<>();
-
-			plants = new ArrayList<>();
-			observers = new ArrayList<>();
-			fieldStats = new FieldStats();
-			populationCounts = new LinkedHashMap<>();
-			field = new Field(depth, width);
-			entityController = new FieldEntityController(field);
-			climate = new Climate(DEFAULT_WEATHER);
-			fieldPopulator = new FieldPopulator();
+		plants = new ArrayList<>();
+		observers = new ArrayList<>();
+		fieldStats = new FieldStats();
+		populationCounts = new LinkedHashMap<>();
+		field = factory.createFieldEnvironment(depth, width);
+		entityController = factory.createEntityController(field);
+		climate = factory.createClimate(DEFAULT_WEATHER);
+		fieldPopulator = factory.createFieldPopulator();
+		currentTimeCycle = DEFAULT_TIMECYCLE;
 
 
 		reset();

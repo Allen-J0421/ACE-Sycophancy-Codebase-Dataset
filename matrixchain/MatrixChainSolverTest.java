@@ -60,6 +60,11 @@ public class MatrixChainSolverTest {
         assertTrue(a.hashCode() == b.hashCode(), "Equal dimensions should have equal hash codes");
     }
 
+    static void testDimensionsToString() {
+        assertEquals("3x4", new MatrixDimensions(3, 4).toString());
+        assertEquals("10x1", new MatrixDimensions(10, 1).toString());
+    }
+
     static void testDimensionsCompatibility() {
         assertTrue(new MatrixDimensions(2, 3).isCompatibleWith(new MatrixDimensions(3, 4)),
                 "Matching inner dimension should be compatible");
@@ -179,6 +184,7 @@ public class MatrixChainSolverTest {
     public static void main(String[] args) {
         testDimensionsValidation();
         testDimensionsEquality();
+        testDimensionsToString();
         testDimensionsCompatibility();
         testResultEquality();
         testResultToString();

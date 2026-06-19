@@ -13,8 +13,7 @@ public final class MatrixChainCli {
             return;
         }
         try {
-            MatrixChainArguments arguments = MatrixChainArguments.parse(args);
-            System.out.println(MatrixChainSolver.solve(arguments.matrices()));
+            System.out.println(MatrixChainSolver.solve(MatrixChainArguments.parse(args).matrices()));
         } catch (IllegalArgumentException e) {
             System.err.println("Error: " + e.getMessage());
             System.err.println("Usage: java matrixchain.MatrixChainCli <dim1> <dim2> ... <dimN>");

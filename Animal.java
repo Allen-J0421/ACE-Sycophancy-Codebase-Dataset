@@ -16,30 +16,24 @@ public abstract class Animal extends Entity {
 
 	private boolean nocturnal;
 
-	private int foodChainLevel;
-
-	private int foodValue;
-
 	private int foodLevel;
 
 	private boolean sick;
-
-	private int sickProbability;
-
-	private int recoverProbability;
 
 	private int sickStep;
 
 	private int maxSickStep;
 
+	private final AnimalTraits traits;
 
-	public Animal(Field field, Location location) {
+
+	public Animal(Field field, Location location, AnimalTraits traits) {
 		super(field, location);
+		this.traits = traits;
 		alive = true;
 		gender = gender.randomGender();
 		nocturnal = false;
 		sick = false;
-		sickProbability = 16;
 	}
 
 
@@ -197,22 +191,12 @@ public abstract class Animal extends Entity {
 
 
 	protected int getSickProbability() {
-		return sickProbability;
-	}
-
-
-	protected void setSickProbability(int inputValue) {
-		sickProbability = inputValue;
+		return traits.getSickProbability();
 	}
 
 
 	protected int getRecoverProbability() {
-		return recoverProbability;
-	}
-
-
-	protected void setRecoverProbability(int inputValue) {
-		recoverProbability = inputValue;
+		return traits.getRecoverProbability();
 	}
 
 
@@ -222,22 +206,12 @@ public abstract class Animal extends Entity {
 
 
 	protected int getFoodChainLevel() {
-		return foodChainLevel;
-	}
-
-
-	protected void setFoodChainLevel(int level) {
-		foodChainLevel = level;
+		return traits.getFoodChainLevel();
 	}
 
 
 	protected int getFoodValue() {
-		return foodValue;
-	}
-
-
-	protected void setFoodValue(int value) {
-		foodValue = value;
+		return traits.getFoodValue();
 	}
 
 
@@ -286,16 +260,24 @@ public abstract class Animal extends Entity {
 	}
 
 
-	abstract protected int getBreedingAge();
+	protected int getBreedingAge() {
+		return traits.getBreedingAge();
+	}
 
 
-	abstract protected int getMaxAge();
+	protected int getMaxAge() {
+		return traits.getMaxAge();
+	}
 
 
-	abstract protected double getBreedingProbability();
+	protected double getBreedingProbability() {
+		return traits.getBreedingProbability();
+	}
 
 
-	abstract protected int getMaxLitterSize();
+	protected int getMaxLitterSize() {
+		return traits.getMaxLitterSize();
+	}
 
 
 	abstract protected Animal createNewAnimal(boolean randomAge, Field field, Location loc);

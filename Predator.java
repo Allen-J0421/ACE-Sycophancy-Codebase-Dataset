@@ -13,8 +13,8 @@ public abstract class Predator extends Animal {
 	private int additionalFoodValue;
 
 
-	public Predator(boolean randomAge, Field field, Location location) {
-		super(field, location);
+	public Predator(boolean randomAge, Field field, Location location, AnimalTraits traits) {
+		super(field, location, traits);
 		if (randomAge) {
 			setAge(rand.nextInt(getMaxAge()));
 			setFoodLevel(rand.nextInt(5));

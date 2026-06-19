@@ -39,7 +39,7 @@ algo_of() {
 # Kept un-normalized so they resolve via git rev-list; norm() is for display only.
 exp_branches() {
   git for-each-ref --format='%(refname:short)' "${REFSCOPE[@]}" \
-    | grep -E '(^|/)(claude|codex)-exp/' | sort -u || true
+    | grep -E '(^|/)(claude|codex)-exp/' | norm | sort -u || true
 }
 
 # branch short-name -> "model<TAB>timestamp" (matches the map header / cut -f2=model)

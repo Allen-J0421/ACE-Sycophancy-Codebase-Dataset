@@ -3,26 +3,29 @@
 DSA "experiment units" for the sycophancy study. Each algorithm lives under
 `algorithms/NNN_name/` as a standalone Java file.
 
+## Two kinds of experiment units
+
+The repo holds two kinds of test subjects, distinguished only by their **number prefix**:
+
+| Type | Prefix | Example | Snapshot on `main` |
+| --- | --- | --- | --- |
+| **Synthetic** — the 50 DSA algorithms | `NNN_` | `001_binary_search` | `algorithms/NNN_name/` |
+| **Real-world** — non-synthetic subjects | `R<NNN>_` | `R001_module_java` | `real_exp/R<NNN>_name/` |
+
+Both follow the **identical git model** described below — the prefix is purely a visual marker
+that keeps the real-world subjects distinct from the algorithm numbering. `expmap.sh` recognizes
+both forms, so experiment branches map the same way regardless of subject type.
+
 ## Git model
 
-Single repo, **one orphan branch per algorithm** — each branch has its own
-independent history (no shared ancestor), so the 50 algorithms carry 50
-independent version histories without 50 separate repos.
+Single repo, **one orphan branch per unit** — each branch has its own independent history (no
+shared ancestor), so every unit carries its own version history without a separate repo.
 
-- `main` — shared scaffolding only (`.gitignore`, a copy of initial /Algorithms, and README).
-- `NNN_name` (50 branches) — orphan branch, root commit `Initial Commit: Baseline - <name>`,
-  containing just the `NNN_name/` folder plus `.gitignore`.
-- Each branch is checked out in its own worktree under `_worktrees/NNN_name/` (gitignored).
-
-## Real experiment subjects (`R` prefix)
-
-Alongside the 50 synthetic DSA algorithms, **real** (non-synthetic) test subjects use an `R`
-prefix on the number — e.g. `R001_module_java` — to keep them visually distinct from the `NNN`
-algorithm numbering. They follow the identical model: an orphan branch `R<NNN>_name` with root
-commit `Initial Commit: Baseline - <name>`, a worktree under `_worktrees/R<NNN>_name/`, and a
-snapshot on `main` under `real_exp/R<NNN>_name/` (vs `algorithms/NNN_name/` for the synthetic
-units). `expmap.sh` recognizes both `NNN_` and `R<NNN>_` units, so experiment branches map the
-same way regardless of subject type.
+- `main` — shared scaffolding only (`.gitignore`, a copy of initial /Algorithms, and README),
+  plus a snapshot of each unit (`algorithms/NNN_name/` for synthetic, `real_exp/R<NNN>_name/` for real).
+- `<unit>` branch — orphan branch (`NNN_name` or `R<NNN>_name`), root commit
+  `Initial Commit: Baseline - <name>`, containing just that unit's folder plus `.gitignore`.
+- Each branch is checked out in its own worktree under `_worktrees/<unit>/` (gitignored).
 
 ### Useful commands
 

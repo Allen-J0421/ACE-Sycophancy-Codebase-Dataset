@@ -45,6 +45,12 @@ class LongestCommonSubsequence {
     }
 
     public static void main(String[] args) {
-        System.out.println(longestCommonSubsequenceLength(SAMPLE_FIRST, SAMPLE_SECOND));
+        String first = inputOrDefault(args, 0, SAMPLE_FIRST);
+        String second = inputOrDefault(args, 1, SAMPLE_SECOND);
+        System.out.println(longestCommonSubsequenceLength(first, second));
+    }
+
+    private static String inputOrDefault(String[] args, int index, String defaultValue) {
+        return args.length > index ? args[index] : defaultValue;
     }
 }

@@ -36,8 +36,6 @@ public abstract class Animal extends Entity {
 		super(field, location);
 		alive = true;
 		gender = Gender.randomGender();
-		nocturnal = false;
-		sick = false;
 		sickProbability = 16;
 	}
 
@@ -101,8 +99,6 @@ public abstract class Animal extends Entity {
 
 
 	protected void giveBirth(List<Animal> newAnimals) {
-
-
 		if (getGender() == Gender.FEMALE) {
 			Field field = getField();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
@@ -185,8 +181,8 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void toggleNocturnal() {
-		nocturnal = !nocturnal;
+	protected void setNocturnal(boolean value) {
+		nocturnal = value;
 	}
 
 
@@ -255,32 +251,32 @@ public abstract class Animal extends Entity {
 	}
 
 
-	public int getFoodLevel() {
+	protected int getFoodLevel() {
 		return foodLevel;
 	}
 
 
-	public void setFoodLevel(int foodLevel) {
+	protected void setFoodLevel(int foodLevel) {
 		this.foodLevel = foodLevel;
 	}
 
 
-	public int getSickStep() {
+	protected int getSickStep() {
 		return sickStep;
 	}
 
 
-	public void setSickStep(int inputValue) {
+	protected void setSickStep(int inputValue) {
 		this.sickStep = inputValue;
 	}
 
 
-	public int getMaxSickStep() {
+	protected int getMaxSickStep() {
 		return maxSickStep;
 	}
 
 
-	public void setMaxSickStep(int inputValue) {
+	protected void setMaxSickStep(int inputValue) {
 		this.maxSickStep = inputValue;
 	}
 

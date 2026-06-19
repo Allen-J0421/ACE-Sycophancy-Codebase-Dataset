@@ -21,12 +21,11 @@ public abstract class Predator extends Animal {
 			setAge(0);
 			setFoodLevel(6);
 		}
-		cannibal = false;
-		additionalFoodValue = 0;
 		setMaxSickStep(30);
 	}
 
 
+	@Override
 	protected void normalAct(List<Animal> newAnimals) {
 		giveBirth(newAnimals);
 
@@ -70,13 +69,13 @@ public abstract class Predator extends Animal {
 	}
 
 
-	public boolean isCannibal() {
+	protected boolean isCannibal() {
 		return cannibal;
 	}
 
 
-	public void toggleCannibal() {
-		cannibal = !cannibal;
+	protected void setCannibal(boolean value) {
+		cannibal = value;
 	}
 
 

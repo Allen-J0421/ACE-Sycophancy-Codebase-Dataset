@@ -10,7 +10,6 @@ public class Grass extends Plant {
 	public Grass(Field field, Location location) {
 		super(field, location);
 
-
 		double stageRoll = rand.nextDouble();
 		if (stageRoll < 0.5) {
 			setMaxStage(3);
@@ -23,20 +22,21 @@ public class Grass extends Plant {
 	}
 
 
+	@Override
 	protected void increaseStage(Climate climate) {
 		super.increaseStage(climate);
-		if (climate.getCurrentSeason() == Season.SPRING && getStage() > 2) {
+		Season season = climate.getCurrentSeason();
+		if ((season == Season.SPRING || season == Season.AUTUMN) && getStage() > 2) {
 			setStage(2);
-		} else if (climate.getCurrentSeason() == Season.SUMMER && getStage() > 3) {
+		} else if (season == Season.SUMMER && getStage() > 3) {
 			setStage(3);
-		} else if (climate.getCurrentSeason() == Season.AUTUMN && getStage() > 2) {
-			setStage(2);
-		} else if (climate.getCurrentSeason() == Season.WINTER && getStage() > 1) {
+		} else if (season == Season.WINTER && getStage() > 1) {
 			setStage(1);
 		}
 	}
 
 
+	@Override
 	protected Color getObjectColor(Climate climate) {
 		switch (climate.getCurrentSeason()) {
 			case SPRING:

@@ -64,17 +64,12 @@ public class Simulator {
 
 
 		animals = new ArrayList<>();
-
 		plants = new ArrayList<>();
 		field = new Field(depth, width);
 		climate = new Climate(DEFAULT_WEATHER);
 
-
 		gridView = new SimulatorView(depth, width);
-
-
 		graphView = new GraphView(1000, 500, 500);
-
 
 		reset();
 	}
@@ -123,8 +118,8 @@ public class Simulator {
 
 
 		int count = 0;
-		for (Animal i : animals) {
-			if (i.isSick()) {
+		for (Animal animal : animals) {
+			if (animal.isSick()) {
 				count++;
 			}
 		}
@@ -140,7 +135,7 @@ public class Simulator {
 		animals.clear();
 		populate();
 		currentTimeCycle = DEFAULT_TIMECYCLE;
-		climate.setCurrentWeather(Weather.SUN);
+		climate.setCurrentWeather(DEFAULT_WEATHER);
 
 		sickPercentage = 0;
 		graphView.reset();

@@ -14,7 +14,6 @@ public class Flower extends Plant {
 		setMaxStage(1);
 		setStage(getMaxStage());
 
-
 		double colorRoll = rand.nextDouble();
 		if (colorRoll < 0.33) {
 			plantColour = new Color(236, 0, 0);
@@ -26,11 +25,8 @@ public class Flower extends Plant {
 	}
 
 
+	@Override
 	protected Color getObjectColor(Climate climate) {
-		if (getStage() == 1) {
-			return plantColour;
-		} else {
-			return new Color(131, 101, 57);
-		}
+		return getStage() == 1 ? plantColour : new Color(131, 101, 57);
 	}
 }

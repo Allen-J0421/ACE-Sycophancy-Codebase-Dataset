@@ -6,6 +6,8 @@ public abstract class Plant extends Entity {
 
 	private static final Random rand = Randomizer.getRandom();
 
+	private static final double RAIN_GROWTH_PROBABILITY = 0.33;
+
 	private int stage;
 
 	private int maxStage;
@@ -23,12 +25,9 @@ public abstract class Plant extends Entity {
 
 
 	protected void increaseStage(Climate climate) {
-		if (stage < getMaxStage()) {
-			if (climate.getCurrentWeather() == Weather.RAIN) {
-				if (rand.nextDouble() <= 0.33) {
-					stage++;
-				}
-			}
+		if (stage < getMaxStage() && climate.getCurrentWeather() == Weather.RAIN
+				&& rand.nextDouble() <= RAIN_GROWTH_PROBABILITY) {
+			stage++;
 		}
 	}
 

@@ -17,6 +17,7 @@ public abstract class Prey extends Animal {
 	}
 
 
+	@Override
 	protected void normalAct(List<Animal> newAnimals) {
 		findFood();
 		giveBirth(newAnimals);

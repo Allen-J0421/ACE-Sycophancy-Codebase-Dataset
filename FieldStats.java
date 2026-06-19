@@ -1,16 +1,15 @@
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class FieldStats {
 
-	private HashMap<Class<?>, Counter> counters;
+	private Map<Class<?>, Counter> counters;
 
 	private boolean countsValid;
 
 
 	public FieldStats() {
-
-
 		counters = new HashMap<>();
 		countsValid = true;
 	}

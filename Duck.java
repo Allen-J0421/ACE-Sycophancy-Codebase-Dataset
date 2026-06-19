@@ -22,31 +22,37 @@ public class Duck extends Prey {
 	}
 
 
+	@Override
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
 	}
 
 
+	@Override
 	protected int getMaxAge() {
 		return MAX_AGE;
 	}
 
 
+	@Override
 	protected double getBreedingProbability() {
 		return BREEDING_PROBABILITY;
 	}
 
 
+	@Override
 	protected int getMaxLitterSize() {
 		return MAX_LITTER_SIZE;
 	}
 
 
+	@Override
 	protected Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
 		return new Duck(randomAge, field, loc);
 	}
 
 
+	@Override
 	protected Color getObjectColor(Climate climate) {
 		return new Color(241, 200, 23);
 	}

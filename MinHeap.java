@@ -1,19 +1,35 @@
 import java.util.NoSuchElementException;
 
-class MinHeap {
+class MinHeap<T extends Comparable<T>> {
 
-    private final int[] heap;
+    private final Object[] heap;
     private final int capacity;
     private int size;
 
     public MinHeap(int capacity) {
         this.capacity = capacity;
-        this.heap = new int[capacity];
+        this.heap = new Object[capacity];
         this.size = 0;
     }
 
+    // O(n) construction via Floyd's bottom-up heapification.
+    public static <T extends Comparable<T>> MinHeap<T> from(T[] arr) {
+        MinHeap<T> h = new MinHeap<>(arr.length);
+        System.arraycopy(arr, 0, h.heap, 0, arr.length);
+        h.size = arr.length;
+        for (int i = arr.length / 2 - 1; i >= 0; i--) {
+            h.heapify(i);
+        }
+        return h;
+    }
+
+    @SuppressWarnings("unchecked")
+    private T at(int i) {
+        return (T) heap[i];
+    }
+
     private void swap(int a, int b) {
-        int temp = heap[a];
+        Object temp = heap[a];
         heap[a] = heap[b];
         heap[b] = temp;
     }
@@ -30,7 +46,7 @@ class MinHeap {
         return 2 * i + 2;
     }
 
-    public boolean insertKey(int key) {
+    public boolean insertKey(T key) {
         if (size == capacity) {
             return false;
         }
@@ -39,47 +55,65 @@ class MinHeap {
         heap[i] = key;
         size++;
 
-        while (i != 0 && heap[i] < heap[parent(i)]) {
+        while (i != 0 && at(i).compareTo(at(parent(i))) < 0) {
             swap(i, parent(i));
             i = parent(i);
         }
         return true;
     }
 
-    public void decreaseKey(int i, int newVal) {
+    public void decreaseKey(int i, T newVal) {
         heap[i] = newVal;
-        while (i != 0 && heap[i] < heap[parent(i)]) {
+        while (i != 0 && at(i).compareTo(at(parent(i))) < 0) {
             swap(i, parent(i));
             i = parent(i);
         }
     }
 
-    public int getMin() {
+    public T getMin() {
         if (size == 0) {
             throw new NoSuchElementException("Heap is empty");
         }
-        return heap[0];
+        return at(0);
     }
 
-    public int extractMin() {
-        if (size <= 0) {
-            return Integer.MAX_VALUE;
+    public T extractMin() {
+        if (size == 0) {
+            throw new NoSuchElementException("Heap is empty");
         }
         if (size == 1) {
+            T root = at(0);
+            heap[0] = null;
             size--;
-            return heap[0];
+            return root;
         }
 
-        int root = heap[0];
+        T root = at(0);
         heap[0] = heap[size - 1];
+        heap[size - 1] = null;
         size--;
         heapify(0);
         return root;
     }
 
     public void deleteKey(int i) {
-        decreaseKey(i, Integer.MIN_VALUE);
-        extractMin();
+        if (i == size - 1) {
+            heap[size - 1] = null;
+            size--;
+            return;
+        }
+        heap[i] = heap[size - 1];
+        heap[size - 1] = null;
+        size--;
+        // The replacement element may need to move up or down.
+        if (i > 0 && at(i).compareTo(at(parent(i))) < 0) {
+            while (i != 0 && at(i).compareTo(at(parent(i))) < 0) {
+                swap(i, parent(i));
+                i = parent(i);
+            }
+        } else {
+            heapify(i);
+        }
     }
 
     private void heapify(int i) {
@@ -87,10 +121,10 @@ class MinHeap {
         int r = right(i);
         int smallest = i;
 
-        if (l < size && heap[l] < heap[smallest]) {
+        if (l < size && at(l).compareTo(at(smallest)) < 0) {
             smallest = l;
         }
-        if (r < size && heap[r] < heap[smallest]) {
+        if (r < size && at(r).compareTo(at(smallest)) < 0) {
             smallest = r;
         }
         if (smallest != i) {
@@ -99,16 +133,16 @@ class MinHeap {
         }
     }
 
-    public void increaseKey(int i, int newVal) {
+    public void increaseKey(int i, T newVal) {
         heap[i] = newVal;
         heapify(i);
     }
 
-    public void changeKey(int i, int newVal) {
-        if (heap[i] == newVal) {
+    public void changeKey(int i, T newVal) {
+        if (at(i).compareTo(newVal) == 0) {
             return;
         }
-        if (heap[i] < newVal) {
+        if (at(i).compareTo(newVal) < 0) {
             increaseKey(i, newVal);
         } else {
             decreaseKey(i, newVal);

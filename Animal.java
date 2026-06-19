@@ -54,9 +54,7 @@ public abstract class Animal extends Entity {
 		incrementHunger();
 		battleSickness();
 		if (isAlive()) {
-			boolean shouldAct = (time == TimeCycle.NIGHT && isNocturnal())
-					|| (time == TimeCycle.DAY && !isNocturnal());
-			if (shouldAct) {
+			if ((time == TimeCycle.NIGHT && isNocturnal()) || (time == TimeCycle.DAY && !isNocturnal())) {
 				normalAct(newAnimals);
 			}
 		}
@@ -105,8 +103,7 @@ public abstract class Animal extends Entity {
 			int births = breed();
 			for (int b = 0; b < births && !free.isEmpty(); b++) {
 				Location loc = free.remove(0);
-				Animal young = createNewAnimal(false, field, loc);
-				newAnimals.add(young);
+				newAnimals.add(createNewAnimal(false, field, loc));
 			}
 		}
 	}

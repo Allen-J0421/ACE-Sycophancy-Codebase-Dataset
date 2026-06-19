@@ -72,7 +72,6 @@ public class SimulatorView extends JFrame {
 
 		fieldView.preparePaint();
 
-
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Object animalObj = field.getAnimalAt(row, col);
@@ -103,8 +102,10 @@ public class SimulatorView extends JFrame {
 	private class FieldView extends JPanel {
 		private static final int GRID_VIEW_SCALING_FACTOR = 5;
 		private Dimension size;
-		private int gridWidth, gridHeight;
-		private int xScale, yScale;
+		private int gridWidth;
+		private int gridHeight;
+		private int xScale;
+		private int yScale;
 		private Graphics g;
 		private Image fieldImage;
 

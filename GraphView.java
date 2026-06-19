@@ -26,7 +26,6 @@ public class GraphView extends JFrame {
 		classes = colors.keySet();
 
 		frame = makeFrame(width, height, startMax);
-
 	}
 
 
@@ -111,12 +110,10 @@ public class GraphView extends JFrame {
 
 
 		public void update(int step, Field field, FieldStats stats) {
-
 			Graphics g = graphImage.getGraphics();
 
 			int height = graphImage.getHeight();
 			int width = graphImage.getWidth();
-
 
 			g.copyArea(1, 0, width - 1, height, -1, 0);
 
@@ -126,7 +123,6 @@ public class GraphView extends JFrame {
 			for (Iterator<Class<?>> it = classes.iterator(); it.hasNext(); i++) {
 				Class<?> nextClass = it.next();
 				int count = stats.getPopulationCount(field, nextClass);
-
 
 				int y = height - ((height * count) / yMax) - 1;
 				while (y < 0) {
@@ -144,7 +140,6 @@ public class GraphView extends JFrame {
 
 			stepLabel.setText(String.valueOf(step));
 			countLabel.setText(stats.getPopulationDetails(field));
-
 		}
 
 

@@ -16,6 +16,8 @@ class MinHeap<T> {
         this.size = 0;
     }
 
+    // --- Factory methods ---
+
     public static <T extends Comparable<T>> MinHeap<T> naturalOrder() {
         return new MinHeap<>(Comparator.<T>naturalOrder(), DEFAULT_CAPACITY);
     }
@@ -36,6 +38,7 @@ class MinHeap<T> {
         return from(arr, Comparator.<T>naturalOrder());
     }
 
+    // O(n) construction via Floyd's bottom-up heapification.
     public static <T> MinHeap<T> from(T[] arr, Comparator<T> comparator) {
         MinHeap<T> h = new MinHeap<>(comparator, arr.length);
         System.arraycopy(arr, 0, h.heap, 0, arr.length);
@@ -45,6 +48,22 @@ class MinHeap<T> {
         }
         return h;
     }
+
+    // --- Static sort ---
+
+    public static <T extends Comparable<T>> void sort(T[] arr) {
+        sort(arr, Comparator.<T>naturalOrder());
+    }
+
+    // Sorts arr in-place according to comparator order.
+    public static <T> void sort(T[] arr, Comparator<T> comparator) {
+        MinHeap<T> h = from(arr, comparator);
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = h.extractMin();
+        }
+    }
+
+    // --- Internal helpers ---
 
     @SuppressWarnings("unchecked")
     private T at(int i) {
@@ -61,26 +80,32 @@ class MinHeap<T> {
         heap[b] = temp;
     }
 
-    private int parent(int i) {
-        return (i - 1) / 2;
-    }
-
-    private int left(int i) {
-        return 2 * i + 1;
-    }
-
-    private int right(int i) {
-        return 2 * i + 2;
-    }
+    private int parent(int i) { return (i - 1) / 2; }
+    private int left(int i)   { return 2 * i + 1; }
+    private int right(int i)  { return 2 * i + 2; }
 
     private void grow() {
         heap = Arrays.copyOf(heap, heap.length * 2);
     }
 
-    public void insertKey(T key) {
-        if (size == heap.length) {
-            grow();
+    // Iterative sift-down — equivalent to the tail-recursive form but avoids call-stack growth.
+    private void heapify(int i) {
+        while (true) {
+            int l = left(i);
+            int r = right(i);
+            int smallest = i;
+            if (l < size && compare(l, smallest) < 0) smallest = l;
+            if (r < size && compare(r, smallest) < 0) smallest = r;
+            if (smallest == i) break;
+            swap(i, smallest);
+            i = smallest;
         }
+    }
+
+    // --- Mutation ---
+
+    public void insertKey(T key) {
+        if (size == heap.length) grow();
         int i = size;
         heap[i] = key;
         size++;
@@ -98,17 +123,47 @@ class MinHeap<T> {
         }
     }
 
-    public T getMin() {
-        if (size == 0) {
-            throw new NoSuchElementException("Heap is empty");
+    public void increaseKey(int i, T newVal) {
+        heap[i] = newVal;
+        heapify(i);
+    }
+
+    public void changeKey(int i, T newVal) {
+        int cmp = comparator.compare(at(i), newVal);
+        if (cmp == 0) return;
+        if (cmp < 0) increaseKey(i, newVal);
+        else decreaseKey(i, newVal);
+    }
+
+    public void deleteKey(int i) {
+        if (i == size - 1) {
+            heap[size - 1] = null;
+            size--;
+            return;
         }
+        heap[i] = heap[size - 1];
+        heap[size - 1] = null;
+        size--;
+        // Replacement element may need to move up or down.
+        if (i > 0 && compare(i, parent(i)) < 0) {
+            while (i != 0 && compare(i, parent(i)) < 0) {
+                swap(i, parent(i));
+                i = parent(i);
+            }
+        } else {
+            heapify(i);
+        }
+    }
+
+    // --- Access ---
+
+    public T getMin() {
+        if (size == 0) throw new NoSuchElementException("Heap is empty");
         return at(0);
     }
 
     public T extractMin() {
-        if (size == 0) {
-            throw new NoSuchElementException("Heap is empty");
-        }
+        if (size == 0) throw new NoSuchElementException("Heap is empty");
         if (size == 1) {
             T root = at(0);
             heap[0] = null;
@@ -123,60 +178,27 @@ class MinHeap<T> {
         return root;
     }
 
-    public void deleteKey(int i) {
-        if (i == size - 1) {
-            heap[size - 1] = null;
-            size--;
-            return;
+    // Returns the heap elements in heap order (not sorted).
+    public Object[] toArray() {
+        return Arrays.copyOf(heap, size);
+    }
+
+    // Returns the heap elements in sorted order without modifying this heap.
+    public Object[] toSortedArray() {
+        MinHeap<T> copy = new MinHeap<>(comparator, size);
+        System.arraycopy(heap, 0, copy.heap, 0, size);
+        copy.size = this.size;
+        Object[] result = new Object[size];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = copy.extractMin();
         }
-        heap[i] = heap[size - 1];
-        heap[size - 1] = null;
-        size--;
-        // The replacement element may need to move up or down.
-        if (i > 0 && compare(i, parent(i)) < 0) {
-            while (i != 0 && compare(i, parent(i)) < 0) {
-                swap(i, parent(i));
-                i = parent(i);
-            }
-        } else {
-            heapify(i);
-        }
+        return result;
     }
 
-    private void heapify(int i) {
-        int l = left(i);
-        int r = right(i);
-        int smallest = i;
-        if (l < size && compare(l, smallest) < 0) smallest = l;
-        if (r < size && compare(r, smallest) < 0) smallest = r;
-        if (smallest != i) {
-            swap(i, smallest);
-            heapify(smallest);
-        }
-    }
+    // --- Utility ---
 
-    public void increaseKey(int i, T newVal) {
-        heap[i] = newVal;
-        heapify(i);
-    }
-
-    public void changeKey(int i, T newVal) {
-        int cmp = comparator.compare(at(i), newVal);
-        if (cmp == 0) return;
-        if (cmp < 0) {
-            increaseKey(i, newVal);
-        } else {
-            decreaseKey(i, newVal);
-        }
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    public int size() {
-        return size;
-    }
+    public boolean isEmpty() { return size == 0; }
+    public int size()        { return size; }
 
     @Override
     public String toString() {

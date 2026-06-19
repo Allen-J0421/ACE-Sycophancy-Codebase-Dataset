@@ -23,6 +23,9 @@ class MinHeapTest {
         testMaxHeap();
         testCustomComparator();
         testToString();
+        testToArray();
+        testToSortedArray();
+        testSort();
         testOriginalScenario();
 
         System.out.println("\n" + passed + " passed, " + failed + " failed.");
@@ -213,10 +216,75 @@ class MinHeapTest {
         h.insertKey(3);
         h.insertKey(1);
         h.insertKey(2);
-        // The root (index 0) is always the minimum; other positions reflect heap structure.
         assertTrue(h.toString().startsWith("[1"), "toString: root is minimum");
         assertTrue(h.toString().contains("2"), "toString: contains 2");
         assertTrue(h.toString().contains("3"), "toString: contains 3");
+    }
+
+    private static void testToArray() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        assertEqual(0, h.toArray().length, "toArray on empty heap");
+
+        h.insertKey(3);
+        h.insertKey(1);
+        h.insertKey(2);
+        Object[] arr = h.toArray();
+        assertEqual(3, arr.length, "toArray: correct length");
+        assertEqual(1, arr[0], "toArray: root is minimum");
+        // Non-root order is heap-dependent; verify all values present via sum.
+        int sum = (Integer) arr[0] + (Integer) arr[1] + (Integer) arr[2];
+        assertEqual(6, sum, "toArray: all elements present");
+        assertEqual(3, h.size(), "toArray is non-destructive");
+    }
+
+    private static void testToSortedArray() {
+        Integer[] input = {5, 3, 8, 1, 9, 2};
+        MinHeap<Integer> h = MinHeap.from(input);
+        Object[] sorted = h.toSortedArray();
+
+        assertEqual(6, sorted.length, "toSortedArray: correct length");
+        Integer[] expected = {1, 2, 3, 5, 8, 9};
+        for (int i = 0; i < expected.length; i++) {
+            assertEqual(expected[i], sorted[i], "toSortedArray: element at index " + i);
+        }
+        assertEqual(6, h.size(), "toSortedArray: non-destructive");
+
+        // With reverse comparator — sorted descending.
+        MinHeap<Integer> maxH = MinHeap.from(input, Comparator.reverseOrder());
+        Object[] desc = maxH.toSortedArray();
+        assertEqual(9, desc[0], "toSortedArray reverse: first is maximum");
+        assertEqual(1, desc[5], "toSortedArray reverse: last is minimum");
+    }
+
+    private static void testSort() {
+        Integer[] arr = {5, 3, 8, 1, 9, 2};
+        MinHeap.sort(arr);
+        Integer[] ascending = {1, 2, 3, 5, 8, 9};
+        for (int i = 0; i < ascending.length; i++) {
+            assertEqual(ascending[i], arr[i], "sort ascending: index " + i);
+        }
+
+        MinHeap.sort(arr, Comparator.reverseOrder());
+        Integer[] descending = {9, 8, 5, 3, 2, 1};
+        for (int i = 0; i < descending.length; i++) {
+            assertEqual(descending[i], arr[i], "sort descending: index " + i);
+        }
+
+        // Edge cases
+        Integer[] single = {42};
+        MinHeap.sort(single);
+        assertEqual(42, single[0], "sort single element");
+
+        Integer[] alreadySorted = {1, 2, 3, 4, 5};
+        MinHeap.sort(alreadySorted);
+        assertEqual(1, alreadySorted[0], "sort already-sorted: first");
+        assertEqual(5, alreadySorted[4], "sort already-sorted: last");
+
+        // Sort strings by length
+        String[] strings = {"banana", "fig", "kiwi", "apple"};
+        MinHeap.sort(strings, Comparator.comparingInt(String::length));
+        assertEqual("fig", strings[0], "sort strings by length: shortest first");
+        assertEqual("banana", strings[3], "sort strings by length: longest last");
     }
 
     private static void testOriginalScenario() {

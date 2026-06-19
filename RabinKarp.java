@@ -3,6 +3,9 @@ import java.util.Collections;
 import java.util.List;
 
 public final class RabinKarp {
+    private static final String DEMO_TEXT = "geeksforgeeks";
+    private static final String DEMO_PATTERN = "geeks";
+
     private RabinKarp() {
     }
 
@@ -158,10 +161,11 @@ public final class RabinKarp {
     }
 
     public static void main(String[] args) {
-        String text = "geeksforgeeks";
-        String pattern = "geeks";
+        printMatches(search(DEMO_PATTERN, DEMO_TEXT));
+    }
 
-        for (int index : search(pattern, text)) {
+    private static void printMatches(List<Integer> matches) {
+        for (int index : matches) {
             System.out.print(index + " ");
         }
         System.out.println();

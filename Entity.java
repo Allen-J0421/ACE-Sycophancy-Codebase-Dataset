@@ -9,9 +9,9 @@ public abstract class Entity implements Movable {
 	private Location location;
 
 
-	public Entity(Field field, Location location) {
+	public Entity(Field field) {
 		this.field = field;
-		setLocation(location);
+		location = null;
 	}
 
 
@@ -39,6 +39,11 @@ public abstract class Entity implements Movable {
 		if (field != null) {
 			field.relocate(this, location, newLocation);
 		}
+		bindLocation(newLocation);
+	}
+
+
+	final void bindLocation(Location newLocation) {
 		location = newLocation;
 	}
 

@@ -46,20 +46,28 @@ public enum AnimalSpecies {
 
 
 	public Animal create(boolean randomAge, Field field, Location location) {
+		Animal animal;
 		switch (this) {
 			case BIRD:
-				return new Bird(randomAge, field, location);
+				animal = new Bird(randomAge, field);
+				break;
 			case DUCK:
-				return new Duck(randomAge, field, location);
+				animal = new Duck(randomAge, field);
+				break;
 			case MOUSE:
-				return new Mouse(randomAge, field, location);
+				animal = new Mouse(randomAge, field);
+				break;
 			case WOLF:
-				return new Wolf(randomAge, field, location);
+				animal = new Wolf(randomAge, field);
+				break;
 			case BEAR:
-				return new Bear(randomAge, field, location);
+				animal = new Bear(randomAge, field);
+				break;
 			default:
 				throw new IllegalStateException("Unhandled species: " + this);
 		}
+		field.spawn(animal, location);
+		return animal;
 	}
 
 

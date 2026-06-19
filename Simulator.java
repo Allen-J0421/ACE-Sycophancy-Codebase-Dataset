@@ -128,9 +128,13 @@ public class Simulator {
 
 	private void populatePlant(Random rand, Location location) {
 		if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
-			plants.add(new Flower(field, location));
+			Flower flower = new Flower(field);
+			field.spawn(flower, location);
+			plants.add(flower);
 		} else {
-			plants.add(new Grass(field, location));
+			Grass grass = new Grass(field);
+			field.spawn(grass, location);
+			plants.add(grass);
 		}
 	}
 

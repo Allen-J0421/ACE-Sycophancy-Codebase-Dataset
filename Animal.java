@@ -35,8 +35,8 @@ public abstract class Animal extends Entity {
 	private int maxSickStep;
 
 
-	public Animal(Field field, Location location, AnimalSpecies species) {
-		super(field, location);
+	public Animal(Field field, AnimalSpecies species) {
+		super(field);
 		this.species = species;
 		alive = true;
 		gender = Gender.randomGender();

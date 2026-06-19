@@ -7,8 +7,8 @@ public abstract class Prey extends Animal {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	public Prey(boolean randomAge, Field field, Location location, AnimalSpecies species) {
-		super(field, location, species);
+	public Prey(boolean randomAge, Field field, AnimalSpecies species) {
+		super(field, species);
 		setAge(0);
 		setFoodLevel(6);
 		if (randomAge) {

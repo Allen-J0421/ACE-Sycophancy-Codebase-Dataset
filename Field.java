@@ -44,6 +44,14 @@ public class Field {
 	}
 
 
+	public void spawn(Movable movable, Location location) {
+		relocate(movable, null, location);
+		if (movable instanceof Entity) {
+			((Entity) movable).bindLocation(location);
+		}
+	}
+
+
 	public <T extends Movable> T getOccupantAt(Location location, OccupancyLayer layer) {
 		return cellAt(location).get(layer);
 	}

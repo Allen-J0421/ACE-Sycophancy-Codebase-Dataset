@@ -7,8 +7,8 @@ public class Grass extends Plant {
 	private static final Random rand = Randomizer.getRandom();
 
 
-	public Grass(Field field, Location location) {
-		super(field, location);
+	public Grass(Field field) {
+		super(field);
 
 
 		if (rand.nextDouble() <= 0.5) {

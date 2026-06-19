@@ -88,6 +88,11 @@ class MinHeap<T> implements Iterable<T> {
         heap = Arrays.copyOf(heap, heap.length * 2);
     }
 
+    private void requireValidIndex(int i) {
+        if (i < 0 || i >= size)
+            throw new IndexOutOfBoundsException("Index " + i + " out of bounds for size " + size);
+    }
+
     // Iterative sift-down — equivalent to the tail-recursive form but avoids call-stack growth.
     private void heapify(int i) {
         while (true) {
@@ -104,7 +109,7 @@ class MinHeap<T> implements Iterable<T> {
 
     // --- Mutation ---
 
-    public void insertKey(T key) {
+    public void insert(T key) {
         if (size == heap.length) grow();
         int i = size;
         heap[i] = key;
@@ -116,6 +121,7 @@ class MinHeap<T> implements Iterable<T> {
     }
 
     public void decreaseKey(int i, T newVal) {
+        requireValidIndex(i);
         heap[i] = newVal;
         while (i != 0 && compare(i, parent(i)) < 0) {
             swap(i, parent(i));
@@ -124,11 +130,13 @@ class MinHeap<T> implements Iterable<T> {
     }
 
     public void increaseKey(int i, T newVal) {
+        requireValidIndex(i);
         heap[i] = newVal;
         heapify(i);
     }
 
     public void changeKey(int i, T newVal) {
+        requireValidIndex(i);
         int cmp = comparator.compare(at(i), newVal);
         if (cmp == 0) return;
         if (cmp < 0) increaseKey(i, newVal);
@@ -138,7 +146,7 @@ class MinHeap<T> implements Iterable<T> {
     public boolean remove(T value) {
         for (int i = 0; i < size; i++) {
             if (comparator.compare(at(i), value) == 0) {
-                deleteKey(i);
+                removeAt(i);
                 return true;
             }
         }
@@ -150,22 +158,20 @@ class MinHeap<T> implements Iterable<T> {
         size = 0;
     }
 
-    public void deleteKey(int i) {
-        if (i == size - 1) {
-            heap[size - 1] = null;
-            size--;
-            return;
-        }
+    public void removeAt(int i) {
+        requireValidIndex(i);
         heap[i] = heap[size - 1];
         heap[size - 1] = null;
         size--;
-        if (i > 0 && compare(i, parent(i)) < 0) {
-            while (i != 0 && compare(i, parent(i)) < 0) {
-                swap(i, parent(i));
-                i = parent(i);
+        if (size > 0 && i < size) {
+            if (i > 0 && compare(i, parent(i)) < 0) {
+                while (i != 0 && compare(i, parent(i)) < 0) {
+                    swap(i, parent(i));
+                    i = parent(i);
+                }
+            } else {
+                heapify(i);
             }
-        } else {
-            heapify(i);
         }
     }
 
@@ -178,16 +184,10 @@ class MinHeap<T> implements Iterable<T> {
 
     public T extractMin() {
         if (size == 0) throw new NoSuchElementException("Heap is empty");
-        if (size == 1) {
-            T root = at(0);
-            heap[0] = null;
-            size--;
-            return root;
-        }
         T root = at(0);
-        heap[0] = heap[size - 1];
-        heap[size - 1] = null;
         size--;
+        heap[0] = heap[size];
+        heap[size] = null;
         heapify(0);
         return root;
     }

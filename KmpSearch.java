@@ -1,4 +1,6 @@
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.function.IntConsumer;
 
 public final class KmpSearch {
 
@@ -15,11 +17,27 @@ public final class KmpSearch {
      * @throws NullPointerException if {@code pattern} or {@code text} is null
      * @throws IllegalArgumentException if {@code pattern} is empty
      */
-    public static List<Integer> search(String pattern, String text) {
+    public static List<Integer> search(CharSequence pattern, CharSequence text) {
         return compile(pattern).findMatchesIn(text);
     }
 
-    public static KmpPattern compile(String pattern) {
+    public static OptionalInt findFirst(CharSequence pattern, CharSequence text) {
+        return compile(pattern).findFirstIn(text);
+    }
+
+    public static int countMatches(CharSequence pattern, CharSequence text) {
+        return compile(pattern).countMatchesIn(text);
+    }
+
+    public static boolean contains(CharSequence pattern, CharSequence text) {
+        return compile(pattern).occursIn(text);
+    }
+
+    public static void forEachMatch(CharSequence pattern, CharSequence text, IntConsumer matchConsumer) {
+        compile(pattern).forEachMatchIn(text, matchConsumer);
+    }
+
+    public static KmpPattern compile(CharSequence pattern) {
         return KmpPattern.compile(pattern);
     }
 }

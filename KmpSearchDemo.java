@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.OptionalInt;
 
 public final class KmpSearchDemo {
     private static final String DEFAULT_TEXT = "aabaacaadaabaaba";
@@ -13,9 +14,17 @@ public final class KmpSearchDemo {
 
         KmpPattern compiledPattern = KmpSearch.compile(pattern);
         List<Integer> matches = compiledPattern.findMatchesIn(text);
+        OptionalInt firstMatch = compiledPattern.findFirstIn(text);
 
-        for (int matchIndex : matches) {
-            System.out.print(matchIndex + " ");
+        System.out.println("Matches: " + matches);
+        System.out.println("Count: " + compiledPattern.countMatchesIn(text));
+        System.out.println("First: " + (firstMatch.isPresent() ? firstMatch.getAsInt() : "none"));
+
+        System.out.print("Streamed: ");
+        compiledPattern.forEachMatchIn(text, matchIndex -> System.out.print(matchIndex + " "));
+        if (matches.isEmpty()) {
+            System.out.print("none");
         }
+        System.out.println();
     }
 }

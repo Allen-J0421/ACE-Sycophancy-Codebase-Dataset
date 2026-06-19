@@ -14,7 +14,9 @@ final class KmpMatcher {
         if (pattern == null || text == null) {
             throw new IllegalArgumentException("Pattern and text must not be null.");
         }
-        if (pattern.length() == 0 || text.length() == 0 || pattern.length() > text.length()) {
+        int patternLength = pattern.length();
+        int textLength = text.length();
+        if (patternLength == 0 || textLength == 0 || patternLength > textLength) {
             return Collections.emptyList();
         }
 
@@ -23,12 +25,12 @@ final class KmpMatcher {
         int textIndex = 0;
         int patternIndex = 0;
 
-        while (textIndex < text.length()) {
+        while (textIndex < textLength) {
             if (text.charAt(textIndex) == pattern.charAt(patternIndex)) {
                 textIndex++;
                 patternIndex++;
 
-                if (patternIndex == pattern.length()) {
+                if (patternIndex == patternLength) {
                     matches.add(textIndex - patternIndex);
                     patternIndex = lps[patternIndex - 1];
                 }
@@ -39,7 +41,7 @@ final class KmpMatcher {
             }
         }
 
-        return Collections.unmodifiableList(new ArrayList<Integer>(matches));
+        return Collections.unmodifiableList(matches);
     }
 
     private static int[] buildLps(CharSequence pattern) {

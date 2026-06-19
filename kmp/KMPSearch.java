@@ -17,15 +17,20 @@ public final class KMPSearch {
     }
 
     public static void main(String[] args) {
+        List<Integer> matches = parseMatches(args);
+        printMatches(matches);
+    }
+
+    private static List<Integer> parseMatches(String[] args) {
         if (args == null || args.length == 0) {
-            printMatches(findAllMatches(SAMPLE_PATTERN, SAMPLE_TEXT));
-            return;
-        } else if (args.length == 2) {
-            printMatches(findAllMatches(args[0], args[1]));
-            return;
-        } else {
-            throw new IllegalArgumentException("Usage: java kmp.KMPSearch [pattern text]");
+            return findAllMatches(SAMPLE_PATTERN, SAMPLE_TEXT);
         }
+
+        if (args.length == 2) {
+            return findAllMatches(args[0], args[1]);
+        }
+
+        throw new IllegalArgumentException("Usage: java kmp.KMPSearch [pattern text]");
     }
 
     private static void printMatches(List<Integer> matches) {

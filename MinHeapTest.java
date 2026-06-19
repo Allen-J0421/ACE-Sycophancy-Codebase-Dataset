@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
@@ -26,6 +27,7 @@ class MinHeapTest {
         testToArray();
         testToSortedArray();
         testSort();
+        testAddAll();
         testContains();
         testRemove();
         testClear();
@@ -287,6 +289,24 @@ class MinHeapTest {
         MinHeap.sort(strings, Comparator.comparingInt(String::length));
         assertEqual("fig", strings[0], "sort strings by length: shortest first");
         assertEqual("banana", strings[3], "sort strings by length: longest last");
+    }
+
+    private static void testAddAll() {
+        MinHeap<Integer> h = MinHeap.naturalOrder();
+        h.addAll(Arrays.asList(5, 3, 8, 1, 9, 2));
+        assertEqual(6, h.size(), "addAll: correct size");
+        assertEqual(1, h.extractMin(), "addAll: extracts minimum");
+        assertEqual(2, h.extractMin(), "addAll: extracts next");
+
+        MinHeap<Integer> h2 = MinHeap.naturalOrder();
+        h2.insert(10);
+        h2.addAll(Arrays.asList(4, 7));
+        assertEqual(3, h2.size(), "addAll to non-empty: correct size");
+        assertEqual(4, h2.extractMin(), "addAll to non-empty: minimum from added elements");
+
+        MinHeap<Integer> h3 = MinHeap.naturalOrder();
+        h3.addAll(Arrays.asList());
+        assertTrue(h3.isEmpty(), "addAll empty iterable: heap unchanged");
     }
 
     private static void testContains() {

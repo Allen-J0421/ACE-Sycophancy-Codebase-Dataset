@@ -118,8 +118,13 @@ class MinHeap<T> implements Iterable<T> {
 
     public void insert(T value) {
         if (size == heap.length) grow();
-        heap[size] = value;
-        siftUp(size++);
+        int i = size++;
+        heap[i] = value;
+        siftUp(i);
+    }
+
+    public void addAll(Iterable<T> values) {
+        for (T value : values) insert(value);
     }
 
     public void decreaseKey(int i, T newVal) {
@@ -144,13 +149,10 @@ class MinHeap<T> implements Iterable<T> {
     }
 
     public boolean remove(T value) {
-        for (int i = 0; i < size; i++) {
-            if (comparator.compare(at(i), value) == 0) {
-                removeAt(i);
-                return true;
-            }
-        }
-        return false;
+        int i = indexOf(value);
+        if (i < 0) return false;
+        removeAt(i);
+        return true;
     }
 
     public void clear() {
@@ -188,11 +190,15 @@ class MinHeap<T> implements Iterable<T> {
         return root;
     }
 
-    public boolean contains(T value) {
+    private int indexOf(T value) {
         for (int i = 0; i < size; i++) {
-            if (comparator.compare(at(i), value) == 0) return true;
+            if (comparator.compare(at(i), value) == 0) return i;
         }
-        return false;
+        return -1;
+    }
+
+    public boolean contains(T value) {
+        return indexOf(value) >= 0;
     }
 
     // Returns the heap elements in heap order (not sorted).

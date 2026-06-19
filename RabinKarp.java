@@ -11,29 +11,7 @@ public final class RabinKarp {
     }
 
     public static List<Integer> search(CharSequence pattern, CharSequence text) {
-        SearchInput input = SearchInput.of(pattern, text);
-
-        if (input.hasEmptyPattern()) {
-            return allStartIndexes(input.textLength());
-        }
-
-        if (!input.hasMatchableWindow()) {
-            return noMatches();
-        }
-
-        SearchState searchState = input.newSearchState();
-        return collectMatches(searchState);
-    }
-
-    private static List<Integer> collectMatches(SearchState searchState) {
-        List<Integer> matches = new ArrayList<>(searchState.windowCount());
-        while (searchState.hasCurrentWindow()) {
-            if (searchState.isMatch()) {
-                matches.add(searchState.currentStart());
-            }
-            searchState.advance();
-        }
-        return matches;
+        return SearchInput.of(pattern, text).findMatches();
     }
 
     private static List<Integer> noMatches() {
@@ -82,8 +60,16 @@ public final class RabinKarp {
             return text.length();
         }
 
-        private SearchState newSearchState() {
-            return new SearchState(text, pattern);
+        private List<Integer> findMatches() {
+            if (hasEmptyPattern()) {
+                return allStartIndexes(textLength());
+            }
+
+            if (!hasMatchableWindow()) {
+                return noMatches();
+            }
+
+            return new SearchSession(text, pattern).findMatches();
         }
     }
 
@@ -126,14 +112,25 @@ public final class RabinKarp {
         }
     }
 
-    private static final class SearchState {
+    private static final class SearchSession {
         private final SearchPattern pattern;
         private final TextWindow window;
         private int startIndex;
 
-        private SearchState(String text, SearchPattern pattern) {
+        private SearchSession(String text, SearchPattern pattern) {
             this.pattern = pattern;
             this.window = new TextWindow(text, pattern.length());
+        }
+
+        private List<Integer> findMatches() {
+            List<Integer> matches = new ArrayList<>(windowCount());
+            while (hasCurrentWindow()) {
+                if (isMatch()) {
+                    matches.add(startIndex);
+                }
+                advance();
+            }
+            return matches;
         }
 
         private boolean hasCurrentWindow() {
@@ -142,10 +139,6 @@ public final class RabinKarp {
 
         private int windowCount() {
             return window.lastStartIndex() + 1;
-        }
-
-        private int currentStart() {
-            return startIndex;
         }
 
         private boolean isMatch() {

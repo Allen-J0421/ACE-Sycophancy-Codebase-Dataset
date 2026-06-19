@@ -1,7 +1,6 @@
 package kmp;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class KmpMatcher {
@@ -10,25 +9,28 @@ public final class KmpMatcher {
         // Utility class.
     }
 
-    public static List<Integer> findAllMatches(CharSequence pattern, CharSequence text) {
-        if (pattern == null || text == null) {
-            throw new IllegalArgumentException("Pattern and text must not be null.");
-        }
-        if (pattern.length() == 0 || text.length() == 0 || pattern.length() > text.length()) {
-            return Collections.emptyList();
+    public static KmpSearchResult search(KmpSearchRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Search request must not be null.");
         }
 
-        int[] lps = buildLps(pattern);
+        if (request.patternLength() == 0
+            || request.textLength() == 0
+            || request.patternLength() > request.textLength()) {
+            return KmpSearchResult.of(request, new ArrayList<Integer>());
+        }
+
+        int[] lps = buildLps(request.pattern());
         List<Integer> matches = new ArrayList<>();
         int textIndex = 0;
         int patternIndex = 0;
 
-        while (textIndex < text.length()) {
-            if (text.charAt(textIndex) == pattern.charAt(patternIndex)) {
+        while (textIndex < request.textLength()) {
+            if (request.text().charAt(textIndex) == request.pattern().charAt(patternIndex)) {
                 textIndex++;
                 patternIndex++;
 
-                if (patternIndex == pattern.length()) {
+                if (patternIndex == request.patternLength()) {
                     matches.add(textIndex - patternIndex);
                     patternIndex = lps[patternIndex - 1];
                 }
@@ -39,7 +41,11 @@ public final class KmpMatcher {
             }
         }
 
-        return Collections.unmodifiableList(matches);
+        return KmpSearchResult.of(request, matches);
+    }
+
+    public static List<Integer> findAllMatches(CharSequence pattern, CharSequence text) {
+        return search(KmpSearchRequest.of(pattern, text)).matches();
     }
 
     private static int[] buildLps(CharSequence pattern) {

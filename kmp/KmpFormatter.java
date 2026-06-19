@@ -2,13 +2,17 @@ package kmp;
 
 import java.util.List;
 
-public final class KmpFormatter {
+final class KmpFormatter {
 
     private KmpFormatter() {
         // Utility class.
     }
 
-    public static String joinMatches(List<Integer> matches) {
+    static String formatMatches(KmpSearchResult result) {
+        return joinMatches(result.matches());
+    }
+
+    static String joinMatches(List<Integer> matches) {
         if (matches.isEmpty()) {
             return "";
         }

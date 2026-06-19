@@ -9,11 +9,21 @@ public final class KMPSearch {
     }
 
     public static void main(String[] args) {
-        List<Integer> matches = KmpMatcher.findAllMatches(
-            KmpExamples.SAMPLE_PATTERN,
-            KmpExamples.SAMPLE_TEXT
-        );
+        KmpSearchRequest request = parseRequest(args);
+        KmpSearchResult result = KmpMatcher.search(request);
 
-        System.out.println(KmpFormatter.joinMatches(matches));
+        System.out.println(KmpFormatter.formatMatches(result));
+    }
+
+    private static KmpSearchRequest parseRequest(String[] args) {
+        if (args == null || args.length == 0) {
+            return KmpExamples.SAMPLE_REQUEST;
+        }
+
+        if (args.length == 2) {
+            return KmpSearchRequest.of(args[0], args[1]);
+        }
+
+        throw new IllegalArgumentException("Usage: java kmp.KMPSearch [pattern text]");
     }
 }

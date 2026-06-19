@@ -8,12 +8,15 @@ class LcsSequenceReconstructor {
      *
      * Algorithm:
      * 1. Compute DP table (same as standard LCS)
-     * 2. Backtrack from dp[m][n] to dp[0][0]:
-     *    - If chars match, char is part of LCS, move diagonally
-     *    - If chars don't match, move in direction of larger value
+     * 2. Backtrack from dp[m][n] to dp[0][0], building result in reverse
+     * 3. Reverse final result (more efficient than repeated insert(0, ...))
      *
-     * Time complexity: O(m * n) for DP + O(m + n) for backtracking = O(m * n)
+     * Time complexity: O(m * n) for DP + O(m + n) for backtracking + O(k) for reverse
+     *   where k = LCS length. Total: O(m * n) since k ≤ min(m,n)
      * Space complexity: O(m * n) for DP table + O(min(m,n)) for result
+     *
+     * Note: Using append + reverse is O(n) total vs insert(0,...) which is O(n²)
+     *       for LCS of length n due to repeated character shifting.
      *
      * @param s1 first string
      * @param s2 second string
@@ -21,28 +24,21 @@ class LcsSequenceReconstructor {
      * @throws IllegalArgumentException if either string is null
      */
     public static String reconstructLcs(String s1, String s2) {
-        if (s1 == null || s2 == null) {
-            throw new IllegalArgumentException("Input strings cannot be null");
+        if (s1 == null) {
+            throw new IllegalArgumentException("First string cannot be null");
+        }
+        if (s2 == null) {
+            throw new IllegalArgumentException("Second string cannot be null");
         }
 
         int m = s1.length();
         int n = s2.length();
 
-        // Build DP table
-        int[][] dpTable = new int[m + 1][n + 1];
-
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
-                    dpTable[i][j] = dpTable[i - 1][j - 1] + 1;
-                } else {
-                    dpTable[i][j] = Math.max(dpTable[i - 1][j],
-                                              dpTable[i][j - 1]);
-                }
-            }
-        }
+        // Build DP table using shared utility
+        int[][] dpTable = DpTableBuilder.buildTable(s1, s2);
 
         // Backtrack to reconstruct the sequence
+        // Build in reverse order for O(1) append instead of O(n) insert
         StringBuilder lcs = new StringBuilder();
         int i = m;
         int j = n;
@@ -50,7 +46,7 @@ class LcsSequenceReconstructor {
         while (i > 0 && j > 0) {
             // If characters match, include in result and move diagonally
             if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
-                lcs.insert(0, s1.charAt(i - 1));
+                lcs.append(s1.charAt(i - 1));
                 i--;
                 j--;
             }
@@ -62,7 +58,8 @@ class LcsSequenceReconstructor {
             }
         }
 
-        return lcs.toString();
+        // Reverse to get correct order (we built it backwards for efficiency)
+        return lcs.reverse().toString();
     }
 
     /**

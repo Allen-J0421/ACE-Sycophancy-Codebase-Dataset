@@ -10,11 +10,15 @@ class LcsInput {
      *
      * @param firstString  the first string (non-null)
      * @param secondString the second string (non-null)
-     * @throws IllegalArgumentException if either string is null
+     * @throws IllegalArgumentException if firstString is null
+     * @throws IllegalArgumentException if secondString is null
      */
     public LcsInput(String firstString, String secondString) {
-        if (firstString == null || secondString == null) {
-            throw new IllegalArgumentException("Input strings cannot be null");
+        if (firstString == null) {
+            throw new IllegalArgumentException("First string cannot be null");
+        }
+        if (secondString == null) {
+            throw new IllegalArgumentException("Second string cannot be null");
         }
         this.firstString = firstString;
         this.secondString = secondString;
@@ -75,18 +79,9 @@ class StandardLcsSolver implements LcsSolver {
 
         int m = s1.length();
         int n = s2.length();
-        int[][] dpTable = new int[m + 1][n + 1];
 
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
-                    dpTable[i][j] = dpTable[i - 1][j - 1] + 1;
-                } else {
-                    dpTable[i][j] = Math.max(dpTable[i - 1][j],
-                                              dpTable[i][j - 1]);
-                }
-            }
-        }
+        // Use shared DP table builder to eliminate duplication
+        int[][] dpTable = DpTableBuilder.buildTable(s1, s2);
 
         return new LcsResult(dpTable[m][n]);
     }

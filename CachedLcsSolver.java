@@ -6,11 +6,12 @@ import java.util.Map;
  * Wraps any LcsSolver implementation and caches results for repeated queries.
  *
  * Useful when the same string pairs are compared multiple times.
- * Cache key is based on both strings to ensure correctness across different orderings.
+ * Uses robust CacheKey class to prevent collision issues and ensure correctness
+ * across different argument orderings.
  */
 class CachedLcsSolver implements LcsSolver {
     private final LcsSolver delegate;
-    private final Map<String, Integer> cache;
+    private final Map<CacheKey, Integer> cache;
 
     /**
      * Creates a cached solver wrapping the provided solver.
@@ -24,45 +25,30 @@ class CachedLcsSolver implements LcsSolver {
 
     /**
      * Solves LCS with caching. Returns cached result if available.
+     * Automatically handles symmetry: lcs(A,B) and lcs(B,A) share same cache entry.
      *
      * @param input the LcsInput containing two strings
      * @return LcsResult with the length of the LCS (from cache if available)
      */
     @Override
     public LcsResult solve(LcsInput input) {
-        String cacheKey = generateCacheKey(input.getFirstString(), input.getSecondString());
+        CacheKey key = new CacheKey(input.getFirstString(), input.getSecondString());
 
-        // Check cache first
-        if (cache.containsKey(cacheKey)) {
-            return new LcsResult(cache.get(cacheKey));
+        // Check cache first (O(1) with CacheKey.equals and hashCode)
+        if (cache.containsKey(key)) {
+            return new LcsResult(cache.get(key));
         }
 
         // Compute and cache the result
         LcsResult result = delegate.solve(input);
-        cache.put(cacheKey, result.getLength());
+        cache.put(key, result.getLength());
 
         return result;
     }
 
     /**
-     * Generates a cache key from two strings.
-     * Uses a canonical form to ensure symmetry (lcs(A,B) uses same cache as lcs(B,A)).
-     *
-     * @param s1 first string
-     * @param s2 second string
-     * @return cache key
-     */
-    private String generateCacheKey(String s1, String s2) {
-        // Create symmetric cache key to handle both (s1,s2) and (s2,s1)
-        if (s1.compareTo(s2) <= 0) {
-            return s1 + "||" + s2;
-        } else {
-            return s2 + "||" + s1;
-        }
-    }
-
-    /**
      * Clears the cache.
+     * Useful between independent test runs or to free memory.
      */
     public void clearCache() {
         cache.clear();

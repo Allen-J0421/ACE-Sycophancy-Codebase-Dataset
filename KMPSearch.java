@@ -11,10 +11,14 @@ public final class KMPSearch {
         KmpPatternSearchingDemo.main(args);
     }
 
-    public static List<Integer> search(String pattern, String text) {
+    /**
+     * Returns every zero-based position where {@code pattern} appears in {@code text}.
+     * Empty patterns match every insertion point from {@code 0} through {@code text.length()}.
+     */
+    public static List<Integer> search(CharSequence pattern, CharSequence text) {
         validateInputs(pattern, text);
 
-        if (pattern.isEmpty()) {
+        if (pattern.length() == 0) {
             return allInsertionPoints(text.length());
         }
 
@@ -25,7 +29,7 @@ public final class KMPSearch {
         return findMatches(pattern, text, buildLps(pattern));
     }
 
-    private static List<Integer> findMatches(String pattern, String text, int[] lps) {
+    private static List<Integer> findMatches(CharSequence pattern, CharSequence text, int[] lps) {
         List<Integer> matches = new ArrayList<>();
         int textIndex = 0;
         int patternIndex = 0;
@@ -49,7 +53,7 @@ public final class KMPSearch {
         return matches;
     }
 
-    private static int[] buildLps(String pattern) {
+    private static int[] buildLps(CharSequence pattern) {
         int[] lps = new int[pattern.length()];
         int prefixLength = 0;
         int index = 1;
@@ -77,7 +81,7 @@ public final class KMPSearch {
         return matches;
     }
 
-    private static void validateInputs(String pattern, String text) {
+    private static void validateInputs(CharSequence pattern, CharSequence text) {
         if (pattern == null || text == null) {
             throw new IllegalArgumentException("Pattern and text must not be null.");
         }

@@ -15,12 +15,13 @@ public final class KMPSearchTest {
         assertMatches("abc", "", indexes());
         assertMatches("", "", indexes(0));
         assertMatches("", "abc", indexes(0, 1, 2, 3));
+        assertMatches(new StringBuilder("aba"), new StringBuilder("ababa"), indexes(0, 2));
 
         assertRejects("null pattern", () -> KMPSearch.search(null, "abc"));
         assertRejects("null text", () -> KMPSearch.search("abc", null));
     }
 
-    private static void assertMatches(String pattern, String text, List<Integer> expected) {
+    private static void assertMatches(CharSequence pattern, CharSequence text, List<Integer> expected) {
         List<Integer> actual = KMPSearch.search(pattern, text);
         if (!actual.equals(expected)) {
             String message = "Expected matches " + expected + " for pattern '" + pattern + "' in text '"

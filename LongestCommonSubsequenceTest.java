@@ -1,28 +1,35 @@
 public final class LongestCommonSubsequenceTest {
+    private static final TestCase[] TEST_CASES = {
+        new TestCase("AGGTAB", "GXTXAYB", 4),
+        new TestCase("", "abc", 0),
+        new TestCase("abc", "", 0),
+        new TestCase("abc", "abc", 3),
+        new TestCase("abc", "def", 0),
+        new TestCase("ABCDGH", "AEDFHR", 3),
+        new TestCase("XMJYAUZ", "MZJAWXU", 4)
+    };
+
     private LongestCommonSubsequenceTest() {
     }
 
     public static void main(String[] args) {
-        assertLcs("AGGTAB", "GXTXAYB", 4);
-        assertLcs("", "abc", 0);
-        assertLcs("abc", "", 0);
-        assertLcs("abc", "abc", 3);
-        assertLcs("abc", "def", 0);
-        assertLcs("ABCDGH", "AEDFHR", 3);
-        assertLcs("XMJYAUZ", "MZJAWXU", 4);
+        for (TestCase testCase : TEST_CASES) {
+            assertLcs(testCase);
+        }
+
         assertSymmetric("abcde", "ace");
         assertNullRejected();
 
         System.out.println("All tests passed.");
     }
 
-    private static void assertLcs(String first, String second, int expected) {
-        int actual = LongestCommonSubsequence.lcs(first, second);
+    private static void assertLcs(TestCase testCase) {
+        int actual = LongestCommonSubsequence.lcs(testCase.first(), testCase.second());
 
-        if (actual != expected) {
+        if (actual != testCase.expected()) {
             throw new AssertionError(
                 "Expected LCS length %d for \"%s\" and \"%s\" but got %d"
-                    .formatted(expected, first, second, actual)
+                    .formatted(testCase.expected(), testCase.first(), testCase.second(), actual)
             );
         }
     }
@@ -56,5 +63,8 @@ public final class LongestCommonSubsequenceTest {
                 );
             }
         }
+    }
+
+    private record TestCase(String first, String second, int expected) {
     }
 }

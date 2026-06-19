@@ -3,6 +3,7 @@ import java.util.Objects;
 public final class LongestCommonSubsequence {
     private static final String SAMPLE_FIRST = "AGGTAB";
     private static final String SAMPLE_SECOND = "GXTXAYB";
+    private static final int REQUIRED_ARGUMENT_COUNT = 2;
 
     private LongestCommonSubsequence() {
     }
@@ -19,15 +20,47 @@ public final class LongestCommonSubsequence {
             return first.length();
         }
 
-        return computeLcsLength(normalizeByLength(first, second));
+        return new Solver(first, second).solve();
     }
 
-    private static int computeLcsLength(NormalizedSequences sequences) {
-        char[] longer = sequences.longer();
-        char[] shorter = sequences.shorter();
-        int[] lengths = new int[shorter.length + 1];
+    public static void main(String[] args) {
+        if (args.length == REQUIRED_ARGUMENT_COUNT) {
+            System.out.println(lcs(args[0], args[1]));
+            return;
+        }
 
-        for (char current : longer) {
+        System.out.println(lcs(SAMPLE_FIRST, SAMPLE_SECOND));
+    }
+
+    private static final class Solver {
+        private final char[] longer;
+        private final char[] shorter;
+        private final int[] lengths;
+
+        private Solver(String first, String second) {
+            char[] firstChars = first.toCharArray();
+            char[] secondChars = second.toCharArray();
+
+            if (firstChars.length >= secondChars.length) {
+                this.longer = firstChars;
+                this.shorter = secondChars;
+            } else {
+                this.longer = secondChars;
+                this.shorter = firstChars;
+            }
+
+            this.lengths = new int[this.shorter.length + 1];
+        }
+
+        private int solve() {
+            for (char current : longer) {
+                updateLengths(current);
+            }
+
+            return lengths[shorter.length];
+        }
+
+        private void updateLengths(char current) {
             int diagonal = 0;
 
             for (int j = 1; j <= shorter.length; j++) {
@@ -39,25 +72,5 @@ public final class LongestCommonSubsequence {
                 diagonal = previousRow;
             }
         }
-
-        return lengths[shorter.length];
-    }
-
-    private static NormalizedSequences normalizeByLength(String first, String second) {
-        char[] firstChars = first.toCharArray();
-        char[] secondChars = second.toCharArray();
-
-        if (firstChars.length >= secondChars.length) {
-            return new NormalizedSequences(firstChars, secondChars);
-        }
-
-        return new NormalizedSequences(secondChars, firstChars);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(lcs(SAMPLE_FIRST, SAMPLE_SECOND));
-    }
-
-    private record NormalizedSequences(char[] longer, char[] shorter) {
     }
 }

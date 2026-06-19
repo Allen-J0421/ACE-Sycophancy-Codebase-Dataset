@@ -2,20 +2,25 @@ import java.util.Comparator;
 import java.util.Objects;
 
 /**
- * A robust, reusable Quicksort implementation.
+ * A robust, reusable sort built on quicksort (an "introsort").
  *
- * <p>Beyond the textbook algorithm, this implementation hardens the three
- * places where a naive quicksort goes wrong in practice:
+ * <p>Beyond the textbook algorithm, this implementation hardens the places where
+ * a naive quicksort goes wrong in practice:
  *
  * <ul>
+ *   <li><b>Guaranteed O(n log n) worst case.</b> The partition depth is capped at
+ *       {@code 2*floor(log2 n)}; if a path exceeds it — the signature of an
+ *       adversarial "median-of-three killer" input that would otherwise go
+ *       quadratic — that sub-range falls back to heapsort. This is the
+ *       introsort strategy used by C++'s {@code std::sort}.</li>
  *   <li><b>Bounded stack usage.</b> Recursion always descends into the
- *       <em>smaller</em> partition and loops on the larger one. This caps the
- *       recursion depth at O(log n) and prevents the {@link StackOverflowError}
+ *       <em>smaller</em> partition and loops on the larger one, capping live
+ *       recursion depth at O(log n) and preventing the {@link StackOverflowError}
  *       a textbook recursive quicksort throws on large sorted input.</li>
- *   <li><b>Resistance to quadratic blow-up.</b> The pivot is chosen by
- *       median-of-three sampling, so already-sorted and reverse-sorted inputs
- *       — the classic worst cases for a first/last-element pivot — still run in
- *       O(n log n).</li>
+ *   <li><b>Good pivots on ordered data.</b> The pivot is chosen by
+ *       median-of-three sampling, so already-sorted and reverse-sorted inputs —
+ *       the classic worst cases for a first/last-element pivot — stay fast
+ *       without ever reaching the heapsort fallback.</li>
  *   <li><b>Speed on small ranges.</b> Sub-arrays at or below a threshold are
  *       finished with insertion sort, which beats quicksort's bookkeeping
  *       overhead there.</li>
@@ -33,6 +38,15 @@ public final class QuickSort {
         // Utility class — not instantiable.
     }
 
+    /**
+     * The introsort depth limit for an input of {@code length} elements:
+     * {@code 2*floor(log2(length))}. Exceeding it signals pathological pivot
+     * choices, triggering the heapsort fallback.
+     */
+    private static int maxDepth(int length) {
+        return 2 * (31 - Integer.numberOfLeadingZeros(length));
+    }
+
     // ------------------------------------------------------------------
     // Primitive int[] API (optimized, no boxing)
     // ------------------------------------------------------------------
@@ -45,23 +59,30 @@ public final class QuickSort {
      */
     public static void sort(int[] array) {
         Objects.requireNonNull(array, "array must not be null");
-        sortRange(array, 0, array.length - 1);
+        if (array.length > 1) {
+            sortRange(array, 0, array.length - 1, maxDepth(array.length));
+        }
     }
 
-    private static void sortRange(int[] a, int low, int high) {
+    private static void sortRange(int[] a, int low, int high, int depthLimit) {
         while (low < high) {
             if (high - low < INSERTION_SORT_THRESHOLD) {
                 insertionSort(a, low, high);
                 return;
             }
+            if (depthLimit == 0) {
+                heapSort(a, low, high); // quicksort is misbehaving here — bail out
+                return;
+            }
+            depthLimit--;
             int p = partition(a, low, high);
             // Recurse into the smaller side, then loop on the larger side.
             // This bounds the live recursion depth to O(log n).
             if (p - low < high - p) {
-                sortRange(a, low, p - 1);
+                sortRange(a, low, p - 1, depthLimit);
                 low = p + 1;
             } else {
-                sortRange(a, p + 1, high);
+                sortRange(a, p + 1, high, depthLimit);
                 high = p - 1;
             }
         }
@@ -97,6 +118,40 @@ public final class QuickSort {
         }
         swap(a, i, high - 1); // restore the pivot to its sorted position
         return i;
+    }
+
+    /**
+     * Heapsort over {@code [low, high]} — the introsort fallback that guarantees
+     * O(n log n) once quicksort's recursion depth is exceeded. Package-private so
+     * the fallback path can be exercised directly by tests.
+     */
+    static void heapSort(int[] a, int low, int high) {
+        int n = high - low + 1;
+        for (int root = n / 2 - 1; root >= 0; root--) {
+            siftDown(a, low, root, n);
+        }
+        for (int end = n - 1; end > 0; end--) {
+            swap(a, low, low + end);
+            siftDown(a, low, 0, end);
+        }
+    }
+
+    /** Sifts the element at heap index {@code root} down a heap of {@code size} elements based at {@code low}. */
+    private static void siftDown(int[] a, int low, int root, int size) {
+        while (true) {
+            int child = 2 * root + 1;
+            if (child >= size) {
+                break;
+            }
+            if (child + 1 < size && a[low + child + 1] > a[low + child]) {
+                child++;
+            }
+            if (a[low + root] >= a[low + child]) {
+                break;
+            }
+            swap(a, low + root, low + child);
+            root = child;
+        }
     }
 
     private static void insertionSort(int[] a, int low, int high) {
@@ -144,21 +199,28 @@ public final class QuickSort {
     public static <T> void sort(T[] array, Comparator<? super T> comparator) {
         Objects.requireNonNull(array, "array must not be null");
         Objects.requireNonNull(comparator, "comparator must not be null");
-        sortRange(array, 0, array.length - 1, comparator);
+        if (array.length > 1) {
+            sortRange(array, 0, array.length - 1, maxDepth(array.length), comparator);
+        }
     }
 
-    private static <T> void sortRange(T[] a, int low, int high, Comparator<? super T> cmp) {
+    private static <T> void sortRange(T[] a, int low, int high, int depthLimit, Comparator<? super T> cmp) {
         while (low < high) {
             if (high - low < INSERTION_SORT_THRESHOLD) {
                 insertionSort(a, low, high, cmp);
                 return;
             }
+            if (depthLimit == 0) {
+                heapSort(a, low, high, cmp);
+                return;
+            }
+            depthLimit--;
             int p = partition(a, low, high, cmp);
             if (p - low < high - p) {
-                sortRange(a, low, p - 1, cmp);
+                sortRange(a, low, p - 1, depthLimit, cmp);
                 low = p + 1;
             } else {
-                sortRange(a, p + 1, high, cmp);
+                sortRange(a, p + 1, high, depthLimit, cmp);
                 high = p - 1;
             }
         }
@@ -184,6 +246,35 @@ public final class QuickSort {
         }
         swap(a, i, high - 1);
         return i;
+    }
+
+    /** Generic counterpart of {@link #heapSort(int[], int, int)}; package-private for testing. */
+    static <T> void heapSort(T[] a, int low, int high, Comparator<? super T> cmp) {
+        int n = high - low + 1;
+        for (int root = n / 2 - 1; root >= 0; root--) {
+            siftDown(a, low, root, n, cmp);
+        }
+        for (int end = n - 1; end > 0; end--) {
+            swap(a, low, low + end);
+            siftDown(a, low, 0, end, cmp);
+        }
+    }
+
+    private static <T> void siftDown(T[] a, int low, int root, int size, Comparator<? super T> cmp) {
+        while (true) {
+            int child = 2 * root + 1;
+            if (child >= size) {
+                break;
+            }
+            if (child + 1 < size && cmp.compare(a[low + child + 1], a[low + child]) > 0) {
+                child++;
+            }
+            if (cmp.compare(a[low + root], a[low + child]) >= 0) {
+                break;
+            }
+            swap(a, low + root, low + child);
+            root = child;
+        }
     }
 
     private static <T> void insertionSort(T[] a, int low, int high, Comparator<? super T> cmp) {

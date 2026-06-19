@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 
 public class SimulatorView extends JFrame {
@@ -9,36 +7,18 @@ public class SimulatorView extends JFrame {
 	private static final Color EMPTY_COLOR = Color.white;
 
 
-	private static final Color UNKNOWN_COLOR = Color.gray;
+	private final SimulationStatusPanel statusPanel;
 
-	private final String STEP_PREFIX = "Step: ";
-	private final String POPULATION_PREFIX = "Population: ";
-	private final String DAYCYCLE_PREFIX = "Day cycle: ";
-	private final String CLIMATE_PREFIX = "Season: ";
-	private final String WEATHER_PREFIX = "Weather: ";
-	private final String INFECTION_PREFIX = "Infection: ";
-	private final String HUMIDITY_PREFIX = "Humidity: ";
-	private JLabel stepLabel, populationLabel, dayCycleLabel, climateLabel, infectLabel, weatherLabel, humidityLabel;
-	private FieldView fieldView;
+	private final FieldView fieldView;
 
-
-	private Map<Class, Color> colors;
-
-	private FieldStats stats;
+	private final FieldStats stats;
 
 
 	public SimulatorView(int height, int width) {
 		stats = new FieldStats();
-		colors = new LinkedHashMap<>();
+		statusPanel = new SimulationStatusPanel();
 
 		setTitle("Predator-Prey Simulation");
-		stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
-		populationLabel = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-		dayCycleLabel = new JLabel(DAYCYCLE_PREFIX, JLabel.CENTER);
-		climateLabel = new JLabel(CLIMATE_PREFIX, JLabel.CENTER);
-		weatherLabel = new JLabel(WEATHER_PREFIX, JLabel.CENTER);
-		infectLabel = new JLabel(INFECTION_PREFIX, JLabel.CENTER);
-		humidityLabel = new JLabel(HUMIDITY_PREFIX, JLabel.CENTER);
 
 		setLocation(100, 50);
 
@@ -46,36 +26,21 @@ public class SimulatorView extends JFrame {
 
 		Container contents = getContentPane();
 
-		JPanel infoPane = new JPanel(new FlowLayout());
-		JPanel detailPane = new JPanel(new BorderLayout());
-
-		infoPane.add(stepLabel);
-		infoPane.add(dayCycleLabel);
-		infoPane.add(climateLabel);
-		infoPane.add(weatherLabel);
-		infoPane.add(humidityLabel);
-		infoPane.add(infectLabel);
-		contents.add(infoPane, BorderLayout.NORTH);
+		contents.add(statusPanel.getStatusPanel(), BorderLayout.NORTH);
 		contents.add(fieldView, BorderLayout.CENTER);
-		contents.add(detailPane, BorderLayout.SOUTH);
-		detailPane.add(populationLabel, BorderLayout.CENTER);
+		contents.add(statusPanel.getPopulationPanel(), BorderLayout.SOUTH);
 
 		pack();
 		setVisible(true);
 	}
 
 
-	public void showStatus(int step, TimeCycle currentTimeCycle, Field field, Climate climate, int infect) {
+	public void showStatus(int step, TimeCycle currentTimeCycle, Field field, Climate climate, int infectionPercentage) {
 		if (!isVisible()) {
 			setVisible(true);
 		}
 
-		stepLabel.setText(STEP_PREFIX + step);
-		dayCycleLabel.setText(DAYCYCLE_PREFIX + currentTimeCycle + " ");
-		this.climateLabel.setText(CLIMATE_PREFIX + climate.getCurrentSeason());
-		this.weatherLabel.setText(WEATHER_PREFIX + climate.getCurrentWeather());
-		this.infectLabel.setText(INFECTION_PREFIX + infect + "%");
-		this.humidityLabel.setText(HUMIDITY_PREFIX + climate.getHumidity() + "%");
+		statusPanel.updateStatus(step, currentTimeCycle, climate, infectionPercentage);
 		stats.reset();
 
 		fieldView.preparePaint();
@@ -97,7 +62,7 @@ public class SimulatorView extends JFrame {
 		}
 		stats.countFinished();
 
-		populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+		statusPanel.updatePopulation(stats.getPopulationDetails(field));
 		fieldView.repaint();
 	}
 
@@ -109,8 +74,9 @@ public class SimulatorView extends JFrame {
 
 	private class FieldView extends JPanel {
 		private final int GRID_VIEW_SCALING_FACTOR = 5;
-		Dimension size;
-		private int gridWidth, gridHeight;
+		private Dimension size;
+		private final int gridWidth;
+		private final int gridHeight;
 		private int xScale, yScale;
 		private Graphics g;
 		private Image fieldImage;
@@ -123,6 +89,7 @@ public class SimulatorView extends JFrame {
 		}
 
 
+		@Override
 		public Dimension getPreferredSize() {
 			return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
 					gridHeight * GRID_VIEW_SCALING_FACTOR);
@@ -154,7 +121,9 @@ public class SimulatorView extends JFrame {
 		}
 
 
+		@Override
 		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
 			if (fieldImage != null) {
 				Dimension currentSize = getSize();
 				if (size.equals(currentSize)) {

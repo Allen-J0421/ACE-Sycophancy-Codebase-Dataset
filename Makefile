@@ -24,6 +24,7 @@ legacy: compile
 test: compile
 	$(JAVAC) -cp $(BUILD_DIR) -d $(BUILD_DIR) $(TEST_SOURCES)
 	$(JAVA) -cp $(BUILD_DIR) kmp.KMPSearchTest
+	$(JAVA) -cp $(BUILD_DIR) CompatibilityTest
 
 clean:
 	rm -rf build

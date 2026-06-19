@@ -12,6 +12,8 @@ searching.
   launcher working.
 - `src/test/java/kmp/KMPSearchTest.java` contains lightweight regression tests
   with no external dependencies.
+- `src/test/java/CompatibilityTest.java` covers the default-package facades and
+  legacy launcher.
 
 ## Commands
 

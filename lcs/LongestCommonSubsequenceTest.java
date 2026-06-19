@@ -1,3 +1,5 @@
+package lcs;
+
 public final class LongestCommonSubsequenceTest {
     private LongestCommonSubsequenceTest() {
         // Utility class.
@@ -47,7 +49,7 @@ public final class LongestCommonSubsequenceTest {
     }
 
     private static void assertAnalysis(String first, String second, int expectedLength) {
-        LongestCommonSubsequence.LcsResult result = LongestCommonSubsequence.analyze(first, second);
+        LcsResult result = LongestCommonSubsequence.analyze(first, second);
         if (result.length() != expectedLength) {
             throw new AssertionError(
                     "Expected analysis length " + expectedLength + " but got " + result.length());

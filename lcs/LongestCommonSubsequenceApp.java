@@ -1,8 +1,10 @@
+package lcs;
+
 /**
  * Command-line entry point for the longest common subsequence example.
  */
 public final class LongestCommonSubsequenceApp {
-    private static final String USAGE = "Usage: java LongestCommonSubsequenceApp <first> <second>";
+    private static final String USAGE = "Usage: java lcs.LongestCommonSubsequenceApp <first> <second>";
 
     private LongestCommonSubsequenceApp() {
         // Utility class.
@@ -15,7 +17,7 @@ public final class LongestCommonSubsequenceApp {
         }
 
         if (args.length == 2) {
-            System.out.println(LongestCommonSubsequence.lcs(args[0], args[1]));
+            printResult(args[0], args[1]);
             return;
         }
 
@@ -24,6 +26,11 @@ public final class LongestCommonSubsequenceApp {
     }
 
     private static void runSample() {
-        System.out.println(LongestCommonSubsequence.lcs("AGGTAB", "GXTXAYB"));
+        printResult("AGGTAB", "GXTXAYB");
+    }
+
+    private static void printResult(String first, String second) {
+        LcsResult result = LongestCommonSubsequence.analyze(first, second);
+        System.out.println(result.length());
     }
 }

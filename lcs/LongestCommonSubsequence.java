@@ -1,3 +1,5 @@
+package lcs;
+
 import java.util.Objects;
 
 /**
@@ -88,11 +90,5 @@ public final class LongestCommonSubsequence {
         }
 
         return new LcsResult(lengths[longer.length()][shorter.length()], subsequence.reverse().toString());
-    }
-
-    public record LcsResult(int length, String subsequence) {
-        public LcsResult {
-            Objects.requireNonNull(subsequence, "subsequence");
-        }
     }
 }

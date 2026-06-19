@@ -21,8 +21,6 @@ public class Simulator {
 
 	private static final int DEFAULT_DEPTH = 200;
 
-	private static final double FLOWER_CREATION_PROBABILITY = 0.07;
-
 	private static final TimeCycle DEFAULT_TIMECYCLE = TimeCycle.DAY;
 
 	private static final Weather DEFAULT_WEATHER = Weather.SUN;
@@ -30,27 +28,8 @@ public class Simulator {
 	private static final int TIMECYCLE_LENGTH = 4;
 
 
-	/** A factory that creates a freshly spawned animal at a location. */
-	@FunctionalInterface
-	private interface AnimalFactory {
-		Animal create(Field field, Location location);
-	}
-
-	/** The chance of spawning a given animal in an empty cell, and how to build it. */
-	private record SpawnRule(double probability, AnimalFactory factory) {
-	}
-
-	/**
-	 * Animal spawn rules, evaluated in order: the first rule that wins its dice
-	 * roll claims the cell. Earlier rules therefore have priority.
-	 */
-	private static final List<SpawnRule> ANIMAL_SPAWN_RULES = List.of(
-			new SpawnRule(0.07, (field, location) -> new Bird(true, field, location)),
-			new SpawnRule(0.07, (field, location) -> new Mouse(true, field, location)),
-			new SpawnRule(0.07, (field, location) -> new Duck(true, field, location)),
-			new SpawnRule(0.03, (field, location) -> new Wolf(true, field, location)),
-			new SpawnRule(0.03, (field, location) -> new Bear(true, field, location)));
-
+	/** Supplies the animal and plant species used to populate the field. */
+	private final SpeciesRegistry registry;
 
 	private final List<Animal> animals;
 
@@ -71,12 +50,12 @@ public class Simulator {
 	private int sickPercentage;
 
 
-	public Simulator() {
-		this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+	public Simulator(SpeciesRegistry registry) {
+		this(registry, DEFAULT_DEPTH, DEFAULT_WIDTH);
 	}
 
 
-	public Simulator(int depth, int width) {
+	public Simulator(SpeciesRegistry registry, int depth, int width) {
 		if (width <= 0 || depth <= 0) {
 			System.out.println("The dimensions must be greater than zero.");
 			System.out.println("Using default values.");
@@ -84,6 +63,7 @@ public class Simulator {
 			width = DEFAULT_WIDTH;
 		}
 
+		this.registry = registry;
 		animals = new ArrayList<>();
 		plants = new ArrayList<>();
 		field = new Field(depth, width);
@@ -170,28 +150,13 @@ public class Simulator {
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
 				Location location = new Location(row, col);
-				spawnPlant(rand, location);
-				spawnAnimal(rand, location);
-			}
-		}
-	}
+				plants.add(registry.spawnPlant(rand, field, location));
 
-
-	private void spawnPlant(Random rand, Location location) {
-		Plant plant = rand.nextDouble() <= FLOWER_CREATION_PROBABILITY
-				? new Flower(field, location)
-				: new Grass(field, location);
-		plants.add(plant);
-	}
-
-
-	private void spawnAnimal(Random rand, Location location) {
-		for (SpawnRule rule : ANIMAL_SPAWN_RULES) {
-			if (rand.nextDouble() <= rule.probability()) {
-				Animal animal = rule.factory().create(field, location);
-				animals.add(animal);
-				graphView.setColor(animal.getClass(), animal.getObjectColor(climate));
-				return;
+				Animal animal = registry.spawnAnimal(rand, field, location);
+				if (animal != null) {
+					animals.add(animal);
+					graphView.setColor(animal.getClass(), animal.getObjectColor(climate));
+				}
 			}
 		}
 	}

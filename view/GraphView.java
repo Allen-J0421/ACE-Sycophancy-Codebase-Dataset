@@ -1,5 +1,6 @@
 package view;
 
+import events.SimulationState;
 import model.*;
 
 import javax.swing.*;

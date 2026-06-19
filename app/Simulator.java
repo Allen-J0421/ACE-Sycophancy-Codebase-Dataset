@@ -1,7 +1,9 @@
 package app;
 
+import events.EventPublisher;
+import events.SimulationEvent;
+import events.SimulationState;
 import model.*;
-import view.*;
 import config.Randomizer;
 
 import java.util.ArrayList;
@@ -11,8 +13,9 @@ import java.util.Random;
 
 /**
  * The engine of the predator-prey simulation. It owns the field, the live
- * animals and plants, and drives the world forward one step at a time while
- * keeping the grid and graph views in sync.
+ * animals and plants, and drives the world forward one step at a time,
+ * announcing what happens through an {@link EventPublisher}. It has no idea who
+ * (if anyone) is listening — views are wired to the bus by the composition root.
  */
 public class Simulator {
 
@@ -31,6 +34,9 @@ public class Simulator {
 	/** Supplies the animal and plant species used to populate the field. */
 	private final SpeciesRegistry registry;
 
+	/** Where the engine announces everything observers might care about. */
+	private final EventPublisher events;
+
 	private final List<Animal> animals;
 
 	private final List<Plant> plants;
@@ -38,9 +44,6 @@ public class Simulator {
 	private final Field field;
 
 	private int step;
-
-	/** Every view observing the simulation; notified uniformly each step. */
-	private final List<SimulationView> views;
 
 	/** Reused to test whether the simulation is still viable. */
 	private final FieldStats stats = new FieldStats();
@@ -52,12 +55,12 @@ public class Simulator {
 	private int sickPercentage;
 
 
-	public Simulator(SpeciesRegistry registry) {
-		this(registry, DEFAULT_DEPTH, DEFAULT_WIDTH);
+	public Simulator(SpeciesRegistry registry, EventPublisher events) {
+		this(registry, events, DEFAULT_DEPTH, DEFAULT_WIDTH);
 	}
 
 
-	public Simulator(SpeciesRegistry registry, int depth, int width) {
+	public Simulator(SpeciesRegistry registry, EventPublisher events, int depth, int width) {
 		if (width <= 0 || depth <= 0) {
 			System.out.println("The dimensions must be greater than zero.");
 			System.out.println("Using default values.");
@@ -66,15 +69,12 @@ public class Simulator {
 		}
 
 		this.registry = registry;
+		this.events = events;
 		animals = new ArrayList<>();
 		plants = new ArrayList<>();
 		field = new Field(depth, width);
 		climate = new Climate(DEFAULT_WEATHER);
 		currentTimeCycle = DEFAULT_TIMECYCLE;
-
-		views = List.of(
-				new SimulatorView(depth, width),
-				new GraphView(1000, 500, 500));
 
 		reset();
 	}
@@ -120,16 +120,14 @@ public class Simulator {
 		}
 
 		sickPercentage = computeSickPercentage();
-		publish();
+		publishStatus();
 	}
 
 
-	/** Publish the current state to every view. */
-	private void publish() {
+	/** Announce the current state of the simulation. */
+	private void publishStatus() {
 		SimulationState state = new SimulationState(step, currentTimeCycle, field, climate, sickPercentage);
-		for (SimulationView view : views) {
-			view.showStatus(state);
-		}
+		events.publish(new SimulationEvent.StatusUpdated(state));
 	}
 
 
@@ -155,10 +153,8 @@ public class Simulator {
 		climate.setCurrentWeather(Weather.SUN);
 
 		sickPercentage = 0;
-		for (SimulationView view : views) {
-			view.reset();
-		}
-		publish();
+		events.publish(new SimulationEvent.SimulationReset());
+		publishStatus();
 	}
 
 
@@ -174,18 +170,16 @@ public class Simulator {
 				Animal animal = registry.spawnAnimal(rand, field, location);
 				if (animal != null) {
 					animals.add(animal);
-					registerSpecies(animal);
+					announceSpecies(animal);
 				}
 			}
 		}
 	}
 
 
-	/** Tell every view which colour represents a newly seen species. */
-	private void registerSpecies(Animal animal) {
-		for (SimulationView view : views) {
-			view.setColor(animal.getClass(), animal.getObjectColor(climate));
-		}
+	/** Announce which colour represents a newly spawned species. */
+	private void announceSpecies(Animal animal) {
+		events.publish(new SimulationEvent.SpeciesRegistered(animal.getClass(), animal.getObjectColor(climate)));
 	}
 
 

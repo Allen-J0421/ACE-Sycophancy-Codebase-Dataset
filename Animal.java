@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
@@ -6,6 +7,8 @@ public abstract class Animal extends Entity {
 
 
 	private static final Random rand = Randomizer.getRandom();
+
+	private final AnimalSpecies species;
 
 	private boolean alive;
 
@@ -32,13 +35,18 @@ public abstract class Animal extends Entity {
 	private int maxSickStep;
 
 
-	public Animal(Field field, Location location) {
+	public Animal(Field field, Location location, AnimalSpecies species) {
 		super(field, location);
+		this.species = species;
 		alive = true;
 		gender = Gender.randomGender();
-		nocturnal = false;
+		nocturnal = species.isNocturnal();
+		foodChainLevel = species.getFoodChainLevel();
+		foodValue = species.getFoodValue();
 		sick = false;
-		sickProbability = 16;
+		sickProbability = species.getSickProbability();
+		recoverProbability = species.getRecoverProbability();
+		maxSickStep = species.getMaxSickStep();
 	}
 
 
@@ -278,17 +286,33 @@ public abstract class Animal extends Entity {
 	}
 
 
-	abstract protected int getBreedingAge();
+	@Override
+	protected final Color getObjectColor(Climate climate) {
+		return species.getColor();
+	}
 
 
-	abstract protected int getMaxAge();
+	protected final int getBreedingAge() {
+		return species.getBreedingAge();
+	}
 
 
-	abstract protected double getBreedingProbability();
+	protected final int getMaxAge() {
+		return species.getMaxAge();
+	}
 
 
-	abstract protected int getMaxLitterSize();
+	protected final double getBreedingProbability() {
+		return species.getBreedingProbability();
+	}
 
 
-	abstract protected Animal createNewAnimal(boolean randomAge, Field field, Location loc);
+	protected final int getMaxLitterSize() {
+		return species.getMaxLitterSize();
+	}
+
+
+	protected final Animal createNewAnimal(boolean randomAge, Field field, Location loc) {
+		return species.create(randomAge, field, loc);
+	}
 }

@@ -13,16 +13,6 @@ public class Simulator {
 
 	private static final double FLOWER_CREATION_PROBABILITY = 0.07;
 
-	private static final double MOUSE_CREATION_PROBABILITY = 0.07;
-
-	private static final double DUCK_CREATION_PROBABILITY = 0.07;
-
-	private static final double BIRD_CREATION_PROBABILITY = 0.07;
-
-	private static final double WOLF_CREATION_PROBABILITY = 0.03;
-
-	private static final double BEAR_CREATION_PROBABILITY = 0.03;
-
 	private static final TimeCycle DEFAULT_TIMECYCLE = TimeCycle.DAY;
 
 	private static final Weather DEFAULT_WEATHER = Weather.SUN;
@@ -145,16 +135,11 @@ public class Simulator {
 	}
 
 	private void populateAnimal(Random rand, Location location) {
-		if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
-			addAnimal(new Bird(true, field, location));
-		} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-			addAnimal(new Mouse(true, field, location));
-		} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
-			addAnimal(new Duck(true, field, location));
-		} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-			addAnimal(new Wolf(true, field, location));
-		} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-			addAnimal(new Bear(true, field, location));
+		for (AnimalSpecies species : AnimalSpecies.values()) {
+			if (rand.nextDouble() <= species.getCreationProbability()) {
+				addAnimal(species.create(true, field, location));
+				break;
+			}
 		}
 	}
 

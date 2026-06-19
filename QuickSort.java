@@ -64,9 +64,6 @@ public final class QuickSort {
      * element type without boxing.
      */
     private interface RangeSorter {
-        /** Partitions {@code [low, high]} (with {@code high - low >= 2}) and returns the pivot's final index. */
-        int partition(int low, int high);
-
         /** Sorts {@code [low, high]} with heapsort (the introsort fallback). */
         void heapSort(int low, int high);
 
@@ -75,6 +72,41 @@ public final class QuickSort {
 
         /** Swaps the elements at indices {@code i} and {@code j} via the type-specific swap helper. */
         void swap(int i, int j);
+
+        /**
+         * Median-of-three partition (Sedgewick scheme), shared by every element
+         * type. Orders {@code a[low] <= a[mid] <= a[high]}, parks the median pivot
+         * at {@code high - 1} as a sentinel, then partitions {@code [low, high]}
+         * around it. The pivot element stays at index {@code high - 1} for the
+         * entire scan, so the inner loops compare against that <em>index</em>
+         * rather than a cached value — keeping the routine expressed purely via
+         * {@link #less} and {@link #swap}, with no boxing. Requires
+         * {@code high - low >= 2}, which the insertion-sort threshold guarantees.
+         *
+         * @return the final resting index of the pivot
+         */
+        default int partition(int low, int high) {
+            int mid = low + (high - low) / 2;
+            if (less(mid, low)) swap(low, mid);
+            if (less(high, low)) swap(low, high);
+            if (less(high, mid)) swap(mid, high);
+            // a[low] <= a[mid] <= a[high]; stash the pivot at high-1 as a sentinel.
+            swap(mid, high - 1);
+            int pivot = high - 1; // the pivot element stays at this index throughout the scan
+
+            int i = low;
+            int j = high - 1;
+            while (true) {
+                while (less(++i, pivot)) { /* advance over elements < pivot */ }
+                while (less(pivot, --j)) { /* advance over elements > pivot */ }
+                if (i >= j) {
+                    break;
+                }
+                swap(i, j);
+            }
+            swap(i, high - 1); // restore the pivot to its sorted position
+            return i;
+        }
 
         /**
          * Swap-based insertion sort for small ranges, shared by every element
@@ -136,38 +168,6 @@ public final class QuickSort {
     }
 
     /**
-     * Median-of-three partition (Sedgewick scheme). Orders {@code a[low]},
-     * {@code a[mid]} and {@code a[high]}, parks the median pivot at
-     * {@code high - 1} as a sentinel, then partitions {@code [low, high]} around
-     * it. Requires {@code high - low >= 2}, which the threshold guarantees.
-     *
-     * @return the final resting index of the pivot
-     */
-    private static int partition(int[] a, int low, int high) {
-        int mid = low + (high - low) / 2;
-        if (a[mid] < a[low]) swap(a, low, mid);
-        if (a[high] < a[low]) swap(a, low, high);
-        if (a[high] < a[mid]) swap(a, mid, high);
-        // Now a[low] <= a[mid] <= a[high]. Stash the pivot just before high;
-        // a[low] and a[high] act as sentinels for the inner scans.
-        swap(a, mid, high - 1);
-        int pivot = a[high - 1];
-
-        int i = low;
-        int j = high - 1;
-        while (true) {
-            while (a[++i] < pivot) { /* advance */ }
-            while (a[--j] > pivot) { /* advance */ }
-            if (i >= j) {
-                break;
-            }
-            swap(a, i, j);
-        }
-        swap(a, i, high - 1); // restore the pivot to its sorted position
-        return i;
-    }
-
-    /**
      * Heapsort over {@code [low, high]} — the introsort fallback that guarantees
      * O(n log n) once quicksort's recursion depth is exceeded. Package-private so
      * the fallback path can be exercised directly by tests.
@@ -214,7 +214,6 @@ public final class QuickSort {
             this.a = a;
         }
 
-        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
         @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
         @Override public boolean less(int i, int j) { return a[i] < a[j]; }
         @Override public void swap(int i, int j) { QuickSort.swap(a, i, j); }
@@ -235,28 +234,6 @@ public final class QuickSort {
         if (array.length > 1) {
             sortRange(new LongSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
-    }
-
-    private static int partition(long[] a, int low, int high) {
-        int mid = low + (high - low) / 2;
-        if (a[mid] < a[low]) swap(a, low, mid);
-        if (a[high] < a[low]) swap(a, low, high);
-        if (a[high] < a[mid]) swap(a, mid, high);
-        swap(a, mid, high - 1);
-        long pivot = a[high - 1];
-
-        int i = low;
-        int j = high - 1;
-        while (true) {
-            while (a[++i] < pivot) { /* advance */ }
-            while (a[--j] > pivot) { /* advance */ }
-            if (i >= j) {
-                break;
-            }
-            swap(a, i, j);
-        }
-        swap(a, i, high - 1);
-        return i;
     }
 
     /** Heapsort fallback for {@code long[]}; package-private for white-box testing. */
@@ -301,7 +278,6 @@ public final class QuickSort {
             this.a = a;
         }
 
-        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
         @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
         @Override public boolean less(int i, int j) { return a[i] < a[j]; }
         @Override public void swap(int i, int j) { QuickSort.swap(a, i, j); }
@@ -325,28 +301,6 @@ public final class QuickSort {
         if (array.length > 1) {
             sortRange(new DoubleSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
-    }
-
-    private static int partition(double[] a, int low, int high) {
-        int mid = low + (high - low) / 2;
-        if (Double.compare(a[mid], a[low]) < 0) swap(a, low, mid);
-        if (Double.compare(a[high], a[low]) < 0) swap(a, low, high);
-        if (Double.compare(a[high], a[mid]) < 0) swap(a, mid, high);
-        swap(a, mid, high - 1);
-        double pivot = a[high - 1];
-
-        int i = low;
-        int j = high - 1;
-        while (true) {
-            while (Double.compare(a[++i], pivot) < 0) { /* advance */ }
-            while (Double.compare(a[--j], pivot) > 0) { /* advance */ }
-            if (i >= j) {
-                break;
-            }
-            swap(a, i, j);
-        }
-        swap(a, i, high - 1);
-        return i;
     }
 
     /** Heapsort fallback for {@code double[]}; package-private for white-box testing. */
@@ -391,7 +345,6 @@ public final class QuickSort {
             this.a = a;
         }
 
-        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
         @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
         @Override public boolean less(int i, int j) { return Double.compare(a[i], a[j]) < 0; }
         @Override public void swap(int i, int j) { QuickSort.swap(a, i, j); }
@@ -415,28 +368,6 @@ public final class QuickSort {
         if (array.length > 1) {
             sortRange(new FloatSorter(array), 0, array.length - 1, maxDepth(array.length));
         }
-    }
-
-    private static int partition(float[] a, int low, int high) {
-        int mid = low + (high - low) / 2;
-        if (Float.compare(a[mid], a[low]) < 0) swap(a, low, mid);
-        if (Float.compare(a[high], a[low]) < 0) swap(a, low, high);
-        if (Float.compare(a[high], a[mid]) < 0) swap(a, mid, high);
-        swap(a, mid, high - 1);
-        float pivot = a[high - 1];
-
-        int i = low;
-        int j = high - 1;
-        while (true) {
-            while (Float.compare(a[++i], pivot) < 0) { /* advance */ }
-            while (Float.compare(a[--j], pivot) > 0) { /* advance */ }
-            if (i >= j) {
-                break;
-            }
-            swap(a, i, j);
-        }
-        swap(a, i, high - 1);
-        return i;
     }
 
     /** Heapsort fallback for {@code float[]}; package-private for white-box testing. */
@@ -481,7 +412,6 @@ public final class QuickSort {
             this.a = a;
         }
 
-        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high); }
         @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high); }
         @Override public boolean less(int i, int j) { return Float.compare(a[i], a[j]) < 0; }
         @Override public void swap(int i, int j) { QuickSort.swap(a, i, j); }
@@ -517,28 +447,6 @@ public final class QuickSort {
         if (array.length > 1) {
             sortRange(new ComparatorSorter<>(array, comparator), 0, array.length - 1, maxDepth(array.length));
         }
-    }
-
-    private static <T> int partition(T[] a, int low, int high, Comparator<? super T> cmp) {
-        int mid = low + (high - low) / 2;
-        if (cmp.compare(a[mid], a[low]) < 0) swap(a, low, mid);
-        if (cmp.compare(a[high], a[low]) < 0) swap(a, low, high);
-        if (cmp.compare(a[high], a[mid]) < 0) swap(a, mid, high);
-        swap(a, mid, high - 1);
-        T pivot = a[high - 1];
-
-        int i = low;
-        int j = high - 1;
-        while (true) {
-            while (cmp.compare(a[++i], pivot) < 0) { /* advance */ }
-            while (cmp.compare(a[--j], pivot) > 0) { /* advance */ }
-            if (i >= j) {
-                break;
-            }
-            swap(a, i, j);
-        }
-        swap(a, i, high - 1);
-        return i;
     }
 
     /** Generic counterpart of {@link #heapSort(int[], int, int)}; package-private for testing. */
@@ -585,7 +493,6 @@ public final class QuickSort {
             this.cmp = cmp;
         }
 
-        @Override public int partition(int low, int high) { return QuickSort.partition(a, low, high, cmp); }
         @Override public void heapSort(int low, int high) { QuickSort.heapSort(a, low, high, cmp); }
         @Override public boolean less(int i, int j) { return cmp.compare(a[i], a[j]) < 0; }
         @Override public void swap(int i, int j) { QuickSort.swap(a, i, j); }

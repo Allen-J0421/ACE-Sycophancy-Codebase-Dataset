@@ -4,8 +4,8 @@ JAVAC ?= javac
 MAIN_SRC_DIR := src/main/java
 TEST_SRC_DIR := src/test/java
 
-MAIN_SOURCES := $(wildcard $(MAIN_SRC_DIR)/*.java)
-TEST_SOURCES := $(wildcard $(TEST_SRC_DIR)/*.java)
+MAIN_SOURCES := $(shell find $(MAIN_SRC_DIR) -name '*.java' | sort)
+TEST_SOURCES := $(shell find $(TEST_SRC_DIR) -name '*.java' | sort)
 
 .PHONY: all compile demo legacy test clean
 
@@ -16,14 +16,14 @@ compile:
 	$(JAVAC) -d $(BUILD_DIR) $(MAIN_SOURCES)
 
 demo: compile
-	$(JAVA) -cp $(BUILD_DIR) KmpPatternSearchingDemo
+	$(JAVA) -cp $(BUILD_DIR) kmp.KmpPatternSearchingDemo
 
 legacy: compile
 	$(JAVA) -cp $(BUILD_DIR) kmp_pattern_searching
 
 test: compile
 	$(JAVAC) -cp $(BUILD_DIR) -d $(BUILD_DIR) $(TEST_SOURCES)
-	$(JAVA) -cp $(BUILD_DIR) KMPSearchTest
+	$(JAVA) -cp $(BUILD_DIR) kmp.KMPSearchTest
 
 clean:
 	rm -rf build

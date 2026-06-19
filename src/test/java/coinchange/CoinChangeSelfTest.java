@@ -1,27 +1,37 @@
 package coinchange;
 
+import java.util.Arrays;
+import java.util.List;
+
 public final class CoinChangeSelfTest {
 
     private CoinChangeSelfTest() {
     }
 
     public static void main(String[] args) {
-        assertCount(new int[] {1, 2, 3}, 5, 5);
-        assertCount(new int[] {2, 5, 3, 6}, 10, 5);
-        assertCount(new int[] {3, 1, 2, 2}, 5, 5);
-        assertCount(new int[] {4}, 3, 0);
+        assertCount(new CountCase(new int[] {1, 2, 3}, 5, 5));
+        assertCount(new CountCase(new int[] {2, 5, 3, 6}, 10, 5));
+        assertCount(new CountCase(new int[] {3, 1, 2, 2}, 5, 5));
+        assertCount(new CountCase(new int[] {4}, 3, 0));
+        assertCount(new CountCase(new int[] {}, 0, 1));
+        assertCount(new CountCase(new int[] {}, 4, 0));
         assertCount(new CoinDenominations(new int[] {1, 2, 3}), 5, 5);
+        assertDenominationsAreNormalized();
+        assertDenominationsUseValueEquality();
         assertRejects(new int[] {1, 0, 3}, 4);
         assertRejects(new int[] {1, 2, 3}, -1);
         assertRejects((int[]) null, 4);
         assertRejects((CoinDenominations) null, 4);
+        assertRejects(Arrays.asList(1, null, 3));
     }
 
-    private static void assertCount(int[] coins, int targetSum, int expectedWays) {
-        int actualWays = CoinChange.count(coins, targetSum);
-        if (actualWays != expectedWays) {
+    private static void assertCount(CountCase countCase) {
+        int actualWays = CoinChange.count(countCase.coins(), countCase.targetSum());
+        if (actualWays != countCase.expectedWays()) {
             throw new AssertionError(
-                "Expected " + expectedWays + " ways for target " + targetSum + " but got " + actualWays
+                "Expected " + countCase.expectedWays()
+                    + " ways for target " + countCase.targetSum()
+                    + " but got " + actualWays
             );
         }
     }
@@ -51,5 +61,32 @@ public final class CoinChangeSelfTest {
         } catch (IllegalArgumentException expected) {
             // Expected path.
         }
+    }
+
+    private static void assertDenominationsAreNormalized() {
+        CoinDenominations denominations = new CoinDenominations(new int[] {3, 1, 2, 2});
+        if (!denominations.values().equals(List.of(1, 2, 3))) {
+            throw new AssertionError("Expected denominations to be sorted and de-duplicated");
+        }
+    }
+
+    private static void assertDenominationsUseValueEquality() {
+        CoinDenominations left = new CoinDenominations(new int[] {1, 2, 3});
+        CoinDenominations right = new CoinDenominations(List.of(1, 2, 3));
+        if (!left.equals(right)) {
+            throw new AssertionError("Expected denominations with same values to be equal");
+        }
+    }
+
+    private static void assertRejects(List<Integer> values) {
+        try {
+            new CoinDenominations(values);
+            throw new AssertionError("Expected invalid denominations to be rejected");
+        } catch (IllegalArgumentException expected) {
+            // Expected path.
+        }
+    }
+
+    private record CountCase(int[] coins, int targetSum, int expectedWays) {
     }
 }

@@ -40,4 +40,13 @@ class RabinKarpTest {
                 List.of(0, 8),
                 new RabinKarpMatcher(256, 101).search("geeks", "geeksforgeeks"));
     }
+
+    @Test
+    void reusesCompiledPatternsAcrossSearches() {
+        RabinKarpMatcher matcher = new RabinKarpMatcher(256, 101);
+        CompiledPattern compiledPattern = CompiledPattern.compile("ana", 256, 101);
+
+        assertEquals(List.of(1, 3), matcher.search(compiledPattern, "banana"));
+        assertEquals(List.of(), matcher.search(compiledPattern, "cab"));
+    }
 }

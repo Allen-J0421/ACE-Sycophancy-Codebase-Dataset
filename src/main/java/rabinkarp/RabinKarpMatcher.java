@@ -24,7 +24,15 @@ public final class RabinKarpMatcher {
         Objects.requireNonNull(pattern, "pattern");
         Objects.requireNonNull(text, "text");
 
-        int patternLength = pattern.length();
+        CompiledPattern compiledPattern = CompiledPattern.compile(pattern, radix, modulus);
+        return search(compiledPattern, text);
+    }
+
+    List<Integer> search(CompiledPattern compiledPattern, CharSequence text) {
+        Objects.requireNonNull(compiledPattern, "compiledPattern");
+        Objects.requireNonNull(text, "text");
+
+        int patternLength = compiledPattern.length();
         int textLength = text.length();
 
         if (patternLength == 0) {
@@ -34,14 +42,14 @@ public final class RabinKarpMatcher {
             return List.of();
         }
 
-        int patternHash = hashOf(pattern, patternLength);
+        int patternHash = compiledPattern.hash();
         int windowHash = hashOf(text, patternLength);
-        int highOrderFactor = highOrderFactorFor(patternLength);
+        int highOrderFactor = compiledPattern.highOrderFactor();
         int lastStart = textLength - patternLength;
         List<Integer> matches = new ArrayList<>();
 
         for (int offset = 0; offset <= lastStart; offset++) {
-            if (patternHash == windowHash && matchesAt(text, pattern, offset)) {
+            if (patternHash == windowHash && matchesAt(text, compiledPattern.pattern(), offset)) {
                 matches.add(offset);
             }
 
@@ -71,14 +79,6 @@ public final class RabinKarpMatcher {
             hash = (radix * hash + sequence.charAt(i)) % modulus;
         }
         return hash;
-    }
-
-    private int highOrderFactorFor(int length) {
-        int factor = 1;
-        for (int i = 0; i < length - 1; i++) {
-            factor = (factor * radix) % modulus;
-        }
-        return factor;
     }
 
     private boolean matchesAt(CharSequence text, CharSequence pattern, int offset) {

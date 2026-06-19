@@ -29,7 +29,7 @@ algo_of() {
   root=$(git rev-list --max-parents=0 "$1" 2>/dev/null | tail -1) || true
   [ -n "${root:-}" ] || return 0
   git for-each-ref --points-at "$root" --format='%(refname:short)' "${REFSCOPE[@]}" \
-    | norm | grep -E '^[0-9]{3}_' | sort -u | head -1 || true
+    | norm | grep -E '^(R?[0-9]{3})_' | sort -u | head -1 || true
 }
 
 # all experiment branch short-names (deduped across local + origin)

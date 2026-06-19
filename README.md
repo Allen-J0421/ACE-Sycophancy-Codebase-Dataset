@@ -14,6 +14,16 @@ independent version histories without 50 separate repos.
   containing just the `NNN_name/` folder plus `.gitignore`.
 - Each branch is checked out in its own worktree under `_worktrees/NNN_name/` (gitignored).
 
+## Real experiment subjects (`R` prefix)
+
+Alongside the 50 synthetic DSA algorithms, **real** (non-synthetic) test subjects use an `R`
+prefix on the number — e.g. `R001_module_java` — to keep them visually distinct from the `NNN`
+algorithm numbering. They follow the identical model: an orphan branch `R<NNN>_name` with root
+commit `Initial Commit: Baseline - <name>`, a worktree under `_worktrees/R<NNN>_name/`, and a
+snapshot on `main` under `real_exp/R<NNN>_name/` (vs `algorithms/NNN_name/` for the synthetic
+units). `expmap.sh` recognizes both `NNN_` and `R<NNN>_` units, so experiment branches map the
+same way regardless of subject type.
+
 ### Useful commands
 
 ```sh

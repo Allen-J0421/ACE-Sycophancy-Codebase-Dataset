@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class CoinChangeSelfTest {
+    private static final CoinChangeSolver SOLVER = new DynamicProgrammingCoinChangeSolver();
 
     private CoinChangeSelfTest() {
     }
@@ -32,6 +33,15 @@ public final class CoinChangeSelfTest {
                 "Expected " + countCase.expectedWays()
                     + " ways for target " + countCase.targetSum()
                     + " but got " + actualWays
+            );
+        }
+
+        int solverWays = SOLVER.countWays(countCase.coins(), countCase.targetSum());
+        if (solverWays != countCase.expectedWays()) {
+            throw new AssertionError(
+                "Expected solver to return " + countCase.expectedWays()
+                    + " ways for target " + countCase.targetSum()
+                    + " but got " + solverWays
             );
         }
     }

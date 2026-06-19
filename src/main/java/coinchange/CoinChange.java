@@ -1,6 +1,7 @@
 package coinchange;
 
 public final class CoinChange {
+    private static final CoinChangeSolver DEFAULT_SOLVER = new DynamicProgrammingCoinChangeSolver();
 
     private CoinChange() {
     }
@@ -14,12 +15,6 @@ public final class CoinChange {
     }
 
     public static int count(CoinChangeRequest request) {
-        return ChangeCounter.countWays(request);
-    }
-
-    public static void main(String[] args) {
-        int[] coins = {1, 2, 3};
-        int targetSum = 5;
-        System.out.println(count(coins, targetSum));
+        return DEFAULT_SOLVER.countWays(request);
     }
 }

@@ -1,11 +1,9 @@
 package coinchange;
 
-final class ChangeCounter {
+public final class DynamicProgrammingCoinChangeSolver implements CoinChangeSolver {
 
-    private ChangeCounter() {
-    }
-
-    static int countWays(CoinChangeRequest request) {
+    @Override
+    public int countWays(CoinChangeRequest request) {
         int targetSum = request.targetSum();
         int[] waysBySum = new int[targetSum + 1];
         waysBySum[0] = 1;

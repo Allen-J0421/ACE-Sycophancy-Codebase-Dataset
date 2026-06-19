@@ -12,7 +12,7 @@ $(BUILD_DIR): $(MAIN_SOURCES) $(TEST_SOURCES)
 	javac -d $(BUILD_DIR) $(MAIN_SOURCES) $(TEST_SOURCES)
 
 run: $(BUILD_DIR)
-	java -cp $(BUILD_DIR) coinchange.CoinChange
+	java -cp $(BUILD_DIR) coinchange.CoinChangeDemo
 
 test: $(BUILD_DIR)
 	java -cp $(BUILD_DIR) coinchange.CoinChangeSelfTest

@@ -5,12 +5,16 @@ import java.util.List;
 
 public final class KmpMatcherTest {
 
+    private static final String SAMPLE_PATTERN = "aaba";
+    private static final String SAMPLE_TEXT = "aabaacaadaabaaba";
+    private static final List<Integer> SAMPLE_MATCHES = Arrays.asList(0, 9, 12);
+
     private KmpMatcherTest() {
         // Utility class.
     }
 
     public static void main(String[] args) {
-        expectMatches(KmpExamples.SAMPLE_PATTERN, KmpExamples.SAMPLE_TEXT, KmpExamples.SAMPLE_MATCHES);
+        expectMatches(SAMPLE_PATTERN, SAMPLE_TEXT, SAMPLE_MATCHES);
         expectMatches("aa", "aaaa", Arrays.asList(0, 1, 2));
         expectMatches("needle", "haystack", Arrays.<Integer>asList());
         expectMatches("", "haystack", Arrays.<Integer>asList());

@@ -1,8 +1,12 @@
 package kmp;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 public final class KMPSearch {
+
+    private static final String SAMPLE_PATTERN = "aaba";
+    private static final String SAMPLE_TEXT = "aabaacaadaabaaba";
 
     private KMPSearch() {
         // Utility class.
@@ -13,19 +17,27 @@ public final class KMPSearch {
     }
 
     public static void main(String[] args) {
-        String pattern;
-        String text;
-
         if (args == null || args.length == 0) {
-            pattern = KmpExamples.SAMPLE_PATTERN;
-            text = KmpExamples.SAMPLE_TEXT;
+            printMatches(findAllMatches(SAMPLE_PATTERN, SAMPLE_TEXT));
+            return;
         } else if (args.length == 2) {
-            pattern = args[0];
-            text = args[1];
+            printMatches(findAllMatches(args[0], args[1]));
+            return;
         } else {
             throw new IllegalArgumentException("Usage: java kmp.KMPSearch [pattern text]");
         }
+    }
 
-        System.out.println(KmpFormatter.joinMatches(findAllMatches(pattern, text)));
+    private static void printMatches(List<Integer> matches) {
+        if (matches.isEmpty()) {
+            System.out.println();
+            return;
+        }
+
+        StringJoiner joiner = new StringJoiner(" ");
+        for (Integer match : matches) {
+            joiner.add(String.valueOf(match));
+        }
+        System.out.println(joiner.toString());
     }
 }

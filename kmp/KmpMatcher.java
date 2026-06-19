@@ -39,9 +39,7 @@ final class KmpMatcher {
             }
         }
 
-        return matches.isEmpty()
-            ? Collections.<Integer>emptyList()
-            : Collections.unmodifiableList(new ArrayList<Integer>(matches));
+        return Collections.unmodifiableList(new ArrayList<Integer>(matches));
     }
 
     private static int[] buildLps(CharSequence pattern) {

@@ -1,4 +1,7 @@
 final class LongestCommonSubsequence {
+    private static final int FIRST_INPUT_ARGUMENT = 0;
+    private static final int SECOND_INPUT_ARGUMENT = 1;
+    private static final int INPUT_PAIR_SIZE = 2;
     private static final SequencePair SAMPLE_INPUT = new SequencePair("AGGTAB", "GXTXAYB");
 
     private LongestCommonSubsequence() {
@@ -50,11 +53,13 @@ final class LongestCommonSubsequence {
     }
 
     private static SequencePair inputPair(String[] args) {
-        return hasInputPair(args) ? new SequencePair(args[0], args[1]) : SAMPLE_INPUT;
+        return hasInputPair(args)
+                ? new SequencePair(args[FIRST_INPUT_ARGUMENT], args[SECOND_INPUT_ARGUMENT])
+                : SAMPLE_INPUT;
     }
 
     private static boolean hasInputPair(String[] args) {
-        return args.length >= 2;
+        return args.length >= INPUT_PAIR_SIZE;
     }
 
     private static final class SequencePair {

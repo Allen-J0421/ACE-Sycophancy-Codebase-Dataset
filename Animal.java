@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -7,6 +6,8 @@ public abstract class Animal extends Entity {
 
 
 	private static final Random rand = Randomizer.getRandom();
+
+	private static final int SICKNESS_RANDOM_TRIGGER = 1;
 
 	private boolean alive;
 
@@ -31,7 +32,7 @@ public abstract class Animal extends Entity {
 		super(field, location);
 		this.traits = traits;
 		alive = true;
-		gender = gender.randomGender();
+		gender = Gender.random();
 		nocturnal = false;
 		sick = false;
 	}
@@ -66,18 +67,21 @@ public abstract class Animal extends Entity {
 	private boolean canBreed() {
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		boolean returnValue = age >= getBreedingAge();
-		while (it.hasNext()) {
-			Location where = it.next();
+		boolean oldEnough = age >= getBreedingAge();
+		for (Location where : adjacent) {
 			Animal animalNear = field.getAnimalAt(where);
-			if (animalNear != null) {
-				if (animalNear.getClass().equals(this.getClass()) && getGender() != animalNear.getGender()) {
-					return returnValue;
-				}
+			if (isPotentialMate(animalNear)) {
+				return oldEnough;
 			}
 		}
-		return returnValue;
+		return oldEnough;
+	}
+
+
+	private boolean isPotentialMate(Animal animal) {
+		return animal != null
+				&& animal.getClass().equals(getClass())
+				&& getGender() != animal.getGender();
 	}
 
 
@@ -91,8 +95,6 @@ public abstract class Animal extends Entity {
 
 
 	protected void giveBirth(List<Animal> newAnimals) {
-
-
 		if (this.getGender() == Gender.FEMALE) {
 			Field field = getField();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
@@ -133,7 +135,7 @@ public abstract class Animal extends Entity {
 	protected void becomeSick() {
 		if (!isSick()) {
 			int randomNumber = rand.nextInt(getSickProbability());
-			if (randomNumber == 1) {
+			if (randomNumber == SICKNESS_RANDOM_TRIGGER) {
 				toggleSick();
 			}
 		}
@@ -143,7 +145,7 @@ public abstract class Animal extends Entity {
 	protected void notSick() {
 		if (isSick()) {
 			int randomNumber = rand.nextInt(getRecoverProbability());
-			if (randomNumber == 1) {
+			if (randomNumber == SICKNESS_RANDOM_TRIGGER) {
 				toggleSick();
 				sickStep = 0;
 			}
@@ -152,30 +154,38 @@ public abstract class Animal extends Entity {
 
 
 	protected void battleSickness() {
-		if (sick) {
-			if (sickStep >= maxSickStep) {
-				setDead();
-				return;
-			}
-			sickStep++;
-			Field field = getField();
-			if (field != null) {
-				List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-				Iterator<Location> it = adjacent.iterator();
-				while (it.hasNext()) {
-					Location where = it.next();
-					Animal nearAnimal = field.getAnimalAt(where);
-					if (nearAnimal != null) {
-						if (nearAnimal.getClass().equals(this.getClass())) {
-							nearAnimal.becomeSick();
-						}
-					}
-				}
-				this.notSick();
-			}
-		} else {
+		if (!sick) {
 			becomeSick();
+			return;
 		}
+
+		if (sickStep >= maxSickStep) {
+			setDead();
+			return;
+		}
+
+		sickStep++;
+		Field field = getField();
+		if (field != null) {
+			spreadSickness(field);
+			notSick();
+		}
+	}
+
+
+	private void spreadSickness(Field field) {
+		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
+		for (Location where : adjacent) {
+			Animal nearAnimal = field.getAnimalAt(where);
+			if (canInfect(nearAnimal)) {
+				nearAnimal.becomeSick();
+			}
+		}
+	}
+
+
+	private boolean canInfect(Animal animal) {
+		return animal != null && animal.getClass().equals(getClass());
 	}
 
 
@@ -195,7 +205,6 @@ public abstract class Animal extends Entity {
 
 	protected void toggleSick() {
 		sick = !sick;
-
 	}
 
 

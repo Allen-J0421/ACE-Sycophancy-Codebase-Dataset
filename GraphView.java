@@ -1,7 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 
 public class GraphView extends JFrame {
@@ -12,18 +17,14 @@ public class GraphView extends JFrame {
 	private static JLabel stepLabel;
 	private static JLabel countLabel;
 
+	private final Map<Class<?>, Color> colors;
 
-	private Set<Class<?>> classes;
-
-	private Map<Class<?>, Color> colors;
-
-	private FieldStats stats;
+	private final FieldStats stats;
 
 
 	public GraphView(int width, int height, int startMax) {
 		stats = new FieldStats();
-		classes = new HashSet<>();
-		colors = new HashMap<>();
+		colors = new LinkedHashMap<>();
 
 		if (frame == null) {
 			frame = makeFrame(width, height, startMax);
@@ -36,7 +37,6 @@ public class GraphView extends JFrame {
 
 	public void setColor(Class<?> animalClass, Color color) {
 		colors.put(animalClass, color);
-		classes = colors.keySet();
 	}
 
 
@@ -94,7 +94,7 @@ public class GraphView extends JFrame {
 		public GraphPanel(int width, int height, int startMax) {
 			graphImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			clearImage();
-			lastVal = new int[classes.size()];
+			lastVal = new int[getTrackedClassCount()];
 			Arrays.fill(lastVal, height);
 			yMax = startMax;
 		}
@@ -109,7 +109,7 @@ public class GraphView extends JFrame {
 			g.setColor(Color.BLACK);
 			g.drawLine(width - 4, 0, width - 4, height);
 			g.drawLine(width - 2, 0, width - 2, height);
-			lastVal = new int[classes.size()];
+			lastVal = new int[getTrackedClassCount()];
 			Arrays.fill(lastVal, height);
 			repaint();
 		}
@@ -127,23 +127,9 @@ public class GraphView extends JFrame {
 
 			stats.reset();
 
-			int i = 0;
-			for (Iterator<Class<?>> it = classes.iterator(); it.hasNext(); i++) {
-				Class<?> nextClass = it.next();
-				int count = stats.getPopulationCount(field, nextClass);
-
-
-				int y = height - ((height * count) / yMax) - 1;
-				while (y < 0) {
-					scaleDown();
-					y = height - ((height * count) / yMax) - 1;
-				}
-				g.setColor(LIGHT_GRAY);
-				g.drawLine(width - 2, y, width - 2, height);
-				g.setColor(colors.get(nextClass));
-				g.drawLine(width - 3, lastVal[i], width - 2, y);
-				lastVal[i] = y;
-			}
+			List<Class<?>> trackedClasses = new ArrayList<>(colors.keySet());
+			IntStream.range(0, trackedClasses.size())
+					.forEach(index -> updateGraphLine(g, field, stats, trackedClasses.get(index), index, width, height));
 
 			repaint();
 
@@ -173,9 +159,8 @@ public class GraphView extends JFrame {
 
 			yMax = (int) (yMax / SCALE_FACTOR);
 
-			for (int i = 0; i < lastVal.length; i++) {
-				lastVal[i] = oldTop + (int) (lastVal[i] * SCALE_FACTOR);
-			}
+			IntStream.range(0, lastVal.length)
+					.forEach(index -> lastVal[index] = oldTop + (int) (lastVal[index] * SCALE_FACTOR));
 
 			repaint();
 		}
@@ -204,5 +189,32 @@ public class GraphView extends JFrame {
 				g.drawImage(graphImage, 0, 0, null);
 			}
 		}
+
+
+		private void updateGraphLine(Graphics graphics, FieldEnvironment field, FieldStats stats, Class<?> animalClass,
+				int index, int width, int height) {
+			int count = stats.getPopulationCount(field, animalClass);
+			int y = scalePopulationToY(height, count);
+			graphics.setColor(LIGHT_GRAY);
+			graphics.drawLine(width - 2, y, width - 2, height);
+			graphics.setColor(colors.get(animalClass));
+			graphics.drawLine(width - 3, lastVal[index], width - 2, y);
+			lastVal[index] = y;
+		}
+
+
+		private int scalePopulationToY(int height, int count) {
+			int y = height - ((height * count) / yMax) - 1;
+			while (y < 0) {
+				scaleDown();
+				y = height - ((height * count) / yMax) - 1;
+			}
+			return y;
+		}
+	}
+
+
+	private int getTrackedClassCount() {
+		return colors.size();
 	}
 }

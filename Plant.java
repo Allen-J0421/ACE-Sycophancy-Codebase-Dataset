@@ -1,10 +1,6 @@
-import java.util.Random;
-
-
 public abstract class Plant extends Entity {
 
-
-	private static final Random rand = Randomizer.getRandom();
+	private static final RandomService RANDOM = RandomService.shared();
 
 	private int stage;
 
@@ -17,12 +13,10 @@ public abstract class Plant extends Entity {
 
 
 	protected void increaseStage(Climate climate) {
-		if (stage < getMaxStage()) {
-			if (climate.getCurrentWeather() == Weather.RAIN) {
-				if (rand.nextDouble() <= 0.33) {
-					stage++;
-				}
-			}
+		if (stage < getMaxStage()
+				&& climate.getCurrentWeather() == Weather.RAIN
+				&& RANDOM.chance(0.33)) {
+			stage++;
 		}
 	}
 

@@ -1,19 +1,17 @@
 import java.awt.*;
-import java.util.Random;
-
 
 public class Grass extends Plant {
 
-	private static final Random rand = Randomizer.getRandom();
+	private static final RandomService RANDOM = RandomService.shared();
 
 
 	public Grass(FieldEnvironment field, Location location) {
 		super(field, location);
 
 
-		if (rand.nextDouble() <= 0.5) {
+		if (RANDOM.chance(0.5)) {
 			setMaxStage(3);
-		} else if (rand.nextDouble() <= 0.3) {
+		} else if (RANDOM.chance(0.3)) {
 			setMaxStage(2);
 		} else {
 			setMaxStage(1);

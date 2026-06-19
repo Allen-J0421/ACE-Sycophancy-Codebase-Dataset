@@ -1,11 +1,8 @@
-import java.util.Random;
-
-
 public class Climate {
 
 	private static final int SEASON_LENGTH = 16;
 
-	private static final Random rand = Randomizer.getRandom();
+	private static final RandomService RANDOM = RandomService.shared();
 
 	private Weather currentWeather;
 
@@ -24,7 +21,7 @@ public class Climate {
 		updateSeason(step);
 
 
-		int humidityIncrease = rand.nextInt((20 - 10) + 1) + 10;
+		int humidityIncrease = RANDOM.nextIntInclusive(10, 20);
 
 		if (humidity < 80 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
 			humidity += humidityIncrease;

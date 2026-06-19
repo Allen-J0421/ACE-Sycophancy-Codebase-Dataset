@@ -1,12 +1,14 @@
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class Field implements FieldEnvironment {
 
-	private static final Random rand = Randomizer.getRandom();
+	private static final RandomService RANDOM = RandomService.shared();
 
 
 	private final int depth;
@@ -27,12 +29,8 @@ public class Field implements FieldEnvironment {
 
 	@Override
 	public void clear() {
-		for (int row = 0; row < depth; row++) {
-			for (int col = 0; col < width; col++) {
-				animalField[row][col] = null;
-				plantField[row][col] = null;
-			}
-		}
+		Arrays.stream(animalField).forEach(row -> Arrays.fill(row, null));
+		Arrays.stream(plantField).forEach(row -> Arrays.fill(row, null));
 	}
 
 
@@ -86,14 +84,9 @@ public class Field implements FieldEnvironment {
 
 	@Override
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
-		List<Location> free = new LinkedList<>();
-		List<Location> adjacent = getAdjacentAnimalLocations(location);
-		for (Location next : adjacent) {
-			if (getAnimalAt(next) == null) {
-				free.add(next);
-			}
-		}
-		return free;
+		return getAdjacentAnimalLocations(location).stream()
+				.filter(next -> getAnimalAt(next) == null)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 
@@ -113,26 +106,19 @@ public class Field implements FieldEnvironment {
 	public List<Location> getAdjacentAnimalLocations(Location location) {
 		assert location != null : "Null location passed to getAdjacentAnimalLocations";
 
-		List<Location> locations = new LinkedList<>();
-		if (location != null) {
-			int row = location.getRow();
-			int col = location.getCol();
-			for (int roffset = -1; roffset <= 1; roffset++) {
-				int nextRow = row + roffset;
-				if (nextRow >= 0 && nextRow < depth) {
-					for (int coffset = -1; coffset <= 1; coffset++) {
-						int nextCol = col + coffset;
-
-						if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-							locations.add(new Location(nextRow, nextCol));
-						}
-					}
-				}
-			}
-
-
-			Collections.shuffle(locations, rand);
+		if (location == null) {
+			return Collections.emptyList();
 		}
+
+		int row = location.getRow();
+		int col = location.getCol();
+		List<Location> locations = IntStream.rangeClosed(Math.max(0, row - 1), Math.min(depth - 1, row + 1))
+				.boxed()
+				.flatMap(nextRow -> IntStream.rangeClosed(Math.max(0, col - 1), Math.min(width - 1, col + 1))
+						.filter(nextCol -> nextRow != row || nextCol != col)
+						.mapToObj(nextCol -> new Location(nextRow, nextCol)))
+				.collect(Collectors.toCollection(ArrayList::new));
+		RANDOM.shuffle(locations);
 		return locations;
 	}
 

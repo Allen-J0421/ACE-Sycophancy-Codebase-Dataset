@@ -1,6 +1,7 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class Simulator {
@@ -88,25 +89,15 @@ public class Simulator {
 		step++;
 		climate.updateClimate(step);
 
-
-		for (Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-			Plant plant = it.next();
-			plant.increaseStage(climate);
-		}
+		plants.forEach(plant -> plant.increaseStage(climate));
 
 
 		List<Animal> newAnimals = new ArrayList<>();
-
-		for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-			Animal animal = it.next();
-			animal.act(newAnimals, currentTimeCycle);
-			if (!animal.isAlive()) {
-				it.remove();
-			}
-		}
-
-
-		animals.addAll(newAnimals);
+		animals.forEach(animal -> animal.act(newAnimals, currentTimeCycle));
+		animals = Stream.concat(
+				animals.stream().filter(Animal::isAlive),
+				newAnimals.stream())
+				.collect(Collectors.toCollection(ArrayList::new));
 
 
 		if (step % TIMECYCLE_LENGTH == 0) {
@@ -141,13 +132,10 @@ public class Simulator {
 			return 0;
 		}
 
-		int sickAnimals = 0;
-		for (Animal animal : animals) {
-			if (animal.isSick()) {
-				sickAnimals++;
-			}
-		}
-		return (sickAnimals * 100) / animals.size();
+		long sickAnimals = animals.stream()
+				.filter(Animal::isSick)
+				.count();
+		return (int) ((sickAnimals * 100) / animals.size());
 	}
 
 

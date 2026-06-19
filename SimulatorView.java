@@ -71,21 +71,7 @@ public class SimulatorView extends JFrame {
 
 		fieldView.preparePaint();
 
-
-		for (int row = 0; row < field.getDepth(); row++) {
-			for (int col = 0; col < field.getWidth(); col++) {
-				Animal animal = field.getAnimalAt(row, col);
-				Plant plant = field.getPlantAt(row, col);
-				if (animal != null) {
-					stats.incrementCount(animal.getClass());
-					fieldView.drawMark(col, row, animal.getObjectColor(climate));
-				} else if (plant != null) {
-					fieldView.drawMark(col, row, plant.getObjectColor(climate));
-				} else {
-					fieldView.drawMark(col, row, EMPTY_COLOR);
-				}
-			}
-		}
+		field.streamLocations().forEach(location -> drawLocation(field, climate, location));
 		stats.countFinished();
 
 		populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
@@ -95,6 +81,20 @@ public class SimulatorView extends JFrame {
 
 	public boolean isViable(FieldEnvironment field) {
 		return stats.isViable(field);
+	}
+
+
+	private void drawLocation(FieldEnvironment field, Climate climate, Location location) {
+		Animal animal = field.getAnimalAt(location);
+		Plant plant = field.getPlantAt(location);
+		if (animal != null) {
+			stats.incrementCount(animal.getClass());
+			fieldView.drawMark(location.getCol(), location.getRow(), animal.getObjectColor(climate));
+		} else if (plant != null) {
+			fieldView.drawMark(location.getCol(), location.getRow(), plant.getObjectColor(climate));
+		} else {
+			fieldView.drawMark(location.getCol(), location.getRow(), EMPTY_COLOR);
+		}
 	}
 
 

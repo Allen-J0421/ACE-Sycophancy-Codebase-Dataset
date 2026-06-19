@@ -1,10 +1,9 @@
 import java.util.List;
-import java.util.Random;
 
 
 public abstract class Prey extends Animal {
 
-	private static final Random rand = Randomizer.getRandom();
+	private static final RandomService RANDOM = RandomService.shared();
 
 
 	public Prey(boolean randomAge, FieldEnvironment field, Location location, AnimalSpecies species) {
@@ -12,7 +11,7 @@ public abstract class Prey extends Animal {
 		setAge(0);
 		setFoodLevel(6);
 		if (randomAge) {
-			setAge(rand.nextInt(getSpecies().getMaxAge()));
+			setAge(RANDOM.nextInt(getSpecies().getMaxAge()));
 		}
 	}
 

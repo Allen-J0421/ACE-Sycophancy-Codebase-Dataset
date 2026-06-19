@@ -1,12 +1,12 @@
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public abstract class Animal extends Entity {
 
 
-	private static final Random rand = Randomizer.getRandom();
+	private static final RandomService RANDOM = RandomService.shared();
 
 	private final AnimalSpecies species;
 
@@ -54,30 +54,17 @@ public abstract class Animal extends Entity {
 
 
 	private boolean canBreed() {
-		if (age < getBreedingAge()) {
-			return false;
-		}
-
-		FieldEnvironment field = getField();
-		List<Location> adjacent = field.getAdjacentAnimalLocations(getLocation());
-		Iterator<Location> it = adjacent.iterator();
-		while (it.hasNext()) {
-			Location where = it.next();
-			Animal animalNear = field.getAnimalAt(where);
-			if (animalNear != null
-					&& animalNear.getClass().equals(getClass())
-					&& getGender() != animalNear.getGender()) {
-				return true;
-			}
-		}
-		return false;
+		return age >= getBreedingAge()
+				&& getField().streamAdjacentAnimals(getLocation())
+				.anyMatch(animalNear -> animalNear.getClass().equals(getClass())
+						&& getGender() != animalNear.getGender());
 	}
 
 
 	private int breed() {
 		int births = 0;
-		if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-			births = rand.nextInt(getMaxLitterSize()) + 1;
+		if (canBreed() && RANDOM.chance(getBreedingProbability())) {
+			births = RANDOM.nextIntInclusive(1, getMaxLitterSize());
 		}
 		return births;
 	}
@@ -90,11 +77,10 @@ public abstract class Animal extends Entity {
 			FieldEnvironment field = getField();
 			List<Location> free = field.getFreeAnimalAdjacentLocations(getLocation());
 			int births = breed();
-			for (int b = 0; b < births && free.size() > 0; b++) {
-				Location loc = free.remove(0);
-				Animal young = species.createAnimal(false, field, loc);
-				newAnimals.add(young);
-			}
+			newAnimals.addAll(IntStream.range(0, Math.min(births, free.size()))
+					.mapToObj(free::get)
+					.map(location -> species.createAnimal(false, field, location))
+					.collect(Collectors.toList()));
 		}
 	}
 
@@ -115,22 +101,16 @@ public abstract class Animal extends Entity {
 
 
 	protected void becomeSick() {
-		if (!isSick()) {
-			int randomNumber = rand.nextInt(getSickProbability());
-			if (randomNumber == 1) {
-				toggleSick();
-			}
+		if (!isSick() && RANDOM.oneIn(getSickProbability())) {
+			toggleSick();
 		}
 	}
 
 
 	protected void notSick() {
-		if (isSick()) {
-			int randomNumber = rand.nextInt(getRecoverProbability());
-			if (randomNumber == 1) {
-				toggleSick();
-				sickStep = 0;
-			}
+		if (isSick() && RANDOM.oneIn(getRecoverProbability())) {
+			toggleSick();
+			sickStep = 0;
 		}
 	}
 
@@ -144,15 +124,9 @@ public abstract class Animal extends Entity {
 			sickStep++;
 			FieldEnvironment field = getField();
 			if (field != null) {
-				List<Location> adjacent = field.getAdjacentAnimalLocations(getLocation());
-				Iterator<Location> it = adjacent.iterator();
-				while (it.hasNext()) {
-					Location where = it.next();
-					Animal nearAnimal = field.getAnimalAt(where);
-					if (nearAnimal != null && nearAnimal.getClass().equals(getClass())) {
-						nearAnimal.becomeSick();
-					}
-				}
+				field.streamAdjacentAnimals(getLocation())
+						.filter(nearAnimal -> nearAnimal.getClass().equals(getClass()))
+						.forEach(Animal::becomeSick);
 				this.notSick();
 			}
 		} else {

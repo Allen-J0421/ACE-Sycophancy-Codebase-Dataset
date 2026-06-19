@@ -8,9 +8,21 @@ public final class KMPSearch {
         // Utility class.
     }
 
+    public static KmpSearchResult search(KmpSearchRequest request) {
+        return KmpMatcher.search(request);
+    }
+
+    public static KmpSearchResult search(CharSequence pattern, CharSequence text) {
+        return search(KmpSearchRequest.of(pattern, text));
+    }
+
+    public static List<Integer> findAllMatches(CharSequence pattern, CharSequence text) {
+        return search(pattern, text).matches();
+    }
+
     public static void main(String[] args) {
         KmpSearchRequest request = parseRequest(args);
-        KmpSearchResult result = KmpMatcher.search(request);
+        KmpSearchResult result = search(request);
 
         System.out.println(KmpFormatter.formatMatches(result));
     }

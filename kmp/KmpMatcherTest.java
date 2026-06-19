@@ -16,21 +16,37 @@ public final class KmpMatcherTest {
         expectSearch(KmpSearchRequest.of("", "haystack"), Arrays.<Integer>asList());
         expectSearch(KmpSearchRequest.of("needle", ""), Arrays.<Integer>asList());
 
-        expectIllegalArgument(() -> KmpMatcher.findAllMatches(null, "text"));
-        expectIllegalArgument(() -> KmpMatcher.findAllMatches("pattern", null));
+        expectMatches("aaba", "aabaacaadaabaaba", Arrays.asList(0, 9, 12));
+        expectMatches("aa", "aaaa", Arrays.asList(0, 1, 2));
+        expectMatches("needle", "haystack", Arrays.<Integer>asList());
+        expectMatches("", "haystack", Arrays.<Integer>asList());
+        expectMatches("needle", "", Arrays.<Integer>asList());
+
+        expectIllegalArgument(() -> KMPSearch.search((KmpSearchRequest) null));
+        expectIllegalArgument(() -> KMPSearch.search(null, "text"));
+        expectIllegalArgument(() -> KMPSearch.search("pattern", null));
+        expectIllegalArgument(() -> KMPSearch.findAllMatches(null, "text"));
+        expectIllegalArgument(() -> KMPSearch.findAllMatches("pattern", null));
         expectIllegalArgument(() -> KmpMatcher.search(null));
 
         System.out.println("All KMP matcher tests passed.");
     }
 
+    private static void expectMatches(String pattern, String text, List<Integer> expectedMatches) {
+        List<Integer> actual = KMPSearch.findAllMatches(pattern, text);
+        if (!actual.equals(expectedMatches)) {
+            throw new AssertionError("Expected " + expectedMatches + " but got " + actual);
+        }
+    }
+
     private static void expectSearch(KmpSearchRequest request, List<Integer> expectedMatches) {
         KmpSearchResult expected = KmpSearchResult.of(request, expectedMatches);
-        KmpSearchResult actual = KmpMatcher.search(request);
+        KmpSearchResult actual = KMPSearch.search(request);
         if (!actual.equals(expected)) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
         }
 
-        List<Integer> convenienceMatches = KmpMatcher.findAllMatches(request.pattern(), request.text());
+        List<Integer> convenienceMatches = KMPSearch.findAllMatches(request.pattern(), request.text());
         if (!convenienceMatches.equals(expectedMatches)) {
             throw new AssertionError("Expected " + expectedMatches + " but got " + convenienceMatches);
         }

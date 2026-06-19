@@ -3,13 +3,13 @@ package kmp;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class KmpMatcher {
+final class KmpMatcher {
 
     private KmpMatcher() {
         // Utility class.
     }
 
-    public static KmpSearchResult search(KmpSearchRequest request) {
+    static KmpSearchResult search(KmpSearchRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Search request must not be null.");
         }
@@ -42,10 +42,6 @@ public final class KmpMatcher {
         }
 
         return KmpSearchResult.of(request, matches);
-    }
-
-    public static List<Integer> findAllMatches(CharSequence pattern, CharSequence text) {
-        return search(KmpSearchRequest.of(pattern, text)).matches();
     }
 
     private static int[] buildLps(CharSequence pattern) {

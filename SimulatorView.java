@@ -74,14 +74,13 @@ public class SimulatorView extends JFrame {
 
 		for (int row = 0; row < field.getDepth(); row++) {
 			for (int col = 0; col < field.getWidth(); col++) {
-				Object animalObj = field.getAnimalAt(row, col);
-				Object plantObj = field.getPlantAt(row, col);
-				if (animalObj instanceof Animal) {
-					Animal animal = (Animal) animalObj;
+				Animal animal = field.getAnimalAt(row, col);
+				Plant plant = field.getPlantAt(row, col);
+				if (animal != null) {
 					stats.incrementCount(animal.getClass());
 					fieldView.drawMark(col, row, animal.getObjectColor(climate));
-				} else if (plantObj instanceof Plant) {
-					fieldView.drawMark(col, row, ((Plant) plantObj).getObjectColor(climate));
+				} else if (plant != null) {
+					fieldView.drawMark(col, row, plant.getObjectColor(climate));
 				} else {
 					fieldView.drawMark(col, row, EMPTY_COLOR);
 				}

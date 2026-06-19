@@ -28,8 +28,6 @@ public class Grass extends Plant {
 		Season season = climate.getCurrentSeason();
 		if ((season == Season.SPRING || season == Season.AUTUMN) && getStage() > 2) {
 			setStage(2);
-		} else if (season == Season.SUMMER && getStage() > 3) {
-			setStage(3);
 		} else if (season == Season.WINTER && getStage() > 1) {
 			setStage(1);
 		}

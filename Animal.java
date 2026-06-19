@@ -74,14 +74,10 @@ public abstract class Animal extends Entity {
 			return false;
 		}
 		Field field = getField();
-		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-		for (Location where : adjacent) {
-			Object animal = field.getAnimalAt(where);
-			if (animal instanceof Animal) {
-				Animal animalNear = (Animal) animal;
-				if (animalNear.getClass() == this.getClass() && getGender() != animalNear.getGender()) {
-					return true;
-				}
+		for (Location where : field.adjacentAnimalLocations(getLocation())) {
+			Animal animalNear = field.getAnimalAt(where);
+			if (animalNear != null && animalNear.getClass() == getClass() && getGender() != animalNear.getGender()) {
+				return true;
 			}
 		}
 		return false;
@@ -148,12 +144,9 @@ public abstract class Animal extends Entity {
 			Field field = getField();
 			if (field != null) {
 				for (Location where : field.adjacentAnimalLocations(getLocation())) {
-					Object animal = field.getAnimalAt(where);
-					if (animal instanceof Animal) {
-						Animal nearAnimal = (Animal) animal;
-						if (nearAnimal.getClass() == this.getClass()) {
-							nearAnimal.becomeSick();
-						}
+					Animal nearAnimal = field.getAnimalAt(where);
+					if (nearAnimal != null && nearAnimal.getClass() == getClass()) {
+						nearAnimal.becomeSick();
 					}
 				}
 				notSick();

@@ -12,16 +12,16 @@ public class Field {
 	private int depth;
 	private int width;
 
-	private Object[][] animalField;
+	private Animal[][] animalField;
 
-	private Object[][] plantField;
+	private Plant[][] plantField;
 
 
 	public Field(int depth, int width) {
 		this.depth = depth;
 		this.width = width;
-		animalField = new Object[depth][width];
-		plantField = new Object[depth][width];
+		animalField = new Animal[depth][width];
+		plantField = new Plant[depth][width];
 	}
 
 
@@ -40,32 +40,32 @@ public class Field {
 	}
 
 
-	public void placeAnimal(Object animal, Location location) {
+	public void placeAnimal(Animal animal, Location location) {
 		animalField[location.getRow()][location.getCol()] = animal;
 	}
 
 
-	public void placePlant(Object plant, Location location) {
+	public void placePlant(Plant plant, Location location) {
 		plantField[location.getRow()][location.getCol()] = plant;
 	}
 
 
-	public Object getAnimalAt(Location location) {
+	public Animal getAnimalAt(Location location) {
 		return getAnimalAt(location.getRow(), location.getCol());
 	}
 
 
-	public Object getAnimalAt(int row, int col) {
+	public Animal getAnimalAt(int row, int col) {
 		return animalField[row][col];
 	}
 
 
-	public Object getPlantAt(Location location) {
+	public Plant getPlantAt(Location location) {
 		return getPlantAt(location.getRow(), location.getCol());
 	}
 
 
-	public Object getPlantAt(int row, int col) {
+	public Plant getPlantAt(int row, int col) {
 		return plantField[row][col];
 	}
 

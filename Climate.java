@@ -28,13 +28,14 @@ public class Climate {
 		updateSeason(step);
 
 		int humidityIncrease = rand.nextInt(MAX_HUMIDITY_CHANGE - MIN_HUMIDITY_CHANGE + 1) + MIN_HUMIDITY_CHANGE;
+		boolean notRaining = currentWeather == Weather.SUN || currentWeather == Weather.CLOUD;
 
-		if (humidity < 80 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
+		if (humidity < 80 && notRaining) {
 			humidity += humidityIncrease;
-		} else if (humidity < 100 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD)) {
+		} else if (humidity < 100 && notRaining) {
 			humidity += humidityIncrease;
 			currentWeather = Weather.CLOUD;
-		} else if (humidity > 100 && (currentWeather == Weather.SUN || currentWeather == Weather.CLOUD) && currentSeason != Season.WINTER) {
+		} else if (humidity > 100 && notRaining && currentSeason != Season.WINTER) {
 			currentWeather = Weather.RAIN;
 		} else if (humidity > 80 && currentWeather == Weather.RAIN) {
 			humidity -= humidityIncrease;
@@ -68,5 +69,4 @@ public class Climate {
 	public int getHumidity() {
 		return humidity;
 	}
-
 }

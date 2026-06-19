@@ -28,10 +28,10 @@ public final class KMPSearch {
             return Collections.emptyList();
         }
 
-        return findMatches(pattern, text, buildLps(pattern));
+        return findMatches(pattern, text, PrefixTable.build(pattern));
     }
 
-    private static List<Integer> findMatches(CharSequence pattern, CharSequence text, int[] lps) {
+    private static List<Integer> findMatches(CharSequence pattern, CharSequence text, int[] prefixTable) {
         List<Integer> matches = new ArrayList<>();
         int textIndex = 0;
         int patternIndex = 0;
@@ -43,36 +43,16 @@ public final class KMPSearch {
 
                 if (patternIndex == pattern.length()) {
                     matches.add(textIndex - patternIndex);
-                    patternIndex = lps[patternIndex - 1];
+                    patternIndex = prefixTable[patternIndex - 1];
                 }
             } else if (patternIndex > 0) {
-                patternIndex = lps[patternIndex - 1];
+                patternIndex = prefixTable[patternIndex - 1];
             } else {
                 textIndex++;
             }
         }
 
         return matches;
-    }
-
-    private static int[] buildLps(CharSequence pattern) {
-        int[] lps = new int[pattern.length()];
-        int prefixLength = 0;
-        int index = 1;
-
-        while (index < pattern.length()) {
-            if (pattern.charAt(index) == pattern.charAt(prefixLength)) {
-                lps[index] = ++prefixLength;
-                index++;
-            } else if (prefixLength > 0) {
-                prefixLength = lps[prefixLength - 1];
-            } else {
-                lps[index] = 0;
-                index++;
-            }
-        }
-
-        return lps;
     }
 
     private static List<Integer> allInsertionPoints(int textLength) {

@@ -21,6 +21,10 @@ public final class KMPSearchTest {
 
         assertRejects("null pattern", () -> KMPSearch.search(null, "abc"));
         assertRejects("null text", () -> KMPSearch.search("abc", null));
+
+        assertPrefixTable("aaba", 0, 1, 0, 1);
+        assertPrefixTable("aaaa", 0, 1, 2, 3);
+        assertPrefixTable("ababaca", 0, 0, 1, 2, 3, 0, 1);
     }
 
     private static void assertMatches(CharSequence pattern, CharSequence text, List<Integer> expected) {
@@ -34,6 +38,14 @@ public final class KMPSearchTest {
 
     private static List<Integer> indexes(Integer... values) {
         return Arrays.asList(values);
+    }
+
+    private static void assertPrefixTable(CharSequence pattern, int... expected) {
+        int[] actual = PrefixTable.build(pattern);
+        if (!Arrays.equals(actual, expected)) {
+            throw new AssertionError("Expected prefix table " + Arrays.toString(expected) + " for pattern '"
+                    + pattern + "', but got " + Arrays.toString(actual) + ".");
+        }
     }
 
     private static void assertRejects(String scenario, Runnable action) {

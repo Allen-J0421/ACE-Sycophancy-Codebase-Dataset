@@ -8,16 +8,18 @@ final class LongestCommonSubsequence {
     }
 
     static int lcs(String first, String second) {
-        SequencePair sequences = SequencePair.from(first, second);
+        requireSequence(first, "first");
+        requireSequence(second, "second");
 
-        if (sequences.hasEmptySequence()) {
+        if (first.isEmpty() || second.isEmpty()) {
             return 0;
         }
 
-        if (sequences.areIdentical()) {
-            return sequences.longerLength();
+        if (first.equals(second)) {
+            return first.length();
         }
 
+        CharArrayPair sequences = normalizeByLength(first, second);
         return computeLcsLength(sequences.longer(), sequences.shorter());
     }
 
@@ -45,43 +47,28 @@ final class LongestCommonSubsequence {
         System.out.println(lcs(SAMPLE_FIRST, SAMPLE_SECOND));
     }
 
-    private static final class SequencePair {
-        private final String first;
-        private final String second;
+    private static void requireSequence(String sequence, String name) {
+        Objects.requireNonNull(sequence, name + " must not be null");
+    }
+
+    private static CharArrayPair normalizeByLength(String first, String second) {
+        char[] firstChars = first.toCharArray();
+        char[] secondChars = second.toCharArray();
+
+        if (firstChars.length >= secondChars.length) {
+            return new CharArrayPair(firstChars, secondChars);
+        }
+
+        return new CharArrayPair(secondChars, firstChars);
+    }
+
+    private static final class CharArrayPair {
         private final char[] longer;
         private final char[] shorter;
 
-        private SequencePair(String first, String second, char[] longer, char[] shorter) {
-            this.first = first;
-            this.second = second;
+        private CharArrayPair(char[] longer, char[] shorter) {
             this.longer = longer;
             this.shorter = shorter;
-        }
-
-        static SequencePair from(String first, String second) {
-            Objects.requireNonNull(first, "first must not be null");
-            Objects.requireNonNull(second, "second must not be null");
-
-            char[] firstChars = first.toCharArray();
-            char[] secondChars = second.toCharArray();
-
-            if (firstChars.length >= secondChars.length) {
-                return new SequencePair(first, second, firstChars, secondChars);
-            }
-
-            return new SequencePair(first, second, secondChars, firstChars);
-        }
-
-        boolean hasEmptySequence() {
-            return shorter.length == 0;
-        }
-
-        boolean areIdentical() {
-            return first.equals(second);
-        }
-
-        int longerLength() {
-            return longer.length;
         }
 
         char[] longer() {

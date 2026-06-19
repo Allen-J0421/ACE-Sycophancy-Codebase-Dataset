@@ -13,7 +13,7 @@ public final class KmpSearchSelfTest {
         assertEquals(List.of(0, 1, 2), KmpSearch.search("aa", "aaaa"), "overlapping matches");
         assertEquals(List.of(), KmpSearch.search("xyz", "aaaa"), "no matches");
         assertEquals(List.of(), KmpSearch.search("longer-pattern", "short"), "pattern longer than text");
-        assertAnalysis(KmpSearch.analyze("aaba", "aabaacaadaabaaba"), List.of(0, 9, 12), "analysis through facade");
+        assertAnalysis(KmpSearch.analyze("aaba", "aabaacaadaabaaba"), "aaba", "aabaacaadaabaaba", List.of(0, 9, 12), "analysis through facade");
         assertMatcher(KmpSearch.matcher("aaba", "aabaacaadaabaaba"), "aaba", "aabaacaadaabaaba", List.of(0, 9, 12), "matcher through facade");
         assertEquals(List.of(0, 2), collectMatches(KmpSearch.matchIterator("aba", "ababa")), "iterator through facade");
         assertEquals(OptionalInt.of(2), KmpSearch.findFirst("aaba", "xxaabaacaadaabaaba"), "first match through facade");
@@ -25,7 +25,7 @@ public final class KmpSearchSelfTest {
         KmpPattern compiledPattern = KmpPattern.compile("aba");
         assertEquals("aba", compiledPattern.value(), "compiled pattern preserves source value");
         assertMatcher(compiledPattern.matcher("ababa"), "aba", "ababa", List.of(0, 2), "compiled pattern matcher");
-        assertAnalysis(compiledPattern.analyzeIn("ababa"), List.of(0, 2), "compiled pattern analysis");
+        assertAnalysis(compiledPattern.analyzeIn("ababa"), "aba", "ababa", List.of(0, 2), "compiled pattern analysis");
         assertEquals(List.of(0, 2), collectMatches(compiledPattern.matchIteratorIn("ababa")), "pattern iterator search");
         assertEquals(List.of(0, 2), compiledPattern.findMatchesIn("ababa"), "compiled pattern search");
         assertEquals(List.of(0, 2), compiledPattern.findMatchesIn(new StringBuilder("ababa")), "char sequence search");
@@ -44,6 +44,17 @@ public final class KmpSearchSelfTest {
         assertThrows(NullPointerException.class, () -> compiledPattern.matchIteratorIn(null), "null iterator text rejected");
         assertThrows(NullPointerException.class, () -> compiledPattern.forEachMatchIn("ababa", null), "null match consumer rejected");
         assertThrows(java.util.NoSuchElementException.class, () -> exhaustedIterator(compiledPattern).nextInt(), "iterator rejects nextInt when exhausted");
+        assertMatcherSnapshot(compiledPattern, "ababa", List.of(0, 2));
+    }
+
+    private static void assertMatcherSnapshot(KmpPattern pattern, String initialText, List<Integer> expectedMatches) {
+        StringBuilder mutableText = new StringBuilder(initialText);
+        KmpMatcher matcher = pattern.matcher(mutableText);
+        mutableText.append("xxx");
+
+        assertEquals(initialText, matcher.text(), "matcher text snapshot");
+        assertEquals(expectedMatches, matcher.findMatches(), "matcher snapshot matches");
+        assertAnalysis(matcher.analyze(), pattern.value(), initialText, expectedMatches, "matcher snapshot analysis");
     }
 
     private static void assertMatcher(
@@ -58,10 +69,17 @@ public final class KmpSearchSelfTest {
         assertEquals(expectedMatches.size(), matcher.countMatches(), scenario + " count");
         assertEquals(!expectedMatches.isEmpty(), matcher.contains(), scenario + " contains");
         assertEquals(toOptional(expectedMatches.isEmpty() ? null : expectedMatches.get(0)), matcher.findFirst(), scenario + " first");
-        assertEquals(expectedMatches, matcher.analyze().matchIndices(), scenario + " analysis");
+        assertAnalysis(matcher.analyze(), expectedPattern, expectedText.toString(), expectedMatches, scenario + " analysis");
     }
 
-    private static void assertAnalysis(KmpMatchResult result, List<Integer> expectedMatches, String scenario) {
+    private static void assertAnalysis(
+            KmpMatchResult result,
+            String expectedPattern,
+            String expectedText,
+            List<Integer> expectedMatches,
+            String scenario) {
+        assertEquals(expectedPattern, result.pattern(), scenario + " pattern");
+        assertEquals(expectedText, result.text(), scenario + " text");
         assertEquals(expectedMatches, result.matchIndices(), scenario + " indices");
         assertEquals(expectedMatches.size(), result.count(), scenario + " count");
         assertEquals(!expectedMatches.isEmpty(), result.hasMatches(), scenario + " presence");
@@ -70,6 +88,7 @@ public final class KmpSearchSelfTest {
                 toOptional(expectedMatches.isEmpty() ? null : expectedMatches.get(expectedMatches.size() - 1)),
                 result.lastMatch(),
                 scenario + " last");
+        assertEquals(expectedMatches, List.copyOf(result.matchIndices()), scenario + " iterable");
         assertEquals(expectedMatches.toString(), result.toString(), scenario + " string");
     }
 

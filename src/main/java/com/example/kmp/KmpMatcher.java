@@ -11,20 +11,20 @@ import java.util.function.IntConsumer;
  */
 public final class KmpMatcher {
     private final KmpPattern pattern;
-    private final CharSequence text;
+    private final String text;
 
     private KmpMatchResult cachedAnalysis;
 
     KmpMatcher(KmpPattern pattern, CharSequence text) {
         this.pattern = Objects.requireNonNull(pattern, "pattern must not be null");
-        this.text = Objects.requireNonNull(text, "text must not be null");
+        this.text = Objects.requireNonNull(text, "text must not be null").toString();
     }
 
     public KmpPattern pattern() {
         return pattern;
     }
 
-    public CharSequence text() {
+    public String text() {
         return text;
     }
 
@@ -37,7 +37,7 @@ public final class KmpMatcher {
             List<Integer> matches = new ArrayList<>();
             KmpMatchIterator iterator = matchIterator();
             iterator.forEachRemaining((int matchIndex) -> matches.add(matchIndex));
-            cachedAnalysis = matches.isEmpty() ? KmpMatchResult.noMatches() : KmpMatchResult.from(matches);
+            cachedAnalysis = KmpMatchResult.from(pattern.value(), text, matches);
         }
 
         return cachedAnalysis;
@@ -48,28 +48,21 @@ public final class KmpMatcher {
     }
 
     public OptionalInt findFirst() {
-        KmpMatchIterator iterator = matchIterator();
-        return iterator.hasNext() ? OptionalInt.of(iterator.nextInt()) : OptionalInt.empty();
+        return analyze().firstMatch();
     }
 
     public int countMatches() {
-        int matchCount = 0;
-        KmpMatchIterator iterator = matchIterator();
-
-        while (iterator.hasNext()) {
-            iterator.nextInt();
-            matchCount++;
-        }
-
-        return matchCount;
+        return analyze().count();
     }
 
     public boolean contains() {
-        return matchIterator().hasNext();
+        return analyze().hasMatches();
     }
 
     public void forEachMatch(IntConsumer matchConsumer) {
         Objects.requireNonNull(matchConsumer, "matchConsumer must not be null");
-        matchIterator().forEachRemaining(matchConsumer);
+        for (int matchIndex : analyze()) {
+            matchConsumer.accept(matchIndex);
+        }
     }
 }

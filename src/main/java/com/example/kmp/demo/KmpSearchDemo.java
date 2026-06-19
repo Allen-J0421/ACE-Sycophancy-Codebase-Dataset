@@ -1,6 +1,5 @@
 package com.example.kmp.demo;
 
-import com.example.kmp.KmpMatchIterator;
 import com.example.kmp.KmpMatchResult;
 import com.example.kmp.KmpMatcher;
 import com.example.kmp.KmpPattern;
@@ -20,17 +19,17 @@ public final class KmpSearchDemo {
         KmpPattern compiledPattern = KmpSearch.compile(pattern);
         KmpMatcher matcher = compiledPattern.matcher(text);
         KmpMatchResult result = matcher.analyze();
-        KmpMatchIterator iterator = matcher.matchIterator();
 
         System.out.println("Matches: " + result.matchIndices());
         System.out.println("Count: " + result.count());
         System.out.println("First: " + formatOptional(result.firstMatch()));
         System.out.println("Last: " + formatOptional(result.lastMatch()));
+        System.out.println("Pattern: " + result.pattern());
+        System.out.println("Text: " + result.text());
         System.out.println("Contains: " + result.hasMatches());
 
         System.out.print("Iterated: ");
-        while (iterator.hasNext()) {
-            int matchIndex = iterator.nextInt();
+        for (int matchIndex : result) {
             System.out.print(matchIndex + " ");
         }
         if (!matcher.contains()) {

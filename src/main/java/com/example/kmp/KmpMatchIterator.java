@@ -1,3 +1,5 @@
+package com.example.kmp;
+
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
 

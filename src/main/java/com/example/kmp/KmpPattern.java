@@ -1,3 +1,5 @@
+package com.example.kmp;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +22,6 @@ public final class KmpPattern {
         Objects.requireNonNull(pattern, "pattern must not be null");
 
         String patternValue = pattern.toString();
-
         if (patternValue.isEmpty()) {
             throw new IllegalArgumentException("pattern must not be empty");
         }

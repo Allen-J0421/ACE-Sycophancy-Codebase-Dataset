@@ -1,3 +1,10 @@
+package com.example.kmp.demo;
+
+import com.example.kmp.KmpMatchIterator;
+import com.example.kmp.KmpMatchResult;
+import com.example.kmp.KmpPattern;
+import com.example.kmp.KmpSearch;
+
 public final class KmpSearchDemo {
     private static final String DEFAULT_TEXT = "aabaacaadaabaaba";
     private static final String DEFAULT_PATTERN = "aaba";

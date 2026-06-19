@@ -32,18 +32,20 @@ public final class KmpPattern {
         return value;
     }
 
-    public KmpMatchResult analyzeIn(CharSequence text) {
+    public KmpMatchIterator matchIteratorIn(CharSequence text) {
         validateText(text);
+        return new KmpMatchIterator(value, longestPrefixSuffix, text);
+    }
 
-        if (value.length() > text.length()) {
+    public KmpMatchResult analyzeIn(CharSequence text) {
+        List<Integer> matches = new ArrayList<>();
+        KmpMatchIterator iterator = matchIteratorIn(text);
+        iterator.forEachRemaining((int matchIndex) -> matches.add(matchIndex));
+
+        if (matches.isEmpty()) {
             return KmpMatchResult.noMatches();
         }
 
-        List<Integer> matches = new ArrayList<>();
-        scanMatches(text, matchIndex -> {
-            matches.add(matchIndex);
-            return true;
-        });
         return KmpMatchResult.from(matches);
     }
 
@@ -52,51 +54,29 @@ public final class KmpPattern {
     }
 
     public OptionalInt findFirstIn(CharSequence text) {
-        validateText(text);
-
-        if (value.length() > text.length()) {
-            return OptionalInt.empty();
-        }
-
-        int[] firstMatchIndex = { -1 };
-        scanMatches(text, matchIndex -> {
-            firstMatchIndex[0] = matchIndex;
-            return false;
-        });
-        return firstMatchIndex[0] >= 0 ? OptionalInt.of(firstMatchIndex[0]) : OptionalInt.empty();
+        KmpMatchIterator iterator = matchIteratorIn(text);
+        return iterator.hasNext() ? OptionalInt.of(iterator.nextInt()) : OptionalInt.empty();
     }
 
     public int countMatchesIn(CharSequence text) {
-        validateText(text);
+        int matchCount = 0;
+        KmpMatchIterator iterator = matchIteratorIn(text);
 
-        if (value.length() > text.length()) {
-            return 0;
+        while (iterator.hasNext()) {
+            iterator.nextInt();
+            matchCount++;
         }
 
-        int[] matchCount = { 0 };
-        scanMatches(text, matchIndex -> {
-            matchCount[0]++;
-            return true;
-        });
-        return matchCount[0];
+        return matchCount;
     }
 
     public boolean occursIn(CharSequence text) {
-        return findFirstIn(text).isPresent();
+        return matchIteratorIn(text).hasNext();
     }
 
     public void forEachMatchIn(CharSequence text, IntConsumer matchConsumer) {
-        validateText(text);
         Objects.requireNonNull(matchConsumer, "matchConsumer must not be null");
-
-        if (value.length() > text.length()) {
-            return;
-        }
-
-        scanMatches(text, matchIndex -> {
-            matchConsumer.accept(matchIndex);
-            return true;
-        });
+        matchIteratorIn(text).forEachRemaining(matchConsumer);
     }
 
     static int[] buildLongestPrefixSuffixTable(String pattern) {
@@ -124,38 +104,5 @@ public final class KmpPattern {
 
     private void validateText(CharSequence text) {
         Objects.requireNonNull(text, "text must not be null");
-    }
-
-    private void scanMatches(CharSequence text, MatchVisitor visitor) {
-        int textIndex = 0;
-        int patternIndex = 0;
-
-        while (textIndex < text.length()) {
-            if (text.charAt(textIndex) == value.charAt(patternIndex)) {
-                textIndex++;
-                patternIndex++;
-
-                if (patternIndex == value.length()) {
-                    int matchIndex = textIndex - patternIndex;
-                    patternIndex = longestPrefixSuffix[patternIndex - 1];
-
-                    if (!visitor.visit(matchIndex)) {
-                        return;
-                    }
-                }
-                continue;
-            }
-
-            if (patternIndex > 0) {
-                patternIndex = longestPrefixSuffix[patternIndex - 1];
-            } else {
-                textIndex++;
-            }
-        }
-    }
-
-    @FunctionalInterface
-    private interface MatchVisitor {
-        boolean visit(int matchIndex);
     }
 }

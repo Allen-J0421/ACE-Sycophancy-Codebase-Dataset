@@ -25,6 +25,10 @@ public final class KmpSearch {
         return compile(pattern).analyzeIn(text);
     }
 
+    public static KmpMatchIterator matchIterator(CharSequence pattern, CharSequence text) {
+        return compile(pattern).matchIteratorIn(text);
+    }
+
     public static OptionalInt findFirst(CharSequence pattern, CharSequence text) {
         return compile(pattern).findFirstIn(text);
     }

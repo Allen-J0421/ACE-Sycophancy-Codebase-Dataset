@@ -11,6 +11,7 @@ public final class KmpSearchDemo {
 
         KmpPattern compiledPattern = KmpSearch.compile(pattern);
         KmpMatchResult result = compiledPattern.analyzeIn(text);
+        KmpMatchIterator iterator = compiledPattern.matchIteratorIn(text);
 
         System.out.println("Matches: " + result.matchIndices());
         System.out.println("Count: " + result.count());
@@ -18,8 +19,9 @@ public final class KmpSearchDemo {
         System.out.println("Last: " + formatOptional(result.lastMatch()));
         System.out.println("Contains: " + result.hasMatches());
 
-        System.out.print("Streamed: ");
-        for (int matchIndex : result.matchIndices()) {
+        System.out.print("Iterated: ");
+        while (iterator.hasNext()) {
+            int matchIndex = iterator.nextInt();
             System.out.print(matchIndex + " ");
         }
         if (!result.hasMatches()) {

@@ -12,6 +12,7 @@ public final class KmpSearchSelfTest {
         assertEquals(List.of(), KmpSearch.search("xyz", "aaaa"), "no matches");
         assertEquals(List.of(), KmpSearch.search("longer-pattern", "short"), "pattern longer than text");
         assertAnalysis(KmpSearch.analyze("aaba", "aabaacaadaabaaba"), List.of(0, 9, 12), "analysis through facade");
+        assertEquals(List.of(0, 2), collectMatches(KmpSearch.matchIterator("aba", "ababa")), "iterator through facade");
         assertEquals(OptionalInt.of(2), KmpSearch.findFirst("aaba", "xxaabaacaadaabaaba"), "first match through facade");
         assertEquals(3, KmpSearch.countMatches("aa", "aaaa"), "count matches through facade");
         assertTrue(KmpSearch.contains("aba", "xxabaxx"), "contains through facade");
@@ -21,6 +22,7 @@ public final class KmpSearchSelfTest {
         KmpPattern compiledPattern = KmpPattern.compile("aba");
         assertEquals("aba", compiledPattern.value(), "compiled pattern preserves source value");
         assertAnalysis(compiledPattern.analyzeIn("ababa"), List.of(0, 2), "compiled pattern analysis");
+        assertEquals(List.of(0, 2), collectMatches(compiledPattern.matchIteratorIn("ababa")), "pattern iterator search");
         assertEquals(List.of(0, 2), compiledPattern.findMatchesIn("ababa"), "compiled pattern search");
         assertEquals(List.of(0, 2), compiledPattern.findMatchesIn(new StringBuilder("ababa")), "char sequence search");
         assertEquals(OptionalInt.of(0), compiledPattern.findFirstIn("ababa"), "first match search");
@@ -34,7 +36,9 @@ public final class KmpSearchSelfTest {
         assertThrows(IllegalArgumentException.class, () -> KmpPattern.compile(""), "empty pattern rejected");
         assertThrows(NullPointerException.class, () -> KmpPattern.compile(null), "null pattern rejected");
         assertThrows(NullPointerException.class, () -> compiledPattern.findMatchesIn(null), "null text rejected");
+        assertThrows(NullPointerException.class, () -> compiledPattern.matchIteratorIn(null), "null iterator text rejected");
         assertThrows(NullPointerException.class, () -> compiledPattern.forEachMatchIn("ababa", null), "null match consumer rejected");
+        assertThrows(java.util.NoSuchElementException.class, () -> exhaustedIterator(compiledPattern).nextInt(), "iterator rejects nextInt when exhausted");
     }
 
     private static void assertAnalysis(KmpMatchResult result, List<Integer> expectedMatches, String scenario) {
@@ -61,8 +65,24 @@ public final class KmpSearchSelfTest {
         return List.copyOf(matches);
     }
 
+    private static List<Integer> collectMatches(KmpMatchIterator iterator) {
+        List<Integer> matches = new java.util.ArrayList<>();
+
+        while (iterator.hasNext()) {
+            matches.add(iterator.nextInt());
+        }
+
+        return List.copyOf(matches);
+    }
+
     private static OptionalInt toOptional(Integer value) {
         return value == null ? OptionalInt.empty() : OptionalInt.of(value);
+    }
+
+    private static KmpMatchIterator exhaustedIterator(KmpPattern pattern) {
+        KmpMatchIterator iterator = pattern.matchIteratorIn("xxxx");
+        assertFalse(iterator.hasNext(), "iterator should be exhausted");
+        return iterator;
     }
 
     private static void assertEquals(Object expected, Object actual, String scenario) {

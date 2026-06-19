@@ -27,14 +27,14 @@ public final class RabinKarp {
     }
 
     private static List<Integer> searchNonEmptyPattern(String pattern, String text) {
-        int patternLength = pattern.length();
+        SearchPattern searchPattern = SearchPattern.from(pattern);
+        int patternLength = searchPattern.length();
         int lastStart = text.length() - patternLength;
-        int patternHash = RollingHash.hash(pattern, patternLength);
         RollingHash textWindow = RollingHash.from(text, patternLength);
         List<Integer> matches = new ArrayList<>();
 
         for (int start = 0; start <= lastStart; start++) {
-            if (windowMatches(patternHash, textWindow, text, pattern, start)) {
+            if (searchPattern.matches(textWindow, text, start)) {
                 matches.add(start);
             }
 
@@ -44,17 +44,6 @@ public final class RabinKarp {
         }
 
         return matches;
-    }
-
-    private static boolean windowMatches(
-        int patternHash,
-        RollingHash textWindow,
-        String text,
-        String pattern,
-        int start
-    ) {
-        return patternHash == textWindow.value()
-            && text.regionMatches(start, pattern, 0, pattern.length());
     }
 
     private static void advanceWindow(
@@ -78,6 +67,29 @@ public final class RabinKarp {
             positions.add(index);
         }
         return positions;
+    }
+
+    private static final class SearchPattern {
+        private final String value;
+        private final int hash;
+
+        private SearchPattern(String value, int hash) {
+            this.value = value;
+            this.hash = hash;
+        }
+
+        private static SearchPattern from(String pattern) {
+            return new SearchPattern(pattern, RollingHash.hash(pattern, pattern.length()));
+        }
+
+        private int length() {
+            return value.length();
+        }
+
+        private boolean matches(RollingHash textWindow, String text, int start) {
+            return hash == textWindow.value()
+                && text.regionMatches(start, value, 0, value.length());
+        }
     }
 
     private static final class RollingHash {

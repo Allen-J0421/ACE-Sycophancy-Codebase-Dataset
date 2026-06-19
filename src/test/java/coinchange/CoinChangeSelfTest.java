@@ -18,6 +18,7 @@ public final class CoinChangeSelfTest {
         assertCount(new CountCase(new int[] {}, 0, 1));
         assertCount(new CountCase(new int[] {}, 4, 0));
         assertCount(new CoinDenominations(new int[] {1, 2, 3}), 5, 5);
+        assertSolutionCarriesProblemContext();
         assertStandardUsesDynamicProgrammingSolver();
         assertRejectsNullSolver();
         assertDenominationsAreNormalized();
@@ -45,6 +46,15 @@ public final class CoinChangeSelfTest {
                 "Expected service to return " + countCase.expectedWays()
                     + " ways for target " + countCase.targetSum()
                     + " but got " + serviceWays
+            );
+        }
+
+        CoinChangeSolution solution = SERVICE.solve(countCase.coins(), countCase.targetSum());
+        if (solution.ways() != countCase.expectedWays()) {
+            throw new AssertionError(
+                "Expected solution to contain " + countCase.expectedWays()
+                    + " ways for target " + countCase.targetSum()
+                    + " but got " + solution.ways()
             );
         }
     }
@@ -94,6 +104,14 @@ public final class CoinChangeSelfTest {
     private static void assertStandardUsesDynamicProgrammingSolver() {
         if (!(CoinChange.standard().solver() instanceof DynamicProgrammingCoinChangeSolver)) {
             throw new AssertionError("Expected standard CoinChange service to use the DP solver");
+        }
+    }
+
+    private static void assertSolutionCarriesProblemContext() {
+        CoinChangeProblem problem = new CoinChangeProblem(new int[] {1, 2, 3}, 5);
+        CoinChangeSolution solution = CoinChange.solveProblem(problem);
+        if (!solution.problem().equals(problem)) {
+            throw new AssertionError("Expected solution to retain the originating problem");
         }
     }
 

@@ -6,8 +6,7 @@ public final class CoinChangeDemo {
     }
 
     public static void main(String[] args) {
-        int[] coins = {1, 2, 3};
-        int targetSum = 5;
-        System.out.println(CoinChange.count(coins, targetSum));
+        CoinChangeProblem problem = new CoinChangeProblem(new int[] {1, 2, 3}, 5);
+        System.out.println(CoinChange.solveProblem(problem).ways());
     }
 }

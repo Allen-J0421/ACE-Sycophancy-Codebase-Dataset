@@ -1,12 +1,12 @@
 package coinchange;
 
-public record CoinChangeRequest(CoinDenominations denominations, int targetSum) {
+public record CoinChangeProblem(CoinDenominations denominations, int targetSum) {
 
-    public CoinChangeRequest(int[] coins, int targetSum) {
+    public CoinChangeProblem(int[] coins, int targetSum) {
         this(new CoinDenominations(coins), targetSum);
     }
 
-    public CoinChangeRequest {
+    public CoinChangeProblem {
         if (denominations == null) {
             throw new IllegalArgumentException("denominations must not be null");
         }

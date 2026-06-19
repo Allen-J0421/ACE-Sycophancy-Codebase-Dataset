@@ -11,15 +11,27 @@ public final class CoinChange implements CoinChangeSolver {
     }
 
     public static int count(int[] coins, int targetSum) {
-        return standard().countWays(coins, targetSum);
+        return solveProblem(coins, targetSum).ways();
     }
 
     public static int count(CoinDenominations denominations, int targetSum) {
-        return standard().countWays(denominations, targetSum);
+        return solveProblem(denominations, targetSum).ways();
     }
 
-    public static int count(CoinChangeRequest request) {
-        return standard().countWays(request);
+    public static int count(CoinChangeProblem problem) {
+        return solveProblem(problem).ways();
+    }
+
+    public static CoinChangeSolution solveProblem(int[] coins, int targetSum) {
+        return standard().solve(new CoinChangeProblem(coins, targetSum));
+    }
+
+    public static CoinChangeSolution solveProblem(CoinDenominations denominations, int targetSum) {
+        return standard().solve(new CoinChangeProblem(denominations, targetSum));
+    }
+
+    public static CoinChangeSolution solveProblem(CoinChangeProblem problem) {
+        return standard().solve(problem);
     }
 
     public static CoinChange standard() {
@@ -31,8 +43,8 @@ public final class CoinChange implements CoinChangeSolver {
     }
 
     @Override
-    public int countWays(CoinChangeRequest request) {
-        return solver.countWays(request);
+    public CoinChangeSolution solve(CoinChangeProblem problem) {
+        return solver.solve(problem);
     }
 
     public CoinChangeSolver solver() {

@@ -26,15 +26,15 @@ public class Simulator {
 
 	private int step;
 
-	private SimulatorView gridView;
-
-	private GraphView graphView;
-
 	private TimeCycle currentTimeCycle;
 
 	private Climate climate;
 
 	private FieldPopulator fieldPopulator;
+
+	private final List<SimulationObserver> observers;
+
+	private final FieldStats fieldStats;
 
 	private int sickPercentage;
 
@@ -57,15 +57,11 @@ public class Simulator {
 		animals = new ArrayList<>();
 
 		plants = new ArrayList<>();
+		observers = new ArrayList<>();
+		fieldStats = new FieldStats();
 		field = new Field(depth, width);
 		climate = new Climate(DEFAULT_WEATHER);
-
-
-		gridView = new SimulatorView(depth, width);
-
-
-		graphView = new GraphView(1000, 500, 500);
-		fieldPopulator = new FieldPopulator(graphView, climate);
+		fieldPopulator = new FieldPopulator();
 
 
 		reset();
@@ -78,7 +74,7 @@ public class Simulator {
 
 
 	public void simulate(int numSteps) {
-		for (int step = 1; step <= numSteps && gridView.isViable(field); step++) {
+		for (int step = 1; step <= numSteps && isViable(); step++) {
 			simulateOneStep();
 			delay(60);
 		}
@@ -104,7 +100,7 @@ public class Simulator {
 			currentTimeCycle = currentTimeCycle.toggle();
 		}
 
-		updateViews();
+		notifyObservers();
 	}
 
 
@@ -115,15 +111,25 @@ public class Simulator {
 		climate.setCurrentWeather(Weather.SUN);
 
 		sickPercentage = 0;
-		graphView.reset();
-		updateViews();
+		notifyObservers();
 	}
 
 
-	private void updateViews() {
+	public void addObserver(SimulationObserver observer) {
+		observers.add(observer);
+		observer.onSimulationStateChanged(createSnapshot());
+	}
+
+
+	public void removeObserver(SimulationObserver observer) {
+		observers.remove(observer);
+	}
+
+
+	private void notifyObservers() {
 		sickPercentage = calculateSickPercentage();
-		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
-		graphView.showStatus(step, field);
+		SimulationSnapshot snapshot = createSnapshot();
+		observers.forEach(observer -> observer.onSimulationStateChanged(snapshot));
 	}
 
 
@@ -136,6 +142,16 @@ public class Simulator {
 				.filter(Animal::isSick)
 				.count();
 		return (int) ((sickAnimals * 100) / animals.size());
+	}
+
+
+	private boolean isViable() {
+		return fieldStats.isViable(field);
+	}
+
+
+	private SimulationSnapshot createSnapshot() {
+		return new SimulationSnapshot(step, currentTimeCycle, field, climate, sickPercentage, isViable());
 	}
 
 

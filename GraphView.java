@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 
-public class GraphView extends JFrame {
+public class GraphView extends JFrame implements SimulationObserver {
 	private static final Color LIGHT_GRAY = new Color(0, 0, 0, 40);
 
 	private static JFrame frame;
@@ -40,17 +40,17 @@ public class GraphView extends JFrame {
 	}
 
 
-	public void showStatus(int step, FieldEnvironment field) {
-		graph.update(step, field, stats);
+	@Override
+	public void onSimulationStateChanged(SimulationSnapshot snapshot) {
+		registerColors(snapshot);
+		if (snapshot.getStep() == 0) {
+			reset();
+		}
+		graph.update(snapshot.getStep(), snapshot.getField(), stats);
 	}
 
 
-	public boolean isViable(FieldEnvironment field) {
-		return stats.isViable(field);
-	}
-
-
-	public void reset() {
+	private void reset() {
 		stats.reset();
 		graph.newRun();
 	}
@@ -216,5 +216,11 @@ public class GraphView extends JFrame {
 
 	private int getTrackedClassCount() {
 		return colors.size();
+	}
+
+
+	private void registerColors(SimulationSnapshot snapshot) {
+		snapshot.getField().streamAnimals()
+				.forEach(animal -> setColor(animal.getClass(), animal.getObjectColor(snapshot.getClimate())));
 	}
 }

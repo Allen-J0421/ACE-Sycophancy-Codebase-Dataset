@@ -19,17 +19,11 @@ public class FieldPopulator {
 
 	private final RandomService random;
 
-	private final GraphView graphView;
-
-	private final Climate climate;
-
 	private final List<AnimalSpawnRule> animalSpawnRules;
 
 
-	public FieldPopulator(GraphView graphView, Climate climate) {
+	public FieldPopulator() {
 		this.random = RandomService.shared();
-		this.graphView = graphView;
-		this.climate = climate;
 		this.animalSpawnRules = new ArrayList<>();
 		registerAnimalSpawnRules();
 	}
@@ -78,7 +72,6 @@ public class FieldPopulator {
 		Animal animal = createAnimal(field, location);
 		if (animal != null) {
 			animals.add(animal);
-			graphView.setColor(animal.getClass(), animal.getObjectColor(climate));
 		}
 	}
 

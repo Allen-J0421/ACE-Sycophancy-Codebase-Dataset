@@ -8,8 +8,11 @@ class KMPSearch {
     private final int[] lps;
 
     KMPSearch(String pattern) {
-        if (pattern == null || pattern.isEmpty()) {
-            throw new IllegalArgumentException("pattern must be non-null and non-empty");
+        if (pattern == null) {
+            throw new IllegalArgumentException("pattern must not be null");
+        }
+        if (pattern.isEmpty()) {
+            throw new IllegalArgumentException("pattern must not be empty");
         }
         this.pattern = pattern;
         this.lps = computeLPS();
@@ -17,21 +20,21 @@ class KMPSearch {
 
     private int[] computeLPS() {
         int m = pattern.length();
-        int[] lps = new int[m];
+        int[] table = new int[m];
         int prefixLen = 0;
         int i = 1;
         while (i < m) {
             if (pattern.charAt(i) == pattern.charAt(prefixLen)) {
                 prefixLen++;
-                lps[i] = prefixLen;
+                table[i] = prefixLen;
                 i++;
             } else if (prefixLen != 0) {
-                prefixLen = lps[prefixLen - 1];
+                prefixLen = table[prefixLen - 1];
             } else {
                 i++;
             }
         }
-        return lps;
+        return table;
     }
 
     List<Integer> search(String text) {

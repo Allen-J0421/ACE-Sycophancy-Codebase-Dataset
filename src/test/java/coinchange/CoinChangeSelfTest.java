@@ -5,6 +5,7 @@ import java.util.List;
 
 public final class CoinChangeSelfTest {
     private static final CoinChangeSolver SOLVER = new DynamicProgrammingCoinChangeSolver();
+    private static final CoinChange SERVICE = new CoinChange(SOLVER);
 
     private CoinChangeSelfTest() {
     }
@@ -17,6 +18,7 @@ public final class CoinChangeSelfTest {
         assertCount(new CountCase(new int[] {}, 0, 1));
         assertCount(new CountCase(new int[] {}, 4, 0));
         assertCount(new CoinDenominations(new int[] {1, 2, 3}), 5, 5);
+        assertStandardUsesDynamicProgrammingSolver();
         assertDenominationsAreNormalized();
         assertDenominationsUseValueEquality();
         assertRejects(new int[] {1, 0, 3}, 4);
@@ -36,12 +38,12 @@ public final class CoinChangeSelfTest {
             );
         }
 
-        int solverWays = SOLVER.countWays(countCase.coins(), countCase.targetSum());
-        if (solverWays != countCase.expectedWays()) {
+        int serviceWays = SERVICE.countWays(countCase.coins(), countCase.targetSum());
+        if (serviceWays != countCase.expectedWays()) {
             throw new AssertionError(
-                "Expected solver to return " + countCase.expectedWays()
+                "Expected service to return " + countCase.expectedWays()
                     + " ways for target " + countCase.targetSum()
-                    + " but got " + solverWays
+                    + " but got " + serviceWays
             );
         }
     }
@@ -85,6 +87,12 @@ public final class CoinChangeSelfTest {
         CoinDenominations right = new CoinDenominations(List.of(1, 2, 3));
         if (!left.equals(right)) {
             throw new AssertionError("Expected denominations with same values to be equal");
+        }
+    }
+
+    private static void assertStandardUsesDynamicProgrammingSolver() {
+        if (!(CoinChange.standard().solver() instanceof DynamicProgrammingCoinChangeSolver)) {
+            throw new AssertionError("Expected standard CoinChange service to use the DP solver");
         }
     }
 

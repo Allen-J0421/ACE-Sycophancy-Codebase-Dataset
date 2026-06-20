@@ -29,12 +29,17 @@
  * directed-cycle witness), and {@link bipartite.ShortestPath} runs Dijkstra's
  * algorithm over a {@link bipartite.WeightedUndirectedGraph} (returning the
  * sealed {@link bipartite.ShortestPathResult} — either the distance and path or
- * an unreachable notification).
+ * an unreachable notification), and {@link bipartite.StronglyConnectedComponents}
+ * runs Tarjan's algorithm (returning the sealed
+ * {@link bipartite.StronglyConnectedComponentsResult} — a single spanning
+ * component or the fragmented components).
  *
  * <p>{@link bipartite.Main} provides a runnable demonstration, and
  * {@link bipartite.BipartiteCheckerTests},
  * {@link bipartite.DepthFirstSearchTests},
- * {@link bipartite.TopologicalSortTests}, and
- * {@link bipartite.ShortestPathTests} are dependency-free test harnesses.
+ * {@link bipartite.TopologicalSortTests},
+ * {@link bipartite.ShortestPathTests}, and
+ * {@link bipartite.StronglyConnectedComponentsTests} are dependency-free test
+ * harnesses.
  */
 package bipartite;

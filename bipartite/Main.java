@@ -44,6 +44,14 @@ public final class Main {
         // Dijkstra shortest path on the weighted graph: 0 -> 2 takes 0-1-2 (3.5)
         // rather than 0-3-2 (4.5).
         reportShortestPath(new ShortestPath().compute(weightedCycle, 0, 2));
+
+        // Strongly connected components: the cycle 0-1-2 forms one SCC, 3 and 4
+        // are their own.
+        DirectedGraph withCycle = DirectedGraph.of(5, new int[][] {
+                {0, 1}, {1, 2}, {2, 0}, {2, 3}, {3, 4}});
+        StronglyConnectedComponentsResult scc =
+                new StronglyConnectedComponents().compute(withCycle);
+        System.out.println("Strongly connected components: " + scc.components());
     }
 
     private static void reportShortestPath(ShortestPathResult result) {

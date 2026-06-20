@@ -1,16 +1,14 @@
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public final class Graph implements Iterable<Integer> {
     private final List<List<Integer>> adjacencyList;
-    private final List<Integer> vertices;
 
     private Graph(List<List<Integer>> adjacencyList) {
         this.adjacencyList = adjacencyList;
-        this.vertices = new VertexView(adjacencyList.size());
     }
 
     public static Graph fromEdges(int vertexCount, int[][] edges) {
@@ -29,13 +27,9 @@ public final class Graph implements Iterable<Integer> {
         return adjacencyList.size();
     }
 
-    public List<Integer> vertices() {
-        return vertices;
-    }
-
     @Override
     public Iterator<Integer> iterator() {
-        return vertices.iterator();
+        return new VertexIterator(adjacencyList.size());
     }
 
     public List<Integer> neighborsOf(int vertex) {
@@ -132,30 +126,26 @@ public final class Graph implements Iterable<Integer> {
         }
     }
 
-    private static final class VertexView extends AbstractList<Integer> {
+    private static final class VertexIterator implements Iterator<Integer> {
         private final int vertexCount;
+        private int currentVertex;
 
-        private VertexView(int vertexCount) {
+        private VertexIterator(int vertexCount) {
             this.vertexCount = vertexCount;
         }
 
         @Override
-        public Integer get(int index) {
-            if (index < 0 || index >= vertexCount) {
-                throw new IndexOutOfBoundsException(
-                        "Vertex index "
-                                + index
-                                + " is out of bounds for graph size "
-                                + vertexCount
-                                + ".");
-            }
-
-            return index;
+        public boolean hasNext() {
+            return currentVertex < vertexCount;
         }
 
         @Override
-        public int size() {
-            return vertexCount;
+        public Integer next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("No more vertices remain in this graph.");
+            }
+
+            return currentVertex++;
         }
     }
 }

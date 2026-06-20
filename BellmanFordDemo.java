@@ -5,17 +5,10 @@ final class BellmanFordDemo {
     }
 
     public static void main(String[] args) {
-        BellmanFord.Graph graph = BellmanFord.Graph.of(
-            5,
-            BellmanFord.Edge.of(1, 3, 2),
-            BellmanFord.Edge.of(4, 3, -1),
-            BellmanFord.Edge.of(2, 4, 1),
-            BellmanFord.Edge.of(1, 2, 1),
-            BellmanFord.Edge.of(0, 1, 5)
-        );
+        WeightedGraph graph = BellmanFordFixtures.sampleGraph();
         int source = 0;
 
-        BellmanFord.Result result = BellmanFord.computeShortestPaths(graph, source);
+        ShortestPathResult result = BellmanFord.computeShortestPaths(graph, source);
         if (result.hasNegativeCycle()) {
             System.out.println("Negative cycle detected");
             return;

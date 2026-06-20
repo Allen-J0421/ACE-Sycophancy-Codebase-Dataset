@@ -12,35 +12,28 @@ final class BellmanFordTest {
     }
 
     private static void testShortestPaths() {
-        BellmanFord.Graph graph = BellmanFord.Graph.of(
-            5,
-            BellmanFord.Edge.of(1, 3, 2),
-            BellmanFord.Edge.of(4, 3, -1),
-            BellmanFord.Edge.of(2, 4, 1),
-            BellmanFord.Edge.of(1, 2, 1),
-            BellmanFord.Edge.of(0, 1, 5)
-        );
+        WeightedGraph graph = BellmanFordFixtures.sampleGraph();
 
-        BellmanFord.Result result = BellmanFord.computeShortestPaths(graph, 0);
+        ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
         assertFalse(result.hasNegativeCycle(), "expected a valid shortest-path result");
         assertArrayEquals(new int[] {0, 5, 6, 6, 7}, result.distances(), "incorrect shortest paths");
     }
 
     private static void testNegativeCycleDetection() {
-        BellmanFord.Graph graph = BellmanFord.Graph.of(
+        WeightedGraph graph = WeightedGraph.of(
             3,
-            BellmanFord.Edge.of(0, 1, 1),
-            BellmanFord.Edge.of(1, 2, -1),
-            BellmanFord.Edge.of(2, 0, -1)
+            WeightedEdge.of(0, 1, 1),
+            WeightedEdge.of(1, 2, -1),
+            WeightedEdge.of(2, 0, -1)
         );
 
-        BellmanFord.Result result = BellmanFord.computeShortestPaths(graph, 0);
+        ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
         assertTrue(result.hasNegativeCycle(), "expected negative cycle detection");
     }
 
     private static void testInvalidEdgeValidation() {
         try {
-            BellmanFord.Graph.from(2, new int[][] {{0, 2, 3}});
+            WeightedGraph.from(2, new int[][] {{0, 2, 3}});
             throw new AssertionError("expected invalid edge validation to fail");
         } catch (IllegalArgumentException expected) {
             assertTrue(expected.getMessage().contains("edge end"), "unexpected validation message");

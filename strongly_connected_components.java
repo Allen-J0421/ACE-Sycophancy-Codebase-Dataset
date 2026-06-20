@@ -4,42 +4,56 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
-class StronglyConnectedComponents {
+final class StronglyConnectedComponents {
 
-    private static void dfsOrder(int node, List<List<Integer>> graph, boolean[] visited, Deque<Integer> order) {
-        visited[node] = true;
-        for (int neighbor : graph.get(node)) {
-            if (!visited[neighbor]) {
-                dfsOrder(neighbor, graph, visited, order);
-            }
-        }
-        order.push(node);
+    private StronglyConnectedComponents() {
     }
 
-    private static void dfsComponent(
-            int node,
-            List<List<Integer>> reverseGraph,
-            boolean[] visited,
-            List<Integer> component) {
-        visited[node] = true;
-        component.add(node);
+    private static void dfsOrder(int startNode, List<List<Integer>> graph, boolean[] visited, Deque<Integer> order) {
+        Deque<TraversalFrame> stack = new ArrayDeque<>();
+        visited[startNode] = true;
+        stack.push(new TraversalFrame(startNode));
 
-        for (int neighbor : reverseGraph.get(node)) {
-            if (!visited[neighbor]) {
-                dfsComponent(neighbor, reverseGraph, visited, component);
+        while (!stack.isEmpty()) {
+            TraversalFrame frame = stack.peek();
+            List<Integer> neighbors = graph.get(frame.node);
+
+            if (frame.nextNeighborIndex < neighbors.size()) {
+                int neighbor = neighbors.get(frame.nextNeighborIndex++);
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    stack.push(new TraversalFrame(neighbor));
+                }
+            } else {
+                stack.pop();
+                order.push(frame.node);
             }
         }
     }
 
-    int[][] kosaraju(List<List<Integer>> graph) {
-        return findStronglyConnectedComponents(graph);
+    private static void dfsComponent(int startNode, List<List<Integer>> reverseGraph, boolean[] visited, List<Integer> component) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(startNode);
+        visited[startNode] = true;
+
+        while (!stack.isEmpty()) {
+            int node = stack.pop();
+            component.add(node);
+
+            for (int neighbor : reverseGraph.get(node)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    stack.push(neighbor);
+                }
+            }
+        }
     }
 
     static int[][] findStronglyConnectedComponents(int vertexCount, int[][] edges) {
-        return findStronglyConnectedComponents(buildGraph(vertexCount, edges));
+        return kosaraju(buildGraph(vertexCount, edges));
     }
 
-    private static int[][] findStronglyConnectedComponents(List<List<Integer>> graph) {
+    static int[][] kosaraju(List<List<Integer>> graph) {
         validateGraph(graph);
 
         int vertexCount = graph.size();
@@ -98,6 +112,15 @@ class StronglyConnectedComponents {
         }
 
         return graph;
+    }
+
+    private static final class TraversalFrame {
+        private final int node;
+        private int nextNeighborIndex;
+
+        private TraversalFrame(int node) {
+            this.node = node;
+        }
     }
 
     private static void validateGraph(List<List<Integer>> graph) {

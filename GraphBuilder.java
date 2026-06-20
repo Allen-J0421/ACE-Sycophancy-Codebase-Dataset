@@ -8,7 +8,7 @@ final class GraphBuilder {
     private final List<Edge> edges;
 
     GraphBuilder(int vertexCount, GraphType type) {
-        validateVertexCount(vertexCount);
+        GraphValidation.requireVertexCount(vertexCount);
         this.vertexCount = vertexCount;
         this.type = Objects.requireNonNull(type, "type");
         this.edges = new ArrayList<>();
@@ -28,9 +28,20 @@ final class GraphBuilder {
 
     GraphBuilder addEdge(Edge edge) {
         Edge nonNullEdge = Objects.requireNonNull(edge, "edge");
-        validateVertex(nonNullEdge.from(), "edge.from");
-        validateVertex(nonNullEdge.to(), "edge.to");
+        GraphValidation.requireVertex(nonNullEdge.from(), vertexCount, "edge.from");
+        GraphValidation.requireVertex(nonNullEdge.to(), vertexCount, "edge.to");
         edges.add(nonNullEdge);
+        return this;
+    }
+
+    GraphBuilder addEdges(int[][] edges) {
+        Objects.requireNonNull(edges, "edges");
+
+        for (int edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
+            int[] edge = GraphValidation.requireEdgeVertices(edges[edgeIndex], vertexCount, edgeIndex);
+            addEdge(edge[0], edge[1]);
+        }
+
         return this;
     }
 
@@ -47,18 +58,6 @@ final class GraphBuilder {
             }
         }
 
-        return new Graph(type, Graph.freezeAdjacencyList(adjacencyList));
-    }
-
-    private void validateVertex(int vertex, String label) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException(label + " must be between 0 and " + (vertexCount - 1));
-        }
-    }
-
-    private static void validateVertexCount(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("vertexCount must be non-negative");
-        }
+        return Graph.create(type, adjacencyList);
     }
 }

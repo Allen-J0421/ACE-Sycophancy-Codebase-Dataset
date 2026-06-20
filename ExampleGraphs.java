@@ -19,10 +19,10 @@ final class ExampleGraphs {
     }
 
     static int[][] weightedDirectedGraph() {
-        return Matrices.copyOf(WEIGHTED_DIRECTED_GRAPH);
+        return Matrices.copyRows(WEIGHTED_DIRECTED_GRAPH);
     }
 
     static int[][] weightedDirectedGraphShortestPaths() {
-        return Matrices.copyOf(WEIGHTED_DIRECTED_GRAPH_SHORTEST_PATHS);
+        return Matrices.copyRows(WEIGHTED_DIRECTED_GRAPH_SHORTEST_PATHS);
     }
 }

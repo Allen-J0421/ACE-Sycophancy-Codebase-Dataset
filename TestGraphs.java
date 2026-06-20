@@ -23,6 +23,10 @@ final class TestGraphs {
         {0},
         {1, 0}
     };
+    private static final int[][] MATRIX_WITH_NULL_ROW = {
+        {0},
+        null
+    };
     private static final int[][] NON_SQUARE_ROW_MATRIX = {
         {0, 1}
     };
@@ -31,33 +35,30 @@ final class TestGraphs {
     }
 
     static int[][] acyclicThreeNodeGraph() {
-        return Matrices.copyOf(ACYCLIC_THREE_NODE_GRAPH);
+        return Matrices.copyRows(ACYCLIC_THREE_NODE_GRAPH);
     }
 
     static int[][] negativeCycleGraph() {
-        return Matrices.copyOf(NEGATIVE_CYCLE_GRAPH);
+        return Matrices.copyRows(NEGATIVE_CYCLE_GRAPH);
     }
 
     static int[][] overflowGraph() {
-        return Matrices.copyOf(OVERFLOW_GRAPH);
+        return Matrices.copyRows(OVERFLOW_GRAPH);
     }
 
     static int[][] unreachableTwoNodeDistances() {
-        return Matrices.copyOf(UNREACHABLE_TWO_NODE_DISTANCES);
+        return Matrices.copyRows(UNREACHABLE_TWO_NODE_DISTANCES);
     }
 
     static int[][] invalidRectangularMatrix() {
-        return new int[][] {
-            {0},
-            {1, 0}
-        };
+        return Matrices.copyRows(INVALID_RECTANGULAR_MATRIX);
     }
 
     static int[][] matrixWithNullRow() {
-        return new int[][] {{0}, null};
+        return Matrices.copyRows(MATRIX_WITH_NULL_ROW);
     }
 
     static int[][] nonSquareRowMatrix() {
-        return Matrices.copyOf(NON_SQUARE_ROW_MATRIX);
+        return Matrices.copyRows(NON_SQUARE_ROW_MATRIX);
     }
 }

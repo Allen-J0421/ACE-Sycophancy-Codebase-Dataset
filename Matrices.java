@@ -37,10 +37,16 @@ final class Matrices {
 
     static int[][] copyOf(int[][] matrix) {
         requireRectangular(matrix, "Matrix");
+        return copyRows(matrix);
+    }
+
+    static int[][] copyRows(int[][] matrix) {
+        requireMatrix(matrix, "Matrix");
 
         int[][] copy = new int[matrix.length][];
         for (int rowIndex = 0; rowIndex < matrix.length; rowIndex++) {
-            copy[rowIndex] = Arrays.copyOf(matrix[rowIndex], matrix[rowIndex].length);
+            int[] row = matrix[rowIndex];
+            copy[rowIndex] = row == null ? null : Arrays.copyOf(row, row.length);
         }
 
         return copy;

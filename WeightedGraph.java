@@ -2,14 +2,17 @@ public final class WeightedGraph {
 
     public static final int DEFAULT_UNREACHABLE_DISTANCE = 100_000_000;
 
-    private final int[][] adjacencyMatrix;
+    private final IntSquareMatrix adjacencyMatrix;
     private final int unreachableDistance;
 
     private WeightedGraph(int[][] adjacencyMatrix, int unreachableDistance) {
-        validateSquareMatrix(adjacencyMatrix);
+        this(IntSquareMatrix.from(adjacencyMatrix), unreachableDistance);
+    }
+
+    private WeightedGraph(IntSquareMatrix adjacencyMatrix, int unreachableDistance) {
         validateUnreachableDistance(unreachableDistance);
 
-        this.adjacencyMatrix = copyMatrix(adjacencyMatrix);
+        this.adjacencyMatrix = adjacencyMatrix;
         this.unreachableDistance = unreachableDistance;
     }
 
@@ -22,7 +25,7 @@ public final class WeightedGraph {
     }
 
     public int vertexCount() {
-        return adjacencyMatrix.length;
+        return adjacencyMatrix.size();
     }
 
     public int unreachableDistance() {
@@ -30,9 +33,7 @@ public final class WeightedGraph {
     }
 
     public int distance(int source, int target) {
-        validateVertex(source, adjacencyMatrix.length);
-        validateVertex(target, adjacencyMatrix.length);
-        return adjacencyMatrix[source][target];
+        return adjacencyMatrix.get(source, target);
     }
 
     public boolean isUnreachable(int source, int target) {
@@ -40,42 +41,12 @@ public final class WeightedGraph {
     }
 
     public int[][] adjacencyMatrix() {
-        return copyMatrix(adjacencyMatrix);
-    }
-
-    private static void validateSquareMatrix(int[][] matrix) {
-        if (matrix == null) {
-            throw new IllegalArgumentException("Matrix must not be null.");
-        }
-
-        for (int i = 0; i < matrix.length; i++) {
-            if (matrix[i] == null) {
-                throw new IllegalArgumentException("Matrix row " + i + " must not be null.");
-            }
-
-            if (matrix[i].length != matrix.length) {
-                throw new IllegalArgumentException("Matrix must be square.");
-            }
-        }
+        return adjacencyMatrix.copyValues();
     }
 
     private static void validateUnreachableDistance(int unreachableDistance) {
         if (unreachableDistance <= 0) {
             throw new IllegalArgumentException("Unreachable distance must be positive.");
         }
-    }
-
-    private static void validateVertex(int vertex, int size) {
-        if (vertex < 0 || vertex >= size) {
-            throw new IllegalArgumentException("Vertex index out of bounds: " + vertex);
-        }
-    }
-
-    private static int[][] copyMatrix(int[][] source) {
-        int[][] copy = new int[source.length][];
-        for (int i = 0; i < source.length; i++) {
-            copy[i] = source[i].clone();
-        }
-        return copy;
     }
 }

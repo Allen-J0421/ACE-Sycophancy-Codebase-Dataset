@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-final class ActivitySelection {
+public final class ActivitySelection {
     private static final Comparator<Activity> BY_FINISH_TIME =
         Comparator.comparingInt(Activity::getFinishTime);
 

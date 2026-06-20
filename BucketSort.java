@@ -12,24 +12,27 @@ public final class BucketSort {
     }
 
     public static void sort(float[] values) {
-        float[] sortedValues = sortedCopy(values);
-        System.arraycopy(sortedValues, 0, values, 0, values.length);
+        Objects.requireNonNull(values, "values");
+        sortInPlace(values);
     }
 
     public static float[] sortedCopy(float[] values) {
         Objects.requireNonNull(values, "values");
 
         float[] copy = Arrays.copyOf(values, values.length);
+        sortInPlace(copy);
+        return copy;
+    }
 
-        if (copy.length == 0) {
-            return copy;
+    private static void sortInPlace(float[] values) {
+        if (values.length == 0) {
+            return;
         }
 
-        List<List<Float>> buckets = createBuckets(copy.length);
-        distributeValues(copy, buckets);
+        List<List<Float>> buckets = createBuckets(values.length);
+        distributeValues(values, buckets);
         sortBuckets(buckets);
-        mergeBuckets(buckets, copy);
-        return copy;
+        mergeBuckets(buckets, values);
     }
 
     private static List<List<Float>> createBuckets(int bucketCount) {

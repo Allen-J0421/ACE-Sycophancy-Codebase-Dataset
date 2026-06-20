@@ -8,6 +8,8 @@ public final class BucketSortTest {
     public static void main(String[] args) {
         sortsValuesInPlace();
         returnsSortedCopyWithoutMutatingInput();
+        sortsDuplicateValues();
+        sortsValuesNearUpperBound();
         rejectsOutOfRangeValues();
         rejectsNullInput();
         handlesEmptyInput();
@@ -37,6 +39,28 @@ public final class BucketSortTest {
             new float[]{0.17f, 0.39f, 0.78f},
             copy,
             "sortedCopy should return sorted data"
+        );
+    }
+
+    private static void sortsDuplicateValues() {
+        float[] values = {0.41f, 0.12f, 0.41f, 0.12f, 0.73f};
+        BucketSort.sort(values);
+
+        assertArrayEquals(
+            new float[]{0.12f, 0.12f, 0.41f, 0.41f, 0.73f},
+            values,
+            "sort should handle duplicate values"
+        );
+    }
+
+    private static void sortsValuesNearUpperBound() {
+        float[] values = {0.9999f, 0.0001f, 0.5f};
+        BucketSort.sort(values);
+
+        assertArrayEquals(
+            new float[]{0.0001f, 0.5f, 0.9999f},
+            values,
+            "sort should support values close to the upper bound"
         );
     }
 

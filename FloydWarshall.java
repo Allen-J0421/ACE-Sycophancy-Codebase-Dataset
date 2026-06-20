@@ -4,37 +4,38 @@ import java.util.List;
 
 public final class FloydWarshall {
 
-    public static final int DEFAULT_UNREACHABLE_DISTANCE = 100_000_000;
+    private final WeightedGraph graph;
 
-    private final int[][] graph;
-    private final int unreachableDistance;
-
-    private FloydWarshall(int[][] graph, int unreachableDistance) {
-        validateSquareMatrix(graph);
-        validateUnreachableDistance(unreachableDistance);
-
-        this.graph = copyMatrix(graph);
-        this.unreachableDistance = unreachableDistance;
+    private FloydWarshall(WeightedGraph graph) {
+        this.graph = graph;
     }
 
     public static FloydWarshall from(int[][] graph) {
-        return new FloydWarshall(graph, DEFAULT_UNREACHABLE_DISTANCE);
+        return new FloydWarshall(WeightedGraph.from(graph));
     }
 
     public static FloydWarshall from(int[][] graph, int unreachableDistance) {
-        return new FloydWarshall(graph, unreachableDistance);
+        return new FloydWarshall(WeightedGraph.from(graph, unreachableDistance));
+    }
+
+    public static FloydWarshall from(WeightedGraph graph) {
+        if (graph == null) {
+            throw new IllegalArgumentException("Graph must not be null.");
+        }
+        return new FloydWarshall(graph);
     }
 
     public int vertexCount() {
-        return graph.length;
+        return graph.vertexCount();
     }
 
     public Result solve() {
-        int[][] distances = copyMatrix(graph);
-        int[][] nextHop = new int[graph.length][graph.length];
-        initializeNextHop(nextHop);
+        int[][] distances = graph.adjacencyMatrix();
+        int[][] nextHop = new int[graph.vertexCount()][graph.vertexCount()];
+        initializeNextHop(distances, nextHop, graph.unreachableDistance());
 
         int vertices = distances.length;
+        int unreachableDistance = graph.unreachableDistance();
         for (int k = 0; k < vertices; k++) {
             for (int i = 0; i < vertices; i++) {
                 if (distances[i][k] == unreachableDistance) {
@@ -58,48 +59,12 @@ public final class FloydWarshall {
         return new Result(distances, nextHop);
     }
 
-    private void initializeNextHop(int[][] nextHop) {
-        for (int i = 0; i < graph.length; i++) {
-            for (int j = 0; j < graph.length; j++) {
-                nextHop[i][j] = graph[i][j] == unreachableDistance ? -1 : j;
+    private void initializeNextHop(int[][] adjacencyMatrix, int[][] nextHop, int unreachableDistance) {
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            for (int j = 0; j < adjacencyMatrix.length; j++) {
+                nextHop[i][j] = adjacencyMatrix[i][j] == unreachableDistance ? -1 : j;
             }
         }
-    }
-
-    private static void validateSquareMatrix(int[][] matrix) {
-        if (matrix == null) {
-            throw new IllegalArgumentException("Matrix must not be null.");
-        }
-
-        for (int i = 0; i < matrix.length; i++) {
-            if (matrix[i] == null) {
-                throw new IllegalArgumentException("Matrix row " + i + " must not be null.");
-            }
-
-            if (matrix[i].length != matrix.length) {
-                throw new IllegalArgumentException("Matrix must be square.");
-            }
-        }
-    }
-
-    private static void validateUnreachableDistance(int unreachableDistance) {
-        if (unreachableDistance <= 0) {
-            throw new IllegalArgumentException("Unreachable distance must be positive.");
-        }
-    }
-
-    private static void validateVertex(int vertex, int size) {
-        if (vertex < 0 || vertex >= size) {
-            throw new IllegalArgumentException("Vertex index out of bounds: " + vertex);
-        }
-    }
-
-    private static int[][] copyMatrix(int[][] source) {
-        int[][] copy = new int[source.length][];
-        for (int i = 0; i < source.length; i++) {
-            copy[i] = source[i].clone();
-        }
-        return copy;
     }
 
     public static final class Result {
@@ -162,5 +127,19 @@ public final class FloydWarshall {
             }
             return false;
         }
+    }
+
+    private static void validateVertex(int vertex, int size) {
+        if (vertex < 0 || vertex >= size) {
+            throw new IllegalArgumentException("Vertex index out of bounds: " + vertex);
+        }
+    }
+
+    private static int[][] copyMatrix(int[][] source) {
+        int[][] copy = new int[source.length][];
+        for (int i = 0; i < source.length; i++) {
+            copy[i] = source[i].clone();
+        }
+        return copy;
     }
 }

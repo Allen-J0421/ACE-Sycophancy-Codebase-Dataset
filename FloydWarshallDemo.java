@@ -6,11 +6,11 @@ final class FloydWarshallDemo {
 
     private static int[][] sampleGraph() {
         return new int[][] {
-            {0, 4, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, 5, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE},
-            {FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, 0, 1, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, 6},
-            {2, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, 0, 3, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE},
-            {FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, 1, 0, 2},
-            {1, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, FloydWarshall.DEFAULT_UNREACHABLE_DISTANCE, 4, 0}
+            {0, 4, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, 5, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE},
+            {WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, 0, 1, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, 6},
+            {2, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, 0, 3, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE},
+            {WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, 1, 0, 2},
+            {1, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, WeightedGraph.DEFAULT_UNREACHABLE_DISTANCE, 4, 0}
         };
     }
 
@@ -28,7 +28,8 @@ final class FloydWarshallDemo {
     }
 
     public static void main(String[] args) {
-        FloydWarshall solver = FloydWarshall.from(sampleGraph());
+        WeightedGraph graph = WeightedGraph.from(sampleGraph());
+        FloydWarshall solver = FloydWarshall.from(graph);
         FloydWarshall.Result shortestPaths = solver.solve();
         printMatrix(shortestPaths.distances());
     }

@@ -1,97 +1,100 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.PriorityQueue;
 
-class Node {
+class HuffmanCoding {
 
-    int data;
+    private static final String SINGLE_SYMBOL_CODE = "0";
 
-    int index;
+    private static final Comparator<Node> NODE_ORDER = Comparator
+            .comparingInt((Node node) -> node.frequency)
+            .thenComparingInt(node -> node.firstSymbolIndex);
 
-    Node left, right;
+    private static final class Node {
+        private final int frequency;
+        private final int firstSymbolIndex;
+        private final Node left;
+        private final Node right;
 
-    Node(int d, int i) {
-        data = d;
-        index = i;
-        left = right = null;
-    }
-
-    Node(Node l, Node r) {
-        data = l.data + r.data;
-
-        index = Math.min(l.index, r.index);
-
-        left = l;
-        right = r;
-    }
-}
-
-class Compare implements Comparator<Node> {
-    public int compare(Node a, Node b) {
-
-        if (a.data != b.data)
-            return a.data - b.data;
-
-        return a.index - b.index;
-    }
-}
-
-public class HuffmanCoding {
-
-    static void preOrder(Node root, ArrayList<String> ans, String curr) {
-        if (root == null) return;
-
-        if (root.left == null && root.right == null) {
-
-            if (curr.equals("")) curr = "0";
-
-            ans.add(curr);
-            return;
+        private Node(int frequency, int symbolIndex) {
+            this.frequency = frequency;
+            this.firstSymbolIndex = symbolIndex;
+            this.left = null;
+            this.right = null;
         }
 
-        preOrder(root.left, ans, curr + '0');
-        preOrder(root.right, ans, curr + '1');
+        private Node(Node left, Node right) {
+            this.frequency = left.frequency + right.frequency;
+            this.firstSymbolIndex = Math.min(left.firstSymbolIndex, right.firstSymbolIndex);
+            this.left = left;
+            this.right = right;
+        }
+
+        private boolean isLeaf() {
+            return left == null && right == null;
+        }
     }
 
     static ArrayList<String> huffmanCodes(String s, int[] freq) {
+        validateInput(s, freq);
 
-        int n = s.length();
-
-        PriorityQueue<Node> pq = new PriorityQueue<>(new Compare());
-        for (int i = 0; i < n; i++) {
-
-            Node tmp = new Node(freq[i], i);
-
-            pq.add(tmp);
+        if (s.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        if (n == 1) {
-            ArrayList<String> res = new ArrayList<>();
-            res.add("0");
-            return res;
+        Node root = buildTree(freq);
+        ArrayList<String> codes = new ArrayList<>();
+        collectCodes(root, "", codes);
+        return codes;
+    }
+
+    private static void validateInput(String s, int[] freq) {
+        Objects.requireNonNull(s, "Input string must not be null");
+        Objects.requireNonNull(freq, "Frequency array must not be null");
+
+        if (s.length() != freq.length) {
+            throw new IllegalArgumentException("Input string and frequency array must have the same length");
+        }
+    }
+
+    private static Node buildTree(int[] frequencies) {
+        PriorityQueue<Node> nodes = new PriorityQueue<>(NODE_ORDER);
+
+        for (int i = 0; i < frequencies.length; i++) {
+            nodes.add(new Node(frequencies[i], i));
         }
 
-        while (pq.size() >= 2) {
-
-            Node l = pq.poll();
-
-            Node r = pq.poll();
-
-            Node newNode = new Node(l, r);
-
-            pq.add(newNode);
+        while (nodes.size() > 1) {
+            Node left = nodes.poll();
+            Node right = nodes.poll();
+            nodes.add(new Node(left, right));
         }
 
-        Node root = pq.peek();
-        ArrayList<String> ans = new ArrayList<>();
-        preOrder(root, ans, "");
-        return ans;
+        return nodes.poll();
+    }
+
+    private static void collectCodes(Node root, String prefix, ArrayList<String> codes) {
+        if (root == null) {
+            return;
+        }
+
+        if (root.isLeaf()) {
+            codes.add(prefix.isEmpty() ? SINGLE_SYMBOL_CODE : prefix);
+            return;
+        }
+
+        collectCodes(root.left, prefix + '0', codes);
+        collectCodes(root.right, prefix + '1', codes);
     }
 
     public static void main(String[] args) {
         String s = "abcdef";
         int[] freq = {5, 9, 12, 13, 16, 45};
-        ArrayList<String> ans = huffmanCodes(s, freq);
-        for (int i = 0; i < ans.size(); i++) {
-            System.out.print(ans.get(i) + " ");
+        ArrayList<String> codes = huffmanCodes(s, freq);
+
+        for (String code : codes) {
+            System.out.print(code + " ");
         }
     }
 }

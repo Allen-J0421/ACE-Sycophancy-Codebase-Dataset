@@ -15,8 +15,6 @@ public class CircularQueue<T> implements Iterable<T> {
         }
         this.capacity = capacity;
         this.arr = new Object[capacity];
-        this.front = 0;
-        this.size = 0;
     }
 
     public boolean isEmpty() {
@@ -124,9 +122,6 @@ public class CircularQueue<T> implements Iterable<T> {
 
     @Override
     public String toString() {
-        if (isEmpty()) {
-            return "[]";
-        }
         StringBuilder sb = new StringBuilder("[");
         Iterator<T> it = iterator();
         while (it.hasNext()) {

@@ -1,5 +1,7 @@
 package sorting;
 
+import java.util.Arrays;
+
 public class BubbleSortDemo {
 
     public static void main(String[] args) {
@@ -9,10 +11,6 @@ public class BubbleSortDemo {
     }
 
     private static int[] parseArgs(String[] args) {
-        int[] arr = new int[args.length];
-        for (int i = 0; i < args.length; i++) {
-            arr[i] = Integer.parseInt(args[i]);
-        }
-        return arr;
+        return Arrays.stream(args).mapToInt(Integer::parseInt).toArray();
     }
 }

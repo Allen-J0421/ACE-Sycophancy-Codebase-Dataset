@@ -12,8 +12,12 @@ public class CountingSort {
             if (val > max) max = val;
         }
 
-        int range = max - min + 1;
-        int[] count = new int[range];
+        long range = (long) max - min + 1;
+        if (range > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(
+                    "Value range too large for counting sort: " + range);
+        }
+        int[] count = new int[(int) range];
         for (int val : arr) {
             count[val - min]++;
         }

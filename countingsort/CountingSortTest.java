@@ -69,7 +69,11 @@ public class CountingSortTest {
         }
 
         assertThrows(IllegalArgumentException.class, () -> CountingSort.sort(null), "null input throws");
+        assertThrows(IllegalArgumentException.class,
+                () -> CountingSort.sort(new int[]{Integer.MIN_VALUE, Integer.MAX_VALUE}),
+                "extreme range throws");
 
         System.out.println("\n" + passed + " passed, " + failed + " failed.");
+        if (failed > 0) System.exit(1);
     }
 }

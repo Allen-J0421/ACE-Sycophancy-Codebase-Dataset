@@ -41,9 +41,9 @@ public final class HeapSort {
         int heapSize = toIndex - fromIndex;
         buildMaxHeap(values, fromIndex, heapSize);
 
-        for (int end = toIndex - 1; end > fromIndex; end--) {
-            swap(values, fromIndex, end);
-            siftDown(values, fromIndex, end - fromIndex, 0);
+        for (int end = heapSize - 1; end > 0; end--) {
+            swap(values, fromIndex, fromIndex + end);
+            siftDown(values, fromIndex, end, 0);
         }
     }
 

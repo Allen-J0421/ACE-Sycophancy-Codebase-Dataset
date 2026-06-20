@@ -4,7 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
-class BipartiteGraph {
+final class BipartiteGraph {
+    private BipartiteGraph() {
+    }
+
+    /**
+     * @deprecated Use {@link #constructAdjacencyList(int, int[][])}.
+     */
     @Deprecated
     static ArrayList<ArrayList<Integer>> constructadj(int vertexCount, int[][] edges) {
         return constructAdjacencyList(vertexCount, edges);

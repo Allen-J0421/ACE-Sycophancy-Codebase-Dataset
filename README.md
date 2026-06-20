@@ -6,9 +6,28 @@ and reports the vertices that form it.
 ## API
 
 - **`DirectedGraph`** — an immutable adjacency-list graph over vertices
-  `0 .. vertices()-1`. Build one with `DirectedGraph.from(vertexCount, edges)`,
-  where `edges` is an array of `{from, to}` pairs. Construction validates the
-  vertex count and every endpoint.
+  `0 .. vertices()-1`. Construction validates the vertex count and every endpoint.
+  Build one in any of three ways:
+
+  ```java
+  // 1. one-shot factory from an edge array
+  DirectedGraph.from(4, new int[][] {{0, 1}, {1, 2}, {2, 0}, {2, 3}});
+
+  // 2. fluent builder, fixed vertex count (endpoints validated against it)
+  DirectedGraph.builder(4)
+      .addEdge(0, 1).addEdge(1, 2).addEdge(2, 0).addEdge(2, 3)
+      .build();
+
+  // 3. fluent builder that grows to fit the edges (no need to pre-count)
+  DirectedGraph.builder()
+      .addEdges(new int[][] {{0, 1}, {1, 2}})
+      .addEdge(2, 0)
+      .ensureVertices(10)   // reserve isolated trailing vertices, if any
+      .build();
+  ```
+
+  The builder is single-use (`build()` consumes it) and `from(...)` is just a
+  shorthand for `builder(vertexCount).addEdges(edges).build()`.
 - **`CycleDetector`** — the detection *interface* (`O(V + E)`):
   - `boolean hasCycle(DirectedGraph)` — whether any cycle exists.
   - `Optional<Cycle> findCycle(DirectedGraph)` — one cycle if present.

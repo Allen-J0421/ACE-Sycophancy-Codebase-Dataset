@@ -11,9 +11,12 @@
 final class DetectCycleDemo {
 
     public static void main(String[] args) {
-        DirectedGraph graph = DirectedGraph.from(4, new int[][] {
-            {0, 1}, {1, 2}, {2, 0}, {2, 3}
-        });
+        DirectedGraph graph = DirectedGraph.builder(4)
+                .addEdge(0, 1)
+                .addEdge(1, 2)
+                .addEdge(2, 0)
+                .addEdge(2, 3)
+                .build();
 
         CycleDetectionAlgorithm[] algorithms = args.length > 0
                 ? new CycleDetectionAlgorithm[] {CycleDetectionAlgorithm.valueOf(args[0].toUpperCase())}

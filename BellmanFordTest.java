@@ -7,6 +7,7 @@ final class BellmanFordTest {
     public static void main(String[] args) {
         testShortestPaths();
         testLegacyShortestPaths();
+        testUnreachableVertexHandling();
         testNegativeCycleDetection();
         testLegacyNegativeCycleDetection();
         testInvalidEdgeValidation();
@@ -33,6 +34,28 @@ final class BellmanFordTest {
         WeightedGraph graph = BellmanFordFixtures.negativeCycleGraph();
         ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
         assertTrue(result.hasNegativeCycle(), "expected negative cycle detection");
+    }
+
+    private static void testUnreachableVertexHandling() {
+        ShortestPathResult result = BellmanFord.computeShortestPaths(
+            BellmanFordFixtures.graphWithUnreachableVertex(),
+            0
+        );
+
+        assertFalse(result.hasNegativeCycle(), "unreachable vertices should not imply a negative cycle");
+        assertFalse(result.isReachable(3), "vertex 3 should be unreachable");
+        assertArrayEquals(
+            new int[] {0, 4, 7, 100_000_000},
+            result.distances(),
+            "legacy distance view should preserve the unreachable sentinel"
+        );
+
+        try {
+            result.distanceTo(3);
+            throw new AssertionError("expected unreachable distance lookup to fail");
+        } catch (IllegalStateException expected) {
+            assertTrue(expected.getMessage().contains("unreachable"), "unexpected unreachable message");
+        }
     }
 
     private static void testLegacyNegativeCycleDetection() {

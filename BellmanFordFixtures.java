@@ -31,4 +31,12 @@ final class BellmanFordFixtures {
             WeightedEdge.of(2, 0, -1)
         );
     }
+
+    static WeightedGraph graphWithUnreachableVertex() {
+        return WeightedGraph.of(
+            4,
+            WeightedEdge.of(0, 1, 4),
+            WeightedEdge.of(1, 2, 3)
+        );
+    }
 }

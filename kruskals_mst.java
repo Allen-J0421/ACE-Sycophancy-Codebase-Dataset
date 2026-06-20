@@ -28,12 +28,14 @@ class KruskalMST {
         int selectedEdges = 0;
 
         for (Edge edge : sortedEdges) {
-            if (disjointSet.union(edge.source, edge.destination)) {
-                totalCost += edge.weight;
-                selectedEdges++;
-                if (hasEnoughEdgesForSpanningTree(vertexCount, selectedEdges)) {
-                    break;
-                }
+            if (!disjointSet.connectIfSeparate(edge.source, edge.destination)) {
+                continue;
+            }
+
+            totalCost += edge.weight;
+            selectedEdges++;
+            if (hasEnoughEdgesForSpanningTree(vertexCount, selectedEdges)) {
+                break;
             }
         }
 
@@ -134,7 +136,7 @@ class KruskalMST {
             return parent[vertex];
         }
 
-        private boolean union(int first, int second) {
+        private boolean connectIfSeparate(int first, int second) {
             int firstRoot = find(first);
             int secondRoot = find(second);
 

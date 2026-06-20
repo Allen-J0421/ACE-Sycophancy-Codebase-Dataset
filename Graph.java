@@ -11,13 +11,26 @@ public final class Graph implements Iterable<Integer> {
         this.adjacencyList = adjacencyList;
     }
 
-    public static Graph fromEdges(int vertexCount, int[][] edges) {
+    public static Graph fromEdgePairs(int vertexCount, int[][] edgePairs) {
+        requireEdgePairs(edgePairs);
+
+        List<Edge> edges = new ArrayList<>(edgePairs.length);
+        for (int edgeIndex = 0; edgeIndex < edgePairs.length; edgeIndex++) {
+            edges.add(Edge.fromPair(edgePairs[edgeIndex], edgeIndex));
+        }
+
+        return fromEdges(vertexCount, edges);
+    }
+
+    public static Graph fromEdges(int vertexCount, Iterable<Edge> edges) {
         validateVertexCount(vertexCount);
         requireEdges(edges);
 
         Builder builder = new Builder(vertexCount);
-        for (int edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
-            builder.addEdge(edges[edgeIndex], edgeIndex);
+        int edgeIndex = 0;
+        for (Edge edge : edges) {
+            builder.addEdge(edge, edgeIndex);
+            edgeIndex++;
         }
 
         return builder.build();
@@ -53,19 +66,27 @@ public final class Graph implements Iterable<Integer> {
         }
     }
 
-    private static void requireEdges(int[][] edges) {
+    private static void requireEdgePairs(int[][] edgePairs) {
+        if (edgePairs == null) {
+            throw new IllegalArgumentException("Edges cannot be null.");
+        }
+    }
+
+    private static void requireEdges(Iterable<Edge> edges) {
         if (edges == null) {
             throw new IllegalArgumentException("Edges cannot be null.");
         }
     }
 
-    private static void validateEdgeShape(int[] edge, int edgeIndex) {
-        if (edge == null || edge.length != 2) {
+    private static Edge validateEdge(Edge edge, int edgeIndex) {
+        if (edge == null) {
             throw new IllegalArgumentException(
-                    "Each edge must contain exactly two vertices. Invalid edge at index "
+                    "Edge cannot be null. Invalid edge at index "
                             + edgeIndex
                             + ".");
         }
+
+        return edge;
     }
 
     private static int validateVertex(int vertex, int vertexCount, int edgeIndex) {
@@ -103,11 +124,10 @@ public final class Graph implements Iterable<Integer> {
             this.adjacencyList = initializeAdjacencyList(vertexCount);
         }
 
-        private void addEdge(int[] edge, int edgeIndex) {
-            validateEdgeShape(edge, edgeIndex);
-
-            int source = validateVertex(edge[0], vertexCount, edgeIndex);
-            int destination = validateVertex(edge[1], vertexCount, edgeIndex);
+        private void addEdge(Edge edge, int edgeIndex) {
+            Edge validatedEdge = validateEdge(edge, edgeIndex);
+            int source = validateVertex(validatedEdge.source(), vertexCount, edgeIndex);
+            int destination = validateVertex(validatedEdge.destination(), vertexCount, edgeIndex);
             adjacencyList.get(source).add(destination);
             adjacencyList.get(destination).add(source);
         }

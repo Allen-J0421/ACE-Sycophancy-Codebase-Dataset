@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public final class BipartiteGraphTest {
     private BipartiteGraphTest() {
         // Utility class.
@@ -19,12 +23,12 @@ public final class BipartiteGraphTest {
     private static void shouldRejectInvalidEdges() {
         assertThrows(
                 IllegalArgumentException.class,
-                () -> Graph.fromEdges(3, new int[][] {{0, 1}, {1, 3}}),
+                () -> Graph.fromEdgePairs(3, new int[][] {{0, 1}, {1, 3}}),
                 "Expected graph construction to reject out-of-range vertices.");
     }
 
     private static void shouldRejectInvalidNeighborAccess() {
-        Graph graph = Graph.fromEdges(2, new int[][] {{0, 1}});
+        Graph graph = Graph.fromEdgePairs(2, new int[][] {{0, 1}});
         assertThrows(
                 IndexOutOfBoundsException.class,
                 () -> graph.neighborsOf(2),
@@ -32,7 +36,7 @@ public final class BipartiteGraphTest {
     }
 
     private static void shouldBeDirectlyIterable() {
-        Graph graph = Graph.fromEdges(4, new int[][] {{0, 1}});
+        Graph graph = Graph.fromEdges(4, edges(Edge.between(0, 1)));
         assertVertexSequence(graph, new int[] {0, 1, 2, 3});
         assertIteratorExhaustion(graph);
     }
@@ -66,7 +70,7 @@ public final class BipartiteGraphTest {
                 BipartiteGraph.isBipartite(testCase.vertexCount, testCase.edges),
                 testCase.failureMessage);
 
-        Graph graph = Graph.fromEdges(testCase.vertexCount, testCase.edges);
+        Graph graph = Graph.fromEdges(testCase.vertexCount, toEdges(testCase.edges));
         assertEquals(
                 testCase.expectedBipartite,
                 BipartiteGraph.isBipartite(graph),
@@ -139,6 +143,19 @@ public final class BipartiteGraphTest {
                     new int[][] {{0, 1}, {2, 3}},
                     "Expected disconnected acyclic components to be bipartite.")
         };
+    }
+
+    private static Iterable<Edge> toEdges(int[][] edgePairs) {
+        List<Edge> edges = new ArrayList<>(edgePairs.length);
+        for (int[] edgePair : edgePairs) {
+            edges.add(Edge.between(edgePair[0], edgePair[1]));
+        }
+
+        return edges;
+    }
+
+    private static Iterable<Edge> edges(Edge... edges) {
+        return Arrays.asList(edges);
     }
 
     private static final class BipartiteCase {

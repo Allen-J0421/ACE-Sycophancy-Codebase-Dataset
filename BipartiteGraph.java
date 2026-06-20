@@ -7,7 +7,7 @@ public final class BipartiteGraph {
     }
 
     public static boolean isBipartite(int vertexCount, int[][] edges) {
-        return isBipartite(Graph.fromEdges(vertexCount, edges));
+        return isBipartite(Graph.fromEdgePairs(vertexCount, edges));
     }
 
     public static boolean isBipartite(Graph graph) {

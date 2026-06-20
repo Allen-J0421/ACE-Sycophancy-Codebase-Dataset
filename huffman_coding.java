@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.PriorityQueue;
+import java.util.function.BiConsumer;
 
 class HuffmanCoding {
 
@@ -41,10 +42,6 @@ class HuffmanCoding {
         private boolean isLeaf() {
             return left == null && right == null;
         }
-    }
-
-    private interface LeafCodeConsumer {
-        void accept(Node leaf, String code);
     }
 
     private static final class HuffmanTree {
@@ -110,7 +107,7 @@ class HuffmanCoding {
             return codes;
         }
 
-        private static void collectLeafCodes(Node root, StringBuilder prefix, LeafCodeConsumer consumer) {
+        private static void collectLeafCodes(Node root, StringBuilder prefix, BiConsumer<Node, String> consumer) {
             if (root == null) {
                 return;
             }
@@ -124,7 +121,7 @@ class HuffmanCoding {
             appendBranchCode(root.right, '1', prefix, consumer);
         }
 
-        private static void appendBranchCode(Node node, char bit, StringBuilder prefix, LeafCodeConsumer consumer) {
+        private static void appendBranchCode(Node node, char bit, StringBuilder prefix, BiConsumer<Node, String> consumer) {
             prefix.append(bit);
             collectLeafCodes(node, prefix, consumer);
             prefix.setLength(prefix.length() - 1);

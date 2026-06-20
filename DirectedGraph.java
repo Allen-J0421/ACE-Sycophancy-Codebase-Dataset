@@ -1,10 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public final class DirectedGraph implements Graph {
     private final List<Vertex> vertices;
@@ -15,38 +13,36 @@ public final class DirectedGraph implements Graph {
         this.adjacencyByVertex = adjacencyByVertex;
     }
 
+    public static DirectedGraphBuilder builder() {
+        return new DirectedGraphBuilder();
+    }
+
     public static DirectedGraph fromEdges(int vertexCount, Edge... edges) {
-        return fromEdges(createRangeVertices(vertexCount), List.of(edges));
+        return builder()
+            .addVertexRange(vertexCount)
+            .addEdges(List.of(edges))
+            .build();
     }
 
     public static DirectedGraph fromEdges(int vertexCount, List<Edge> edges) {
-        return fromEdges(createRangeVertices(vertexCount), edges);
+        return builder()
+            .addVertexRange(vertexCount)
+            .addEdges(edges)
+            .build();
     }
 
     public static DirectedGraph fromEdges(List<Vertex> vertices, Edge... edges) {
-        return fromEdges(vertices, List.of(edges));
+        return builder()
+            .addVertices(vertices)
+            .addEdges(List.of(edges))
+            .build();
     }
 
     public static DirectedGraph fromEdges(List<Vertex> vertices, List<Edge> edges) {
-        List<Vertex> normalizedVertices = normalizeVertices(vertices);
-
-        if (edges == null) {
-            throw new IllegalArgumentException("Edges must not be null.");
-        }
-
-        Map<Vertex, List<Vertex>> adjacencyByVertex = createEmptyAdjacency(normalizedVertices);
-
-        for (Edge edge : edges) {
-            validateEdge(edge);
-
-            Vertex from = edge.from();
-            Vertex to = edge.to();
-            validateVertex(from, adjacencyByVertex);
-            validateVertex(to, adjacencyByVertex);
-            adjacencyByVertex.get(from).add(to);
-        }
-
-        return new DirectedGraph(normalizedVertices, freeze(adjacencyByVertex));
+        return builder()
+            .addVertices(vertices)
+            .addEdges(edges)
+            .build();
     }
 
     @Override
@@ -83,6 +79,12 @@ public final class DirectedGraph implements Graph {
         return new DirectedGraph(vertices, freeze(reversedAdjacency));
     }
 
+    static DirectedGraph fromAdjacency(List<Vertex> vertices, Map<Vertex, List<Vertex>> adjacencyByVertex) {
+        validateVertices(vertices);
+        validateAdjacency(vertices, adjacencyByVertex);
+        return new DirectedGraph(List.copyOf(vertices), freeze(adjacencyByVertex));
+    }
+
     private static Map<Vertex, List<Vertex>> createEmptyAdjacency(List<Vertex> vertices) {
         Map<Vertex, List<Vertex>> adjacencyByVertex = new LinkedHashMap<>();
         for (Vertex vertex : vertices) {
@@ -101,40 +103,28 @@ public final class DirectedGraph implements Graph {
         return Collections.unmodifiableMap(immutableAdjacency);
     }
 
-    private static List<Vertex> createRangeVertices(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("Vertex count must be non-negative.");
-        }
-
-        List<Vertex> vertices = new ArrayList<>(vertexCount);
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            vertices.add(Vertex.of(vertex));
-        }
-        return Collections.unmodifiableList(vertices);
-    }
-
-    private static List<Vertex> normalizeVertices(List<Vertex> vertices) {
+    private static void validateVertices(List<Vertex> vertices) {
         if (vertices == null) {
             throw new IllegalArgumentException("Vertices must not be null.");
         }
 
-        Set<Vertex> uniqueVertices = new LinkedHashSet<>();
         for (Vertex vertex : vertices) {
             if (vertex == null) {
                 throw new IllegalArgumentException("Vertices must not contain null values.");
             }
-
-            if (!uniqueVertices.add(vertex)) {
-                throw new IllegalArgumentException("Vertices must not contain duplicates.");
-            }
         }
-
-        return List.copyOf(uniqueVertices);
     }
 
-    private static void validateEdge(Edge edge) {
-        if (edge == null || edge.from() == null || edge.to() == null) {
-            throw new IllegalArgumentException("Edges must not contain null values.");
+    private static void validateAdjacency(
+        List<Vertex> vertices,
+        Map<Vertex, List<Vertex>> adjacencyByVertex
+    ) {
+        if (adjacencyByVertex == null) {
+            throw new IllegalArgumentException("Adjacency must not be null.");
+        }
+
+        for (Vertex vertex : vertices) {
+            validateVertex(vertex, adjacencyByVertex);
         }
     }
 

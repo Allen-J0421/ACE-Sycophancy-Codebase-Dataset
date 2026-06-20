@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class HuffmanCoding {
@@ -11,6 +12,11 @@ public class HuffmanCoding {
     private static final Comparator<Node> NODE_ORDER =
             Comparator.comparingInt((Node node) -> node.frequency)
                     .thenComparingInt(node -> node.sortOrder);
+
+    private enum CodeOrder {
+        TRAVERSAL,
+        SYMBOL
+    }
 
     private static final class Node {
         private final int frequency;
@@ -49,41 +55,47 @@ public class HuffmanCoding {
     static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
         validateSymbols(symbols);
         validateFrequencyCount(symbols.length(), frequencies);
-        return huffmanCodes(frequencies);
+        return generateCodes(frequencies, symbols.length(), CodeOrder.TRAVERSAL);
     }
 
     static ArrayList<String> huffmanCodes(int[] frequencies) {
         validateFrequencies(frequencies);
-        if (frequencies.length == 0) {
-            return new ArrayList<>();
-        }
-
-        PriorityQueue<Node> queue = buildLeafQueue(frequencies);
-        Node root = buildTree(queue);
-        return buildCodesInTraversalOrder(root);
+        return generateCodes(frequencies, frequencies.length, CodeOrder.TRAVERSAL);
     }
 
     static ArrayList<String> huffmanCodesBySymbolOrder(String symbols, int[] frequencies) {
         validateSymbols(symbols);
         validateFrequencyCount(symbols.length(), frequencies);
-        if (frequencies.length == 0) {
+        return generateCodes(frequencies, symbols.length(), CodeOrder.SYMBOL);
+    }
+
+    private static ArrayList<String> generateCodes(
+            int[] frequencies,
+            int symbolCount,
+            CodeOrder codeOrder
+    ) {
+        if (symbolCount == 0) {
             return new ArrayList<>();
         }
 
         PriorityQueue<Node> queue = buildLeafQueue(frequencies);
         Node root = buildTree(queue);
-        return buildCodes(root, frequencies.length);
+        if (codeOrder == CodeOrder.SYMBOL) {
+            return buildCodesBySymbolOrder(root, symbolCount);
+        }
+        return buildCodesInTraversalOrder(root);
     }
 
     private static void validateSymbols(String symbols) {
-        if (symbols == null) {
-            throw new IllegalArgumentException("symbols must not be null");
-        }
+        Objects.requireNonNull(symbols, "symbols must not be null");
     }
 
     private static void validateFrequencies(int[] frequencies) {
-        if (frequencies == null) {
-            throw new IllegalArgumentException("frequencies must not be null");
+        Objects.requireNonNull(frequencies, "frequencies must not be null");
+        for (int frequency : frequencies) {
+            if (frequency < 0) {
+                throw new IllegalArgumentException("frequencies must be non-negative");
+            }
         }
     }
 
@@ -111,7 +123,7 @@ public class HuffmanCoding {
         return queue.peek();
     }
 
-    private static ArrayList<String> buildCodes(Node root, int symbolCount) {
+    private static ArrayList<String> buildCodesBySymbolOrder(Node root, int symbolCount) {
         String[] codesBySymbol = new String[symbolCount];
         collectCodes(root, new StringBuilder(), codesBySymbol);
         return new ArrayList<>(Arrays.asList(codesBySymbol));

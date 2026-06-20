@@ -7,6 +7,8 @@ public class HuffmanCodingTest {
         shouldGenerateExpectedSymbolOrderCodes();
         shouldHandleSingleSymbol();
         shouldHandleEmptyInput();
+        shouldRejectNullFrequencies();
+        shouldRejectNegativeFrequencies();
         shouldRejectMismatchedInputLengths();
     }
 
@@ -47,6 +49,22 @@ public class HuffmanCodingTest {
                 IllegalArgumentException.class,
                 () -> HuffmanCoding.huffmanCodes("ab", new int[]{1}),
                 "mismatched symbols and frequencies should be rejected"
+        );
+    }
+
+    private static void shouldRejectNullFrequencies() {
+        assertThrows(
+                NullPointerException.class,
+                () -> HuffmanCoding.huffmanCodes((int[]) null),
+                "null frequencies should be rejected"
+        );
+    }
+
+    private static void shouldRejectNegativeFrequencies() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> HuffmanCoding.huffmanCodes(new int[]{2, -1, 3}),
+                "negative frequencies should be rejected"
         );
     }
 

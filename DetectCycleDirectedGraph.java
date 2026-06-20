@@ -6,7 +6,7 @@ public final class DetectCycleDirectedGraph {
     }
 
     public static boolean hasCycle(DirectedGraph graph) {
-        return new CycleDetector(graph).hasCycle();
+        return CycleDetector.hasCycle(graph);
     }
 
     public static boolean hasCycle(List<List<Integer>> adjacencyList) {

@@ -26,7 +26,7 @@ final class DirectedGraph {
     }
 
     public boolean hasCycle() {
-        return DetectCycleDirectedGraph.hasCycle(this);
+        return CycleDetector.hasCycle(this);
     }
 
     public int vertexCount() {

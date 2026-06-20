@@ -7,13 +7,17 @@ final class CycleDetector {
     private final Queue<Integer> zeroIndegreeVertices;
     private int visitedCount;
 
-    CycleDetector(DirectedGraph graph) {
+    private CycleDetector(DirectedGraph graph) {
         this.graph = graph;
         this.indegree = graph.indegreeSnapshot();
         this.zeroIndegreeVertices = collectZeroIndegreeVertices(indegree);
     }
 
-    boolean hasCycle() {
+    static boolean hasCycle(DirectedGraph graph) {
+        return new CycleDetector(graph).containsCycle();
+    }
+
+    private boolean containsCycle() {
         while (!zeroIndegreeVertices.isEmpty()) {
             processNextVertex();
         }

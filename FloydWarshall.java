@@ -1,5 +1,5 @@
 public final class FloydWarshall {
-    public static final int INF = 100_000_000;
+    public static final int INF = Integer.MAX_VALUE;
 
     private FloydWarshall() {
     }
@@ -13,15 +13,7 @@ public final class FloydWarshall {
         for (int intermediate = 0; intermediate < vertexCount; intermediate++) {
             for (int source = 0; source < vertexCount; source++) {
                 for (int target = 0; target < vertexCount; target++) {
-                    if (!canRelax(distances, source, intermediate, target)) {
-                        continue;
-                    }
-
-                    int candidateDistance = pathDistanceThrough(
-                            distances, source, intermediate, target);
-                    if (candidateDistance < distances[source][target]) {
-                        distances[source][target] = candidateDistance;
-                    }
+                    relax(distances, source, intermediate, target);
                 }
             }
         }
@@ -43,6 +35,22 @@ public final class FloydWarshall {
 
     public static boolean isReachable(int distance) {
         return distance != INF;
+    }
+
+    private static void relax(
+            int[][] distances,
+            int source,
+            int intermediate,
+            int target) {
+        if (!canRelax(distances, source, intermediate, target)) {
+            return;
+        }
+
+        int candidateDistance = pathDistanceThrough(
+                distances, source, intermediate, target);
+        if (candidateDistance < distances[source][target]) {
+            distances[source][target] = candidateDistance;
+        }
     }
 
     private static boolean canRelax(

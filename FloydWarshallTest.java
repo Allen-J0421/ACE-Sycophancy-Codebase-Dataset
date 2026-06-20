@@ -71,8 +71,8 @@ public final class FloydWarshallTest {
 
     private static void throwsOnDistanceOverflow() {
         int[][] graph = {
-                {0, Integer.MAX_VALUE, FloydWarshall.INF},
-                {FloydWarshall.INF, 0, 1},
+                {0, Integer.MAX_VALUE - 1, FloydWarshall.INF},
+                {FloydWarshall.INF, 0, 2},
                 {FloydWarshall.INF, FloydWarshall.INF, 0}
         };
 

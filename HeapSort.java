@@ -1,10 +1,10 @@
 public class HeapSort {
 
-    static void heapSort(int[] arr) {
+    public static void heapSort(int[] arr) {
         heapSort(arr, 0, arr.length);
     }
 
-    static void heapSort(int[] arr, int from, int to) {
+    public static void heapSort(int[] arr, int from, int to) {
         new RangeHeap(arr, from, to).sort();
     }
 
@@ -41,10 +41,10 @@ public class HeapSort {
                 int l = 2 * i + 1;
                 int r = 2 * i + 2;
 
-                if (l < heapSize && arr[from + l] > arr[from + largest])
+                if (l < heapSize && get(l) > get(largest))
                     largest = l;
 
-                if (r < heapSize && arr[from + r] > arr[from + largest])
+                if (r < heapSize && get(r) > get(largest))
                     largest = r;
 
                 if (largest == i) break;
@@ -52,6 +52,10 @@ public class HeapSort {
                 swap(i, largest);
                 i = largest;
             }
+        }
+
+        private int get(int i) {
+            return arr[from + i];
         }
 
         private void swap(int i, int j) {

@@ -1,7 +1,8 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
-import java.util.Queue;
 
 final class ConnectedComponents {
 
@@ -9,32 +10,33 @@ final class ConnectedComponents {
     }
 
     static List<List<Integer>> findComponents(UndirectedGraph graph) {
-        boolean[] visited = new boolean[graph.size()];
-        List<List<Integer>> components = new ArrayList<>();
+        int vertexCount = graph.size();
+        boolean[] visited = new boolean[vertexCount];
+        List<List<Integer>> components = new ArrayList<>(vertexCount);
 
-        for (int vertex = 0; vertex < graph.size(); vertex++) {
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
             if (!visited[vertex]) {
                 List<Integer> component = new ArrayList<>();
                 bfs(graph, vertex, visited, component);
-                components.add(component);
+                components.add(Collections.unmodifiableList(component));
             }
         }
-        return components;
+        return Collections.unmodifiableList(components);
     }
 
     private static void bfs(UndirectedGraph graph, int source, boolean[] visited, List<Integer> component) {
-        Queue<Integer> queue = new ArrayDeque<>();
+        Deque<Integer> queue = new ArrayDeque<>();
         visited[source] = true;
-        queue.add(source);
+        queue.addLast(source);
 
         while (!queue.isEmpty()) {
-            int currentVertex = queue.remove();
+            int currentVertex = queue.removeFirst();
             component.add(currentVertex);
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
-                    queue.add(neighbor);
+                    queue.addLast(neighbor);
                 }
             }
         }

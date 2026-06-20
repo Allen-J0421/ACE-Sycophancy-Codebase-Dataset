@@ -6,15 +6,17 @@ final class ConnectedComponentsDemo {
     }
 
     public static void main(String[] args) {
-        UndirectedGraph graph = new UndirectedGraph(6);
+        List<List<Integer>> components = ConnectedComponents.findComponents(sampleGraph());
+        printComponents(components);
+    }
 
+    private static UndirectedGraph sampleGraph() {
+        UndirectedGraph graph = new UndirectedGraph(6);
         graph.addUndirectedEdge(1, 2);
         graph.addUndirectedEdge(0, 3);
         graph.addUndirectedEdge(2, 0);
         graph.addUndirectedEdge(5, 4);
-
-        List<List<Integer>> components = ConnectedComponents.findComponents(graph);
-        printComponents(components);
+        return graph;
     }
 
     private static void printComponents(List<List<Integer>> components) {

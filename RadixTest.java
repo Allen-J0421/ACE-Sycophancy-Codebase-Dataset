@@ -10,6 +10,7 @@ class RadixTest {
         sortsSubrangeOnly();
         keepsEmptyAndSingleElementArraysValid();
         keepsMaximumLookupIndependentFromSortValidation();
+        formatsValuesAndRanges();
         rejectsUnsupportedSortInputs();
         rejectsInvalidRanges();
         sortsSingleDigitPass();
@@ -88,6 +89,15 @@ class RadixTest {
         }
     }
 
+    private static void formatsValuesAndRanges() {
+        int[] values = {99, -3, -1, 2, 4, 100};
+
+        assertEquals("99 -3 -1 2 4 100", Radix.format(values));
+        assertEquals("99 -3 -1", Radix.format(values, 3));
+        assertEquals("-3 -1 2 4", Radix.format(values, 1, 5));
+        assertEquals("", Radix.format(values, 2, 2));
+    }
+
     private static void rejectsUnsupportedSortInputs() {
         assertThrows(() -> Radix.radixSort(null));
         assertThrows(() -> Radix.countSort(new int[] {2, -1}, 2, 1));
@@ -103,6 +113,8 @@ class RadixTest {
         assertThrows(() -> Radix.radixSort(new int[] {1}, 0, 2));
         assertThrows(() -> Radix.print(new int[] {1}, 2));
         assertThrows(() -> Radix.print(new int[] {1}, 1, 0));
+        assertThrows(() -> Radix.format(new int[] {1}, 2));
+        assertThrows(() -> Radix.format(new int[] {1}, 1, 0));
     }
 
     private static void sortsSingleDigitPass() {
@@ -117,6 +129,12 @@ class RadixTest {
         if (!Arrays.equals(expected, actual)) {
             throw new AssertionError(
                     "Expected " + Arrays.toString(expected) + " but got " + Arrays.toString(actual));
+        }
+    }
+
+    private static void assertEquals(String expected, String actual) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError("Expected " + expected + " but got " + actual);
         }
     }
 

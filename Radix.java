@@ -67,11 +67,33 @@ public final class Radix {
     }
 
     public static void print(int[] values, int fromIndex, int toIndex) {
-        validateRange(values, fromIndex, toIndex);
-
-        for (int i = fromIndex; i < toIndex; i++) {
-            System.out.print(values[i] + " ");
+        String formatted = format(values, fromIndex, toIndex);
+        if (!formatted.isEmpty()) {
+            System.out.print(formatted + " ");
         }
+    }
+
+    public static String format(int[] values) {
+        validateNotNull(values);
+        return format(values, values.length);
+    }
+
+    public static String format(int[] values, int length) {
+        return format(values, 0, length);
+    }
+
+    public static String format(int[] values, int fromIndex, int toIndex) {
+        validateRange(values, fromIndex, toIndex);
+        if (fromIndex == toIndex) {
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+        result.append(values[fromIndex]);
+        for (int i = fromIndex + 1; i < toIndex; i++) {
+            result.append(' ').append(values[i]);
+        }
+        return result.toString();
     }
 
     private static int maxOf(int[] values, int fromIndex, int toIndex) {

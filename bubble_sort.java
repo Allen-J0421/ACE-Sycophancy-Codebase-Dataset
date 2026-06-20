@@ -18,13 +18,17 @@ class BubbleSort {
         boolean swapped = false;
 
         for (int j = 0; j < unsortedLength - 1; j++) {
-            if (values[j] > values[j + 1]) {
+            if (isOutOfOrder(values, j)) {
                 swap(values, j, j + 1);
                 swapped = true;
             }
         }
 
         return swapped;
+    }
+
+    private static boolean isOutOfOrder(int[] values, int index) {
+        return values[index] > values[index + 1];
     }
 
     private static void swap(int[] values, int firstIndex, int secondIndex) {

@@ -7,10 +7,27 @@ public final class CountingSortTest {
     }
 
     public static void main(String[] args) {
-        assertSortsTo("positive and repeated values", new int[] {2, 5, 3, 0, 2, 3, 0, 3}, new int[] {0, 0, 2, 2, 3, 3, 3, 5});
-        assertSortsTo("negative values", new int[] {4, -2, 7, 0, -2, 5}, new int[] {-2, -2, 0, 4, 5, 7});
-        assertSortsTo("empty array", new int[0], new int[0]);
-        assertSortsTo("single element", new int[] {42}, new int[] {42});
+        String[] descriptions = {
+            "positive and repeated values",
+            "negative values",
+            "empty array",
+            "single element"
+        };
+        int[][] inputs = {
+            {2, 5, 3, 0, 2, 3, 0, 3},
+            {4, -2, 7, 0, -2, 5},
+            {},
+            {42}
+        };
+        int[][] expected = {
+            {0, 0, 2, 2, 3, 3, 3, 5},
+            {-2, -2, 0, 4, 5, 7},
+            {},
+            {42}
+        };
+        for (int i = 0; i < descriptions.length; i++) {
+            assertSortsTo(descriptions[i], inputs[i], expected[i]);
+        }
         assertThrows(NullPointerException.class, () -> CountingSort.sort(null));
         assertThrows(
             IllegalArgumentException.class,

@@ -11,9 +11,27 @@ public final class ConnectedComponentsTest {
         keepsLegacyGetComponentsApi();
         worksWithGraphInterface();
         handlesIsolatedVertices();
+        returnsReadOnlyComponents();
         copiesAdjacencyListsDefensively();
         rejectsInvalidEdges();
         exposesReadOnlyNeighbors();
+    }
+
+    private static void returnsReadOnlyComponents() {
+        UndirectedGraph graph = UndirectedGraph.withVertexCount(2);
+        graph.addEdge(0, 1);
+        List<List<Integer>> components = ConnectedComponents.findComponents(graph);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> components.add(List.of(2)),
+                "read-only component list"
+        );
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> components.get(0).add(2),
+                "read-only component"
+        );
     }
 
     @SuppressWarnings("deprecation")

@@ -26,7 +26,7 @@ public final class ConnectedComponents {
             }
         }
 
-        return components;
+        return copyAsImmutableComponents(components);
     }
 
     @Deprecated
@@ -59,5 +59,13 @@ public final class ConnectedComponents {
         }
 
         return component;
+    }
+
+    private static List<List<Integer>> copyAsImmutableComponents(List<List<Integer>> components) {
+        List<List<Integer>> immutableComponents = new ArrayList<>(components.size());
+        for (List<Integer> component : components) {
+            immutableComponents.add(List.copyOf(component));
+        }
+        return List.copyOf(immutableComponents);
     }
 }

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Determines whether an undirected graph is bipartite using BFS 2-coloring.
@@ -12,6 +13,8 @@ import java.util.List;
  * the graph contains no odd-length cycles).
  */
 class BipartiteGraph {
+
+    private BipartiteGraph() {}
 
     private static final int UNVISITED = -1;
     private static final int COLOR_A = 0;
@@ -23,13 +26,16 @@ class BipartiteGraph {
      * @param vertexCount number of vertices (0-indexed)
      * @param edges       array of {u, v} pairs representing undirected edges
      * @return adjacency list where index i holds neighbors of vertex i
-     * @throws IllegalArgumentException if vertexCount is negative or an edge
-     *                                  references a vertex outside [0, vertexCount)
+     * @throws NullPointerException     if edges is null
+     * @throws IllegalArgumentException if vertexCount is negative, an edge does not
+     *                                  have exactly two endpoints, an endpoint is outside
+     *                                  [0, vertexCount), or an edge is a self-loop
      */
-    static List<List<Integer>> buildAdjacencyList(int vertexCount, int[][] edges) {
+    private static List<List<Integer>> buildAdjacencyList(int vertexCount, int[][] edges) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("vertexCount must be non-negative");
         }
+        Objects.requireNonNull(edges, "edges must not be null");
 
         List<List<Integer>> adjacencyList = new ArrayList<>();
         for (int i = 0; i < vertexCount; i++) {
@@ -37,6 +43,10 @@ class BipartiteGraph {
         }
 
         for (int[] edge : edges) {
+            if (edge.length != 2) {
+                throw new IllegalArgumentException(
+                    "Each edge must have exactly 2 endpoints, got " + edge.length);
+            }
             int u = edge[0];
             int v = edge[1];
             if (u < 0 || u >= vertexCount || v < 0 || v >= vertexCount) {
@@ -98,7 +108,7 @@ class BipartiteGraph {
      * @param edges       array of {u, v} pairs representing undirected edges
      * @return true if the graph is bipartite, false otherwise
      */
-    static boolean isBipartite(int vertexCount, int[][] edges) {
+    public static boolean isBipartite(int vertexCount, int[][] edges) {
         List<List<Integer>> adjacencyList = buildAdjacencyList(vertexCount, edges);
 
         int[] color = new int[vertexCount];

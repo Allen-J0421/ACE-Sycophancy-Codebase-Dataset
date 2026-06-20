@@ -27,25 +27,29 @@ public final class BucketSort {
             return;
         }
 
-        BucketLayout bucketLayout = BucketLayout.from(values);
-        float[] bucketedValues = distribute(values, bucketLayout);
-        sortBuckets(bucketedValues, bucketLayout);
+        DistributionPlan distributionPlan = DistributionPlan.from(values);
+        float[] bucketedValues = distribute(values, distributionPlan);
+        sortBuckets(bucketedValues, distributionPlan);
         System.arraycopy(bucketedValues, 0, values, 0, values.length);
     }
 
-    private static float[] distribute(float[] values, BucketLayout bucketLayout) {
+    private static float[] distribute(float[] values, DistributionPlan distributionPlan) {
         float[] bucketedValues = new float[values.length];
-        int[] insertionIndexes = bucketLayout.insertionIndexes();
-        for (float value : values) {
-            int bucketIndex = bucketIndexFor(value, bucketLayout.bucketCount());
-            bucketedValues[insertionIndexes[bucketIndex]++] = value;
+        int[] insertionIndexes = distributionPlan.insertionIndexes();
+        for (int i = 0; i < values.length; i++) {
+            int bucketIndex = distributionPlan.bucketIndexForValue(i);
+            bucketedValues[insertionIndexes[bucketIndex]++] = values[i];
         }
         return bucketedValues;
     }
 
-    private static void sortBuckets(float[] bucketedValues, BucketLayout bucketLayout) {
-        for (int i = 0; i < bucketLayout.bucketCount(); i++) {
-            insertionSort(bucketedValues, bucketLayout.bucketStart(i), bucketLayout.bucketEnd(i));
+    private static void sortBuckets(float[] bucketedValues, DistributionPlan distributionPlan) {
+        for (int i = 0; i < distributionPlan.bucketCount(); i++) {
+            insertionSort(
+                bucketedValues,
+                distributionPlan.bucketStart(i),
+                distributionPlan.bucketEnd(i)
+            );
         }
     }
 
@@ -84,20 +88,26 @@ public final class BucketSort {
             && value < MAX_SUPPORTED_VALUE;
     }
 
-    private static final class BucketLayout {
+    private static final class DistributionPlan {
 
         private final int[] bucketBoundaries;
+        private final int[] bucketIndexesByValue;
 
-        private BucketLayout(int[] bucketBoundaries) {
+        private DistributionPlan(int[] bucketBoundaries, int[] bucketIndexesByValue) {
             this.bucketBoundaries = bucketBoundaries;
+            this.bucketIndexesByValue = bucketIndexesByValue;
         }
 
-        private static BucketLayout from(float[] values) {
+        private static DistributionPlan from(float[] values) {
             int[] bucketSizes = new int[values.length];
+            int[] bucketIndexesByValue = new int[values.length];
 
-            for (float value : values) {
+            for (int i = 0; i < values.length; i++) {
+                float value = values[i];
                 validateValue(value);
-                bucketSizes[bucketIndexFor(value, bucketSizes.length)]++;
+                int bucketIndex = bucketIndexFor(value, bucketSizes.length);
+                bucketIndexesByValue[i] = bucketIndex;
+                bucketSizes[bucketIndex]++;
             }
 
             int[] bucketBoundaries = new int[bucketSizes.length + 1];
@@ -108,7 +118,7 @@ public final class BucketSort {
             }
             bucketBoundaries[bucketSizes.length] = nextBucketStart;
 
-            return new BucketLayout(bucketBoundaries);
+            return new DistributionPlan(bucketBoundaries, bucketIndexesByValue);
         }
 
         private int bucketCount() {
@@ -121,6 +131,10 @@ public final class BucketSort {
 
         private int bucketEnd(int bucketIndex) {
             return bucketBoundaries[bucketIndex + 1];
+        }
+
+        private int bucketIndexForValue(int valueIndex) {
+            return bucketIndexesByValue[valueIndex];
         }
 
         private int[] insertionIndexes() {

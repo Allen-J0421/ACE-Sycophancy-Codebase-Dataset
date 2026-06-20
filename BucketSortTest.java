@@ -80,6 +80,7 @@ public final class BucketSortTest {
         assertRejectsUnsupportedValue(1.0f, "sort should reject values outside [0.0, 1.0)");
         assertRejectsUnsupportedValue(-0.01f, "sort should reject negative values");
         assertRejectsUnsupportedValue(Float.NaN, "sort should reject NaN");
+        assertRejectsUnsupportedValue(Float.NEGATIVE_INFINITY, "sort should reject negative infinity");
         assertRejectsUnsupportedValue(Float.POSITIVE_INFINITY, "sort should reject infinity");
     }
 

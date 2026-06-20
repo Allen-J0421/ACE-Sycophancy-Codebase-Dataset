@@ -1,3 +1,5 @@
+package bucketsort;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,48 +11,43 @@ public final class BucketSort {
     }
 
     public static void sort(float[] values) {
+        sort(values, values == null ? 0 : values.length);
+    }
+
+    public static void sort(float[] values, int bucketCount) {
         if (values == null || values.length < 2) {
             return;
         }
+        if (bucketCount < 1) {
+            throw new IllegalArgumentException("bucketCount must be positive");
+        }
 
-        sortInPlace(values);
+        sortInPlace(values, bucketCount);
     }
 
     public static float[] sortedCopy(float[] values) {
+        return sortedCopy(values, values == null ? 0 : values.length);
+    }
+
+    public static float[] sortedCopy(float[] values, int bucketCount) {
         if (values == null) {
             return null;
         }
 
         float[] copy = Arrays.copyOf(values, values.length);
-        sort(copy);
+        sort(copy, bucketCount);
         return copy;
     }
 
-    private static void sortInPlace(float[] values) {
-        Range range = findRange(values);
+    private static void sortInPlace(float[] values, int bucketCount) {
+        Range range = Range.from(values);
         if (range.isFlat()) {
             return;
         }
 
-        List<List<Float>> buckets = createBuckets(values.length);
+        List<List<Float>> buckets = createBuckets(bucketCount);
         distribute(values, buckets, range);
         gather(values, buckets);
-    }
-
-    private static Range findRange(float[] values) {
-        float min = values[0];
-        float max = values[0];
-
-        for (float value : values) {
-            if (value < min) {
-                min = value;
-            }
-            if (value > max) {
-                max = value;
-            }
-        }
-
-        return new Range(min, max);
     }
 
     private static List<List<Float>> createBuckets(int bucketCount) {
@@ -63,23 +60,10 @@ public final class BucketSort {
 
     private static void distribute(float[] values, List<List<Float>> buckets, Range range) {
         int bucketCount = buckets.size();
-        float span = range.max - range.min;
 
         for (float value : values) {
-            int bucketIndex = bucketIndexFor(value, range, span, bucketCount);
-            buckets.get(bucketIndex).add(value);
+            buckets.get(range.bucketIndexFor(value, bucketCount)).add(value);
         }
-    }
-
-    private static int bucketIndexFor(float value, Range range, float span, int bucketCount) {
-        int bucketIndex = (int) (((value - range.min) / span) * (bucketCount - 1));
-        if (bucketIndex < 0) {
-            return 0;
-        }
-        if (bucketIndex >= bucketCount) {
-            return bucketCount - 1;
-        }
-        return bucketIndex;
     }
 
     private static void gather(float[] values, List<List<Float>> buckets) {
@@ -110,14 +94,43 @@ public final class BucketSort {
     private static final class Range {
         private final float min;
         private final float max;
+        private final float span;
 
         private Range(float min, float max) {
             this.min = min;
             this.max = max;
+            this.span = max - min;
+        }
+
+        private static Range from(float[] values) {
+            float min = values[0];
+            float max = values[0];
+
+            for (float value : values) {
+                if (value < min) {
+                    min = value;
+                }
+                if (value > max) {
+                    max = value;
+                }
+            }
+
+            return new Range(min, max);
         }
 
         private boolean isFlat() {
-            return min == max;
+            return span == 0.0f;
+        }
+
+        private int bucketIndexFor(float value, int bucketCount) {
+            int bucketIndex = (int) (((value - min) / span) * (bucketCount - 1));
+            if (bucketIndex < 0) {
+                return 0;
+            }
+            if (bucketIndex >= bucketCount) {
+                return bucketCount - 1;
+            }
+            return bucketIndex;
         }
     }
 }

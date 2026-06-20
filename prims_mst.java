@@ -117,13 +117,13 @@ final class PrimMST {
     }
 
     private static void runDemo() {
-        primMST(sampleGraph());
+        printMST(primMST(sampleGraph()));
     }
 
-    static void primMST(int[][] graph)
+    static List<Edge> primMST(int[][] graph)
     {
         validateGraph(graph);
-        printMST(buildMST(graph));
+        return buildMST(graph);
     }
 
     public static void main(String[] args)

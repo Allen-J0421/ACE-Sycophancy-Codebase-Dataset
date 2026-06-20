@@ -1,5 +1,6 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Map;
-import java.util.Stack;
 
 public class BalancedParentheses {
     private static final Map<Character, Character> MATCHING = Map.of(
@@ -8,9 +9,9 @@ public class BalancedParentheses {
         ']', '['
     );
 
-    public static boolean isBalanced(String s) {
-        Stack<Character> stack = new Stack<>();
-        for (char c : s.toCharArray()) {
+    public static boolean isBalanced(String input) {
+        Deque<Character> stack = new ArrayDeque<>();
+        for (char c : input.toCharArray()) {
             if (c == '(' || c == '{' || c == '[') {
                 stack.push(c);
             } else if (MATCHING.containsKey(c)) {

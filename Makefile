@@ -2,9 +2,11 @@ JAVAC ?= javac
 JAVA ?= java
 SOURCES := $(wildcard *.java)
 
-.PHONY: all test run legacy clean
+.PHONY: all verify test run legacy clean
 
-all: test
+all: verify
+
+verify: test run legacy
 
 test:
 	$(JAVAC) $(SOURCES)

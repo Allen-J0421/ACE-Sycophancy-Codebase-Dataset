@@ -2,8 +2,6 @@ import java.util.Arrays;
 import java.util.Objects;
 
 final class HeapSort {
-    private static final int ROOT_INDEX = 0;
-
     private HeapSort() {
     }
 
@@ -14,70 +12,100 @@ final class HeapSort {
             return;
         }
 
-        buildMaxHeap(values);
-        for (int heapSize = values.length - 1; heapSize > 0; heapSize--) {
-            swap(values, ROOT_INDEX, heapSize);
-            siftDown(values, heapSize, ROOT_INDEX);
-        }
+        MaxHeap.from(values).sortAscending();
     }
 
     static void heapSort(int[] values) {
         sort(values);
     }
 
-    private static void buildMaxHeap(int[] values) {
-        for (int index = values.length / 2 - 1; index >= 0; index--) {
-            siftDown(values, values.length, index);
+    private static final class MaxHeap {
+        private static final int ROOT_INDEX = 0;
+
+        private final int[] values;
+        private int size;
+
+        private MaxHeap(int[] values) {
+            this.values = values;
+            size = values.length;
         }
-    }
 
-    private static void siftDown(int[] values, int heapSize, int rootIndex) {
-        int currentIndex = rootIndex;
+        private static MaxHeap from(int[] values) {
+            MaxHeap heap = new MaxHeap(values);
+            heap.build();
+            return heap;
+        }
 
-        while (true) {
-            int largestIndex = largestIndexInSubtree(values, heapSize, currentIndex);
+        private void sortAscending() {
+            while (size > 1) {
+                moveMaxToEnd();
+                siftDown(ROOT_INDEX);
+            }
+        }
 
-            if (largestIndex == currentIndex) {
-                return;
+        private void build() {
+            for (int index = firstParentIndex(); index >= 0; index--) {
+                siftDown(index);
+            }
+        }
+
+        private int firstParentIndex() {
+            return size / 2 - 1;
+        }
+
+        private void moveMaxToEnd() {
+            size--;
+            swap(ROOT_INDEX, size);
+        }
+
+        private void siftDown(int rootIndex) {
+            int currentIndex = rootIndex;
+
+            while (true) {
+                int largestIndex = largestIndexInSubtree(currentIndex);
+
+                if (largestIndex == currentIndex) {
+                    return;
+                }
+
+                swap(currentIndex, largestIndex);
+                currentIndex = largestIndex;
+            }
+        }
+
+        private int largestIndexInSubtree(int rootIndex) {
+            int largestIndex = rootIndex;
+            int leftChildIndex = leftChildIndex(rootIndex);
+            int rightChildIndex = rightChildIndex(rootIndex);
+
+            if (isGreater(leftChildIndex, largestIndex)) {
+                largestIndex = leftChildIndex;
             }
 
-            swap(values, currentIndex, largestIndex);
-            currentIndex = largestIndex;
-        }
-    }
+            if (isGreater(rightChildIndex, largestIndex)) {
+                largestIndex = rightChildIndex;
+            }
 
-    private static int largestIndexInSubtree(int[] values, int heapSize, int rootIndex) {
-        int largestIndex = rootIndex;
-        int leftChildIndex = leftChildIndex(rootIndex);
-        int rightChildIndex = rightChildIndex(rootIndex);
-
-        if (isGreater(values, leftChildIndex, largestIndex, heapSize)) {
-            largestIndex = leftChildIndex;
+            return largestIndex;
         }
 
-        if (isGreater(values, rightChildIndex, largestIndex, heapSize)) {
-            largestIndex = rightChildIndex;
+        private boolean isGreater(int candidateIndex, int currentIndex) {
+            return candidateIndex < size && values[candidateIndex] > values[currentIndex];
         }
 
-        return largestIndex;
-    }
+        private static int leftChildIndex(int index) {
+            return 2 * index + 1;
+        }
 
-    private static boolean isGreater(int[] values, int candidateIndex, int currentIndex, int heapSize) {
-        return candidateIndex < heapSize && values[candidateIndex] > values[currentIndex];
-    }
+        private static int rightChildIndex(int index) {
+            return 2 * index + 2;
+        }
 
-    private static int leftChildIndex(int index) {
-        return 2 * index + 1;
-    }
-
-    private static int rightChildIndex(int index) {
-        return 2 * index + 2;
-    }
-
-    private static void swap(int[] values, int firstIndex, int secondIndex) {
-        int value = values[firstIndex];
-        values[firstIndex] = values[secondIndex];
-        values[secondIndex] = value;
+        private void swap(int firstIndex, int secondIndex) {
+            int value = values[firstIndex];
+            values[firstIndex] = values[secondIndex];
+            values[secondIndex] = value;
+        }
     }
 
     public static void main(String[] args) {

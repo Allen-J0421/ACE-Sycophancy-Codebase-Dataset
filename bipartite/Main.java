@@ -37,6 +37,18 @@ public final class Main {
         // Depth-first traversal over the same Graph interface.
         List<Integer> dfsOrder = new DepthFirstSearch().traverse(triangle);
         System.out.println("DFS preorder (unweighted undirected): " + dfsOrder);
+
+        // Topological sort of the directed acyclic graph above.
+        reportTopologicalSort(new TopologicalSort().sort(directed));
+    }
+
+    private static void reportTopologicalSort(TopologicalSortResult result) {
+        switch (result) {
+            case TopologicalSortResult.Sorted sorted ->
+                    System.out.println("Topological order (directed): " + sorted.order());
+            case TopologicalSortResult.Cyclic cyclic ->
+                    System.out.println("Topological sort failed; cycle witness: " + cyclic.cycle());
+        }
     }
 
     private static void report(String label, BipartiteResult result) {

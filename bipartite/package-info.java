@@ -22,11 +22,15 @@
  * run unchanged on every implementation. {@link bipartite.BipartiteChecker} runs
  * a breadth-first 2-coloring and returns the sealed
  * {@link bipartite.BipartiteResult} — either the two vertex partitions or an
- * odd-cycle witness — while {@link bipartite.DepthFirstSearch} provides a
- * standard depth-first traversal.
+ * odd-cycle witness — {@link bipartite.DepthFirstSearch} provides a standard
+ * depth-first traversal, and {@link bipartite.TopologicalSort} orders a
+ * {@link bipartite.DirectedGraph} so dependencies precede dependents, returning
+ * the sealed {@link bipartite.TopologicalSortResult} — either the order or a
+ * directed-cycle witness.
  *
  * <p>{@link bipartite.Main} provides a runnable demonstration, and
- * {@link bipartite.BipartiteCheckerTests} and
- * {@link bipartite.DepthFirstSearchTests} are dependency-free test harnesses.
+ * {@link bipartite.BipartiteCheckerTests},
+ * {@link bipartite.DepthFirstSearchTests}, and
+ * {@link bipartite.TopologicalSortTests} are dependency-free test harnesses.
  */
 package bipartite;

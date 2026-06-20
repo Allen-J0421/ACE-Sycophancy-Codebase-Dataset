@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class BucketSort {
@@ -12,6 +13,20 @@ public final class BucketSort {
             return;
         }
 
+        sortInPlace(values);
+    }
+
+    public static float[] sortedCopy(float[] values) {
+        if (values == null) {
+            return null;
+        }
+
+        float[] copy = Arrays.copyOf(values, values.length);
+        sort(copy);
+        return copy;
+    }
+
+    private static void sortInPlace(float[] values) {
         Range range = findRange(values);
         if (range.isFlat()) {
             return;
@@ -51,9 +66,20 @@ public final class BucketSort {
         float span = range.max - range.min;
 
         for (float value : values) {
-            int bucketIndex = (int) (((value - range.min) / span) * (bucketCount - 1));
+            int bucketIndex = bucketIndexFor(value, range, span, bucketCount);
             buckets.get(bucketIndex).add(value);
         }
+    }
+
+    private static int bucketIndexFor(float value, Range range, float span, int bucketCount) {
+        int bucketIndex = (int) (((value - range.min) / span) * (bucketCount - 1));
+        if (bucketIndex < 0) {
+            return 0;
+        }
+        if (bucketIndex >= bucketCount) {
+            return bucketCount - 1;
+        }
+        return bucketIndex;
     }
 
     private static void gather(float[] values, List<List<Float>> buckets) {

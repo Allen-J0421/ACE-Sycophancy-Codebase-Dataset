@@ -53,7 +53,7 @@ public final class CountingSort {
         }
 
         CountingTable countingTable = CountingTable.from(request.source());
-        writeSortedValues(request.source(), request.output(), countingTable);
+        countingTable.writeSortedValuesTo(request.source(), request.output());
     }
 
     private static void requireSameLength(int[] input, int[] output) {
@@ -61,17 +61,6 @@ public final class CountingSort {
             throw new IllegalArgumentException(
                 "Input and output arrays must have the same length."
             );
-        }
-    }
-
-    private static void writeSortedValues(
-        int[] input,
-        int[] output,
-        CountingTable countingTable
-    ) {
-        for (int i = input.length - 1; i >= 0; i--) {
-            int value = input[i];
-            output[countingTable.takeOutputIndex(value)] = value;
         }
     }
 
@@ -112,6 +101,13 @@ public final class CountingSort {
             }
 
             return new CountingTable(range, prefixCounts);
+        }
+
+        private void writeSortedValuesTo(int[] input, int[] output) {
+            for (int i = input.length - 1; i >= 0; i--) {
+                int value = input[i];
+                output[takeOutputIndex(value)] = value;
+            }
         }
 
         private int takeOutputIndex(int value) {

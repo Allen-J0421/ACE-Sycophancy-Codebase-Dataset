@@ -72,9 +72,10 @@ public final class CountingSortTest {
         assertArrayEquals(new int[] {-1, 0, 3, 3}, values);
     }
 
+    @SuppressWarnings("deprecation")
     private static void testCompatibilityWrappers() {
         int[] input = {5, -3, 1, 5, 0};
-        int[] expected = sortedWithArraysSort(input);
+        int[] expected = CountingSort.sortedCopy(input);
 
         assertArrayEquals(expected, CountingSort.countSort(input));
         assertArrayEquals(expected, CountingSort.sort(input));

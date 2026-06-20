@@ -1,15 +1,15 @@
 package sorting;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class IntArrayFormatter {
 
+    private IntArrayFormatter() {}
+
     public static String format(int[] arr) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arr.length; i++) {
-            if (i > 0) {
-                sb.append(' ');
-            }
-            sb.append(arr[i]);
-        }
-        return sb.toString();
+        return Arrays.stream(arr)
+                .mapToObj(Integer::toString)
+                .collect(Collectors.joining(" "));
     }
 }

@@ -18,7 +18,8 @@ final class ConnectedComponentsTest {
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
         assertEquals(2, result.componentCount(), "sample graph component count");
-        assertEquals("[[0, 3, 2, 1], [4, 5]]", result.toString(), "sample graph components");
+        assertListEquals(List.of(0, 3, 2, 1), result.componentAt(0).vertices(), "first sample component");
+        assertListEquals(List.of(4, 5), result.componentAt(1).vertices(), "second sample component");
     }
 
     private static void verifiesSingleVertexComponents() {
@@ -27,7 +28,9 @@ final class ConnectedComponentsTest {
         ConnectedComponentsResult result = GraphComponentFinder.findConnectedComponents(graph);
 
         assertEquals(3, result.componentCount(), "isolated vertex component count");
-        assertEquals("[[0], [1], [2]]", result.toString(), "isolated vertex components");
+        assertListEquals(List.of(0), result.componentAt(0).vertices(), "first isolated component");
+        assertListEquals(List.of(1), result.componentAt(1).vertices(), "second isolated component");
+        assertListEquals(List.of(2), result.componentAt(2).vertices(), "third isolated component");
     }
 
     private static void verifiesFormattedOutput() {
@@ -44,8 +47,11 @@ final class ConnectedComponentsTest {
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
         assertThrows(UnsupportedOperationException.class,
-                () -> result.components().add(List.of(99)),
+                () -> result.components().add(new ConnectedComponent(List.of(99))),
                 "result component list immutability");
+        assertThrows(UnsupportedOperationException.class,
+                () -> result.componentAt(0).vertices().add(99),
+                "component vertex list immutability");
     }
 
     private static void verifiesInvalidNeighborGraphIsRejected() {
@@ -64,6 +70,16 @@ final class ConnectedComponentsTest {
         assertThrows(IllegalArgumentException.class,
                 () -> GraphComponentFinder.findConnectedComponents(invalidGraph),
                 "invalid neighbor graph");
+    }
+
+    private static void assertListEquals(
+            List<Integer> expected,
+            List<Integer> actual,
+            String description) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError(
+                    description + " expected " + expected + " but was " + actual);
+        }
     }
 
     private static void assertEquals(int expected, int actual, String description) {

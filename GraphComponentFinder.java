@@ -15,7 +15,7 @@ final class GraphComponentFinder {
         int vertexCount = graph.vertexCount();
         validateVertexCount(vertexCount);
         boolean[] visited = new boolean[vertexCount];
-        List<List<Integer>> components = new ArrayList<>();
+        List<ConnectedComponent> components = new ArrayList<>();
 
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             if (!visited[vertex]) {
@@ -26,7 +26,7 @@ final class GraphComponentFinder {
         return new ConnectedComponentsResult(components);
     }
 
-    private static List<Integer> traverseComponent(
+    private static ConnectedComponent traverseComponent(
             Graph graph,
             int startVertex,
             int vertexCount,
@@ -50,7 +50,7 @@ final class GraphComponentFinder {
             }
         }
 
-        return List.copyOf(component);
+        return new ConnectedComponent(component);
     }
 
     private static void validateVertexCount(int vertexCount) {

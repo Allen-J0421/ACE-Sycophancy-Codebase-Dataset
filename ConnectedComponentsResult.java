@@ -4,29 +4,32 @@ import java.util.Objects;
 
 final class ConnectedComponentsResult {
 
-    private final List<List<Integer>> components;
+    private final List<ConnectedComponent> components;
 
-    ConnectedComponentsResult(List<List<Integer>> components) {
+    ConnectedComponentsResult(List<ConnectedComponent> components) {
         Objects.requireNonNull(components, "components");
 
-        List<List<Integer>> snapshot = new ArrayList<>(components.size());
-        for (List<Integer> component : components) {
-            snapshot.add(List.copyOf(component));
-        }
-
-        this.components = List.copyOf(snapshot);
+        this.components = List.copyOf(new ArrayList<>(components));
     }
 
     int componentCount() {
         return components.size();
     }
 
-    List<List<Integer>> components() {
+    ConnectedComponent componentAt(int componentIndex) {
+        if (componentIndex < 0 || componentIndex >= components.size()) {
+            throw new IllegalArgumentException("Component index out of bounds: " + componentIndex);
+        }
+
+        return components.get(componentIndex);
+    }
+
+    List<ConnectedComponent> components() {
         return components;
     }
 
     String format() {
-        return ComponentFormatter.format(components);
+        return ComponentFormatter.format(this);
     }
 
     @Override

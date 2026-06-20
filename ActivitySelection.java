@@ -27,7 +27,7 @@ public final class ActivitySelection {
     ) {
         ActivityInterval[] activities = buildIntervals(startTimes, finishTimes);
         if (activities.length == 0) {
-            return new SelectionResult(0, List.of());
+            return new SelectionResult(List.of());
         }
         return selectActivities(sortByFinishTime(activities));
     }
@@ -86,7 +86,7 @@ public final class ActivitySelection {
             }
         }
 
-        return new SelectionResult(selectedActivities.size(), List.copyOf(selectedActivities));
+        return new SelectionResult(List.copyOf(selectedActivities));
     }
 
     public record ActivityInterval(int startTime, int finishTime) {
@@ -97,13 +97,14 @@ public final class ActivitySelection {
         }
     }
 
-    public record SelectionResult(int count, List<ActivityInterval> selectedActivities) {
+    public record SelectionResult(List<ActivityInterval> selectedActivities) {
         public SelectionResult {
             Objects.requireNonNull(selectedActivities, "selectedActivities");
-            if (count != selectedActivities.size()) {
-                throw new IllegalArgumentException("count must match selectedActivities.size()");
-            }
             selectedActivities = List.copyOf(selectedActivities);
+        }
+
+        public int count() {
+            return selectedActivities.size();
         }
     }
 }

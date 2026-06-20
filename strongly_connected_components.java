@@ -162,14 +162,18 @@ class StronglyConnectedComponents {
             if (containsVertex(component, excludedVertex)) {
                 continue;
             }
-            for (int vertex : component) {
-                if (vertex == EMPTY) {
-                    break;
-                }
-                System.out.print(vertex + " ");
-            }
-            System.out.println();
+            printComponent(component);
         }
+    }
+
+    private static void printComponent(int[] component) {
+        for (int vertex : component) {
+            if (vertex == EMPTY) {
+                break;
+            }
+            System.out.print(vertex + " ");
+        }
+        System.out.println();
     }
 
     public static void main(String[] args) {

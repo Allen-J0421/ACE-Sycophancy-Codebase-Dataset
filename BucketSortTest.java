@@ -12,36 +12,25 @@ public final class BucketSortTest {
         sortsDuplicateValues();
         sortsValuesAtLowerBound();
         sortsValuesNearUpperBound();
-        rejectsOutOfRangeValues();
+        rejectsUnsupportedValues();
         rejectsNullInput();
         handlesEmptyInput();
         returnsEmptySortedCopy();
     }
 
     private static void sortsValuesInPlace() {
-        float[] values = {0.42f, 0.32f, 0.23f, 0.52f, 0.25f, 0.47f};
-        BucketSort.sort(values);
-
-        assertArrayEquals(
+        assertSortsInPlace(
+            new float[]{0.42f, 0.32f, 0.23f, 0.52f, 0.25f, 0.47f},
             new float[]{0.23f, 0.25f, 0.32f, 0.42f, 0.47f, 0.52f},
-            values,
             "sort should order values in place"
         );
     }
 
     private static void returnsSortedCopyWithoutMutatingInput() {
-        float[] original = {0.78f, 0.17f, 0.39f};
-        float[] copy = BucketSort.sortedCopy(original);
-
-        assertArrayEquals(
+        assertSortedCopy(
             new float[]{0.78f, 0.17f, 0.39f},
-            original,
-            "sortedCopy should not mutate the source array"
-        );
-        assertArrayEquals(
             new float[]{0.17f, 0.39f, 0.78f},
-            copy,
-            "sortedCopy should return sorted data"
+            "sortedCopy should not mutate the source array"
         );
     }
 
@@ -55,44 +44,34 @@ public final class BucketSortTest {
     }
 
     private static void sortsDuplicateValues() {
-        float[] values = {0.41f, 0.12f, 0.41f, 0.12f, 0.73f};
-        BucketSort.sort(values);
-
-        assertArrayEquals(
+        assertSortsInPlace(
+            new float[]{0.41f, 0.12f, 0.41f, 0.12f, 0.73f},
             new float[]{0.12f, 0.12f, 0.41f, 0.41f, 0.73f},
-            values,
             "sort should handle duplicate values"
         );
     }
 
     private static void sortsValuesAtLowerBound() {
-        float[] values = {0.25f, 0.0f, 0.75f};
-        BucketSort.sort(values);
-
-        assertArrayEquals(
+        assertSortsInPlace(
+            new float[]{0.25f, 0.0f, 0.75f},
             new float[]{0.0f, 0.25f, 0.75f},
-            values,
             "sort should support the lower bound"
         );
     }
 
     private static void sortsValuesNearUpperBound() {
-        float[] values = {0.9999f, 0.0001f, 0.5f};
-        BucketSort.sort(values);
-
-        assertArrayEquals(
+        assertSortsInPlace(
+            new float[]{0.9999f, 0.0001f, 0.5f},
             new float[]{0.0001f, 0.5f, 0.9999f},
-            values,
             "sort should support values close to the upper bound"
         );
     }
 
-    private static void rejectsOutOfRangeValues() {
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> BucketSort.sort(new float[]{0.5f, 1.0f}),
-            "sort should reject values outside [0.0, 1.0)"
-        );
+    private static void rejectsUnsupportedValues() {
+        assertRejectsUnsupportedValue(1.0f, "sort should reject values outside [0.0, 1.0)");
+        assertRejectsUnsupportedValue(-0.01f, "sort should reject negative values");
+        assertRejectsUnsupportedValue(Float.NaN, "sort should reject NaN");
+        assertRejectsUnsupportedValue(Float.POSITIVE_INFINITY, "sort should reject infinity");
     }
 
     private static void rejectsNullInput() {
@@ -112,6 +91,27 @@ public final class BucketSortTest {
     private static void returnsEmptySortedCopy() {
         float[] copy = BucketSort.sortedCopy(new float[]{});
         assertArrayEquals(new float[]{}, copy, "sortedCopy should handle empty input");
+    }
+
+    private static void assertSortsInPlace(float[] input, float[] expected, String message) {
+        BucketSort.sort(input);
+        assertArrayEquals(expected, input, message);
+    }
+
+    private static void assertSortedCopy(float[] input, float[] expected, String message) {
+        float[] original = Arrays.copyOf(input, input.length);
+        float[] copy = BucketSort.sortedCopy(input);
+
+        assertArrayEquals(original, input, message);
+        assertArrayEquals(expected, copy, "sortedCopy should return sorted data");
+    }
+
+    private static void assertRejectsUnsupportedValue(float value, String message) {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> BucketSort.sort(new float[]{0.5f, value}),
+            message
+        );
     }
 
     private static void assertArrayEquals(float[] expected, float[] actual, String message) {

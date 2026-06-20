@@ -93,7 +93,7 @@ public final class BucketSort {
     }
 
     private static void validateValue(float value) {
-        if (value < MIN_SUPPORTED_VALUE || value >= MAX_SUPPORTED_VALUE) {
+        if (!isSupportedValue(value)) {
             throw new IllegalArgumentException(
                 "Bucket sort expects values in the range ["
                     + MIN_SUPPORTED_VALUE
@@ -103,5 +103,11 @@ public final class BucketSort {
                     + value
             );
         }
+    }
+
+    private static boolean isSupportedValue(float value) {
+        return Float.isFinite(value)
+            && value >= MIN_SUPPORTED_VALUE
+            && value < MAX_SUPPORTED_VALUE;
     }
 }

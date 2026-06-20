@@ -5,17 +5,22 @@ final class BellmanFordDemo {
     }
 
     public static void main(String[] args) {
-        int vertices = 5;
-        int[][] edges = {
-            {1, 3, 2},
-            {4, 3, -1},
-            {2, 4, 1},
-            {1, 2, 1},
-            {0, 1, 5}
-        };
+        BellmanFord.Graph graph = BellmanFord.Graph.of(
+            5,
+            BellmanFord.Edge.of(1, 3, 2, 5),
+            BellmanFord.Edge.of(4, 3, -1, 5),
+            BellmanFord.Edge.of(2, 4, 1, 5),
+            BellmanFord.Edge.of(1, 2, 1, 5),
+            BellmanFord.Edge.of(0, 1, 5, 5)
+        );
         int source = 0;
 
-        int[] shortestDistances = BellmanFord.shortestPaths(vertices, edges, source);
-        System.out.println(Arrays.toString(shortestDistances));
+        BellmanFord.Result result = BellmanFord.computeShortestPaths(graph, source);
+        if (result.hasNegativeCycle()) {
+            System.out.println("Negative cycle detected");
+            return;
+        }
+
+        System.out.println(Arrays.toString(result.distances()));
     }
 }

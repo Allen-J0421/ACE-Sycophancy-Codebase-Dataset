@@ -1,11 +1,10 @@
-import java.util.Collections;
 import java.util.List;
 
 public final class DirectedGraph implements DirectedGraphView {
     private final List<List<Integer>> adjacencyList;
 
     DirectedGraph(List<List<Integer>> adjacencyList) {
-        this.adjacencyList = freezeAdjacencyList(adjacencyList);
+        this.adjacencyList = GraphSupport.freezeAdjacencyList(adjacencyList);
     }
 
     public int vertexCount() {
@@ -13,21 +12,7 @@ public final class DirectedGraph implements DirectedGraphView {
     }
 
     public List<Integer> neighborsOf(int vertex) {
-        validateVertex(vertex);
+        GraphSupport.validateVertexIndex(vertex, vertexCount());
         return adjacencyList.get(vertex);
-    }
-
-    private void validateVertex(int vertex) {
-        if (vertex < 0 || vertex >= vertexCount()) {
-            throw new IndexOutOfBoundsException("vertex out of range: " + vertex);
-        }
-    }
-
-    private static List<List<Integer>> freezeAdjacencyList(List<List<Integer>> adjacencyList) {
-        List<List<Integer>> frozenAdjacencyList = new java.util.ArrayList<>(adjacencyList.size());
-        for (List<Integer> neighbors : adjacencyList) {
-            frozenAdjacencyList.add(Collections.unmodifiableList(new java.util.ArrayList<>(neighbors)));
-        }
-        return Collections.unmodifiableList(frozenAdjacencyList);
     }
 }

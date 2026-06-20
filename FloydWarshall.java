@@ -5,9 +5,7 @@ public final class FloydWarshall {
     }
 
     public static int[][] shortestPaths(int[][] graph) {
-        MatrixValidator.requireSquare(graph, "Graph matrix");
-
-        int vertexCount = graph.length;
+        int vertexCount = MatrixValidator.requireSquare(graph, "Graph matrix");
         int[][] distances = copyMatrix(graph);
 
         for (int intermediate = 0; intermediate < vertexCount; intermediate++) {

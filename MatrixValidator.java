@@ -2,23 +2,23 @@ final class MatrixValidator {
     private MatrixValidator() {
     }
 
-    static void requireSquare(int[][] matrix, String name) {
-        requireRectangular(matrix, name);
+    static int requireSquare(int[][] matrix, String name) {
+        int columnCount = requireRectangular(matrix, name);
 
-        for (int row = 0; row < matrix.length; row++) {
-            if (matrix[row].length != matrix.length) {
-                throw new IllegalArgumentException(name + " must be square.");
-            }
+        if (matrix.length != columnCount) {
+            throw new IllegalArgumentException(name + " must be square.");
         }
+
+        return matrix.length;
     }
 
-    static void requireRectangular(int[][] matrix, String name) {
+    static int requireRectangular(int[][] matrix, String name) {
         if (matrix == null) {
             throw new IllegalArgumentException(name + " cannot be null.");
         }
 
         if (matrix.length == 0) {
-            return;
+            return 0;
         }
 
         if (matrix[0] == null) {
@@ -34,5 +34,7 @@ final class MatrixValidator {
                 throw new IllegalArgumentException(name + " must be rectangular.");
             }
         }
+
+        return columnCount;
     }
 }

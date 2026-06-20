@@ -44,11 +44,15 @@ final class InsertionSort {
     private static int shiftLargerValuesRight(int[] values, int unsortedIndex, int valueToInsert) {
         int sortedIndex = unsortedIndex - 1;
 
-        while (sortedIndex >= 0 && values[sortedIndex] > valueToInsert) {
+        while (hasLargerSortedValue(values, sortedIndex, valueToInsert)) {
             values[sortedIndex + 1] = values[sortedIndex];
             sortedIndex--;
         }
 
         return sortedIndex + 1;
+    }
+
+    private static boolean hasLargerSortedValue(int[] values, int sortedIndex, int valueToInsert) {
+        return sortedIndex >= 0 && values[sortedIndex] > valueToInsert;
     }
 }

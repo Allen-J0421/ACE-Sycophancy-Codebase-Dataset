@@ -1,32 +1,55 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class ActivitySelection {
+class ActivitySelection {
 
-        public static int activitySelection(int[] start, int[] finish) {
-        int n = start.length;
-        int[][] arr = new int[n][2];
-        for (int i = 0; i < n; i++) {
-            arr[i][0] = start[i];
-            arr[i][1] = finish[i];
+    public static int activitySelection(int[] startTimes, int[] finishTimes) {
+        validateSchedule(startTimes, finishTimes);
+
+        if (startTimes.length == 0) {
+            return 0;
         }
 
-        Arrays.sort(arr, Comparator.comparingInt(a -> a[1]));
+        Activity[] activities = buildActivities(startTimes, finishTimes);
+        Arrays.sort(activities, Comparator.comparingInt(Activity::getFinishTime));
 
-        int count = 1;
+        return countCompatibleActivities(activities);
+    }
 
-        int j = 0;
+    private static void validateSchedule(int[] startTimes, int[] finishTimes) {
+        if (startTimes == null || finishTimes == null) {
+            throw new IllegalArgumentException("Start and finish times must not be null.");
+        }
 
-        for (int i = 1; i < n; i++) {
+        if (startTimes.length != finishTimes.length) {
+            throw new IllegalArgumentException("Start and finish times must have the same length.");
+        }
+    }
 
-            if (arr[i][0] > arr[j][1]) {
-                count++;
+    private static Activity[] buildActivities(int[] startTimes, int[] finishTimes) {
+        Activity[] activities = new Activity[startTimes.length];
 
-                j = i;
+        for (int i = 0; i < startTimes.length; i++) {
+            activities[i] = new Activity(startTimes[i], finishTimes[i]);
+        }
+
+        return activities;
+    }
+
+    private static int countCompatibleActivities(Activity[] activities) {
+        int selectedCount = 1;
+        Activity lastSelected = activities[0];
+
+        for (int i = 1; i < activities.length; i++) {
+            Activity candidate = activities[i];
+
+            if (candidate.getStartTime() > lastSelected.getFinishTime()) {
+                selectedCount++;
+                lastSelected = candidate;
             }
         }
 
-        return count;
+        return selectedCount;
     }
 
     public static void main(String[] args) {
@@ -35,5 +58,23 @@ public class ActivitySelection {
 
         System.out.println(
             activitySelection(start, finish));
+    }
+
+    private static final class Activity {
+        private final int startTime;
+        private final int finishTime;
+
+        private Activity(int startTime, int finishTime) {
+            this.startTime = startTime;
+            this.finishTime = finishTime;
+        }
+
+        private int getStartTime() {
+            return startTime;
+        }
+
+        private int getFinishTime() {
+            return finishTime;
+        }
     }
 }

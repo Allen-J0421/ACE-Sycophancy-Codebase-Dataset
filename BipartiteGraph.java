@@ -6,11 +6,11 @@ public final class BipartiteGraph {
         // Utility class.
     }
 
-    static boolean isBipartite(int vertexCount, int[][] edges) {
+    public static boolean isBipartite(int vertexCount, int[][] edges) {
         return isBipartite(Graph.fromEdges(vertexCount, edges));
     }
 
-    static boolean isBipartite(Graph graph) {
+    public static boolean isBipartite(Graph graph) {
         VertexColor[] colors = new VertexColor[graph.vertexCount()];
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
@@ -48,13 +48,6 @@ public final class BipartiteGraph {
         }
 
         return true;
-    }
-
-    public static void main(String[] args) {
-        int vertexCount = 4;
-        int[][] edges = {{0, 1}, {0, 2}, {1, 2}, {2, 3}};
-
-        System.out.println(isBipartite(vertexCount, edges));
     }
 
     private enum VertexColor {

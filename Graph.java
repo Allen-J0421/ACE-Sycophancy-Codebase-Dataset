@@ -2,14 +2,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class Graph {
+public final class Graph {
     private final List<List<Integer>> adjacencyList;
 
     private Graph(List<List<Integer>> adjacencyList) {
         this.adjacencyList = adjacencyList;
     }
 
-    static Graph fromEdges(int vertexCount, int[][] edges) {
+    public static Graph fromEdges(int vertexCount, int[][] edges) {
         validateInputs(vertexCount, edges);
 
         List<List<Integer>> adjacencyList = initializeAdjacencyList(vertexCount);
@@ -20,11 +20,12 @@ final class Graph {
         return new Graph(toUnmodifiableAdjacencyList(adjacencyList));
     }
 
-    int vertexCount() {
+    public int vertexCount() {
         return adjacencyList.size();
     }
 
-    List<Integer> neighborsOf(int vertex) {
+    public List<Integer> neighborsOf(int vertex) {
+        validateVertexIndex(vertex);
         return adjacencyList.get(vertex);
     }
 
@@ -90,6 +91,17 @@ final class Graph {
                             + vertex
                             + " for graph size "
                             + vertexCount
+                            + ".");
+        }
+    }
+
+    private void validateVertexIndex(int vertex) {
+        if (vertex < 0 || vertex >= adjacencyList.size()) {
+            throw new IndexOutOfBoundsException(
+                    "Vertex "
+                            + vertex
+                            + " is out of bounds for graph size "
+                            + adjacencyList.size()
                             + ".");
         }
     }

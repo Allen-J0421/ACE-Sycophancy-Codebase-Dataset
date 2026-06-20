@@ -7,7 +7,7 @@ final class MaxFlowDemo {
 
     public static void main(String[] args) {
         System.out.println("The maximum possible flow is "
-                           + new MaxFlow().fordFulkerson(sampleGraph(), SOURCE, SINK));
+                           + new MaxFlow().maximumFlow(sampleGraph(), SOURCE, SINK));
     }
 
     private static int[][] sampleGraph() {

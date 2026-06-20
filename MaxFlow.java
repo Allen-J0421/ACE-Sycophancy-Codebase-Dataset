@@ -4,6 +4,10 @@ import java.util.Queue;
 
 public final class MaxFlow {
     public int fordFulkerson(int[][] graph, int source, int sink) {
+        return maximumFlow(graph, source, sink);
+    }
+
+    public int maximumFlow(int[][] graph, int source, int sink) {
         validateGraph(graph, source, sink);
 
         int[][] residualGraph = copyGraph(graph);
@@ -13,7 +17,7 @@ public final class MaxFlow {
         while (findAugmentingPath(residualGraph, source, sink, parent)) {
             int pathFlow = findBottleneckCapacity(residualGraph, source, sink, parent);
             updateResidualCapacities(residualGraph, source, sink, parent, pathFlow);
-            maxFlow += pathFlow;
+            maxFlow = Math.addExact(maxFlow, pathFlow);
         }
 
         return maxFlow;

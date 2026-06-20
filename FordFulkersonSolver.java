@@ -1,17 +1,18 @@
-public final class MaxFlowSolver {
+public final class FordFulkersonSolver implements MaxFlowAlgorithm {
     private final AugmentingPathFinder pathFinder;
 
-    public MaxFlowSolver() {
+    public FordFulkersonSolver() {
         this(new BreadthFirstAugmentingPathFinder());
     }
 
-    public MaxFlowSolver(AugmentingPathFinder pathFinder) {
+    public FordFulkersonSolver(AugmentingPathFinder pathFinder) {
         if (pathFinder == null) {
             throw new IllegalArgumentException("Path finder must not be null.");
         }
         this.pathFinder = pathFinder;
     }
 
+    @Override
     public MaxFlowResult solve(FlowProblem problem) {
         ResidualNetwork residualNetwork = new ResidualNetwork(problem.network());
         int maxFlow = 0;
@@ -25,13 +26,5 @@ public final class MaxFlowSolver {
             residualNetwork.augment(path.get());
             maxFlow += path.get().bottleneck();
         }
-    }
-
-    public MaxFlowResult solve(FlowNetwork network, int source, int sink) {
-        return solve(new FlowProblem(network, source, sink));
-    }
-
-    public int calculateMaxFlow(int[][] graph, int source, int sink) {
-        return solve(new FlowNetwork(graph), source, sink).getMaxFlow();
     }
 }

@@ -16,6 +16,10 @@ public final class FlowProblem {
         this.sink = sink;
     }
 
+    public static FlowProblem fromCapacities(int[][] capacities, int source, int sink) {
+        return new FlowProblem(new FlowNetwork(capacities), source, sink);
+    }
+
     public FlowNetwork network() {
         return network;
     }

@@ -1,8 +1,10 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 /**
  * Dependency-free test suite for {@link CircularQueue}.
@@ -22,16 +24,23 @@ public final class CircularQueueTest {
         newQueueIsEmpty();
         enqueueDequeuePreservesFifoOrder();
         wrapAroundKeepsOrder();
-        fullQueueRejectsEnqueue();
-        emptyQueueRejectsRemovalAndPeek();
         peekDoesNotRemove();
         clearResetsToEmptyKeepingCapacity();
-        nullElementsAreSupported();
         iteratorYieldsFrontToRear();
         iteratorIsFailFast();
         equalsIgnoresInternalAlignment();
         equalHashCodesForEqualQueues();
         toStringRendersFrontToRear();
+
+        // java.util.Queue contract
+        usableAsQueueInterface();
+        offerReturnsFalseWhenFull();
+        addThrowsWhenFull();
+        pollAndPeekReturnNullWhenEmpty();
+        removeAndElementThrowWhenEmpty();
+        elementReturnsHeadWithoutRemoving();
+        nullElementsAreRejected();
+        inheritedCollectionOperations();
 
         System.out.printf("%n%d passed, %d failed%n", passed, failed);
         if (failed > 0) {
@@ -84,22 +93,6 @@ public final class CircularQueueTest {
         check(name, q.isEmpty(), "should be empty after wrap-around drain");
     }
 
-    private static void fullQueueRejectsEnqueue() {
-        String name = "fullQueueRejectsEnqueue";
-        CircularQueue<Integer> q = new CircularQueue<>(2);
-        q.enqueue(1);
-        q.enqueue(2);
-        expectThrows(name, IllegalStateException.class, () -> q.enqueue(3));
-    }
-
-    private static void emptyQueueRejectsRemovalAndPeek() {
-        String name = "emptyQueueRejectsRemovalAndPeek";
-        CircularQueue<Integer> q = new CircularQueue<>(2);
-        expectThrows(name, NoSuchElementException.class, q::dequeue);
-        expectThrows(name, NoSuchElementException.class, q::peek);
-        expectThrows(name, NoSuchElementException.class, q::peekRear);
-    }
-
     private static void peekDoesNotRemove() {
         String name = "peekDoesNotRemove";
         CircularQueue<Integer> q = new CircularQueue<>(3);
@@ -125,16 +118,6 @@ public final class CircularQueueTest {
         checkEquals(name, 3, q.capacity());
         q.enqueue(42); // still usable after clear
         checkEquals(name, 42, q.peek());
-    }
-
-    private static void nullElementsAreSupported() {
-        String name = "nullElementsAreSupported";
-        CircularQueue<String> q = new CircularQueue<>(2);
-        q.enqueue(null);
-        q.enqueue("x");
-        checkEquals(name, 2, q.size());
-        checkEquals(name, null, q.dequeue());
-        checkEquals(name, "x", q.dequeue());
     }
 
     private static void iteratorYieldsFrontToRear() {
@@ -171,7 +154,7 @@ public final class CircularQueueTest {
         aligned.enqueue(3);
 
         CircularQueue<Integer> rotated = new CircularQueue<>(3);
-        rotated.enqueue(0);
+        rotated.enqueue(9);
         rotated.dequeue();   // advance front
         rotated.enqueue(2);
         rotated.enqueue(3);
@@ -203,6 +186,79 @@ public final class CircularQueueTest {
         q.enqueue(30);
         checkEquals(name, "[10, 20, 30]", q.toString());
         checkEquals(name, "[]", new CircularQueue<Integer>(2).toString());
+    }
+
+    // --- java.util.Queue contract -----------------------------------------
+
+    private static void usableAsQueueInterface() {
+        String name = "usableAsQueueInterface";
+        Queue<Integer> q = new CircularQueue<>(3); // referenced through the interface
+        check(name, q.offer(1), "offer should succeed with space");
+        check(name, q.offer(2), "offer should succeed with space");
+        checkEquals(name, 1, q.peek());
+        checkEquals(name, 1, q.poll());
+        checkEquals(name, 2, q.poll());
+        checkEquals(name, null, q.poll());
+    }
+
+    private static void offerReturnsFalseWhenFull() {
+        String name = "offerReturnsFalseWhenFull";
+        CircularQueue<Integer> q = new CircularQueue<>(2);
+        check(name, q.offer(1), "first offer should succeed");
+        check(name, q.offer(2), "second offer should succeed");
+        check(name, !q.offer(3), "offer should return false when full");
+        checkEquals(name, 2, q.size());
+    }
+
+    private static void addThrowsWhenFull() {
+        String name = "addThrowsWhenFull";
+        CircularQueue<Integer> q = new CircularQueue<>(2);
+        q.add(1);
+        q.add(2);
+        expectThrows(name, IllegalStateException.class, () -> q.add(3));
+        expectThrows(name, IllegalStateException.class, () -> q.enqueue(3)); // alias
+    }
+
+    private static void pollAndPeekReturnNullWhenEmpty() {
+        String name = "pollAndPeekReturnNullWhenEmpty";
+        CircularQueue<Integer> q = new CircularQueue<>(2);
+        checkEquals(name, null, q.poll());
+        checkEquals(name, null, q.peek());
+        checkEquals(name, null, q.peekRear());
+    }
+
+    private static void removeAndElementThrowWhenEmpty() {
+        String name = "removeAndElementThrowWhenEmpty";
+        CircularQueue<Integer> q = new CircularQueue<>(2);
+        expectThrows(name, NoSuchElementException.class, q::remove);
+        expectThrows(name, NoSuchElementException.class, q::element);
+        expectThrows(name, NoSuchElementException.class, q::dequeue); // alias
+    }
+
+    private static void elementReturnsHeadWithoutRemoving() {
+        String name = "elementReturnsHeadWithoutRemoving";
+        CircularQueue<Integer> q = new CircularQueue<>(3);
+        q.add(11);
+        q.add(22);
+        checkEquals(name, 11, q.element());
+        checkEquals(name, 2, q.size());
+    }
+
+    private static void nullElementsAreRejected() {
+        String name = "nullElementsAreRejected";
+        CircularQueue<String> q = new CircularQueue<>(2);
+        expectThrows(name, NullPointerException.class, () -> q.offer(null));
+        expectThrows(name, NullPointerException.class, () -> q.add(null));
+    }
+
+    private static void inheritedCollectionOperations() {
+        String name = "inheritedCollectionOperations";
+        CircularQueue<Integer> q = new CircularQueue<>(5);
+        q.addAll(List.of(1, 2, 3)); // inherited from AbstractQueue
+        check(name, q.contains(2), "contains should find an element");
+        check(name, !q.contains(99), "contains should reject a missing element");
+        checkEquals(name, 3, q.size());
+        checkEquals(name, List.of(1, 2, 3), Arrays.asList(q.toArray())); // inherited toArray
     }
 
     // --- tiny assertion harness -------------------------------------------

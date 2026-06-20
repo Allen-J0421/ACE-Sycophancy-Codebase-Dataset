@@ -11,6 +11,7 @@ public final class CountingSortTest {
         shouldSortNegativeValues();
         shouldHandleEmptyAndSingleElementArrays();
         shouldRejectNullInput();
+        shouldRejectImpossibleRanges();
         System.out.println("All counting sort checks passed.");
     }
 
@@ -21,12 +22,11 @@ public final class CountingSortTest {
         assertSortedAndUnchanged(expected, snapshot, input, CountingSort.sort(input));
     }
 
-    @SuppressWarnings("deprecation")
     private static void shouldSortNegativeValues() {
         int[] input = {4, -2, 7, 0, -2, 5};
         int[] expected = {-2, -2, 0, 4, 5, 7};
         int[] snapshot = input.clone();
-        assertSortedAndUnchanged(expected, snapshot, input, CountingSort.countSort(input));
+        assertSortedAndUnchanged(expected, snapshot, input, CountingSort.sort(input));
     }
 
     private static void shouldHandleEmptyAndSingleElementArrays() {
@@ -42,6 +42,15 @@ public final class CountingSortTest {
             CountingSort.sort(null);
             throw new AssertionError("Expected NullPointerException for null input");
         } catch (NullPointerException expected) {
+            // Expected path.
+        }
+    }
+
+    private static void shouldRejectImpossibleRanges() {
+        try {
+            CountingSort.sort(new int[] {Integer.MIN_VALUE, Integer.MAX_VALUE});
+            throw new AssertionError("Expected IllegalArgumentException for impossible range");
+        } catch (IllegalArgumentException expected) {
             // Expected path.
         }
     }

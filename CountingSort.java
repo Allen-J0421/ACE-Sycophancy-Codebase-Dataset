@@ -23,14 +23,6 @@ public final class CountingSort {
         return placeValues(values, prefixCounts, bounds.min);
     }
 
-    /**
-     * Legacy alias retained for callers that still use the original method name.
-     */
-    @Deprecated
-    public static int[] countSort(int[] values) {
-        return sort(values);
-    }
-
     private static Bounds findBounds(int[] values) {
         int min = values[0];
         int max = values[0];

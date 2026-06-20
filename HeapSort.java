@@ -8,7 +8,7 @@ public class HeapSort {
         new RangeHeap(arr, from, to).sort();
     }
 
-    static class RangeHeap {
+    private static class RangeHeap {
         private final int[] arr;
         private final int from;
         private final int size;

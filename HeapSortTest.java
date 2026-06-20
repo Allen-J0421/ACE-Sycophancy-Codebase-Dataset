@@ -2,10 +2,6 @@ import java.util.Arrays;
 
 public class HeapSortTest {
 
-    interface ThrowingRunnable {
-        void run() throws Exception;
-    }
-
     interface TestCase {
         void run();
     }
@@ -15,18 +11,6 @@ public class HeapSortTest {
             throw new AssertionError(label + ": expected " + Arrays.toString(expected)
                     + " but got " + Arrays.toString(actual));
         System.out.println("PASS: " + label);
-    }
-
-    static void assertThrows(Class<? extends Exception> type, ThrowingRunnable r, String label) {
-        try {
-            r.run();
-            throw new AssertionError(label + ": expected " + type.getSimpleName() + " but no exception was thrown");
-        } catch (Exception e) {
-            if (!type.isInstance(e))
-                throw new AssertionError(label + ": expected " + type.getSimpleName()
-                        + " but got " + e.getClass().getSimpleName());
-            System.out.println("PASS: " + label);
-        }
     }
 
     static abstract class ArraySortCase implements TestCase {
@@ -88,8 +72,12 @@ public class HeapSortTest {
         }
 
         public void run() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> HeapSort.heapSort(input, from, to), label);
+            try {
+                HeapSort.heapSort(input, from, to);
+                throw new AssertionError(label + ": expected IllegalArgumentException but no exception was thrown");
+            } catch (IllegalArgumentException e) {
+                System.out.println("PASS: " + label);
+            }
         }
     }
 

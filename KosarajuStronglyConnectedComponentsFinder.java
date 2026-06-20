@@ -4,29 +4,27 @@ import java.util.List;
 
 public final class KosarajuStronglyConnectedComponentsFinder
     implements StronglyConnectedComponentsFinder {
-    private final DepthFirstTraversal traversal = new DepthFirstTraversal();
-
     @Override
     public StronglyConnectedComponentsResult findComponents(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("Graph must not be null.");
         }
 
-        Deque<Integer> finishingOrder = traversal.buildFinishingOrder(graph);
+        GraphTraversal forwardTraversal = GraphTraversal.forGraph(graph);
+        Deque<Integer> finishingOrder = forwardTraversal.buildFinishingOrder();
 
-        Graph reversedGraph = graph.reverse();
-        boolean[] visited = new boolean[graph.vertexCount()];
+        GraphTraversal reversedTraversal = GraphTraversal.forGraph(graph.reverse());
         List<StronglyConnectedComponent> components = new ArrayList<>();
 
         while (!finishingOrder.isEmpty()) {
             int vertex = finishingOrder.pop();
-            if (visited[vertex]) {
+            if (reversedTraversal.hasVisited(vertex)) {
                 continue;
             }
 
             components.add(
                 StronglyConnectedComponent.fromVertices(
-                    traversal.collectReachableVertices(vertex, reversedGraph, visited)
+                    reversedTraversal.collectReachableVerticesFrom(vertex)
                 )
             );
         }

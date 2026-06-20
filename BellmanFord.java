@@ -22,12 +22,13 @@ public final class BellmanFord {
 
     public static Result computeShortestPaths(Graph graph, int source) {
         validateSource(source, graph.vertices());
+        Edge[] edges = graph.edgeArray();
         int[] distances = initializeDistances(graph.vertices(), source);
 
         for (int pass = 0; pass < graph.vertices() - 1; pass++) {
             boolean updated = false;
 
-            for (Edge edge : graph.edges()) {
+            for (Edge edge : edges) {
                 updated |= relax(edge, distances);
             }
 
@@ -36,7 +37,7 @@ public final class BellmanFord {
             }
         }
 
-        if (hasNegativeCycle(graph.edges(), distances)) {
+        if (hasNegativeCycle(edges, distances)) {
             return Result.negativeCycle();
         }
 
@@ -115,7 +116,9 @@ public final class BellmanFord {
                 if (edge == null || edge.length != EDGE_WIDTH) {
                     throw new IllegalArgumentException("each edge must contain exactly 3 integers");
                 }
-                edges[i] = Edge.of(edge[0], edge[1], edge[2], vertices);
+                Edge candidate = Edge.of(edge[0], edge[1], edge[2]);
+                validateEdge(candidate, vertices);
+                edges[i] = candidate;
             }
             return new Graph(vertices, edges);
         }
@@ -132,8 +135,7 @@ public final class BellmanFord {
                 if (edge == null) {
                     throw new IllegalArgumentException("edges must not contain null entries");
                 }
-                validateVertex(edge.from, vertices, "edge start");
-                validateVertex(edge.to, vertices, "edge end");
+                validateEdge(edge, vertices);
                 normalizedEdges[i] = edge;
             }
             return new Graph(vertices, normalizedEdges);
@@ -145,6 +147,10 @@ public final class BellmanFord {
 
         public Edge[] edges() {
             return edges.clone();
+        }
+
+        private Edge[] edgeArray() {
+            return edges;
         }
     }
 
@@ -159,9 +165,7 @@ public final class BellmanFord {
             this.weight = weight;
         }
 
-        public static Edge of(int from, int to, int weight, int vertices) {
-            validateVertex(from, vertices, "edge start");
-            validateVertex(to, vertices, "edge end");
+        public static Edge of(int from, int to, int weight) {
             return new Edge(from, to, weight);
         }
 
@@ -202,5 +206,10 @@ public final class BellmanFord {
         public int[] distances() {
             return distances.clone();
         }
+    }
+
+    private static void validateEdge(Edge edge, int vertices) {
+        validateVertex(edge.from, vertices, "edge start");
+        validateVertex(edge.to, vertices, "edge end");
     }
 }

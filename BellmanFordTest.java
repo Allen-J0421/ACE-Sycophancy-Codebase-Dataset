@@ -14,11 +14,11 @@ final class BellmanFordTest {
     private static void testShortestPaths() {
         BellmanFord.Graph graph = BellmanFord.Graph.of(
             5,
-            BellmanFord.Edge.of(1, 3, 2, 5),
-            BellmanFord.Edge.of(4, 3, -1, 5),
-            BellmanFord.Edge.of(2, 4, 1, 5),
-            BellmanFord.Edge.of(1, 2, 1, 5),
-            BellmanFord.Edge.of(0, 1, 5, 5)
+            BellmanFord.Edge.of(1, 3, 2),
+            BellmanFord.Edge.of(4, 3, -1),
+            BellmanFord.Edge.of(2, 4, 1),
+            BellmanFord.Edge.of(1, 2, 1),
+            BellmanFord.Edge.of(0, 1, 5)
         );
 
         BellmanFord.Result result = BellmanFord.computeShortestPaths(graph, 0);
@@ -29,9 +29,9 @@ final class BellmanFordTest {
     private static void testNegativeCycleDetection() {
         BellmanFord.Graph graph = BellmanFord.Graph.of(
             3,
-            BellmanFord.Edge.of(0, 1, 1, 3),
-            BellmanFord.Edge.of(1, 2, -1, 3),
-            BellmanFord.Edge.of(2, 0, -1, 3)
+            BellmanFord.Edge.of(0, 1, 1),
+            BellmanFord.Edge.of(1, 2, -1),
+            BellmanFord.Edge.of(2, 0, -1)
         );
 
         BellmanFord.Result result = BellmanFord.computeShortestPaths(graph, 0);

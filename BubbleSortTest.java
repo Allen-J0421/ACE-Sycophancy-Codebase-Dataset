@@ -8,57 +8,52 @@ public final class BubbleSortTest {
         verifiesSortsUnorderedValues();
         verifiesLeavesSortedValuesUntouched();
         verifiesHandlesDuplicates();
+        verifiesHandlesNegativeValues();
         verifiesHandlesSingleElementValues();
         verifiesHandlesEmptyValues();
         verifiesFormatsArrayForDisplay();
+        verifiesFormatsEmptyArrayForDisplay();
         verifiesSortRejectsNullValues();
         verifiesDisplayStringRejectsNullValues();
     }
 
     private static void verifiesSortsUnorderedValues() {
-        int[] values = {64, 34, 25, 12, 22, 11, 90};
-
-        BubbleSort.sort(values);
-
-        assertArrayEquals(new int[] {11, 12, 22, 25, 34, 64, 90}, values);
+        assertSortedResult(
+            new int[] {64, 34, 25, 12, 22, 11, 90},
+            new int[] {11, 12, 22, 25, 34, 64, 90}
+        );
     }
 
     private static void verifiesLeavesSortedValuesUntouched() {
-        int[] values = {1, 2, 3, 4, 5};
-
-        BubbleSort.sort(values);
-
-        assertArrayEquals(new int[] {1, 2, 3, 4, 5}, values);
+        assertSortedResult(new int[] {1, 2, 3, 4, 5}, new int[] {1, 2, 3, 4, 5});
     }
 
     private static void verifiesHandlesDuplicates() {
-        int[] values = {3, 1, 2, 3, 1};
+        assertSortedResult(new int[] {3, 1, 2, 3, 1}, new int[] {1, 1, 2, 3, 3});
+    }
 
-        BubbleSort.sort(values);
-
-        assertArrayEquals(new int[] {1, 1, 2, 3, 3}, values);
+    private static void verifiesHandlesNegativeValues() {
+        assertSortedResult(new int[] {4, -2, 0, -7, 3}, new int[] {-7, -2, 0, 3, 4});
     }
 
     private static void verifiesHandlesSingleElementValues() {
-        int[] values = {42};
-
-        BubbleSort.sort(values);
-
-        assertArrayEquals(new int[] {42}, values);
+        assertSortedResult(new int[] {42}, new int[] {42});
     }
 
     private static void verifiesHandlesEmptyValues() {
-        int[] values = {};
-
-        BubbleSort.sort(values);
-
-        assertArrayEquals(new int[] {}, values);
+        assertSortedResult(new int[] {}, new int[] {});
     }
 
     private static void verifiesFormatsArrayForDisplay() {
         String output = BubbleSort.toDisplayString(new int[] {7, 8, 9});
 
         assertEquals("7 8 9", output);
+    }
+
+    private static void verifiesFormatsEmptyArrayForDisplay() {
+        String output = BubbleSort.toDisplayString(new int[] {});
+
+        assertEquals("", output);
     }
 
     private static void verifiesSortRejectsNullValues() {
@@ -75,6 +70,11 @@ public final class BubbleSortTest {
                 "Expected " + Arrays.toString(expected) + " but was " + Arrays.toString(actual)
             );
         }
+    }
+
+    private static void assertSortedResult(int[] input, int[] expected) {
+        BubbleSort.sort(input);
+        assertArrayEquals(expected, input);
     }
 
     private static void assertEquals(String expected, String actual) {

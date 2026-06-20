@@ -10,21 +10,12 @@ public final class BubbleSort {
     public static void sort(int[] values) {
         Objects.requireNonNull(values, "values");
 
-        if (values.length < 2) {
+        if (hasFewerThanTwoValues(values)) {
             return;
         }
 
-        for (int i = 0; i < values.length - 1; i++) {
-            boolean swapped = false;
-
-            for (int j = 0; j < values.length - i - 1; j++) {
-                if (values[j] > values[j + 1]) {
-                    swap(values, j, j + 1);
-                    swapped = true;
-                }
-            }
-
-            if (!swapped) {
+        for (int lastUnsortedIndex = values.length - 1; lastUnsortedIndex > 0; lastUnsortedIndex--) {
+            if (!bubbleLargestValueToEnd(values, lastUnsortedIndex)) {
                 return;
             }
         }
@@ -47,6 +38,23 @@ public final class BubbleSort {
         }
 
         return output.toString();
+    }
+
+    private static boolean hasFewerThanTwoValues(int[] values) {
+        return values.length < 2;
+    }
+
+    private static boolean bubbleLargestValueToEnd(int[] values, int lastUnsortedIndex) {
+        boolean swapped = false;
+
+        for (int currentIndex = 0; currentIndex < lastUnsortedIndex; currentIndex++) {
+            if (values[currentIndex] > values[currentIndex + 1]) {
+                swap(values, currentIndex, currentIndex + 1);
+                swapped = true;
+            }
+        }
+
+        return swapped;
     }
 
     private static void swap(int[] values, int leftIndex, int rightIndex) {

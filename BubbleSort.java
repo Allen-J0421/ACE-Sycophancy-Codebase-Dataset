@@ -1,6 +1,8 @@
 import java.util.Objects;
 
 public final class BubbleSort {
+    private static final char VALUE_SEPARATOR = ' ';
+
     private BubbleSort() {
         // Utility class.
     }
@@ -39,21 +41,12 @@ public final class BubbleSort {
 
         for (int value : values) {
             if (!output.isEmpty()) {
-                output.append(' ');
+                output.append(VALUE_SEPARATOR);
             }
             output.append(value);
         }
 
         return output.toString();
-    }
-
-    public static void main(String[] args) {
-        int[] values = {64, 34, 25, 12, 22, 11, 90};
-
-        sort(values);
-
-        System.out.println("Sorted array: ");
-        printArray(values);
     }
 
     private static void swap(int[] values, int leftIndex, int rightIndex) {

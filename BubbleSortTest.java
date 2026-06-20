@@ -8,7 +8,11 @@ public final class BubbleSortTest {
         verifiesSortsUnorderedValues();
         verifiesLeavesSortedValuesUntouched();
         verifiesHandlesDuplicates();
+        verifiesHandlesSingleElementValues();
+        verifiesHandlesEmptyValues();
         verifiesFormatsArrayForDisplay();
+        verifiesSortRejectsNullValues();
+        verifiesDisplayStringRejectsNullValues();
     }
 
     private static void verifiesSortsUnorderedValues() {
@@ -35,10 +39,34 @@ public final class BubbleSortTest {
         assertArrayEquals(new int[] {1, 1, 2, 3, 3}, values);
     }
 
+    private static void verifiesHandlesSingleElementValues() {
+        int[] values = {42};
+
+        BubbleSort.sort(values);
+
+        assertArrayEquals(new int[] {42}, values);
+    }
+
+    private static void verifiesHandlesEmptyValues() {
+        int[] values = {};
+
+        BubbleSort.sort(values);
+
+        assertArrayEquals(new int[] {}, values);
+    }
+
     private static void verifiesFormatsArrayForDisplay() {
         String output = BubbleSort.toDisplayString(new int[] {7, 8, 9});
 
         assertEquals("7 8 9", output);
+    }
+
+    private static void verifiesSortRejectsNullValues() {
+        assertThrowsNullPointer(() -> BubbleSort.sort(null));
+    }
+
+    private static void verifiesDisplayStringRejectsNullValues() {
+        assertThrowsNullPointer(() -> BubbleSort.toDisplayString(null));
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual) {
@@ -53,5 +81,15 @@ public final class BubbleSortTest {
         if (!expected.equals(actual)) {
             throw new AssertionError("Expected \"" + expected + "\" but was \"" + actual + "\"");
         }
+    }
+
+    private static void assertThrowsNullPointer(Runnable action) {
+        try {
+            action.run();
+        } catch (NullPointerException expected) {
+            return;
+        }
+
+        throw new AssertionError("Expected NullPointerException");
     }
 }

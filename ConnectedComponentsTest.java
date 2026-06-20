@@ -121,7 +121,7 @@ public final class ConnectedComponentsTest {
         }
 
         @Override
-        public List<Integer> neighbors(int vertex) {
+        public Iterable<Integer> neighbors(int vertex) {
             return adjacencyList.get(vertex);
         }
     }

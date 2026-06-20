@@ -5,6 +5,7 @@ import java.util.PriorityQueue;
 
 class HuffmanCoding {
 
+    private static final int INTERNAL_NODE_SYMBOL_INDEX = -1;
     private static final String SINGLE_SYMBOL_CODE = "0";
 
     private static final Comparator<Node> NODE_ORDER = Comparator
@@ -32,7 +33,7 @@ class HuffmanCoding {
         private Node(Node left, Node right) {
             this.frequency = left.frequency + right.frequency;
             this.firstSymbolIndex = Math.min(left.firstSymbolIndex, right.firstSymbolIndex);
-            this.symbolIndex = -1;
+            this.symbolIndex = INTERNAL_NODE_SYMBOL_INDEX;
             this.left = left;
             this.right = right;
         }
@@ -47,29 +48,13 @@ class HuffmanCoding {
     }
 
     static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
-        validateInput(symbols, frequencies);
-
-        if (symbols.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        Node root = buildTree(frequencies);
-        ArrayList<String> codes = new ArrayList<>(symbols.length());
-        collectLeafCodes(root, new StringBuilder(), (leaf, code) -> codes.add(code));
-        return codes;
+        Node root = buildTreeFor(symbols, frequencies);
+        return collectCodesInTraversalOrder(root, symbols.length());
     }
 
     static ArrayList<String> huffmanCodesBySymbol(String symbols, int[] frequencies) {
-        validateInput(symbols, frequencies);
-
-        if (symbols.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        Node root = buildTree(frequencies);
-        ArrayList<String> codes = createEmptyCodeList(symbols.length());
-        collectLeafCodes(root, new StringBuilder(), (leaf, code) -> codes.set(leaf.symbolIndex, code));
-        return codes;
+        Node root = buildTreeFor(symbols, frequencies);
+        return collectCodesBySymbolOrder(root, symbols.length());
     }
 
     private static void validateInput(String symbols, int[] frequencies) {
@@ -79,6 +64,16 @@ class HuffmanCoding {
         if (symbols.length() != frequencies.length) {
             throw new IllegalArgumentException("Input string and frequency array must have the same length");
         }
+    }
+
+    private static Node buildTreeFor(String symbols, int[] frequencies) {
+        validateInput(symbols, frequencies);
+
+        if (symbols.isEmpty()) {
+            return null;
+        }
+
+        return buildTree(frequencies);
     }
 
     private static Node buildTree(int[] frequencies) {
@@ -105,6 +100,18 @@ class HuffmanCoding {
         Node left = nodes.poll();
         Node right = nodes.poll();
         return new Node(left, right);
+    }
+
+    private static ArrayList<String> collectCodesInTraversalOrder(Node root, int symbolCount) {
+        ArrayList<String> codes = new ArrayList<>(symbolCount);
+        collectLeafCodes(root, new StringBuilder(), (leaf, code) -> codes.add(code));
+        return codes;
+    }
+
+    private static ArrayList<String> collectCodesBySymbolOrder(Node root, int symbolCount) {
+        ArrayList<String> codes = createEmptyCodeList(symbolCount);
+        collectLeafCodes(root, new StringBuilder(), (leaf, code) -> codes.set(leaf.symbolIndex, code));
+        return codes;
     }
 
     private static ArrayList<String> createEmptyCodeList(int size) {

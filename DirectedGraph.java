@@ -23,6 +23,14 @@ final class DirectedGraph {
         return graph.build();
     }
 
+    public static DirectedGraph fromEdges(int vertexCount, List<DirectedEdge> edges) {
+        DirectedGraphBuilder graph = builder(vertexCount);
+        for (DirectedEdge edge : edges) {
+            graph.addEdge(edge);
+        }
+        return graph.build();
+    }
+
     public boolean hasCycle() {
         return CycleDetector.hasCycle(this);
     }

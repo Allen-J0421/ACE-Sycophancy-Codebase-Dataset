@@ -1,6 +1,12 @@
 import java.util.List;
 
 public final class DetectCycleDirectedGraph {
+    private static final int SAMPLE_VERTEX_COUNT = 4;
+    private static final List<DirectedEdge> SAMPLE_EDGES = List.of(
+            new DirectedEdge(0, 1),
+            new DirectedEdge(1, 2),
+            new DirectedEdge(2, 0),
+            new DirectedEdge(2, 3));
 
     private DetectCycleDirectedGraph() {
     }
@@ -14,12 +20,7 @@ public final class DetectCycleDirectedGraph {
     }
 
     private static DirectedGraph createSampleGraph() {
-        return DirectedGraph.builder(4)
-                .addEdge(0, 1)
-                .addEdge(1, 2)
-                .addEdge(2, 0)
-                .addEdge(2, 3)
-                .build();
+        return DirectedGraph.fromEdges(SAMPLE_VERTEX_COUNT, SAMPLE_EDGES);
     }
 
     public static void main(String[] args) {

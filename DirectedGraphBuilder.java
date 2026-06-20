@@ -26,6 +26,10 @@ final class DirectedGraphBuilder {
         return this;
     }
 
+    DirectedGraphBuilder addEdge(DirectedEdge edge) {
+        return addEdge(edge.source(), edge.destination());
+    }
+
     DirectedGraph build() {
         List<List<Integer>> immutableAdjacencyList = new ArrayList<>(adjacencyList.size());
         for (List<Integer> neighbors : adjacencyList) {

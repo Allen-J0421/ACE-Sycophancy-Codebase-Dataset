@@ -3,11 +3,11 @@ import java.util.Arrays;
 import java.util.Queue;
 
 public final class MaxFlowSolver {
-    public int calculateMaxFlow(int[][] graph, int source, int sink) {
-        validateGraph(graph, source, sink);
+    public MaxFlowResult solve(FlowNetwork network, int source, int sink) {
+        validateVertices(network, source, sink);
 
-        int[][] residualGraph = copyGraph(graph);
-        int[] parent = new int[graph.length];
+        int[][] residualGraph = network.copyCapacities();
+        int[] parent = new int[network.size()];
         int maxFlow = 0;
 
         while (findAugmentingPath(residualGraph, source, sink, parent)) {
@@ -16,7 +16,11 @@ public final class MaxFlowSolver {
             maxFlow += pathFlow;
         }
 
-        return maxFlow;
+        return new MaxFlowResult(maxFlow, residualGraph);
+    }
+
+    public int calculateMaxFlow(int[][] graph, int source, int sink) {
+        return solve(new FlowNetwork(graph), source, sink).getMaxFlow();
     }
 
     private boolean findAugmentingPath(int[][] residualGraph, int source, int sink, int[] parent) {
@@ -67,24 +71,8 @@ public final class MaxFlowSolver {
         }
     }
 
-    private int[][] copyGraph(int[][] graph) {
-        int[][] residualGraph = new int[graph.length][graph.length];
-
-        for (int row = 0; row < graph.length; row++) {
-            if (graph[row].length != graph.length) {
-                throw new IllegalArgumentException("Graph must be a square adjacency matrix.");
-            }
-            System.arraycopy(graph[row], 0, residualGraph[row], 0, graph.length);
-        }
-
-        return residualGraph;
-    }
-
-    private void validateGraph(int[][] graph, int source, int sink) {
-        if (graph == null || graph.length == 0) {
-            throw new IllegalArgumentException("Graph must not be empty.");
-        }
-        if (source < 0 || source >= graph.length || sink < 0 || sink >= graph.length) {
+    private void validateVertices(FlowNetwork network, int source, int sink) {
+        if (source < 0 || source >= network.size() || sink < 0 || sink >= network.size()) {
             throw new IllegalArgumentException("Source and sink must be valid vertex indices.");
         }
     }

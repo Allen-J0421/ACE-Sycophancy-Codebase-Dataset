@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-class MST {
+class PrimMST {
     private static final int START_VERTEX = 0;
     private static final int NO_EDGE = 0;
 
@@ -17,6 +17,19 @@ class MST {
         }
 
         return minIndex;
+    }
+
+    private static void validateGraph(int[][] graph) {
+        if (graph == null || graph.length == 0) {
+            throw new IllegalArgumentException("Graph must contain at least one vertex");
+        }
+
+        final int vertexCount = graph.length;
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            if (graph[vertex] == null || graph[vertex].length != vertexCount) {
+                throw new IllegalArgumentException("Graph must be a non-null square adjacency matrix");
+            }
+        }
     }
 
     private static void initializeState(int[] key, boolean[] mstSet) {
@@ -45,6 +58,8 @@ class MST {
 
     static void primMST(int[][] graph)
     {
+        validateGraph(graph);
+
         final int vertexCount = graph.length;
         int[] parent = new int[vertexCount];
         int[] key = new int[vertexCount];

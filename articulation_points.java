@@ -12,10 +12,7 @@ class ArticulationPoints {
         static Graph fromEdges(int vertexCount, int[][] edges) {
             validateVertexCount(vertexCount);
 
-            ArrayList<ArrayList<Integer>> adjacencyList = new ArrayList<>(vertexCount);
-            for (int vertex = 0; vertex < vertexCount; vertex++) {
-                adjacencyList.add(new ArrayList<>());
-            }
+            ArrayList<ArrayList<Integer>> adjacencyList = buildEmptyAdjacencyList(vertexCount);
             if (edges != null) {
                 for (int[] edge : edges) {
                     validateEdge(edge, vertexCount);
@@ -94,6 +91,19 @@ class ArticulationPoints {
             if (vertex < 0 || vertex >= vertexCount) {
                 throw new IllegalArgumentException("Vertex must be within range [0, vertexCount)");
             }
+        }
+
+        private static ArrayList<ArrayList<Integer>> buildEmptyAdjacencyList(int vertexCount) {
+            ArrayList<ArrayList<Integer>> adjacencyList = new ArrayList<>(vertexCount);
+            for (int vertex = 0; vertex < vertexCount; vertex++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+            return adjacencyList;
+        }
+
+        private static void addUndirectedEdge(ArrayList<ArrayList<Integer>> adjacencyList, int from, int to) {
+            adjacencyList.get(from).add(to);
+            adjacencyList.get(to).add(from);
         }
 
         private static final class TarjanFinder {
@@ -189,16 +199,14 @@ class ArticulationPoints {
             {3, 4}
         };
 
-        ArrayList<Integer> points = articulationPoints(vertexCount, edges);
+        System.out.println(formatPoints(articulationPoints(vertexCount, edges)));
+    }
+
+    private static String formatPoints(ArrayList<Integer> points) {
         StringBuilder output = new StringBuilder();
         for (int point : points) {
             output.append(point).append(' ');
         }
-        System.out.println(output);
-    }
-
-    private static void addUndirectedEdge(ArrayList<ArrayList<Integer>> adjacencyList, int from, int to) {
-        adjacencyList.get(from).add(to);
-        adjacencyList.get(to).add(from);
+        return output.toString();
     }
 }

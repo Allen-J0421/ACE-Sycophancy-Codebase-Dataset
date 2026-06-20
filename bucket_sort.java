@@ -15,6 +15,7 @@ public class Main {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void bucketSort(float[] arr) {
         if (arr == null || arr.length == 0) {
             return;

@@ -14,6 +14,7 @@ final class GraphComponentFinder {
         Objects.requireNonNull(graph, "graph");
 
         int vertexCount = graph.vertexCount();
+        validateVertexCount(vertexCount);
         boolean[] visited = new boolean[vertexCount];
         List<List<Integer>> components = new ArrayList<>();
 
@@ -41,6 +42,7 @@ final class GraphComponentFinder {
             component.add(currentVertex);
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
+                validateNeighborVertex(neighbor, graph.vertexCount());
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
                     pendingVertices.add(neighbor);
@@ -49,5 +51,17 @@ final class GraphComponentFinder {
         }
 
         return Collections.unmodifiableList(component);
+    }
+
+    private static void validateVertexCount(int vertexCount) {
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("Vertex count must be non-negative.");
+        }
+    }
+
+    private static void validateNeighborVertex(int vertex, int vertexCount) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException("Neighbor index out of bounds: " + vertex);
+        }
     }
 }

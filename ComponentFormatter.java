@@ -20,8 +20,12 @@ final class ComponentFormatter {
     }
 
     private static void appendComponent(StringBuilder output, List<Integer> component) {
-        for (int vertex : component) {
-            output.append(vertex).append(' ');
+        for (int vertexIndex = 0; vertexIndex < component.size(); vertexIndex++) {
+            if (vertexIndex > 0) {
+                output.append(' ');
+            }
+
+            output.append(component.get(vertexIndex));
         }
     }
 }

@@ -3,9 +3,11 @@ import java.util.Collections;
 import java.util.List;
 
 public final class DirectedGraph implements Graph {
+    private final List<Integer> vertices;
     private final List<List<Integer>> adjacency;
 
-    private DirectedGraph(List<List<Integer>> adjacency) {
+    private DirectedGraph(List<Integer> vertices, List<List<Integer>> adjacency) {
+        this.vertices = vertices;
         this.adjacency = adjacency;
     }
 
@@ -18,6 +20,7 @@ public final class DirectedGraph implements Graph {
             throw new IllegalArgumentException("Edges must not be null.");
         }
 
+        List<Integer> vertices = createVertices(vertexCount);
         List<List<Integer>> adjacency = createEmptyAdjacency(vertexCount);
 
         for (Edge edge : edges) {
@@ -30,12 +33,17 @@ public final class DirectedGraph implements Graph {
             adjacency.get(from).add(to);
         }
 
-        return new DirectedGraph(freeze(adjacency));
+        return new DirectedGraph(vertices, freeze(adjacency));
     }
 
     @Override
     public int vertexCount() {
-        return adjacency.size();
+        return vertices.size();
+    }
+
+    @Override
+    public List<Integer> vertices() {
+        return vertices;
     }
 
     @Override
@@ -45,16 +53,21 @@ public final class DirectedGraph implements Graph {
     }
 
     @Override
+    public boolean containsVertex(int vertex) {
+        return isValidVertex(vertex, vertexCount());
+    }
+
+    @Override
     public DirectedGraph reverse() {
         List<List<Integer>> reversedAdjacency = createEmptyAdjacency(vertexCount());
 
-        for (int vertex = 0; vertex < vertexCount(); vertex++) {
+        for (int vertex : vertices) {
             for (int neighbor : neighborsOf(vertex)) {
                 reversedAdjacency.get(neighbor).add(vertex);
             }
         }
 
-        return new DirectedGraph(freeze(reversedAdjacency));
+        return new DirectedGraph(vertices, freeze(reversedAdjacency));
     }
 
     private static List<List<Integer>> createEmptyAdjacency(int vertexCount) {
@@ -79,6 +92,14 @@ public final class DirectedGraph implements Graph {
         return Collections.unmodifiableList(immutableAdjacency);
     }
 
+    private static List<Integer> createVertices(int vertexCount) {
+        List<Integer> vertices = new ArrayList<>(vertexCount);
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            vertices.add(vertex);
+        }
+        return Collections.unmodifiableList(vertices);
+    }
+
     private static void validateEdge(Edge edge) {
         if (edge == null) {
             throw new IllegalArgumentException("Edges must not contain null values.");
@@ -86,10 +107,14 @@ public final class DirectedGraph implements Graph {
     }
 
     private static void validateVertex(int vertex, int vertexCount) {
-        if (vertex < 0 || vertex >= vertexCount) {
+        if (!isValidVertex(vertex, vertexCount)) {
             throw new IllegalArgumentException(
                 "Vertex " + vertex + " is out of bounds for graph size " + vertexCount + '.'
             );
         }
+    }
+
+    private static boolean isValidVertex(int vertex, int vertexCount) {
+        return vertex >= 0 && vertex < vertexCount;
     }
 }

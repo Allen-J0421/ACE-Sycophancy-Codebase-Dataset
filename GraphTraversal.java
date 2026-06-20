@@ -1,11 +1,13 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 final class GraphTraversal {
     private final Graph graph;
-    private final boolean[] visited;
+    private final Set<Integer> visited;
 
     private GraphTraversal(Graph graph) {
         if (graph == null) {
@@ -13,7 +15,7 @@ final class GraphTraversal {
         }
 
         this.graph = graph;
-        this.visited = new boolean[graph.vertexCount()];
+        this.visited = new HashSet<>();
     }
 
     static GraphTraversal forGraph(Graph graph) {
@@ -23,7 +25,7 @@ final class GraphTraversal {
     Deque<Integer> buildFinishingOrder() {
         Deque<Integer> finishingOrder = new ArrayDeque<>();
 
-        for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
+        for (int vertex : graph.vertices()) {
             if (isUnvisited(vertex)) {
                 traverseForFinishingOrder(vertex, finishingOrder);
             }
@@ -33,13 +35,15 @@ final class GraphTraversal {
     }
 
     List<Integer> collectReachableVerticesFrom(int startVertex) {
+        validateVertex(startVertex);
+
         List<Integer> visitedVertices = new ArrayList<>();
         traverseReachableVertices(startVertex, visitedVertices);
         return visitedVertices;
     }
 
     boolean hasVisited(int vertex) {
-        return visited[vertex];
+        return visited.contains(vertex);
     }
 
     boolean isUnvisited(int vertex) {
@@ -47,7 +51,7 @@ final class GraphTraversal {
     }
 
     private void traverseForFinishingOrder(int vertex, Deque<Integer> finishingOrder) {
-        visited[vertex] = true;
+        visited.add(vertex);
 
         for (int neighbor : graph.neighborsOf(vertex)) {
             if (isUnvisited(neighbor)) {
@@ -59,13 +63,19 @@ final class GraphTraversal {
     }
 
     private void traverseReachableVertices(int vertex, List<Integer> visitedVertices) {
-        visited[vertex] = true;
+        visited.add(vertex);
         visitedVertices.add(vertex);
 
         for (int neighbor : graph.neighborsOf(vertex)) {
             if (isUnvisited(neighbor)) {
                 traverseReachableVertices(neighbor, visitedVertices);
             }
+        }
+    }
+
+    private void validateVertex(int vertex) {
+        if (!graph.containsVertex(vertex)) {
+            throw new IllegalArgumentException("Vertex " + vertex + " is not part of the graph.");
         }
     }
 }

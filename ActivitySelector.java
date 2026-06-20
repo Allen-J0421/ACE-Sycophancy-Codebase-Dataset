@@ -2,14 +2,14 @@ final class ActivitySelector {
     private ActivitySelector() {
     }
 
-    static int maxCompatibleActivities(int[] startTimes, int[] finishTimes) {
+    static int maximumCompatibleActivities(int[] startTimes, int[] finishTimes) {
         ActivitySchedule schedule = ActivitySchedule.from(startTimes, finishTimes);
 
         if (schedule.isEmpty()) {
             return 0;
         }
 
-        return countCompatibleActivities(schedule.activitiesByFinishTime());
+        return countCompatibleActivities(schedule.activitiesSortedByFinishTime());
     }
 
     private static int countCompatibleActivities(Activity[] activities) {

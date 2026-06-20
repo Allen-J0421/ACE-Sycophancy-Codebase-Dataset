@@ -7,7 +7,7 @@ public final class ActivitySelection {
     }
 
     public static int maximumCompatibleActivities(int[] startTimes, int[] finishTimes) {
-        return ActivitySelector.maxCompatibleActivities(startTimes, finishTimes);
+        return ActivitySelector.maximumCompatibleActivities(startTimes, finishTimes);
     }
 
     public static void main(String[] args) {

@@ -23,7 +23,7 @@ final class ActivitySchedule {
         return activities.length == 0;
     }
 
-    Activity[] activitiesByFinishTime() {
+    Activity[] activitiesSortedByFinishTime() {
         Activity[] sortedActivities = Arrays.copyOf(activities, activities.length);
         Arrays.sort(sortedActivities, Activity.BY_FINISH_TIME);
         return sortedActivities;

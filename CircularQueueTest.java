@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,17 +21,16 @@ public final class CircularQueueTest {
     private static int failed = 0;
 
     public static void main(String[] args) {
+        // Core ring-buffer behaviour
         constructorRejectsNonPositiveCapacity();
         newQueueIsEmpty();
         enqueueDequeuePreservesFifoOrder();
         wrapAroundKeepsOrder();
-        peekDoesNotRemove();
         clearResetsToEmptyKeepingCapacity();
-        iteratorYieldsFrontToRear();
-        iteratorIsFailFast();
         equalsIgnoresInternalAlignment();
         equalHashCodesForEqualQueues();
         toStringRendersFrontToRear();
+        nullElementsAreRejected();
 
         // java.util.Queue contract
         usableAsQueueInterface();
@@ -38,15 +38,33 @@ public final class CircularQueueTest {
         addThrowsWhenFull();
         pollAndPeekReturnNullWhenEmpty();
         removeAndElementThrowWhenEmpty();
-        elementReturnsHeadWithoutRemoving();
-        nullElementsAreRejected();
         inheritedCollectionOperations();
+
+        // java.util.Deque contract
+        usableAsDeque();
+        bothEndsInsertAndRemove();
+        offerFirstLastReturnFalseWhenFull();
+        getFirstLastThrowWhenEmpty();
+        usableAsStack();
+        removeFirstOccurrenceRemovesFrontMost();
+        removeLastOccurrenceRemovesRearMost();
+        removeObjectDelegatesToFirstOccurrence();
+        descendingIteratorGoesRearToFront();
+
+        // Iteration
+        iteratorYieldsFrontToRear();
+        iteratorIsFailFast();
+        iteratorRemoveDeletesCurrent();
+        descendingIteratorRemoveDeletesCurrent();
+        bulkRemovalViaIterator();
 
         System.out.printf("%n%d passed, %d failed%n", passed, failed);
         if (failed > 0) {
             System.exit(1);
         }
     }
+
+    // --- core -------------------------------------------------------------
 
     private static void constructorRejectsNonPositiveCapacity() {
         String name = "constructorRejectsNonPositiveCapacity";
@@ -93,20 +111,6 @@ public final class CircularQueueTest {
         check(name, q.isEmpty(), "should be empty after wrap-around drain");
     }
 
-    private static void peekDoesNotRemove() {
-        String name = "peekDoesNotRemove";
-        CircularQueue<Integer> q = new CircularQueue<>(3);
-        q.enqueue(7);
-        q.enqueue(8);
-        q.enqueue(9);
-        checkEquals(name, 7, q.peek());
-        checkEquals(name, 9, q.peekRear());
-        checkEquals(name, 3, q.size());
-        // Peeking again returns the same values.
-        checkEquals(name, 7, q.peek());
-        checkEquals(name, 9, q.peekRear());
-    }
-
     private static void clearResetsToEmptyKeepingCapacity() {
         String name = "clearResetsToEmptyKeepingCapacity";
         CircularQueue<Integer> q = new CircularQueue<>(3);
@@ -117,33 +121,7 @@ public final class CircularQueueTest {
         checkEquals(name, 0, q.size());
         checkEquals(name, 3, q.capacity());
         q.enqueue(42); // still usable after clear
-        checkEquals(name, 42, q.peek());
-    }
-
-    private static void iteratorYieldsFrontToRear() {
-        String name = "iteratorYieldsFrontToRear";
-        CircularQueue<Integer> q = new CircularQueue<>(3);
-        q.enqueue(1);
-        q.enqueue(2);
-        q.dequeue();
-        q.enqueue(3);
-        q.enqueue(4); // contents front->rear: 2, 3, 4
-        List<Integer> seen = new ArrayList<>();
-        for (Integer v : q) {
-            seen.add(v);
-        }
-        checkEquals(name, List.of(2, 3, 4), seen);
-    }
-
-    private static void iteratorIsFailFast() {
-        String name = "iteratorIsFailFast";
-        CircularQueue<Integer> q = new CircularQueue<>(3);
-        q.enqueue(1);
-        q.enqueue(2);
-        Iterator<Integer> it = q.iterator();
-        it.next();
-        q.enqueue(3); // structural modification
-        expectThrows(name, ConcurrentModificationException.class, it::next);
+        checkEquals(name, 42, q.peekFirst());
     }
 
     private static void equalsIgnoresInternalAlignment() {
@@ -188,6 +166,15 @@ public final class CircularQueueTest {
         checkEquals(name, "[]", new CircularQueue<Integer>(2).toString());
     }
 
+    private static void nullElementsAreRejected() {
+        String name = "nullElementsAreRejected";
+        CircularQueue<String> q = new CircularQueue<>(2);
+        expectThrows(name, NullPointerException.class, () -> q.offer(null));
+        expectThrows(name, NullPointerException.class, () -> q.add(null));
+        expectThrows(name, NullPointerException.class, () -> q.offerFirst(null));
+        expectThrows(name, NullPointerException.class, () -> q.push(null));
+    }
+
     // --- java.util.Queue contract -----------------------------------------
 
     private static void usableAsQueueInterface() {
@@ -224,7 +211,8 @@ public final class CircularQueueTest {
         CircularQueue<Integer> q = new CircularQueue<>(2);
         checkEquals(name, null, q.poll());
         checkEquals(name, null, q.peek());
-        checkEquals(name, null, q.peekRear());
+        checkEquals(name, null, q.peekFirst());
+        checkEquals(name, null, q.peekLast());
     }
 
     private static void removeAndElementThrowWhenEmpty() {
@@ -235,22 +223,6 @@ public final class CircularQueueTest {
         expectThrows(name, NoSuchElementException.class, q::dequeue); // alias
     }
 
-    private static void elementReturnsHeadWithoutRemoving() {
-        String name = "elementReturnsHeadWithoutRemoving";
-        CircularQueue<Integer> q = new CircularQueue<>(3);
-        q.add(11);
-        q.add(22);
-        checkEquals(name, 11, q.element());
-        checkEquals(name, 2, q.size());
-    }
-
-    private static void nullElementsAreRejected() {
-        String name = "nullElementsAreRejected";
-        CircularQueue<String> q = new CircularQueue<>(2);
-        expectThrows(name, NullPointerException.class, () -> q.offer(null));
-        expectThrows(name, NullPointerException.class, () -> q.add(null));
-    }
-
     private static void inheritedCollectionOperations() {
         String name = "inheritedCollectionOperations";
         CircularQueue<Integer> q = new CircularQueue<>(5);
@@ -259,6 +231,173 @@ public final class CircularQueueTest {
         check(name, !q.contains(99), "contains should reject a missing element");
         checkEquals(name, 3, q.size());
         checkEquals(name, List.of(1, 2, 3), Arrays.asList(q.toArray())); // inherited toArray
+    }
+
+    // --- java.util.Deque contract -----------------------------------------
+
+    private static void usableAsDeque() {
+        String name = "usableAsDeque";
+        Deque<Integer> d = new CircularQueue<>(4); // referenced through the interface
+        d.addFirst(2);
+        d.addFirst(1); // front -> [1, 2]
+        d.addLast(3);
+        d.addLast(4);  // -> [1, 2, 3, 4]
+        checkEquals(name, 1, d.getFirst());
+        checkEquals(name, 4, d.getLast());
+        checkEquals(name, 1, d.pollFirst());
+        checkEquals(name, 4, d.pollLast());
+        checkEquals(name, List.of(2, 3), new ArrayList<>(d));
+    }
+
+    private static void bothEndsInsertAndRemove() {
+        String name = "bothEndsInsertAndRemove";
+        CircularQueue<Integer> d = new CircularQueue<>(3);
+        d.offerFirst(2);
+        d.offerLast(3);
+        d.offerFirst(1); // -> [1, 2, 3]
+        checkEquals(name, "[1, 2, 3]", d.toString());
+        checkEquals(name, 1, d.peekFirst());
+        checkEquals(name, 3, d.peekLast());
+        checkEquals(name, 3, d.removeLast());
+        checkEquals(name, 1, d.removeFirst());
+        checkEquals(name, "[2]", d.toString());
+    }
+
+    private static void offerFirstLastReturnFalseWhenFull() {
+        String name = "offerFirstLastReturnFalseWhenFull";
+        CircularQueue<Integer> d = new CircularQueue<>(2);
+        d.offerFirst(1);
+        d.offerLast(2);
+        check(name, !d.offerFirst(3), "offerFirst should return false when full");
+        check(name, !d.offerLast(4), "offerLast should return false when full");
+        expectThrows(name, IllegalStateException.class, () -> d.addFirst(5));
+        expectThrows(name, IllegalStateException.class, () -> d.addLast(6));
+    }
+
+    private static void getFirstLastThrowWhenEmpty() {
+        String name = "getFirstLastThrowWhenEmpty";
+        CircularQueue<Integer> d = new CircularQueue<>(2);
+        expectThrows(name, NoSuchElementException.class, d::getFirst);
+        expectThrows(name, NoSuchElementException.class, d::getLast);
+        expectThrows(name, NoSuchElementException.class, d::removeFirst);
+        expectThrows(name, NoSuchElementException.class, d::removeLast);
+        expectThrows(name, NoSuchElementException.class, d::pop);
+    }
+
+    private static void usableAsStack() {
+        String name = "usableAsStack";
+        Deque<Integer> stack = new CircularQueue<>(3);
+        stack.push(1);
+        stack.push(2);
+        stack.push(3);
+        checkEquals(name, 3, stack.peek()); // LIFO top is the front
+        checkEquals(name, 3, stack.pop());
+        checkEquals(name, 2, stack.pop());
+        checkEquals(name, 1, stack.pop());
+        check(name, stack.isEmpty(), "stack should be empty after popping all");
+    }
+
+    private static void removeFirstOccurrenceRemovesFrontMost() {
+        String name = "removeFirstOccurrenceRemovesFrontMost";
+        CircularQueue<Integer> d = new CircularQueue<>(6);
+        d.addAll(List.of(1, 2, 3, 2, 1));
+        check(name, d.removeFirstOccurrence(2), "should report removal");
+        checkEquals(name, List.of(1, 3, 2, 1), new ArrayList<>(d));
+        check(name, !d.removeFirstOccurrence(99), "missing element returns false");
+    }
+
+    private static void removeLastOccurrenceRemovesRearMost() {
+        String name = "removeLastOccurrenceRemovesRearMost";
+        CircularQueue<Integer> d = new CircularQueue<>(6);
+        d.addAll(List.of(1, 2, 3, 2, 1));
+        check(name, d.removeLastOccurrence(2), "should report removal");
+        checkEquals(name, List.of(1, 2, 3, 1), new ArrayList<>(d));
+    }
+
+    private static void removeObjectDelegatesToFirstOccurrence() {
+        String name = "removeObjectDelegatesToFirstOccurrence";
+        CircularQueue<Integer> d = new CircularQueue<>(6);
+        d.addAll(List.of(5, 6, 5));
+        check(name, d.remove(Integer.valueOf(5)), "remove(Object) should remove front-most 5");
+        checkEquals(name, List.of(6, 5), new ArrayList<>(d));
+    }
+
+    private static void descendingIteratorGoesRearToFront() {
+        String name = "descendingIteratorGoesRearToFront";
+        CircularQueue<Integer> d = new CircularQueue<>(4);
+        d.addAll(List.of(1, 2, 3));
+        List<Integer> seen = new ArrayList<>();
+        Iterator<Integer> it = d.descendingIterator();
+        while (it.hasNext()) {
+            seen.add(it.next());
+        }
+        checkEquals(name, List.of(3, 2, 1), seen);
+    }
+
+    // --- iteration --------------------------------------------------------
+
+    private static void iteratorYieldsFrontToRear() {
+        String name = "iteratorYieldsFrontToRear";
+        CircularQueue<Integer> q = new CircularQueue<>(3);
+        q.enqueue(1);
+        q.enqueue(2);
+        q.dequeue();
+        q.enqueue(3);
+        q.enqueue(4); // contents front->rear: 2, 3, 4
+        List<Integer> seen = new ArrayList<>();
+        for (Integer v : q) {
+            seen.add(v);
+        }
+        checkEquals(name, List.of(2, 3, 4), seen);
+    }
+
+    private static void iteratorIsFailFast() {
+        String name = "iteratorIsFailFast";
+        CircularQueue<Integer> q = new CircularQueue<>(3);
+        q.enqueue(1);
+        q.enqueue(2);
+        Iterator<Integer> it = q.iterator();
+        it.next();
+        q.enqueue(3); // structural modification
+        expectThrows(name, ConcurrentModificationException.class, it::next);
+    }
+
+    private static void iteratorRemoveDeletesCurrent() {
+        String name = "iteratorRemoveDeletesCurrent";
+        CircularQueue<Integer> q = new CircularQueue<>(6);
+        q.addAll(List.of(1, 2, 3, 4, 5));
+        Iterator<Integer> it = q.iterator();
+        while (it.hasNext()) {
+            if (it.next() % 2 == 0) {
+                it.remove(); // drop evens
+            }
+        }
+        checkEquals(name, List.of(1, 3, 5), new ArrayList<>(q));
+        // remove() without a preceding next() is illegal
+        expectThrows(name, IllegalStateException.class, () -> q.iterator().remove());
+    }
+
+    private static void descendingIteratorRemoveDeletesCurrent() {
+        String name = "descendingIteratorRemoveDeletesCurrent";
+        CircularQueue<Integer> q = new CircularQueue<>(6);
+        q.addAll(List.of(1, 2, 3, 4, 5));
+        Iterator<Integer> it = q.descendingIterator();
+        while (it.hasNext()) {
+            if (it.next() % 2 == 0) {
+                it.remove(); // drop evens, iterating rear->front
+            }
+        }
+        checkEquals(name, List.of(1, 3, 5), new ArrayList<>(q));
+    }
+
+    private static void bulkRemovalViaIterator() {
+        String name = "bulkRemovalViaIterator";
+        CircularQueue<Integer> q = new CircularQueue<>(8);
+        q.addAll(List.of(1, 2, 3, 4, 5, 6));
+        q.removeIf(v -> v > 3);          // inherited, uses iterator().remove()
+        checkEquals(name, List.of(1, 2, 3), new ArrayList<>(q));
+        q.retainAll(List.of(2));         // inherited
+        checkEquals(name, List.of(2), new ArrayList<>(q));
     }
 
     // --- tiny assertion harness -------------------------------------------

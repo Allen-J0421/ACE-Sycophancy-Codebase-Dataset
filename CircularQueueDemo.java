@@ -22,6 +22,6 @@ public final class CircularQueueDemo {
     }
 
     private static void print(CircularQueue<Integer> queue) {
-        System.out.println(queue + " front=" + queue.peek() + " rear=" + queue.peekRear());
+        System.out.println(queue + " front=" + queue.peekFirst() + " rear=" + queue.peekLast());
     }
 }

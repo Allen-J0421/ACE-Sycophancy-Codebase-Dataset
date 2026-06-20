@@ -10,20 +10,28 @@ final class InsertionSort {
     }
 
     static void printArray(int[] values) {
+        System.out.println(formatArray(values));
+    }
+
+    public static void main(String[] args) {
+        int[] values = exampleValues();
+
+        sort(values);
+        printArray(values);
+    }
+
+    private static int[] exampleValues() {
+        return new int[] {12, 11, 13, 5, 6};
+    }
+
+    private static String formatArray(int[] values) {
         StringBuilder output = new StringBuilder();
 
         for (int value : values) {
             output.append(value).append(' ');
         }
 
-        System.out.println(output);
-    }
-
-    public static void main(String[] args) {
-        int[] values = {12, 11, 13, 5, 6};
-
-        sort(values);
-        printArray(values);
+        return output.toString();
     }
 
     private static void insert(int[] values, int currentIndex) {

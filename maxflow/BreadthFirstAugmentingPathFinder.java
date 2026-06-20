@@ -22,12 +22,12 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
                 if (!visited[nextVertex] && residualNetwork.hasResidualCapacity(currentVertex, nextVertex)) {
                     parent[nextVertex] = currentVertex;
                     if (nextVertex == sink) {
-                        return Optional.of(
-                            new AugmentingPath(source, sink, parent, bottleneckCapacity(
-                                residualNetwork,
-                                parent,
-                                source,
-                                sink)));
+                        int[] vertices = buildPath(parent, source, sink);
+                        return Optional.of(new AugmentingPath(
+                            source,
+                            sink,
+                            vertices,
+                            bottleneckCapacity(residualNetwork, vertices)));
                     }
 
                     visited[nextVertex] = true;
@@ -41,16 +41,34 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
 
     private static int bottleneckCapacity(
         ResidualNetwork residualNetwork,
-        int[] parent,
-        int source,
-        int sink
+        int[] vertices
     ) {
         int pathFlow = Integer.MAX_VALUE;
-        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
-            int predecessor = parent[vertex];
-            pathFlow = Math.min(pathFlow, residualNetwork.residualCapacity(predecessor, vertex));
+
+        for (int index = 0; index < vertices.length - 1; index++) {
+            int from = vertices[index];
+            int to = vertices[index + 1];
+            pathFlow = Math.min(pathFlow, residualNetwork.residualCapacity(from, to));
         }
 
         return pathFlow;
+    }
+
+    private static int[] buildPath(int[] parent, int source, int sink) {
+        int length = 1;
+        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
+            length++;
+        }
+
+        int[] vertices = new int[length];
+        int index = length - 1;
+        for (int vertex = sink; ; vertex = parent[vertex]) {
+            vertices[index--] = vertex;
+            if (vertex == source) {
+                break;
+            }
+        }
+
+        return vertices;
     }
 }

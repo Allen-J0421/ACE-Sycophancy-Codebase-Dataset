@@ -21,10 +21,11 @@ public final class ResidualNetwork {
 
     public int augmentPath(AugmentingPath path) {
         int flow = path.flow();
-        for (int vertex = path.sink(); vertex != path.source(); vertex = path.parentOf(vertex)) {
-            int predecessor = path.parentOf(vertex);
-            residualCapacities.add(predecessor, vertex, -flow);
-            residualCapacities.add(vertex, predecessor, flow);
+        for (int index = 0; index < path.vertexCount() - 1; index++) {
+            int from = path.vertexAt(index);
+            int to = path.vertexAt(index + 1);
+            residualCapacities.add(from, to, -flow);
+            residualCapacities.add(to, from, flow);
         }
 
         return flow;

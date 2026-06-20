@@ -4,14 +4,13 @@ import java.util.stream.Collectors;
 class FloydWarshallDemo {
 
     public static void main(String[] args) {
-        int INF = FloydWarshall.INF;
-
+        final int I = FloydWarshall.INF;
         int[][] graph = {
-            {0,   4,   INF, 5,   INF},
-            {INF, 0,   1,   INF, 6  },
-            {2,   INF, 0,   3,   INF},
-            {INF, INF, 1,   0,   2  },
-            {1,   INF, INF, 4,   0  }
+            {0, 4, I, 5, I},
+            {I, 0, 1, I, 6},
+            {2, I, 0, 3, I},
+            {I, I, 1, 0, 2},
+            {1, I, I, 4, 0}
         };
 
         FloydWarshall.Result result = FloydWarshall.compute(graph);
@@ -20,7 +19,7 @@ class FloydWarshallDemo {
         printDistMatrix(result);
 
         System.out.println("\nShortest paths:");
-        int n = result.size();
+        int n = result.vertexCount();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i != j) {
@@ -31,7 +30,7 @@ class FloydWarshallDemo {
     }
 
     private static void printDistMatrix(FloydWarshall.Result result) {
-        int n = result.size();
+        int n = result.vertexCount();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 int d = result.getDistance(i, j);

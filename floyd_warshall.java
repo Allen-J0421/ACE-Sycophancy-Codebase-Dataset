@@ -27,15 +27,19 @@ class FloydWarshall {
             if (!isReachable(from, to)) {
                 return Collections.emptyList();
             }
+            int n = dist.length;
             List<Integer> path = new ArrayList<>();
             for (int v = from; v != to; v = next[v][to]) {
+                if (path.size() >= n) {
+                    throw new IllegalStateException("Path reconstruction loop; graph may contain a negative cycle");
+                }
                 path.add(v);
             }
             path.add(to);
             return path;
         }
 
-        int size() {
+        int vertexCount() {
             return dist.length;
         }
     }
@@ -72,6 +76,12 @@ class FloydWarshall {
                         next[i][j] = next[i][k];
                     }
                 }
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (dist[i][i] < 0) {
+                throw new IllegalArgumentException("Graph contains a negative-weight cycle");
             }
         }
 

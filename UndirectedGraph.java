@@ -2,17 +2,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-final class Graph {
+final class UndirectedGraph {
 
     private final int vertexCount;
     private final List<List<Integer>> adjacencyList;
 
-    private Graph(int vertexCount, List<List<Integer>> adjacencyList) {
+    private UndirectedGraph(int vertexCount, List<List<Integer>> adjacencyList) {
         this.vertexCount = vertexCount;
         this.adjacencyList = adjacencyList;
     }
 
-    static Graph fromEdgeList(int vertexCount, int[][] edges) {
+    static UndirectedGraph fromEdgeList(int vertexCount, int[][] edges) {
         validateGraphInput(vertexCount, edges);
 
         List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
@@ -36,7 +36,7 @@ final class Graph {
             adjacencyList.set(i, List.copyOf(adjacencyList.get(i)));
         }
 
-        return new Graph(vertexCount, List.copyOf(adjacencyList));
+        return new UndirectedGraph(vertexCount, List.copyOf(adjacencyList));
     }
 
     int vertexCount() {
@@ -45,10 +45,6 @@ final class Graph {
 
     List<Integer> neighborsOf(int vertex) {
         return adjacencyList.get(vertex);
-    }
-
-    boolean isBipartite() {
-        return BipartiteChecker.isBipartite(this);
     }
 
     private static void validateGraphInput(int vertexCount, int[][] edges) {

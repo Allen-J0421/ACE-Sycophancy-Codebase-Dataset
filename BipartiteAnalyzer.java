@@ -2,12 +2,12 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Objects;
 
-final class BipartiteChecker {
+final class BipartiteAnalyzer {
 
-    private BipartiteChecker() {
+    private BipartiteAnalyzer() {
     }
 
-    static boolean isBipartite(Graph graph) {
+    static boolean isBipartite(UndirectedGraph graph) {
         Objects.requireNonNull(graph, "graph");
 
         Coloring coloring = new Coloring(graph.vertexCount());
@@ -21,24 +21,24 @@ final class BipartiteChecker {
         return true;
     }
 
-    private static boolean colorComponent(int startVertex, Graph graph, Coloring coloring) {
+    private static boolean colorComponent(int startVertex, UndirectedGraph graph, Coloring coloring) {
         Deque<Integer> queue = new ArrayDeque<>();
-        coloring.assign(startVertex, Color.LEFT);
+        coloring.assign(startVertex, Partition.LEFT);
         queue.addLast(startVertex);
 
         while (!queue.isEmpty()) {
             int currentVertex = queue.removeFirst();
-            Color currentColor = coloring.colorOf(currentVertex);
-            Color oppositeColor = currentColor.opposite();
+            Partition currentPartition = coloring.partitionOf(currentVertex);
+            Partition oppositePartition = currentPartition.opposite();
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
                 if (coloring.isUncolored(neighbor)) {
-                    coloring.assign(neighbor, oppositeColor);
+                    coloring.assign(neighbor, oppositePartition);
                     queue.addLast(neighbor);
                     continue;
                 }
 
-                if (coloring.colorOf(neighbor) == currentColor) {
+                if (coloring.partitionOf(neighbor) == currentPartition) {
                     return false;
                 }
             }
@@ -47,36 +47,36 @@ final class BipartiteChecker {
         return true;
     }
 
-    private enum Color {
+    private enum Partition {
         LEFT,
         RIGHT;
 
-        Color opposite() {
+        Partition opposite() {
             return this == LEFT ? RIGHT : LEFT;
         }
     }
 
     private static final class Coloring {
-        private final Color[] colors;
+        private final Partition[] partitions;
 
         private Coloring(int vertexCount) {
-            this.colors = new Color[vertexCount];
+            this.partitions = new Partition[vertexCount];
         }
 
         int size() {
-            return colors.length;
+            return partitions.length;
         }
 
         boolean isUncolored(int vertex) {
-            return colors[vertex] == null;
+            return partitions[vertex] == null;
         }
 
-        Color colorOf(int vertex) {
-            return colors[vertex];
+        Partition partitionOf(int vertex) {
+            return partitions[vertex];
         }
 
-        void assign(int vertex, Color color) {
-            colors[vertex] = color;
+        void assign(int vertex, Partition partition) {
+            partitions[vertex] = partition;
         }
     }
 }

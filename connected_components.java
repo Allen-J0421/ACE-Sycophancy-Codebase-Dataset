@@ -1,66 +1,117 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
-import java.util.LinkedList;
 
 class ConnectedComponents {
 
-    static void bfs(ArrayList<ArrayList<Integer>> adj, int src, boolean[] visited, ArrayList<Integer> res) {
-        Queue<Integer> q = new LinkedList<>();
-        visited[src] = true;
-        q.add(src);
+    static List<List<Integer>> getComponents(List<List<Integer>> graph) {
+        validateGraph(graph);
 
-        while (!q.isEmpty()) {
-            int curr = q.poll();
-            res.add(curr);
+        boolean[] visited = new boolean[graph.size()];
+        List<List<Integer>> components = new ArrayList<>();
 
-            for (int x : adj.get(curr)) {
-                if (!visited[x]) {
-                    visited[x] = true;
-                    q.add(x);
+        for (int vertex = 0; vertex < graph.size(); vertex++) {
+            if (!visited[vertex]) {
+                List<Integer> component = new ArrayList<>();
+                collectComponent(graph, vertex, visited, component);
+                components.add(component);
+            }
+        }
+
+        return components;
+    }
+
+    static void addEdge(List<List<Integer>> graph, int firstVertex, int secondVertex) {
+        validateVertex(graph, firstVertex);
+        validateVertex(graph, secondVertex);
+
+        graph.get(firstVertex).add(secondVertex);
+        graph.get(secondVertex).add(firstVertex);
+    }
+
+    private static void collectComponent(
+            List<List<Integer>> graph,
+            int source,
+            boolean[] visited,
+            List<Integer> component
+    ) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        visited[source] = true;
+        queue.add(source);
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            component.add(current);
+
+            for (int neighbor : graph.get(current)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    queue.add(neighbor);
                 }
             }
         }
     }
 
-    static ArrayList<ArrayList<Integer>> getComponents(ArrayList<ArrayList<Integer>> adj) {
-        int V = adj.size();
-        boolean[] visited = new boolean[V];
-        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
-
-        for (int i = 0; i < V; i++) {
-            if (!visited[i]) {
-                ArrayList<Integer> component = new ArrayList<>();
-                bfs(adj, i, visited, component);
-                res.add(component);
-            }
+    private static List<List<Integer>> createGraph(int vertexCount) {
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("vertexCount must be non-negative");
         }
-        return res;
+
+        List<List<Integer>> graph = new ArrayList<>(vertexCount);
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            graph.add(new ArrayList<>());
+        }
+        return graph;
     }
 
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-        adj.get(v).add(u);
+    private static void validateGraph(List<List<Integer>> graph) {
+        if (graph == null) {
+            throw new IllegalArgumentException("graph cannot be null");
+        }
+
+        for (int vertex = 0; vertex < graph.size(); vertex++) {
+            List<Integer> neighbors = graph.get(vertex);
+            if (neighbors == null) {
+                throw new IllegalArgumentException("adjacency list cannot be null for vertex " + vertex);
+            }
+
+            for (int neighbor : neighbors) {
+                validateVertex(graph, neighbor);
+            }
+        }
+    }
+
+    private static void validateVertex(List<List<Integer>> graph, int vertex) {
+        if (graph == null) {
+            throw new IllegalArgumentException("graph cannot be null");
+        }
+        if (vertex < 0 || vertex >= graph.size()) {
+            throw new IllegalArgumentException("vertex out of range: " + vertex);
+        }
+    }
+
+    private static void printComponents(List<List<Integer>> components) {
+        for (List<Integer> component : components) {
+            StringBuilder line = new StringBuilder();
+            for (int vertex : component) {
+                if (line.length() > 0) {
+                    line.append(' ');
+                }
+                line.append(vertex);
+            }
+            System.out.println(line);
+        }
     }
 
     public static void main(String[] args) {
-        int V = 6;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        List<List<Integer>> graph = createGraph(6);
 
-        for (int i = 0; i < V; i++)
-            adj.add(new ArrayList<>());
+        addEdge(graph, 1, 2);
+        addEdge(graph, 0, 3);
+        addEdge(graph, 2, 0);
+        addEdge(graph, 5, 4);
 
-        addEdge(adj, 1, 2);
-        addEdge(adj, 0, 3);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 5, 4);
-
-        ArrayList<ArrayList<Integer>> res = getComponents(adj);
-
-        for (ArrayList<Integer> component : res) {
-            for (int vertex : component) {
-                System.out.print(vertex + " ");
-            }
-            System.out.println();
-        }
+        printComponents(getComponents(graph));
     }
 }

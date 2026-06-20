@@ -1,7 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public final class BipartiteGraphTest {
     private BipartiteGraphTest() {
         // Utility class.
@@ -36,7 +32,7 @@ public final class BipartiteGraphTest {
     }
 
     private static void shouldBeDirectlyIterable() {
-        Graph graph = Graph.fromEdges(4, edges(Edge.between(0, 1)));
+        Graph graph = Graph.fromEdges(4, Edge.between(0, 1));
         assertVertexSequence(graph, new int[] {0, 1, 2, 3});
         assertIteratorExhaustion(graph);
     }
@@ -67,10 +63,10 @@ public final class BipartiteGraphTest {
     private static void assertBipartiteCase(BipartiteCase testCase) {
         assertEquals(
                 testCase.expectedBipartite,
-                BipartiteGraph.isBipartite(testCase.vertexCount, testCase.edges),
+                BipartiteGraph.isBipartite(testCase.vertexCount, toEdgePairs(testCase.edges)),
                 testCase.failureMessage);
 
-        Graph graph = Graph.fromEdges(testCase.vertexCount, toEdges(testCase.edges));
+        Graph graph = Graph.fromEdges(testCase.vertexCount, testCase.edges);
         assertEquals(
                 testCase.expectedBipartite,
                 BipartiteGraph.isBipartite(graph),
@@ -128,48 +124,57 @@ public final class BipartiteGraphTest {
                     "identifies bipartite graphs",
                     true,
                     4,
-                    new int[][] {{0, 1}, {0, 3}, {2, 1}, {2, 3}},
+                    new Edge[] {
+                        Edge.between(0, 1),
+                        Edge.between(0, 3),
+                        Edge.between(2, 1),
+                        Edge.between(2, 3)
+                    },
                     "Expected an even-cycle graph to be bipartite."),
             new BipartiteCase(
                     "rejects non-bipartite graphs",
                     false,
                     3,
-                    new int[][] {{0, 1}, {1, 2}, {2, 0}},
+                    new Edge[] {
+                        Edge.between(0, 1),
+                        Edge.between(1, 2),
+                        Edge.between(2, 0)
+                    },
                     "Expected an odd cycle to be non-bipartite."),
             new BipartiteCase(
                     "handles disconnected graphs",
                     true,
                     5,
-                    new int[][] {{0, 1}, {2, 3}},
+                    new Edge[] {
+                        Edge.between(0, 1),
+                        Edge.between(2, 3)
+                    },
                     "Expected disconnected acyclic components to be bipartite.")
         };
     }
 
-    private static Iterable<Edge> toEdges(int[][] edgePairs) {
-        List<Edge> edges = new ArrayList<>(edgePairs.length);
-        for (int[] edgePair : edgePairs) {
-            edges.add(Edge.between(edgePair[0], edgePair[1]));
+    private static int[][] toEdgePairs(Edge[] edges) {
+        int[][] edgePairs = new int[edges.length][2];
+        for (int index = 0; index < edges.length; index++) {
+            edgePairs[index][0] = edges[index].source();
+            edgePairs[index][1] = edges[index].destination();
         }
 
-        return edges;
-    }
-
-    private static Iterable<Edge> edges(Edge... edges) {
-        return Arrays.asList(edges);
+        return edgePairs;
     }
 
     private static final class BipartiteCase {
         private final String name;
         private final boolean expectedBipartite;
         private final int vertexCount;
-        private final int[][] edges;
+        private final Edge[] edges;
         private final String failureMessage;
 
         private BipartiteCase(
                 String name,
                 boolean expectedBipartite,
                 int vertexCount,
-                int[][] edges,
+                Edge[] edges,
                 String failureMessage) {
             this.name = name;
             this.expectedBipartite = expectedBipartite;

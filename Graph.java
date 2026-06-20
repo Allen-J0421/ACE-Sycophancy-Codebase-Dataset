@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -12,14 +13,15 @@ public final class Graph implements Iterable<Integer> {
     }
 
     public static Graph fromEdgePairs(int vertexCount, int[][] edgePairs) {
-        requireEdgePairs(edgePairs);
+        return fromEdges(vertexCount, Edge.fromPairs(edgePairs));
+    }
 
-        List<Edge> edges = new ArrayList<>(edgePairs.length);
-        for (int edgeIndex = 0; edgeIndex < edgePairs.length; edgeIndex++) {
-            edges.add(Edge.fromPair(edgePairs[edgeIndex], edgeIndex));
+    public static Graph fromEdges(int vertexCount, Edge... edges) {
+        if (edges == null) {
+            throw new IllegalArgumentException("Edges cannot be null.");
         }
 
-        return fromEdges(vertexCount, edges);
+        return fromEdges(vertexCount, Arrays.asList(edges));
     }
 
     public static Graph fromEdges(int vertexCount, Iterable<Edge> edges) {
@@ -63,12 +65,6 @@ public final class Graph implements Iterable<Integer> {
     private static void validateVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count cannot be negative.");
-        }
-    }
-
-    private static void requireEdgePairs(int[][] edgePairs) {
-        if (edgePairs == null) {
-            throw new IllegalArgumentException("Edges cannot be null.");
         }
     }
 

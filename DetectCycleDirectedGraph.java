@@ -30,138 +30,138 @@ public final class DetectCycleDirectedGraph {
         DirectedGraph graph = createSampleGraph();
         System.out.println(graph.hasCycle());
     }
+}
 
-    public static final class DirectedGraph {
-        private final List<List<Integer>> adjacencyList;
-        private final int[] indegree;
+final class DirectedGraph {
+    private final List<List<Integer>> adjacencyList;
+    private final int[] indegree;
 
-        private DirectedGraph(List<List<Integer>> adjacencyList, int[] indegree) {
-            this.adjacencyList = adjacencyList;
-            this.indegree = indegree;
-        }
+    private DirectedGraph(List<List<Integer>> adjacencyList, int[] indegree) {
+        this.adjacencyList = adjacencyList;
+        this.indegree = indegree;
+    }
 
-        public static Builder builder(int vertexCount) {
-            return new Builder(vertexCount);
-        }
+    public static Builder builder(int vertexCount) {
+        return new Builder(vertexCount);
+    }
 
-        public static DirectedGraph fromAdjacencyList(List<List<Integer>> adjacencyList) {
-            Builder graph = builder(adjacencyList.size());
-            for (int source = 0; source < adjacencyList.size(); source++) {
-                for (int destination : adjacencyList.get(source)) {
-                    graph.addEdge(source, destination);
-                }
-            }
-            return graph.build();
-        }
-
-        public boolean hasCycle() {
-            return DetectCycleDirectedGraph.hasCycle(this);
-        }
-
-        public int vertexCount() {
-            return adjacencyList.size();
-        }
-
-        public List<Integer> neighborsOf(int vertex) {
-            validateVertex(vertex);
-            return adjacencyList.get(vertex);
-        }
-
-        public int[] indegreeSnapshot() {
-            return indegree.clone();
-        }
-
-        private void validateVertex(int vertex) {
-            validateVertex(vertex, adjacencyList.size());
-        }
-
-        private static void validateVertex(int vertex, int vertexCount) {
-            if (vertex < 0 || vertex >= vertexCount) {
-                throw new IndexOutOfBoundsException(
-                        "Invalid vertex: " + vertex + " for graph size " + vertexCount);
+    public static DirectedGraph fromAdjacencyList(List<List<Integer>> adjacencyList) {
+        Builder graph = builder(adjacencyList.size());
+        for (int source = 0; source < adjacencyList.size(); source++) {
+            for (int destination : adjacencyList.get(source)) {
+                graph.addEdge(source, destination);
             }
         }
+        return graph.build();
+    }
 
-        public static final class Builder {
-            private final List<List<Integer>> adjacencyList;
-            private final int[] indegree;
+    public boolean hasCycle() {
+        return DetectCycleDirectedGraph.hasCycle(this);
+    }
 
-            private Builder(int vertexCount) {
-                if (vertexCount < 0) {
-                    throw new IllegalArgumentException("vertexCount must be non-negative");
-                }
+    public int vertexCount() {
+        return adjacencyList.size();
+    }
 
-                adjacencyList = new ArrayList<>(vertexCount);
-                indegree = new int[vertexCount];
-                for (int vertex = 0; vertex < vertexCount; vertex++) {
-                    adjacencyList.add(new ArrayList<>());
-                }
-            }
+    public List<Integer> neighborsOf(int vertex) {
+        validateVertex(vertex);
+        return adjacencyList.get(vertex);
+    }
 
-            public Builder addEdge(int source, int destination) {
-                validateVertex(source, adjacencyList.size());
-                validateVertex(destination, adjacencyList.size());
-                adjacencyList.get(source).add(destination);
-                indegree[destination]++;
-                return this;
-            }
+    public int[] indegreeSnapshot() {
+        return indegree.clone();
+    }
 
-            public DirectedGraph build() {
-                List<List<Integer>> immutableAdjacencyList = new ArrayList<>(adjacencyList.size());
-                for (List<Integer> neighbors : adjacencyList) {
-                    immutableAdjacencyList.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
-                }
+    private void validateVertex(int vertex) {
+        validateVertex(vertex, adjacencyList.size());
+    }
 
-                return new DirectedGraph(
-                        Collections.unmodifiableList(immutableAdjacencyList),
-                        indegree.clone());
-            }
+    private static void validateVertex(int vertex, int vertexCount) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IndexOutOfBoundsException(
+                    "Invalid vertex: " + vertex + " for graph size " + vertexCount);
         }
     }
 
-    private static final class CycleDetector {
-        private final DirectedGraph graph;
+    public static final class Builder {
+        private final List<List<Integer>> adjacencyList;
         private final int[] indegree;
-        private final Queue<Integer> zeroIndegreeVertices;
-        private int visitedCount;
 
-        private CycleDetector(DirectedGraph graph) {
-            this.graph = graph;
-            this.indegree = graph.indegreeSnapshot();
-            this.zeroIndegreeVertices = collectZeroIndegreeVertices(indegree);
-        }
-
-        private boolean hasCycle() {
-            while (!zeroIndegreeVertices.isEmpty()) {
-                processNextVertex();
+        private Builder(int vertexCount) {
+            if (vertexCount < 0) {
+                throw new IllegalArgumentException("vertexCount must be non-negative");
             }
-            return visitedCount != graph.vertexCount();
-        }
 
-        private void processNextVertex() {
-            int vertex = zeroIndegreeVertices.poll();
-            visitedCount++;
-
-            for (int neighbor : graph.neighborsOf(vertex)) {
-                decrementIndegree(neighbor);
+            adjacencyList = new ArrayList<>(vertexCount);
+            indegree = new int[vertexCount];
+            for (int vertex = 0; vertex < vertexCount; vertex++) {
+                adjacencyList.add(new ArrayList<>());
             }
         }
 
-        private void decrementIndegree(int vertex) {
-            indegree[vertex]--;
+        public Builder addEdge(int source, int destination) {
+            validateVertex(source, adjacencyList.size());
+            validateVertex(destination, adjacencyList.size());
+            adjacencyList.get(source).add(destination);
+            indegree[destination]++;
+            return this;
+        }
+
+        public DirectedGraph build() {
+            List<List<Integer>> immutableAdjacencyList = new ArrayList<>(adjacencyList.size());
+            for (List<Integer> neighbors : adjacencyList) {
+                immutableAdjacencyList.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
+            }
+
+            return new DirectedGraph(
+                    Collections.unmodifiableList(immutableAdjacencyList),
+                    indegree.clone());
+        }
+    }
+}
+
+final class CycleDetector {
+    private final DirectedGraph graph;
+    private final int[] indegree;
+    private final Queue<Integer> zeroIndegreeVertices;
+    private int visitedCount;
+
+    CycleDetector(DirectedGraph graph) {
+        this.graph = graph;
+        this.indegree = graph.indegreeSnapshot();
+        this.zeroIndegreeVertices = collectZeroIndegreeVertices(indegree);
+    }
+
+    boolean hasCycle() {
+        while (!zeroIndegreeVertices.isEmpty()) {
+            processNextVertex();
+        }
+        return visitedCount != graph.vertexCount();
+    }
+
+    private void processNextVertex() {
+        int vertex = zeroIndegreeVertices.poll();
+        visitedCount++;
+
+        for (int neighbor : graph.neighborsOf(vertex)) {
+            decrementIndegree(neighbor);
+        }
+    }
+
+    private void decrementIndegree(int vertex) {
+        indegree[vertex]--;
+        if (indegree[vertex] == 0) {
+            zeroIndegreeVertices.add(vertex);
+        }
+    }
+
+    private static Queue<Integer> collectZeroIndegreeVertices(int[] indegree) {
+        Queue<Integer> queue = new ArrayDeque<>();
+        for (int vertex = 0; vertex < indegree.length; vertex++) {
             if (indegree[vertex] == 0) {
-                zeroIndegreeVertices.add(vertex);
+                queue.add(vertex);
             }
         }
-
-        private static Queue<Integer> collectZeroIndegreeVertices(int[] indegree) {
-            Queue<Integer> queue = new ArrayDeque<>();
-            for (int vertex = 0; vertex < indegree.length; vertex++) {
-                if (indegree[vertex] == 0) {
-                    queue.add(vertex);
-                }
-            }
-            return queue;
-        }
+        return queue;
     }
 }

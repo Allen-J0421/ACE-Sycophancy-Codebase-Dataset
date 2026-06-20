@@ -6,11 +6,11 @@ import java.util.List;
 final class DetectCycle {
 
     private static final int SAMPLE_VERTEX_COUNT = 4;
-    private static final int[][] SAMPLE_EDGES = {
-            {0, 1},
-            {1, 2},
-            {2, 0},
-            {2, 3}
+    private static final Edge[] SAMPLE_EDGES = {
+            new Edge(0, 1),
+            new Edge(1, 2),
+            new Edge(2, 0),
+            new Edge(2, 3)
     };
 
     private DetectCycle() {
@@ -100,8 +100,8 @@ final class DetectCycle {
 
     private static List<List<Integer>> buildSampleGraph() {
         List<List<Integer>> adjacencyList = createGraph(SAMPLE_VERTEX_COUNT);
-        for (int[] edge : SAMPLE_EDGES) {
-            addEdge(adjacencyList, edge[0], edge[1]);
+        for (Edge edge : SAMPLE_EDGES) {
+            addEdge(adjacencyList, edge.source, edge.destination);
         }
         return adjacencyList;
     }
@@ -117,5 +117,16 @@ final class DetectCycle {
     public static void main(String[] args) {
         List<List<Integer>> adjacencyList = buildSampleGraph();
         System.out.println(isCyclic(adjacencyList) ? "true" : "false");
+    }
+
+    private static final class Edge {
+
+        private final int source;
+        private final int destination;
+
+        private Edge(int source, int destination) {
+            this.source = source;
+            this.destination = destination;
+        }
     }
 }

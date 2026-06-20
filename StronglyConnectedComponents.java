@@ -1,3 +1,5 @@
+import java.util.List;
+
 public final class StronglyConnectedComponents {
 
     private StronglyConnectedComponents() {
@@ -5,7 +7,7 @@ public final class StronglyConnectedComponents {
 
     public static void main(String[] args) {
         DirectedGraph graph = DirectedGraph.fromEdges(
-            5,
+            List.of(0, 1, 2, 3, 4),
             Edge.of(0, 2),
             Edge.of(0, 3),
             Edge.of(1, 0),

@@ -1,23 +1,35 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public final class BucketSort {
 
+    private static final float MIN_SUPPORTED_VALUE = 0.0f;
+    private static final float MAX_SUPPORTED_VALUE = 1.0f;
+
     private BucketSort() {
     }
 
     public static void sort(float[] values) {
+        float[] sortedValues = sortedCopy(values);
+        System.arraycopy(sortedValues, 0, values, 0, values.length);
+    }
+
+    public static float[] sortedCopy(float[] values) {
         Objects.requireNonNull(values, "values");
 
-        if (values.length == 0) {
-            return;
+        float[] copy = Arrays.copyOf(values, values.length);
+
+        if (copy.length == 0) {
+            return copy;
         }
 
-        List<List<Float>> buckets = createBuckets(values.length);
-        distributeValues(values, buckets);
+        List<List<Float>> buckets = createBuckets(copy.length);
+        distributeValues(copy, buckets);
         sortBuckets(buckets);
-        mergeBuckets(buckets, values);
+        mergeBuckets(buckets, copy);
+        return copy;
     }
 
     private static List<List<Float>> createBuckets(int bucketCount) {
@@ -32,7 +44,7 @@ public final class BucketSort {
         int bucketCount = buckets.size();
         for (float value : values) {
             validateValue(value);
-            int bucketIndex = (int) (bucketCount * value);
+            int bucketIndex = bucketIndexFor(value, bucketCount);
             buckets.get(bucketIndex).add(value);
         }
     }
@@ -64,10 +76,19 @@ public final class BucketSort {
         }
     }
 
+    private static int bucketIndexFor(float value, int bucketCount) {
+        return (int) (bucketCount * value);
+    }
+
     private static void validateValue(float value) {
-        if (value < 0.0f || value >= 1.0f) {
+        if (value < MIN_SUPPORTED_VALUE || value >= MAX_SUPPORTED_VALUE) {
             throw new IllegalArgumentException(
-                "Bucket sort expects values in the range [0.0, 1.0): " + value
+                "Bucket sort expects values in the range ["
+                    + MIN_SUPPORTED_VALUE
+                    + ", "
+                    + MAX_SUPPORTED_VALUE
+                    + "): "
+                    + value
             );
         }
     }

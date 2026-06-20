@@ -33,6 +33,10 @@ public final class Main {
         // Directed — demonstrates one-way adjacency on the generic base.
         DirectedGraph directed = DirectedGraph.of(3, new int[][] {{0, 1}, {0, 2}, {1, 2}});
         System.out.println("Directed out-neighbors of 0: " + directed.neighbors(0));
+
+        // Depth-first traversal over the same Graph interface.
+        List<Integer> dfsOrder = new DepthFirstSearch().traverse(triangle);
+        System.out.println("DFS preorder (unweighted undirected): " + dfsOrder);
     }
 
     private static void report(String label, BipartiteResult result) {

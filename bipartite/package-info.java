@@ -18,12 +18,15 @@
  *       {@link bipartite.GraphInputValidator} validates construction inputs.</li>
  * </ul>
  *
- * <p>{@link bipartite.BipartiteChecker} runs a breadth-first 2-coloring against
- * any {@link bipartite.Graph} and returns the sealed
+ * <p>Algorithms operate against the {@link bipartite.Graph} interface, so they
+ * run unchanged on every implementation. {@link bipartite.BipartiteChecker} runs
+ * a breadth-first 2-coloring and returns the sealed
  * {@link bipartite.BipartiteResult} — either the two vertex partitions or an
- * odd-cycle witness.
+ * odd-cycle witness — while {@link bipartite.DepthFirstSearch} provides a
+ * standard depth-first traversal.
  *
- * <p>{@link bipartite.Main} provides a runnable demonstration and
- * {@link bipartite.BipartiteCheckerTests} a dependency-free test harness.
+ * <p>{@link bipartite.Main} provides a runnable demonstration, and
+ * {@link bipartite.BipartiteCheckerTests} and
+ * {@link bipartite.DepthFirstSearchTests} are dependency-free test harnesses.
  */
 package bipartite;

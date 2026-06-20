@@ -1,14 +1,16 @@
 class BubbleSort {
 
+    static void bubbleSort(int[] arr) {
+        bubbleSort(arr, arr.length);
+    }
+
     static void bubbleSort(int[] arr, int n) {
         for (int i = 0; i < n - 1; i++) {
             boolean swapped = false;
 
             for (int j = 0; j < n - i - 1; j++) {
                 if (arr[j] > arr[j + 1]) {
-                    int temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
+                    swap(arr, j, j + 1);
                     swapped = true;
                 }
             }
@@ -17,6 +19,12 @@ class BubbleSort {
                 break;
             }
         }
+    }
+
+    private static void swap(int[] arr, int firstIndex, int secondIndex) {
+        int temp = arr[firstIndex];
+        arr[firstIndex] = arr[secondIndex];
+        arr[secondIndex] = temp;
     }
 
     static void printArray(int[] arr, int size) {
@@ -28,12 +36,11 @@ class BubbleSort {
     }
 
     public static void main(String[] args) {
-        int[] arr = {64, 34, 25, 12, 22, 11, 90};
-        int n = arr.length;
+        int[] numbers = {64, 34, 25, 12, 22, 11, 90};
 
-        bubbleSort(arr, n);
+        bubbleSort(numbers);
 
         System.out.println("Sorted array: ");
-        printArray(arr, n);
+        printArray(numbers, numbers.length);
     }
 }

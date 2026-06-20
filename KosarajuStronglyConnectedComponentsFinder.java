@@ -11,13 +11,13 @@ public final class KosarajuStronglyConnectedComponentsFinder
         }
 
         GraphTraversal forwardTraversal = GraphTraversal.forGraph(graph);
-        Deque<Integer> finishingOrder = forwardTraversal.buildFinishingOrder();
+        Deque<Vertex> finishingOrder = forwardTraversal.buildFinishingOrder();
 
         GraphTraversal reversedTraversal = GraphTraversal.forGraph(graph.reverse());
         List<StronglyConnectedComponent> components = new ArrayList<>();
 
         while (!finishingOrder.isEmpty()) {
-            int vertex = finishingOrder.pop();
+            Vertex vertex = finishingOrder.pop();
             if (reversedTraversal.hasVisited(vertex)) {
                 continue;
             }

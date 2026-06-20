@@ -19,8 +19,8 @@ public final class StronglyConnectedComponentsFormatter {
         }
 
         StringBuilder output = new StringBuilder();
-        for (int vertex : component.vertices()) {
-            output.append(vertex).append(' ');
+        for (Vertex vertex : component.vertices()) {
+            output.append(vertex.id()).append(' ');
         }
         return output.toString();
     }

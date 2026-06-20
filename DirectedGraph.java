@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Set;
 
 public final class DirectedGraph implements Graph {
-    private final List<Integer> vertices;
-    private final Map<Integer, List<Integer>> adjacencyByVertex;
+    private final List<Vertex> vertices;
+    private final Map<Vertex, List<Vertex>> adjacencyByVertex;
 
-    private DirectedGraph(List<Integer> vertices, Map<Integer, List<Integer>> adjacencyByVertex) {
+    private DirectedGraph(List<Vertex> vertices, Map<Vertex, List<Vertex>> adjacencyByVertex) {
         this.vertices = vertices;
         this.adjacencyByVertex = adjacencyByVertex;
     }
@@ -23,24 +23,24 @@ public final class DirectedGraph implements Graph {
         return fromEdges(createRangeVertices(vertexCount), edges);
     }
 
-    public static DirectedGraph fromEdges(List<Integer> vertices, Edge... edges) {
+    public static DirectedGraph fromEdges(List<Vertex> vertices, Edge... edges) {
         return fromEdges(vertices, List.of(edges));
     }
 
-    public static DirectedGraph fromEdges(List<Integer> vertices, List<Edge> edges) {
-        List<Integer> normalizedVertices = normalizeVertices(vertices);
+    public static DirectedGraph fromEdges(List<Vertex> vertices, List<Edge> edges) {
+        List<Vertex> normalizedVertices = normalizeVertices(vertices);
 
         if (edges == null) {
             throw new IllegalArgumentException("Edges must not be null.");
         }
 
-        Map<Integer, List<Integer>> adjacencyByVertex = createEmptyAdjacency(normalizedVertices);
+        Map<Vertex, List<Vertex>> adjacencyByVertex = createEmptyAdjacency(normalizedVertices);
 
         for (Edge edge : edges) {
             validateEdge(edge);
 
-            int from = edge.from();
-            int to = edge.to();
+            Vertex from = edge.from();
+            Vertex to = edge.to();
             validateVertex(from, adjacencyByVertex);
             validateVertex(to, adjacencyByVertex);
             adjacencyByVertex.get(from).add(to);
@@ -55,27 +55,27 @@ public final class DirectedGraph implements Graph {
     }
 
     @Override
-    public List<Integer> vertices() {
+    public List<Vertex> vertices() {
         return vertices;
     }
 
     @Override
-    public List<Integer> neighborsOf(int vertex) {
+    public List<Vertex> neighborsOf(Vertex vertex) {
         validateVertex(vertex, adjacencyByVertex);
         return adjacencyByVertex.get(vertex);
     }
 
     @Override
-    public boolean containsVertex(int vertex) {
+    public boolean containsVertex(Vertex vertex) {
         return adjacencyByVertex.containsKey(vertex);
     }
 
     @Override
     public DirectedGraph reverse() {
-        Map<Integer, List<Integer>> reversedAdjacency = createEmptyAdjacency(vertices);
+        Map<Vertex, List<Vertex>> reversedAdjacency = createEmptyAdjacency(vertices);
 
-        for (int vertex : vertices) {
-            for (int neighbor : neighborsOf(vertex)) {
+        for (Vertex vertex : vertices) {
+            for (Vertex neighbor : neighborsOf(vertex)) {
                 reversedAdjacency.get(neighbor).add(vertex);
             }
         }
@@ -83,43 +83,43 @@ public final class DirectedGraph implements Graph {
         return new DirectedGraph(vertices, freeze(reversedAdjacency));
     }
 
-    private static Map<Integer, List<Integer>> createEmptyAdjacency(List<Integer> vertices) {
-        Map<Integer, List<Integer>> adjacencyByVertex = new LinkedHashMap<>();
-        for (int vertex : vertices) {
+    private static Map<Vertex, List<Vertex>> createEmptyAdjacency(List<Vertex> vertices) {
+        Map<Vertex, List<Vertex>> adjacencyByVertex = new LinkedHashMap<>();
+        for (Vertex vertex : vertices) {
             adjacencyByVertex.put(vertex, new ArrayList<>());
         }
         return adjacencyByVertex;
     }
 
-    private static Map<Integer, List<Integer>> freeze(Map<Integer, List<Integer>> adjacencyByVertex) {
-        Map<Integer, List<Integer>> immutableAdjacency = new LinkedHashMap<>();
+    private static Map<Vertex, List<Vertex>> freeze(Map<Vertex, List<Vertex>> adjacencyByVertex) {
+        Map<Vertex, List<Vertex>> immutableAdjacency = new LinkedHashMap<>();
 
-        for (Map.Entry<Integer, List<Integer>> entry : adjacencyByVertex.entrySet()) {
+        for (Map.Entry<Vertex, List<Vertex>> entry : adjacencyByVertex.entrySet()) {
             immutableAdjacency.put(entry.getKey(), List.copyOf(entry.getValue()));
         }
 
         return Collections.unmodifiableMap(immutableAdjacency);
     }
 
-    private static List<Integer> createRangeVertices(int vertexCount) {
+    private static List<Vertex> createRangeVertices(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count must be non-negative.");
         }
 
-        List<Integer> vertices = new ArrayList<>(vertexCount);
+        List<Vertex> vertices = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
-            vertices.add(vertex);
+            vertices.add(Vertex.of(vertex));
         }
         return Collections.unmodifiableList(vertices);
     }
 
-    private static List<Integer> normalizeVertices(List<Integer> vertices) {
+    private static List<Vertex> normalizeVertices(List<Vertex> vertices) {
         if (vertices == null) {
             throw new IllegalArgumentException("Vertices must not be null.");
         }
 
-        Set<Integer> uniqueVertices = new LinkedHashSet<>();
-        for (Integer vertex : vertices) {
+        Set<Vertex> uniqueVertices = new LinkedHashSet<>();
+        for (Vertex vertex : vertices) {
             if (vertex == null) {
                 throw new IllegalArgumentException("Vertices must not contain null values.");
             }
@@ -133,12 +133,12 @@ public final class DirectedGraph implements Graph {
     }
 
     private static void validateEdge(Edge edge) {
-        if (edge == null) {
+        if (edge == null || edge.from() == null || edge.to() == null) {
             throw new IllegalArgumentException("Edges must not contain null values.");
         }
     }
 
-    private static void validateVertex(int vertex, Map<Integer, List<Integer>> adjacencyByVertex) {
+    private static void validateVertex(Vertex vertex, Map<Vertex, List<Vertex>> adjacencyByVertex) {
         if (!adjacencyByVertex.containsKey(vertex)) {
             throw new IllegalArgumentException("Vertex " + vertex + " is not part of the graph.");
         }

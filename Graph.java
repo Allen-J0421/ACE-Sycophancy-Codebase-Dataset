@@ -3,11 +3,11 @@ import java.util.List;
 public interface Graph {
     int vertexCount();
 
-    List<Integer> vertices();
+    List<Vertex> vertices();
 
-    List<Integer> neighborsOf(int vertex);
+    List<Vertex> neighborsOf(Vertex vertex);
 
-    boolean containsVertex(int vertex);
+    boolean containsVertex(Vertex vertex);
 
     Graph reverse();
 }

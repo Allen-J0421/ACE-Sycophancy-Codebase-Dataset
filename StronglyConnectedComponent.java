@@ -1,13 +1,13 @@
 import java.util.List;
 
 public final class StronglyConnectedComponent {
-    private final List<Integer> vertices;
+    private final List<Vertex> vertices;
 
-    private StronglyConnectedComponent(List<Integer> vertices) {
+    private StronglyConnectedComponent(List<Vertex> vertices) {
         this.vertices = vertices;
     }
 
-    public static StronglyConnectedComponent fromVertices(List<Integer> vertices) {
+    public static StronglyConnectedComponent fromVertices(List<Vertex> vertices) {
         if (vertices == null) {
             throw new IllegalArgumentException("Vertices must not be null.");
         }
@@ -15,7 +15,7 @@ public final class StronglyConnectedComponent {
         return new StronglyConnectedComponent(List.copyOf(vertices));
     }
 
-    public List<Integer> vertices() {
+    public List<Vertex> vertices() {
         return vertices;
     }
 
@@ -23,7 +23,7 @@ public final class StronglyConnectedComponent {
         return vertices.size();
     }
 
-    public boolean contains(int vertex) {
+    public boolean contains(Vertex vertex) {
         return vertices.contains(vertex);
     }
 }

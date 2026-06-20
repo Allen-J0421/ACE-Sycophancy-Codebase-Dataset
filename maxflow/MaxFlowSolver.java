@@ -1,5 +1,9 @@
 package maxflow;
 
 public interface MaxFlowSolver {
-    int computeMaxFlow();
+    MaxFlowResult solve();
+
+    default int computeMaxFlow() {
+        return solve().value();
+    }
 }

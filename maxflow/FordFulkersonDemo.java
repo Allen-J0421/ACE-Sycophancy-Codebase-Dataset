@@ -17,6 +17,7 @@ public final class FordFulkersonDemo {
 
         FlowNetwork network = FlowNetwork.fromMatrix(graph);
         MaxFlowSolver solver = new FordFulkersonSolver(network, 0, 5);
-        System.out.println("The maximum possible flow is " + solver.computeMaxFlow());
+        MaxFlowResult result = solver.solve();
+        System.out.println("The maximum possible flow is " + result.value());
     }
 }

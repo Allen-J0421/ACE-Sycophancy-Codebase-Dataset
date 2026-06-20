@@ -41,6 +41,10 @@ public final class ResidualNetwork {
         return flow;
     }
 
+    int[][] snapshotCapacities() {
+        return copyMatrix(residualCapacities);
+    }
+
     private static int[][] copyMatrix(int[][] sourceMatrix) {
         int[][] copy = new int[sourceMatrix.length][sourceMatrix.length];
         for (int row = 0; row < sourceMatrix.length; row++) {

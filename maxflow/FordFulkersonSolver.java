@@ -36,7 +36,7 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
     }
 
     @Override
-    public int computeMaxFlow() {
+    public MaxFlowResult solve() {
         ResidualNetwork residualNetwork = network.createResidualNetwork();
         int maxFlow = 0;
 
@@ -48,7 +48,7 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
             augmentingPath = augmentingPathFinder.findPath(residualNetwork, source, sink);
         }
 
-        return maxFlow;
+        return new MaxFlowResult(maxFlow, source, sink, residualNetwork.snapshotCapacities());
     }
 
     private static int validateVertex(int vertex, int vertexCount, String label) {

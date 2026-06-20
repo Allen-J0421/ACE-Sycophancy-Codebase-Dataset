@@ -1,52 +1,70 @@
 import java.util.Arrays;
+import java.util.Objects;
 
-public class HeapSort {
+final class HeapSort {
+    private HeapSort() {
+    }
 
-    static void heapify(int[] arr, int n, int i) {
+    static void sort(int[] values) {
+        Objects.requireNonNull(values, "values");
 
-        int largest = i;
-
-        int l = 2 * i + 1;
-
-        int r = 2 * i + 2;
-
-        if (l < n && arr[l] > arr[largest])
-            largest = l;
-
-        if (r < n && arr[r] > arr[largest])
-            largest = r;
-
-        if (largest != i) {
-            int temp = arr[i];
-            arr[i] = arr[largest];
-            arr[largest] = temp;
-
-            heapify(arr, n, largest);
+        buildMaxHeap(values);
+        for (int heapSize = values.length - 1; heapSize > 0; heapSize--) {
+            swap(values, 0, heapSize);
+            siftDown(values, heapSize, 0);
         }
     }
 
-    static void heapSort(int[] arr) {
-        int n = arr.length;
+    static void heapSort(int[] values) {
+        sort(values);
+    }
 
-        for (int i = n / 2 - 1; i >= 0; i--)
-            heapify(arr, n, i);
-
-        for (int i = n - 1; i > 0; i--) {
-
-            int temp = arr[0];
-            arr[0] = arr[i];
-            arr[i] = temp;
-
-            heapify(arr, i, 0);
+    private static void buildMaxHeap(int[] values) {
+        for (int index = values.length / 2 - 1; index >= 0; index--) {
+            siftDown(values, values.length, index);
         }
+    }
+
+    private static void siftDown(int[] values, int heapSize, int rootIndex) {
+        int largestIndex = rootIndex;
+        int leftChildIndex = leftChildIndex(rootIndex);
+        int rightChildIndex = rightChildIndex(rootIndex);
+
+        if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
+            largestIndex = leftChildIndex;
+        }
+
+        if (rightChildIndex < heapSize && values[rightChildIndex] > values[largestIndex]) {
+            largestIndex = rightChildIndex;
+        }
+
+        if (largestIndex == rootIndex) {
+            return;
+        }
+
+        swap(values, rootIndex, largestIndex);
+        siftDown(values, heapSize, largestIndex);
+    }
+
+    private static int leftChildIndex(int index) {
+        return 2 * index + 1;
+    }
+
+    private static int rightChildIndex(int index) {
+        return 2 * index + 2;
+    }
+
+    private static void swap(int[] values, int firstIndex, int secondIndex) {
+        int value = values[firstIndex];
+        values[firstIndex] = values[secondIndex];
+        values[secondIndex] = value;
     }
 
     public static void main(String[] args) {
-        int[] arr = { 9, 4, 3, 8, 10, 2, 5 };
+        int[] values = {9, 4, 3, 8, 10, 2, 5};
 
-        heapSort(arr);
+        sort(values);
 
-        for (int i = 0; i < arr.length; ++i)
-            System.out.print(arr[i] + " ");
+        System.out.println(Arrays.toString(values));
     }
 }

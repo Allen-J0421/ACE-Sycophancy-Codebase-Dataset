@@ -3,6 +3,7 @@ import java.util.List;
 
 public class HuffmanCodingTest {
     public static void main(String[] args) {
+        shouldBuildCodebookOnceForBothOrderings();
         shouldGenerateExpectedTraversalOrderCodes();
         shouldGenerateExpectedSymbolOrderCodes();
         shouldHandleSingleSymbol();
@@ -10,6 +11,21 @@ public class HuffmanCodingTest {
         shouldRejectNullFrequencies();
         shouldRejectNegativeFrequencies();
         shouldRejectMismatchedInputLengths();
+    }
+
+    private static void shouldBuildCodebookOnceForBothOrderings() {
+        HuffmanCoding.Codebook codebook = HuffmanCoding.codebook("abcdef", new int[]{5, 9, 12, 13, 16, 45});
+
+        assertListEquals(
+                Arrays.asList("0", "100", "101", "1100", "1101", "111"),
+                codebook.inTraversalOrder(),
+                "codebook should expose traversal-order codes"
+        );
+        assertListEquals(
+                Arrays.asList("1100", "1101", "100", "101", "111", "0"),
+                codebook.inSymbolOrder(),
+                "codebook should expose symbol-order codes"
+        );
     }
 
     private static void shouldGenerateExpectedTraversalOrderCodes() {

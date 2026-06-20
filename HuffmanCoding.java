@@ -11,26 +11,28 @@ public class HuffmanCoding {
     private static final int[] SAMPLE_FREQUENCIES = {5, 9, 12, 13, 16, 45};
 
     static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
-        validateSymbols(symbols);
-        validateFrequencyCount(symbols.length(), frequencies);
-        return HuffmanTree.fromFrequencies(frequencies)
-                .buildCodebook(symbols.length())
-                .inTraversalOrder();
+        return codebook(symbols, frequencies).inTraversalOrder();
     }
 
     static ArrayList<String> huffmanCodes(int[] frequencies) {
-        validateFrequencies(frequencies);
-        return HuffmanTree.fromFrequencies(frequencies)
-                .buildCodebook(frequencies.length)
-                .inTraversalOrder();
+        return codebook(frequencies).inTraversalOrder();
     }
 
     static ArrayList<String> huffmanCodesBySymbolOrder(String symbols, int[] frequencies) {
+        return codebook(symbols, frequencies).inSymbolOrder();
+    }
+
+    static Codebook codebook(String symbols, int[] frequencies) {
         validateSymbols(symbols);
         validateFrequencyCount(symbols.length(), frequencies);
         return HuffmanTree.fromFrequencies(frequencies)
-                .buildCodebook(symbols.length())
-                .inSymbolOrder();
+                .buildCodebook(symbols.length());
+    }
+
+    static Codebook codebook(int[] frequencies) {
+        validateFrequencies(frequencies);
+        return HuffmanTree.fromFrequencies(frequencies)
+                .buildCodebook(frequencies.length);
     }
 
     private static void validateSymbols(String symbols) {
@@ -60,6 +62,28 @@ public class HuffmanCoding {
     public static void main(String[] args) {
         ArrayList<String> codes = huffmanCodes(SAMPLE_SYMBOLS, SAMPLE_FREQUENCIES);
         printCodes(codes);
+    }
+
+    static final class Codebook {
+        private final ArrayList<String> traversalCodes = new ArrayList<>();
+        private final String[] symbolCodes;
+
+        private Codebook(int symbolCount) {
+            symbolCodes = new String[symbolCount];
+        }
+
+        private void add(int symbolIndex, String code) {
+            traversalCodes.add(code);
+            symbolCodes[symbolIndex] = code;
+        }
+
+        ArrayList<String> inTraversalOrder() {
+            return new ArrayList<>(traversalCodes);
+        }
+
+        ArrayList<String> inSymbolOrder() {
+            return new ArrayList<>(Arrays.asList(symbolCodes));
+        }
     }
 
     private static final class HuffmanTree {
@@ -119,28 +143,6 @@ public class HuffmanCoding {
             path.append('1');
             collectCodes(node.right, path, codebook);
             path.deleteCharAt(path.length() - 1);
-        }
-
-        private static final class Codebook {
-            private final ArrayList<String> traversalCodes = new ArrayList<>();
-            private final String[] symbolCodes;
-
-            private Codebook(int symbolCount) {
-                symbolCodes = new String[symbolCount];
-            }
-
-            private void add(int symbolIndex, String code) {
-                traversalCodes.add(code);
-                symbolCodes[symbolIndex] = code;
-            }
-
-            private ArrayList<String> inTraversalOrder() {
-                return new ArrayList<>(traversalCodes);
-            }
-
-            private ArrayList<String> inSymbolOrder() {
-                return new ArrayList<>(Arrays.asList(symbolCodes));
-            }
         }
 
         private static final class Node {

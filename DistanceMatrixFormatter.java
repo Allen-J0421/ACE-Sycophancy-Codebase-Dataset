@@ -3,6 +3,8 @@ public final class DistanceMatrixFormatter {
     }
 
     public static String format(int[][] distances) {
+        MatrixValidator.requireRectangular(distances, "Distance matrix");
+
         StringBuilder output = new StringBuilder();
         for (int[] row : distances) {
             output.append(formatRow(row)).append(System.lineSeparator());

@@ -5,7 +5,7 @@ public final class FloydWarshall {
     }
 
     public static int[][] shortestPaths(int[][] graph) {
-        validateSquareMatrix(graph);
+        MatrixValidator.requireSquare(graph, "Graph matrix");
 
         int vertexCount = graph.length;
         int[][] distances = copyMatrix(graph);
@@ -22,7 +22,7 @@ public final class FloydWarshall {
     }
 
     public static boolean hasNegativeCycle(int[][] distances) {
-        validateSquareMatrix(distances);
+        MatrixValidator.requireSquare(distances, "Distance matrix");
 
         for (int vertex = 0; vertex < distances.length; vertex++) {
             if (distances[vertex][vertex] < 0) {
@@ -85,18 +85,6 @@ public final class FloydWarshall {
             return Math.addExact(firstDistance, secondDistance);
         } catch (ArithmeticException exception) {
             throw new ArithmeticException("Path distance overflowed int range.");
-        }
-    }
-
-    private static void validateSquareMatrix(int[][] matrix) {
-        if (matrix == null) {
-            throw new IllegalArgumentException("Graph matrix cannot be null.");
-        }
-
-        for (int row = 0; row < matrix.length; row++) {
-            if (matrix[row] == null || matrix[row].length != matrix.length) {
-                throw new IllegalArgumentException("Graph matrix must be square.");
-            }
         }
     }
 

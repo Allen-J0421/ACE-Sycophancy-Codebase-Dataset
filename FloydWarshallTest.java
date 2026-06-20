@@ -9,6 +9,7 @@ public final class FloydWarshallTest {
         doesNotMutateInput();
         detectsNegativeCycles();
         rejectsInvalidMatrices();
+        rejectsInvalidFormatterMatrices();
         throwsOnDistanceOverflow();
         formatsUnreachableDistances();
 
@@ -67,6 +68,21 @@ public final class FloydWarshallTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> FloydWarshall.shortestPaths(new int[][]{{0}, {1, 0}}));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> FloydWarshall.shortestPaths(new int[][]{{0}, null}));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> FloydWarshall.shortestPaths(new int[][]{{0, 1}}));
+    }
+
+    private static void rejectsInvalidFormatterMatrices() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> DistanceMatrixFormatter.format(null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> DistanceMatrixFormatter.format(new int[][]{{0}, {1, 0}}));
     }
 
     private static void throwsOnDistanceOverflow() {

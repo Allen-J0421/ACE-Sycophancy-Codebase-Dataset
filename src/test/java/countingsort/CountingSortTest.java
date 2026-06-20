@@ -9,26 +9,22 @@ public final class CountingSortTest {
     }
 
     public static void main(String[] args) {
-        String[] descriptions = {
-            "positive and repeated values",
-            "negative values",
-            "empty array",
-            "single element"
+        SortCase[] cases = {
+            new SortCase(
+                "positive and repeated values",
+                new int[] {2, 5, 3, 0, 2, 3, 0, 3},
+                new int[] {0, 0, 2, 2, 3, 3, 3, 5}
+            ),
+            new SortCase(
+                "negative values",
+                new int[] {4, -2, 7, 0, -2, 5},
+                new int[] {-2, -2, 0, 4, 5, 7}
+            ),
+            new SortCase("empty array", new int[0], new int[0]),
+            new SortCase("single element", new int[] {42}, new int[] {42})
         };
-        int[][] inputs = {
-            {2, 5, 3, 0, 2, 3, 0, 3},
-            {4, -2, 7, 0, -2, 5},
-            {},
-            {42}
-        };
-        int[][] expected = {
-            {0, 0, 2, 2, 3, 3, 3, 5},
-            {-2, -2, 0, 4, 5, 7},
-            {},
-            {42}
-        };
-        for (int i = 0; i < descriptions.length; i++) {
-            assertSortsTo(descriptions[i], inputs[i], expected[i]);
+        for (SortCase sortCase : cases) {
+            assertSortsTo(sortCase);
         }
         assertThrows(NullPointerException.class, () -> CountingSort.sort(null));
         assertThrows(
@@ -38,16 +34,19 @@ public final class CountingSortTest {
         System.out.println("All counting sort checks passed.");
     }
 
-    private static void assertSortsTo(String description, int[] input, int[] expected) {
-        int[] snapshot = input.clone();
-        int[] actual = CountingSort.sort(input);
-        if (!Arrays.equals(expected, actual)) {
+    private static void assertSortsTo(SortCase sortCase) {
+        int[] snapshot = sortCase.input.clone();
+        int[] actual = CountingSort.sort(sortCase.input);
+        if (!Arrays.equals(sortCase.expected, actual)) {
             throw new AssertionError(
-                description + ": expected " + Arrays.toString(expected) + " but got " + Arrays.toString(actual)
+                sortCase.description + ": expected "
+                    + Arrays.toString(sortCase.expected)
+                    + " but got "
+                    + Arrays.toString(actual)
             );
         }
-        if (!Arrays.equals(snapshot, input)) {
-            throw new AssertionError(description + ": input array was modified");
+        if (!Arrays.equals(snapshot, sortCase.input)) {
+            throw new AssertionError(sortCase.description + ": input array was modified");
         }
     }
 
@@ -62,6 +61,18 @@ public final class CountingSortTest {
                     thrown
                 );
             }
+        }
+    }
+
+    private static final class SortCase {
+        private final String description;
+        private final int[] input;
+        private final int[] expected;
+
+        private SortCase(String description, int[] input, int[] expected) {
+            this.description = description;
+            this.input = input;
+            this.expected = expected;
         }
     }
 

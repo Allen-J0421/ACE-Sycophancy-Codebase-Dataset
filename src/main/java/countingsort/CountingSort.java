@@ -30,19 +30,19 @@ public final class CountingSort {
             }
         }
 
-        int[] positions = buildPositions(values, min, max);
-        return buildSortedCopy(values, positions, min);
+        int[] prefixSums = buildPrefixSums(values, min, max);
+        return placeSortedValues(values, prefixSums, min);
     }
 
-    private static int[] buildPositions(int[] values, int min, int max) {
-        int[] counts = buildCounts(values, min, max);
+    private static int[] buildPrefixSums(int[] values, int min, int max) {
+        int[] counts = countValues(values, min, max);
         for (int i = 1; i < counts.length; i++) {
             counts[i] += counts[i - 1];
         }
         return counts;
     }
 
-    private static int[] buildCounts(int[] values, int min, int max) {
+    private static int[] countValues(int[] values, int min, int max) {
         long range = (long) max - min + 1L;
         if (range > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Input range is too large for counting sort");
@@ -55,11 +55,11 @@ public final class CountingSort {
         return counts;
     }
 
-    private static int[] buildSortedCopy(int[] values, int[] positions, int min) {
+    private static int[] placeSortedValues(int[] values, int[] prefixSums, int min) {
         int[] sorted = new int[values.length];
         for (int i = values.length - 1; i >= 0; i--) {
             int value = values[i];
-            sorted[--positions[value - min]] = value;
+            sorted[--prefixSums[value - min]] = value;
         }
         return sorted;
     }

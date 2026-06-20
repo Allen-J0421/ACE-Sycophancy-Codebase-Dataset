@@ -68,14 +68,11 @@ class KruskalMST {
             int rootY = find(y);
             if (rootX == rootY) return false;
 
-            if (rank[rootX] < rank[rootY]) {
-                parent[rootX] = rootY;
-            } else if (rank[rootX] > rank[rootY]) {
-                parent[rootY] = rootX;
-            } else {
-                parent[rootY] = rootX;
-                rank[rootX]++;
+            if (rank[rootX] > rank[rootY]) {
+                int tmp = rootX; rootX = rootY; rootY = tmp;
             }
+            parent[rootX] = rootY;
+            if (rank[rootX] == rank[rootY]) rank[rootY]++;
             return true;
         }
     }

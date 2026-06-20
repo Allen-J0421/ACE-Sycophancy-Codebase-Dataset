@@ -10,6 +10,10 @@ class KruskalMST {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] edges) {
+        return kruskalMST(vertexCount, edges);
+    }
+
+    public static int kruskalMST(int vertexCount, int[][] edges) {
         return minimumSpanningTreeCost(vertexCount, edges);
     }
 

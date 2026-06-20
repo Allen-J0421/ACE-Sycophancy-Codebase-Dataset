@@ -1,5 +1,7 @@
 package maxflow;
 
+import java.util.Optional;
+
 public final class FordFulkersonSolver implements MaxFlowSolver {
     private final FlowNetwork network;
     private final int source;
@@ -36,13 +38,14 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
     @Override
     public int computeMaxFlow() {
         ResidualNetwork residualNetwork = network.createResidualNetwork();
-        int[] parent = new int[network.vertexCount()];
         int maxFlow = 0;
 
-        while (augmentingPathFinder.findPath(residualNetwork, source, sink, parent)) {
-            int pathFlow = residualNetwork.bottleneckCapacity(parent, source, sink);
-            residualNetwork.augmentPath(parent, source, sink, pathFlow);
-            maxFlow += pathFlow;
+        Optional<AugmentingPath> augmentingPath =
+            augmentingPathFinder.findPath(residualNetwork, source, sink);
+        while (augmentingPath.isPresent()) {
+            AugmentingPath path = augmentingPath.get();
+            maxFlow += residualNetwork.augmentPath(path);
+            augmentingPath = augmentingPathFinder.findPath(residualNetwork, source, sink);
         }
 
         return maxFlow;

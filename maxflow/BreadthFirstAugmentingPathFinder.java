@@ -2,11 +2,13 @@ package maxflow;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Optional;
 
 public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFinder {
     @Override
-    public boolean findPath(ResidualNetwork residualNetwork, int source, int sink, int[] parent) {
+    public Optional<AugmentingPath> findPath(ResidualNetwork residualNetwork, int source, int sink) {
         boolean[] visited = new boolean[residualNetwork.vertexCount()];
+        int[] parent = new int[residualNetwork.vertexCount()];
         Arrays.fill(parent, -1);
 
         ArrayDeque<Integer> queue = new ArrayDeque<>();
@@ -20,7 +22,7 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
                 if (!visited[nextVertex] && residualNetwork.hasResidualCapacity(currentVertex, nextVertex)) {
                     parent[nextVertex] = currentVertex;
                     if (nextVertex == sink) {
-                        return true;
+                        return Optional.of(new AugmentingPath(source, sink, parent));
                     }
 
                     visited[nextVertex] = true;
@@ -29,6 +31,6 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
             }
         }
 
-        return false;
+        return Optional.empty();
     }
 }

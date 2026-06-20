@@ -19,23 +19,26 @@ public final class ResidualNetwork {
         return residualCapacities[from][to] > 0;
     }
 
-    public int bottleneckCapacity(int[] parent, int source, int sink) {
+    public int bottleneckCapacity(AugmentingPath path) {
         int pathFlow = Integer.MAX_VALUE;
 
-        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
-            int predecessor = parent[vertex];
+        for (int vertex = path.sink(); vertex != path.source(); vertex = path.parentOf(vertex)) {
+            int predecessor = path.parentOf(vertex);
             pathFlow = Math.min(pathFlow, residualCapacities[predecessor][vertex]);
         }
 
         return pathFlow;
     }
 
-    public void augmentPath(int[] parent, int source, int sink, int flow) {
-        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
-            int predecessor = parent[vertex];
+    public int augmentPath(AugmentingPath path) {
+        int flow = bottleneckCapacity(path);
+        for (int vertex = path.sink(); vertex != path.source(); vertex = path.parentOf(vertex)) {
+            int predecessor = path.parentOf(vertex);
             residualCapacities[predecessor][vertex] -= flow;
             residualCapacities[vertex][predecessor] += flow;
         }
+
+        return flow;
     }
 
     private static int[][] copyMatrix(int[][] sourceMatrix) {

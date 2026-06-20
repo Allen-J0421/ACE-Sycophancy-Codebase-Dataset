@@ -11,6 +11,7 @@ public final class BucketSortTest {
         returnsDistinctArrayForSortedCopy();
         sortsDuplicateValues();
         sortsValuesAtLowerBound();
+        sortsSingleValue();
         sortsValuesNearUpperBound();
         rejectsUnsupportedValues();
         rejectsNullInput();
@@ -56,6 +57,14 @@ public final class BucketSortTest {
             new float[]{0.25f, 0.0f, 0.75f},
             new float[]{0.0f, 0.25f, 0.75f},
             "sort should support the lower bound"
+        );
+    }
+
+    private static void sortsSingleValue() {
+        assertSortsInPlace(
+            new float[]{0.4f},
+            new float[]{0.4f},
+            "sort should handle a single value"
         );
     }
 

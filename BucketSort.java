@@ -27,64 +27,37 @@ public final class BucketSort {
             return;
         }
 
-        int[] bucketSizes = countValuesPerBucket(values);
-        float[][] buckets = createBuckets(bucketSizes);
-        distribute(values, buckets);
-        sortBuckets(buckets, bucketSizes);
-        mergeBuckets(buckets, bucketSizes, values);
+        BucketLayout bucketLayout = BucketLayout.from(values);
+        float[] bucketedValues = distribute(values, bucketLayout);
+        sortBuckets(bucketedValues, bucketLayout);
+        System.arraycopy(bucketedValues, 0, values, 0, values.length);
     }
 
-    private static int[] countValuesPerBucket(float[] values) {
-        int[] bucketSizes = new int[values.length];
-
+    private static float[] distribute(float[] values, BucketLayout bucketLayout) {
+        float[] bucketedValues = new float[values.length];
+        int[] insertionIndexes = bucketLayout.insertionIndexes();
         for (float value : values) {
-            validateValue(value);
-            bucketSizes[bucketIndexFor(value, bucketSizes.length)]++;
+            int bucketIndex = bucketIndexFor(value, bucketLayout.bucketCount());
+            bucketedValues[insertionIndexes[bucketIndex]++] = value;
         }
-
-        return bucketSizes;
+        return bucketedValues;
     }
 
-    private static float[][] createBuckets(int[] bucketSizes) {
-        float[][] buckets = new float[bucketSizes.length][];
-        for (int i = 0; i < bucketSizes.length; i++) {
-            buckets[i] = new float[bucketSizes[i]];
-        }
-        return buckets;
-    }
-
-    private static void distribute(float[] values, float[][] buckets) {
-        int[] insertionIndexes = new int[buckets.length];
-        for (float value : values) {
-            int bucketIndex = bucketIndexFor(value, buckets.length);
-            buckets[bucketIndex][insertionIndexes[bucketIndex]++] = value;
+    private static void sortBuckets(float[] bucketedValues, BucketLayout bucketLayout) {
+        for (int i = 0; i < bucketLayout.bucketCount(); i++) {
+            insertionSort(bucketedValues, bucketLayout.bucketStart(i), bucketLayout.bucketEnd(i));
         }
     }
 
-    private static void sortBuckets(float[][] buckets, int[] bucketSizes) {
-        for (int i = 0; i < buckets.length; i++) {
-            insertionSort(buckets[i], bucketSizes[i]);
-        }
-    }
-
-    private static void mergeBuckets(float[][] buckets, int[] bucketSizes, float[] target) {
-        int targetIndex = 0;
-        for (int i = 0; i < buckets.length; i++) {
-            int bucketSize = bucketSizes[i];
-            System.arraycopy(buckets[i], 0, target, targetIndex, bucketSize);
-            targetIndex += bucketSize;
-        }
-    }
-
-    private static void insertionSort(float[] bucket, int size) {
-        for (int i = 1; i < size; i++) {
-            float currentValue = bucket[i];
+    private static void insertionSort(float[] values, int startInclusive, int endExclusive) {
+        for (int i = startInclusive + 1; i < endExclusive; i++) {
+            float currentValue = values[i];
             int j = i - 1;
-            while (j >= 0 && bucket[j] > currentValue) {
-                bucket[j + 1] = bucket[j];
+            while (j >= startInclusive && values[j] > currentValue) {
+                values[j + 1] = values[j];
                 j--;
             }
-            bucket[j + 1] = currentValue;
+            values[j + 1] = currentValue;
         }
     }
 
@@ -109,5 +82,49 @@ public final class BucketSort {
         return Float.isFinite(value)
             && value >= MIN_SUPPORTED_VALUE
             && value < MAX_SUPPORTED_VALUE;
+    }
+
+    private static final class BucketLayout {
+
+        private final int[] bucketBoundaries;
+
+        private BucketLayout(int[] bucketBoundaries) {
+            this.bucketBoundaries = bucketBoundaries;
+        }
+
+        private static BucketLayout from(float[] values) {
+            int[] bucketSizes = new int[values.length];
+
+            for (float value : values) {
+                validateValue(value);
+                bucketSizes[bucketIndexFor(value, bucketSizes.length)]++;
+            }
+
+            int[] bucketBoundaries = new int[bucketSizes.length + 1];
+            int nextBucketStart = 0;
+            for (int i = 0; i < bucketSizes.length; i++) {
+                bucketBoundaries[i] = nextBucketStart;
+                nextBucketStart += bucketSizes[i];
+            }
+            bucketBoundaries[bucketSizes.length] = nextBucketStart;
+
+            return new BucketLayout(bucketBoundaries);
+        }
+
+        private int bucketCount() {
+            return bucketBoundaries.length - 1;
+        }
+
+        private int bucketStart(int bucketIndex) {
+            return bucketBoundaries[bucketIndex];
+        }
+
+        private int bucketEnd(int bucketIndex) {
+            return bucketBoundaries[bucketIndex + 1];
+        }
+
+        private int[] insertionIndexes() {
+            return Arrays.copyOf(bucketBoundaries, bucketCount());
+        }
     }
 }

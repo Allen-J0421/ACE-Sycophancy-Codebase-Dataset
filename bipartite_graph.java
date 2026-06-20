@@ -22,9 +22,11 @@ final class BipartiteGraph {
 
     static boolean isBipartite(int vertexCount, int[][] edges) {
         Graph graph = Graph.fromEdges(vertexCount, edges);
+        return isBipartite(graph);
+    }
 
-        Color[] colors = new Color[graph.vertexCount()];
-        Arrays.fill(colors, Color.UNCOLORED);
+    private static boolean isBipartite(Graph graph) {
+        Color[] colors = createColorAssignments(graph.vertexCount());
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
             if (colors[vertex].isUncolored() && !colorComponent(vertex, graph, colors)) {
@@ -33,6 +35,12 @@ final class BipartiteGraph {
         }
 
         return true;
+    }
+
+    private static Color[] createColorAssignments(int vertexCount) {
+        Color[] colors = new Color[vertexCount];
+        Arrays.fill(colors, Color.UNCOLORED);
+        return colors;
     }
 
     private static boolean colorComponent(

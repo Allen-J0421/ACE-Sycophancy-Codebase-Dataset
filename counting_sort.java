@@ -17,6 +17,10 @@ final class CountingSort {
         }
 
         ValueRange range = ValueRange.from(values);
+        if (range.hasSingleValue()) {
+            return Arrays.copyOf(values, values.length);
+        }
+
         int[] counts = buildCounts(values, range);
         return buildSortedArray(counts, range, values.length);
     }
@@ -68,6 +72,10 @@ final class CountingSort {
 
         private int size() {
             return size;
+        }
+
+        private boolean hasSingleValue() {
+            return size == 1;
         }
 
         private int indexOf(int value) {

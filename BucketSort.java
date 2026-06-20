@@ -27,14 +27,17 @@ public final class BucketSort {
             return;
         }
 
-        for (float value : values) {
-            validateValue(value);
-        }
-
-        Buckets buckets = new Buckets(values.length);
-        buckets.distribute(values);
+        BucketSet buckets = new BucketSet(values.length);
+        distribute(values, buckets);
         buckets.sortEach();
         buckets.writeBack(values);
+    }
+
+    private static void distribute(float[] values, BucketSet buckets) {
+        for (float value : values) {
+            validateValue(value);
+            buckets.add(value);
+        }
     }
 
     private static void insertionSort(float[] bucket, int size) {
@@ -66,60 +69,67 @@ public final class BucketSort {
         }
     }
 
-    private static final class Buckets {
+    private static final class BucketSet {
 
-        private final float[][] valuesByBucket;
-        private final int[] sizes;
+        private final Bucket[] buckets;
 
-        private Buckets(int bucketCount) {
-            valuesByBucket = new float[bucketCount][];
-            sizes = new int[bucketCount];
+        private BucketSet(int bucketCount) {
+            buckets = new Bucket[bucketCount];
 
             for (int i = 0; i < bucketCount; i++) {
-                valuesByBucket[i] = new float[0];
-            }
-        }
-
-        private void distribute(float[] values) {
-            for (float value : values) {
-                add(value);
+                buckets[i] = new Bucket();
             }
         }
 
         private void sortEach() {
-            for (int i = 0; i < valuesByBucket.length; i++) {
-                insertionSort(valuesByBucket[i], sizes[i]);
+            for (Bucket bucket : buckets) {
+                bucket.sort();
             }
         }
 
         private void writeBack(float[] target) {
             int targetIndex = 0;
-            for (int i = 0; i < valuesByBucket.length; i++) {
-                int size = sizes[i];
-                System.arraycopy(valuesByBucket[i], 0, target, targetIndex, size);
-                targetIndex += size;
+            for (Bucket bucket : buckets) {
+                targetIndex = bucket.writeTo(target, targetIndex);
             }
         }
 
         private void add(float value) {
-            int bucketIndex = bucketIndexFor(value, valuesByBucket.length);
-            int size = sizes[bucketIndex];
-            ensureCapacity(bucketIndex, size + 1);
-            valuesByBucket[bucketIndex][size] = value;
-            sizes[bucketIndex] = size + 1;
+            int bucketIndex = bucketIndexFor(value, buckets.length);
+            buckets[bucketIndex].add(value);
+        }
+    }
+
+    private static final class Bucket {
+
+        private float[] values = new float[0];
+        private int size;
+
+        private void add(float value) {
+            ensureCapacity(size + 1);
+            values[size] = value;
+            size++;
         }
 
-        private void ensureCapacity(int bucketIndex, int minCapacity) {
-            float[] bucket = valuesByBucket[bucketIndex];
-            if (bucket.length >= minCapacity) {
+        private void sort() {
+            insertionSort(values, size);
+        }
+
+        private int writeTo(float[] target, int targetIndex) {
+            System.arraycopy(values, 0, target, targetIndex, size);
+            return targetIndex + size;
+        }
+
+        private void ensureCapacity(int minCapacity) {
+            if (values.length >= minCapacity) {
                 return;
             }
 
-            int newCapacity = Math.max(1, bucket.length * 2);
+            int newCapacity = Math.max(1, values.length * 2);
             while (newCapacity < minCapacity) {
                 newCapacity *= 2;
             }
-            valuesByBucket[bucketIndex] = Arrays.copyOf(bucket, newCapacity);
+            values = Arrays.copyOf(values, newCapacity);
         }
     }
 }

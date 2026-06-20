@@ -14,6 +14,7 @@ public final class BucketSortTest {
         rejectsOutOfRangeValues();
         rejectsNullInput();
         handlesEmptyInput();
+        returnsEmptySortedCopy();
     }
 
     private static void sortsValuesInPlace() {
@@ -94,6 +95,11 @@ public final class BucketSortTest {
         float[] values = {};
         BucketSort.sort(values);
         assertArrayEquals(new float[]{}, values, "sort should leave empty input unchanged");
+    }
+
+    private static void returnsEmptySortedCopy() {
+        float[] copy = BucketSort.sortedCopy(new float[]{});
+        assertArrayEquals(new float[]{}, copy, "sortedCopy should handle empty input");
     }
 
     private static void assertArrayEquals(float[] expected, float[] actual, String message) {

@@ -30,7 +30,7 @@ final class FloydWarshallDemo {
     public static void main(String[] args) {
         WeightedGraph graph = WeightedGraph.from(sampleGraph());
         FloydWarshall solver = FloydWarshall.from(graph);
-        FloydWarshall.Result shortestPaths = solver.solve();
+        AllPairsShortestPaths shortestPaths = solver.solve();
         printMatrix(shortestPaths.distances());
     }
 }

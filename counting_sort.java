@@ -12,8 +12,8 @@ final class CountingSort {
 
     public static int[] sort(int[] values) {
         Objects.requireNonNull(values, "values");
-        if (values.length == 0) {
-            return new int[0];
+        if (values.length < 2) {
+            return Arrays.copyOf(values, values.length);
         }
 
         ValueRange range = ValueRange.from(values);

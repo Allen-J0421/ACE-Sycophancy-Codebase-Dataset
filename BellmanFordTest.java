@@ -3,7 +3,7 @@ import java.util.Arrays;
 /**
  * Lightweight, dependency-free tests for {@link BellmanFord} and friends.
  *
- * <p>Run with: {@code javac bellman_ford.java BellmanFordTest.java && java BellmanFordTest}
+ * <p>Run with: {@code javac *.java && java BellmanFordTest}
  */
 final class BellmanFordTest {
 
@@ -15,7 +15,7 @@ final class BellmanFordTest {
         unreachableVerticesAreReported();
         negativeWeightsAreHandled();
         negativeCycleIsDetected();
-        negativeCycleResultRejectsDistanceQueries();
+        resultTypeDistinguishesTheTwoCases();
         invalidGraphInputIsRejected();
         invalidSourceIsRejected();
 
@@ -29,22 +29,21 @@ final class BellmanFordTest {
         WeightedGraph graph = WeightedGraph.from(5, new int[][] {
             {1, 3, 2}, {4, 3, -1}, {2, 4, 1}, {1, 2, 1}, {0, 1, 5}
         });
-        ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
+        Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
 
-        check("no negative cycle", !result.hasNegativeCycle());
-        checkArray("sample distances", new int[] {0, 5, 6, 6, 7}, result.distances());
+        checkArray("sample distances", new int[] {0, 5, 6, 6, 7}, distances.all());
     }
 
     private static void unreachableVerticesAreReported() {
         // Vertex 2 is isolated; vertex 1 is reachable from 0.
         WeightedGraph graph = WeightedGraph.of(3, WeightedEdge.of(0, 1, 4));
-        ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
+        Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
 
-        check("source reachable", result.isReachable(0));
-        check("neighbour reachable", result.isReachable(1));
-        check("isolated vertex unreachable", !result.isReachable(2));
+        check("source reachable", distances.isReachable(0));
+        check("neighbour reachable", distances.isReachable(1));
+        check("isolated vertex unreachable", !distances.isReachable(2));
         check("unreachable distance sentinel",
-            result.distanceTo(2) == ShortestPathResult.UNREACHABLE);
+            distances.distanceTo(2) == Distances.UNREACHABLE);
     }
 
     private static void negativeWeightsAreHandled() {
@@ -52,9 +51,9 @@ final class BellmanFordTest {
             WeightedEdge.of(0, 1, 4),
             WeightedEdge.of(0, 2, 5),
             WeightedEdge.of(1, 2, -3));
-        ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
+        Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
 
-        check("negative edge improves path", result.distanceTo(2) == 1);
+        check("negative edge improves path", distances.distanceTo(2) == 1);
     }
 
     private static void negativeCycleIsDetected() {
@@ -64,18 +63,19 @@ final class BellmanFordTest {
             WeightedEdge.of(2, 1, -1)); // 1 -> 2 -> 1 sums to -2
         ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
 
-        check("negative cycle detected", result.hasNegativeCycle());
+        check("negative cycle detected", result instanceof NegativeCycle);
     }
 
-    private static void negativeCycleResultRejectsDistanceQueries() {
-        WeightedGraph graph = WeightedGraph.of(2,
+    private static void resultTypeDistinguishesTheTwoCases() {
+        WeightedGraph healthy = WeightedGraph.of(2, WeightedEdge.of(0, 1, 1));
+        WeightedGraph cyclic = WeightedGraph.of(2,
             WeightedEdge.of(0, 1, 1),
             WeightedEdge.of(1, 0, -2));
-        ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
 
-        check("cycle flagged", result.hasNegativeCycle());
-        checkThrows("distances() rejected on cycle", IllegalStateException.class,
-            result::distances);
+        check("healthy graph yields Distances",
+            BellmanFord.shortestPaths(healthy, 0) instanceof Distances);
+        check("cyclic graph yields NegativeCycle",
+            BellmanFord.shortestPaths(cyclic, 0) instanceof NegativeCycle);
     }
 
     private static void invalidGraphInputIsRejected() {
@@ -92,6 +92,16 @@ final class BellmanFordTest {
     }
 
     // --- tiny assertion helpers -------------------------------------------------
+
+    /** Asserts the result is a success and returns the {@link Distances} for inspection. */
+    private static Distances succeed(ShortestPathResult result) {
+        if (result instanceof Distances distances) {
+            return distances;
+        }
+        failed++;
+        System.out.println("FAIL: expected Distances but got " + result);
+        throw new AssertionError(result);
+    }
 
     private static void check(String name, boolean condition) {
         if (condition) {

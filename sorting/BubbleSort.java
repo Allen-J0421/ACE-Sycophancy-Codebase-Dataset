@@ -29,7 +29,7 @@ public final class BubbleSort implements Sorter {
             boolean swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
                 if (comparator.compare(array[j], array[j + 1]) > 0) {
-                    swap(array, j, j + 1);
+                    SortSupport.swap(array, j, j + 1);
                     swapped = true;
                 }
             }
@@ -63,7 +63,7 @@ public final class BubbleSort implements Sorter {
             boolean swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
                 if (comparator.compare(array[j], array[j + 1]) > 0) {
-                    swap(array, j, j + 1);
+                    SortSupport.swap(array, j, j + 1);
                     swapped = true;
                 }
             }
@@ -73,15 +73,4 @@ public final class BubbleSort implements Sorter {
         }
     }
 
-    private static <T> void swap(T[] array, int i, int j) {
-        T temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-
-    private static void swap(int[] array, int i, int j) {
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
 }

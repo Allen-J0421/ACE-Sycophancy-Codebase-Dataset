@@ -9,7 +9,7 @@ public final class DetectCycle {
     }
 
     private static DirectedGraph sampleGraph() {
-        return DirectedGraph.builder(4)
+        return new DirectedGraphBuilder(4)
                 .addEdge(0, 1)
                 .addEdge(1, 2)
                 .addEdge(2, 0)

@@ -3,15 +3,15 @@ import java.util.List;
 
 final class ArticulationPointAnalysis implements GraphAnalysis<List<Integer>> {
     @Override
-    public List<Integer> analyze(Graph graph) {
-        validateGraph(graph);
-        return new ArticulationPointTraversal(graph).run();
-    }
-
-    private static void validateGraph(Graph graph) {
+    public void validate(Graph graph) {
         if (!graph.isUndirected()) {
             throw new IllegalArgumentException("Articulation points require an undirected graph");
         }
+    }
+
+    @Override
+    public List<Integer> compute(Graph graph) {
+        return new ArticulationPointTraversal(graph).run();
     }
 
     private static final class ArticulationPointTraversal extends DepthFirstGraphAnalysis<List<Integer>> {

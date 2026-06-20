@@ -45,6 +45,29 @@ final class GraphBuilder {
         return this;
     }
 
+    GraphBuilder addEdges(Iterable<Edge> edges) {
+        Objects.requireNonNull(edges, "edges");
+        for (Edge edge : edges) {
+            addEdge(edge);
+        }
+
+        return this;
+    }
+
+    GraphBuilder addGraph(Graph graph) {
+        Graph nonNullGraph = Objects.requireNonNull(graph, "graph");
+        if (nonNullGraph.type() != type) {
+            throw new IllegalArgumentException("graph type " + nonNullGraph.type() + " does not match builder type " + type);
+        }
+        if (nonNullGraph.vertexCount() != vertexCount) {
+            throw new IllegalArgumentException(
+                "graph vertex count " + nonNullGraph.vertexCount() + " does not match builder vertex count " + vertexCount
+            );
+        }
+
+        return addEdges(nonNullGraph.edges());
+    }
+
     Graph build() {
         List<List<Integer>> adjacencyList = new ArrayList<>();
         for (int vertex = 0; vertex < vertexCount; vertex++) {
@@ -58,6 +81,6 @@ final class GraphBuilder {
             }
         }
 
-        return Graph.create(type, adjacencyList);
+        return Graph.create(type, edges, adjacencyList);
     }
 }

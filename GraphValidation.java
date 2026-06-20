@@ -42,4 +42,8 @@ final class GraphValidation {
 
         return Collections.unmodifiableList(immutableAdjacencyList);
     }
+
+    static List<Edge> freezeEdges(List<Edge> edges) {
+        return Collections.unmodifiableList(new ArrayList<>(edges));
+    }
 }

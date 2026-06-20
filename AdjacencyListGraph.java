@@ -2,20 +2,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class DirectedGraph {
+class AdjacencyListGraph implements Graph {
     private final int vertexCount;
     private final List<List<Integer>> adjacency;
 
-    private DirectedGraph(int vertexCount, List<List<Integer>> adjacency) {
+    private AdjacencyListGraph(int vertexCount, List<List<Integer>> adjacency) {
         this.vertexCount = vertexCount;
         this.adjacency = adjacency;
     }
 
-    int vertexCount() {
+    @Override
+    public int vertexCount() {
         return vertexCount;
     }
 
-    Iterable<Integer> neighbors(int vertex) {
+    @Override
+    public Iterable<Integer> neighbors(int vertex) {
         return adjacency.get(vertex);
     }
 
@@ -45,7 +47,7 @@ class DirectedGraph {
             return this;
         }
 
-        DirectedGraph build() {
+        Graph build() {
             if (built) {
                 throw new IllegalStateException("build() has already been called");
             }
@@ -54,7 +56,7 @@ class DirectedGraph {
             for (List<Integer> neighbors : adjacency) {
                 sealed.add(Collections.unmodifiableList(new ArrayList<>(neighbors)));
             }
-            return new DirectedGraph(vertexCount, Collections.unmodifiableList(sealed));
+            return new AdjacencyListGraph(vertexCount, Collections.unmodifiableList(sealed));
         }
 
         private void checkVertex(String label, int vertex) {

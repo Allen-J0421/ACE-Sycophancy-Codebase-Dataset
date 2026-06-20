@@ -1,7 +1,12 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-class ActivitySelection {
+final class ActivitySelection {
+    private static final Comparator<Activity> BY_FINISH_TIME =
+        Comparator.comparingInt(Activity::getFinishTime);
+
+    private ActivitySelection() {
+    }
 
     public static int activitySelection(int[] startTimes, int[] finishTimes) {
         validateSchedule(startTimes, finishTimes);
@@ -11,7 +16,7 @@ class ActivitySelection {
         }
 
         Activity[] activities = buildActivities(startTimes, finishTimes);
-        Arrays.sort(activities, Comparator.comparingInt(Activity::getFinishTime));
+        Arrays.sort(activities, BY_FINISH_TIME);
 
         return countCompatibleActivities(activities);
     }
@@ -53,11 +58,10 @@ class ActivitySelection {
     }
 
     public static void main(String[] args) {
-        int[] start = {1, 3, 0, 5, 8, 5};
-        int[] finish = {2, 4, 6, 7, 9, 9};
+        int[] startTimes = {1, 3, 0, 5, 8, 5};
+        int[] finishTimes = {2, 4, 6, 7, 9, 9};
 
-        System.out.println(
-            activitySelection(start, finish));
+        System.out.println(activitySelection(startTimes, finishTimes));
     }
 
     private static final class Activity {

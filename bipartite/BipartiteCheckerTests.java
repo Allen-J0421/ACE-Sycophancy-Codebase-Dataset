@@ -23,6 +23,7 @@ public final class BipartiteCheckerTests {
         partitionsCoverAllVertices();
         rejectsEdgeOutOfRange();
         rejectsMalformedEdgePair();
+        rejectsSelfLoop();
         rejectsNegativeVertexCount();
         rejectsNullGraph();
 
@@ -92,6 +93,11 @@ public final class BipartiteCheckerTests {
     private static void rejectsMalformedEdgePair() {
         check("rejects edge pair without two endpoints",
                 throwsIllegalArgument(() -> UndirectedGraph.of(2, new int[][] {{0}})));
+    }
+
+    private static void rejectsSelfLoop() {
+        check("rejects self-loop edge",
+                throwsIllegalArgument(() -> UndirectedGraph.of(2, new int[][] {{0, 0}})));
     }
 
     private static void rejectsNegativeVertexCount() {

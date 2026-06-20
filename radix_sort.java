@@ -4,6 +4,8 @@ class RadixSort {
 
     private static final int RADIX = 10;
 
+    private RadixSort() {}
+
     public static void sort(int[] arr) {
         if (arr == null || arr.length <= 1) {
             return;
@@ -19,7 +21,7 @@ class RadixSort {
         // Shift values into non-negative range so the algorithm works on negatives.
         int offset = min < 0 ? -min : 0;
         if (offset > 0) {
-            for (int i = 0; i < arr.length; i++) arr[i] += offset;
+            shift(arr, offset);
             max += offset;
         }
 
@@ -28,8 +30,12 @@ class RadixSort {
         }
 
         if (offset > 0) {
-            for (int i = 0; i < arr.length; i++) arr[i] -= offset;
+            shift(arr, -offset);
         }
+    }
+
+    private static void shift(int[] arr, int delta) {
+        for (int i = 0; i < arr.length; i++) arr[i] += delta;
     }
 
     private static void countSort(int[] arr, int exp) {

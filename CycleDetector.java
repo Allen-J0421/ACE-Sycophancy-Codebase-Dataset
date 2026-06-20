@@ -1,11 +1,14 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Objects;
 
 public final class CycleDetector {
     private CycleDetector() {
     }
 
     public static boolean hasCycle(DirectedGraph graph) {
+        Objects.requireNonNull(graph, "graph");
+
         int[] inDegree = computeInDegrees(graph);
         Deque<Integer> readyVertices = new ArrayDeque<>();
 

@@ -9,11 +9,11 @@ public final class DetectCycle {
     }
 
     private static DirectedGraph sampleGraph() {
-        DirectedGraph graph = DirectedGraph.withVertexCount(4);
-        graph.addEdge(0, 1);
-        graph.addEdge(1, 2);
-        graph.addEdge(2, 0);
-        graph.addEdge(2, 3);
-        return graph;
+        return DirectedGraph.builder(4)
+                .addEdge(0, 1)
+                .addEdge(1, 2)
+                .addEdge(2, 0)
+                .addEdge(2, 3)
+                .build();
     }
 }

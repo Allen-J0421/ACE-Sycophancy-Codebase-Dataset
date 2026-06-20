@@ -69,9 +69,6 @@ public class ActivitySelection {
      */
     public static List<Activity> select(List<Activity> activities) {
         Objects.requireNonNull(activities, "activities");
-        if (activities.isEmpty()) {
-            return new ArrayList<>();
-        }
 
         List<Activity> byFinish = new ArrayList<>(activities);
         byFinish.sort(null); // natural order: by finish time

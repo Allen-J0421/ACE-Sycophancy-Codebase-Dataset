@@ -1,92 +1,140 @@
-import java.io.*;
-import java.lang.*;
-import java.util.*;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
 
-class MaxFlow {
-    static final int V = 6;
+final class MaxFlow {
+    private static final int SOURCE = 0;
+    private static final int SINK = 5;
 
-    boolean bfs(int rGraph[][], int s, int t, int parent[])
-    {
+    public int fordFulkerson(int[][] graph, int source, int sink) {
+        validateGraph(graph, source, sink);
 
-        boolean visited[] = new boolean[V];
-        for (int i = 0; i < V; ++i)
-            visited[i] = false;
+        int[][] residualGraph = copyGraph(graph);
+        int[] parent = new int[graph.length];
+        int maxFlow = 0;
 
-        LinkedList<Integer> queue
-            = new LinkedList<Integer>();
-        queue.add(s);
-        visited[s] = true;
-        parent[s] = -1;
+        while (findAugmentingPath(residualGraph, source, sink, parent)) {
+            int pathFlow = findBottleneckCapacity(residualGraph, source, sink, parent);
+            updateResidualCapacities(residualGraph, source, sink, parent, pathFlow);
+            maxFlow += pathFlow;
+        }
 
-        while (queue.size() != 0) {
+        return maxFlow;
+    }
+
+    private boolean findAugmentingPath(
+        int[][] residualGraph,
+        int source,
+        int sink,
+        int[] parent
+    ) {
+        boolean[] visited = new boolean[residualGraph.length];
+        Queue<Integer> queue = new ArrayDeque<>();
+
+        Arrays.fill(parent, -1);
+        queue.add(source);
+        visited[source] = true;
+
+        while (!queue.isEmpty()) {
             int u = queue.poll();
 
-            for (int v = 0; v < V; v++) {
-                if (visited[v] == false
-                    && rGraph[u][v] > 0) {
-
-                    if (v == t) {
-                        parent[v] = u;
-                        return true;
-                    }
-                    queue.add(v);
-                    parent[v] = u;
-                    visited[v] = true;
+            for (int v = 0; v < residualGraph.length; v++) {
+                if (visited[v] || residualGraph[u][v] <= 0) {
+                    continue;
                 }
+
+                parent[v] = u;
+                if (v == sink) {
+                    return true;
+                }
+
+                visited[v] = true;
+                queue.add(v);
             }
         }
 
         return false;
     }
 
-    int fordFulkerson(int graph[][], int s, int t)
-    {
-        int u, v;
+    private int findBottleneckCapacity(
+        int[][] residualGraph,
+        int source,
+        int sink,
+        int[] parent
+    ) {
+        int pathFlow = Integer.MAX_VALUE;
 
-        int rGraph[][] = new int[V][V];
-
-        for (u = 0; u < V; u++)
-            for (v = 0; v < V; v++)
-                rGraph[u][v] = graph[u][v];
-
-        int parent[] = new int[V];
-
-        int max_flow = 0;
-
-        while (bfs(rGraph, s, t, parent)) {
-
-            int path_flow = Integer.MAX_VALUE;
-            for (v = t; v != s; v = parent[v]) {
-                u = parent[v];
-                path_flow
-                    = Math.min(path_flow, rGraph[u][v]);
-            }
-
-            for (v = t; v != s; v = parent[v]) {
-                u = parent[v];
-                rGraph[u][v] -= path_flow;
-                rGraph[v][u] += path_flow;
-            }
-
-            max_flow += path_flow;
+        for (int v = sink; v != source; v = parent[v]) {
+            int u = parent[v];
+            pathFlow = Math.min(pathFlow, residualGraph[u][v]);
         }
 
-        return max_flow;
+        return pathFlow;
     }
 
-    public static void main(String[] args)
-        throws java.lang.Exception
-    {
+    private void updateResidualCapacities(
+        int[][] residualGraph,
+        int source,
+        int sink,
+        int[] parent,
+        int pathFlow
+    ) {
+        for (int v = sink; v != source; v = parent[v]) {
+            int u = parent[v];
+            residualGraph[u][v] -= pathFlow;
+            residualGraph[v][u] += pathFlow;
+        }
+    }
 
-        int graph[][] = new int[][] {
+    private int[][] copyGraph(int[][] graph) {
+        int[][] copy = new int[graph.length][graph.length];
+
+        for (int row = 0; row < graph.length; row++) {
+            copy[row] = Arrays.copyOf(graph[row], graph[row].length);
+        }
+
+        return copy;
+    }
+
+    private void validateGraph(int[][] graph, int source, int sink) {
+        if (graph == null || graph.length == 0) {
+            throw new IllegalArgumentException("Graph must contain at least one vertex.");
+        }
+
+        if (!isValidVertex(source, graph.length) || !isValidVertex(sink, graph.length)) {
+            throw new IllegalArgumentException("Source and sink must be valid vertex indexes.");
+        }
+
+        if (source == sink) {
+            throw new IllegalArgumentException("Source and sink must be different vertices.");
+        }
+
+        for (int row = 0; row < graph.length; row++) {
+            if (graph[row] == null || graph[row].length != graph.length) {
+                throw new IllegalArgumentException("Graph must be a square capacity matrix.");
+            }
+
+            for (int capacity : graph[row]) {
+                if (capacity < 0) {
+                    throw new IllegalArgumentException("Graph capacities must be non-negative.");
+                }
+            }
+        }
+    }
+
+    private boolean isValidVertex(int vertex, int vertexCount) {
+        return vertex >= 0 && vertex < vertexCount;
+    }
+
+    public static void main(String[] args) {
+
+        int[][] graph = new int[][] {
             { 0, 16, 13, 0, 0, 0 }, { 0, 0, 10, 12, 0, 0 },
             { 0, 4, 0, 0, 14, 0 },  { 0, 0, 9, 0, 0, 20 },
             { 0, 0, 0, 7, 0, 4 },   { 0, 0, 0, 0, 0, 0 }
         };
-        MaxFlow m = new MaxFlow();
 
         System.out.println("The maximum possible flow is "
-                           + m.fordFulkerson(graph, 0, 5));
+                           + new MaxFlow().fordFulkerson(graph, SOURCE, SINK));
     }
 }

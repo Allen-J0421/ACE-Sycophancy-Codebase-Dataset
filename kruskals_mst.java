@@ -146,6 +146,11 @@ class KruskalMST {
                 return false;
             }
 
+            mergeRoots(firstRoot, secondRoot);
+            return true;
+        }
+
+        private void mergeRoots(int firstRoot, int secondRoot) {
             if (rankByRoot[firstRoot] < rankByRoot[secondRoot]) {
                 parentByVertex[firstRoot] = secondRoot;
             } else if (rankByRoot[firstRoot] > rankByRoot[secondRoot]) {
@@ -154,8 +159,6 @@ class KruskalMST {
                 parentByVertex[secondRoot] = firstRoot;
                 rankByRoot[firstRoot]++;
             }
-
-            return true;
         }
     }
 }

@@ -16,6 +16,18 @@ public class StronglyConnectedComponent {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StronglyConnectedComponent)) return false;
+        return vertices.equals(((StronglyConnectedComponent) o).vertices);
+    }
+
+    @Override
+    public int hashCode() {
+        return vertices.hashCode();
+    }
+
+    @Override
     public String toString() {
         return vertices.toString();
     }

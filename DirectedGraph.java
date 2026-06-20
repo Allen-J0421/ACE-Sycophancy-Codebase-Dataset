@@ -14,6 +14,14 @@ public class DirectedGraph {
         this.adjacencyList = List.copyOf(sealed);
     }
 
+    static DirectedGraph fromEdges(int vertexCount, List<Edge> edges) {
+        List<List<Integer>> adjList = emptyAdjacencyList(vertexCount);
+        for (Edge edge : edges) {
+            adjList.get(edge.getSource()).add(edge.getDestination());
+        }
+        return new DirectedGraph(vertexCount, adjList);
+    }
+
     public List<Integer> neighbors(int vertex) {
         return adjacencyList.get(vertex);
     }
@@ -32,7 +40,7 @@ public class DirectedGraph {
         return new DirectedGraph(vertexCount, reversed);
     }
 
-    static List<List<Integer>> emptyAdjacencyList(int vertexCount) {
+    private static List<List<Integer>> emptyAdjacencyList(int vertexCount) {
         List<List<Integer>> list = new ArrayList<>(vertexCount + 1);
         for (int i = 0; i <= vertexCount; i++) {
             list.add(new ArrayList<>());

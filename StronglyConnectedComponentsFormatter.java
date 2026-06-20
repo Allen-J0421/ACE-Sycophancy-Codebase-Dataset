@@ -5,13 +5,13 @@ public class StronglyConnectedComponentsFormatter {
     private StronglyConnectedComponentsFormatter() {}
 
     public static String format(StronglyConnectedComponentsResult result) {
-        StringBuilder sb = new StringBuilder("Strongly Connected Components:\n");
-        for (StronglyConnectedComponent scc : result) {
-            sb.append(scc.getVertices().stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(" ")));
-            sb.append('\n');
-        }
-        return sb.toString().stripTrailing();
+        String sccLines = result.stream()
+                .map(scc -> scc.getVertices().stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(" ")))
+                .collect(Collectors.joining("\n"));
+        return sccLines.isEmpty()
+                ? "Strongly Connected Components:"
+                : "Strongly Connected Components:\n" + sccLines;
     }
 }

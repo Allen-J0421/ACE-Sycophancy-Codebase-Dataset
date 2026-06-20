@@ -22,7 +22,6 @@ public class DirectedGraphBuilder {
         if (vertexCount <= 0) {
             throw new IllegalStateException("withVertexCount must be called before build()");
         }
-        List<List<Integer>> adjList = DirectedGraph.emptyAdjacencyList(vertexCount);
         for (Edge edge : edges) {
             int from = edge.getSource();
             int to = edge.getDestination();
@@ -30,8 +29,7 @@ public class DirectedGraphBuilder {
                 throw new IllegalArgumentException(
                         "Edge " + edge + " references vertex outside valid range [1, " + vertexCount + "]");
             }
-            adjList.get(from).add(to);
         }
-        return new DirectedGraph(vertexCount, adjList);
+        return DirectedGraph.fromEdges(vertexCount, edges);
     }
 }

@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class StronglyConnectedComponentsResult implements Iterable<StronglyConnectedComponent> {
     private final List<StronglyConnectedComponent> components;
@@ -16,8 +17,24 @@ public class StronglyConnectedComponentsResult implements Iterable<StronglyConne
         return components.size();
     }
 
+    public Stream<StronglyConnectedComponent> stream() {
+        return components.stream();
+    }
+
     @Override
     public Iterator<StronglyConnectedComponent> iterator() {
         return components.iterator();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StronglyConnectedComponentsResult)) return false;
+        return components.equals(((StronglyConnectedComponentsResult) o).components);
+    }
+
+    @Override
+    public int hashCode() {
+        return components.hashCode();
     }
 }

@@ -34,9 +34,8 @@ final class CountingSort {
         int sortedIndex = 0;
         for (int countIndex = 0; countIndex < counts.length; countIndex++) {
             int value = range.valueAt(countIndex);
-            for (int occurrence = 0; occurrence < counts[countIndex]; occurrence++) {
-                sorted[sortedIndex] = value;
-                sortedIndex++;
+            for (int remaining = counts[countIndex]; remaining > 0; remaining--) {
+                sorted[sortedIndex++] = value;
             }
         }
 
@@ -53,18 +52,18 @@ final class CountingSort {
         }
 
         private static ValueRange from(int[] values) {
-            int minVal = values[0];
-            int maxVal = values[0];
-            for (int i = 1; i < values.length; i++) {
-                if (values[i] < minVal) {
-                    minVal = values[i];
+            int min = values[0];
+            int max = values[0];
+            for (int value : values) {
+                if (value < min) {
+                    min = value;
                 }
-                if (values[i] > maxVal) {
-                    maxVal = values[i];
+                if (value > max) {
+                    max = value;
                 }
             }
 
-            return new ValueRange(minVal, maxVal);
+            return new ValueRange(min, max);
         }
 
         private int size() {

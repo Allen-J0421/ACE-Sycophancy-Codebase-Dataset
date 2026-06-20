@@ -26,7 +26,7 @@ public final class FloydWarshallTest {
     private static void doesNotMutateInput() {
         int[][] graph = TestGraphs.acyclicThreeNodeGraph();
 
-        int[][] original = Matrices.copyOf(graph);
+        int[][] original = MatrixUtils.copyOf(graph);
         FloydWarshall.shortestPaths(graph);
 
         TestAssertions.assertMatrixEquals(original, graph);

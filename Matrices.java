@@ -1,67 +1,20 @@
-import java.util.Arrays;
-
 final class Matrices {
-    private static final String NULL_SUFFIX = " must not be null.";
-    private static final String NULL_ROW_SUFFIX = " must not contain null rows.";
-    private static final String RECTANGULAR_SUFFIX = " must be rectangular.";
-    private static final String SQUARE_SUFFIX = " must be square.";
-
     private Matrices() {
     }
 
     static int requireSquare(int[][] matrix, String label) {
-        int columnCount = requireRectangular(matrix, label);
-        if (matrix.length != columnCount) {
-            throw new IllegalArgumentException(label + SQUARE_SUFFIX);
-        }
-        return matrix.length;
+        return MatrixValidator.requireSquare(matrix, label);
     }
 
     static int requireRectangular(int[][] matrix, String label) {
-        requireMatrix(matrix, label);
-
-        if (matrix.length == 0) {
-            return 0;
-        }
-
-        int columnCount = requireRow(matrix[0], label).length;
-        for (int rowIndex = 1; rowIndex < matrix.length; rowIndex++) {
-            int[] row = requireRow(matrix[rowIndex], label);
-            if (row.length != columnCount) {
-                throw new IllegalArgumentException(label + RECTANGULAR_SUFFIX);
-            }
-        }
-
-        return columnCount;
+        return MatrixValidator.requireRectangular(matrix, label);
     }
 
     static int[][] copyOf(int[][] matrix) {
-        requireRectangular(matrix, "Matrix");
-        return copyRows(matrix);
+        return MatrixUtils.copyOf(matrix);
     }
 
     static int[][] copyRows(int[][] matrix) {
-        requireMatrix(matrix, "Matrix");
-
-        int[][] copy = new int[matrix.length][];
-        for (int rowIndex = 0; rowIndex < matrix.length; rowIndex++) {
-            int[] row = matrix[rowIndex];
-            copy[rowIndex] = row == null ? null : Arrays.copyOf(row, row.length);
-        }
-
-        return copy;
-    }
-
-    private static void requireMatrix(int[][] matrix, String label) {
-        if (matrix == null) {
-            throw new IllegalArgumentException(label + NULL_SUFFIX);
-        }
-    }
-
-    private static int[] requireRow(int[] row, String label) {
-        if (row == null) {
-            throw new IllegalArgumentException(label + NULL_ROW_SUFFIX);
-        }
-        return row;
+        return MatrixUtils.copyRows(matrix);
     }
 }

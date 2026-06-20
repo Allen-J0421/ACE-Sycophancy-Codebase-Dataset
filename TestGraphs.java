@@ -35,30 +35,30 @@ final class TestGraphs {
     }
 
     static int[][] acyclicThreeNodeGraph() {
-        return Matrices.copyRows(ACYCLIC_THREE_NODE_GRAPH);
+        return MatrixUtils.copyRows(ACYCLIC_THREE_NODE_GRAPH);
     }
 
     static int[][] negativeCycleGraph() {
-        return Matrices.copyRows(NEGATIVE_CYCLE_GRAPH);
+        return MatrixUtils.copyRows(NEGATIVE_CYCLE_GRAPH);
     }
 
     static int[][] overflowGraph() {
-        return Matrices.copyRows(OVERFLOW_GRAPH);
+        return MatrixUtils.copyRows(OVERFLOW_GRAPH);
     }
 
     static int[][] unreachableTwoNodeDistances() {
-        return Matrices.copyRows(UNREACHABLE_TWO_NODE_DISTANCES);
+        return MatrixUtils.copyRows(UNREACHABLE_TWO_NODE_DISTANCES);
     }
 
     static int[][] invalidRectangularMatrix() {
-        return Matrices.copyRows(INVALID_RECTANGULAR_MATRIX);
+        return MatrixUtils.copyRows(INVALID_RECTANGULAR_MATRIX);
     }
 
     static int[][] matrixWithNullRow() {
-        return Matrices.copyRows(MATRIX_WITH_NULL_ROW);
+        return MatrixUtils.copyRows(MATRIX_WITH_NULL_ROW);
     }
 
     static int[][] nonSquareRowMatrix() {
-        return Matrices.copyRows(NON_SQUARE_ROW_MATRIX);
+        return MatrixUtils.copyRows(NON_SQUARE_ROW_MATRIX);
     }
 }

@@ -5,7 +5,7 @@ public final class DistanceMatrixFormatter {
     }
 
     public static String format(int[][] distances) {
-        Matrices.requireRectangular(distances, "Distance matrix");
+        MatrixValidator.requireRectangular(distances, "Distance matrix");
 
         StringBuilder output = new StringBuilder();
         for (int[] row : distances) {

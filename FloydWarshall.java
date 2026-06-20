@@ -7,8 +7,8 @@ public final class FloydWarshall {
     }
 
     public static int[][] shortestPaths(int[][] graph) {
-        int vertexCount = Matrices.requireSquare(graph, "Graph matrix");
-        int[][] distances = Matrices.copyOf(graph);
+        int vertexCount = MatrixValidator.requireSquare(graph, "Graph matrix");
+        int[][] distances = MatrixUtils.copyOf(graph);
 
         for (int via = 0; via < vertexCount; via++) {
             relaxPathsVia(distances, via);
@@ -18,7 +18,7 @@ public final class FloydWarshall {
     }
 
     public static boolean hasNegativeCycle(int[][] distances) {
-        Matrices.requireSquare(distances, "Distance matrix");
+        MatrixValidator.requireSquare(distances, "Distance matrix");
 
         for (int index = 0; index < distances.length; index++) {
             if (hasNegativeSelfDistance(distances, index)) {

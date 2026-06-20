@@ -6,6 +6,9 @@ public class ActivitySelection {
     private record Activity(int start, int finish) {}
 
     public static int activitySelection(int[] start, int[] finish) {
+        if (start.length != finish.length) {
+            throw new IllegalArgumentException("start and finish arrays must have equal length");
+        }
         int n = start.length;
         if (n == 0) return 0;
 
@@ -14,13 +17,17 @@ public class ActivitySelection {
             .sorted(Comparator.comparingInt(Activity::finish))
             .toArray(Activity[]::new);
 
-        int count = 1;
-        int lastFinish = activities[0].finish();
+        return countSelected(activities);
+    }
 
-        for (int i = 1; i < n; i++) {
-            if (activities[i].start() > lastFinish) {
+    private static int countSelected(Activity[] sortedByFinish) {
+        int count = 1;
+        int lastFinish = sortedByFinish[0].finish();
+
+        for (int i = 1; i < sortedByFinish.length; i++) {
+            if (sortedByFinish[i].start() > lastFinish) {
                 count++;
-                lastFinish = activities[i].finish();
+                lastFinish = sortedByFinish[i].finish();
             }
         }
 

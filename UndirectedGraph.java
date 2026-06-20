@@ -9,16 +9,12 @@ public final class UndirectedGraph implements Graph {
         this.adjacencyList = adjacencyList;
     }
 
-    public static UndirectedGraph withVertexCount(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("vertexCount must be non-negative");
-        }
+    public static Builder builder(int vertexCount) {
+        return new Builder(vertexCount);
+    }
 
-        List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
-        }
-        return new UndirectedGraph(adjacencyList);
+    public static UndirectedGraph withVertexCount(int vertexCount) {
+        return new UndirectedGraph(createEmptyAdjacencyList(vertexCount));
     }
 
     public static UndirectedGraph fromAdjacencyList(List<? extends List<Integer>> source) {
@@ -46,8 +42,41 @@ public final class UndirectedGraph implements Graph {
     }
 
     public void addEdge(int firstVertex, int secondVertex) {
-        validateVertex(vertexCount(), firstVertex);
-        validateVertex(vertexCount(), secondVertex);
+        addValidatedEdge(adjacencyList, firstVertex, secondVertex);
+    }
+
+    public static final class Builder {
+        private final List<List<Integer>> adjacencyList;
+
+        private Builder(int vertexCount) {
+            this.adjacencyList = createEmptyAdjacencyList(vertexCount);
+        }
+
+        public Builder addEdge(int firstVertex, int secondVertex) {
+            addValidatedEdge(adjacencyList, firstVertex, secondVertex);
+            return this;
+        }
+
+        public UndirectedGraph build() {
+            return UndirectedGraph.fromAdjacencyList(adjacencyList);
+        }
+    }
+
+    private static List<List<Integer>> createEmptyAdjacencyList(int vertexCount) {
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("vertexCount must be non-negative");
+        }
+
+        List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+        return adjacencyList;
+    }
+
+    private static void addValidatedEdge(List<List<Integer>> adjacencyList, int firstVertex, int secondVertex) {
+        validateVertex(adjacencyList.size(), firstVertex);
+        validateVertex(adjacencyList.size(), secondVertex);
 
         adjacencyList.get(firstVertex).add(secondVertex);
         adjacencyList.get(secondVertex).add(firstVertex);

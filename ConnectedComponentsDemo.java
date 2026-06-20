@@ -4,12 +4,12 @@ public final class ConnectedComponentsDemo {
     }
 
     public static void main(String[] args) {
-        UndirectedGraph graph = UndirectedGraph.withVertexCount(6);
-
-        graph.addEdge(1, 2);
-        graph.addEdge(0, 3);
-        graph.addEdge(2, 0);
-        graph.addEdge(5, 4);
+        UndirectedGraph graph = UndirectedGraph.builder(6)
+                .addEdge(1, 2)
+                .addEdge(0, 3)
+                .addEdge(2, 0)
+                .addEdge(5, 4)
+                .build();
 
         System.out.println(ComponentFormatter.formatComponents(ConnectedComponents.findComponents(graph)));
     }

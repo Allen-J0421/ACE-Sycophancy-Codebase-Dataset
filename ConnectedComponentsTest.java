@@ -13,6 +13,7 @@ public final class ConnectedComponentsTest {
         handlesIsolatedVertices();
         returnsReadOnlyComponents();
         copiesAdjacencyListsDefensively();
+        builderCreatesDefensiveGraphSnapshot();
         rejectsInvalidEdges();
         exposesReadOnlyNeighbors();
     }
@@ -47,11 +48,12 @@ public final class ConnectedComponentsTest {
     }
 
     private static void findsComponentsInSampleGraph() {
-        UndirectedGraph graph = UndirectedGraph.withVertexCount(6);
-        graph.addEdge(1, 2);
-        graph.addEdge(0, 3);
-        graph.addEdge(2, 0);
-        graph.addEdge(5, 4);
+        UndirectedGraph graph = UndirectedGraph.builder(6)
+                .addEdge(1, 2)
+                .addEdge(0, 3)
+                .addEdge(2, 0)
+                .addEdge(5, 4)
+                .build();
 
         assertEquals(
                 List.of(List.of(0, 3, 2, 1), List.of(4, 5)),
@@ -93,6 +95,16 @@ public final class ConnectedComponentsTest {
         source.get(0).clear();
 
         assertEquals(List.of(1), graph.neighbors(0), "defensive adjacency copy");
+    }
+
+    private static void builderCreatesDefensiveGraphSnapshot() {
+        UndirectedGraph.Builder builder = UndirectedGraph.builder(3).addEdge(0, 1);
+        UndirectedGraph graph = builder.build();
+
+        builder.addEdge(1, 2);
+
+        assertEquals(List.of(1), graph.neighbors(0), "builder defensive graph snapshot");
+        assertEquals(List.of(0), graph.neighbors(1), "builder defensive neighbor snapshot");
     }
 
     private static void rejectsInvalidEdges() {

@@ -208,9 +208,14 @@ class ArticulationPoints {
     }
 
     private static void printVertices(List<Integer> vertices) {
+        System.out.println(formatVertices(vertices));
+    }
+
+    private static String formatVertices(List<Integer> vertices) {
+        StringBuilder formattedVertices = new StringBuilder();
         for (int vertex : vertices) {
-            System.out.print(vertex + " ");
+            formattedVertices.append(vertex).append(" ");
         }
-        System.out.println();
+        return formattedVertices.toString();
     }
 }

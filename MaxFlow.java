@@ -10,91 +10,83 @@ public final class MaxFlow {
     public int maximumFlow(int[][] graph, int source, int sink) {
         validateGraph(graph, source, sink);
 
-        int[][] residualGraph = copyGraph(graph);
+        ResidualNetwork residualNetwork = ResidualNetwork.from(graph);
         int[] parent = new int[graph.length];
         int maxFlow = 0;
 
-        while (findAugmentingPath(residualGraph, source, sink, parent)) {
-            int pathFlow = findBottleneckCapacity(residualGraph, source, sink, parent);
-            updateResidualCapacities(residualGraph, source, sink, parent, pathFlow);
+        while (residualNetwork.findAugmentingPath(source, sink, parent)) {
+            int pathFlow = residualNetwork.bottleneckCapacity(source, sink, parent);
+            residualNetwork.augmentPath(source, sink, parent, pathFlow);
             maxFlow = Math.addExact(maxFlow, pathFlow);
         }
 
         return maxFlow;
     }
 
-    private static boolean findAugmentingPath(
-        int[][] residualGraph,
-        int source,
-        int sink,
-        int[] parent
-    ) {
-        boolean[] visited = new boolean[residualGraph.length];
-        Queue<Integer> queue = new ArrayDeque<>();
+    private static final class ResidualNetwork {
+        private final int[][] capacities;
 
-        Arrays.fill(parent, -1);
-        queue.add(source);
-        visited[source] = true;
+        private ResidualNetwork(int[][] capacities) {
+            this.capacities = capacities;
+        }
 
-        while (!queue.isEmpty()) {
-            int u = queue.poll();
+        private static ResidualNetwork from(int[][] graph) {
+            int[][] capacities = new int[graph.length][];
 
-            for (int v = 0; v < residualGraph.length; v++) {
-                if (visited[v] || residualGraph[u][v] <= 0) {
-                    continue;
+            for (int row = 0; row < graph.length; row++) {
+                capacities[row] = Arrays.copyOf(graph[row], graph[row].length);
+            }
+
+            return new ResidualNetwork(capacities);
+        }
+
+        private boolean findAugmentingPath(int source, int sink, int[] parent) {
+            boolean[] visited = new boolean[capacities.length];
+            Queue<Integer> queue = new ArrayDeque<>();
+
+            Arrays.fill(parent, -1);
+            queue.add(source);
+            visited[source] = true;
+
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+
+                for (int v = 0; v < capacities.length; v++) {
+                    if (visited[v] || capacities[u][v] <= 0) {
+                        continue;
+                    }
+
+                    parent[v] = u;
+                    if (v == sink) {
+                        return true;
+                    }
+
+                    visited[v] = true;
+                    queue.add(v);
                 }
+            }
 
-                parent[v] = u;
-                if (v == sink) {
-                    return true;
-                }
+            return false;
+        }
 
-                visited[v] = true;
-                queue.add(v);
+        private int bottleneckCapacity(int source, int sink, int[] parent) {
+            int pathFlow = Integer.MAX_VALUE;
+
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                pathFlow = Math.min(pathFlow, capacities[u][v]);
+            }
+
+            return pathFlow;
+        }
+
+        private void augmentPath(int source, int sink, int[] parent, int pathFlow) {
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                capacities[u][v] -= pathFlow;
+                capacities[v][u] += pathFlow;
             }
         }
-
-        return false;
-    }
-
-    private static int findBottleneckCapacity(
-        int[][] residualGraph,
-        int source,
-        int sink,
-        int[] parent
-    ) {
-        int pathFlow = Integer.MAX_VALUE;
-
-        for (int v = sink; v != source; v = parent[v]) {
-            int u = parent[v];
-            pathFlow = Math.min(pathFlow, residualGraph[u][v]);
-        }
-
-        return pathFlow;
-    }
-
-    private static void updateResidualCapacities(
-        int[][] residualGraph,
-        int source,
-        int sink,
-        int[] parent,
-        int pathFlow
-    ) {
-        for (int v = sink; v != source; v = parent[v]) {
-            int u = parent[v];
-            residualGraph[u][v] -= pathFlow;
-            residualGraph[v][u] += pathFlow;
-        }
-    }
-
-    private static int[][] copyGraph(int[][] graph) {
-        int[][] copy = new int[graph.length][];
-
-        for (int row = 0; row < graph.length; row++) {
-            copy[row] = Arrays.copyOf(graph[row], graph[row].length);
-        }
-
-        return copy;
     }
 
     private static void validateGraph(int[][] graph, int source, int sink) {

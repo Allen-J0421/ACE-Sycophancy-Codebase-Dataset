@@ -8,6 +8,7 @@ public final class ConnectedComponentsTest {
 
     public static void main(String[] args) {
         findsComponentsInSampleGraph();
+        worksWithGraphInterface();
         handlesIsolatedVertices();
         copiesAdjacencyListsDefensively();
         rejectsInvalidEdges();
@@ -25,6 +26,20 @@ public final class ConnectedComponentsTest {
                 List.of(List.of(0, 3, 2, 1), List.of(4, 5)),
                 ConnectedComponents.getComponents(graph),
                 "sample graph components"
+        );
+    }
+
+    private static void worksWithGraphInterface() {
+        Graph graph = new StaticGraph(List.of(
+                List.of(1),
+                List.of(0),
+                List.of()
+        ));
+
+        assertEquals(
+                List.of(List.of(0, 1), List.of(2)),
+                ConnectedComponents.getComponents(graph),
+                "graph interface"
         );
     }
 
@@ -91,5 +106,23 @@ public final class ConnectedComponentsTest {
         }
 
         throw new AssertionError(label + " did not throw " + expectedType.getSimpleName());
+    }
+
+    private static final class StaticGraph implements Graph {
+        private final List<List<Integer>> adjacencyList;
+
+        private StaticGraph(List<List<Integer>> adjacencyList) {
+            this.adjacencyList = adjacencyList;
+        }
+
+        @Override
+        public int vertexCount() {
+            return adjacencyList.size();
+        }
+
+        @Override
+        public List<Integer> neighbors(int vertex) {
+            return adjacencyList.get(vertex);
+        }
     }
 }

@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class UndirectedGraph {
+public final class UndirectedGraph implements Graph {
     private final List<List<Integer>> adjacencyList;
 
     private UndirectedGraph(List<List<Integer>> adjacencyList) {
@@ -34,10 +34,12 @@ public final class UndirectedGraph {
         return new UndirectedGraph(adjacencyList);
     }
 
+    @Override
     public int vertexCount() {
         return adjacencyList.size();
     }
 
+    @Override
     public List<Integer> neighbors(int vertex) {
         validateVertex(vertexCount(), vertex);
         return Collections.unmodifiableList(adjacencyList.get(vertex));

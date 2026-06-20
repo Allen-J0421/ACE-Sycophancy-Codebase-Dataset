@@ -12,7 +12,7 @@ public final class ConnectedComponents {
         return getComponents(UndirectedGraph.fromAdjacencyList(adjacencyList));
     }
 
-    public static List<List<Integer>> getComponents(UndirectedGraph graph) {
+    public static List<List<Integer>> getComponents(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("graph cannot be null");
         }
@@ -29,7 +29,7 @@ public final class ConnectedComponents {
         return components;
     }
 
-    private static List<Integer> collectComponent(UndirectedGraph graph, int source, boolean[] visited) {
+    private static List<Integer> collectComponent(Graph graph, int source, boolean[] visited) {
         Queue<Integer> queue = new ArrayDeque<>();
         List<Integer> component = new ArrayList<>();
 

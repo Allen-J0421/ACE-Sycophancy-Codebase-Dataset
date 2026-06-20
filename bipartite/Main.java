@@ -23,7 +23,7 @@ public final class Main {
 
         // Weighted undirected — the same algorithm via the Graph interface; the
         // weights are simply ignored by the check.
-        Graph weightedCycle = WeightedUndirectedGraph.of(4, List.of(
+        WeightedUndirectedGraph weightedCycle = WeightedUndirectedGraph.of(4, List.of(
                 new WeightedEdge(0, 1, 2.5),
                 new WeightedEdge(1, 2, 1.0),
                 new WeightedEdge(2, 3, 4.0),
@@ -40,6 +40,20 @@ public final class Main {
 
         // Topological sort of the directed acyclic graph above.
         reportTopologicalSort(new TopologicalSort().sort(directed));
+
+        // Dijkstra shortest path on the weighted graph: 0 -> 2 takes 0-1-2 (3.5)
+        // rather than 0-3-2 (4.5).
+        reportShortestPath(new ShortestPath().compute(weightedCycle, 0, 2));
+    }
+
+    private static void reportShortestPath(ShortestPathResult result) {
+        switch (result) {
+            case ShortestPathResult.Path path -> System.out.println(
+                    "Shortest path 0->2 (weighted): distance=" + path.distance()
+                            + ", via=" + path.vertices());
+            case ShortestPathResult.Unreachable unreachable -> System.out.println(
+                    "No path from " + unreachable.source() + " to " + unreachable.target());
+        }
     }
 
     private static void reportTopologicalSort(TopologicalSortResult result) {

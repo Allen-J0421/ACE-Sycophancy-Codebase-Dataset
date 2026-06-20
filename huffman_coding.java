@@ -48,7 +48,7 @@ public class HuffmanCoding {
             if (f <= 0) throw new IllegalArgumentException("frequencies must be positive, got " + f);
         }
         List<String> codes = new ArrayList<>(freq.length);
-        generateCodes(buildTree(freq), codes, new StringBuilder());
+        generateCodes(buildTree(freq), codes, new StringBuilder(freq.length));
         return List.copyOf(codes);
     }
 

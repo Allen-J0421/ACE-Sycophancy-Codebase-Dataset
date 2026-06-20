@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-final class BellmanFord {
+public final class BellmanFord {
     private static final int EDGE_WIDTH = 3;
     private static final int INF = 100_000_000;
     private static final int[] NEGATIVE_CYCLE_RESULT = {-1};
@@ -9,11 +9,15 @@ final class BellmanFord {
     }
 
     static int[] bellmanFord(int vertices, int[][] edgeData, int source) {
-        validateInput(vertices, edgeData, source);
-        return bellmanFord(vertices, toEdges(vertices, edgeData), source);
+        return shortestPaths(vertices, edgeData, source);
     }
 
-    private static int[] bellmanFord(int vertices, Edge[] edges, int source) {
+    static int[] shortestPaths(int vertices, int[][] edgeData, int source) {
+        validateInput(vertices, edgeData, source);
+        return shortestPaths(vertices, toEdges(vertices, edgeData), source);
+    }
+
+    private static int[] shortestPaths(int vertices, Edge[] edges, int source) {
         int[] distances = initializeDistances(vertices, source);
 
         for (int pass = 0; pass < vertices - 1; pass++) {
@@ -111,23 +115,6 @@ final class BellmanFord {
             this.from = from;
             this.to = to;
             this.weight = weight;
-        }
-    }
-
-    public static void main(String[] args) {
-        int vertices = 5;
-        int[][] edges = {
-            {1, 3, 2},
-            {4, 3, -1},
-            {2, 4, 1},
-            {1, 2, 1},
-            {0, 1, 5}
-        };
-        int source = 0;
-
-        int[] shortestDistances = bellmanFord(vertices, edges, source);
-        for (int distance : shortestDistances) {
-            System.out.print(distance + " ");
         }
     }
 }

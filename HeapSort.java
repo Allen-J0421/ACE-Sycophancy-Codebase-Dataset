@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -36,6 +35,7 @@ public final class HeapSort {
      *
      * @param values array to sort
      */
+    @Deprecated
     public static void heapSort(int[] values) {
         sort(values);
     }
@@ -75,11 +75,5 @@ public final class HeapSort {
         int temp = values[firstIndex];
         values[firstIndex] = values[secondIndex];
         values[secondIndex] = temp;
-    }
-
-    public static void main(String[] args) {
-        int[] values = {9, 4, 3, 8, 10, 2, 5};
-        sort(values);
-        System.out.println(Arrays.toString(values));
     }
 }

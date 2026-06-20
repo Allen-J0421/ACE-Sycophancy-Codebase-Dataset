@@ -24,7 +24,6 @@ public final class HeapSortTest {
         assertSort(new int[] {1, 2, 3, 4, 5}, new int[] {1, 2, 3, 4, 5});
         assertSort(new int[] {5, 4, 3, 2, 1}, new int[] {1, 2, 3, 4, 5});
         assertRangeSort(RANGE_INPUT, 1, 4, RANGE_OUTPUT);
-        assertDeprecatedAlias();
         assertNullRejected();
         assertInvalidRanges();
         System.out.println("HeapSort tests passed");
@@ -42,17 +41,8 @@ public final class HeapSortTest {
         assertArrayEquals(expected, actual);
     }
 
-    @SuppressWarnings("deprecation")
-    private static void assertDeprecatedAlias() {
-        int[] values = {7, 1, 4};
-        HeapSort.heapSort(values);
-        assertArrayEquals(new int[] {1, 4, 7}, values);
-    }
-
-    @SuppressWarnings("deprecation")
     private static void assertNullRejected() {
         expectNullPointer(() -> HeapSort.sort(null));
-        expectNullPointer(() -> HeapSort.heapSort(null));
         expectNullPointer(() -> HeapSort.sort(null, 0, 0));
     }
 

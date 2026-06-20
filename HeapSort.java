@@ -38,53 +38,43 @@ public final class HeapSort {
             return;
         }
 
-        buildMaxHeap(values, fromIndex, toIndex);
+        int heapSize = toIndex - fromIndex;
+        buildMaxHeap(values, fromIndex, heapSize);
 
         for (int end = toIndex - 1; end > fromIndex; end--) {
             swap(values, fromIndex, end);
-            siftDown(values, fromIndex, end, fromIndex);
+            siftDown(values, fromIndex, end - fromIndex, 0);
         }
     }
 
-    /**
-     * Backward-compatible alias for {@link #sort(int[])}.
-     *
-     * @param values array to sort
-     */
-    @Deprecated
-    public static void heapSort(int[] values) {
-        sort(values);
-    }
-
-    private static void buildMaxHeap(int[] values, int fromIndex, int toIndex) {
-        int length = toIndex - fromIndex;
-
-        for (int root = fromIndex + length / 2 - 1; root >= fromIndex; root--) {
-            siftDown(values, root, toIndex, fromIndex);
+    private static void buildMaxHeap(int[] values, int baseIndex, int heapSize) {
+        for (int root = heapSize / 2 - 1; root >= 0; root--) {
+            siftDown(values, baseIndex, heapSize, root);
         }
     }
 
-    private static void siftDown(int[] values, int rootIndex, int heapEndExclusive, int baseIndex) {
+    private static void siftDown(int[] values, int baseIndex, int heapSize, int rootIndex) {
         int current = rootIndex;
 
         while (true) {
-            int leftChild = baseIndex + ((current - baseIndex) * 2) + 1;
-            if (leftChild >= heapEndExclusive) {
+            int leftChild = 2 * current + 1;
+            if (leftChild >= heapSize) {
                 return;
             }
 
             int rightChild = leftChild + 1;
             int largestChild = leftChild;
 
-            if (rightChild < heapEndExclusive && values[rightChild] > values[leftChild]) {
+            if (rightChild < heapSize
+                    && values[baseIndex + rightChild] > values[baseIndex + leftChild]) {
                 largestChild = rightChild;
             }
 
-            if (values[current] >= values[largestChild]) {
+            if (values[baseIndex + current] >= values[baseIndex + largestChild]) {
                 return;
             }
 
-            swap(values, current, largestChild);
+            swap(values, baseIndex + current, baseIndex + largestChild);
             current = largestChild;
         }
     }

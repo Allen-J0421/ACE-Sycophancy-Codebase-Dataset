@@ -15,25 +15,43 @@ class FloydWarshall {
             this.next = next;
         }
 
+        private void checkVertex(int v) {
+            if (v < 0 || v >= dist.length) {
+                throw new IndexOutOfBoundsException(
+                    "Vertex " + v + " out of range [0, " + (dist.length - 1) + "]");
+            }
+        }
+
         int getDistance(int from, int to) {
+            checkVertex(from);
+            checkVertex(to);
             return dist[from][to];
         }
 
         boolean isReachable(int from, int to) {
+            checkVertex(from);
+            checkVertex(to);
             return dist[from][to] < INF;
         }
 
         List<Integer> getPath(int from, int to) {
+            checkVertex(from);
+            checkVertex(to);
             if (!isReachable(from, to)) {
                 return Collections.emptyList();
             }
             int n = dist.length;
             List<Integer> path = new ArrayList<>();
-            for (int v = from; v != to; v = next[v][to]) {
+            for (int v = from; v != to; ) {
                 if (path.size() >= n) {
                     throw new IllegalStateException("Path reconstruction loop; graph may contain a negative cycle");
                 }
+                int nxt = next[v][to];
+                if (nxt < 0) {
+                    throw new IllegalStateException("Broken next-hop entry at vertex " + v);
+                }
                 path.add(v);
+                v = nxt;
             }
             path.add(to);
             return path;

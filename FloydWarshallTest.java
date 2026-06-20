@@ -10,11 +10,29 @@ class FloydWarshallTest {
         testPathReconstruction();
         testUnreachableVertices();
         testSingleVertex();
+        testNegativeEdgesWithoutCycle();
         testNegativeCycleDetection();
+        testInputValidation();
 
         System.out.printf("Tests: %d passed, %d failed%n", passed, failed);
         if (failed > 0) {
             System.exit(1);
+        }
+    }
+
+    private static void assertThrows(String name, Class<? extends Exception> type, Runnable block) {
+        try {
+            block.run();
+            failed++;
+            System.err.printf("FAIL [%s]: expected %s%n", name, type.getSimpleName());
+        } catch (Exception e) {
+            if (type.isInstance(e)) {
+                passed++;
+            } else {
+                failed++;
+                System.err.printf("FAIL [%s]: expected %s but got %s%n",
+                    name, type.getSimpleName(), e.getClass().getSimpleName());
+            }
         }
     }
 
@@ -101,6 +119,20 @@ class FloydWarshallTest {
         assertTrue("single path [0]", r.getPath(0, 0).equals(List.of(0)));
     }
 
+    private static void testNegativeEdgesWithoutCycle() {
+        int I = FloydWarshall.INF;
+        // negative edge 0->1 but no cycle — should compute correctly
+        int[][] graph = {
+            {0, -1, I},
+            {I,  0, 2},
+            {I,  I, 0}
+        };
+        FloydWarshall.Result r = FloydWarshall.compute(graph);
+        assertEqual("negEdge dist[0][1]", -1, r.getDistance(0, 1));
+        assertEqual("negEdge dist[0][2]",  1, r.getDistance(0, 2));  // 0->1->2: -1+2=1
+        assertTrue("negEdge path[0->2]", r.getPath(0, 2).equals(List.of(0, 1, 2)));
+    }
+
     private static void testNegativeCycleDetection() {
         int I = FloydWarshall.INF;
         // 0->1 (+1), 1->2 (+1), 2->0 (-3): total cycle weight -1
@@ -109,12 +141,22 @@ class FloydWarshallTest {
             {I, 0, 1},
             {-3, I, 0}
         };
-        try {
-            FloydWarshall.compute(graph);
-            failed++;
-            System.err.println("FAIL [negCycle]: expected IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            passed++;
-        }
+        assertThrows("negCycle", IllegalArgumentException.class,
+            () -> FloydWarshall.compute(graph));
+    }
+
+    private static void testInputValidation() {
+        assertThrows("emptyGraph", IllegalArgumentException.class,
+            () -> FloydWarshall.compute(new int[0][]));
+        assertThrows("nonSquare", IllegalArgumentException.class,
+            () -> FloydWarshall.compute(new int[][]{{0, 1}, {2}}));
+
+        FloydWarshall.Result r = FloydWarshall.compute(new int[][]{{0}});
+        assertThrows("vertexTooHigh", IndexOutOfBoundsException.class,
+            () -> r.getDistance(0, 5));
+        assertThrows("vertexNegative", IndexOutOfBoundsException.class,
+            () -> r.getDistance(-1, 0));
+        assertThrows("pathOutOfBounds", IndexOutOfBoundsException.class,
+            () -> r.getPath(0, 5));
     }
 }

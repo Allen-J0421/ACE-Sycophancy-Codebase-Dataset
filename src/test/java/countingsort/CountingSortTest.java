@@ -1,3 +1,5 @@
+package countingsort;
+
 import java.util.Arrays;
 
 public final class CountingSortTest {

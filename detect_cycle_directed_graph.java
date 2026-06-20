@@ -110,14 +110,6 @@ final class DetectCycle {
         return graph;
     }
 
-    private static List<List<Integer>> createGraph(int vertexCount) {
-        List<List<Integer>> adjacencyList = new ArrayList<>();
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
-        }
-        return adjacencyList;
-    }
-
     public static void main(String[] args) {
         DirectedGraph graph = buildSampleGraph();
         System.out.println(containsCycle(graph.adjacencyList()) ? "true" : "false");
@@ -128,7 +120,10 @@ final class DetectCycle {
         private final List<List<Integer>> adjacencyList;
 
         private DirectedGraph(int vertexCount) {
-            this.adjacencyList = createGraph(vertexCount);
+            this.adjacencyList = new ArrayList<>();
+            for (int vertex = 0; vertex < vertexCount; vertex++) {
+                adjacencyList.add(new ArrayList<>());
+            }
         }
 
         private void addEdge(Edge edge) {

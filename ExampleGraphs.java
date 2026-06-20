@@ -1,15 +1,16 @@
 final class ExampleGraphs {
+    private static final int INF = FloydWarshall.NO_PATH;
+
     private ExampleGraphs() {
     }
 
     static int[][] weightedDirectedGraph() {
-        int inf = FloydWarshall.NO_PATH;
         return new int[][] {
-            {0, 4, inf, 5, inf},
-            {inf, 0, 1, inf, 6},
-            {2, inf, 0, 3, inf},
-            {inf, inf, 1, 0, 2},
-            {1, inf, inf, 4, 0}
+            {0, 4, INF, 5, INF},
+            {INF, 0, 1, INF, 6},
+            {2, INF, 0, 3, INF},
+            {INF, INF, 1, 0, 2},
+            {1, INF, INF, 4, 0}
         };
     }
 

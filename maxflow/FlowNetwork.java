@@ -1,4 +1,6 @@
-final class FlowNetwork {
+package maxflow;
+
+public final class FlowNetwork {
     private final int[][] capacities;
 
     private FlowNetwork(int[][] capacities) {
@@ -6,15 +8,15 @@ final class FlowNetwork {
         this.capacities = copyMatrix(capacities);
     }
 
-    static FlowNetwork fromMatrix(int[][] capacities) {
+    public static FlowNetwork fromMatrix(int[][] capacities) {
         return new FlowNetwork(capacities);
     }
 
-    int size() {
+    public int vertexCount() {
         return capacities.length;
     }
 
-    ResidualNetwork createResidualNetwork() {
+    public ResidualNetwork createResidualNetwork() {
         return new ResidualNetwork(capacities);
     }
 

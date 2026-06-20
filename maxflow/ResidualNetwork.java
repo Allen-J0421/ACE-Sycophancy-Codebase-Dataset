@@ -1,23 +1,25 @@
-final class ResidualNetwork {
+package maxflow;
+
+public final class ResidualNetwork {
     private final int[][] residualCapacities;
 
     ResidualNetwork(int[][] capacities) {
         this.residualCapacities = copyMatrix(capacities);
     }
 
-    int size() {
+    public int vertexCount() {
         return residualCapacities.length;
     }
 
-    int residualCapacity(int from, int to) {
+    public int residualCapacity(int from, int to) {
         return residualCapacities[from][to];
     }
 
-    boolean hasResidualCapacity(int from, int to) {
+    public boolean hasResidualCapacity(int from, int to) {
         return residualCapacities[from][to] > 0;
     }
 
-    int bottleneckCapacity(int[] parent, int source, int sink) {
+    public int bottleneckCapacity(int[] parent, int source, int sink) {
         int pathFlow = Integer.MAX_VALUE;
 
         for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
@@ -28,7 +30,7 @@ final class ResidualNetwork {
         return pathFlow;
     }
 
-    void augmentPath(int[] parent, int source, int sink, int flow) {
+    public void augmentPath(int[] parent, int source, int sink, int flow) {
         for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
             int predecessor = parent[vertex];
             residualCapacities[predecessor][vertex] -= flow;

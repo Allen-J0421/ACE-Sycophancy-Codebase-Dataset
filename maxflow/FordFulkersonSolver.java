@@ -1,14 +1,16 @@
-final class FordFulkersonSolver {
+package maxflow;
+
+public final class FordFulkersonSolver implements MaxFlowSolver {
     private final FlowNetwork network;
     private final int source;
     private final int sink;
     private final AugmentingPathFinder augmentingPathFinder;
 
-    FordFulkersonSolver(FlowNetwork network, int source, int sink) {
+    public FordFulkersonSolver(FlowNetwork network, int source, int sink) {
         this(network, source, sink, new BreadthFirstAugmentingPathFinder());
     }
 
-    FordFulkersonSolver(
+    public FordFulkersonSolver(
         FlowNetwork network,
         int source,
         int sink,
@@ -22,8 +24,8 @@ final class FordFulkersonSolver {
         }
 
         this.network = network;
-        this.source = validateVertex(source, network.size(), "source");
-        this.sink = validateVertex(sink, network.size(), "sink");
+        this.source = validateVertex(source, network.vertexCount(), "source");
+        this.sink = validateVertex(sink, network.vertexCount(), "sink");
         this.augmentingPathFinder = augmentingPathFinder;
 
         if (source == sink) {
@@ -31,9 +33,10 @@ final class FordFulkersonSolver {
         }
     }
 
-    int computeMaxFlow() {
+    @Override
+    public int computeMaxFlow() {
         ResidualNetwork residualNetwork = network.createResidualNetwork();
-        int[] parent = new int[network.size()];
+        int[] parent = new int[network.vertexCount()];
         int maxFlow = 0;
 
         while (augmentingPathFinder.findPath(residualNetwork, source, sink, parent)) {

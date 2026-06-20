@@ -44,14 +44,14 @@ final class DetectCycle {
             visitedCount++;
 
             for (int neighbor : adjacencyList.get(vertex)) {
-                decrementInDegree(neighbor, inDegrees, zeroInDegreeVertices);
+                decrementInDegreeAndEnqueueIfReady(neighbor, inDegrees, zeroInDegreeVertices);
             }
         }
 
         return visitedCount;
     }
 
-    private static void decrementInDegree(
+    private static void decrementInDegreeAndEnqueueIfReady(
             int vertex,
             int[] inDegrees,
             Deque<Integer> zeroInDegreeVertices

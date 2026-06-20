@@ -21,6 +21,11 @@ final class BellmanFordDemo {
                         (distances.isReachable(v) ? distances.distanceTo(v) : "INF") + " ");
                 }
                 System.out.println();
+
+                int target = 3;
+                System.out.println("Shortest path " + distances.source() + " -> " + target
+                    + ": " + distances.pathTo(target)
+                    + " (distance " + distances.distanceTo(target) + ")");
             }
         }
     }

@@ -32,24 +32,29 @@ final class BellmanFord {
         Arrays.fill(dist, Distances.UNREACHABLE);
         dist[source] = 0;
 
+        // predecessors[v] is the vertex preceding v on the best known path to v,
+        // enabling path reconstruction; the source and unreachable vertices have none.
+        int[] predecessors = new int[graph.vertices()];
+        Arrays.fill(predecessors, Distances.NO_PREDECESSOR);
+
         for (int pass = 0; pass < graph.vertices() - 1; pass++) {
-            if (!relaxAll(graph, dist)) {
+            if (!relaxAll(graph, dist, predecessors)) {
                 break; // no edge improved this pass; further passes cannot either
             }
         }
 
-        if (relaxAll(graph, dist)) {
+        if (relaxAll(graph, dist, predecessors)) {
             return new NegativeCycle();
         }
-        return new Distances(dist);
+        return new Distances(source, dist, predecessors);
     }
 
     /**
-     * Relaxes every edge once.
+     * Relaxes every edge once, recording the predecessor for any improved vertex.
      *
      * @return {@code true} if any distance was reduced
      */
-    private static boolean relaxAll(WeightedGraph graph, int[] dist) {
+    private static boolean relaxAll(WeightedGraph graph, int[] dist, int[] predecessors) {
         boolean improved = false;
         for (WeightedEdge edge : graph.edges()) {
             int from = dist[edge.from()];
@@ -59,6 +64,7 @@ final class BellmanFord {
             int candidate = from + edge.weight();
             if (candidate < dist[edge.to()]) {
                 dist[edge.to()] = candidate;
+                predecessors[edge.to()] = edge.from();
                 improved = true;
             }
         }

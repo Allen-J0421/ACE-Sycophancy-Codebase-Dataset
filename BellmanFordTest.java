@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Lightweight, dependency-free tests for {@link BellmanFord} and friends.
@@ -12,6 +13,9 @@ final class BellmanFordTest {
 
     public static void main(String[] args) {
         sampleGraphProducesKnownDistances();
+        pathsAreReconstructed();
+        pathToSourceIsTheSourceAlone();
+        unreachableVertexHasNoPath();
         unreachableVerticesAreReported();
         negativeWeightsAreHandled();
         negativeCycleIsDetected();
@@ -32,6 +36,33 @@ final class BellmanFordTest {
         Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
 
         checkArray("sample distances", new int[] {0, 5, 6, 6, 7}, distances.all());
+    }
+
+    private static void pathsAreReconstructed() {
+        WeightedGraph graph = WeightedGraph.from(5, new int[][] {
+            {1, 3, 2}, {4, 3, -1}, {2, 4, 1}, {1, 2, 1}, {0, 1, 5}
+        });
+        Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
+
+        check("path 0->3 follows the optimal route",
+            distances.pathTo(3).equals(List.of(0, 1, 2, 4, 3)));
+        check("reconstructed path ends at the target", lastOf(distances.pathTo(3)) == 3);
+        check("path source matches result source", distances.pathTo(3).get(0) == 0);
+    }
+
+    private static void pathToSourceIsTheSourceAlone() {
+        WeightedGraph graph = WeightedGraph.of(2, WeightedEdge.of(0, 1, 1));
+        Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
+
+        check("path to the source is just the source",
+            distances.pathTo(0).equals(List.of(0)));
+    }
+
+    private static void unreachableVertexHasNoPath() {
+        WeightedGraph graph = WeightedGraph.of(3, WeightedEdge.of(0, 1, 4));
+        Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
+
+        check("unreachable vertex has empty path", distances.pathTo(2).isEmpty());
     }
 
     private static void unreachableVerticesAreReported() {
@@ -101,6 +132,10 @@ final class BellmanFordTest {
         failed++;
         System.out.println("FAIL: expected Distances but got " + result);
         throw new AssertionError(result);
+    }
+
+    private static int lastOf(List<Integer> path) {
+        return path.get(path.size() - 1);
     }
 
     private static void check(String name, boolean condition) {

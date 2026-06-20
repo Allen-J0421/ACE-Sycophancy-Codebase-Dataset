@@ -1,7 +1,6 @@
 package sorting;
 
 import java.util.Comparator;
-import java.util.Objects;
 
 /**
  * In-place quicksort using a median-of-three pivot and Lomuto partitioning.
@@ -15,8 +14,7 @@ public final class QuickSort implements Sorter {
 
     @Override
     public <T> void sort(T[] array, Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
+        SortSupport.requireArgs(array, comparator);
         sort(array, 0, array.length - 1, comparator);
     }
 

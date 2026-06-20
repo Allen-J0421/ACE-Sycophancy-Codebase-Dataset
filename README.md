@@ -16,7 +16,7 @@ All sources live in the `sorting` package:
 | `InsertionSort.java`     | Insertion sort: O(n) on nearly-sorted input, stable.                |
 | `MergeSort.java`         | Top-down merge sort: O(n log n) always, stable.                     |
 | `QuickSort.java`         | In-place quicksort: median-of-three pivot, O(log n) stack.          |
-| `SortSupport.java`       | Package-private shared helpers (element swap).                      |
+| `SortSupport.java`       | Package-private shared helpers (element swap, argument checks).      |
 | `IntArrayFormatter.java` | Formats `int[]` for display, separate from the algorithm and I/O.   |
 | `SortingDemo.java`       | `main` entry point; demonstrates swapping strategies.               |
 | `SortingTest.java`       | Dependency-free test harness; non-zero exit on failure.             |

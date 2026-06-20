@@ -1,7 +1,6 @@
 package sorting;
 
 import java.util.Comparator;
-import java.util.Objects;
 
 /**
  * Insertion sort: grows a sorted prefix one element at a time, shifting larger
@@ -14,8 +13,7 @@ public final class InsertionSort implements Sorter {
 
     @Override
     public <T> void sort(T[] array, Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
+        SortSupport.requireArgs(array, comparator);
         for (int i = 1; i < array.length; i++) {
             T key = array[i];
             int j = i - 1;

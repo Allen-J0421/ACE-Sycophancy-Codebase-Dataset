@@ -1,7 +1,6 @@
 package sorting;
 
 import java.util.Comparator;
-import java.util.Objects;
 
 /**
  * Top-down merge sort: recursively splits the array in half, sorts each half,
@@ -14,8 +13,7 @@ public final class MergeSort implements Sorter {
 
     @Override
     public <T> void sort(T[] array, Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
+        SortSupport.requireArgs(array, comparator);
         if (array.length < 2) {
             return;
         }

@@ -1,7 +1,6 @@
 package sorting;
 
 import java.util.Comparator;
-import java.util.Objects;
 
 /**
  * Bubble sort with the classic early-exit optimization: a pass that completes
@@ -22,8 +21,7 @@ public final class BubbleSort implements Sorter {
 
     @Override
     public <T> void sort(T[] array, Comparator<? super T> comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
+        SortSupport.requireArgs(array, comparator);
         int n = array.length;
         for (int i = 0; i < n - 1; i++) {
             boolean swapped = false;
@@ -56,8 +54,7 @@ public final class BubbleSort implements Sorter {
      * @param comparator the ordering to impose; must not be {@code null}
      */
     public static void sort(int[] array, IntComparator comparator) {
-        Objects.requireNonNull(array, "array");
-        Objects.requireNonNull(comparator, "comparator");
+        SortSupport.requireArgs(array, comparator);
         int n = array.length;
         for (int i = 0; i < n - 1; i++) {
             boolean swapped = false;

@@ -28,11 +28,17 @@ class BubbleSort {
     }
 
     static void printArray(int[] arr, int size) {
+        System.out.println(formatArray(arr, size));
+    }
+
+    private static String formatArray(int[] arr, int size) {
+        StringBuilder result = new StringBuilder();
+
         for (int i = 0; i < size; i++) {
-            System.out.print(arr[i] + " ");
+            result.append(arr[i]).append(" ");
         }
 
-        System.out.println();
+        return result.toString();
     }
 
     public static void main(String[] args) {

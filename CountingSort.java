@@ -53,12 +53,6 @@ public final class CountingSort {
      * Sorts {@code values} in place.
      */
     public static void sortInPlace(int[] values) {
-        Objects.requireNonNull(values, "values");
-
-        if (values.length == 0) {
-            return;
-        }
-
         copyInto(values, values);
     }
 
@@ -98,8 +92,7 @@ public final class CountingSort {
     ) {
         for (int i = input.length - 1; i >= 0; i--) {
             int value = input[i];
-            output[countingTable.outputIndex(value)] = value;
-            countingTable.consume(value);
+            output[countingTable.takeOutputIndex(value)] = value;
         }
     }
 
@@ -119,12 +112,11 @@ public final class CountingSort {
             return new CountingTable(range, prefixCounts);
         }
 
-        private int outputIndex(int value) {
-            return prefixCounts[range.indexOf(value)] - 1;
-        }
-
-        private void consume(int value) {
-            prefixCounts[range.indexOf(value)]--;
+        private int takeOutputIndex(int value) {
+            int countIndex = range.indexOf(value);
+            int outputIndex = prefixCounts[countIndex] - 1;
+            prefixCounts[countIndex]--;
+            return outputIndex;
         }
     }
 

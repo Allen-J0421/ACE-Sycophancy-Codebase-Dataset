@@ -17,7 +17,7 @@ public class DirectedGraph {
     static DirectedGraph fromEdges(int vertexCount, List<Edge> edges) {
         List<List<Integer>> adjList = emptyAdjacencyList(vertexCount);
         for (Edge edge : edges) {
-            adjList.get(edge.getSource()).add(edge.getDestination());
+            adjList.get(edge.source()).add(edge.destination());
         }
         return new DirectedGraph(vertexCount, adjList);
     }
@@ -30,7 +30,7 @@ public class DirectedGraph {
         return adjacencyList.get(vertex);
     }
 
-    public int getVertexCount() {
+    public int vertexCount() {
         return vertexCount;
     }
 

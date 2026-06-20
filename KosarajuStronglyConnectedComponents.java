@@ -8,7 +8,7 @@ public class KosarajuStronglyConnectedComponents implements StronglyConnectedCom
 
     @Override
     public StronglyConnectedComponentsResult find(DirectedGraph graph) {
-        int n = graph.getVertexCount();
+        int n = graph.vertexCount();
         boolean[] visited = new boolean[n + 1];
         Deque<Integer> finishOrder = new ArrayDeque<>();
 

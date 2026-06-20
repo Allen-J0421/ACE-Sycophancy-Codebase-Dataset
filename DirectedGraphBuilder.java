@@ -29,8 +29,8 @@ public class DirectedGraphBuilder {
             throw new IllegalStateException("withVertexCount must be called before build()");
         }
         for (Edge edge : edges) {
-            int from = edge.getSource();
-            int to = edge.getDestination();
+            int from = edge.source();
+            int to = edge.destination();
             if (from < 1 || from > vertexCount || to < 1 || to > vertexCount) {
                 throw new IllegalArgumentException(
                         "Edge " + edge + " references vertex outside valid range [1, " + vertexCount + "]");

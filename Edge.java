@@ -9,19 +9,18 @@ public class Edge {
         this.destination = destination;
     }
 
-    public int getSource() {
+    public int source() {
         return source;
     }
 
-    public int getDestination() {
+    public int destination() {
         return destination;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Edge)) return false;
-        Edge other = (Edge) o;
+        if (!(o instanceof Edge other)) return false;
         return source == other.source && destination == other.destination;
     }
 

@@ -9,7 +9,7 @@ public class StronglyConnectedComponentsResult implements Iterable<StronglyConne
         this.components = List.copyOf(components);
     }
 
-    public List<StronglyConnectedComponent> getComponents() {
+    public List<StronglyConnectedComponent> components() {
         return components;
     }
 
@@ -29,8 +29,8 @@ public class StronglyConnectedComponentsResult implements Iterable<StronglyConne
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StronglyConnectedComponentsResult)) return false;
-        return components.equals(((StronglyConnectedComponentsResult) o).components);
+        if (!(o instanceof StronglyConnectedComponentsResult other)) return false;
+        return components.equals(other.components);
     }
 
     @Override

@@ -4,28 +4,27 @@ public final class BipartiteGraphTest {
     }
 
     public static void main(String[] args) {
-        shouldIdentifyABipartiteGraph();
-        shouldRejectANonBipartiteGraph();
-        shouldHandleDisconnectedGraphs();
-        shouldRejectInvalidEdges();
-        shouldRejectInvalidNeighborAccess();
+        runTest("identifies bipartite graphs", BipartiteGraphTest::shouldIdentifyABipartiteGraph);
+        runTest("rejects non-bipartite graphs", BipartiteGraphTest::shouldRejectANonBipartiteGraph);
+        runTest("handles disconnected graphs", BipartiteGraphTest::shouldHandleDisconnectedGraphs);
+        runTest("rejects invalid edges", BipartiteGraphTest::shouldRejectInvalidEdges);
+        runTest("rejects invalid neighbor access", BipartiteGraphTest::shouldRejectInvalidNeighborAccess);
+        runTest("exposes stable vertex iteration", BipartiteGraphTest::shouldExposeStableVertexIteration);
     }
 
     private static void shouldIdentifyABipartiteGraph() {
-        assertEquals(
+        assertBipartiteResult(
                 true,
-                BipartiteGraph.isBipartite(
-                        4,
-                        new int[][] {{0, 1}, {0, 3}, {2, 1}, {2, 3}}),
+                4,
+                new int[][] {{0, 1}, {0, 3}, {2, 1}, {2, 3}},
                 "Expected an even-cycle graph to be bipartite.");
     }
 
     private static void shouldRejectANonBipartiteGraph() {
-        assertEquals(
+        assertBipartiteResult(
                 false,
-                BipartiteGraph.isBipartite(
-                        3,
-                        new int[][] {{0, 1}, {1, 2}, {2, 0}}),
+                3,
+                new int[][] {{0, 1}, {1, 2}, {2, 0}},
                 "Expected an odd cycle to be non-bipartite.");
     }
 
@@ -52,9 +51,49 @@ public final class BipartiteGraphTest {
                 "Expected neighbor lookup to validate vertex bounds.");
     }
 
+    private static void shouldExposeStableVertexIteration() {
+        Graph graph = Graph.fromEdges(3, new int[][] {{0, 1}});
+        assertVertexSequence(graph, new int[] {0, 1, 2});
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> graph.vertices().add(3),
+                "Expected vertex iteration to be immutable.");
+    }
+
+    private static void assertBipartiteResult(
+            boolean expected,
+            int vertexCount,
+            int[][] edges,
+            String message) {
+        assertEquals(expected, BipartiteGraph.isBipartite(vertexCount, edges), message);
+    }
+
+    private static void assertVertexSequence(Graph graph, int[] expectedVertices) {
+        int index = 0;
+        for (int vertex : graph.vertices()) {
+            if (index >= expectedVertices.length || vertex != expectedVertices[index]) {
+                throw new AssertionError("Unexpected vertex iteration order.");
+            }
+
+            index++;
+        }
+
+        if (index != expectedVertices.length) {
+            throw new AssertionError("Vertex iteration did not include all expected vertices.");
+        }
+    }
+
     private static void assertEquals(boolean expected, boolean actual, String message) {
         if (expected != actual) {
             throw new AssertionError(message + " Expected: " + expected + ", actual: " + actual);
+        }
+    }
+
+    private static void runTest(String name, ThrowingRunnable test) {
+        try {
+            test.run();
+        } catch (Throwable throwable) {
+            throw new AssertionError("Test failed: " + name, throwable);
         }
     }
 

@@ -4,24 +4,31 @@ import java.util.List;
 
 public final class Graph {
     private final List<List<Integer>> adjacencyList;
+    private final List<Integer> vertices;
 
-    private Graph(List<List<Integer>> adjacencyList) {
+    private Graph(List<List<Integer>> adjacencyList, List<Integer> vertices) {
         this.adjacencyList = adjacencyList;
+        this.vertices = vertices;
     }
 
     public static Graph fromEdges(int vertexCount, int[][] edges) {
-        validateInputs(vertexCount, edges);
+        validateVertexCount(vertexCount);
+        requireEdges(edges);
 
-        List<List<Integer>> adjacencyList = initializeAdjacencyList(vertexCount);
-        for (int[] edge : edges) {
-            addUndirectedEdge(adjacencyList, edge[0], edge[1]);
+        Builder builder = new Builder(vertexCount);
+        for (int edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
+            builder.addEdge(edges[edgeIndex], edgeIndex);
         }
 
-        return new Graph(toUnmodifiableAdjacencyList(adjacencyList));
+        return builder.build();
     }
 
     public int vertexCount() {
         return adjacencyList.size();
+    }
+
+    public List<Integer> vertices() {
+        return vertices;
     }
 
     public List<Integer> neighborsOf(int vertex) {
@@ -29,21 +36,13 @@ public final class Graph {
         return adjacencyList.get(vertex);
     }
 
-    private static List<List<Integer>> initializeAdjacencyList(int vertexCount) {
-        List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
+    private static List<Integer> initializeVertices(int vertexCount) {
+        List<Integer> vertices = new ArrayList<>(vertexCount);
         for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
+            vertices.add(vertex);
         }
 
-        return adjacencyList;
-    }
-
-    private static void addUndirectedEdge(
-            List<List<Integer>> adjacencyList,
-            int source,
-            int destination) {
-        adjacencyList.get(source).add(destination);
-        adjacencyList.get(destination).add(source);
+        return Collections.unmodifiableList(vertices);
     }
 
     private static List<List<Integer>> toUnmodifiableAdjacencyList(
@@ -56,33 +55,28 @@ public final class Graph {
         return Collections.unmodifiableList(immutableAdjacencyList);
     }
 
-    private static void validateInputs(int vertexCount, int[][] edges) {
+    private static void validateVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count cannot be negative.");
         }
+    }
 
+    private static void requireEdges(int[][] edges) {
         if (edges == null) {
             throw new IllegalArgumentException("Edges cannot be null.");
         }
-
-        for (int edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
-            validateEdge(edges[edgeIndex], vertexCount, edgeIndex);
-        }
     }
 
-    private static void validateEdge(int[] edge, int vertexCount, int edgeIndex) {
+    private static void validateEdgeShape(int[] edge, int edgeIndex) {
         if (edge == null || edge.length != 2) {
             throw new IllegalArgumentException(
                     "Each edge must contain exactly two vertices. Invalid edge at index "
                             + edgeIndex
                             + ".");
         }
-
-        validateVertex(edge[0], vertexCount, edgeIndex);
-        validateVertex(edge[1], vertexCount, edgeIndex);
     }
 
-    private static void validateVertex(int vertex, int vertexCount, int edgeIndex) {
+    private static int validateVertex(int vertex, int vertexCount, int edgeIndex) {
         if (vertex < 0 || vertex >= vertexCount) {
             throw new IllegalArgumentException(
                     "Edge at index "
@@ -93,6 +87,8 @@ public final class Graph {
                             + vertexCount
                             + ".");
         }
+
+        return vertex;
     }
 
     private void validateVertexIndex(int vertex) {
@@ -103,6 +99,40 @@ public final class Graph {
                             + " is out of bounds for graph size "
                             + adjacencyList.size()
                             + ".");
+        }
+    }
+
+    private static final class Builder {
+        private final List<List<Integer>> adjacencyList;
+        private final int vertexCount;
+
+        private Builder(int vertexCount) {
+            this.vertexCount = vertexCount;
+            this.adjacencyList = initializeAdjacencyList(vertexCount);
+        }
+
+        private void addEdge(int[] edge, int edgeIndex) {
+            validateEdgeShape(edge, edgeIndex);
+
+            int source = validateVertex(edge[0], vertexCount, edgeIndex);
+            int destination = validateVertex(edge[1], vertexCount, edgeIndex);
+            adjacencyList.get(source).add(destination);
+            adjacencyList.get(destination).add(source);
+        }
+
+        private Graph build() {
+            return new Graph(
+                    toUnmodifiableAdjacencyList(adjacencyList),
+                    initializeVertices(vertexCount));
+        }
+
+        private static List<List<Integer>> initializeAdjacencyList(int vertexCount) {
+            List<List<Integer>> adjacencyList = new ArrayList<>(vertexCount);
+            for (int vertex = 0; vertex < vertexCount; vertex++) {
+                adjacencyList.add(new ArrayList<>());
+            }
+
+            return adjacencyList;
         }
     }
 }

@@ -7,21 +7,15 @@ final class ActivitySelector {
     static int maximumCompatibleActivities(int[] startTimes, int[] finishTimes) {
         ActivitySchedule schedule = ActivitySchedule.from(startTimes, finishTimes);
 
-        if (schedule.isEmpty()) {
-            return 0;
-        }
-
         return countCompatibleActivities(schedule.activitiesSortedByFinishTime());
     }
 
     private static int countCompatibleActivities(List<Activity> activities) {
-        int selectedCount = 1;
-        Activity lastSelected = activities.get(0);
+        int selectedCount = 0;
+        Activity lastSelected = null;
 
-        for (int i = 1; i < activities.size(); i++) {
-            Activity candidate = activities.get(i);
-
-            if (candidate.startsAfter(lastSelected)) {
+        for (Activity candidate : activities) {
+            if (lastSelected == null || candidate.startsAfter(lastSelected)) {
                 selectedCount++;
                 lastSelected = candidate;
             }

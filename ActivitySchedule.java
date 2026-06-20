@@ -20,10 +20,6 @@ final class ActivitySchedule {
         return new ActivitySchedule(activities);
     }
 
-    boolean isEmpty() {
-        return activities.isEmpty();
-    }
-
     List<Activity> activitiesSortedByFinishTime() {
         List<Activity> sortedActivities = new ArrayList<>(activities);
         sortedActivities.sort(Activity.BY_FINISH_TIME);

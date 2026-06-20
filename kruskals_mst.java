@@ -59,10 +59,11 @@ class KruskalMST {
         }
 
         int find(int i) {
-            if (parent[i] != i) {
-                parent[i] = find(parent[i]);
+            while (parent[i] != i) {
+                parent[i] = parent[parent[i]]; // path halving
+                i = parent[i];
             }
-            return parent[i];
+            return i;
         }
 
         boolean union(int x, int y) {

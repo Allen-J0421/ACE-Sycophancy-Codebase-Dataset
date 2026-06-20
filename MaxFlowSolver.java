@@ -1,10 +1,23 @@
 public final class MaxFlowSolver {
+    private final AugmentingPathFinder pathFinder;
+
+    public MaxFlowSolver() {
+        this(new BreadthFirstAugmentingPathFinder());
+    }
+
+    public MaxFlowSolver(AugmentingPathFinder pathFinder) {
+        if (pathFinder == null) {
+            throw new IllegalArgumentException("Path finder must not be null.");
+        }
+        this.pathFinder = pathFinder;
+    }
+
     public MaxFlowResult solve(FlowProblem problem) {
         ResidualNetwork residualNetwork = new ResidualNetwork(problem.network());
         int maxFlow = 0;
 
         while (true) {
-            java.util.Optional<AugmentingPath> path = residualNetwork.findAugmentingPath(problem.source(), problem.sink());
+            java.util.Optional<AugmentingPath> path = pathFinder.find(residualNetwork, problem);
             if (path.isEmpty()) {
                 return new MaxFlowResult(maxFlow, residualNetwork.snapshot());
             }

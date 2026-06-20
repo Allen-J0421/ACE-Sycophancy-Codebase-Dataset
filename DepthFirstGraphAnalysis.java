@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 abstract class DepthFirstGraphAnalysis<Result> {
     protected static final int ROOT_PARENT = -1;
 
@@ -7,7 +9,7 @@ abstract class DepthFirstGraphAnalysis<Result> {
     private int currentTime;
 
     protected DepthFirstGraphAnalysis(Graph graph) {
-        this.graph = graph;
+        this.graph = Objects.requireNonNull(graph, "graph");
         this.discoveryTime = new int[graph.vertexCount()];
         this.visited = new boolean[graph.vertexCount()];
         this.currentTime = 0;
@@ -23,12 +25,16 @@ abstract class DepthFirstGraphAnalysis<Result> {
         return buildResult();
     }
 
-    protected final Graph graph() {
-        return graph;
+    protected final int vertexCount() {
+        return graph.vertexCount();
     }
 
     protected final int discoveryTimeOf(int vertex) {
         return discoveryTime[vertex];
+    }
+
+    protected final boolean isRoot(int parent) {
+        return parent == ROOT_PARENT;
     }
 
     private void depthFirstSearch(int vertex, int parent) {

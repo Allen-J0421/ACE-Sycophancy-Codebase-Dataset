@@ -1,12 +1,13 @@
 import java.util.ArrayList;
+import java.util.List;
 
-final class ArticulationPointAnalysis implements GraphAnalysis<ArrayList<Integer>> {
+final class ArticulationPointAnalysis implements GraphAnalysis<List<Integer>> {
     @Override
-    public ArrayList<Integer> analyze(Graph graph) {
+    public List<Integer> analyze(Graph graph) {
         return new ArticulationPointTraversal(graph).run();
     }
 
-    private static final class ArticulationPointTraversal extends DepthFirstGraphAnalysis<ArrayList<Integer>> {
+    private static final class ArticulationPointTraversal extends DepthFirstGraphAnalysis<List<Integer>> {
         private static final int NO_ARTICULATION_POINTS = -1;
 
         private final int[] lowLink;
@@ -14,8 +15,8 @@ final class ArticulationPointAnalysis implements GraphAnalysis<ArrayList<Integer
 
         private ArticulationPointTraversal(Graph graph) {
             super(graph);
-            this.lowLink = new int[graph.vertexCount()];
-            this.articulationPoint = new boolean[graph.vertexCount()];
+            this.lowLink = new int[vertexCount()];
+            this.articulationPoint = new boolean[vertexCount()];
         }
 
         @Override
@@ -27,7 +28,7 @@ final class ArticulationPointAnalysis implements GraphAnalysis<ArrayList<Integer
         protected void afterChildTraversal(int vertex, int child, int parent) {
             lowLink[vertex] = Math.min(lowLink[vertex], lowLink[child]);
 
-            if (parent != ROOT_PARENT && lowLink[child] >= discoveryTimeOf(vertex)) {
+            if (!isRoot(parent) && lowLink[child] >= discoveryTimeOf(vertex)) {
                 articulationPoint[vertex] = true;
             }
         }
@@ -39,13 +40,13 @@ final class ArticulationPointAnalysis implements GraphAnalysis<ArrayList<Integer
 
         @Override
         protected void onCompleteVertex(int vertex, int parent, int childCount) {
-            if (parent == ROOT_PARENT && childCount > 1) {
+            if (isRoot(parent) && childCount > 1) {
                 articulationPoint[vertex] = true;
             }
         }
 
         @Override
-        protected ArrayList<Integer> buildResult() {
+        protected List<Integer> buildResult() {
             ArrayList<Integer> result = new ArrayList<>();
 
             for (int vertex = 0; vertex < articulationPoint.length; vertex++) {

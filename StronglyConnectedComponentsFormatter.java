@@ -6,7 +6,7 @@ public class StronglyConnectedComponentsFormatter {
 
     public static String format(StronglyConnectedComponentsResult result) {
         String sccLines = result.stream()
-                .map(scc -> scc.getVertices().stream()
+                .map(scc -> scc.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(" ")))
                 .collect(Collectors.joining("\n"));

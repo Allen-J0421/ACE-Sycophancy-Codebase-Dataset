@@ -13,9 +13,13 @@ public class DirectedGraphBuilder {
         return this;
     }
 
-    public DirectedGraphBuilder addEdge(int from, int to) {
-        edges.add(new Edge(from, to));
+    public DirectedGraphBuilder addEdge(Edge edge) {
+        edges.add(edge);
         return this;
+    }
+
+    public DirectedGraphBuilder addEdge(int from, int to) {
+        return addEdge(new Edge(from, to));
     }
 
     public DirectedGraph build() {

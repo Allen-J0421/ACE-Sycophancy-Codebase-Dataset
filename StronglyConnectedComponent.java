@@ -1,6 +1,8 @@
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class StronglyConnectedComponent {
+public class StronglyConnectedComponent implements Iterable<Integer> {
     private final List<Integer> vertices;
 
     public StronglyConnectedComponent(List<Integer> vertices) {
@@ -13,6 +15,15 @@ public class StronglyConnectedComponent {
 
     public int size() {
         return vertices.size();
+    }
+
+    public Stream<Integer> stream() {
+        return vertices.stream();
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return vertices.iterator();
     }
 
     @Override

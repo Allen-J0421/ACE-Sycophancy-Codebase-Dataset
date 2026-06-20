@@ -23,6 +23,10 @@ public class DirectedGraph {
     }
 
     public List<Integer> neighbors(int vertex) {
+        if (vertex < 1 || vertex > vertexCount) {
+            throw new IllegalArgumentException(
+                    "Vertex " + vertex + " is outside valid range [1, " + vertexCount + "]");
+        }
         return adjacencyList.get(vertex);
     }
 

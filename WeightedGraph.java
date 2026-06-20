@@ -40,8 +40,8 @@ public final class WeightedGraph {
         return distance(source, target) == unreachableDistance;
     }
 
-    public int[][] adjacencyMatrix() {
-        return adjacencyMatrix.copyValues();
+    public IntSquareMatrix adjacencyMatrix() {
+        return adjacencyMatrix;
     }
 
     private static void validateUnreachableDistance(int unreachableDistance) {

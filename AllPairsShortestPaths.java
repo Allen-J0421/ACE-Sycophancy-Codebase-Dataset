@@ -20,8 +20,8 @@ public final class AllPairsShortestPaths {
         return distances.size();
     }
 
-    public int[][] distances() {
-        return distances.copyValues();
+    public IntSquareMatrix distances() {
+        return distances;
     }
 
     public int distance(int source, int target) {

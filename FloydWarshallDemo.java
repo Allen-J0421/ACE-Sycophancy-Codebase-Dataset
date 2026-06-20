@@ -14,23 +14,10 @@ final class FloydWarshallDemo {
         };
     }
 
-    private static void printMatrix(int[][] matrix) {
-        for (int[] row : matrix) {
-            StringBuilder line = new StringBuilder();
-            for (int value : row) {
-                if (line.length() > 0) {
-                    line.append(' ');
-                }
-                line.append(value);
-            }
-            System.out.println(line);
-        }
-    }
-
     public static void main(String[] args) {
         WeightedGraph graph = WeightedGraph.from(sampleGraph());
         FloydWarshall solver = FloydWarshall.from(graph);
         AllPairsShortestPaths shortestPaths = solver.solve();
-        printMatrix(shortestPaths.distances());
+        System.out.println(shortestPaths.distances());
     }
 }

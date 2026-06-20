@@ -25,6 +25,28 @@ public final class IntSquareMatrix {
         return copyMatrix(values);
     }
 
+    public String toDisplayString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                builder.append('\n');
+            }
+
+            for (int j = 0; j < values.length; j++) {
+                if (j > 0) {
+                    builder.append(' ');
+                }
+                builder.append(values[i][j]);
+            }
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toDisplayString();
+    }
+
     private static void validateSquareMatrix(int[][] matrix) {
         if (matrix == null) {
             throw new IllegalArgumentException("Matrix must not be null.");

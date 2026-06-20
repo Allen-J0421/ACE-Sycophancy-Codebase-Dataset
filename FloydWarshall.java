@@ -26,9 +26,10 @@ public final class FloydWarshall {
     }
 
     public AllPairsShortestPaths solve() {
-        int[][] distances = graph.adjacencyMatrix();
+        IntSquareMatrix adjacencyMatrix = graph.adjacencyMatrix();
+        int[][] distances = adjacencyMatrix.copyValues();
         int[][] nextHop = new int[graph.vertexCount()][graph.vertexCount()];
-        initializeNextHop(distances, nextHop, graph.unreachableDistance());
+        initializeNextHop(adjacencyMatrix, nextHop, graph.unreachableDistance());
 
         int vertices = distances.length;
         int unreachableDistance = graph.unreachableDistance();
@@ -55,10 +56,10 @@ public final class FloydWarshall {
         return new AllPairsShortestPaths(distances, nextHop);
     }
 
-    private void initializeNextHop(int[][] adjacencyMatrix, int[][] nextHop, int unreachableDistance) {
-        for (int i = 0; i < adjacencyMatrix.length; i++) {
-            for (int j = 0; j < adjacencyMatrix.length; j++) {
-                nextHop[i][j] = adjacencyMatrix[i][j] == unreachableDistance ? -1 : j;
+    private void initializeNextHop(IntSquareMatrix adjacencyMatrix, int[][] nextHop, int unreachableDistance) {
+        for (int i = 0; i < adjacencyMatrix.size(); i++) {
+            for (int j = 0; j < adjacencyMatrix.size(); j++) {
+                nextHop[i][j] = adjacencyMatrix.get(i, j) == unreachableDistance ? -1 : j;
             }
         }
     }

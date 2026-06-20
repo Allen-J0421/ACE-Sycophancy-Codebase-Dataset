@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 class AVLTree<T extends Comparable<T>> implements Iterable<T> {
 
@@ -10,9 +11,9 @@ class AVLTree<T extends Comparable<T>> implements Iterable<T> {
         Node<T> right;
         int height;
 
-        Node(T k) {
-            key = k;
-            height = 1;
+        Node(T key) {
+            this.key = key;
+            this.height = 1;
         }
     }
 
@@ -20,6 +21,7 @@ class AVLTree<T extends Comparable<T>> implements Iterable<T> {
     private int size;
 
     public boolean insert(T key) {
+        Objects.requireNonNull(key, "key must not be null");
         if (contains(key)) return false;
         root = insert(root, key);
         size++;
@@ -40,6 +42,7 @@ class AVLTree<T extends Comparable<T>> implements Iterable<T> {
     }
 
     public boolean contains(T key) {
+        Objects.requireNonNull(key, "key must not be null");
         Node<T> node = root;
         while (node != null) {
             int cmp = key.compareTo(node.key);

@@ -30,9 +30,8 @@ public class CountingSort {
 
         int[] sorted = new int[arr.length];
         for (int i = arr.length - 1; i >= 0; i--) {
-            int val = arr[i];
-            sorted[count[val - min] - 1] = val;
-            count[val - min]--;
+            int idx = arr[i] - min;
+            sorted[--count[idx]] = arr[i];
         }
 
         return sorted;

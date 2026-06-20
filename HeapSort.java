@@ -25,7 +25,7 @@ public class HeapSort {
         void sort() {
             build();
             for (int i = size - 1; i > 0; i--) {
-                swap(from, from + i);
+                swap(0, i);
                 siftDown(0, i);
             }
         }
@@ -49,15 +49,15 @@ public class HeapSort {
 
                 if (largest == i) break;
 
-                swap(from + i, from + largest);
+                swap(i, largest);
                 i = largest;
             }
         }
 
         private void swap(int i, int j) {
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
+            int temp = arr[from + i];
+            arr[from + i] = arr[from + j];
+            arr[from + j] = temp;
         }
     }
 }

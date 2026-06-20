@@ -29,43 +29,48 @@ public class HeapSortTest {
         }
     }
 
-    static class SortCase implements TestCase {
-        private final String label;
-        private final int[] input;
-        private final int[] expected;
+    static abstract class ArraySortCase implements TestCase {
+        protected final String label;
+        protected final int[] input;
+        protected final int[] expected;
 
-        SortCase(String label, int[] input, int[] expected) {
+        ArraySortCase(String label, int[] input, int[] expected) {
             this.label = label;
             this.input = input;
             this.expected = expected;
         }
 
+        protected abstract void sort(int[] arr);
+
         public void run() {
             int[] arr = Arrays.copyOf(input, input.length);
-            HeapSort.heapSort(arr);
+            sort(arr);
             assertEquals(expected, arr, label);
         }
     }
 
-    static class RangeCase implements TestCase {
-        private final String label;
-        private final int[] input;
-        private final int from;
-        private final int to;
-        private final int[] expected;
-
-        RangeCase(String label, int[] input, int from, int to, int[] expected) {
-            this.label = label;
-            this.input = input;
-            this.from = from;
-            this.to = to;
-            this.expected = expected;
+    static class SortCase extends ArraySortCase {
+        SortCase(String label, int[] input, int[] expected) {
+            super(label, input, expected);
         }
 
-        public void run() {
-            int[] arr = Arrays.copyOf(input, input.length);
+        protected void sort(int[] arr) {
+            HeapSort.heapSort(arr);
+        }
+    }
+
+    static class RangeCase extends ArraySortCase {
+        private final int from;
+        private final int to;
+
+        RangeCase(String label, int[] input, int from, int to, int[] expected) {
+            super(label, input, expected);
+            this.from = from;
+            this.to = to;
+        }
+
+        protected void sort(int[] arr) {
             HeapSort.heapSort(arr, from, to);
-            assertEquals(expected, arr, label);
         }
     }
 

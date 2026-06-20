@@ -102,7 +102,8 @@ public class FloydWarshall {
 
         for (int i = 0; i < n; i++) {
             if (dist[i][i] < 0) {
-                throw new IllegalArgumentException("Graph contains a negative-weight cycle");
+                throw new IllegalArgumentException(
+                    "Graph contains a negative-weight cycle involving vertex " + i);
             }
         }
 

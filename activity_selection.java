@@ -1,5 +1,5 @@
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.stream.IntStream;
 
 public class ActivitySelection {
 
@@ -9,12 +9,10 @@ public class ActivitySelection {
         int n = start.length;
         if (n == 0) return 0;
 
-        Activity[] activities = new Activity[n];
-        for (int i = 0; i < n; i++) {
-            activities[i] = new Activity(start[i], finish[i]);
-        }
-
-        Arrays.sort(activities, Comparator.comparingInt(Activity::finish));
+        Activity[] activities = IntStream.range(0, n)
+            .mapToObj(i -> new Activity(start[i], finish[i]))
+            .sorted(Comparator.comparingInt(Activity::finish))
+            .toArray(Activity[]::new);
 
         int count = 1;
         int lastFinish = activities[0].finish();

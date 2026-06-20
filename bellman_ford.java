@@ -20,7 +20,7 @@ final class BellmanFord {
     private static int[] shortestPathsFrom(Graph graph, int source) {
         int[] distances = initialDistances(graph.vertexCount, source);
 
-        for (int i = 1; i < graph.vertexCount; i++) {
+        for (int pass = 1; pass < graph.vertexCount; pass++) {
             if (!relaxEdges(graph.edges, distances)) {
                 break;
             }
@@ -64,6 +64,15 @@ final class BellmanFord {
         }
 
         return false;
+    }
+
+    private static String formatDistances(int[] distances) {
+        StringBuilder output = new StringBuilder();
+        for (int distance : distances) {
+            output.append(distance).append(' ');
+        }
+
+        return output.toString();
     }
 
     private static final class Edge {
@@ -157,8 +166,6 @@ final class BellmanFord {
 
         int[] distances = bellmanFord(vertexCount, edges, source);
 
-        for (int distance : distances) {
-            System.out.print(distance + " ");
-        }
+        System.out.print(formatDistances(distances));
     }
 }

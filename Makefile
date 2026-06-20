@@ -1,5 +1,6 @@
 JAVAC ?= javac
 JAVA ?= java
+ARGS ?=
 
 SOURCES = Radix.java RadixDemo.java RadixTest.java
 
@@ -11,7 +12,7 @@ test:
 
 run:
 	$(JAVAC) Radix.java RadixDemo.java
-	$(JAVA) RadixDemo
+	$(JAVA) RadixDemo $(ARGS)
 
 clean:
 	find . -maxdepth 1 -name '*.class' -delete

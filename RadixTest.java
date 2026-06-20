@@ -11,6 +11,7 @@ class RadixTest {
         keepsEmptyAndSingleElementArraysValid();
         keepsMaximumLookupIndependentFromSortValidation();
         formatsValuesAndRanges();
+        parsesDemoArguments();
         rejectsUnsupportedSortInputs();
         rejectsInvalidRanges();
         sortsSingleDigitPass();
@@ -96,6 +97,12 @@ class RadixTest {
         assertEquals("99 -3 -1", Radix.format(values, 3));
         assertEquals("-3 -1 2 4", Radix.format(values, 1, 5));
         assertEquals("", Radix.format(values, 2, 2));
+    }
+
+    private static void parsesDemoArguments() {
+        int[] parsed = RadixDemo.parseValues(new String[] {"3", "-1", "2"});
+
+        assertArrayEquals(new int[] {3, -1, 2}, parsed);
     }
 
     private static void rejectsUnsupportedSortInputs() {

@@ -24,6 +24,12 @@ Run the demo:
 make run
 ```
 
+Sort custom demo values:
+
+```sh
+make run ARGS="3 -1 2"
+```
+
 Remove compiled class files:
 
 ```sh

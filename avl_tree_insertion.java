@@ -16,9 +16,17 @@ class AVLTree<T extends Comparable<T>> {
     }
 
     private Node<T> root;
+    private int size;
 
-    public void insert(T key) {
+    public boolean insert(T key) {
+        if (contains(key)) return false;
         root = insert(root, key);
+        size++;
+        return true;
+    }
+
+    public int size() {
+        return size;
     }
 
     public boolean contains(T key) {
@@ -33,6 +41,11 @@ class AVLTree<T extends Comparable<T>> {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return inOrder().toString();
     }
 
     public List<T> preOrder() {
@@ -146,8 +159,12 @@ class AVLTree<T extends Comparable<T>> {
         tree.insert(25);
 
         System.out.println(tree.preOrder());
-        System.out.println(tree.inOrder());
-        System.out.println(tree.contains(25));
-        System.out.println(tree.contains(99));
+        System.out.println(tree);
+        System.out.println("size:        " + tree.size());
+        System.out.println("contains 25: " + tree.contains(25));
+        System.out.println("contains 99: " + tree.contains(99));
+        System.out.println("insert 25:   " + tree.insert(25));
+        System.out.println("insert 35:   " + tree.insert(35));
+        System.out.println("size:        " + tree.size());
     }
 }

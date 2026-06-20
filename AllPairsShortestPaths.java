@@ -1,7 +1,3 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public final class AllPairsShortestPaths {
 
     private final IntSquareMatrix distances;
@@ -28,24 +24,24 @@ public final class AllPairsShortestPaths {
         return distances.get(source, target);
     }
 
-    public List<Integer> path(int source, int target) {
+    public VertexPath path(int source, int target) {
         if (nextHop.get(source, target) == -1) {
-            return Collections.emptyList();
+            return VertexPath.empty();
         }
 
-        List<Integer> path = new ArrayList<>();
+        java.util.ArrayList<Integer> path = new java.util.ArrayList<>();
         int current = source;
         path.add(current);
 
         while (current != target) {
             current = nextHop.get(current, target);
             if (current == -1) {
-                return Collections.emptyList();
+                return VertexPath.empty();
             }
             path.add(current);
         }
 
-        return Collections.unmodifiableList(path);
+        return VertexPath.of(path);
     }
 
     public boolean isReachable(int source, int target) {

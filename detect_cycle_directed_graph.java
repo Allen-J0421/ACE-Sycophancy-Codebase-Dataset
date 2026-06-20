@@ -17,6 +17,10 @@ final class DetectCycle {
     }
 
     static boolean isCyclic(List<? extends List<Integer>> adjacencyList) {
+        return containsCycle(adjacencyList);
+    }
+
+    static boolean containsCycle(List<? extends List<Integer>> adjacencyList) {
         return hasCycle(adjacencyList);
     }
 
@@ -116,7 +120,7 @@ final class DetectCycle {
 
     public static void main(String[] args) {
         List<List<Integer>> adjacencyList = buildSampleGraph();
-        System.out.println(isCyclic(adjacencyList) ? "true" : "false");
+        System.out.println(containsCycle(adjacencyList) ? "true" : "false");
     }
 
     private static final class Edge {

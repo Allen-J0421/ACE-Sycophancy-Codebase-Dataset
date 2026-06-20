@@ -9,21 +9,28 @@ public final class RadixSort {
 
     public static void sort(int[] values) {
         validateInput(values);
-        if (values.length < 2) {
-            return;
-        }
-
-        int maxValue = findMax(values);
-        for (int exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
-            countingSortByDigit(values, exponent);
-        }
+        sortValidated(values);
     }
 
     public static int[] sortedCopy(int[] values) {
         validateInput(values);
         int[] copy = Arrays.copyOf(values, values.length);
-        sort(copy);
+        sortValidated(copy);
         return copy;
+    }
+
+    private static void sortValidated(int[] values) {
+        if (values.length < 2) {
+            return;
+        }
+
+        int[] output = new int[values.length];
+        int[] counts = new int[RADIX];
+        int maxValue = findMax(values);
+
+        for (int exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
+            countingSortByDigit(values, output, counts, exponent);
+        }
     }
 
     private static void validateInput(int[] values) {
@@ -48,9 +55,13 @@ public final class RadixSort {
         return maxValue;
     }
 
-    private static void countingSortByDigit(int[] values, int exponent) {
-        int[] output = new int[values.length];
-        int[] counts = new int[RADIX];
+    private static void countingSortByDigit(
+        int[] values,
+        int[] output,
+        int[] counts,
+        int exponent
+    ) {
+        Arrays.fill(counts, 0);
 
         for (int value : values) {
             counts[digitAt(value, exponent)]++;
@@ -71,11 +82,5 @@ public final class RadixSort {
 
     private static int digitAt(int value, int exponent) {
         return (value / exponent) % RADIX;
-    }
-
-    public static void main(String[] args) {
-        int[] values = {170, 45, 75, 90, 802, 24, 2, 66};
-        sort(values);
-        System.out.println(Arrays.toString(values));
     }
 }

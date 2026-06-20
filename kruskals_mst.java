@@ -26,18 +26,6 @@ class KruskalMST {
         return totalCost;
     }
 
-    public static void main(String[] args) {
-        Edge[] edges = {
-            new Edge(0, 1, 10),
-            new Edge(1, 3, 15),
-            new Edge(2, 3, 4),
-            new Edge(2, 0, 6),
-            new Edge(0, 3, 5)
-        };
-
-        System.out.println(kruskalsMST(4, edges));
-    }
-
     private static class UnionFind {
         private final int[] parent, rank;
 
@@ -67,5 +55,19 @@ class KruskalMST {
             if (rank[rootX] == rank[rootY]) rank[rootY]++;
             return true;
         }
+    }
+}
+
+class KruskalMSTDemo {
+    public static void main(String[] args) {
+        KruskalMST.Edge[] edges = {
+            new KruskalMST.Edge(0, 1, 10),
+            new KruskalMST.Edge(1, 3, 15),
+            new KruskalMST.Edge(2, 3, 4),
+            new KruskalMST.Edge(2, 0, 6),
+            new KruskalMST.Edge(0, 3, 5)
+        };
+
+        System.out.println(KruskalMST.kruskalsMST(4, edges));
     }
 }

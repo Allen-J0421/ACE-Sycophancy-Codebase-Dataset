@@ -20,7 +20,7 @@ public final class FordFulkersonSolver implements MaxFlowAlgorithm {
         while (true) {
             java.util.Optional<AugmentingPath> path = pathFinder.find(residualNetwork, problem);
             if (path.isEmpty()) {
-                return new MaxFlowResult(maxFlow, residualNetwork.snapshot());
+                return new MaxFlowResult(problem, maxFlow, residualNetwork.asFlowNetwork());
             }
 
             residualNetwork.augment(path.get());

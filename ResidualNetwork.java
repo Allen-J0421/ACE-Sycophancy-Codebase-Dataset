@@ -35,7 +35,7 @@ public final class ResidualNetwork {
         }
     }
 
-    public int[][] snapshot() {
-        return IntMatrix.copyOf(capacities);
+    public FlowNetwork asFlowNetwork() {
+        return new FlowNetwork(capacities);
     }
 }

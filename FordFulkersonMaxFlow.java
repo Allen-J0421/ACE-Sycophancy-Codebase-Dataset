@@ -15,6 +15,6 @@ public final class FordFulkersonMaxFlow {
         MaxFlowAlgorithm algorithm = new FordFulkersonSolver();
         MaxFlowResult result = algorithm.solve(problem);
 
-        System.out.println("The maximum possible flow is " + result.getMaxFlow());
+        System.out.println("The maximum possible flow is " + result.maxFlow());
     }
 }

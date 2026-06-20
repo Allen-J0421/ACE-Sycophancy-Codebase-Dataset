@@ -1,10 +1,14 @@
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class ActivitySelection {
 
-    private record Activity(int start, int finish) {}
+    private record Activity(int start, int finish) implements Comparable<Activity> {
+        @Override
+        public int compareTo(Activity other) {
+            return Integer.compare(this.finish, other.finish);
+        }
+    }
 
     public static int activitySelection(int[] start, int[] finish) {
         if (start.length != finish.length) {
@@ -12,7 +16,7 @@ public class ActivitySelection {
         }
         return countSelected(IntStream.range(0, start.length)
             .mapToObj(i -> new Activity(start[i], finish[i]))
-            .sorted(Comparator.comparingInt(Activity::finish))
+            .sorted()
             .toList());
     }
 

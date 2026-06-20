@@ -43,26 +43,34 @@ final class BellmanFordTest {
             {1, 3, 2}, {4, 3, -1}, {2, 4, 1}, {1, 2, 1}, {0, 1, 5}
         });
         Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
+        Path path = distances.pathTo(3);
 
         check("path 0->3 follows the optimal route",
-            distances.pathTo(3).equals(List.of(0, 1, 2, 4, 3)));
-        check("reconstructed path ends at the target", lastOf(distances.pathTo(3)) == 3);
-        check("path source matches result source", distances.pathTo(3).get(0) == 0);
+            path.vertices().equals(List.of(0, 1, 2, 4, 3)));
+        check("path total weight matches the distance",
+            path.totalWeight() == distances.distanceTo(3));
+        check("path total weight is 6", path.totalWeight() == 6);
+        check("path edge count is 4", path.edgeCount() == 4);
+        check("path is not empty", !path.isEmpty());
     }
 
     private static void pathToSourceIsTheSourceAlone() {
         WeightedGraph graph = WeightedGraph.of(2, WeightedEdge.of(0, 1, 1));
         Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
+        Path path = distances.pathTo(0);
 
-        check("path to the source is just the source",
-            distances.pathTo(0).equals(List.of(0)));
+        check("path to the source is just the source", path.vertices().equals(List.of(0)));
+        check("path to the source has zero weight", path.totalWeight() == 0);
+        check("path to the source has no edges", path.edgeCount() == 0);
     }
 
     private static void unreachableVertexHasNoPath() {
         WeightedGraph graph = WeightedGraph.of(3, WeightedEdge.of(0, 1, 4));
         Distances distances = succeed(BellmanFord.shortestPaths(graph, 0));
+        Path path = distances.pathTo(2);
 
-        check("unreachable vertex has empty path", distances.pathTo(2).isEmpty());
+        check("unreachable vertex has no path", path.isEmpty());
+        check("unreachable path equals Path.none()", path.equals(Path.none()));
     }
 
     private static void unreachableVerticesAreReported() {
@@ -132,10 +140,6 @@ final class BellmanFordTest {
         failed++;
         System.out.println("FAIL: expected Distances but got " + result);
         throw new AssertionError(result);
-    }
-
-    private static int lastOf(List<Integer> path) {
-        return path.get(path.size() - 1);
     }
 
     private static void check(String name, boolean condition) {

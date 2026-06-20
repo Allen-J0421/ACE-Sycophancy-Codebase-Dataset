@@ -23,9 +23,9 @@ final class BellmanFordDemo {
                 System.out.println();
 
                 int target = 3;
+                Path path = distances.pathTo(target);
                 System.out.println("Shortest path " + distances.source() + " -> " + target
-                    + ": " + distances.pathTo(target)
-                    + " (distance " + distances.distanceTo(target) + ")");
+                    + ": " + path.vertices() + " (weight " + path.totalWeight() + ")");
             }
         }
     }

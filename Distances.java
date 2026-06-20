@@ -48,22 +48,23 @@ final class Distances implements ShortestPathResult {
     /**
      * Reconstructs the shortest path from the source to {@code target}.
      *
-     * <p>The path is returned as the sequence of vertices from the source through
-     * to {@code target} inclusive. The path to the source itself is the single
-     * element {@code [source]}.
+     * <p>The returned {@link Path} lists the vertices from the source through to
+     * {@code target} inclusive, paired with the path's total weight. The path to
+     * the source itself is the single vertex {@code [source]} with weight {@code 0}.
      *
-     * @return the vertex sequence, or an empty list if {@code target} is unreachable
+     * @return the path, or {@link Path#none()} if {@code target} is unreachable
      */
-    List<Integer> pathTo(int target) {
+    Path pathTo(int target) {
         if (!isReachable(target)) {
-            return List.of();
+            return Path.none();
         }
         // Walk predecessors back to the source, building the path front-to-back.
-        ArrayDeque<Integer> path = new ArrayDeque<>();
+        ArrayDeque<Integer> vertices = new ArrayDeque<>();
         for (int v = target; v != NO_PREDECESSOR; v = predecessors[v]) {
-            path.addFirst(v);
+            vertices.addFirst(v);
         }
-        return List.copyOf(path);
+        // The total weight of the shortest path to a vertex is exactly its distance.
+        return Path.of(List.copyOf(vertices), distances[target]);
     }
 
     /** A defensive copy of all distances; index {@code i} is the distance to vertex {@code i}. */

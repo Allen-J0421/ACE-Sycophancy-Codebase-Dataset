@@ -15,6 +15,8 @@ public final class BipartiteCheckerTests {
 
     public static void main(String[] args) {
         triangleIsNotBipartite();
+        triangleWitnessIsAValidOddCycle();
+        longOddCycleWitnessIsValid();
         evenCycleIsBipartite();
         emptyGraphIsBipartite();
         disconnectedGraphIsBipartite();
@@ -37,6 +39,25 @@ public final class BipartiteCheckerTests {
         check("triangle is not bipartite", !CHECKER.check(graph).isBipartite());
     }
 
+    private static void triangleWitnessIsAValidOddCycle() {
+        UndirectedGraph graph = UndirectedGraph.of(3, new int[][] {{0, 1}, {1, 2}, {2, 0}});
+        BipartiteResult result = CHECKER.check(graph);
+        check("triangle witness is a valid odd cycle",
+                result instanceof BipartiteResult.NotBipartite notBipartite
+                        && isValidOddCycle(graph, notBipartite.oddCycle()));
+    }
+
+    private static void longOddCycleWitnessIsValid() {
+        // A 5-cycle 0-1-2-3-4-0 (odd) plus a pendant vertex 5 hanging off it.
+        UndirectedGraph graph = UndirectedGraph.of(6, new int[][] {
+                {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}, {2, 5}
+        });
+        BipartiteResult result = CHECKER.check(graph);
+        check("longer odd-cycle witness is valid",
+                result instanceof BipartiteResult.NotBipartite notBipartite
+                        && isValidOddCycle(graph, notBipartite.oddCycle()));
+    }
+
     private static void evenCycleIsBipartite() {
         UndirectedGraph graph = UndirectedGraph.of(4, new int[][] {{0, 1}, {1, 2}, {2, 3}, {3, 0}});
         check("even cycle is bipartite", CHECKER.check(graph).isBipartite());
@@ -56,10 +77,11 @@ public final class BipartiteCheckerTests {
     private static void partitionsCoverAllVertices() {
         UndirectedGraph graph = UndirectedGraph.of(4, new int[][] {{0, 1}, {1, 2}, {2, 3}, {3, 0}});
         BipartiteResult result = CHECKER.check(graph);
-        int covered = result.partitionA().size() + result.partitionB().size();
-        check("partitions cover every vertex exactly once", covered == 4
-                && List.of(0, 2).equals(result.partitionA())
-                && List.of(1, 3).equals(result.partitionB()));
+        boolean ok = result instanceof BipartiteResult.Bipartite bipartite
+                && bipartite.partitionA().size() + bipartite.partitionB().size() == 4
+                && List.of(0, 2).equals(bipartite.partitionA())
+                && List.of(1, 3).equals(bipartite.partitionB());
+        check("partitions cover every vertex exactly once", ok);
     }
 
     private static void rejectsEdgeOutOfRange() {
@@ -86,6 +108,26 @@ public final class BipartiteCheckerTests {
             threw = true;
         }
         check("rejects null graph", threw);
+    }
+
+    /**
+     * A witness is valid when it has odd length ({@code >= 3}) and every
+     * consecutive pair of vertices — including the closing edge from the last
+     * vertex back to the first — is actually adjacent in the graph.
+     */
+    private static boolean isValidOddCycle(UndirectedGraph graph, List<Integer> cycle) {
+        int n = cycle.size();
+        if (n < 3 || n % 2 == 0) {
+            return false;
+        }
+        for (int i = 0; i < n; i++) {
+            int from = cycle.get(i);
+            int to = cycle.get((i + 1) % n);
+            if (!graph.neighbors(from).contains(to)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean throwsIllegalArgument(Runnable action) {

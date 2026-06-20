@@ -1,7 +1,7 @@
 import java.util.Collections;
 import java.util.List;
 
-public final class DirectedGraph {
+public final class DirectedGraph implements DirectedGraphView {
     private final List<List<Integer>> adjacencyList;
 
     DirectedGraph(List<List<Integer>> adjacencyList) {

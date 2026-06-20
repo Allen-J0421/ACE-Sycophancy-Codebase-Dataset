@@ -6,7 +6,7 @@ public final class CycleDetector {
     private CycleDetector() {
     }
 
-    public static boolean hasCycle(DirectedGraph graph) {
+    public static boolean hasCycle(DirectedGraphView graph) {
         Objects.requireNonNull(graph, "graph");
 
         int[] inDegree = computeInDegrees(graph);
@@ -29,7 +29,7 @@ public final class CycleDetector {
         return processedVertexCount != graph.vertexCount();
     }
 
-    private static int[] computeInDegrees(DirectedGraph graph) {
+    private static int[] computeInDegrees(DirectedGraphView graph) {
         int vertexCount = graph.vertexCount();
         int[] inDegree = new int[vertexCount];
 

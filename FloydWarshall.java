@@ -10,11 +10,7 @@ public final class FloydWarshall {
         int[][] distances = Matrices.copyOf(graph);
 
         for (int via = 0; via < vertexCount; via++) {
-            for (int from = 0; from < vertexCount; from++) {
-                for (int to = 0; to < vertexCount; to++) {
-                    relax(distances, from, via, to);
-                }
-            }
+            relaxPathsVia(distances, vertexCount, via);
         }
 
         return distances;
@@ -24,7 +20,7 @@ public final class FloydWarshall {
         Matrices.requireSquare(distances, "Distance matrix");
 
         for (int index = 0; index < distances.length; index++) {
-            if (distances[index][index] < 0) {
+            if (hasNegativeSelfDistance(distances, index)) {
                 return true;
             }
         }
@@ -36,19 +32,35 @@ public final class FloydWarshall {
         return distance != NO_PATH;
     }
 
+    private static void relaxPathsVia(int[][] distances, int vertexCount, int via) {
+        for (int from = 0; from < vertexCount; from++) {
+            for (int to = 0; to < vertexCount; to++) {
+                relax(distances, from, via, to);
+            }
+        }
+    }
+
     private static void relax(int[][] distances, int from, int via, int to) {
         if (!canRelax(distances, from, via, to)) {
             return;
         }
 
         int candidateDistance = pathDistanceThrough(distances, from, via, to);
-        if (candidateDistance < distances[from][to]) {
+        if (isShorterPath(candidateDistance, distances[from][to])) {
             distances[from][to] = candidateDistance;
         }
     }
 
+    private static boolean hasNegativeSelfDistance(int[][] distances, int vertex) {
+        return distances[vertex][vertex] < 0;
+    }
+
     private static boolean canRelax(int[][] distances, int from, int via, int to) {
         return isReachable(distances[from][via]) && isReachable(distances[via][to]);
+    }
+
+    private static boolean isShorterPath(int candidateDistance, int currentDistance) {
+        return candidateDistance < currentDistance;
     }
 
     private static int pathDistanceThrough(int[][] distances, int from, int via, int to) {

@@ -1,5 +1,7 @@
 package radixsort;
 
+import java.util.Arrays;
+
 final class LongRadixSort {
     private static final int RADIX = 10;
 
@@ -27,9 +29,11 @@ final class LongRadixSort {
     }
 
     private static void sortInPlace(long[] values) {
+        Workspace workspace = new Workspace(values.length);
         long max = findMax(values);
         for (long exp = 1; max / exp > 0; exp *= RADIX) {
-            countingSortByDigit(values, exp);
+            countingSortByDigit(values, exp, workspace);
+            System.arraycopy(workspace.output, 0, values, 0, values.length);
         }
     }
 
@@ -43,9 +47,9 @@ final class LongRadixSort {
         return max;
     }
 
-    private static void countingSortByDigit(long[] values, long exp) {
-        long[] output = new long[values.length];
-        int[] count = new int[RADIX];
+    private static void countingSortByDigit(long[] values, long exp, Workspace workspace) {
+        int[] count = workspace.count;
+        Arrays.fill(count, 0);
 
         for (long value : values) {
             count[digitAt(value, exp)]++;
@@ -58,14 +62,22 @@ final class LongRadixSort {
         for (int i = values.length - 1; i >= 0; i--) {
             long value = values[i];
             int digit = digitAt(value, exp);
-            output[count[digit] - 1] = value;
+            workspace.output[count[digit] - 1] = value;
             count[digit]--;
         }
-
-        System.arraycopy(output, 0, values, 0, values.length);
     }
 
     private static int digitAt(long value, long exp) {
         return (int) ((value / exp) % RADIX);
+    }
+
+    private static final class Workspace {
+        private final long[] output;
+        private final int[] count;
+
+        private Workspace(int size) {
+            this.output = new long[size];
+            this.count = new int[RADIX];
+        }
     }
 }

@@ -1,44 +1,48 @@
 package radixsort;
 
 final class IntPartitions {
-    private IntPartitions() {
-        // Utility class.
+    private final long[] negativeMagnitudes;
+    private final long[] nonNegativeValues;
+
+    private IntPartitions(long[] negativeMagnitudes, long[] nonNegativeValues) {
+        this.negativeMagnitudes = negativeMagnitudes;
+        this.nonNegativeValues = nonNegativeValues;
     }
 
-    static long[] negativeMagnitudes(int[] values) {
-        long[] negatives = new long[countNegatives(values)];
-        int negativeIndex = 0;
+    static IntPartitions split(int[] values) {
+        int negativeCount = countNegatives(values);
+        long[] negativeMagnitudes = new long[negativeCount];
+        long[] nonNegativeValues = new long[values.length - negativeCount];
 
+        int negativeIndex = 0;
+        int nonNegativeIndex = 0;
         for (int value : values) {
             if (value < 0) {
-                negatives[negativeIndex++] = -(long) value;
+                negativeMagnitudes[negativeIndex++] = -(long) value;
+            } else {
+                nonNegativeValues[nonNegativeIndex++] = value;
             }
         }
 
-        return negatives;
+        return new IntPartitions(negativeMagnitudes, nonNegativeValues);
     }
 
-    static long[] nonNegativeValues(int[] values) {
-        long[] nonNegatives = new long[values.length - countNegatives(values)];
-        int nonNegativeIndex = 0;
-
-        for (int value : values) {
-            if (value >= 0) {
-                nonNegatives[nonNegativeIndex++] = value;
-            }
-        }
-
-        return nonNegatives;
+    long[] negativeMagnitudes() {
+        return negativeMagnitudes;
     }
 
-    static int[] mergeSorted(long[] negatives, long[] nonNegatives) {
-        int[] sorted = new int[negatives.length + nonNegatives.length];
+    long[] nonNegativeValues() {
+        return nonNegativeValues;
+    }
+
+    int[] mergeSorted(long[] sortedNegativeMagnitudes, long[] sortedNonNegativeValues) {
+        int[] sorted = new int[sortedNegativeMagnitudes.length + sortedNonNegativeValues.length];
         int writeIndex = 0;
 
-        for (int i = negatives.length - 1; i >= 0; i--) {
-            sorted[writeIndex++] = (int) -negatives[i];
+        for (int i = sortedNegativeMagnitudes.length - 1; i >= 0; i--) {
+            sorted[writeIndex++] = (int) -sortedNegativeMagnitudes[i];
         }
-        for (long value : nonNegatives) {
+        for (long value : sortedNonNegativeValues) {
             sorted[writeIndex++] = (int) value;
         }
 

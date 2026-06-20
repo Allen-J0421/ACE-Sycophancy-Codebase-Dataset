@@ -4,34 +4,51 @@ import java.util.List;
 
 public final class FloydWarshall {
 
-    public static final int INF = 100_000_000;
+    public static final int DEFAULT_UNREACHABLE_DISTANCE = 100_000_000;
 
-    private FloydWarshall() {
-        // Utility class.
+    private final int[][] graph;
+    private final int unreachableDistance;
+
+    private FloydWarshall(int[][] graph, int unreachableDistance) {
+        validateSquareMatrix(graph);
+        validateUnreachableDistance(unreachableDistance);
+
+        this.graph = copyMatrix(graph);
+        this.unreachableDistance = unreachableDistance;
     }
 
-    public static Result computeShortestPaths(int[][] graph) {
-        validateSquareMatrix(graph);
+    public static FloydWarshall from(int[][] graph) {
+        return new FloydWarshall(graph, DEFAULT_UNREACHABLE_DISTANCE);
+    }
 
+    public static FloydWarshall from(int[][] graph, int unreachableDistance) {
+        return new FloydWarshall(graph, unreachableDistance);
+    }
+
+    public int vertexCount() {
+        return graph.length;
+    }
+
+    public Result solve() {
         int[][] distances = copyMatrix(graph);
         int[][] nextHop = new int[graph.length][graph.length];
-        initializeNextHop(graph, nextHop);
+        initializeNextHop(nextHop);
 
         int vertices = distances.length;
         for (int k = 0; k < vertices; k++) {
             for (int i = 0; i < vertices; i++) {
-                if (distances[i][k] == INF) {
+                if (distances[i][k] == unreachableDistance) {
                     continue;
                 }
 
                 for (int j = 0; j < vertices; j++) {
-                    if (distances[k][j] == INF) {
+                    if (distances[k][j] == unreachableDistance) {
                         continue;
                     }
 
-                    int throughK = distances[i][k] + distances[k][j];
+                    long throughK = (long) distances[i][k] + distances[k][j];
                     if (throughK < distances[i][j]) {
-                        distances[i][j] = throughK;
+                        distances[i][j] = (int) throughK;
                         nextHop[i][j] = nextHop[i][k];
                     }
                 }
@@ -41,10 +58,10 @@ public final class FloydWarshall {
         return new Result(distances, nextHop);
     }
 
-    private static void initializeNextHop(int[][] graph, int[][] nextHop) {
+    private void initializeNextHop(int[][] nextHop) {
         for (int i = 0; i < graph.length; i++) {
             for (int j = 0; j < graph.length; j++) {
-                nextHop[i][j] = graph[i][j] == INF ? -1 : j;
+                nextHop[i][j] = graph[i][j] == unreachableDistance ? -1 : j;
             }
         }
     }
@@ -62,6 +79,12 @@ public final class FloydWarshall {
             if (matrix[i].length != matrix.length) {
                 throw new IllegalArgumentException("Matrix must be square.");
             }
+        }
+    }
+
+    private static void validateUnreachableDistance(int unreachableDistance) {
+        if (unreachableDistance <= 0) {
+            throw new IllegalArgumentException("Unreachable distance must be positive.");
         }
     }
 

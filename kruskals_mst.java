@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.Comparator;
 
 class KruskalMST {
     private static final int SOURCE = 0;
@@ -16,8 +15,10 @@ class KruskalMST {
 
     public static int minimumSpanningTreeCost(int vertexCount, int[][] edges) {
         validateGraph(vertexCount, edges);
+        return minimumSpanningTreeCost(vertexCount, copyEdgesSortedByWeight(edges));
+    }
 
-        Edge[] sortedEdges = copyEdgesSortedByWeight(edges);
+    private static int minimumSpanningTreeCost(int vertexCount, Edge[] sortedEdges) {
         DisjointSet disjointSet = new DisjointSet(vertexCount);
         int totalCost = 0;
         int selectedEdges = 0;
@@ -26,7 +27,7 @@ class KruskalMST {
             if (disjointSet.union(edge.source, edge.destination)) {
                 totalCost += edge.weight;
                 selectedEdges++;
-                if (selectedEdges == vertexCount - 1) {
+                if (hasEnoughEdgesForSpanningTree(vertexCount, selectedEdges)) {
                     break;
                 }
             }
@@ -44,8 +45,16 @@ class KruskalMST {
         for (int i = 0; i < edges.length; i++) {
             sortedEdges[i] = Edge.from(edges[i]);
         }
-        Arrays.sort(sortedEdges, Comparator.comparingInt(edge -> edge.weight));
+        Arrays.sort(sortedEdges);
         return sortedEdges;
+    }
+
+    private static boolean hasEnoughEdgesForSpanningTree(int vertexCount, int selectedEdges) {
+        return selectedEdges == requiredEdgeCount(vertexCount);
+    }
+
+    private static int requiredEdgeCount(int vertexCount) {
+        return Math.max(0, vertexCount - 1);
     }
 
     private static void validateGraph(int vertexCount, int[][] edges) {
@@ -80,7 +89,7 @@ class KruskalMST {
         };
     }
 
-    private static class Edge {
+    private static class Edge implements Comparable<Edge> {
         private final int source;
         private final int destination;
         private final int weight;
@@ -93,6 +102,11 @@ class KruskalMST {
 
         private static Edge from(int[] edge) {
             return new Edge(edge[SOURCE], edge[DESTINATION], edge[WEIGHT]);
+        }
+
+        @Override
+        public int compareTo(Edge other) {
+            return Integer.compare(weight, other.weight);
         }
     }
 

@@ -1,38 +1,60 @@
-import java.io.*;
-import java.lang.*;
-import java.util.*;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 
-class MaxFlow {
-    static final int V = 6;
+final class FordFulkersonSolver {
+    private final int[][] capacity;
+    private final int vertexCount;
+    private final int source;
+    private final int sink;
 
-    boolean bfs(int rGraph[][], int s, int t, int parent[])
-    {
+    FordFulkersonSolver(int[][] capacity, int source, int sink) {
+        validateCapacityMatrix(capacity);
 
-        boolean visited[] = new boolean[V];
-        for (int i = 0; i < V; ++i)
-            visited[i] = false;
+        this.vertexCount = capacity.length;
+        this.source = validateVertex(source, vertexCount, "source");
+        this.sink = validateVertex(sink, vertexCount, "sink");
 
-        LinkedList<Integer> queue
-            = new LinkedList<Integer>();
-        queue.add(s);
-        visited[s] = true;
-        parent[s] = -1;
+        if (source == sink) {
+            throw new IllegalArgumentException("source and sink must be different vertices");
+        }
 
-        while (queue.size() != 0) {
-            int u = queue.poll();
+        this.capacity = copyMatrix(capacity);
+    }
 
-            for (int v = 0; v < V; v++) {
-                if (visited[v] == false
-                    && rGraph[u][v] > 0) {
+    int computeMaxFlow() {
+        int[][] residualGraph = copyMatrix(capacity);
+        int[] parent = new int[vertexCount];
+        int maxFlow = 0;
 
-                    if (v == t) {
-                        parent[v] = u;
+        while (findAugmentingPath(residualGraph, parent)) {
+            int pathFlow = findBottleneckCapacity(residualGraph, parent);
+            applyAugmentation(residualGraph, parent, pathFlow);
+            maxFlow += pathFlow;
+        }
+
+        return maxFlow;
+    }
+
+    private boolean findAugmentingPath(int[][] residualGraph, int[] parent) {
+        boolean[] visited = new boolean[vertexCount];
+        Arrays.fill(parent, -1);
+
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        queue.add(source);
+        visited[source] = true;
+
+        while (!queue.isEmpty()) {
+            int currentVertex = queue.removeFirst();
+
+            for (int nextVertex = 0; nextVertex < vertexCount; nextVertex++) {
+                if (!visited[nextVertex] && residualGraph[currentVertex][nextVertex] > 0) {
+                    parent[nextVertex] = currentVertex;
+                    if (nextVertex == sink) {
                         return true;
                     }
-                    queue.add(v);
-                    parent[v] = u;
-                    visited[v] = true;
+
+                    visited[nextVertex] = true;
+                    queue.addLast(nextVertex);
                 }
             }
         }
@@ -40,53 +62,83 @@ class MaxFlow {
         return false;
     }
 
-    int fordFulkerson(int graph[][], int s, int t)
-    {
-        int u, v;
+    private int findBottleneckCapacity(int[][] residualGraph, int[] parent) {
+        int pathFlow = Integer.MAX_VALUE;
 
-        int rGraph[][] = new int[V][V];
-
-        for (u = 0; u < V; u++)
-            for (v = 0; v < V; v++)
-                rGraph[u][v] = graph[u][v];
-
-        int parent[] = new int[V];
-
-        int max_flow = 0;
-
-        while (bfs(rGraph, s, t, parent)) {
-
-            int path_flow = Integer.MAX_VALUE;
-            for (v = t; v != s; v = parent[v]) {
-                u = parent[v];
-                path_flow
-                    = Math.min(path_flow, rGraph[u][v]);
-            }
-
-            for (v = t; v != s; v = parent[v]) {
-                u = parent[v];
-                rGraph[u][v] -= path_flow;
-                rGraph[v][u] += path_flow;
-            }
-
-            max_flow += path_flow;
+        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
+            int predecessor = parent[vertex];
+            pathFlow = Math.min(pathFlow, residualGraph[predecessor][vertex]);
         }
 
-        return max_flow;
+        return pathFlow;
     }
 
-    public static void main(String[] args)
-        throws java.lang.Exception
-    {
+    private void applyAugmentation(int[][] residualGraph, int[] parent, int pathFlow) {
+        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
+            int predecessor = parent[vertex];
+            residualGraph[predecessor][vertex] -= pathFlow;
+            residualGraph[vertex][predecessor] += pathFlow;
+        }
+    }
 
-        int graph[][] = new int[][] {
-            { 0, 16, 13, 0, 0, 0 }, { 0, 0, 10, 12, 0, 0 },
-            { 0, 4, 0, 0, 14, 0 },  { 0, 0, 9, 0, 0, 20 },
-            { 0, 0, 0, 7, 0, 4 },   { 0, 0, 0, 0, 0, 0 }
+    private static void validateCapacityMatrix(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            throw new IllegalArgumentException("capacity matrix must not be null or empty");
+        }
+
+        if (matrix[0] == null) {
+            throw new IllegalArgumentException("capacity matrix rows must not be null");
+        }
+
+        int expectedWidth = matrix[0].length;
+        if (expectedWidth == 0) {
+            throw new IllegalArgumentException("capacity matrix must contain at least one vertex");
+        }
+
+        for (int row = 0; row < matrix.length; row++) {
+            if (matrix[row] == null || matrix[row].length != expectedWidth) {
+                throw new IllegalArgumentException("capacity matrix must be rectangular");
+            }
+            if (matrix[row].length != matrix.length) {
+                throw new IllegalArgumentException("capacity matrix must be square");
+            }
+        }
+    }
+
+    private static int validateVertex(int vertex, int vertexCount, String label) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException(
+                label + " vertex must be between 0 and " + (vertexCount - 1));
+        }
+
+        return vertex;
+    }
+
+    private static int[][] copyMatrix(int[][] sourceMatrix) {
+        int[][] copy = new int[sourceMatrix.length][sourceMatrix.length];
+        for (int row = 0; row < sourceMatrix.length; row++) {
+            System.arraycopy(sourceMatrix[row], 0, copy[row], 0, sourceMatrix[row].length);
+        }
+        return copy;
+    }
+}
+
+final class FordFulkersonExample {
+    private FordFulkersonExample() {
+        // Utility class.
+    }
+
+    public static void main(String[] args) {
+        int[][] graph = {
+            { 0, 16, 13, 0, 0, 0 },
+            { 0, 0, 10, 12, 0, 0 },
+            { 0, 4, 0, 0, 14, 0 },
+            { 0, 0, 9, 0, 0, 20 },
+            { 0, 0, 0, 7, 0, 4 },
+            { 0, 0, 0, 0, 0, 0 }
         };
-        MaxFlow m = new MaxFlow();
 
-        System.out.println("The maximum possible flow is "
-                           + m.fordFulkerson(graph, 0, 5));
+        FordFulkersonSolver solver = new FordFulkersonSolver(graph, 0, 5);
+        System.out.println("The maximum possible flow is " + solver.computeMaxFlow());
     }
 }

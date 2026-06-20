@@ -23,11 +23,7 @@ public final class DirectedGraphBuilder {
     }
 
     public DirectedGraph build() {
-        List<List<Integer>> adjacencyListCopy = new ArrayList<>(adjacencyList.size());
-        for (List<Integer> neighbors : adjacencyList) {
-            adjacencyListCopy.add(new ArrayList<>(neighbors));
-        }
-        return new DirectedGraph(adjacencyListCopy);
+        return new DirectedGraph(adjacencyList);
     }
 
     private void validateVertex(int vertex) {

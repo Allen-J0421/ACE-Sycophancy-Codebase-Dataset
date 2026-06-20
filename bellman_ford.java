@@ -1,4 +1,7 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Single-source shortest paths via the Bellman-Ford algorithm.
@@ -12,6 +15,9 @@ import java.util.Arrays;
  */
 final class BellmanFord {
 
+    /** Sentinel for "no vertex", e.g. a pass that relaxed nothing. */
+    private static final int NO_VERTEX = -1;
+
     private BellmanFord() {
     }
 
@@ -20,7 +26,8 @@ final class BellmanFord {
      *
      * <p>The classic algorithm: relax every edge {@code V - 1} times, then run one
      * additional pass. If any edge can still be relaxed on that final pass, a
-     * negative-weight cycle is reachable and no shortest path is well defined.
+     * negative-weight cycle is reachable; the cycle itself is then reconstructed
+     * from the predecessor chain.
      */
     static ShortestPathResult shortestPaths(WeightedGraph graph, int source) {
         if (source < 0 || source >= graph.vertices()) {
@@ -33,18 +40,21 @@ final class BellmanFord {
         dist[source] = 0;
 
         // predecessors[v] is the vertex preceding v on the best known path to v,
-        // enabling path reconstruction; the source and unreachable vertices have none.
+        // enabling path (and negative-cycle) reconstruction; the source and
+        // unreachable vertices have none.
         int[] predecessors = new int[graph.vertices()];
         Arrays.fill(predecessors, Distances.NO_PREDECESSOR);
 
         for (int pass = 0; pass < graph.vertices() - 1; pass++) {
-            if (!relaxAll(graph, dist, predecessors)) {
+            if (relaxPass(graph, dist, predecessors) == NO_VERTEX) {
                 break; // no edge improved this pass; further passes cannot either
             }
         }
 
-        if (relaxAll(graph, dist, predecessors)) {
-            return new NegativeCycle();
+        // One more pass: any vertex still improving lies on or downstream of a cycle.
+        int affected = relaxPass(graph, dist, predecessors);
+        if (affected != NO_VERTEX) {
+            return new NegativeCycle(extractCycle(affected, predecessors, graph.vertices()));
         }
         return new Distances(source, dist, predecessors);
     }
@@ -52,10 +62,10 @@ final class BellmanFord {
     /**
      * Relaxes every edge once, recording the predecessor for any improved vertex.
      *
-     * @return {@code true} if any distance was reduced
+     * @return the last vertex whose distance was reduced, or {@link #NO_VERTEX} if none
      */
-    private static boolean relaxAll(WeightedGraph graph, int[] dist, int[] predecessors) {
-        boolean improved = false;
+    private static int relaxPass(WeightedGraph graph, int[] dist, int[] predecessors) {
+        int improved = NO_VERTEX;
         for (WeightedEdge edge : graph.edges()) {
             int from = dist[edge.from()];
             if (from == Distances.UNREACHABLE) {
@@ -65,9 +75,34 @@ final class BellmanFord {
             if (candidate < dist[edge.to()]) {
                 dist[edge.to()] = candidate;
                 predecessors[edge.to()] = edge.from();
-                improved = true;
+                improved = edge.to();
             }
         }
         return improved;
+    }
+
+    /**
+     * Reconstructs a negative-weight cycle from the predecessor chain.
+     *
+     * @param affected a vertex relaxed on the detection pass (on or downstream of the cycle)
+     * @return the cycle vertices in traversal order: edge {@code v[i] -> v[i+1]} exists,
+     *     and the last vertex closes back to the first
+     */
+    private static List<Integer> extractCycle(int affected, int[] predecessors, int vertices) {
+        // Stepping back V times is guaranteed to land on a vertex of the cycle itself,
+        // even if `affected` only leads into the cycle rather than lying on it.
+        int onCycle = affected;
+        for (int i = 0; i < vertices; i++) {
+            onCycle = predecessors[onCycle];
+        }
+        // Walk predecessors once around the loop, then reverse into traversal order.
+        List<Integer> cycle = new ArrayList<>();
+        int v = onCycle;
+        do {
+            cycle.add(v);
+            v = predecessors[v];
+        } while (v != onCycle);
+        Collections.reverse(cycle);
+        return cycle;
     }
 }

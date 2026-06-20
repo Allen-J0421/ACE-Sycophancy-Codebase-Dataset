@@ -2,6 +2,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -125,6 +126,38 @@ class BellmanFordTest {
         }
 
         @Test
+        @DisplayName("the reported cycle is a real closed walk with negative weight")
+        void reportedCycleIsValid() {
+            WeightedGraph graph = WeightedGraph.of(3,
+                WeightedEdge.of(0, 1, 1),
+                WeightedEdge.of(1, 2, -1),
+                WeightedEdge.of(2, 1, -1)); // 1 -> 2 -> 1 sums to -2
+            NegativeCycle result =
+                assertInstanceOf(NegativeCycle.class, BellmanFord.shortestPaths(graph, 0));
+
+            assertClosedNegativeWalk(graph, result.vertices());
+            // The only cycle here is {1, 2}.
+            assertEquals(List.of(1, 2), result.vertices().stream().sorted().toList());
+        }
+
+        @Test
+        @DisplayName("a cycle that the source only leads into is still reported")
+        void cycleReachedThroughALeadInIsReported() {
+            // 0 -> 1 enters a 1 -> 2 -> 3 -> 1 cycle summing to -1; vertex 0 is not on it.
+            WeightedGraph graph = WeightedGraph.of(4,
+                WeightedEdge.of(0, 1, 5),
+                WeightedEdge.of(1, 2, 1),
+                WeightedEdge.of(2, 3, 1),
+                WeightedEdge.of(3, 1, -3));
+            NegativeCycle result =
+                assertInstanceOf(NegativeCycle.class, BellmanFord.shortestPaths(graph, 0));
+
+            assertClosedNegativeWalk(graph, result.vertices());
+            assertFalse(result.vertices().contains(0), "lead-in vertex must not be on the cycle");
+            assertEquals(List.of(1, 2, 3), result.vertices().stream().sorted().toList());
+        }
+
+        @Test
         @DisplayName("the result type distinguishes the two cases")
         void resultTypeDistinguishesTheTwoCases() {
             WeightedGraph healthy = WeightedGraph.of(2, WeightedEdge.of(0, 1, 1));
@@ -134,6 +167,26 @@ class BellmanFordTest {
 
             assertInstanceOf(Distances.class, BellmanFord.shortestPaths(healthy, 0));
             assertInstanceOf(NegativeCycle.class, BellmanFord.shortestPaths(cyclic, 0));
+        }
+
+        /**
+         * Asserts that {@code cycle} lists vertices for which each consecutive pair
+         * (wrapping around) is a real edge, and that the edges sum to a negative weight.
+         */
+        private void assertClosedNegativeWalk(WeightedGraph graph, List<Integer> cycle) {
+            assertFalse(cycle.isEmpty(), "cycle must not be empty");
+            int total = 0;
+            for (int i = 0; i < cycle.size(); i++) {
+                int from = cycle.get(i);
+                int to = cycle.get((i + 1) % cycle.size());
+                int weight = graph.edges().stream()
+                    .filter(e -> e.from() == from && e.to() == to)
+                    .map(WeightedEdge::weight)
+                    .min(Comparator.naturalOrder())
+                    .orElseThrow(() -> new AssertionError("no edge " + from + " -> " + to));
+                total += weight;
+            }
+            assertTrue(total < 0, "cycle weight should be negative but was " + total);
         }
     }
 

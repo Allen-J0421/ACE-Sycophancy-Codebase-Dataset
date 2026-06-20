@@ -13,8 +13,8 @@ final class BellmanFordDemo {
         ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
 
         switch (result) {
-            case NegativeCycle ignored ->
-                System.out.println("Graph contains a negative-weight cycle.");
+            case NegativeCycle cycle ->
+                System.out.println("Graph contains a negative-weight cycle: " + cycle.vertices());
             case Distances distances -> {
                 for (int v = 0; v < distances.vertexCount(); v++) {
                     System.out.print(

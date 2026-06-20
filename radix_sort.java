@@ -1,60 +1,120 @@
-import java.io.*;
-import java.util.*;
+final class Radix {
+    private static final int RADIX = 10;
 
-class Radix {
-
-    static int getMax(int arr[], int n)
-    {
-        int mx = arr[0];
-        for (int i = 1; i < n; i++)
-            if (arr[i] > mx)
-                mx = arr[i];
-        return mx;
+    private Radix() {
     }
 
-    static void countSort(int arr[], int n, int exp)
-    {
-        int output[] = new int[n];
-        int i;
-        int count[] = new int[10];
-        Arrays.fill(count, 0);
+    static int getMax(int[] values, int length) {
+        validateRange(values, length);
 
-        for (i = 0; i < n; i++)
-            count[(arr[i] / exp) % 10]++;
-
-        for (i = 1; i < 10; i++)
-            count[i] += count[i - 1];
-
-        for (i = n - 1; i >= 0; i--) {
-            output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-            count[(arr[i] / exp) % 10]--;
+        if (length == 0) {
+            throw new IllegalArgumentException("Cannot find the maximum of an empty range.");
         }
 
-        for (i = 0; i < n; i++)
-            arr[i] = output[i];
+        int max = values[0];
+        for (int i = 1; i < length; i++) {
+            if (values[i] > max) {
+                max = values[i];
+            }
+        }
+        return max;
     }
 
-    static void radixsort(int arr[], int n)
-    {
-
-        int m = getMax(arr, n);
-
-        for (int exp = 1; m / exp > 0; exp *= 10)
-            countSort(arr, n, exp);
+    static void countSort(int[] values, int length, int exponent) {
+        validateSortableRange(values, length);
+        if (exponent <= 0) {
+            throw new IllegalArgumentException("Exponent must be positive.");
+        }
+        countingSortByDigit(values, length, exponent);
     }
 
-    static void print(int arr[], int n)
-    {
-        for (int i = 0; i < n; i++)
-            System.out.print(arr[i] + " ");
+    static void radixsort(int[] values, int length) {
+        radixSort(values, length);
     }
 
-    public static void main(String[] args)
-    {
-        int arr[] = { 170, 45, 75, 90, 802, 24, 2, 66 };
-        int n = arr.length;
+    static void radixSort(int[] values) {
+        validateNotNull(values);
+        radixSort(values, values.length);
+    }
 
-        radixsort(arr, n);
-        print(arr, n);
+    static void radixSort(int[] values, int length) {
+        validateSortableRange(values, length);
+        if (length < 2) {
+            return;
+        }
+
+        int max = getMax(values, length);
+
+        for (long exponent = 1; max / exponent > 0; exponent *= RADIX) {
+            countingSortByDigit(values, length, exponent);
+        }
+    }
+
+    static void print(int[] values, int length) {
+        validateRange(values, length);
+
+        for (int i = 0; i < length; i++) {
+            System.out.print(values[i] + " ");
+        }
+    }
+
+    private static void countingSortByDigit(int[] values, int length, long exponent) {
+        validateSortableRange(values, length);
+
+        int[] output = new int[length];
+        int[] counts = new int[RADIX];
+
+        for (int i = 0; i < length; i++) {
+            counts[digitAt(values[i], exponent)]++;
+        }
+
+        for (int i = 1; i < RADIX; i++) {
+            counts[i] += counts[i - 1];
+        }
+
+        for (int i = length - 1; i >= 0; i--) {
+            int digit = digitAt(values[i], exponent);
+            output[counts[digit] - 1] = values[i];
+            counts[digit]--;
+        }
+
+        System.arraycopy(output, 0, values, 0, length);
+    }
+
+    private static int digitAt(int value, long exponent) {
+        return (int) ((value / exponent) % RADIX);
+    }
+
+    private static void validateSortableRange(int[] values, int length) {
+        validateRange(values, length);
+        validateNonNegative(values, length);
+    }
+
+    private static void validateRange(int[] values, int length) {
+        validateNotNull(values);
+        if (length < 0 || length > values.length) {
+            throw new IllegalArgumentException("Length must be between 0 and values.length.");
+        }
+    }
+
+    private static void validateNotNull(int[] values) {
+        if (values == null) {
+            throw new IllegalArgumentException("Values cannot be null.");
+        }
+    }
+
+    private static void validateNonNegative(int[] values, int length) {
+        for (int i = 0; i < length; i++) {
+            if (values[i] < 0) {
+                throw new IllegalArgumentException("Radix sort only supports non-negative integers.");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] values = {170, 45, 75, 90, 802, 24, 2, 66};
+
+        radixSort(values);
+        print(values, values.length);
     }
 }

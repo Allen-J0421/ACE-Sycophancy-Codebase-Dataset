@@ -19,12 +19,12 @@ final class DetectCycleDemo {
                 ? new CycleDetectionAlgorithm[] {CycleDetectionAlgorithm.valueOf(args[0].toUpperCase())}
                 : CycleDetectionAlgorithm.values();
 
+        // Attach the console logger to observe detection events; without
+        // withLogging(...) the library runs silently.
+        CycleDetectionLogger logger = new ConsoleLogger();
         for (CycleDetectionAlgorithm algorithm : algorithms) {
-            CycleDetector detector = CycleDetector.create(algorithm);
-            String result = detector.findCycle(graph)
-                    .map(cycle -> "cycle " + cycle)
-                    .orElse("acyclic");
-            System.out.printf("%-4s (%s): %s%n", algorithm, algorithm.description(), result);
+            CycleDetector detector = CycleDetector.create(algorithm).withLogging(logger);
+            detector.findCycle(graph);
         }
     }
 }

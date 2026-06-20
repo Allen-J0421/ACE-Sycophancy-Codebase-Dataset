@@ -41,6 +41,11 @@ final class DfsCycleDetector implements CycleDetector {
     }
 
     @Override
+    public String name() {
+        return "DFS";
+    }
+
+    @Override
     public Optional<Cycle> findCycle(DirectedGraph graph) {
         int vertexCount = graph.vertices();
         Mark[] marks = new Mark[vertexCount];

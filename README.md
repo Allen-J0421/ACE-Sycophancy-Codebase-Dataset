@@ -33,6 +33,36 @@ CycleDetectionAlgorithm algorithm = CycleDetectionAlgorithm.valueOf(args[0]); //
 CycleDetector detector = CycleDetector.create(algorithm);
 ```
 
+### Logging events (optional)
+
+The library is silent by default. To track events — when an algorithm begins,
+when a cycle is found, when a graph is acyclic — attach a `CycleDetectionLogger`
+with `withLogging(...)`:
+
+```java
+CycleDetector detector = CycleDetector.create(CycleDetectionAlgorithm.DFS)
+    .withLogging(new ConsoleLogger());   // prints: [DFS] detection started ... / [DFS] cycle found: 0 -> 1 -> 2 -> 0
+detector.findCycle(graph);
+```
+
+`CycleDetectionLogger` is a dependency-free facade. Built-in implementations:
+`NoOpLogger` (the silent default) and `ConsoleLogger` (writes to a `PrintStream`).
+The library depends only on the JDK, so to route events into `java.util.logging`,
+SLF4J, Log4j, etc., implement the four-method interface yourself:
+
+```java
+CycleDetectionLogger toJul = new CycleDetectionLogger() {
+    private final java.util.logging.Logger log = java.util.logging.Logger.getLogger("cycles");
+    public void detectionStarted(String algo, DirectedGraph g) { log.info(algo + " started"); }
+    public void cycleFound(String algo, Cycle c)               { log.info(algo + " cycle: " + c); }
+    public void cycleDetected(String algo)                     { log.info(algo + " cycle present"); }
+    public void noCycleFound(String algo)                      { log.info(algo + " acyclic"); }
+};
+```
+
+Logging is added by a decorator (`LoggingCycleDetector`), so the algorithm
+implementations themselves carry no logging code.
+
 ## Example
 
 ```java

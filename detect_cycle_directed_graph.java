@@ -35,6 +35,19 @@ interface CycleDetector {
         return findCycle(graph).isPresent();
     }
 
+    /** A short label identifying the algorithm; used in {@link CycleDetectionLogger} events. */
+    default String name() {
+        return getClass().getSimpleName();
+    }
+
+    /**
+     * Returns a view of this detector that emits {@link CycleDetectionLogger}
+     * events around each operation. The underlying algorithm is unchanged.
+     */
+    default CycleDetector withLogging(CycleDetectionLogger logger) {
+        return new LoggingCycleDetector(this, logger);
+    }
+
     /** Creates the detector for the requested algorithm. */
     static CycleDetector create(CycleDetectionAlgorithm algorithm) {
         return algorithm.create();

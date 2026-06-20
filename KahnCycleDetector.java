@@ -17,6 +17,11 @@ import java.util.Optional;
 final class KahnCycleDetector implements CycleDetector {
 
     @Override
+    public String name() {
+        return "KAHN";
+    }
+
+    @Override
     public boolean hasCycle(DirectedGraph graph) {
         int vertexCount = graph.vertices();
         int[] inDegree = inDegrees(graph);

@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class Graph {
+final class UndirectedGraph {
     private final List<List<Integer>> adjacency;
 
-    Graph(int vertexCount) {
+    UndirectedGraph(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("vertexCount must be non-negative");
         }

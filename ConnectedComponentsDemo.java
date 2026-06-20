@@ -6,7 +6,7 @@ final class ConnectedComponentsDemo {
     }
 
     public static void main(String[] args) {
-        Graph graph = new Graph(6);
+        UndirectedGraph graph = new UndirectedGraph(6);
 
         graph.addUndirectedEdge(1, 2);
         graph.addUndirectedEdge(0, 3);

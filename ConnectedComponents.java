@@ -8,7 +8,7 @@ final class ConnectedComponents {
     private ConnectedComponents() {
     }
 
-    static List<List<Integer>> findComponents(Graph graph) {
+    static List<List<Integer>> findComponents(UndirectedGraph graph) {
         boolean[] visited = new boolean[graph.size()];
         List<List<Integer>> components = new ArrayList<>();
 
@@ -22,7 +22,7 @@ final class ConnectedComponents {
         return components;
     }
 
-    private static void bfs(Graph graph, int source, boolean[] visited, List<Integer> component) {
+    private static void bfs(UndirectedGraph graph, int source, boolean[] visited, List<Integer> component) {
         Queue<Integer> queue = new ArrayDeque<>();
         visited[source] = true;
         queue.add(source);

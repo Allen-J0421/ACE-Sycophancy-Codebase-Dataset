@@ -8,41 +8,38 @@ public final class RadixSort {
     }
 
     public static void sort(int[] values) {
-        InputAnalysis input = analyze(values);
-        sortValidated(input.values(), input.maxValue());
+        sortValidated(analyze(values));
     }
 
     public static int[] sortedCopy(int[] values) {
-        InputAnalysis input = analyze(values);
-        int[] copy = Arrays.copyOf(input.values(), input.values().length);
-        sortValidated(copy, input.maxValue());
+        SortContext input = analyze(values);
+        int[] copy = Arrays.copyOf(input.originalValues(), input.length());
+        sortValidated(SortContext.forValues(copy, input.maxValue()));
         return copy;
     }
 
-    private static void sortValidated(int[] values, int maxValue) {
-        if (values.length < 2) {
+    private static void sortValidated(SortContext context) {
+        if (context.length() < 2) {
             return;
         }
 
-        SortWorkspace workspace = new SortWorkspace(values);
-
-        for (long exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
+        for (long exponent = 1; context.maxValue() / exponent > 0; exponent *= RADIX) {
             countingSortByDigit(
-                workspace.source(),
-                workspace.target(),
-                workspace.counts(),
+                context.source(),
+                context.target(),
+                context.counts(),
                 exponent
             );
-            workspace.swapBuffers();
+            context.swapBuffers();
         }
 
-        workspace.copyResultBackIfNeeded();
+        context.copyResultBackIfNeeded();
     }
 
-    private static InputAnalysis analyze(int[] values) {
+    private static SortContext analyze(int[] values) {
         Objects.requireNonNull(values, "values");
         if (values.length == 0) {
-            return new InputAnalysis(values, 0);
+            return SortContext.forValues(values, 0);
         }
 
         int maxValue = values[0];
@@ -60,7 +57,7 @@ public final class RadixSort {
             }
         }
 
-        return new InputAnalysis(values, maxValue);
+        return SortContext.forValues(values, maxValue);
     }
 
     private static void countingSortByDigit(
@@ -90,18 +87,36 @@ public final class RadixSort {
         return (int) ((value / exponent) % RADIX);
     }
 
-    private static final class SortWorkspace {
+    private static final class SortContext {
         private final int[] originalValues;
+        private final int maxValue;
         private final int[] buffer;
         private final int[] counts = new int[RADIX];
         private int[] source;
         private int[] target;
 
-        private SortWorkspace(int[] values) {
+        private SortContext(int[] values, int maxValue) {
             this.originalValues = values;
+            this.maxValue = maxValue;
             this.buffer = new int[values.length];
             this.source = values;
             this.target = buffer;
+        }
+
+        private static SortContext forValues(int[] values, int maxValue) {
+            return new SortContext(values, maxValue);
+        }
+
+        private int length() {
+            return originalValues.length;
+        }
+
+        private int[] originalValues() {
+            return originalValues;
+        }
+
+        private int maxValue() {
+            return maxValue;
         }
 
         private int[] source() {
@@ -126,24 +141,6 @@ public final class RadixSort {
             if (source != originalValues) {
                 System.arraycopy(source, 0, originalValues, 0, originalValues.length);
             }
-        }
-    }
-
-    private static final class InputAnalysis {
-        private final int[] values;
-        private final int maxValue;
-
-        private InputAnalysis(int[] values, int maxValue) {
-            this.values = values;
-            this.maxValue = maxValue;
-        }
-
-        private int[] values() {
-            return values;
-        }
-
-        private int maxValue() {
-            return maxValue;
         }
     }
 }

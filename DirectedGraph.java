@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class DirectedGraph {
+public final class DirectedGraph implements Graph {
     private final List<List<Integer>> adjacency;
 
     private DirectedGraph(List<List<Integer>> adjacency) {
@@ -33,15 +33,18 @@ public final class DirectedGraph {
         return new DirectedGraph(freeze(adjacency));
     }
 
+    @Override
     public int vertexCount() {
         return adjacency.size();
     }
 
+    @Override
     public List<Integer> neighborsOf(int vertex) {
         validateVertex(vertex, vertexCount());
         return adjacency.get(vertex);
     }
 
+    @Override
     public DirectedGraph reverse() {
         List<List<Integer>> reversedAdjacency = createEmptyAdjacency(vertexCount());
 

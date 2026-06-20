@@ -7,14 +7,14 @@ public final class KosarajuStronglyConnectedComponentsFinder
     private final DepthFirstTraversal traversal = new DepthFirstTraversal();
 
     @Override
-    public StronglyConnectedComponentsResult findComponents(DirectedGraph graph) {
+    public StronglyConnectedComponentsResult findComponents(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("Graph must not be null.");
         }
 
         Deque<Integer> finishingOrder = traversal.buildFinishingOrder(graph);
 
-        DirectedGraph reversedGraph = graph.reverse();
+        Graph reversedGraph = graph.reverse();
         boolean[] visited = new boolean[graph.vertexCount()];
         List<StronglyConnectedComponent> components = new ArrayList<>();
 

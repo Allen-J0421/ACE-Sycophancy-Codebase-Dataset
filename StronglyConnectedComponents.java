@@ -15,7 +15,8 @@ public final class StronglyConnectedComponents {
 
         StronglyConnectedComponentsFinder solver = new KosarajuStronglyConnectedComponentsFinder();
         StronglyConnectedComponentsResult result = solver.findComponents(graph);
+        StronglyConnectedComponentsFormatter formatter = new StronglyConnectedComponentsFormatter();
 
-        System.out.println(result);
+        System.out.println(formatter.format(result));
     }
 }

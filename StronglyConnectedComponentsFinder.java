@@ -1,3 +1,3 @@
 public interface StronglyConnectedComponentsFinder {
-    StronglyConnectedComponentsResult findComponents(DirectedGraph graph);
+    StronglyConnectedComponentsResult findComponents(Graph graph);
 }

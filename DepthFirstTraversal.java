@@ -5,7 +5,7 @@ import java.util.List;
 
 final class DepthFirstTraversal {
 
-    Deque<Integer> buildFinishingOrder(DirectedGraph graph) {
+    Deque<Integer> buildFinishingOrder(Graph graph) {
         boolean[] visited = new boolean[graph.vertexCount()];
         Deque<Integer> finishingOrder = new ArrayDeque<>();
 
@@ -18,7 +18,7 @@ final class DepthFirstTraversal {
         return finishingOrder;
     }
 
-    List<Integer> collectReachableVertices(int startVertex, DirectedGraph graph, boolean[] visited) {
+    List<Integer> collectReachableVertices(int startVertex, Graph graph, boolean[] visited) {
         List<Integer> visitedVertices = new ArrayList<>();
         traverseReachableVertices(startVertex, graph, visited, visitedVertices);
         return visitedVertices;
@@ -26,7 +26,7 @@ final class DepthFirstTraversal {
 
     private void traverseForFinishingOrder(
         int vertex,
-        DirectedGraph graph,
+        Graph graph,
         boolean[] visited,
         Deque<Integer> finishingOrder
     ) {
@@ -43,7 +43,7 @@ final class DepthFirstTraversal {
 
     private void traverseReachableVertices(
         int vertex,
-        DirectedGraph graph,
+        Graph graph,
         boolean[] visited,
         List<Integer> visitedVertices
     ) {

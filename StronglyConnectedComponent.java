@@ -26,17 +26,4 @@ public final class StronglyConnectedComponent {
     public boolean contains(int vertex) {
         return vertices.contains(vertex);
     }
-
-    public String toDisplayString() {
-        StringBuilder output = new StringBuilder();
-        for (int vertex : vertices) {
-            output.append(vertex).append(' ');
-        }
-        return output.toString();
-    }
-
-    @Override
-    public String toString() {
-        return toDisplayString();
-    }
 }

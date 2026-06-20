@@ -12,14 +12,25 @@ final class MaxFlowTest {
     }
 
     private static void returnsExpectedSampleFlow() {
-        assertEquals(23, new MaxFlow().maximumFlow(sampleGraph(), 0, 5));
+        assertEquals(
+            SampleNetworks.SIX_VERTEX_MAX_FLOW,
+            new MaxFlow().maximumFlow(
+                SampleNetworks.sixVertexNetwork(),
+                SampleNetworks.SIX_VERTEX_SOURCE,
+                SampleNetworks.SIX_VERTEX_SINK
+            )
+        );
     }
 
     private static void doesNotMutateInputGraph() {
-        int[][] graph = sampleGraph();
+        int[][] graph = SampleNetworks.sixVertexNetwork();
         int[][] original = copyGraph(graph);
 
-        new MaxFlow().maximumFlow(graph, 0, 5);
+        new MaxFlow().maximumFlow(
+            graph,
+            SampleNetworks.SIX_VERTEX_SOURCE,
+            SampleNetworks.SIX_VERTEX_SINK
+        );
 
         if (!Arrays.deepEquals(original, graph)) {
             throw new AssertionError("Expected input graph to remain unchanged.");
@@ -41,17 +52,6 @@ final class MaxFlowTest {
         assertThrows(() -> new MaxFlow().maximumFlow(new int[][] { { 0, 1 } }, 0, 1));
         assertThrows(() -> new MaxFlow().maximumFlow(new int[][] { { 0, -1 }, { 0, 0 } }, 0, 1));
         assertThrows(() -> new MaxFlow().maximumFlow(new int[][] { { 0 } }, 0, 0));
-    }
-
-    private static int[][] sampleGraph() {
-        return new int[][] {
-            { 0, 16, 13, 0, 0, 0 },
-            { 0, 0, 10, 12, 0, 0 },
-            { 0, 4, 0, 0, 14, 0 },
-            { 0, 0, 9, 0, 0, 20 },
-            { 0, 0, 0, 7, 0, 4 },
-            { 0, 0, 0, 0, 0, 0 }
-        };
     }
 
     private static int[][] copyGraph(int[][] graph) {

@@ -1,6 +1,9 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 class AVLTree<T extends Comparable<T>> implements Iterable<T> {
@@ -38,7 +41,31 @@ class AVLTree<T extends Comparable<T>> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return inOrder().iterator();
+        return new Iterator<T>() {
+            private final Deque<Node<T>> stack = new ArrayDeque<>();
+
+            { pushLeft(root); }
+
+            private void pushLeft(Node<T> node) {
+                while (node != null) {
+                    stack.push(node);
+                    node = node.left;
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return !stack.isEmpty();
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) throw new NoSuchElementException();
+                Node<T> node = stack.pop();
+                pushLeft(node.right);
+                return node.key;
+            }
+        };
     }
 
     public boolean contains(T key) {

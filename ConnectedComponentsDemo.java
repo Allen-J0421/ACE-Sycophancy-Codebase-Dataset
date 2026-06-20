@@ -11,6 +11,6 @@ public final class ConnectedComponentsDemo {
         graph.addEdge(2, 0);
         graph.addEdge(5, 4);
 
-        System.out.println(ComponentFormatter.formatComponents(ConnectedComponents.getComponents(graph)));
+        System.out.println(ComponentFormatter.formatComponents(ConnectedComponents.findComponents(graph)));
     }
 }

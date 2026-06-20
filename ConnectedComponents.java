@@ -8,11 +8,11 @@ public final class ConnectedComponents {
     private ConnectedComponents() {
     }
 
-    public static List<List<Integer>> getComponents(List<? extends List<Integer>> adjacencyList) {
-        return getComponents(UndirectedGraph.fromAdjacencyList(adjacencyList));
+    public static List<List<Integer>> findComponents(List<? extends List<Integer>> adjacencyList) {
+        return findComponents(UndirectedGraph.fromAdjacencyList(adjacencyList));
     }
 
-    public static List<List<Integer>> getComponents(Graph graph) {
+    public static List<List<Integer>> findComponents(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("graph cannot be null");
         }
@@ -27,6 +27,16 @@ public final class ConnectedComponents {
         }
 
         return components;
+    }
+
+    @Deprecated
+    public static List<List<Integer>> getComponents(List<? extends List<Integer>> adjacencyList) {
+        return findComponents(adjacencyList);
+    }
+
+    @Deprecated
+    public static List<List<Integer>> getComponents(Graph graph) {
+        return findComponents(graph);
     }
 
     private static List<Integer> collectComponent(Graph graph, int source, boolean[] visited) {

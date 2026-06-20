@@ -8,11 +8,24 @@ public final class ConnectedComponentsTest {
 
     public static void main(String[] args) {
         findsComponentsInSampleGraph();
+        keepsLegacyGetComponentsApi();
         worksWithGraphInterface();
         handlesIsolatedVertices();
         copiesAdjacencyListsDefensively();
         rejectsInvalidEdges();
         exposesReadOnlyNeighbors();
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void keepsLegacyGetComponentsApi() {
+        UndirectedGraph graph = UndirectedGraph.withVertexCount(2);
+        graph.addEdge(0, 1);
+
+        assertEquals(
+                List.of(List.of(0, 1)),
+                ConnectedComponents.getComponents(graph),
+                "legacy getComponents API"
+        );
     }
 
     private static void findsComponentsInSampleGraph() {
@@ -24,7 +37,7 @@ public final class ConnectedComponentsTest {
 
         assertEquals(
                 List.of(List.of(0, 3, 2, 1), List.of(4, 5)),
-                ConnectedComponents.getComponents(graph),
+                ConnectedComponents.findComponents(graph),
                 "sample graph components"
         );
     }
@@ -38,7 +51,7 @@ public final class ConnectedComponentsTest {
 
         assertEquals(
                 List.of(List.of(0, 1), List.of(2)),
-                ConnectedComponents.getComponents(graph),
+                ConnectedComponents.findComponents(graph),
                 "graph interface"
         );
     }
@@ -48,7 +61,7 @@ public final class ConnectedComponentsTest {
 
         assertEquals(
                 List.of(List.of(0), List.of(1), List.of(2)),
-                ConnectedComponents.getComponents(graph),
+                ConnectedComponents.findComponents(graph),
                 "isolated vertices"
         );
     }

@@ -43,5 +43,23 @@ public final class SortingDemo {
         Integer[] descending = sample.clone();
         new QuickSort().sort(descending, Comparator.reverseOrder());
         System.out.println("quick desc: " + Arrays.toString(descending));
+
+        // Trace hook: count comparisons and swaps each algorithm performs.
+        System.out.println();
+        System.out.println("Operation counts (sorting " + sample.length + " elements):");
+        strategies.forEach((name, sorter) -> {
+            Integer[] copy = sample.clone();
+            SortStats stats = new SortStats();
+            sorter.sort(copy, Comparator.naturalOrder(), stats);
+            System.out.printf("%-11s %s%n", name + ":", stats);
+        });
+
+        // The hook makes algorithmic behavior observable: bubble sort short-
+        // circuits on already-sorted input after a single comparison pass.
+        Integer[] alreadySorted = { 1, 2, 3, 4, 5, 6, 7 };
+        SortStats early = new SortStats();
+        new BubbleSort().sort(alreadySorted, Comparator.naturalOrder(), early);
+        System.out.println();
+        System.out.println("bubble on already-sorted input: " + early + " (early exit)");
     }
 }

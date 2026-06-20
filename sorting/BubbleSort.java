@@ -10,24 +10,26 @@ import java.util.Comparator;
  *
  * <p>The class offers symmetric object and primitive entry points:
  * <ul>
- *   <li>the generic {@link #sort(Object[], Comparator)} required by
- *       {@link Sorter}, for object arrays; and</li>
+ *   <li>the generic {@link #sort(Object[], Comparator, SortObserver)} required
+ *       by {@link Sorter}, for object arrays; and</li>
  *   <li>{@link #sort(int[], IntComparator)} for primitive {@code int} arrays,
  *       with a {@link #sort(int[])} convenience for ascending order. These
- *       preserve the original allocation-free {@code int[]} behavior.</li>
+ *       preserve the original allocation-free {@code int[]} behavior and are not
+ *       instrumented.</li>
  * </ul>
  */
 public final class BubbleSort implements Sorter {
 
     @Override
-    public <T> void sort(T[] array, Comparator<? super T> comparator) {
-        SortSupport.requireArgs(array, comparator);
+    public <T> void sort(T[] array, Comparator<? super T> comparator, SortObserver observer) {
+        SortSupport.requireArgs(array, comparator, observer);
+        Comparator<? super T> cmp = SortSupport.counting(comparator, observer);
         int n = array.length;
         for (int i = 0; i < n - 1; i++) {
             boolean swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
-                if (comparator.compare(array[j], array[j + 1]) > 0) {
-                    SortSupport.swap(array, j, j + 1);
+                if (cmp.compare(array[j], array[j + 1]) > 0) {
+                    SortSupport.swap(array, j, j + 1, observer);
                     swapped = true;
                 }
             }
@@ -69,5 +71,4 @@ public final class BubbleSort implements Sorter {
             }
         }
     }
-
 }

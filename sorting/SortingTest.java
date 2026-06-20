@@ -28,6 +28,7 @@ public final class SortingTest {
             runBattery(sorter.getClass().getSimpleName(), sorter);
         }
         primitivePaths();
+        instrumentation();
 
         System.out.printf("%nTests: %d passed, %d failed%n", passed, failed);
         if (failed > 0) {
@@ -100,6 +101,50 @@ public final class SortingTest {
         assertInts("BubbleSort / primitive descending", desc, new int[]{4, 3, 2, 1});
     }
 
+    private static void instrumentation() {
+        // Bubble sort early-exits on already-sorted input: a single comparison
+        // pass (n-1 comparisons) and zero swaps.
+        Integer[] sorted = {1, 2, 3, 4, 5};
+        SortStats s1 = new SortStats();
+        new BubbleSort().sort(sorted, Comparator.naturalOrder(), s1);
+        assertEquals("bubble sorted / comparisons", s1.comparisons(), 4);
+        assertEquals("bubble sorted / swaps", s1.swaps(), 0);
+
+        // Reverse input is bubble sort's worst case: n(n-1)/2 of each.
+        Integer[] reverse = {5, 4, 3, 2, 1};
+        SortStats s2 = new SortStats();
+        new BubbleSort().sort(reverse, Comparator.naturalOrder(), s2);
+        assertEquals("bubble reverse / comparisons", s2.comparisons(), 10);
+        assertEquals("bubble reverse / swaps", s2.swaps(), 10);
+
+        // Insertion sort's best case (sorted): n-1 comparisons, and it shifts
+        // rather than swaps, so zero swaps.
+        Integer[] sorted2 = {1, 2, 3, 4, 5};
+        SortStats s3 = new SortStats();
+        new InsertionSort().sort(sorted2, Comparator.naturalOrder(), s3);
+        assertEquals("insertion sorted / comparisons", s3.comparisons(), 4);
+        assertEquals("insertion sorted / swaps", s3.swaps(), 0);
+
+        // Every algorithm reports comparisons and still sorts correctly while
+        // observed.
+        for (Sorter sorter : SORTERS) {
+            String name = sorter.getClass().getSimpleName();
+            Integer[] data = {3, 1, 4, 1, 5, 9, 2, 6};
+            SortStats st = new SortStats();
+            sorter.sort(data, Comparator.naturalOrder(), st);
+            assertObjects(name + " / observed sort correct", data,
+                    new Integer[]{1, 1, 2, 3, 4, 5, 6, 9});
+            assertTrue(name + " / observed comparisons > 0", st.comparisons() > 0);
+        }
+
+        // The NO_OP observer produces the same result as the convenience overload.
+        Integer[] viaConvenience = {3, 1, 2};
+        Integer[] viaNoOp = {3, 1, 2};
+        new QuickSort().sort(viaConvenience, Comparator.naturalOrder());
+        new QuickSort().sort(viaNoOp, Comparator.naturalOrder(), SortObserver.NO_OP);
+        assertObjects("NO_OP equals convenience", viaConvenience, viaNoOp);
+    }
+
     private static void assertInts(String name, int[] actual, int[] expected) {
         if (Arrays.equals(actual, expected)) {
             pass(name);
@@ -113,6 +158,22 @@ public final class SortingTest {
             pass(name);
         } else {
             fail(name, Arrays.toString(expected), Arrays.toString(actual));
+        }
+    }
+
+    private static void assertEquals(String name, long actual, long expected) {
+        if (actual == expected) {
+            pass(name);
+        } else {
+            fail(name, Long.toString(expected), Long.toString(actual));
+        }
+    }
+
+    private static void assertTrue(String name, boolean condition) {
+        if (condition) {
+            pass(name);
+        } else {
+            fail(name, "true", "false");
         }
     }
 

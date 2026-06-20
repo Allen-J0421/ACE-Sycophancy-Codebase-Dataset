@@ -11,6 +11,8 @@ All sources live in the `sorting` package:
 | File                     | Responsibility                                                       |
 |--------------------------|---------------------------------------------------------------------|
 | `Sorter.java`            | Strategy interface for in-place, comparator-driven sorting.         |
+| `SortObserver.java`      | Hook notified of each comparison and swap (default no-ops).         |
+| `SortStats.java`         | `SortObserver` that counts comparisons and swaps.                   |
 | `IntComparator.java`     | Primitive `int` comparison function (no boxing).                    |
 | `BubbleSort.java`        | Bubble sort (early-exit optimized): generic + primitive `int[]`.    |
 | `InsertionSort.java`     | Insertion sort: O(n) on nearly-sorted input, stable.                |
@@ -41,6 +43,25 @@ sorter.sort(values, Comparator.reverseOrder());
 
 `BubbleSort` additionally offers an allocation-free primitive `int[]` path with
 an `IntComparator` — something the JDK's `Arrays.sort(int[])` cannot do.
+
+## Instrumentation
+
+Every generic sort accepts an optional `SortObserver`, notified of each
+comparison and swap. `SortStats` is a ready-made counting observer:
+
+```java
+SortStats stats = new SortStats();
+new BubbleSort().sort(values, Comparator.naturalOrder(), stats);
+System.out.println(stats);   // e.g. "21 comparisons, 14 swaps"
+```
+
+This makes algorithmic behavior observable and testable — for instance, bubble
+sort on already-sorted input reports `n-1` comparisons and zero swaps (its
+early exit), whereas reverse input costs `n(n-1)/2` of each. Insertion and merge
+sort shift/copy rather than swap, so they report zero swaps. The observer
+defaults to `SortObserver.NO_OP`, which the two- and one-argument `sort`
+overloads use, so the uninstrumented path carries no overhead. The primitive
+`int[]` paths are not instrumented.
 
 ### History
 

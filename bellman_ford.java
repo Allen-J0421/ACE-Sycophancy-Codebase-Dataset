@@ -9,15 +9,7 @@ class BellmanFord {
     }
 
     static int[] bellmanFord(Graph graph, int src) {
-        int[] dist = graph.createDistances(src);
-
-        for (int pass = 0; pass < graph.vertices() - 1; pass++) {
-            if (!graph.relaxEdges(dist)) {
-                break;
-            }
-        }
-
-        return graph.hasNegativeCycle(dist) ? new int[]{NEGATIVE_CYCLE} : dist;
+        return graph.shortestPathsFrom(src);
     }
 
     private static final class Graph {
@@ -50,6 +42,18 @@ class BellmanFord {
             Arrays.fill(dist, INF);
             dist[src] = 0;
             return dist;
+        }
+
+        int[] shortestPathsFrom(int src) {
+            int[] dist = createDistances(src);
+
+            for (int pass = 0; pass < vertices - 1; pass++) {
+                if (!relaxEdges(dist)) {
+                    break;
+                }
+            }
+
+            return hasNegativeCycle(dist) ? new int[]{NEGATIVE_CYCLE} : dist;
         }
 
         boolean relaxEdges(int[] dist) {

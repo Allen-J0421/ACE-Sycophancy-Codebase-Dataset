@@ -4,7 +4,7 @@ final class BipartiteGraph {
     }
 
     static boolean isBipartite(int vertexCount, int[][] edges) {
-        return BipartiteAnalyzer.isBipartite(UndirectedGraph.fromEdgeList(vertexCount, edges));
+        return BipartiteAnalyzer.isBipartite(UndirectedGraphBuilder.fromEdgeList(vertexCount, edges));
     }
 
     public static void main(String[] args) {

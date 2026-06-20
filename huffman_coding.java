@@ -73,6 +73,66 @@ class HuffmanCoding {
             collectLeafCodes(root, new StringBuilder(), (leaf, code) -> codes.set(leaf.symbolIndex, code));
             return codes;
         }
+
+        private static Node buildTree(int[] frequencies) {
+            PriorityQueue<Node> nodes = createLeafQueue(frequencies);
+
+            while (nodes.size() > 1) {
+                nodes.add(mergeLowestFrequencyNodes(nodes));
+            }
+
+            return nodes.poll();
+        }
+
+        private static PriorityQueue<Node> createLeafQueue(int[] frequencies) {
+            PriorityQueue<Node> nodes = new PriorityQueue<>(NODE_ORDER);
+
+            for (int i = 0; i < frequencies.length; i++) {
+                nodes.add(new Node(frequencies[i], i));
+            }
+
+            return nodes;
+        }
+
+        private static Node mergeLowestFrequencyNodes(PriorityQueue<Node> nodes) {
+            Node left = nodes.poll();
+            Node right = nodes.poll();
+            return new Node(left, right);
+        }
+
+        private static ArrayList<String> createEmptyCodeList(int size) {
+            ArrayList<String> codes = new ArrayList<>(size);
+
+            for (int i = 0; i < size; i++) {
+                codes.add("");
+            }
+
+            return codes;
+        }
+
+        private static void collectLeafCodes(Node root, StringBuilder prefix, LeafCodeConsumer consumer) {
+            if (root == null) {
+                return;
+            }
+
+            if (root.isLeaf()) {
+                consumer.accept(root, codeFor(prefix));
+                return;
+            }
+
+            appendBranchCode(root.left, '0', prefix, consumer);
+            appendBranchCode(root.right, '1', prefix, consumer);
+        }
+
+        private static void appendBranchCode(Node node, char bit, StringBuilder prefix, LeafCodeConsumer consumer) {
+            prefix.append(bit);
+            collectLeafCodes(node, prefix, consumer);
+            prefix.setLength(prefix.length() - 1);
+        }
+
+        private static String codeFor(StringBuilder prefix) {
+            return prefix.length() == 0 ? SINGLE_SYMBOL_CODE : prefix.toString();
+        }
     }
 
     static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
@@ -90,66 +150,6 @@ class HuffmanCoding {
         if (symbols.length() != frequencies.length) {
             throw new IllegalArgumentException("Input string and frequency array must have the same length");
         }
-    }
-
-    private static Node buildTree(int[] frequencies) {
-        PriorityQueue<Node> nodes = createLeafQueue(frequencies);
-
-        while (nodes.size() > 1) {
-            nodes.add(mergeLowestFrequencyNodes(nodes));
-        }
-
-        return nodes.poll();
-    }
-
-    private static PriorityQueue<Node> createLeafQueue(int[] frequencies) {
-        PriorityQueue<Node> nodes = new PriorityQueue<>(NODE_ORDER);
-
-        for (int i = 0; i < frequencies.length; i++) {
-            nodes.add(new Node(frequencies[i], i));
-        }
-
-        return nodes;
-    }
-
-    private static Node mergeLowestFrequencyNodes(PriorityQueue<Node> nodes) {
-        Node left = nodes.poll();
-        Node right = nodes.poll();
-        return new Node(left, right);
-    }
-
-    private static ArrayList<String> createEmptyCodeList(int size) {
-        ArrayList<String> codes = new ArrayList<>(size);
-
-        for (int i = 0; i < size; i++) {
-            codes.add("");
-        }
-
-        return codes;
-    }
-
-    private static void collectLeafCodes(Node root, StringBuilder prefix, LeafCodeConsumer consumer) {
-        if (root == null) {
-            return;
-        }
-
-        if (root.isLeaf()) {
-            consumer.accept(root, codeFor(prefix));
-            return;
-        }
-
-        appendBranchCode(root.left, '0', prefix, consumer);
-        appendBranchCode(root.right, '1', prefix, consumer);
-    }
-
-    private static void appendBranchCode(Node node, char bit, StringBuilder prefix, LeafCodeConsumer consumer) {
-        prefix.append(bit);
-        collectLeafCodes(node, prefix, consumer);
-        prefix.setLength(prefix.length() - 1);
-    }
-
-    private static String codeFor(StringBuilder prefix) {
-        return prefix.length() == 0 ? SINGLE_SYMBOL_CODE : prefix.toString();
     }
 
     public static void main(String[] args) {

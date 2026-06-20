@@ -2,15 +2,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class StronglyConnectedComponent implements Iterable<Integer> {
-    private final List<Integer> vertices;
+public record StronglyConnectedComponent(List<Integer> vertices) implements Iterable<Integer> {
 
-    public StronglyConnectedComponent(List<Integer> vertices) {
-        this.vertices = List.copyOf(vertices);
-    }
-
-    public List<Integer> vertices() {
-        return vertices;
+    public StronglyConnectedComponent {
+        vertices = List.copyOf(vertices);
     }
 
     public int size() {
@@ -24,18 +19,6 @@ public class StronglyConnectedComponent implements Iterable<Integer> {
     @Override
     public Iterator<Integer> iterator() {
         return vertices.iterator();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof StronglyConnectedComponent other)) return false;
-        return vertices.equals(other.vertices);
-    }
-
-    @Override
-    public int hashCode() {
-        return vertices.hashCode();
     }
 
     @Override

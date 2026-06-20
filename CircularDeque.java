@@ -40,7 +40,7 @@ import java.util.Objects;
  *
  * @param <E> the type of elements held in this deque
  */
-public class CircularQueue<E> extends AbstractQueue<E> implements Deque<E> {
+public class CircularDeque<E> extends AbstractQueue<E> implements Deque<E> {
 
     private final Object[] elements;
     private int front;
@@ -55,7 +55,7 @@ public class CircularQueue<E> extends AbstractQueue<E> implements Deque<E> {
      * @param capacity the maximum number of elements; must be positive
      * @throws IllegalArgumentException if {@code capacity <= 0}
      */
-    public CircularQueue(int capacity) {
+    public CircularDeque(int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("capacity must be positive, was " + capacity);
         }
@@ -474,14 +474,14 @@ public class CircularQueue<E> extends AbstractQueue<E> implements Deque<E> {
      *
      * <p>This is an intentional value-equality extension beyond the
      * {@code Collection} contract (which leaves {@code equals} as identity for
-     * deques); it only ever considers another {@code CircularQueue} equal.
+     * deques); it only ever considers another {@code CircularDeque} equal.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CircularQueue<?> other)) {
+        if (!(o instanceof CircularDeque<?> other)) {
             return false;
         }
         if (size != other.size) {

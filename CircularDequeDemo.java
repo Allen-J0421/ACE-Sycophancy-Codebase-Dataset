@@ -1,14 +1,14 @@
 /**
- * Small runnable demonstration of {@link CircularQueue}, kept separate so the
+ * Small runnable demonstration of {@link CircularDeque}, kept separate so the
  * data structure itself stays free of executable/demo code.
  */
-public final class CircularQueueDemo {
+public final class CircularDequeDemo {
 
-    private CircularQueueDemo() {
+    private CircularDequeDemo() {
     }
 
     public static void main(String[] args) {
-        CircularQueue<Integer> queue = new CircularQueue<>(5);
+        CircularDeque<Integer> queue = new CircularDeque<>(5);
         queue.enqueue(10);
         queue.enqueue(20);
         queue.enqueue(30);
@@ -21,7 +21,7 @@ public final class CircularQueueDemo {
         print(queue);
     }
 
-    private static void print(CircularQueue<Integer> queue) {
+    private static void print(CircularDeque<Integer> queue) {
         System.out.println(queue + " front=" + queue.peekFirst() + " rear=" + queue.peekLast());
     }
 }

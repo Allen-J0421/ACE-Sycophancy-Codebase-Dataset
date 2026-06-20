@@ -6,11 +6,7 @@ public final class BubbleSortDemo {
     }
 
     public static void main(String[] args) {
-        int[] values = SAMPLE_VALUES.clone();
-
-        BubbleSort.sort(values);
-
         System.out.println(SORTED_ARRAY_LABEL);
-        BubbleSort.printArray(values);
+        BubbleSort.printArray(BubbleSort.sortedCopy(SAMPLE_VALUES));
     }
 }

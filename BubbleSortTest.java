@@ -5,43 +5,61 @@ public final class BubbleSortTest {
     }
 
     public static void main(String[] args) {
-        verifiesSortsUnorderedValues();
-        verifiesLeavesSortedValuesUntouched();
-        verifiesHandlesDuplicates();
-        verifiesHandlesNegativeValues();
-        verifiesHandlesSingleElementValues();
-        verifiesHandlesEmptyValues();
+        verifiesSortMutatesUnorderedValues();
+        verifiesSortLeavesSortedValuesUntouched();
+        verifiesSortHandlesDuplicates();
+        verifiesSortHandlesNegativeValues();
+        verifiesSortHandlesSingleElementValues();
+        verifiesSortHandlesEmptyValues();
+        verifiesSortedCopyReturnsSortedValues();
+        verifiesSortedCopyDoesNotMutateInput();
         verifiesFormatsArrayForDisplay();
         verifiesFormatsEmptyArrayForDisplay();
         verifiesSortRejectsNullValues();
+        verifiesSortedCopyRejectsNullValues();
         verifiesDisplayStringRejectsNullValues();
     }
 
-    private static void verifiesSortsUnorderedValues() {
-        assertSortedResult(
+    private static void verifiesSortMutatesUnorderedValues() {
+        assertInPlaceSortResult(
             new int[] {64, 34, 25, 12, 22, 11, 90},
             new int[] {11, 12, 22, 25, 34, 64, 90}
         );
     }
 
-    private static void verifiesLeavesSortedValuesUntouched() {
-        assertSortedResult(new int[] {1, 2, 3, 4, 5}, new int[] {1, 2, 3, 4, 5});
+    private static void verifiesSortLeavesSortedValuesUntouched() {
+        assertInPlaceSortResult(new int[] {1, 2, 3, 4, 5}, new int[] {1, 2, 3, 4, 5});
     }
 
-    private static void verifiesHandlesDuplicates() {
-        assertSortedResult(new int[] {3, 1, 2, 3, 1}, new int[] {1, 1, 2, 3, 3});
+    private static void verifiesSortHandlesDuplicates() {
+        assertInPlaceSortResult(new int[] {3, 1, 2, 3, 1}, new int[] {1, 1, 2, 3, 3});
     }
 
-    private static void verifiesHandlesNegativeValues() {
-        assertSortedResult(new int[] {4, -2, 0, -7, 3}, new int[] {-7, -2, 0, 3, 4});
+    private static void verifiesSortHandlesNegativeValues() {
+        assertInPlaceSortResult(new int[] {4, -2, 0, -7, 3}, new int[] {-7, -2, 0, 3, 4});
     }
 
-    private static void verifiesHandlesSingleElementValues() {
-        assertSortedResult(new int[] {42}, new int[] {42});
+    private static void verifiesSortHandlesSingleElementValues() {
+        assertInPlaceSortResult(new int[] {42}, new int[] {42});
     }
 
-    private static void verifiesHandlesEmptyValues() {
-        assertSortedResult(new int[] {}, new int[] {});
+    private static void verifiesSortHandlesEmptyValues() {
+        assertInPlaceSortResult(new int[] {}, new int[] {});
+    }
+
+    private static void verifiesSortedCopyReturnsSortedValues() {
+        int[] sortedValues = BubbleSort.sortedCopy(new int[] {9, 4, 6, 1});
+
+        assertArrayEquals(new int[] {1, 4, 6, 9}, sortedValues);
+    }
+
+    private static void verifiesSortedCopyDoesNotMutateInput() {
+        int[] input = {9, 4, 6, 1};
+
+        int[] sortedValues = BubbleSort.sortedCopy(input);
+
+        assertArrayEquals(new int[] {9, 4, 6, 1}, input);
+        assertArrayEquals(new int[] {1, 4, 6, 9}, sortedValues);
     }
 
     private static void verifiesFormatsArrayForDisplay() {
@@ -60,6 +78,10 @@ public final class BubbleSortTest {
         assertThrowsNullPointer(() -> BubbleSort.sort(null));
     }
 
+    private static void verifiesSortedCopyRejectsNullValues() {
+        assertThrowsNullPointer(() -> BubbleSort.sortedCopy(null));
+    }
+
     private static void verifiesDisplayStringRejectsNullValues() {
         assertThrowsNullPointer(() -> BubbleSort.toDisplayString(null));
     }
@@ -72,7 +94,7 @@ public final class BubbleSortTest {
         }
     }
 
-    private static void assertSortedResult(int[] input, int[] expected) {
+    private static void assertInPlaceSortResult(int[] input, int[] expected) {
         BubbleSort.sort(input);
         assertArrayEquals(expected, input);
     }

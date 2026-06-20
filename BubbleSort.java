@@ -21,6 +21,14 @@ public final class BubbleSort {
         }
     }
 
+    public static int[] sortedCopy(int[] values) {
+        Objects.requireNonNull(values, "values");
+
+        int[] sortedValues = values.clone();
+        sort(sortedValues);
+        return sortedValues;
+    }
+
     public static void printArray(int[] values) {
         System.out.println(toDisplayString(values));
     }

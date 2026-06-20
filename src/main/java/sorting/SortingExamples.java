@@ -1,60 +1,40 @@
 package sorting;
 
 final class SortingExamples {
-    private static final int[] DEMO_VALUES = {64, 34, 25, 12, 22, 11, 90};
-    private static final int[] SORTED_DEMO_VALUES = {11, 12, 22, 25, 34, 64, 90};
-    private static final int[] SORTED_VALUES = {1, 2, 3, 4, 5};
-    private static final int[] DUPLICATE_VALUES = {3, 1, 2, 3, 1};
-    private static final int[] SORTED_DUPLICATE_VALUES = {1, 1, 2, 3, 3};
-    private static final int[] NEGATIVE_VALUES = {4, -2, 0, -7, 3};
-    private static final int[] SORTED_NEGATIVE_VALUES = {-7, -2, 0, 3, 4};
-    private static final int[] SINGLE_VALUE = {42};
-    private static final int[] COPY_SORT_VALUES = {9, 4, 6, 1};
-    private static final int[] SORTED_COPY_SORT_VALUES = {1, 4, 6, 9};
+    private static final SortScenario DEMO_SCENARIO = new SortScenario(
+        "demo values",
+        new int[] {64, 34, 25, 12, 22, 11, 90},
+        new int[] {11, 12, 22, 25, 34, 64, 90}
+    );
+    private static final SortScenario[] IN_PLACE_SORT_SCENARIOS = {
+        DEMO_SCENARIO,
+        new SortScenario("sorted values", new int[] {1, 2, 3, 4, 5}, new int[] {1, 2, 3, 4, 5}),
+        new SortScenario("duplicate values", new int[] {3, 1, 2, 3, 1}, new int[] {1, 1, 2, 3, 3}),
+        new SortScenario("negative values", new int[] {4, -2, 0, -7, 3}, new int[] {-7, -2, 0, 3, 4}),
+        new SortScenario("single value", new int[] {42}, new int[] {42}),
+        new SortScenario("empty values", new int[] {}, new int[] {})
+    };
+    private static final SortScenario COPY_SORT_SCENARIO = new SortScenario(
+        "copy sort values",
+        new int[] {9, 4, 6, 1},
+        new int[] {1, 4, 6, 9}
+    );
     private static final int[] FORMAT_VALUES = {7, 8, 9};
     private static final int[] EMPTY_VALUES = {};
 
     private SortingExamples() {
     }
 
-    static int[] demoValues() {
-        return DEMO_VALUES.clone();
+    static SortScenario demoScenario() {
+        return DEMO_SCENARIO;
     }
 
-    static int[] sortedDemoValues() {
-        return SORTED_DEMO_VALUES.clone();
+    static SortScenario[] inPlaceSortScenarios() {
+        return IN_PLACE_SORT_SCENARIOS.clone();
     }
 
-    static int[] sortedValues() {
-        return SORTED_VALUES.clone();
-    }
-
-    static int[] duplicateValues() {
-        return DUPLICATE_VALUES.clone();
-    }
-
-    static int[] sortedDuplicateValues() {
-        return SORTED_DUPLICATE_VALUES.clone();
-    }
-
-    static int[] negativeValues() {
-        return NEGATIVE_VALUES.clone();
-    }
-
-    static int[] sortedNegativeValues() {
-        return SORTED_NEGATIVE_VALUES.clone();
-    }
-
-    static int[] singleValue() {
-        return SINGLE_VALUE.clone();
-    }
-
-    static int[] copySortValues() {
-        return COPY_SORT_VALUES.clone();
-    }
-
-    static int[] sortedCopySortValues() {
-        return SORTED_COPY_SORT_VALUES.clone();
+    static SortScenario copySortScenario() {
+        return COPY_SORT_SCENARIO;
     }
 
     static int[] formatValues() {

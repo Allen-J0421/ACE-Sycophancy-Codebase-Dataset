@@ -22,18 +22,20 @@ public final class BubbleSortTest {
     }
 
     private static void verifiesSortedCopyReturnsSortedValues() {
-        int[] sortedValues = BubbleSort.sortedCopy(SortingExamples.copySortValues());
+        SortScenario scenario = SortingExamples.copySortScenario();
+        int[] sortedValues = BubbleSort.sortedCopy(scenario.input());
 
-        IntArrayAssertions.assertArrayEquals(SortingExamples.sortedCopySortValues(), sortedValues);
+        IntArrayAssertions.assertArrayEquals(scenario.expected(), sortedValues);
     }
 
     private static void verifiesSortedCopyDoesNotMutateInput() {
-        int[] input = SortingExamples.copySortValues();
+        SortScenario scenario = SortingExamples.copySortScenario();
+        int[] input = scenario.input();
 
         int[] sortedValues = BubbleSort.sortedCopy(input);
 
-        IntArrayAssertions.assertArrayEquals(SortingExamples.copySortValues(), input);
-        IntArrayAssertions.assertArrayEquals(SortingExamples.sortedCopySortValues(), sortedValues);
+        IntArrayAssertions.assertArrayEquals(scenario.input(), input);
+        IntArrayAssertions.assertArrayEquals(scenario.expected(), sortedValues);
     }
 
     private static void verifiesFormatterFormatsArrayForDisplay() {

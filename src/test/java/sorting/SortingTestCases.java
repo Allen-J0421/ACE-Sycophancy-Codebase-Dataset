@@ -5,16 +5,20 @@ final class SortingTestCases {
     }
 
     static SortCase[] inPlaceSortCases() {
-        return new SortCase[] {
-            new SortCase(SortingExamples.demoValues(), SortingExamples.sortedDemoValues()),
-            new SortCase(SortingExamples.sortedValues(), SortingExamples.sortedValues()),
-            new SortCase(SortingExamples.duplicateValues(), SortingExamples.sortedDuplicateValues()),
-            new SortCase(SortingExamples.negativeValues(), SortingExamples.sortedNegativeValues()),
-            new SortCase(SortingExamples.singleValue(), SortingExamples.singleValue()),
-            new SortCase(SortingExamples.emptyValues(), SortingExamples.emptyValues())
-        };
+        SortScenario[] scenarios = SortingExamples.inPlaceSortScenarios();
+        SortCase[] sortCases = new SortCase[scenarios.length];
+
+        for (int index = 0; index < scenarios.length; index++) {
+            sortCases[index] = new SortCase(
+                scenarios[index].name(),
+                scenarios[index].input(),
+                scenarios[index].expected()
+            );
+        }
+
+        return sortCases;
     }
 
-    record SortCase(int[] input, int[] expected) {
+    record SortCase(String name, int[] input, int[] expected) {
     }
 }

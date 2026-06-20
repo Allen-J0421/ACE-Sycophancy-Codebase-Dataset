@@ -12,11 +12,15 @@ public final class BellmanFord {
     }
 
     public static int[] shortestPaths(int vertices, int[][] edgeData, int source) {
-        ShortestPathResult result = computeShortestPaths(WeightedGraph.from(vertices, edgeData), source);
+        ShortestPathResult result = computeShortestPaths(vertices, edgeData, source);
         if (result.hasNegativeCycle()) {
             return NEGATIVE_CYCLE_RESULT.clone();
         }
         return result.distances();
+    }
+
+    public static ShortestPathResult computeShortestPaths(int vertices, int[][] edgeData, int source) {
+        return computeShortestPaths(WeightedGraph.from(vertices, edgeData), source);
     }
 
     public static ShortestPathResult computeShortestPaths(WeightedGraph graph, int source) {
@@ -32,10 +36,7 @@ public final class BellmanFord {
             }
 
             if (!updated) {
-                return ShortestPathResult.success(
-                    state.toLegacyDistances(),
-                    state.reachableVertices()
-                );
+                return state.toResult();
             }
         }
 
@@ -43,10 +44,7 @@ public final class BellmanFord {
             return ShortestPathResult.negativeCycle();
         }
 
-        return ShortestPathResult.success(
-            state.toLegacyDistances(),
-            state.reachableVertices()
-        );
+        return state.toResult();
     }
 
     private static boolean relax(WeightedEdge edge, DistanceState state) {
@@ -128,6 +126,10 @@ public final class BellmanFord {
 
         private boolean[] reachableVertices() {
             return reachable.clone();
+        }
+
+        private ShortestPathResult toResult() {
+            return ShortestPathResult.success(toLegacyDistances(), reachableVertices());
         }
 
         private int toIntExact(long distance) {

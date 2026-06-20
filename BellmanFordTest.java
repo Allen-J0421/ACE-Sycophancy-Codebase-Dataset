@@ -7,6 +7,7 @@ final class BellmanFordTest {
     public static void main(String[] args) {
         testShortestPaths();
         testLegacyShortestPaths();
+        testRawTypedShortestPaths();
         testUnreachableVertexHandling();
         testNegativeCycleDetection();
         testLegacyNegativeCycleDetection();
@@ -16,36 +17,58 @@ final class BellmanFordTest {
     }
 
     private static void testShortestPaths() {
-        WeightedGraph graph = BellmanFordFixtures.sampleGraph();
+        BellmanFordFixtures.Case sampleCase = BellmanFordFixtures.sampleCase();
 
-        ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
+        ShortestPathResult result = BellmanFord.computeShortestPaths(
+            sampleCase.graph(),
+            sampleCase.source()
+        );
         assertFalse(result.hasNegativeCycle(), "expected a valid shortest-path result");
-        assertArrayEquals(new int[] {0, 5, 6, 6, 7}, result.distances(), "incorrect shortest paths");
+        assertArrayEquals(sampleCase.expectedDistances(), result.distances(), "incorrect shortest paths");
         assertEquals(6, result.distanceTo(3), "incorrect distance lookup");
         assertEquals(5, result.vertexCount(), "incorrect vertex count");
     }
 
     private static void testLegacyShortestPaths() {
-        int[] distances = BellmanFord.shortestPaths(5, BellmanFordFixtures.sampleEdgeData(), 0);
-        assertArrayEquals(new int[] {0, 5, 6, 6, 7}, distances, "incorrect legacy shortest paths");
+        BellmanFordFixtures.Case sampleCase = BellmanFordFixtures.sampleCase();
+        int[] distances = BellmanFord.shortestPaths(
+            sampleCase.graph().vertices(),
+            sampleCase.edgeData(),
+            sampleCase.source()
+        );
+        assertArrayEquals(sampleCase.expectedDistances(), distances, "incorrect legacy shortest paths");
+    }
+
+    private static void testRawTypedShortestPaths() {
+        BellmanFordFixtures.Case sampleCase = BellmanFordFixtures.sampleCase();
+        ShortestPathResult result = BellmanFord.computeShortestPaths(
+            sampleCase.graph().vertices(),
+            sampleCase.edgeData(),
+            sampleCase.source()
+        );
+        assertArrayEquals(sampleCase.expectedDistances(), result.distances(), "incorrect raw typed shortest paths");
     }
 
     private static void testNegativeCycleDetection() {
-        WeightedGraph graph = BellmanFordFixtures.negativeCycleGraph();
-        ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
+        BellmanFordFixtures.Case negativeCycleCase = BellmanFordFixtures.negativeCycleCase();
+        ShortestPathResult result = BellmanFord.computeShortestPaths(
+            negativeCycleCase.graph(),
+            negativeCycleCase.source()
+        );
         assertTrue(result.hasNegativeCycle(), "expected negative cycle detection");
     }
 
     private static void testUnreachableVertexHandling() {
+        BellmanFordFixtures.Case unreachableVertexCase = BellmanFordFixtures.unreachableVertexCase();
         ShortestPathResult result = BellmanFord.computeShortestPaths(
-            BellmanFordFixtures.graphWithUnreachableVertex(),
-            0
+            unreachableVertexCase.graph(),
+            unreachableVertexCase.source()
         );
 
         assertFalse(result.hasNegativeCycle(), "unreachable vertices should not imply a negative cycle");
         assertFalse(result.isReachable(3), "vertex 3 should be unreachable");
         assertArrayEquals(
-            new int[] {0, 4, 7, 100_000_000},
+            unreachableVertexCase.expectedDistances(),
             result.distances(),
             "legacy distance view should preserve the unreachable sentinel"
         );
@@ -59,16 +82,17 @@ final class BellmanFordTest {
     }
 
     private static void testLegacyNegativeCycleDetection() {
+        BellmanFordFixtures.Case negativeCycleCase = BellmanFordFixtures.negativeCycleCase();
         int[] result = BellmanFord.shortestPaths(
-            3,
-            new int[][] {
-                {0, 1, 1},
-                {1, 2, -1},
-                {2, 0, -1}
-            },
-            0
+            negativeCycleCase.graph().vertices(),
+            negativeCycleCase.edgeData(),
+            negativeCycleCase.source()
         );
-        assertArrayEquals(new int[] {-1}, result, "legacy API should return the negative-cycle sentinel");
+        assertArrayEquals(
+            negativeCycleCase.expectedDistances(),
+            result,
+            "legacy API should return the negative-cycle sentinel"
+        );
     }
 
     private static void testInvalidEdgeValidation() {
@@ -81,7 +105,7 @@ final class BellmanFordTest {
     }
 
     private static void testGraphEdgesAreImmutable() {
-        WeightedGraph graph = BellmanFordFixtures.sampleGraph();
+        WeightedGraph graph = BellmanFordFixtures.sampleCase().graph();
         try {
             graph.edges().add(WeightedEdge.of(3, 4, 1));
             throw new AssertionError("expected graph edges view to be immutable");

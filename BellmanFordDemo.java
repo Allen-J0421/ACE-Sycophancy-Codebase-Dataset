@@ -3,10 +3,12 @@ final class BellmanFordDemo {
     }
 
     public static void main(String[] args) {
-        WeightedGraph graph = BellmanFordFixtures.sampleGraph();
-        int source = 0;
+        BellmanFordFixtures.Case sampleCase = BellmanFordFixtures.sampleCase();
 
-        ShortestPathResult result = BellmanFord.computeShortestPaths(graph, source);
+        ShortestPathResult result = BellmanFord.computeShortestPaths(
+            sampleCase.graph(),
+            sampleCase.source()
+        );
         if (result.hasNegativeCycle()) {
             System.out.println("Negative cycle detected");
             return;

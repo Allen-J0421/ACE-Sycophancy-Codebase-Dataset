@@ -53,6 +53,17 @@ public final class WeightedGraph {
         return edges;
     }
 
+    public int[][] edgeData() {
+        int[][] edgeData = new int[edges.size()][3];
+        for (int i = 0; i < edges.size(); i++) {
+            WeightedEdge edge = edges.get(i);
+            edgeData[i][0] = edge.from();
+            edgeData[i][1] = edge.to();
+            edgeData[i][2] = edge.weight();
+        }
+        return edgeData;
+    }
+
     private static void validateVerticesCount(int vertices) {
         if (vertices <= 0) {
             throw new IllegalArgumentException("vertices must be positive");

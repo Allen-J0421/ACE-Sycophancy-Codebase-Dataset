@@ -89,7 +89,7 @@ public final class FloydWarshallTest {
         String lineSeparator = System.lineSeparator();
         String expected = "0 INF" + lineSeparator + "INF 0" + lineSeparator;
 
-        assertEquals(expected, FloydWarshallDemo.formatDistances(distances));
+        assertEquals(expected, DistanceMatrixFormatter.format(distances));
     }
 
     private static int[][] copyMatrix(int[][] matrix) {

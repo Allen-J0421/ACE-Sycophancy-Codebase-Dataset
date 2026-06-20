@@ -12,27 +12,6 @@ public final class FloydWarshallDemo {
         };
 
         int[][] distances = FloydWarshall.shortestPaths(graph);
-        System.out.print(formatDistances(distances));
-    }
-
-    static String formatDistances(int[][] distances) {
-        StringBuilder output = new StringBuilder();
-        for (int[] row : distances) {
-            for (int column = 0; column < row.length; column++) {
-                if (column > 0) {
-                    output.append(' ');
-                }
-                output.append(formatDistance(row[column]));
-            }
-            output.append(System.lineSeparator());
-        }
-        return output.toString();
-    }
-
-    private static String formatDistance(int distance) {
-        if (FloydWarshall.isReachable(distance)) {
-            return Integer.toString(distance);
-        }
-        return "INF";
+        System.out.print(DistanceMatrixFormatter.format(distances));
     }
 }

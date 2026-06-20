@@ -24,6 +24,10 @@ final class DetectCycle {
         return hasCycle(adjacencyList);
     }
 
+    private static boolean containsCycle(DirectedGraph graph) {
+        return containsCycle(graph.adjacencyList());
+    }
+
     private static boolean hasCycle(List<? extends List<Integer>> adjacencyList) {
         int vertexCount = adjacencyList.size();
         int[] inDegrees = calculateInDegrees(adjacencyList, vertexCount);
@@ -112,7 +116,7 @@ final class DetectCycle {
 
     public static void main(String[] args) {
         DirectedGraph graph = buildSampleGraph();
-        System.out.println(Boolean.toString(containsCycle(graph.adjacencyList())));
+        System.out.println(Boolean.toString(containsCycle(graph)));
     }
 
     private static final class DirectedGraph {

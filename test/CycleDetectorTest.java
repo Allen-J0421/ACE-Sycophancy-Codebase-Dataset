@@ -123,6 +123,29 @@ class CycleDetectorTest {
         }
     }
 
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(CycleDetectionAlgorithm.class)
+    @DisplayName("handles a deep graph without stack overflow")
+    void deepGraphNoStackOverflow(CycleDetectionAlgorithm algorithm) {
+        int n = 200_000;
+        CycleDetector detector = CycleDetector.create(algorithm);
+
+        // A long acyclic chain 0 -> 1 -> ... -> n-1 (depth that would blow a recursive stack).
+        int[][] chain = new int[n - 1][];
+        for (int i = 0; i < n - 1; i++) {
+            chain[i] = new int[] {i, i + 1};
+        }
+        assertFalse(detector.hasCycle(DirectedGraph.from(n, chain)));
+
+        // The same chain closed into one big cycle by adding (n-1) -> 0.
+        int[][] loop = new int[n][];
+        System.arraycopy(chain, 0, loop, 0, n - 1);
+        loop[n - 1] = new int[] {n - 1, 0};
+        DirectedGraph cyclic = DirectedGraph.from(n, loop);
+        assertTrue(detector.hasCycle(cyclic));
+        assertIsCycleOf(detector.findCycle(cyclic).orElseThrow(), cyclic);
+    }
+
     @Test
     @DisplayName("factory returns the requested implementation")
     void factorySelectsImplementation() {

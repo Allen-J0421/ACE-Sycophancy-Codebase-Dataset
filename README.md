@@ -22,7 +22,7 @@ and reports the vertices that form it.
 
 | Algorithm | Strategy | Notes |
 |-----------|----------|-------|
-| `DFS`  | depth-first search, back-edge detection | reconstructs the cycle path directly from the traversal |
+| `DFS`  | depth-first search, back-edge detection | iterative (explicit stack), so no recursion-depth limit; reconstructs the cycle path directly from the traversal |
 | `KAHN` | Kahn's topological elimination          | decides *existence* cheaply; reconstructs a cycle from the residual core |
 
 Both satisfy the same contract and agree on every result.

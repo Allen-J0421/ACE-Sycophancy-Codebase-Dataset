@@ -28,20 +28,20 @@ final class MaxFlowComputation {
     }
 
     MaxFlowResult compute() {
-        ResidualNetwork residualNetwork = problem.network().createResidualNetwork();
+        ResidualGraph residualGraph = problem.network().createResidualGraph();
         int maxFlow = 0;
 
         Optional<AugmentingPath> path =
-            pathFinder.findPath(residualNetwork, problem.source(), problem.sink());
+            pathFinder.findPath(residualGraph, problem.source(), problem.sink());
         while (path.isPresent()) {
-            maxFlow += augmentor.augment(residualNetwork, path.get());
-            path = pathFinder.findPath(residualNetwork, problem.source(), problem.sink());
+            maxFlow += augmentor.augment(residualGraph, path.get());
+            path = pathFinder.findPath(residualGraph, problem.source(), problem.sink());
         }
 
         return new MaxFlowResult(
             maxFlow,
             problem.source(),
             problem.sink(),
-            residualNetwork.snapshotCapacities());
+            residualGraph.snapshotCapacities());
     }
 }

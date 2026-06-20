@@ -5,6 +5,19 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
     private final AugmentingPathFinder augmentingPathFinder;
     private final FlowAugmentor augmentor;
 
+    public FordFulkersonSolver(FlowGraph network, int source, int sink) {
+        this(FlowProblem.of(network, source, sink), new BreadthFirstAugmentingPathFinder(), new ResidualFlowAugmentor());
+    }
+
+    public FordFulkersonSolver(
+        FlowGraph network,
+        int source,
+        int sink,
+        AugmentingPathFinder augmentingPathFinder
+    ) {
+        this(FlowProblem.of(network, source, sink), augmentingPathFinder, new ResidualFlowAugmentor());
+    }
+
     public FordFulkersonSolver(FlowProblem problem) {
         this(problem, new BreadthFirstAugmentingPathFinder(), new ResidualFlowAugmentor());
     }

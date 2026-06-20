@@ -1,11 +1,11 @@
 package maxflow;
 
 public final class FlowProblem {
-    private final FlowNetwork network;
+    private final FlowGraph network;
     private final int source;
     private final int sink;
 
-    private FlowProblem(FlowNetwork network, int source, int sink) {
+    private FlowProblem(FlowGraph network, int source, int sink) {
         if (network == null) {
             throw new IllegalArgumentException("network must not be null");
         }
@@ -19,11 +19,11 @@ public final class FlowProblem {
         }
     }
 
-    public static FlowProblem of(FlowNetwork network, int source, int sink) {
+    public static FlowProblem of(FlowGraph network, int source, int sink) {
         return new FlowProblem(network, source, sink);
     }
 
-    public FlowNetwork network() {
+    public FlowGraph network() {
         return network;
     }
 

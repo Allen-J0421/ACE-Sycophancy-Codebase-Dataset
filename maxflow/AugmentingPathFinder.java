@@ -3,5 +3,5 @@ package maxflow;
 import java.util.Optional;
 
 public interface AugmentingPathFinder {
-    Optional<AugmentingPath> findPath(ResidualNetwork residualNetwork, int source, int sink);
+    Optional<AugmentingPath> findPath(ResidualGraph residualGraph, int source, int sink);
 }

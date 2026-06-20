@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFinder {
     @Override
-    public Optional<AugmentingPath> findPath(ResidualNetwork residualNetwork, int source, int sink) {
-        boolean[] visited = new boolean[residualNetwork.vertexCount()];
-        int[] parent = new int[residualNetwork.vertexCount()];
+    public Optional<AugmentingPath> findPath(ResidualGraph residualGraph, int source, int sink) {
+        boolean[] visited = new boolean[residualGraph.vertexCount()];
+        int[] parent = new int[residualGraph.vertexCount()];
         Arrays.fill(parent, -1);
 
         ArrayDeque<Integer> queue = new ArrayDeque<>();
@@ -18,8 +18,8 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
         while (!queue.isEmpty()) {
             int currentVertex = queue.removeFirst();
 
-            for (int nextVertex = 0; nextVertex < residualNetwork.vertexCount(); nextVertex++) {
-                if (!visited[nextVertex] && residualNetwork.hasResidualCapacity(currentVertex, nextVertex)) {
+            for (int nextVertex = 0; nextVertex < residualGraph.vertexCount(); nextVertex++) {
+                if (!visited[nextVertex] && residualGraph.hasResidualCapacity(currentVertex, nextVertex)) {
                     parent[nextVertex] = currentVertex;
                     if (nextVertex == sink) {
                         int[] vertices = buildPath(parent, source, sink);
@@ -27,7 +27,7 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
                             source,
                             sink,
                             vertices,
-                            bottleneckCapacity(residualNetwork, vertices)));
+                            bottleneckCapacity(residualGraph, vertices)));
                     }
 
                     visited[nextVertex] = true;
@@ -40,7 +40,7 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
     }
 
     private static int bottleneckCapacity(
-        ResidualNetwork residualNetwork,
+        ResidualGraph residualGraph,
         int[] vertices
     ) {
         int pathFlow = Integer.MAX_VALUE;
@@ -48,7 +48,7 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
         for (int index = 0; index < vertices.length - 1; index++) {
             int from = vertices[index];
             int to = vertices[index + 1];
-            pathFlow = Math.min(pathFlow, residualNetwork.residualCapacity(from, to));
+            pathFlow = Math.min(pathFlow, residualGraph.residualCapacity(from, to));
         }
 
         return pathFlow;

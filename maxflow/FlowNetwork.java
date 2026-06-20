@@ -1,6 +1,6 @@
 package maxflow;
 
-public final class FlowNetwork {
+public final class FlowNetwork implements FlowGraph {
     private final SquareMatrix capacities;
 
     private FlowNetwork(int[][] capacities) {
@@ -15,7 +15,8 @@ public final class FlowNetwork {
         return capacities.size();
     }
 
-    public ResidualNetwork createResidualNetwork() {
+    @Override
+    public ResidualGraph createResidualGraph() {
         return new ResidualNetwork(capacities);
     }
 }

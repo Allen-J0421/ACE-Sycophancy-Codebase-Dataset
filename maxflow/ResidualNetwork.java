@@ -1,6 +1,6 @@
 package maxflow;
 
-public final class ResidualNetwork {
+public final class ResidualNetwork implements ResidualGraph {
     private final SquareMatrix residualCapacities;
 
     ResidualNetwork(SquareMatrix capacities) {
@@ -31,7 +31,8 @@ public final class ResidualNetwork {
         return flow;
     }
 
-    int[][] snapshotCapacities() {
+    @Override
+    public int[][] snapshotCapacities() {
         return residualCapacities.snapshot();
     }
 }

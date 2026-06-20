@@ -44,6 +44,9 @@ public class HuffmanCoding {
     public static List<String> huffmanCodes(int[] freq) {
         Objects.requireNonNull(freq, "freq must not be null");
         if (freq.length == 0) return List.of();
+        for (int f : freq) {
+            if (f <= 0) throw new IllegalArgumentException("frequencies must be positive, got " + f);
+        }
         List<String> codes = new ArrayList<>(freq.length);
         generateCodes(buildTree(freq), codes, new StringBuilder());
         return List.copyOf(codes);
@@ -75,8 +78,6 @@ public class HuffmanCoding {
 
     public static void main(String[] args) {
         int[] freq = {5, 9, 12, 13, 16, 45};
-        for (String code : huffmanCodes(freq)) {
-            System.out.print(code + " ");
-        }
+        System.out.println(String.join(" ", huffmanCodes(freq)));
     }
 }

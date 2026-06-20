@@ -1,9 +1,18 @@
 import java.util.Objects;
 
+/**
+ * In-place heap sort for integer arrays.
+ */
 public final class HeapSort {
     private HeapSort() {
     }
 
+    /**
+     * Sorts {@code values} in ascending order.
+     *
+     * @param values the array to sort
+     * @throws NullPointerException if {@code values} is null
+     */
     public static void sort(int[] values) {
         Objects.requireNonNull(values, "values");
 
@@ -14,6 +23,12 @@ public final class HeapSort {
         MaxHeap.from(values).sortAscending();
     }
 
+    /**
+     * Compatibility wrapper for callers that use the original method name.
+     *
+     * @param values the array to sort
+     * @throws NullPointerException if {@code values} is null
+     */
     public static void heapSort(int[] values) {
         sort(values);
     }

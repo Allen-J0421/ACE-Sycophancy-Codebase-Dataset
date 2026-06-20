@@ -7,12 +7,22 @@ final class ConnectedComponentsTest {
     }
 
     public static void main(String[] args) {
+        verifiesEmptyGraph();
         verifiesConnectedComponentsForSampleGraph();
         verifiesSingleVertexComponents();
         verifiesFormattedOutput();
         verifiesResultIsImmutable();
         verifiesInvalidNeighborGraphIsRejected();
         verifiesInvalidVertexListGraphIsRejected();
+    }
+
+    private static void verifiesEmptyGraph() {
+        ConnectedComponentsResult result =
+                GraphComponentFinder.findConnectedComponents(UndirectedGraph.empty(0));
+
+        assertTrue(result.isEmpty(), "empty graph should produce no components");
+        assertEquals(0, result.componentCount(), "empty graph component count");
+        assertEquals("", result.format(), "empty graph formatted output");
     }
 
     private static void verifiesConnectedComponentsForSampleGraph() {
@@ -154,6 +164,12 @@ final class ConnectedComponentsTest {
 
     private static void assertFalse(boolean condition, String description) {
         if (condition) {
+            throw new AssertionError(description);
+        }
+    }
+
+    private static void assertTrue(boolean condition, String description) {
+        if (!condition) {
             throw new AssertionError(description);
         }
     }

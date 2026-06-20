@@ -17,4 +17,13 @@ final class VisitedVertices {
     void markVisited(Vertex vertex) {
         visited[vertex.index()] = true;
     }
+
+    boolean markVisitedIfUnvisited(Vertex vertex) {
+        if (isVisited(vertex)) {
+            return false;
+        }
+
+        markVisited(vertex);
+        return true;
+    }
 }

@@ -30,36 +30,36 @@ public final class CountingSort {
             }
         }
 
-        int[] prefixSums = buildPrefixSums(values, min, max);
-        return placeSortedValues(values, prefixSums, min);
+        int[] cumulativeCounts = buildCumulativeCounts(values, min, max);
+        return placeSortedValues(values, cumulativeCounts, min);
     }
 
-    private static int[] buildPrefixSums(int[] values, int min, int max) {
-        int[] counts = countValues(values, min, max);
-        for (int i = 1; i < counts.length; i++) {
-            counts[i] += counts[i - 1];
+    private static int[] buildCumulativeCounts(int[] values, int min, int max) {
+        int[] histogram = buildHistogram(values, min, max);
+        for (int i = 1; i < histogram.length; i++) {
+            histogram[i] += histogram[i - 1];
         }
-        return counts;
+        return histogram;
     }
 
-    private static int[] countValues(int[] values, int min, int max) {
+    private static int[] buildHistogram(int[] values, int min, int max) {
         long range = (long) max - min + 1L;
         if (range > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Input range is too large for counting sort");
         }
 
-        int[] counts = new int[(int) range];
+        int[] histogram = new int[(int) range];
         for (int value : values) {
-            counts[value - min]++;
+            histogram[value - min]++;
         }
-        return counts;
+        return histogram;
     }
 
-    private static int[] placeSortedValues(int[] values, int[] prefixSums, int min) {
+    private static int[] placeSortedValues(int[] values, int[] cumulativeCounts, int min) {
         int[] sorted = new int[values.length];
         for (int i = values.length - 1; i >= 0; i--) {
             int value = values[i];
-            sorted[--prefixSums[value - min]] = value;
+            sorted[--cumulativeCounts[value - min]] = value;
         }
         return sorted;
     }

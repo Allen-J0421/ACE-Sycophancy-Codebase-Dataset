@@ -7,6 +7,7 @@ class RadixTest {
         sortsSignedValues();
         sortsLikeArraysSortForDeterministicSamples();
         sortsPrefixOnly();
+        sortsSubrangeOnly();
         keepsEmptyAndSingleElementArraysValid();
         keepsMaximumLookupIndependentFromSortValidation();
         rejectsUnsupportedSortInputs();
@@ -56,6 +57,14 @@ class RadixTest {
         assertArrayEquals(new int[] {-3, -1, 2, 4, 99}, values);
     }
 
+    private static void sortsSubrangeOnly() {
+        int[] values = {99, 4, -3, 2, -1, 100};
+
+        Radix.radixSort(values, 1, 5);
+
+        assertArrayEquals(new int[] {99, -3, -1, 2, 4, 100}, values);
+    }
+
     private static void keepsEmptyAndSingleElementArraysValid() {
         int[] empty = {};
         Radix.radixSort(empty);
@@ -72,6 +81,11 @@ class RadixTest {
         if (maximum != -1) {
             throw new AssertionError("Expected maximum -1 but got " + maximum);
         }
+
+        int rangeMaximum = Radix.getMax(new int[] {100, -3, -1, -7, 200}, 1, 4);
+        if (rangeMaximum != -1) {
+            throw new AssertionError("Expected range maximum -1 but got " + rangeMaximum);
+        }
     }
 
     private static void rejectsUnsupportedSortInputs() {
@@ -84,7 +98,11 @@ class RadixTest {
     private static void rejectsInvalidRanges() {
         assertThrows(() -> Radix.radixSort(new int[] {1}, -1));
         assertThrows(() -> Radix.radixSort(new int[] {1}, 2));
+        assertThrows(() -> Radix.radixSort(new int[] {1}, -1, 1));
+        assertThrows(() -> Radix.radixSort(new int[] {1}, 1, 0));
+        assertThrows(() -> Radix.radixSort(new int[] {1}, 0, 2));
         assertThrows(() -> Radix.print(new int[] {1}, 2));
+        assertThrows(() -> Radix.print(new int[] {1}, 1, 0));
     }
 
     private static void sortsSingleDigitPass() {

@@ -1,71 +1,91 @@
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
-public class DetectCycle {
+final class DetectCycle {
 
-    static boolean isCyclic(ArrayList<ArrayList<Integer>> adj)
-    {
-        int V = adj.size();
+    private DetectCycle() {
+    }
 
-        int[] inDegree = new int[V];
+    static boolean isCyclic(List<? extends List<Integer>> adjacencyList) {
+        return hasCycle(adjacencyList);
+    }
 
-        Queue<Integer> q = new LinkedList<>();
+    private static boolean hasCycle(List<? extends List<Integer>> adjacencyList) {
+        int vertexCount = adjacencyList.size();
+        int[] inDegrees = calculateInDegrees(adjacencyList, vertexCount);
+        Deque<Integer> zeroInDegreeVertices = findZeroInDegreeVertices(inDegrees);
 
-        int visited = 0;
+        int visitedCount = 0;
 
-        for (int u = 0; u < V; ++u)
-        {
-            for (int v : adj.get(u))
-            {
-                inDegree[v]++;
-            }
-        }
+        while (!zeroInDegreeVertices.isEmpty()) {
+            int vertex = zeroInDegreeVertices.removeFirst();
+            visitedCount++;
 
-        for (int u = 0; u < V; ++u)
-        {
-            if (inDegree[u] == 0)
-            {
-                q.add(u);
-            }
-        }
-
-        while (!q.isEmpty())
-        {
-            int u = q.poll();
-            visited++;
-
-            for (int v : adj.get(u))
-            {
-                inDegree[v]--;
-                if (inDegree[v] == 0)
-                {
-
-                    q.add(v);
+            for (int neighbor : adjacencyList.get(vertex)) {
+                inDegrees[neighbor]--;
+                if (inDegrees[neighbor] == 0) {
+                    zeroInDegreeVertices.addLast(neighbor);
                 }
             }
         }
 
-        return visited != V;
+        return visitedCount != vertexCount;
     }
 
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-     }
+    private static int[] calculateInDegrees(
+            List<? extends List<Integer>> adjacencyList,
+            int vertexCount
+    ) {
+        int[] inDegrees = new int[vertexCount];
 
-     public static void main(String[] args)
-    {
-        int V = 4;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
-        for (int i = 0; i < V; i++) {
-            adj.add(new ArrayList<>());
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            for (int neighbor : adjacencyList.get(vertex)) {
+                validateVertex(neighbor, vertexCount);
+                inDegrees[neighbor]++;
+            }
         }
 
-        addEdge(adj, 0, 1);
-        addEdge(adj, 1, 2);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 2, 3);
+        return inDegrees;
+    }
 
-         System.out.println(isCyclic(adj) ? "true" : "false");
+    private static Deque<Integer> findZeroInDegreeVertices(int[] inDegrees) {
+        Deque<Integer> vertices = new ArrayDeque<>();
+
+        for (int vertex = 0; vertex < inDegrees.length; vertex++) {
+            if (inDegrees[vertex] == 0) {
+                vertices.addLast(vertex);
+            }
+        }
+
+        return vertices;
+    }
+
+    static void addEdge(List<? extends List<Integer>> adjacencyList, int source, int destination) {
+        validateVertex(source, adjacencyList.size());
+        validateVertex(destination, adjacencyList.size());
+        adjacencyList.get(source).add(destination);
+    }
+
+    private static void validateVertex(int vertex, int vertexCount) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException("Vertex out of range: " + vertex);
+        }
+    }
+
+    public static void main(String[] args) {
+        int vertexCount = 4;
+        List<List<Integer>> adjacencyList = new ArrayList<>();
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
+            adjacencyList.add(new ArrayList<>());
+        }
+
+        addEdge(adjacencyList, 0, 1);
+        addEdge(adjacencyList, 1, 2);
+        addEdge(adjacencyList, 2, 0);
+        addEdge(adjacencyList, 2, 3);
+
+        System.out.println(isCyclic(adjacencyList) ? "true" : "false");
     }
 }

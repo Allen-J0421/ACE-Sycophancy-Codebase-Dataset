@@ -6,6 +6,8 @@ import java.util.PriorityQueue;
 
 public class HuffmanCoding {
     private static final String SINGLE_SYMBOL_CODE = "0";
+    private static final String SAMPLE_SYMBOLS = "abcdef";
+    private static final int[] SAMPLE_FREQUENCIES = {5, 9, 12, 13, 16, 45};
     private static final Comparator<Node> NODE_ORDER =
             Comparator.comparingInt((Node node) -> node.frequency)
                     .thenComparingInt(node -> node.sortOrder);
@@ -45,24 +47,49 @@ public class HuffmanCoding {
     }
 
     static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
-        validateInputs(symbols, frequencies);
-        if (symbols.isEmpty()) {
+        validateSymbols(symbols);
+        validateFrequencyCount(symbols.length(), frequencies);
+        return huffmanCodes(frequencies);
+    }
+
+    static ArrayList<String> huffmanCodes(int[] frequencies) {
+        validateFrequencies(frequencies);
+        if (frequencies.length == 0) {
             return new ArrayList<>();
         }
 
         PriorityQueue<Node> queue = buildLeafQueue(frequencies);
         Node root = buildTree(queue);
-        return buildCodes(root, symbols.length());
+        return buildCodesInTraversalOrder(root);
     }
 
-    private static void validateInputs(String symbols, int[] frequencies) {
+    static ArrayList<String> huffmanCodesBySymbolOrder(String symbols, int[] frequencies) {
+        validateSymbols(symbols);
+        validateFrequencyCount(symbols.length(), frequencies);
+        if (frequencies.length == 0) {
+            return new ArrayList<>();
+        }
+
+        PriorityQueue<Node> queue = buildLeafQueue(frequencies);
+        Node root = buildTree(queue);
+        return buildCodes(root, frequencies.length);
+    }
+
+    private static void validateSymbols(String symbols) {
         if (symbols == null) {
             throw new IllegalArgumentException("symbols must not be null");
         }
+    }
+
+    private static void validateFrequencies(int[] frequencies) {
         if (frequencies == null) {
             throw new IllegalArgumentException("frequencies must not be null");
         }
-        if (symbols.length() != frequencies.length) {
+    }
+
+    private static void validateFrequencyCount(int symbolCount, int[] frequencies) {
+        validateFrequencies(frequencies);
+        if (symbolCount != frequencies.length) {
             throw new IllegalArgumentException("symbols and frequencies must be the same length");
         }
     }
@@ -90,6 +117,12 @@ public class HuffmanCoding {
         return new ArrayList<>(Arrays.asList(codesBySymbol));
     }
 
+    private static ArrayList<String> buildCodesInTraversalOrder(Node root) {
+        ArrayList<String> codes = new ArrayList<>();
+        collectCodes(root, new StringBuilder(), codes);
+        return codes;
+    }
+
     private static void collectCodes(Node node, StringBuilder path, String[] codesBySymbol) {
         if (node == null) {
             return;
@@ -110,14 +143,31 @@ public class HuffmanCoding {
         path.deleteCharAt(path.length() - 1);
     }
 
+    private static void collectCodes(Node node, StringBuilder path, List<String> codes) {
+        if (node == null) {
+            return;
+        }
+
+        if (node.isLeaf()) {
+            codes.add(path.length() == 0 ? SINGLE_SYMBOL_CODE : path.toString());
+            return;
+        }
+
+        path.append('0');
+        collectCodes(node.left, path, codes);
+        path.deleteCharAt(path.length() - 1);
+
+        path.append('1');
+        collectCodes(node.right, path, codes);
+        path.deleteCharAt(path.length() - 1);
+    }
+
     private static void printCodes(List<String> codes) {
         System.out.print(String.join(" ", codes));
     }
 
     public static void main(String[] args) {
-        String symbols = "abcdef";
-        int[] frequencies = {5, 9, 12, 13, 16, 45};
-        ArrayList<String> codes = huffmanCodes(symbols, frequencies);
+        ArrayList<String> codes = huffmanCodes(SAMPLE_SYMBOLS, SAMPLE_FREQUENCIES);
         printCodes(codes);
     }
 }

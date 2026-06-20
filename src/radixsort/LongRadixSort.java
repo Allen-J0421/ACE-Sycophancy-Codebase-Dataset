@@ -14,12 +14,15 @@ final class LongRadixSort {
             return;
         }
 
-        long[] sorted = values.clone();
-        sortInPlace(sorted);
+        long[] sorted = sortedClone(values);
         System.arraycopy(sorted, 0, values, 0, values.length);
     }
 
     static long[] sortedCopy(long[] values) {
+        return sortedClone(values);
+    }
+
+    private static long[] sortedClone(long[] values) {
         if (values.length < 2) {
             return values.clone();
         }

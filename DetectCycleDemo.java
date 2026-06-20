@@ -39,5 +39,19 @@ final class DetectCycleDemo {
         ReachableVerticesVisitor reachable = new ReachableVerticesVisitor();
         GraphTraversal.traverseFrom(graph, 0, reachable);
         System.out.println("reachable from 0: " + reachable.reachable());
+
+        // Topological sort: detects DAG-ness and produces an ordering at once.
+        TopologicalSorter sorter = new TopologicalSorter();
+        System.out.println("sample graph is a DAG? " + sorter.isDag(graph));
+
+        DirectedGraph dag = DirectedGraph.builder(4)
+                .addEdge(0, 1)
+                .addEdge(0, 2)
+                .addEdge(1, 3)
+                .addEdge(2, 3)
+                .build();
+        sorter.sort(dag).ifPresentOrElse(
+                order -> System.out.println("topological order: " + order),
+                () -> System.out.println("graph is not a DAG"));
     }
 }

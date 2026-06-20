@@ -102,6 +102,30 @@ Run the bundled demo:
 javac *.java && java DetectCycleDemo
 ```
 
+## Topological sort
+
+`TopologicalSorter` orders a DAG with Kahn's algorithm (iterative, `O(V + E)`).
+A single call answers *both* "is this a DAG?" and "what is a valid ordering?":
+`sort` returns the ordering when the graph is acyclic, or empty when it contains
+a cycle (a cyclic graph has no linear ordering).
+
+```java
+TopologicalSorter sorter = new TopologicalSorter();
+
+DirectedGraph dag = DirectedGraph.builder(4)
+    .addEdge(0, 1).addEdge(0, 2).addEdge(1, 3).addEdge(2, 3)
+    .build();
+
+sorter.sort(dag).ifPresentOrElse(
+    order -> System.out.println("order: " + order),   // every edge u->v has u before v
+    ()    -> System.out.println("not a DAG"));
+
+sorter.isDag(dag);   // true  — convenience over sort(...).isPresent()
+```
+
+This is the constructive counterpart to the `KAHN` cycle detector: both decide
+acyclicity, but the sorter also materialises the ordering.
+
 ## Custom graph operations (visitor pattern)
 
 Define new operations over a graph — degree statistics, reachability, edge

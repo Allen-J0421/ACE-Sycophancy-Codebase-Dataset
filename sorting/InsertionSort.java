@@ -1,5 +1,7 @@
-import java.util.Objects;
+package sorting;
+
 import java.util.Comparator;
+import java.util.Objects;
 
 public final class InsertionSort {
 
@@ -16,17 +18,7 @@ public final class InsertionSort {
         Objects.requireNonNull(array, "array");
         Objects.checkFromToIndex(fromIndex, toIndex, array.length);
 
-        for (int i = fromIndex + 1; i < toIndex; i++) {
-            int key = array[i];
-            int j = i - 1;
-
-            while (j >= fromIndex && array[j] > key) {
-                array[j + 1] = array[j];
-                j--;
-            }
-
-            array[j + 1] = key;
-        }
+        sortRange(array, fromIndex, toIndex);
     }
 
     public static int[] sortedCopy(int[] array) {
@@ -39,7 +31,7 @@ public final class InsertionSort {
         Objects.checkFromToIndex(fromIndex, toIndex, array.length);
 
         int[] copy = array.clone();
-        sort(copy, fromIndex, toIndex);
+        sortRange(copy, fromIndex, toIndex);
         return copy;
     }
 
@@ -63,6 +55,20 @@ public final class InsertionSort {
         Objects.checkFromToIndex(fromIndex, toIndex, array.length);
 
         sortRange(array, fromIndex, toIndex, comparator);
+    }
+
+    private static void sortRange(int[] array, int fromIndex, int toIndex) {
+        for (int i = fromIndex + 1; i < toIndex; i++) {
+            int key = array[i];
+            int j = i - 1;
+
+            while (j >= fromIndex && array[j] > key) {
+                array[j + 1] = array[j];
+                j--;
+            }
+
+            array[j + 1] = key;
+        }
     }
 
     private static <T> void sortRange(T[] array, int fromIndex, int toIndex, Comparator<? super T> comparator) {

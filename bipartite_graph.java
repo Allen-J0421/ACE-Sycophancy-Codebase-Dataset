@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Queue;
 
 class BipartiteGraph {
-    private static final int UNCOLORED = -1;
-    private static final int FIRST_COLOR = 0;
-
     static ArrayList<ArrayList<Integer>> constructadj(int vertexCount, int[][] edges) {
         validateInput(vertexCount, edges);
 
@@ -23,11 +20,11 @@ class BipartiteGraph {
     static boolean isBipartite(int vertexCount, int[][] edges) {
         ArrayList<ArrayList<Integer>> adjacencyList = constructadj(vertexCount, edges);
 
-        int[] colors = new int[vertexCount];
-        Arrays.fill(colors, UNCOLORED);
+        Color[] colors = new Color[vertexCount];
+        Arrays.fill(colors, Color.UNCOLORED);
 
         for (int vertex = 0; vertex < vertexCount; vertex++) {
-            if (colors[vertex] == UNCOLORED && !colorComponent(vertex, adjacencyList, colors)) {
+            if (colors[vertex] == Color.UNCOLORED && !colorComponent(vertex, adjacencyList, colors)) {
                 return false;
             }
         }
@@ -38,18 +35,18 @@ class BipartiteGraph {
     private static boolean colorComponent(
             int startVertex,
             List<? extends List<Integer>> adjacencyList,
-            int[] colors
+            Color[] colors
     ) {
         Queue<Integer> queue = new ArrayDeque<>();
-        colors[startVertex] = FIRST_COLOR;
+        colors[startVertex] = Color.FIRST;
         queue.offer(startVertex);
 
         while (!queue.isEmpty()) {
             int currentVertex = queue.poll();
 
             for (int neighbor : adjacencyList.get(currentVertex)) {
-                if (colors[neighbor] == UNCOLORED) {
-                    colors[neighbor] = oppositeColor(colors[currentVertex]);
+                if (colors[neighbor] == Color.UNCOLORED) {
+                    colors[neighbor] = colors[currentVertex].opposite();
                     queue.offer(neighbor);
                 } else if (colors[neighbor] == colors[currentVertex]) {
                     return false;
@@ -58,10 +55,6 @@ class BipartiteGraph {
         }
 
         return true;
-    }
-
-    private static int oppositeColor(int color) {
-        return 1 - color;
     }
 
     private static ArrayList<ArrayList<Integer>> createEmptyAdjacencyList(int vertexCount) {
@@ -120,5 +113,23 @@ class BipartiteGraph {
         int[][] edges = {{0, 1}, {0, 2}, {1, 2}, {2, 3}};
 
         System.out.println(isBipartite(vertexCount, edges));
+    }
+
+    private enum Color {
+        UNCOLORED,
+        FIRST,
+        SECOND;
+
+        private Color opposite() {
+            if (this == FIRST) {
+                return SECOND;
+            }
+
+            if (this == SECOND) {
+                return FIRST;
+            }
+
+            throw new IllegalStateException("Uncolored vertices do not have an opposite color");
+        }
     }
 }

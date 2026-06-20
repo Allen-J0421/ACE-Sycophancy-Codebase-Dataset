@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-class AVLTree<T extends Comparable<T>> {
+class AVLTree<T extends Comparable<T>> implements Iterable<T> {
 
     private static class Node<T> {
         final T key;
@@ -27,6 +28,15 @@ class AVLTree<T extends Comparable<T>> {
 
     public int size() {
         return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return inOrder().iterator();
     }
 
     public boolean contains(T key) {
@@ -158,13 +168,19 @@ class AVLTree<T extends Comparable<T>> {
         tree.insert(50);
         tree.insert(25);
 
-        System.out.println(tree.preOrder());
-        System.out.println(tree);
+        System.out.println("preOrder:    " + tree.preOrder());
+        System.out.println("inOrder:     " + tree);
         System.out.println("size:        " + tree.size());
+        System.out.println("isEmpty:     " + tree.isEmpty());
         System.out.println("contains 25: " + tree.contains(25));
         System.out.println("contains 99: " + tree.contains(99));
         System.out.println("insert 25:   " + tree.insert(25));
         System.out.println("insert 35:   " + tree.insert(35));
         System.out.println("size:        " + tree.size());
+
+        System.out.print("for-each:    ");
+        for (int key : tree)
+            System.out.print(key + " ");
+        System.out.println();
     }
 }

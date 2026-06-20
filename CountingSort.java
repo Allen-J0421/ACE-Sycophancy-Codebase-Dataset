@@ -7,6 +7,11 @@ public final class CountingSort {
         // Utility class.
     }
 
+    /**
+     * Returns a sorted copy of the supplied values using counting sort.
+     *
+     * <p>The input array is never modified.</p>
+     */
     public static int[] sort(int[] values) {
         Objects.requireNonNull(values, "values");
         if (values.length < 2) {
@@ -18,6 +23,10 @@ public final class CountingSort {
         return placeValues(values, prefixCounts, bounds.min);
     }
 
+    /**
+     * Legacy alias retained for callers that still use the original method name.
+     */
+    @Deprecated
     public static int[] countSort(int[] values) {
         return sort(values);
     }
@@ -71,10 +80,5 @@ public final class CountingSort {
             this.min = min;
             this.max = max;
         }
-    }
-
-    public static void main(String[] args) {
-        int[] values = {2, 5, 3, 0, 2, 3, 0, 3};
-        System.out.println(Arrays.toString(sort(values)));
     }
 }

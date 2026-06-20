@@ -17,18 +17,24 @@ public final class CountingSortTest {
     private static void shouldSortPositiveAndRepeatedValues() {
         int[] input = {2, 5, 3, 0, 2, 3, 0, 3};
         int[] expected = {0, 0, 2, 2, 3, 3, 3, 5};
-        assertSorted(expected, CountingSort.sort(input));
+        int[] snapshot = input.clone();
+        assertSortedAndUnchanged(expected, snapshot, input, CountingSort.sort(input));
     }
 
+    @SuppressWarnings("deprecation")
     private static void shouldSortNegativeValues() {
         int[] input = {4, -2, 7, 0, -2, 5};
         int[] expected = {-2, -2, 0, 4, 5, 7};
-        assertSorted(expected, CountingSort.countSort(input));
+        int[] snapshot = input.clone();
+        assertSortedAndUnchanged(expected, snapshot, input, CountingSort.countSort(input));
     }
 
     private static void shouldHandleEmptyAndSingleElementArrays() {
         assertSorted(new int[0], CountingSort.sort(new int[0]));
-        assertSorted(new int[] {42}, CountingSort.sort(new int[] {42}));
+
+        int[] single = {42};
+        int[] snapshot = single.clone();
+        assertSortedAndUnchanged(new int[] {42}, snapshot, single, CountingSort.sort(single));
     }
 
     private static void shouldRejectNullInput() {
@@ -45,6 +51,13 @@ public final class CountingSortTest {
             throw new AssertionError(
                 "Expected " + Arrays.toString(expected) + " but got " + Arrays.toString(actual)
             );
+        }
+    }
+
+    private static void assertSortedAndUnchanged(int[] expected, int[] snapshot, int[] original, int[] actual) {
+        assertSorted(expected, actual);
+        if (!Arrays.equals(snapshot, original)) {
+            throw new AssertionError("Input array was modified");
         }
     }
 }

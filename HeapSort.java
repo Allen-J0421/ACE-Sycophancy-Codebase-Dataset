@@ -17,16 +17,32 @@ public final class HeapSort {
      */
     public static void sort(int[] values) {
         Objects.requireNonNull(values, "values");
+        sort(values, 0, values.length);
+    }
 
-        if (values.length < 2) {
+    /**
+     * Sorts the specified range of the supplied array in ascending order.
+     * The range is {@code [fromIndex, toIndex)}.
+     *
+     * @param values array to sort
+     * @param fromIndex inclusive start of the range
+     * @param toIndex exclusive end of the range
+     * @throws NullPointerException if {@code values} is null
+     * @throws IndexOutOfBoundsException if the range is invalid
+     */
+    public static void sort(int[] values, int fromIndex, int toIndex) {
+        Objects.requireNonNull(values, "values");
+        validateRange(values.length, fromIndex, toIndex);
+
+        if (toIndex - fromIndex < 2) {
             return;
         }
 
-        buildMaxHeap(values);
+        buildMaxHeap(values, fromIndex, toIndex);
 
-        for (int end = values.length - 1; end > 0; end--) {
-            swap(values, 0, end);
-            siftDown(values, 0, end);
+        for (int end = toIndex - 1; end > fromIndex; end--) {
+            swap(values, fromIndex, end);
+            siftDown(values, fromIndex, end, fromIndex);
         }
     }
 
@@ -40,25 +56,27 @@ public final class HeapSort {
         sort(values);
     }
 
-    private static void buildMaxHeap(int[] values) {
-        for (int root = values.length / 2 - 1; root >= 0; root--) {
-            siftDown(values, root, values.length);
+    private static void buildMaxHeap(int[] values, int fromIndex, int toIndex) {
+        int length = toIndex - fromIndex;
+
+        for (int root = fromIndex + length / 2 - 1; root >= fromIndex; root--) {
+            siftDown(values, root, toIndex, fromIndex);
         }
     }
 
-    private static void siftDown(int[] values, int rootIndex, int heapSize) {
+    private static void siftDown(int[] values, int rootIndex, int heapEndExclusive, int baseIndex) {
         int current = rootIndex;
 
         while (true) {
-            int leftChild = 2 * current + 1;
-            if (leftChild >= heapSize) {
+            int leftChild = baseIndex + ((current - baseIndex) * 2) + 1;
+            if (leftChild >= heapEndExclusive) {
                 return;
             }
 
             int rightChild = leftChild + 1;
             int largestChild = leftChild;
 
-            if (rightChild < heapSize && values[rightChild] > values[leftChild]) {
+            if (rightChild < heapEndExclusive && values[rightChild] > values[leftChild]) {
                 largestChild = rightChild;
             }
 
@@ -68,6 +86,22 @@ public final class HeapSort {
 
             swap(values, current, largestChild);
             current = largestChild;
+        }
+    }
+
+    private static void validateRange(int length, int fromIndex, int toIndex) {
+        if (fromIndex < 0) {
+            throw new IndexOutOfBoundsException("fromIndex (" + fromIndex + ") must be non-negative");
+        }
+
+        if (toIndex > length) {
+            throw new IndexOutOfBoundsException(
+                    "toIndex (" + toIndex + ") must not exceed array length (" + length + ")");
+        }
+
+        if (fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException(
+                    "fromIndex (" + fromIndex + ") must not be greater than toIndex (" + toIndex + ")");
         }
     }
 

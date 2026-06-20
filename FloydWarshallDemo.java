@@ -1,16 +1,16 @@
 import java.util.List;
 import java.util.stream.Collectors;
 
-class FloydWarshallDemo {
+public class FloydWarshallDemo {
 
     public static void main(String[] args) {
-        final int I = FloydWarshall.INF;
+        final int INF = FloydWarshall.INF;
         int[][] graph = {
-            {0, 4, I, 5, I},
-            {I, 0, 1, I, 6},
-            {2, I, 0, 3, I},
-            {I, I, 1, 0, 2},
-            {1, I, I, 4, 0}
+            {0,   4,   INF, 5,   INF},
+            {INF, 0,   1,   INF, 6  },
+            {2,   INF, 0,   3,   INF},
+            {INF, INF, 1,   0,   2  },
+            {1,   INF, INF, 4,   0  }
         };
 
         FloydWarshall.Result result = FloydWarshall.compute(graph);
@@ -31,10 +31,20 @@ class FloydWarshallDemo {
 
     private static void printDistMatrix(FloydWarshall.Result result) {
         int n = result.vertexCount();
+        int colWidth = 3; // minimum width for "INF"
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 int d = result.getDistance(i, j);
-                System.out.printf("%-6s", d >= FloydWarshall.INF ? "INF" : String.valueOf(d));
+                if (d < FloydWarshall.INF) {
+                    colWidth = Math.max(colWidth, String.valueOf(d).length());
+                }
+            }
+        }
+        String fmt = "%-" + (colWidth + 1) + "s";
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int d = result.getDistance(i, j);
+                System.out.printf(fmt, d >= FloydWarshall.INF ? "INF" : d);
             }
             System.out.println();
         }

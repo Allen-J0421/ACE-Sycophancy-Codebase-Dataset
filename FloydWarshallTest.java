@@ -1,6 +1,6 @@
 import java.util.List;
 
-class FloydWarshallTest {
+public class FloydWarshallTest {
 
     private static int passed = 0;
     private static int failed = 0;
@@ -79,25 +79,9 @@ class FloydWarshallTest {
 
     private static void testPathReconstruction() {
         FloydWarshall.Result r = FloydWarshall.compute(sampleGraph());
-
-        // 0 -> 2 via 1: [0, 1, 2]
-        List<Integer> path02 = r.getPath(0, 2);
-        assertTrue("path[0->2] length=3", path02.size() == 3);
-        assertTrue("path[0->2][0]=0", path02.get(0) == 0);
-        assertTrue("path[0->2][1]=1", path02.get(1) == 1);
-        assertTrue("path[0->2][2]=2", path02.get(2) == 2);
-
-        // 1 -> 0 via 2: [1, 2, 0]
-        List<Integer> path10 = r.getPath(1, 0);
-        assertTrue("path[1->0] length=3", path10.size() == 3);
-        assertTrue("path[1->0][0]=1", path10.get(0) == 1);
-        assertTrue("path[1->0][1]=2", path10.get(1) == 2);
-        assertTrue("path[1->0][2]=0", path10.get(2) == 0);
-
-        // self-path: [3]
-        List<Integer> path33 = r.getPath(3, 3);
-        assertTrue("path[3->3] length=1", path33.size() == 1);
-        assertTrue("path[3->3][0]=3", path33.get(0) == 3);
+        assertTrue("path[0->2]", r.getPath(0, 2).equals(List.of(0, 1, 2)));  // via 1
+        assertTrue("path[1->0]", r.getPath(1, 0).equals(List.of(1, 2, 0)));  // via 2
+        assertTrue("path[3->3]", r.getPath(3, 3).equals(List.of(3)));        // self
     }
 
     private static void testUnreachableVertices() {

@@ -1,11 +1,11 @@
 import java.util.Arrays;
 import java.util.Objects;
 
-final class HeapSort {
+public final class HeapSort {
     private HeapSort() {
     }
 
-    static void sort(int[] values) {
+    public static void sort(int[] values) {
         Objects.requireNonNull(values, "values");
 
         if (values.length < 2) {
@@ -15,7 +15,7 @@ final class HeapSort {
         MaxHeap.from(values).sortAscending();
     }
 
-    static void heapSort(int[] values) {
+    public static void heapSort(int[] values) {
         sort(values);
     }
 

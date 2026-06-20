@@ -1,8 +1,11 @@
 import java.util.Arrays;
+import java.util.Random;
 
 class RadixTest {
     public static void main(String[] args) {
         sortsFullArray();
+        sortsSignedValues();
+        sortsLikeArraysSortForDeterministicSamples();
         sortsPrefixOnly();
         keepsEmptyAndSingleElementArraysValid();
         keepsMaximumLookupIndependentFromSortValidation();
@@ -19,13 +22,38 @@ class RadixTest {
         assertArrayEquals(new int[] {0, 1, 3, 5, 42, Integer.MAX_VALUE}, values);
     }
 
+    private static void sortsSignedValues() {
+        int[] values = {0, -10, 5, Integer.MIN_VALUE, -1, Integer.MAX_VALUE, 42};
+
+        Radix.radixSort(values);
+
+        assertArrayEquals(new int[] {Integer.MIN_VALUE, -10, -1, 0, 5, 42, Integer.MAX_VALUE}, values);
+    }
+
+    private static void sortsLikeArraysSortForDeterministicSamples() {
+        Random random = new Random(8675309L);
+
+        for (int length = 0; length < 64; length++) {
+            int[] values = new int[length];
+            for (int i = 0; i < length; i++) {
+                values[i] = random.nextInt();
+            }
+
+            int[] expected = values.clone();
+            Arrays.sort(expected);
+            Radix.radixSort(values);
+
+            assertArrayEquals(expected, values);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     private static void sortsPrefixOnly() {
-        int[] values = {4, 3, 2, 1, 99};
+        int[] values = {4, -3, 2, -1, 99};
 
         Radix.radixsort(values, 4);
 
-        assertArrayEquals(new int[] {1, 2, 3, 4, 99}, values);
+        assertArrayEquals(new int[] {-3, -1, 2, 4, 99}, values);
     }
 
     private static void keepsEmptyAndSingleElementArraysValid() {
@@ -48,7 +76,7 @@ class RadixTest {
 
     private static void rejectsUnsupportedSortInputs() {
         assertThrows(() -> Radix.radixSort(null));
-        assertThrows(() -> Radix.radixSort(new int[] {2, -1}));
+        assertThrows(() -> Radix.countSort(new int[] {2, -1}, 2, 1));
         assertThrows(() -> Radix.countSort(new int[] {1, 2}, 2, 0));
         assertThrows(() -> Radix.getMax(new int[] {}, 0));
     }

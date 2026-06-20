@@ -1,5 +1,10 @@
+import java.util.Arrays;
+
 public final class Radix {
-    private static final int RADIX = 10;
+    private static final int BITS_PER_BYTE = 8;
+    private static final int BYTE_RADIX = 1 << BITS_PER_BYTE;
+    private static final int BYTE_MASK = BYTE_RADIX - 1;
+    private static final int DECIMAL_RADIX = 10;
 
     private Radix() {
     }
@@ -15,11 +20,11 @@ public final class Radix {
     }
 
     public static void countSort(int[] values, int length, int exponent) {
-        validateSortableRange(values, length);
+        validateNonNegativeRange(values, length);
         if (exponent <= 0) {
             throw new IllegalArgumentException("Exponent must be positive.");
         }
-        countingSortByDigit(values, length, exponent);
+        countingSortByDecimalDigit(values, length, exponent);
     }
 
     @Deprecated
@@ -33,15 +38,16 @@ public final class Radix {
     }
 
     public static void radixSort(int[] values, int length) {
-        validateSortableRange(values, length);
+        validateRange(values, length);
         if (length < 2) {
             return;
         }
 
-        int max = maxOf(values, length);
+        int[] output = new int[length];
+        int[] counts = new int[BYTE_RADIX];
 
-        for (long exponent = 1; max / exponent > 0; exponent *= RADIX) {
-            countingSortByDigit(values, length, exponent);
+        for (int shift = 0; shift < Integer.SIZE; shift += BITS_PER_BYTE) {
+            countingSortByByte(values, length, shift, output, counts);
         }
     }
 
@@ -63,20 +69,20 @@ public final class Radix {
         return max;
     }
 
-    private static void countingSortByDigit(int[] values, int length, long exponent) {
-        int[] output = new int[length];
-        int[] counts = new int[RADIX];
+    private static void countingSortByByte(
+            int[] values, int length, int shift, int[] output, int[] counts) {
+        Arrays.fill(counts, 0);
 
         for (int i = 0; i < length; i++) {
-            counts[digitAt(values[i], exponent)]++;
+            counts[byteAt(values[i], shift)]++;
         }
 
-        for (int i = 1; i < RADIX; i++) {
+        for (int i = 1; i < BYTE_RADIX; i++) {
             counts[i] += counts[i - 1];
         }
 
         for (int i = length - 1; i >= 0; i--) {
-            int digit = digitAt(values[i], exponent);
+            int digit = byteAt(values[i], shift);
             output[counts[digit] - 1] = values[i];
             counts[digit]--;
         }
@@ -84,13 +90,33 @@ public final class Radix {
         System.arraycopy(output, 0, values, 0, length);
     }
 
-    private static int digitAt(int value, long exponent) {
-        return (int) ((value / exponent) % RADIX);
+    private static int byteAt(int value, int shift) {
+        return ((value ^ Integer.MIN_VALUE) >>> shift) & BYTE_MASK;
     }
 
-    private static void validateSortableRange(int[] values, int length) {
-        validateRange(values, length);
-        validateNonNegative(values, length);
+    private static void countingSortByDecimalDigit(int[] values, int length, long exponent) {
+        int[] output = new int[length];
+        int[] counts = new int[DECIMAL_RADIX];
+
+        for (int i = 0; i < length; i++) {
+            counts[decimalDigitAt(values[i], exponent)]++;
+        }
+
+        for (int i = 1; i < DECIMAL_RADIX; i++) {
+            counts[i] += counts[i - 1];
+        }
+
+        for (int i = length - 1; i >= 0; i--) {
+            int digit = decimalDigitAt(values[i], exponent);
+            output[counts[digit] - 1] = values[i];
+            counts[digit]--;
+        }
+
+        System.arraycopy(output, 0, values, 0, length);
+    }
+
+    private static int decimalDigitAt(int value, long exponent) {
+        return (int) ((value / exponent) % DECIMAL_RADIX);
     }
 
     private static void validateRange(int[] values, int length) {
@@ -106,18 +132,16 @@ public final class Radix {
         }
     }
 
+    private static void validateNonNegativeRange(int[] values, int length) {
+        validateRange(values, length);
+        validateNonNegative(values, length);
+    }
+
     private static void validateNonNegative(int[] values, int length) {
         for (int i = 0; i < length; i++) {
             if (values[i] < 0) {
-                throw new IllegalArgumentException("Radix sort only supports non-negative integers.");
+                throw new IllegalArgumentException("Decimal digit count sort only supports non-negative integers.");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        int[] values = {170, 45, 75, 90, 802, 24, 2, 66};
-
-        radixSort(values);
-        print(values, values.length);
     }
 }

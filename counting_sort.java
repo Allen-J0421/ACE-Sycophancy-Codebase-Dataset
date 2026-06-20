@@ -17,14 +17,8 @@ final class CountingSort {
         }
 
         Bounds bounds = Bounds.from(values);
-        int[] cumulativeCounts = buildCumulativeCounts(values, bounds);
-        return buildSortedArray(values, cumulativeCounts, bounds);
-    }
-
-    private static int[] buildCumulativeCounts(int[] values, Bounds bounds) {
         int[] counts = buildCounts(values, bounds);
-        accumulateCounts(counts);
-        return counts;
+        return buildSortedArray(counts, bounds, values.length);
     }
 
     private static int[] buildCounts(int[] values, Bounds bounds) {
@@ -35,19 +29,15 @@ final class CountingSort {
         return counts;
     }
 
-    private static void accumulateCounts(int[] counts) {
-        for (int i = 1; i < counts.length; i++) {
-            counts[i] += counts[i - 1];
-        }
-    }
-
-    private static int[] buildSortedArray(int[] values, int[] counts, Bounds bounds) {
-        int[] sorted = new int[values.length];
-        for (int i = values.length - 1; i >= 0; i--) {
-            int value = values[i];
-            int countIndex = bounds.indexOf(value);
-            sorted[counts[countIndex] - 1] = value;
-            counts[countIndex]--;
+    private static int[] buildSortedArray(int[] counts, Bounds bounds, int length) {
+        int[] sorted = new int[length];
+        int sortedIndex = 0;
+        for (int countIndex = 0; countIndex < counts.length; countIndex++) {
+            int value = bounds.valueAt(countIndex);
+            for (int occurrence = 0; occurrence < counts[countIndex]; occurrence++) {
+                sorted[sortedIndex] = value;
+                sortedIndex++;
+            }
         }
 
         return sorted;
@@ -83,6 +73,10 @@ final class CountingSort {
 
         private int indexOf(int value) {
             return value - min;
+        }
+
+        private int valueAt(int index) {
+            return min + index;
         }
 
         private static int calculateSize(int min, int max) {

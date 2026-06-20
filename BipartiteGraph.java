@@ -13,7 +13,7 @@ public final class BipartiteGraph {
     public static boolean isBipartite(Graph graph) {
         ColoringState coloring = new ColoringState(graph.vertexCount());
 
-        for (int vertex : graph.vertices()) {
+        for (int vertex : graph) {
             if (!coloring.isColored(vertex)
                     && !isComponentBipartite(vertex, graph, coloring)) {
                 return false;

@@ -1,14 +1,16 @@
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-public final class Graph {
+public final class Graph implements Iterable<Integer> {
     private final List<List<Integer>> adjacencyList;
     private final List<Integer> vertices;
 
-    private Graph(List<List<Integer>> adjacencyList, List<Integer> vertices) {
+    private Graph(List<List<Integer>> adjacencyList) {
         this.adjacencyList = adjacencyList;
-        this.vertices = vertices;
+        this.vertices = new VertexView(adjacencyList.size());
     }
 
     public static Graph fromEdges(int vertexCount, int[][] edges) {
@@ -31,18 +33,14 @@ public final class Graph {
         return vertices;
     }
 
+    @Override
+    public Iterator<Integer> iterator() {
+        return vertices.iterator();
+    }
+
     public List<Integer> neighborsOf(int vertex) {
         validateVertexIndex(vertex);
         return adjacencyList.get(vertex);
-    }
-
-    private static List<Integer> initializeVertices(int vertexCount) {
-        List<Integer> vertices = new ArrayList<>(vertexCount);
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            vertices.add(vertex);
-        }
-
-        return Collections.unmodifiableList(vertices);
     }
 
     private static List<List<Integer>> toUnmodifiableAdjacencyList(
@@ -121,9 +119,7 @@ public final class Graph {
         }
 
         private Graph build() {
-            return new Graph(
-                    toUnmodifiableAdjacencyList(adjacencyList),
-                    initializeVertices(vertexCount));
+            return new Graph(toUnmodifiableAdjacencyList(adjacencyList));
         }
 
         private static List<List<Integer>> initializeAdjacencyList(int vertexCount) {
@@ -133,6 +129,33 @@ public final class Graph {
             }
 
             return adjacencyList;
+        }
+    }
+
+    private static final class VertexView extends AbstractList<Integer> {
+        private final int vertexCount;
+
+        private VertexView(int vertexCount) {
+            this.vertexCount = vertexCount;
+        }
+
+        @Override
+        public Integer get(int index) {
+            if (index < 0 || index >= vertexCount) {
+                throw new IndexOutOfBoundsException(
+                        "Vertex index "
+                                + index
+                                + " is out of bounds for graph size "
+                                + vertexCount
+                                + ".");
+            }
+
+            return index;
+        }
+
+        @Override
+        public int size() {
+            return vertexCount;
         }
     }
 }

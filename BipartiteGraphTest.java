@@ -10,6 +10,7 @@ public final class BipartiteGraphTest {
         runTest("rejects invalid edges", BipartiteGraphTest::shouldRejectInvalidEdges);
         runTest("rejects invalid neighbor access", BipartiteGraphTest::shouldRejectInvalidNeighborAccess);
         runTest("exposes stable vertex iteration", BipartiteGraphTest::shouldExposeStableVertexIteration);
+        runTest("is directly iterable", BipartiteGraphTest::shouldBeDirectlyIterable);
     }
 
     private static void shouldIdentifyABipartiteGraph() {
@@ -53,11 +54,16 @@ public final class BipartiteGraphTest {
 
     private static void shouldExposeStableVertexIteration() {
         Graph graph = Graph.fromEdges(3, new int[][] {{0, 1}});
-        assertVertexSequence(graph, new int[] {0, 1, 2});
+        assertVertexSequence(graph.vertices(), new int[] {0, 1, 2});
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> graph.vertices().add(3),
                 "Expected vertex iteration to be immutable.");
+    }
+
+    private static void shouldBeDirectlyIterable() {
+        Graph graph = Graph.fromEdges(4, new int[][] {{0, 1}});
+        assertVertexSequence(graph, new int[] {0, 1, 2, 3});
     }
 
     private static void assertBipartiteResult(
@@ -68,9 +74,11 @@ public final class BipartiteGraphTest {
         assertEquals(expected, BipartiteGraph.isBipartite(vertexCount, edges), message);
     }
 
-    private static void assertVertexSequence(Graph graph, int[] expectedVertices) {
+    private static void assertVertexSequence(
+            Iterable<Integer> vertices,
+            int[] expectedVertices) {
         int index = 0;
-        for (int vertex : graph.vertices()) {
+        for (int vertex : vertices) {
             if (index >= expectedVertices.length || vertex != expectedVertices[index]) {
                 throw new AssertionError("Unexpected vertex iteration order.");
             }

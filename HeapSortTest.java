@@ -6,6 +6,10 @@ public class HeapSortTest {
         void run() throws Exception;
     }
 
+    interface TestCase {
+        void run();
+    }
+
     static void assertEquals(int[] expected, int[] actual, String label) {
         if (!Arrays.equals(expected, actual))
             throw new AssertionError(label + ": expected " + Arrays.toString(expected)
@@ -25,10 +29,10 @@ public class HeapSortTest {
         }
     }
 
-    static class SortCase {
-        final String label;
-        final int[] input;
-        final int[] expected;
+    static class SortCase implements TestCase {
+        private final String label;
+        private final int[] input;
+        private final int[] expected;
 
         SortCase(String label, int[] input, int[] expected) {
             this.label = label;
@@ -36,19 +40,19 @@ public class HeapSortTest {
             this.expected = expected;
         }
 
-        void run() {
+        public void run() {
             int[] arr = Arrays.copyOf(input, input.length);
             HeapSort.heapSort(arr);
             assertEquals(expected, arr, label);
         }
     }
 
-    static class RangeCase {
-        final String label;
-        final int[] input;
-        final int from;
-        final int to;
-        final int[] expected;
+    static class RangeCase implements TestCase {
+        private final String label;
+        private final int[] input;
+        private final int from;
+        private final int to;
+        private final int[] expected;
 
         RangeCase(String label, int[] input, int from, int to, int[] expected) {
             this.label = label;
@@ -58,18 +62,18 @@ public class HeapSortTest {
             this.expected = expected;
         }
 
-        void run() {
+        public void run() {
             int[] arr = Arrays.copyOf(input, input.length);
             HeapSort.heapSort(arr, from, to);
             assertEquals(expected, arr, label);
         }
     }
 
-    static class InvalidRangeCase {
-        final String label;
-        final int[] input;
-        final int from;
-        final int to;
+    static class InvalidRangeCase implements TestCase {
+        private final String label;
+        private final int[] input;
+        private final int from;
+        private final int to;
 
         InvalidRangeCase(String label, int[] input, int from, int to) {
             this.label = label;
@@ -78,14 +82,14 @@ public class HeapSortTest {
             this.to = to;
         }
 
-        void run() {
+        public void run() {
             assertThrows(IllegalArgumentException.class,
                     () -> HeapSort.heapSort(input, from, to), label);
         }
     }
 
     public static void main(String[] args) {
-        SortCase[] sortCases = {
+        TestCase[] cases = {
             new SortCase("typical unsorted array",
                     new int[]{ 9, 4, 3, 8, 10, 2, 5 },
                     new int[]{ 2, 3, 4, 5, 8, 9, 10 }),
@@ -104,9 +108,6 @@ public class HeapSortTest {
             new SortCase("duplicates",
                     new int[]{ 3, 1, 4, 1, 5, 9, 2, 6, 5 },
                     new int[]{ 1, 1, 2, 3, 4, 5, 5, 6, 9 }),
-        };
-
-        RangeCase[] rangeCases = {
             new RangeCase("sort middle subrange",
                     new int[]{ 7, 1, 6, 2, 9, 3, 8 }, 2, 5,
                     new int[]{ 7, 1, 2, 6, 9, 3, 8 }),
@@ -116,18 +117,12 @@ public class HeapSortTest {
             new RangeCase("empty range is no-op",
                     new int[]{ 3, 1, 2 }, 1, 1,
                     new int[]{ 3, 1, 2 }),
+            new InvalidRangeCase("negative from",        new int[]{ 1, 2, 3 }, -1, 2),
+            new InvalidRangeCase("to beyond length",     new int[]{ 1, 2, 3 },  0, 4),
+            new InvalidRangeCase("from greater than to", new int[]{ 1, 2, 3 },  2, 1),
         };
 
-        InvalidRangeCase[] invalidCases = {
-            new InvalidRangeCase("negative from",       new int[]{ 1, 2, 3 }, -1, 2),
-            new InvalidRangeCase("to beyond length",    new int[]{ 1, 2, 3 },  0, 4),
-            new InvalidRangeCase("from greater than to",new int[]{ 1, 2, 3 },  2, 1),
-        };
-
-        for (SortCase c : sortCases) c.run();
-        for (RangeCase c : rangeCases) c.run();
-        for (InvalidRangeCase c : invalidCases) c.run();
-
+        for (TestCase c : cases) c.run();
         System.out.println("All tests passed.");
     }
 }

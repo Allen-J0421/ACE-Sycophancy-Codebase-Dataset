@@ -1,11 +1,5 @@
 public class HeapSort {
 
-    static void swap(int[] arr, int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
     static void heapSort(int[] arr) {
         heapSort(arr, 0, arr.length);
     }
@@ -31,7 +25,7 @@ public class HeapSort {
         void sort() {
             build();
             for (int i = size - 1; i > 0; i--) {
-                swap(arr, from, from + i);
+                swap(from, from + i);
                 siftDown(0, i);
             }
         }
@@ -42,20 +36,28 @@ public class HeapSort {
         }
 
         private void siftDown(int i, int heapSize) {
-            int largest = i;
-            int l = 2 * i + 1;
-            int r = 2 * i + 2;
+            while (true) {
+                int largest = i;
+                int l = 2 * i + 1;
+                int r = 2 * i + 2;
 
-            if (l < heapSize && arr[from + l] > arr[from + largest])
-                largest = l;
+                if (l < heapSize && arr[from + l] > arr[from + largest])
+                    largest = l;
 
-            if (r < heapSize && arr[from + r] > arr[from + largest])
-                largest = r;
+                if (r < heapSize && arr[from + r] > arr[from + largest])
+                    largest = r;
 
-            if (largest != i) {
-                swap(arr, from + i, from + largest);
-                siftDown(largest, heapSize);
+                if (largest == i) break;
+
+                swap(from + i, from + largest);
+                i = largest;
             }
+        }
+
+        private void swap(int i, int j) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
         }
     }
 }

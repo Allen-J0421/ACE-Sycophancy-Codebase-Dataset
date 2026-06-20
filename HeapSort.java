@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -45,6 +46,21 @@ public final class HeapSort {
             swap(values, fromIndex, fromIndex + end);
             siftDown(values, fromIndex, end, 0);
         }
+    }
+
+    /**
+     * Returns a sorted copy of the supplied array.
+     *
+     * @param values array to copy and sort
+     * @return a new sorted array
+     * @throws NullPointerException if {@code values} is null
+     */
+    public static int[] sortedCopy(int[] values) {
+        Objects.requireNonNull(values, "values");
+
+        int[] copy = Arrays.copyOf(values, values.length);
+        sort(copy);
+        return copy;
     }
 
     private static void buildMaxHeap(int[] values, int baseIndex, int heapSize) {

@@ -28,22 +28,24 @@ public final class HeapSortTest {
 
     public static void main(String[] args) {
         for (SortCase testCase : FULL_SORT_CASES) {
-            assertSort(testCase);
+            assertSortedCopy(testCase);
         }
 
         for (RangeCase testCase : RANGE_SORT_CASES) {
             assertRangeSort(testCase);
         }
 
+        assertSortedCopyRejectedNull();
         assertNullRejected();
         assertInvalidRanges();
         System.out.println("HeapSort tests passed");
     }
 
-    private static void assertSort(SortCase testCase) {
-        int[] actual = Arrays.copyOf(testCase.input(), testCase.input().length);
-        HeapSort.sort(actual);
+    private static void assertSortedCopy(SortCase testCase) {
+        int[] input = Arrays.copyOf(testCase.input(), testCase.input().length);
+        int[] actual = HeapSort.sortedCopy(input);
         assertArrayEquals(testCase.expected(), actual);
+        assertArrayEquals(testCase.input(), input);
     }
 
     private static void assertRangeSort(RangeCase testCase) {
@@ -55,6 +57,10 @@ public final class HeapSortTest {
     private static void assertNullRejected() {
         expectNullPointer(() -> HeapSort.sort(null));
         expectNullPointer(() -> HeapSort.sort(null, 0, 0));
+    }
+
+    private static void assertSortedCopyRejectedNull() {
+        expectNullPointer(() -> HeapSort.sortedCopy(null));
     }
 
     private static void assertInvalidRanges() {

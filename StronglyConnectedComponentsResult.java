@@ -13,7 +13,7 @@ public class StronglyConnectedComponentsResult implements Iterable<StronglyConne
         return components;
     }
 
-    public int count() {
+    public int size() {
         return components.size();
     }
 

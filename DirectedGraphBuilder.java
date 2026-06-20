@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DirectedGraphBuilder {
     private int vertexCount;
@@ -14,6 +15,7 @@ public class DirectedGraphBuilder {
     }
 
     public DirectedGraphBuilder addEdge(Edge edge) {
+        Objects.requireNonNull(edge, "edge must not be null");
         edges.add(edge);
         return this;
     }

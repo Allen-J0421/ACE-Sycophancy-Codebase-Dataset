@@ -34,6 +34,16 @@ public class DirectedGraph {
         return vertexCount;
     }
 
+    public List<Edge> edges() {
+        List<Edge> result = new ArrayList<>();
+        for (int u = 1; u <= vertexCount; u++) {
+            for (int v : adjacencyList.get(u)) {
+                result.add(new Edge(u, v));
+            }
+        }
+        return List.copyOf(result);
+    }
+
     public DirectedGraph reverse() {
         List<List<Integer>> reversed = emptyAdjacencyList(vertexCount);
         for (int u = 1; u <= vertexCount; u++) {

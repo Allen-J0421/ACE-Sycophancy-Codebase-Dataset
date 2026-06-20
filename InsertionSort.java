@@ -2,8 +2,6 @@ import java.util.Objects;
 
 public final class InsertionSort {
 
-    private static final int[] DEMO_INPUT = {12, 11, 13, 5, 6};
-
     private InsertionSort() {
         // Utility class.
     }
@@ -30,17 +28,5 @@ public final class InsertionSort {
         int[] copy = array.clone();
         sort(copy);
         return copy;
-    }
-
-    private static void printArray(int[] array) {
-        for (int value : array) {
-            System.out.print(value + " ");
-        }
-        System.out.println();
-    }
-
-    public static void main(String[] args) {
-        int[] sorted = sortedCopy(DEMO_INPUT);
-        printArray(sorted);
     }
 }

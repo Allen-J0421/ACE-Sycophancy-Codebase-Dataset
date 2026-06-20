@@ -60,6 +60,7 @@ public class CountingSortTest {
             new SortCase("already sorted", new int[]{1, 2, 3, 4, 5},          new int[]{1, 2, 3, 4, 5}),
             new SortCase("reverse sorted", new int[]{5, 4, 3, 2, 1},          new int[]{1, 2, 3, 4, 5}),
             new SortCase("all same",       new int[]{3, 3, 3},                 new int[]{3, 3, 3}),
+            new SortCase("two elements",   new int[]{2, 1},                    new int[]{1, 2}),
             new SortCase("negatives",      new int[]{-3, 1, -1, 0, 2, -2},    new int[]{-3, -2, -1, 0, 1, 2}),
             new SortCase("mixed",          new int[]{-1, 0, 1},                new int[]{-1, 0, 1}),
         };

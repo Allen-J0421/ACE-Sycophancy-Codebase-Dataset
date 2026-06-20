@@ -5,16 +5,13 @@ import java.util.Arrays;
 public class CountingSortDemo {
 
     public static void main(String[] args) {
-        int[] basic = {2, 5, 3, 0, 2, 3, 0, 3};
-        System.out.println("Input:  " + Arrays.toString(basic));
-        System.out.println("Sorted: " + Arrays.toString(CountingSort.sort(basic)));
+        show(new int[]{2, 5, 3, 0, 2, 3, 0, 3});
+        show(new int[]{-3, 1, -1, 0, 2, -2});
+        show(new int[]{42});
+    }
 
-        int[] withNegatives = {-3, 1, -1, 0, 2, -2};
-        System.out.println("Input:  " + Arrays.toString(withNegatives));
-        System.out.println("Sorted: " + Arrays.toString(CountingSort.sort(withNegatives)));
-
-        int[] single = {42};
-        System.out.println("Input:  " + Arrays.toString(single));
-        System.out.println("Sorted: " + Arrays.toString(CountingSort.sort(single)));
+    private static void show(int[] arr) {
+        System.out.println("Input:  " + Arrays.toString(arr));
+        System.out.println("Sorted: " + Arrays.toString(CountingSort.sort(arr)));
     }
 }

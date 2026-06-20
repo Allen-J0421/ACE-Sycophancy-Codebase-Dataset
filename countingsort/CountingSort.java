@@ -2,6 +2,8 @@ package countingsort;
 
 public class CountingSort {
 
+    private CountingSort() {}
+
     public static int[] sort(int[] arr) {
         if (arr == null) throw new IllegalArgumentException("Input array cannot be null");
         if (arr.length == 0) return new int[0];
@@ -22,7 +24,7 @@ public class CountingSort {
             count[val - min]++;
         }
 
-        for (int i = 1; i < range; i++) {
+        for (int i = 1; i < count.length; i++) {
             count[i] += count[i - 1];
         }
 

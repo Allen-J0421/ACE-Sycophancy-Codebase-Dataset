@@ -22,9 +22,8 @@ public final class RadixSort {
             return values.clone();
         }
 
-        IntPartitions partitions = IntPartitions.from(values);
-        LongRadixSort.sort(partitions.negatives());
-        LongRadixSort.sort(partitions.nonNegatives());
-        return partitions.merge();
+        long[] negatives = LongRadixSort.sortedCopy(IntPartitions.negativeMagnitudes(values));
+        long[] nonNegatives = LongRadixSort.sortedCopy(IntPartitions.nonNegativeValues(values));
+        return IntPartitions.mergeSorted(negatives, nonNegatives);
     }
 }

@@ -12,6 +12,21 @@ final class LongRadixSort {
             return;
         }
 
+        long[] sorted = sortedCopy(values);
+        System.arraycopy(sorted, 0, values, 0, values.length);
+    }
+
+    static long[] sortedCopy(long[] values) {
+        if (values.length < 2) {
+            return values.clone();
+        }
+
+        long[] sorted = values.clone();
+        sortInPlace(sorted);
+        return sorted;
+    }
+
+    private static void sortInPlace(long[] values) {
         long max = findMax(values);
         for (long exp = 1; max / exp > 0; exp *= RADIX) {
             countingSortByDigit(values, exp);

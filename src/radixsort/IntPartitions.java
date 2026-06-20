@@ -1,40 +1,37 @@
 package radixsort;
 
 final class IntPartitions {
-    private final long[] negatives;
-    private final long[] nonNegatives;
-
-    private IntPartitions(long[] negatives, long[] nonNegatives) {
-        this.negatives = negatives;
-        this.nonNegatives = nonNegatives;
+    private IntPartitions() {
+        // Utility class.
     }
 
-    static IntPartitions from(int[] values) {
+    static long[] negativeMagnitudes(int[] values) {
         long[] negatives = new long[countNegatives(values)];
-        long[] nonNegatives = new long[values.length - negatives.length];
-
         int negativeIndex = 0;
-        int nonNegativeIndex = 0;
+
         for (int value : values) {
             if (value < 0) {
                 negatives[negativeIndex++] = -(long) value;
-            } else {
+            }
+        }
+
+        return negatives;
+    }
+
+    static long[] nonNegativeValues(int[] values) {
+        long[] nonNegatives = new long[values.length - countNegatives(values)];
+        int nonNegativeIndex = 0;
+
+        for (int value : values) {
+            if (value >= 0) {
                 nonNegatives[nonNegativeIndex++] = value;
             }
         }
 
-        return new IntPartitions(negatives, nonNegatives);
-    }
-
-    long[] negatives() {
-        return negatives;
-    }
-
-    long[] nonNegatives() {
         return nonNegatives;
     }
 
-    int[] merge() {
+    static int[] mergeSorted(long[] negatives, long[] nonNegatives) {
         int[] sorted = new int[negatives.length + nonNegatives.length];
         int writeIndex = 0;
 

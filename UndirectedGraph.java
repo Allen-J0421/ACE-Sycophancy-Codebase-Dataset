@@ -7,7 +7,7 @@ final class UndirectedGraph implements GraphView {
 
     UndirectedGraph(int vertexCount, List<List<Integer>> adjacencyList) {
         this.vertexCount = vertexCount;
-        this.adjacencyList = List.copyOf(adjacencyList);
+        this.adjacencyList = adjacencyList;
     }
 
     @Override

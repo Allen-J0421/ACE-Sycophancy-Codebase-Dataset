@@ -2,9 +2,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class PrimMST {
+final class PrimMST {
     private static final int START_VERTEX = 0;
     private static final int NO_EDGE = 0;
+
+    private PrimMST() {
+        // Utility class.
+    }
 
     private static final class Edge {
         final int from;
@@ -42,6 +46,14 @@ class PrimMST {
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             if (graph[vertex] == null || graph[vertex].length != vertexCount) {
                 throw new IllegalArgumentException("Graph must be a non-null square adjacency matrix");
+            }
+        }
+
+        for (int row = 0; row < vertexCount; row++) {
+            for (int col = row + 1; col < vertexCount; col++) {
+                if (graph[row][col] != graph[col][row]) {
+                    throw new IllegalArgumentException("Graph must be undirected and symmetric");
+                }
             }
         }
     }

@@ -7,7 +7,7 @@ final class BipartiteAnalyzer {
     private BipartiteAnalyzer() {
     }
 
-    static boolean isBipartite(UndirectedGraph graph) {
+    static boolean isBipartite(GraphView graph) {
         Objects.requireNonNull(graph, "graph");
 
         Coloring coloring = new Coloring(graph.vertexCount());
@@ -21,7 +21,7 @@ final class BipartiteAnalyzer {
         return true;
     }
 
-    private static boolean colorComponent(int startVertex, UndirectedGraph graph, Coloring coloring) {
+    private static boolean colorComponent(int startVertex, GraphView graph, Coloring coloring) {
         Deque<Integer> queue = new ArrayDeque<>();
         coloring.assign(startVertex, Partition.LEFT);
         queue.addLast(startVertex);

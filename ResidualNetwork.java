@@ -9,19 +9,19 @@ public final class ResidualNetwork {
         return capacities.length;
     }
 
-    public boolean hasCapacity(int from, int to) {
-        return capacities[from][to] > 0;
+    public boolean hasCapacity(Vertex from, Vertex to) {
+        return capacity(from, to) > 0;
     }
 
-    public int capacity(int from, int to) {
-        return capacities[from][to];
+    public int capacity(Vertex from, Vertex to) {
+        return capacities[from.index()][to.index()];
     }
 
     public void augment(AugmentingPath path) {
-        for (int vertex = path.sink(); vertex != path.source(); vertex = path.parentOf(vertex)) {
-            int previous = path.parentOf(vertex);
-            capacities[previous][vertex] -= path.bottleneck();
-            capacities[vertex][previous] += path.bottleneck();
+        for (Vertex vertex = path.sink(); vertex.index() != path.source().index(); vertex = path.parentOf(vertex)) {
+            Vertex previous = path.parentOf(vertex);
+            capacities[previous.index()][vertex.index()] -= path.bottleneck();
+            capacities[vertex.index()][previous.index()] += path.bottleneck();
         }
     }
 

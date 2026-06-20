@@ -10,12 +10,24 @@ public final class FlowNetwork {
         return capacities.length;
     }
 
-    public int capacity(int from, int to) {
-        return capacities[from][to];
+    public boolean contains(Vertex vertex) {
+        return vertex != null && vertex.index() < capacities.length;
+    }
+
+    public int capacity(Vertex from, Vertex to) {
+        validateVertex(from);
+        validateVertex(to);
+        return capacities[from.index()][to.index()];
     }
 
     public int[][] copyCapacities() {
         return IntMatrix.copyOf(capacities);
+    }
+
+    private void validateVertex(Vertex vertex) {
+        if (!contains(vertex)) {
+            throw new IllegalArgumentException("Vertex must belong to the network.");
+        }
     }
 
     private static void validate(int[][] capacities) {

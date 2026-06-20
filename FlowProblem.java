@@ -1,14 +1,14 @@
 public final class FlowProblem {
     private final FlowNetwork network;
-    private final int source;
-    private final int sink;
+    private final Vertex source;
+    private final Vertex sink;
 
-    public FlowProblem(FlowNetwork network, int source, int sink) {
+    public FlowProblem(FlowNetwork network, Vertex source, Vertex sink) {
         if (network == null) {
             throw new IllegalArgumentException("Network must not be null.");
         }
-        if (source < 0 || source >= network.size() || sink < 0 || sink >= network.size()) {
-            throw new IllegalArgumentException("Source and sink must be valid vertex indices.");
+        if (!network.contains(source) || !network.contains(sink)) {
+            throw new IllegalArgumentException("Source and sink must be valid vertices in the network.");
         }
 
         this.network = network;
@@ -17,18 +17,18 @@ public final class FlowProblem {
     }
 
     public static FlowProblem fromCapacities(int[][] capacities, int source, int sink) {
-        return new FlowProblem(new FlowNetwork(capacities), source, sink);
+        return new FlowProblem(new FlowNetwork(capacities), new Vertex(source), new Vertex(sink));
     }
 
     public FlowNetwork network() {
         return network;
     }
 
-    public int source() {
+    public Vertex source() {
         return source;
     }
 
-    public int sink() {
+    public Vertex sink() {
         return sink;
     }
 }

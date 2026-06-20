@@ -11,19 +11,21 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
         Queue<Integer> queue = new ArrayDeque<>();
 
         Arrays.fill(parents, -1);
-        queue.add(problem.source());
-        visited[problem.source()] = true;
+        queue.add(problem.source().index());
+        visited[problem.source().index()] = true;
 
         while (!queue.isEmpty()) {
             int current = queue.poll();
 
             for (int next = 0; next < network.size(); next++) {
-                if (visited[next] || !network.hasCapacity(current, next)) {
+                Vertex currentVertex = new Vertex(current);
+                Vertex nextVertex = new Vertex(next);
+                if (visited[next] || !network.hasCapacity(currentVertex, nextVertex)) {
                     continue;
                 }
 
                 parents[next] = current;
-                if (next == problem.sink()) {
+                if (next == problem.sink().index()) {
                     return Optional.of(createPath(network, problem, parents));
                 }
 
@@ -38,8 +40,8 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
     private AugmentingPath createPath(ResidualNetwork network, FlowProblem problem, int[] parents) {
         int bottleneck = Integer.MAX_VALUE;
 
-        for (int vertex = problem.sink(); vertex != problem.source(); vertex = parents[vertex]) {
-            int previous = parents[vertex];
+        for (Vertex vertex = problem.sink(); vertex.index() != problem.source().index(); vertex = new Vertex(parents[vertex.index()])) {
+            Vertex previous = new Vertex(parents[vertex.index()]);
             bottleneck = Math.min(bottleneck, network.capacity(previous, vertex));
         }
 

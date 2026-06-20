@@ -9,6 +9,8 @@ public final class FloydWarshallTest {
         doesNotMutateInput();
         detectsNegativeCycles();
         rejectsInvalidMatrices();
+        throwsOnDistanceOverflow();
+        formatsUnreachableDistances();
 
         System.out.println("All FloydWarshall tests passed.");
     }
@@ -59,8 +61,35 @@ public final class FloydWarshallTest {
     }
 
     private static void rejectsInvalidMatrices() {
-        assertThrows(() -> FloydWarshall.shortestPaths(null));
-        assertThrows(() -> FloydWarshall.shortestPaths(new int[][]{{0}, {1, 0}}));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> FloydWarshall.shortestPaths(null));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> FloydWarshall.shortestPaths(new int[][]{{0}, {1, 0}}));
+    }
+
+    private static void throwsOnDistanceOverflow() {
+        int[][] graph = {
+                {0, Integer.MAX_VALUE, FloydWarshall.INF},
+                {FloydWarshall.INF, 0, 1},
+                {FloydWarshall.INF, FloydWarshall.INF, 0}
+        };
+
+        assertThrows(
+                ArithmeticException.class,
+                () -> FloydWarshall.shortestPaths(graph));
+    }
+
+    private static void formatsUnreachableDistances() {
+        int[][] distances = {
+                {0, FloydWarshall.INF},
+                {FloydWarshall.INF, 0}
+        };
+        String lineSeparator = System.lineSeparator();
+        String expected = "0 INF" + lineSeparator + "INF 0" + lineSeparator;
+
+        assertEquals(expected, FloydWarshallDemo.formatDistances(distances));
     }
 
     private static int[][] copyMatrix(int[][] matrix) {
@@ -84,13 +113,24 @@ public final class FloydWarshallTest {
         }
     }
 
-    private static void assertThrows(Runnable runnable) {
+    private static void assertEquals(String expected, String actual) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError("Expected \"" + expected + "\" but got \"" + actual + "\".");
+        }
+    }
+
+    private static void assertThrows(Class<? extends Throwable> expectedType, Runnable runnable) {
         try {
             runnable.run();
-        } catch (IllegalArgumentException expected) {
-            return;
+        } catch (Throwable throwable) {
+            if (expectedType.isInstance(throwable)) {
+                return;
+            }
+
+            throw new AssertionError("Expected " + expectedType.getSimpleName()
+                    + " but got " + throwable.getClass().getSimpleName() + ".", throwable);
         }
 
-        throw new AssertionError("Expected IllegalArgumentException.");
+        throw new AssertionError("Expected " + expectedType.getSimpleName() + ".");
     }
 }

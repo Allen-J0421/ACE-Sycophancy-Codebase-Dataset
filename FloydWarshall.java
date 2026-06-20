@@ -13,14 +13,12 @@ public final class FloydWarshall {
         for (int intermediate = 0; intermediate < vertexCount; intermediate++) {
             for (int source = 0; source < vertexCount; source++) {
                 for (int target = 0; target < vertexCount; target++) {
-                    if (distances[source][intermediate] == INF
-                            || distances[intermediate][target] == INF) {
+                    if (!canRelax(distances, source, intermediate, target)) {
                         continue;
                     }
 
-                    int candidateDistance = addDistances(
-                            distances[source][intermediate],
-                            distances[intermediate][target]);
+                    int candidateDistance = pathDistanceThrough(
+                            distances, source, intermediate, target);
                     if (candidateDistance < distances[source][target]) {
                         distances[source][target] = candidateDistance;
                     }
@@ -41,6 +39,29 @@ public final class FloydWarshall {
         }
 
         return false;
+    }
+
+    public static boolean isReachable(int distance) {
+        return distance != INF;
+    }
+
+    private static boolean canRelax(
+            int[][] distances,
+            int source,
+            int intermediate,
+            int target) {
+        return isReachable(distances[source][intermediate])
+                && isReachable(distances[intermediate][target]);
+    }
+
+    private static int pathDistanceThrough(
+            int[][] distances,
+            int source,
+            int intermediate,
+            int target) {
+        return addDistances(
+                distances[source][intermediate],
+                distances[intermediate][target]);
     }
 
     private static int[][] copyMatrix(int[][] matrix) {
@@ -71,25 +92,4 @@ public final class FloydWarshall {
         }
     }
 
-    private static void printDistances(int[][] distances) {
-        for (int[] row : distances) {
-            for (int distance : row) {
-                System.out.print((distance == INF ? "INF" : distance) + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    public static void main(String[] args) {
-        int[][] graph = {
-                {0, 4, INF, 5, INF},
-                {INF, 0, 1, INF, 6},
-                {2, INF, 0, 3, INF},
-                {INF, INF, 1, 0, 2},
-                {1, INF, INF, 4, 0}
-        };
-
-        int[][] distances = shortestPaths(graph);
-        printDistances(distances);
-    }
 }

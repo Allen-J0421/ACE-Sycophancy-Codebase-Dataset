@@ -52,6 +52,21 @@ public final class Main {
         StronglyConnectedComponentsResult scc =
                 new StronglyConnectedComponents().compute(withCycle);
         System.out.println("Strongly connected components: " + scc.components());
+
+        // Prim's minimum spanning tree on the weighted graph (drops the heaviest
+        // edge of the cycle).
+        reportMinimumSpanningTree(new MinimumSpanningTree().compute(weightedCycle));
+    }
+
+    private static void reportMinimumSpanningTree(MinimumSpanningTreeResult result) {
+        switch (result) {
+            case MinimumSpanningTreeResult.Tree tree -> System.out.println(
+                    "Minimum spanning tree (weighted): totalWeight=" + tree.totalWeight()
+                            + ", edges=" + tree.edges());
+            case MinimumSpanningTreeResult.Disconnected disconnected -> System.out.println(
+                    "Graph is disconnected; reachable component: "
+                            + disconnected.reachableVertices());
+        }
     }
 
     private static void reportShortestPath(ShortestPathResult result) {

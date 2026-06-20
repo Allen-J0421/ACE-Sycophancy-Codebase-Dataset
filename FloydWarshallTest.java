@@ -1,11 +1,7 @@
 import java.util.Arrays;
 
 public final class FloydWarshallTest {
-    private static final int INF = FloydWarshall.NO_PATH;
     private static final String LINE_SEPARATOR = System.lineSeparator();
-    private static final int[][] INVALID_RECTANGULAR_MATRIX = {{0}, {1, 0}};
-    private static final int[][] MATRIX_WITH_NULL_ROW = {{0}, null};
-    private static final int[][] NON_SQUARE_ROW_MATRIX = {{0, 1}};
 
     private FloydWarshallTest() {
     }
@@ -30,7 +26,7 @@ public final class FloydWarshallTest {
     }
 
     private static void doesNotMutateInput() {
-        int[][] graph = acyclicThreeNodeGraph();
+        int[][] graph = TestGraphs.acyclicThreeNodeGraph();
 
         int[][] original = Matrices.copyOf(graph);
         FloydWarshall.shortestPaths(graph);
@@ -39,7 +35,7 @@ public final class FloydWarshallTest {
     }
 
     private static void detectsNegativeCycles() {
-        int[][] graph = negativeCycleGraph();
+        int[][] graph = TestGraphs.negativeCycleGraph();
 
         int[][] distances = FloydWarshall.shortestPaths(graph);
         assertTrue(FloydWarshall.hasNegativeCycle(distances), "Expected a negative cycle.");
@@ -47,24 +43,24 @@ public final class FloydWarshallTest {
 
     private static void rejectsInvalidMatrices() {
         assertInvalidGraphRejected(null);
-        assertInvalidGraphRejected(INVALID_RECTANGULAR_MATRIX);
-        assertInvalidGraphRejected(MATRIX_WITH_NULL_ROW);
-        assertInvalidGraphRejected(NON_SQUARE_ROW_MATRIX);
+        assertInvalidGraphRejected(TestGraphs.invalidRectangularMatrix());
+        assertInvalidGraphRejected(TestGraphs.matrixWithNullRow());
+        assertInvalidGraphRejected(TestGraphs.nonSquareRowMatrix());
     }
 
     private static void rejectsInvalidFormatterMatrices() {
         assertInvalidDistanceMatrixRejected(null);
-        assertInvalidDistanceMatrixRejected(INVALID_RECTANGULAR_MATRIX);
+        assertInvalidDistanceMatrixRejected(TestGraphs.invalidRectangularMatrix());
     }
 
     private static void throwsOnDistanceOverflow() {
-        int[][] graph = overflowGraph();
+        int[][] graph = TestGraphs.overflowGraph();
 
         assertThrows(ArithmeticException.class, () -> FloydWarshall.shortestPaths(graph));
     }
 
     private static void formatsUnreachableDistances() {
-        int[][] distances = unreachableTwoNodeDistances();
+        int[][] distances = TestGraphs.unreachableTwoNodeDistances();
 
         String expected = "0 INF" + LINE_SEPARATOR + "INF 0" + LINE_SEPARATOR;
         assertEquals(expected, DistanceMatrixFormatter.format(distances));
@@ -76,37 +72,6 @@ public final class FloydWarshallTest {
 
     private static void assertInvalidDistanceMatrixRejected(int[][] distances) {
         assertThrows(IllegalArgumentException.class, () -> DistanceMatrixFormatter.format(distances));
-    }
-
-    private static int[][] acyclicThreeNodeGraph() {
-        return new int[][] {
-            {0, 2, INF},
-            {INF, 0, 3},
-            {INF, INF, 0}
-        };
-    }
-
-    private static int[][] negativeCycleGraph() {
-        return new int[][] {
-            {0, 1, INF},
-            {INF, 0, -2},
-            {-2, INF, 0}
-        };
-    }
-
-    private static int[][] overflowGraph() {
-        return new int[][] {
-            {0, Integer.MAX_VALUE - 1, INF},
-            {INF, 0, 2},
-            {INF, INF, 0}
-        };
-    }
-
-    private static int[][] unreachableTwoNodeDistances() {
-        return new int[][] {
-            {0, INF},
-            {INF, 0}
-        };
     }
 
     private static void assertMatrixEquals(int[][] expected, int[][] actual) {

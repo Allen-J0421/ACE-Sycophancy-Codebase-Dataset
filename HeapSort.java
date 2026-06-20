@@ -39,7 +39,7 @@ public final class HeapSort {
             return;
         }
 
-        new HeapSlice(values, fromIndex, toIndex).sort();
+        new RangeHeap(values, fromIndex, toIndex).sort();
     }
 
     /**
@@ -57,12 +57,12 @@ public final class HeapSort {
         return copy;
     }
 
-    private static final class HeapSlice {
+    private static final class RangeHeap {
         private final int[] values;
         private final int baseIndex;
         private final int heapSize;
 
-        private HeapSlice(int[] values, int baseIndex, int toIndex) {
+        private RangeHeap(int[] values, int baseIndex, int toIndex) {
             this.values = values;
             this.baseIndex = baseIndex;
             this.heapSize = toIndex - baseIndex;
@@ -73,21 +73,21 @@ public final class HeapSort {
 
             for (int end = heapSize - 1; end > 0; end--) {
                 swap(0, end);
-                siftDown(end, 0);
+                siftDown(0, end);
             }
         }
 
         private void buildMaxHeap() {
             for (int root = heapSize / 2 - 1; root >= 0; root--) {
-                siftDown(heapSize, root);
+                siftDown(root, heapSize);
             }
         }
 
-        private void siftDown(int heapLimit, int rootIndex) {
+        private void siftDown(int rootIndex, int heapLimit) {
             int current = rootIndex;
 
             while (true) {
-                int leftChild = 2 * current + 1;
+                int leftChild = leftChildIndex(current);
                 if (leftChild >= heapLimit) {
                     return;
                 }
@@ -106,6 +106,10 @@ public final class HeapSort {
                 swap(current, largestChild);
                 current = largestChild;
             }
+        }
+
+        private int leftChildIndex(int relativeIndex) {
+            return 2 * relativeIndex + 1;
         }
 
         private int valueAt(int relativeIndex) {

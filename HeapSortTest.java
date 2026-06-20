@@ -35,38 +35,35 @@ public final class HeapSortTest {
             assertRangeSort(testCase);
         }
 
-        assertSortedCopyRejectedNull();
         assertNullRejected();
         assertInvalidRanges();
         System.out.println("HeapSort tests passed");
     }
 
     private static void assertSortedCopy(SortCase testCase) {
-        int[] input = Arrays.copyOf(testCase.input(), testCase.input().length);
+        int[] input = Arrays.copyOf(testCase.input, testCase.input.length);
         int[] actual = HeapSort.sortedCopy(input);
-        assertArrayEquals(testCase.expected(), actual);
-        assertArrayEquals(testCase.input(), input);
+        assertArrayEquals(testCase.expected, actual);
+        assertArrayEquals(testCase.input, input);
     }
 
     private static void assertRangeSort(RangeCase testCase) {
-        int[] actual = Arrays.copyOf(testCase.input(), testCase.input().length);
-        HeapSort.sort(actual, testCase.fromIndex(), testCase.toIndex());
-        assertArrayEquals(testCase.expected(), actual);
+        int[] actual = Arrays.copyOf(testCase.input, testCase.input.length);
+        HeapSort.sort(actual, testCase.fromIndex, testCase.toIndex);
+        assertArrayEquals(testCase.expected, actual);
     }
 
     private static void assertNullRejected() {
-        expectNullPointer(() -> HeapSort.sort(null));
-        expectNullPointer(() -> HeapSort.sort(null, 0, 0));
-    }
-
-    private static void assertSortedCopyRejectedNull() {
-        expectNullPointer(() -> HeapSort.sortedCopy(null));
+        assertThrows(NullPointerException.class, () -> HeapSort.sort(null));
+        assertThrows(NullPointerException.class, () -> HeapSort.sort(null, 0, 0));
+        assertThrows(NullPointerException.class, () -> HeapSort.sortedCopy(null));
     }
 
     private static void assertInvalidRanges() {
         for (InvalidRangeCase testCase : INVALID_RANGE_CASES) {
-            expectIndexOutOfBounds(
-                    () -> HeapSort.sort(testCase.input(), testCase.fromIndex(), testCase.toIndex()));
+            assertThrows(
+                    IndexOutOfBoundsException.class,
+                    () -> HeapSort.sort(testCase.input, testCase.fromIndex, testCase.toIndex));
         }
     }
 
@@ -77,16 +74,7 @@ public final class HeapSortTest {
         }
     }
 
-    private static void expectNullPointer(ThrowingRunnable action) {
-        expectException(action, NullPointerException.class, "Expected NullPointerException");
-    }
-
-    private static void expectIndexOutOfBounds(ThrowingRunnable action) {
-        expectException(action, IndexOutOfBoundsException.class, "Expected IndexOutOfBoundsException");
-    }
-
-    private static void expectException(
-            ThrowingRunnable action, Class<? extends RuntimeException> expectedType, String failureMessage) {
+    private static void assertThrows(Class<? extends RuntimeException> expectedType, ThrowingRunnable action) {
         try {
             action.run();
         } catch (RuntimeException exception) {
@@ -95,10 +83,12 @@ public final class HeapSortTest {
             }
 
             throw new AssertionError(
-                    failureMessage + ", but got " + exception.getClass().getSimpleName(), exception);
+                    "Expected " + expectedType.getSimpleName() + ", but got "
+                            + exception.getClass().getSimpleName(),
+                    exception);
         }
 
-        throw new AssertionError(failureMessage);
+        throw new AssertionError("Expected " + expectedType.getSimpleName());
     }
 
     private static SortCase sortCase(int[] input, int[] expected) {
@@ -121,14 +111,6 @@ public final class HeapSortTest {
             this.input = input;
             this.expected = expected;
         }
-
-        private int[] input() {
-            return input;
-        }
-
-        private int[] expected() {
-            return expected;
-        }
     }
 
     private static final class RangeCase {
@@ -143,22 +125,6 @@ public final class HeapSortTest {
             this.toIndex = toIndex;
             this.expected = expected;
         }
-
-        private int[] input() {
-            return input;
-        }
-
-        private int fromIndex() {
-            return fromIndex;
-        }
-
-        private int toIndex() {
-            return toIndex;
-        }
-
-        private int[] expected() {
-            return expected;
-        }
     }
 
     private static final class InvalidRangeCase {
@@ -170,18 +136,6 @@ public final class HeapSortTest {
             this.input = input;
             this.fromIndex = fromIndex;
             this.toIndex = toIndex;
-        }
-
-        private int[] input() {
-            return input;
-        }
-
-        private int fromIndex() {
-            return fromIndex;
-        }
-
-        private int toIndex() {
-            return toIndex;
         }
     }
 

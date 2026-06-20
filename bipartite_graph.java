@@ -27,7 +27,7 @@ final class BipartiteGraph {
         Arrays.fill(colors, Color.UNCOLORED);
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
-            if (colors[vertex] == Color.UNCOLORED && !colorComponent(vertex, graph, colors)) {
+            if (colors[vertex].isUncolored() && !colorComponent(vertex, graph, colors)) {
                 return false;
             }
         }
@@ -46,12 +46,13 @@ final class BipartiteGraph {
 
         while (!queue.isEmpty()) {
             int currentVertex = queue.poll();
+            Color currentColor = colors[currentVertex];
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
-                if (colors[neighbor] == Color.UNCOLORED) {
-                    colors[neighbor] = colors[currentVertex].opposite();
+                if (colors[neighbor].isUncolored()) {
+                    colors[neighbor] = currentColor.opposite();
                     queue.offer(neighbor);
-                } else if (colors[neighbor] == colors[currentVertex]) {
+                } else if (colors[neighbor] == currentColor) {
                     return false;
                 }
             }
@@ -170,6 +171,10 @@ final class BipartiteGraph {
         UNCOLORED,
         FIRST,
         SECOND;
+
+        private boolean isUncolored() {
+            return this == UNCOLORED;
+        }
 
         private Color opposite() {
             if (this == FIRST) {

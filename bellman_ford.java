@@ -18,9 +18,9 @@ final class BellmanFord {
     }
 
     private static int[] shortestPathsFrom(Graph graph, int source) {
-        int[] distances = initialDistances(graph.vertexCount, source);
+        int[] distances = graph.initialDistances(source);
 
-        for (int pass = 1; pass < graph.vertexCount; pass++) {
+        for (int pass = 0; pass < graph.relaxationPasses(); pass++) {
             if (!graph.relaxEdges(distances)) {
                 break;
             }
@@ -30,13 +30,6 @@ final class BellmanFord {
             return negativeCycleResult();
         }
 
-        return distances;
-    }
-
-    private static int[] initialDistances(int vertexCount, int source) {
-        int[] distances = new int[vertexCount];
-        Arrays.fill(distances, INF);
-        distances[source] = 0;
         return distances;
     }
 
@@ -125,6 +118,17 @@ final class BellmanFord {
             if (source < 0 || source >= vertexCount) {
                 throw new IllegalArgumentException("Source vertex is out of range");
             }
+        }
+
+        private int[] initialDistances(int source) {
+            int[] distances = new int[vertexCount];
+            Arrays.fill(distances, INF);
+            distances[source] = 0;
+            return distances;
+        }
+
+        private int relaxationPasses() {
+            return Math.max(0, vertexCount - 1);
         }
 
         private boolean relaxEdges(int[] distances) {

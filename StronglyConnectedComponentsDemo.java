@@ -13,7 +13,6 @@ public class StronglyConnectedComponentsDemo {
         StronglyConnectedComponentsFinder finder = new KosarajuStronglyConnectedComponents();
         StronglyConnectedComponentsResult result = finder.find(graph);
 
-        StronglyConnectedComponentsFormatter formatter = new StronglyConnectedComponentsFormatter();
-        System.out.println(formatter.format(result));
+        System.out.println(StronglyConnectedComponentsFormatter.format(result));
     }
 }

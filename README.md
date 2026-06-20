@@ -9,11 +9,29 @@ and reports the vertices that form it.
   `0 .. vertices()-1`. Build one with `DirectedGraph.from(vertexCount, edges)`,
   where `edges` is an array of `{from, to}` pairs. Construction validates the
   vertex count and every endpoint.
-- **`CycleDetector`** — depth-first cycle detection in `O(V + E)`:
+- **`CycleDetector`** — the detection *interface* (`O(V + E)`):
   - `boolean hasCycle(DirectedGraph)` — whether any cycle exists.
   - `Optional<Cycle> findCycle(DirectedGraph)` — one cycle if present.
 - **`Cycle`** — the result: a closed vertex walk such as `[0, 1, 2, 0]`
   (`toString()` renders it as `0 -> 1 -> 2 -> 0`). A self-loop on `v` is `[v, v]`.
+
+### Choosing an algorithm at runtime
+
+`CycleDetector` has two interchangeable implementations, selected through the
+`CycleDetectionAlgorithm` enum:
+
+| Algorithm | Strategy | Notes |
+|-----------|----------|-------|
+| `DFS`  | depth-first search, back-edge detection | reconstructs the cycle path directly from the traversal |
+| `KAHN` | Kahn's topological elimination          | decides *existence* cheaply; reconstructs a cycle from the residual core |
+
+Both satisfy the same contract and agree on every result.
+
+```java
+// pick a concrete algorithm — e.g. from config or a CLI argument
+CycleDetectionAlgorithm algorithm = CycleDetectionAlgorithm.valueOf(args[0]); // "DFS" | "KAHN"
+CycleDetector detector = CycleDetector.create(algorithm);
+```
 
 ## Example
 
@@ -22,7 +40,8 @@ DirectedGraph graph = DirectedGraph.from(4, new int[][] {
     {0, 1}, {1, 2}, {2, 0}, {2, 3}
 });
 
-new CycleDetector().findCycle(graph)
+CycleDetector detector = CycleDetector.create(CycleDetectionAlgorithm.DFS);
+detector.findCycle(graph)
     .ifPresentOrElse(
         cycle -> System.out.println("cycle: " + cycle),  // cycle: 0 -> 1 -> 2 -> 0
         ()    -> System.out.println("acyclic"));

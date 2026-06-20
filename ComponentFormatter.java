@@ -29,7 +29,7 @@ final class ComponentFormatter {
                 output.append(' ');
             }
 
-            output.append(component.vertices().get(vertexIndex));
+            output.append(component.vertices().get(vertexIndex).index());
         }
     }
 }

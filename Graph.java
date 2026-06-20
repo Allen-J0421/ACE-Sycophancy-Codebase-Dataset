@@ -4,5 +4,7 @@ interface Graph {
 
     int vertexCount();
 
-    List<Integer> neighborsOf(int vertex);
+    List<Vertex> vertices();
+
+    List<Vertex> neighborsOf(Vertex vertex);
 }

@@ -3,9 +3,9 @@ import java.util.Objects;
 
 final class ConnectedComponent {
 
-    private final List<Integer> vertices;
+    private final List<Vertex> vertices;
 
-    ConnectedComponent(List<Integer> vertices) {
+    ConnectedComponent(List<Vertex> vertices) {
         Objects.requireNonNull(vertices, "vertices");
         this.vertices = List.copyOf(vertices);
     }
@@ -14,7 +14,7 @@ final class ConnectedComponent {
         return vertices.size();
     }
 
-    List<Integer> vertices() {
+    List<Vertex> vertices() {
         return vertices;
     }
 

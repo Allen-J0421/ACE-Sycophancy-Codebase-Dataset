@@ -17,8 +17,8 @@ final class GraphComponentFinder {
         boolean[] visited = new boolean[vertexCount];
         List<ConnectedComponent> components = new ArrayList<>();
 
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            if (!visited[vertex]) {
+        for (Vertex vertex : graph.vertices()) {
+            if (!visited[vertex.index()]) {
                 components.add(traverseComponent(graph, vertex, vertexCount, visited));
             }
         }
@@ -28,23 +28,23 @@ final class GraphComponentFinder {
 
     private static ConnectedComponent traverseComponent(
             Graph graph,
-            int startVertex,
+            Vertex startVertex,
             int vertexCount,
             boolean[] visited) {
-        Queue<Integer> pendingVertices = new ArrayDeque<>();
-        List<Integer> component = new ArrayList<>();
+        Queue<Vertex> pendingVertices = new ArrayDeque<>();
+        List<Vertex> component = new ArrayList<>();
 
-        visited[startVertex] = true;
+        visited[startVertex.index()] = true;
         pendingVertices.add(startVertex);
 
         while (!pendingVertices.isEmpty()) {
-            int currentVertex = pendingVertices.remove();
+            Vertex currentVertex = pendingVertices.remove();
             component.add(currentVertex);
 
-            for (int neighbor : graph.neighborsOf(currentVertex)) {
+            for (Vertex neighbor : graph.neighborsOf(currentVertex)) {
                 validateNeighborVertex(neighbor, vertexCount);
-                if (!visited[neighbor]) {
-                    visited[neighbor] = true;
+                if (!visited[neighbor.index()]) {
+                    visited[neighbor.index()] = true;
                     pendingVertices.add(neighbor);
                 }
             }
@@ -59,9 +59,12 @@ final class GraphComponentFinder {
         }
     }
 
-    private static void validateNeighborVertex(int vertex, int vertexCount) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException("Neighbor index out of bounds: " + vertex);
+    private static void validateNeighborVertex(Vertex vertex, int vertexCount) {
+        if (vertex == null) {
+            throw new IllegalArgumentException("Neighbor vertex must not be null.");
+        }
+        if (vertex.index() < 0 || vertex.index() >= vertexCount) {
+            throw new IllegalArgumentException("Neighbor index out of bounds: " + vertex.index());
         }
     }
 }

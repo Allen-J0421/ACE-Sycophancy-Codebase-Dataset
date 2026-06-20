@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.stream.Collectors;
 
 final class ConnectedComponentsTest {
 
@@ -18,8 +19,8 @@ final class ConnectedComponentsTest {
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
         assertEquals(2, result.componentCount(), "sample graph component count");
-        assertListEquals(List.of(0, 3, 2, 1), result.componentAt(0).vertices(), "first sample component");
-        assertListEquals(List.of(4, 5), result.componentAt(1).vertices(), "second sample component");
+        assertVertexIndexesEqual(List.of(0, 3, 2, 1), result.componentAt(0).vertices(), "first sample component");
+        assertVertexIndexesEqual(List.of(4, 5), result.componentAt(1).vertices(), "second sample component");
     }
 
     private static void verifiesSingleVertexComponents() {
@@ -28,9 +29,9 @@ final class ConnectedComponentsTest {
         ConnectedComponentsResult result = GraphComponentFinder.findConnectedComponents(graph);
 
         assertEquals(3, result.componentCount(), "isolated vertex component count");
-        assertListEquals(List.of(0), result.componentAt(0).vertices(), "first isolated component");
-        assertListEquals(List.of(1), result.componentAt(1).vertices(), "second isolated component");
-        assertListEquals(List.of(2), result.componentAt(2).vertices(), "third isolated component");
+        assertVertexIndexesEqual(List.of(0), result.componentAt(0).vertices(), "first isolated component");
+        assertVertexIndexesEqual(List.of(1), result.componentAt(1).vertices(), "second isolated component");
+        assertVertexIndexesEqual(List.of(2), result.componentAt(2).vertices(), "third isolated component");
     }
 
     private static void verifiesFormattedOutput() {
@@ -47,10 +48,10 @@ final class ConnectedComponentsTest {
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
         assertThrows(UnsupportedOperationException.class,
-                () -> result.components().add(new ConnectedComponent(List.of(99))),
+                () -> result.components().add(new ConnectedComponent(List.of(new Vertex(99)))),
                 "result component list immutability");
         assertThrows(UnsupportedOperationException.class,
-                () -> result.componentAt(0).vertices().add(99),
+                () -> result.componentAt(0).vertices().add(new Vertex(99)),
                 "component vertex list immutability");
     }
 
@@ -62,8 +63,13 @@ final class ConnectedComponentsTest {
             }
 
             @Override
-            public List<Integer> neighborsOf(int vertex) {
-                return List.of(2);
+            public List<Vertex> vertices() {
+                return List.of(new Vertex(0));
+            }
+
+            @Override
+            public List<Vertex> neighborsOf(Vertex vertex) {
+                return List.of(new Vertex(2));
             }
         };
 
@@ -72,13 +78,16 @@ final class ConnectedComponentsTest {
                 "invalid neighbor graph");
     }
 
-    private static void assertListEquals(
+    private static void assertVertexIndexesEqual(
             List<Integer> expected,
-            List<Integer> actual,
+            List<Vertex> actual,
             String description) {
-        if (!expected.equals(actual)) {
+        List<Integer> actualIndexes = actual.stream()
+                .map(Vertex::index)
+                .collect(Collectors.toList());
+        if (!expected.equals(actualIndexes)) {
             throw new AssertionError(
-                    description + " expected " + expected + " but was " + actual);
+                    description + " expected " + expected + " but was " + actualIndexes);
         }
     }
 

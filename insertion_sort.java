@@ -1,36 +1,35 @@
-public class InsertionSort {
+final class InsertionSort {
 
-    void sort(int arr[])
-    {
-        int n = arr.length;
-        for (int i = 1; i < n; ++i) {
-            int key = arr[i];
-            int j = i - 1;
+    void sort(int[] values) {
+        for (int currentIndex = 1; currentIndex < values.length; currentIndex++) {
+            int currentValue = values[currentIndex];
+            int sortedIndex = currentIndex - 1;
 
-            while (j >= 0 && arr[j] > key) {
-                arr[j + 1] = arr[j];
-                j = j - 1;
+            while (sortedIndex >= 0 && values[sortedIndex] > currentValue) {
+                values[sortedIndex + 1] = values[sortedIndex];
+                sortedIndex--;
             }
-            arr[j + 1] = key;
+
+            values[sortedIndex + 1] = currentValue;
         }
     }
 
-    static void printArray(int arr[])
-    {
-        int n = arr.length;
-        for (int i = 0; i < n; ++i)
-            System.out.print(arr[i] + " ");
+    static void printArray(int[] values) {
+        StringBuilder output = new StringBuilder();
 
-        System.out.println();
+        for (int value : values) {
+            output.append(value).append(' ');
+        }
+
+        System.out.println(output);
     }
 
-    public static void main(String args[])
-    {
-        int arr[] = { 12, 11, 13, 5, 6 };
+    public static void main(String[] args) {
+        int[] values = {12, 11, 13, 5, 6};
 
-        InsertionSort ob = new InsertionSort();
-        ob.sort(arr);
+        InsertionSort sorter = new InsertionSort();
+        sorter.sort(values);
 
-        printArray(arr);
+        printArray(values);
     }
 }

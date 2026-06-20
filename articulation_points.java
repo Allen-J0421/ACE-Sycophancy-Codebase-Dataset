@@ -23,125 +23,128 @@ class ArticulationPoints {
     }
 
     static List<Integer> articulationPoints(int vertexCount, List<List<Integer>> adj) {
-
-        SearchState state = new SearchState(vertexCount);
-
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            if (!state.isVisited(vertex)) {
-                depthFirstSearch(adj, vertex, NO_PARENT, state);
-            }
-        }
-
-        return collectArticulationPoints(vertexCount, state);
+        return new ArticulationPointFinder(vertexCount, adj).find();
     }
 
-    private static List<Integer> collectArticulationPoints(int vertexCount, SearchState state) {
-        List<Integer> articulationPoints = new ArrayList<>();
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            if (state.isArticulationPoint(vertex)) {
-                articulationPoints.add(vertex);
-            }
+    private static final class ArticulationPointFinder {
+        private final int vertexCount;
+        private final List<List<Integer>> adj;
+        private final SearchState state;
+
+        private ArticulationPointFinder(int vertexCount, List<List<Integer>> adj) {
+            this.vertexCount = vertexCount;
+            this.adj = adj;
+            state = new SearchState(vertexCount);
         }
 
-        if (articulationPoints.isEmpty()) {
-            articulationPoints.add(NO_ARTICULATION_POINT);
-        }
-        return articulationPoints;
-    }
-
-    private static void depthFirstSearch(
-            List<List<Integer>> adj,
-            int vertex,
-            int parent,
-            SearchState state
-    ) {
-        state.visit(vertex);
-        int childCount = 0;
-
-        for (int neighbor : adj.get(vertex)) {
-            if (!state.isVisited(neighbor)) {
-                childCount++;
-                depthFirstSearch(adj, neighbor, vertex, state);
-                state.updateLowestReachableFromChild(vertex, neighbor);
-
-                if (isNonRootArticulationPoint(vertex, neighbor, parent, state)) {
-                    state.markArticulationPoint(vertex);
+        private List<Integer> find() {
+            for (int vertex = 0; vertex < vertexCount; vertex++) {
+                if (!state.isVisited(vertex)) {
+                    depthFirstSearch(vertex, NO_PARENT);
                 }
-            } else if (neighbor != parent) {
-                state.updateLowestReachableFromBackEdge(vertex, neighbor);
+            }
+
+            return collectArticulationPoints();
+        }
+
+        private List<Integer> collectArticulationPoints() {
+            List<Integer> articulationPoints = new ArrayList<>();
+            for (int vertex = 0; vertex < vertexCount; vertex++) {
+                if (state.isArticulationPoint(vertex)) {
+                    articulationPoints.add(vertex);
+                }
+            }
+
+            if (articulationPoints.isEmpty()) {
+                articulationPoints.add(NO_ARTICULATION_POINT);
+            }
+            return articulationPoints;
+        }
+
+        private void depthFirstSearch(int vertex, int parent) {
+            state.visit(vertex);
+            int childCount = 0;
+
+            for (int neighbor : adj.get(vertex)) {
+                if (!state.isVisited(neighbor)) {
+                    childCount++;
+                    depthFirstSearch(neighbor, vertex);
+                    state.updateLowestReachableFromChild(vertex, neighbor);
+
+                    if (isNonRootArticulationPoint(vertex, neighbor, parent)) {
+                        state.markArticulationPoint(vertex);
+                    }
+                } else if (neighbor != parent) {
+                    state.updateLowestReachableFromBackEdge(vertex, neighbor);
+                }
+            }
+
+            if (isRootArticulationPoint(parent, childCount)) {
+                state.markArticulationPoint(vertex);
             }
         }
 
-        if (isRootArticulationPoint(parent, childCount)) {
-            state.markArticulationPoint(vertex);
-        }
-    }
-
-    private static boolean isNonRootArticulationPoint(
-            int vertex,
-            int child,
-            int parent,
-            SearchState state
-    ) {
-        return parent != NO_PARENT
-                && state.lowestReachableTime(child) >= state.discoveryTime(vertex);
-    }
-
-    private static boolean isRootArticulationPoint(int parent, int childCount) {
-        return parent == NO_PARENT && childCount > 1;
-    }
-
-    private static final class SearchState {
-        private final boolean[] visited;
-        private final int[] discoveryTime;
-        private final int[] lowestReachableTime;
-        private final boolean[] isArticulationPoint;
-        private int time;
-
-        private SearchState(int vertexCount) {
-            visited = new boolean[vertexCount];
-            discoveryTime = new int[vertexCount];
-            lowestReachableTime = new int[vertexCount];
-            isArticulationPoint = new boolean[vertexCount];
+        private boolean isNonRootArticulationPoint(int vertex, int child, int parent) {
+            return parent != NO_PARENT
+                    && state.lowestReachableTime(child) >= state.discoveryTime(vertex);
         }
 
-        private void visit(int vertex) {
-            visited[vertex] = true;
-            discoveryTime[vertex] = lowestReachableTime[vertex] = ++time;
+        private boolean isRootArticulationPoint(int parent, int childCount) {
+            return parent == NO_PARENT && childCount > 1;
         }
 
-        private boolean isVisited(int vertex) {
-            return visited[vertex];
-        }
+        private static final class SearchState {
+            private final boolean[] visited;
+            private final int[] discoveryTime;
+            private final int[] lowestReachableTime;
+            private final boolean[] isArticulationPoint;
+            private int time;
 
-        private boolean isArticulationPoint(int vertex) {
-            return isArticulationPoint[vertex];
-        }
+            private SearchState(int vertexCount) {
+                visited = new boolean[vertexCount];
+                discoveryTime = new int[vertexCount];
+                lowestReachableTime = new int[vertexCount];
+                isArticulationPoint = new boolean[vertexCount];
+            }
 
-        private void markArticulationPoint(int vertex) {
-            isArticulationPoint[vertex] = true;
-        }
+            private void visit(int vertex) {
+                visited[vertex] = true;
+                discoveryTime[vertex] = lowestReachableTime[vertex] = ++time;
+            }
 
-        private int discoveryTime(int vertex) {
-            return discoveryTime[vertex];
-        }
+            private boolean isVisited(int vertex) {
+                return visited[vertex];
+            }
 
-        private int lowestReachableTime(int vertex) {
-            return lowestReachableTime[vertex];
-        }
+            private boolean isArticulationPoint(int vertex) {
+                return isArticulationPoint[vertex];
+            }
 
-        private void updateLowestReachableFromChild(int vertex, int child) {
-            lowestReachableTime[vertex] = Math.min(
-                    lowestReachableTime[vertex],
-                    lowestReachableTime[child]
-            );
-        }
+            private void markArticulationPoint(int vertex) {
+                isArticulationPoint[vertex] = true;
+            }
 
-        private void updateLowestReachableFromBackEdge(int vertex, int ancestor) {
-            lowestReachableTime[vertex] = Math.min(
-                    lowestReachableTime[vertex],
-                    discoveryTime[ancestor]
-            );
+            private int discoveryTime(int vertex) {
+                return discoveryTime[vertex];
+            }
+
+            private int lowestReachableTime(int vertex) {
+                return lowestReachableTime[vertex];
+            }
+
+            private void updateLowestReachableFromChild(int vertex, int child) {
+                lowestReachableTime[vertex] = Math.min(
+                        lowestReachableTime[vertex],
+                        lowestReachableTime[child]
+                );
+            }
+
+            private void updateLowestReachableFromBackEdge(int vertex, int ancestor) {
+                lowestReachableTime[vertex] = Math.min(
+                        lowestReachableTime[vertex],
+                        discoveryTime[ancestor]
+                );
+            }
         }
     }
 

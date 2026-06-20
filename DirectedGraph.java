@@ -14,7 +14,7 @@ public class DirectedGraph {
         }
     }
 
-    public void addEdge(int from, int to) {
+    void addEdge(int from, int to) {
         adjacencyList.get(from).add(to);
     }
 

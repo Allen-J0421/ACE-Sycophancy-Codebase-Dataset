@@ -34,22 +34,48 @@ public class KosarajuStronglyConnectedComponents implements StronglyConnectedCom
         return new StronglyConnectedComponentsResult(components);
     }
 
-    private void collectFinishOrder(int u, DirectedGraph graph, boolean[] visited, Deque<Integer> finishOrder) {
-        visited[u] = true;
-        for (int v : graph.neighbors(u)) {
-            if (!visited[v]) {
-                collectFinishOrder(v, graph, visited, finishOrder);
+    // Iterative post-order DFS: each frame tracks which neighbor to visit next.
+    private void collectFinishOrder(int start, DirectedGraph graph, boolean[] visited, Deque<Integer> finishOrder) {
+        Deque<int[]> callStack = new ArrayDeque<>();
+        visited[start] = true;
+        callStack.push(new int[]{start, 0});
+
+        while (!callStack.isEmpty()) {
+            int[] frame = callStack.peek();
+            int u = frame[0];
+            List<Integer> nbrs = graph.neighbors(u);
+
+            boolean descended = false;
+            while (frame[1] < nbrs.size()) {
+                int v = nbrs.get(frame[1]++);
+                if (!visited[v]) {
+                    visited[v] = true;
+                    callStack.push(new int[]{v, 0});
+                    descended = true;
+                    break;
+                }
+            }
+
+            if (!descended) {
+                callStack.pop();
+                finishOrder.push(u);
             }
         }
-        finishOrder.push(u);
     }
 
-    private void collectComponent(int u, DirectedGraph reversed, boolean[] visited, List<Integer> vertices) {
-        visited[u] = true;
-        vertices.add(u);
-        for (int v : reversed.neighbors(u)) {
-            if (!visited[v]) {
-                collectComponent(v, reversed, visited, vertices);
+    private void collectComponent(int start, DirectedGraph reversed, boolean[] visited, List<Integer> vertices) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        visited[start] = true;
+        stack.push(start);
+
+        while (!stack.isEmpty()) {
+            int u = stack.pop();
+            vertices.add(u);
+            for (int v : reversed.neighbors(u)) {
+                if (!visited[v]) {
+                    visited[v] = true;
+                    stack.push(v);
+                }
             }
         }
     }

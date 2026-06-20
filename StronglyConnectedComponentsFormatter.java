@@ -1,12 +1,13 @@
+import java.util.stream.Collectors;
+
 public class StronglyConnectedComponentsFormatter {
 
     public String format(StronglyConnectedComponentsResult result) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Strongly Connected Components:\n");
+        StringBuilder sb = new StringBuilder("Strongly Connected Components:\n");
         for (StronglyConnectedComponent scc : result.getComponents()) {
-            for (int vertex : scc.getVertices()) {
-                sb.append(vertex).append(' ');
-            }
+            sb.append(scc.getVertices().stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(" ")));
             sb.append('\n');
         }
         return sb.toString().stripTrailing();

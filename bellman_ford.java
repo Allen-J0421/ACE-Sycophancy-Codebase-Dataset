@@ -5,24 +5,27 @@ class BellmanFord {
     private static final int NEGATIVE_CYCLE = -1;
 
     static int[] bellmanFord(int V, int[][] edges, int src) {
-        Edge[] typedEdges = toEdges(edges);
+        return bellmanFord(V, toEdges(edges), src);
+    }
+
+    static int[] bellmanFord(int V, Edge[] edges, int src) {
         int[] dist = new int[V];
         Arrays.fill(dist, INF);
         dist[src] = 0;
 
         for (int pass = 0; pass < V - 1; pass++) {
-            if (!relaxEdges(dist, typedEdges)) {
+            if (!relaxEdges(dist, edges)) {
                 break;
             }
         }
 
-        return hasNegativeCycle(dist, typedEdges) ? new int[]{NEGATIVE_CYCLE} : dist;
+        return hasNegativeCycle(dist, edges) ? new int[]{NEGATIVE_CYCLE} : dist;
     }
 
     private static Edge[] toEdges(int[][] edges) {
         Edge[] typedEdges = new Edge[edges.length];
         for (int i = 0; i < edges.length; i++) {
-            typedEdges[i] = new Edge(edges[i][0], edges[i][1], edges[i][2]);
+            typedEdges[i] = Edge.of(edges[i][0], edges[i][1], edges[i][2]);
         }
         return typedEdges;
     }
@@ -58,15 +61,19 @@ class BellmanFord {
         return dist[edge.u] != INF && dist[edge.u] + edge.wt < dist[edge.v];
     }
 
-    private static final class Edge {
-        private final int u;
-        private final int v;
-        private final int wt;
+    static final class Edge {
+        final int u;
+        final int v;
+        final int wt;
 
         private Edge(int u, int v, int wt) {
             this.u = u;
             this.v = v;
             this.wt = wt;
+        }
+
+        static Edge of(int u, int v, int wt) {
+            return new Edge(u, v, wt);
         }
     }
 

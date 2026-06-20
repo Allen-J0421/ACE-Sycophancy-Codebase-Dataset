@@ -1,6 +1,5 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -43,8 +42,19 @@ final class ConnectedComponents {
 
     private static void printComponents(List<List<Integer>> components) {
         for (List<Integer> component : components) {
-            System.out.println(String.join(" ", component.stream().map(String::valueOf).toArray(String[]::new)));
+            System.out.println(joinIntegers(component));
         }
+    }
+
+    private static String joinIntegers(List<Integer> values) {
+        StringBuilder line = new StringBuilder();
+        for (int index = 0; index < values.size(); index++) {
+            if (index > 0) {
+                line.append(' ');
+            }
+            line.append(values.get(index));
+        }
+        return line.toString();
     }
 
     public static void main(String[] args) {
@@ -57,41 +67,5 @@ final class ConnectedComponents {
 
         List<List<Integer>> components = findComponents(graph);
         printComponents(components);
-    }
-
-    static final class Graph {
-        private final List<List<Integer>> adjacency;
-
-        Graph(int vertexCount) {
-            if (vertexCount < 0) {
-                throw new IllegalArgumentException("vertexCount must be non-negative");
-            }
-            adjacency = new ArrayList<>(vertexCount);
-            for (int vertex = 0; vertex < vertexCount; vertex++) {
-                adjacency.add(new ArrayList<>());
-            }
-        }
-
-        int size() {
-            return adjacency.size();
-        }
-
-        void addUndirectedEdge(int u, int v) {
-            validateVertex(u);
-            validateVertex(v);
-            adjacency.get(u).add(v);
-            adjacency.get(v).add(u);
-        }
-
-        List<Integer> neighborsOf(int vertex) {
-            validateVertex(vertex);
-            return Collections.unmodifiableList(adjacency.get(vertex));
-        }
-
-        private void validateVertex(int vertex) {
-            if (vertex < 0 || vertex >= adjacency.size()) {
-                throw new IllegalArgumentException("Vertex out of range: " + vertex);
-            }
-        }
     }
 }

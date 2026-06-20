@@ -18,11 +18,12 @@ public final class CountingSort {
             return Arrays.copyOf(values, values.length);
         }
 
-        SortPlan plan = buildSortPlan(values);
-        return placeValues(values, plan);
+        Range range = findRange(values);
+        int[] positions = buildPositions(values, range);
+        return writeSorted(values, positions, range.min);
     }
 
-    private static SortPlan buildSortPlan(int[] values) {
+    private static Range findRange(int[] values) {
         int min = values[0];
         int max = values[0];
         for (int value : values) {
@@ -33,12 +34,16 @@ public final class CountingSort {
                 max = value;
             }
         }
-
-        int[] cumulativeCounts = buildCumulativeCounts(values, min, max);
-        return new SortPlan(min, cumulativeCounts);
+        return new Range(min, max);
     }
 
-    private static int[] buildCumulativeCounts(int[] values, int min, int max) {
+    private static int[] buildPositions(int[] values, Range range) {
+        int[] counts = buildCounts(values, range.min, range.max);
+        accumulateCounts(counts);
+        return counts;
+    }
+
+    private static int[] buildCounts(int[] values, int min, int max) {
         long range = (long) max - min + 1L;
         if (range > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Input range is too large for counting sort");
@@ -48,30 +53,31 @@ public final class CountingSort {
         for (int value : values) {
             counts[value - min]++;
         }
-
-        for (int i = 1; i < counts.length; i++) {
-            counts[i] += counts[i - 1];
-        }
         return counts;
     }
 
-    private static int[] placeValues(int[] values, SortPlan plan) {
+    private static void accumulateCounts(int[] counts) {
+        for (int i = 1; i < counts.length; i++) {
+            counts[i] += counts[i - 1];
+        }
+    }
+
+    private static int[] writeSorted(int[] values, int[] positions, int min) {
         int[] sorted = new int[values.length];
         for (int i = values.length - 1; i >= 0; i--) {
             int value = values[i];
-            int countIndex = value - plan.min;
-            sorted[--plan.cumulativeCounts[countIndex]] = value;
+            sorted[--positions[value - min]] = value;
         }
         return sorted;
     }
 
-    private static final class SortPlan {
+    private static final class Range {
         private final int min;
-        private final int[] cumulativeCounts;
+        private final int max;
 
-        private SortPlan(int min, int[] cumulativeCounts) {
+        private Range(int min, int max) {
             this.min = min;
-            this.cumulativeCounts = cumulativeCounts;
+            this.max = max;
         }
     }
 }

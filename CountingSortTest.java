@@ -7,16 +7,8 @@ public final class CountingSortTest {
     }
 
     public static void main(String[] args) {
-        assertSortsTo(
-            "positive and repeated values",
-            new int[] {2, 5, 3, 0, 2, 3, 0, 3},
-            new int[] {0, 0, 2, 2, 3, 3, 3, 5}
-        );
-        assertSortsTo(
-            "negative values",
-            new int[] {4, -2, 7, 0, -2, 5},
-            new int[] {-2, -2, 0, 4, 5, 7}
-        );
+        assertSortsTo("positive and repeated values", new int[] {2, 5, 3, 0, 2, 3, 0, 3}, new int[] {0, 0, 2, 2, 3, 3, 3, 5});
+        assertSortsTo("negative values", new int[] {4, -2, 7, 0, -2, 5}, new int[] {-2, -2, 0, 4, 5, 7});
         assertSortsTo("empty array", new int[0], new int[0]);
         assertSortsTo("single element", new int[] {42}, new int[] {42});
         assertThrows(NullPointerException.class, () -> CountingSort.sort(null));
@@ -27,18 +19,14 @@ public final class CountingSortTest {
         System.out.println("All counting sort checks passed.");
     }
 
-    private static void assertSorted(int[] expected, int[] actual) {
-        if (!Arrays.equals(expected, actual)) {
-            throw new AssertionError(
-                "Expected " + Arrays.toString(expected) + " but got " + Arrays.toString(actual)
-            );
-        }
-    }
-
     private static void assertSortsTo(String description, int[] input, int[] expected) {
         int[] snapshot = input.clone();
         int[] actual = CountingSort.sort(input);
-        assertSorted(expected, actual);
+        if (!Arrays.equals(expected, actual)) {
+            throw new AssertionError(
+                description + ": expected " + Arrays.toString(expected) + " but got " + Arrays.toString(actual)
+            );
+        }
         if (!Arrays.equals(snapshot, input)) {
             throw new AssertionError(description + ": input array was modified");
         }

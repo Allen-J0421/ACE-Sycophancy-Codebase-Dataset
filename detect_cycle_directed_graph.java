@@ -1,71 +1,94 @@
-import java.util.Queue;
-import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
-public class DetectCycle {
+class DetectCycle {
 
-    static boolean isCyclic(ArrayList<ArrayList<Integer>> adj)
-    {
-        int V = adj.size();
+    static class DirectedGraph {
+        private final int vertices;
+        private final List<List<Integer>> adjacency;
 
-        int[] inDegree = new int[V];
-
-        Queue<Integer> q = new LinkedList<>();
-
-        int visited = 0;
-
-        for (int u = 0; u < V; ++u)
-        {
-            for (int v : adj.get(u))
-            {
-                inDegree[v]++;
+        private DirectedGraph(int vertices) {
+            this.vertices = vertices;
+            this.adjacency = new ArrayList<>(vertices);
+            for (int i = 0; i < vertices; i++) {
+                adjacency.add(new ArrayList<>());
             }
         }
 
-        for (int u = 0; u < V; ++u)
-        {
-            if (inDegree[u] == 0)
-            {
-                q.add(u);
-            }
+        void addEdge(int from, int to) {
+            adjacency.get(from).add(to);
         }
 
-        while (!q.isEmpty())
-        {
-            int u = q.poll();
-            visited++;
-
-            for (int v : adj.get(u))
-            {
-                inDegree[v]--;
-                if (inDegree[v] == 0)
-                {
-
-                    q.add(v);
-                }
-            }
+        int vertexCount() {
+            return vertices;
         }
 
-        return visited != V;
+        List<Integer> neighbors(int vertex) {
+            return adjacency.get(vertex);
+        }
+
+        static class Builder {
+            private final DirectedGraph graph;
+
+            Builder(int vertices) {
+                this.graph = new DirectedGraph(vertices);
+            }
+
+            Builder edge(int from, int to) {
+                graph.addEdge(from, to);
+                return this;
+            }
+
+            DirectedGraph build() {
+                return graph;
+            }
+        }
     }
 
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-     }
+    static class CycleDetector {
+        boolean hasCycle(DirectedGraph graph) {
+            int V = graph.vertexCount();
+            int[] inDegree = new int[V];
 
-     public static void main(String[] args)
-    {
-        int V = 4;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
-        for (int i = 0; i < V; i++) {
-            adj.add(new ArrayList<>());
+            for (int u = 0; u < V; u++) {
+                for (int v : graph.neighbors(u)) {
+                    inDegree[v]++;
+                }
+            }
+
+            Queue<Integer> queue = new LinkedList<>();
+            for (int u = 0; u < V; u++) {
+                if (inDegree[u] == 0) {
+                    queue.add(u);
+                }
+            }
+
+            int visited = 0;
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+                visited++;
+                for (int v : graph.neighbors(u)) {
+                    if (--inDegree[v] == 0) {
+                        queue.add(v);
+                    }
+                }
+            }
+
+            return visited != V;
         }
+    }
 
-        addEdge(adj, 0, 1);
-        addEdge(adj, 1, 2);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 2, 3);
+    public static void main(String[] args) {
+        DirectedGraph graph = new DirectedGraph.Builder(4)
+            .edge(0, 1)
+            .edge(1, 2)
+            .edge(2, 0)
+            .edge(2, 3)
+            .build();
 
-         System.out.println(isCyclic(adj) ? "true" : "false");
+        boolean cyclic = new CycleDetector().hasCycle(graph);
+        System.out.println(cyclic ? "true" : "false");
     }
 }

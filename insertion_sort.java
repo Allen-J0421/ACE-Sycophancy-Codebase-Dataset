@@ -52,7 +52,7 @@ final class InsertionSort {
         int sortedIndex = unsortedIndex - 1;
 
         while (hasLargerSortedValue(values, sortedIndex, valueToInsert)) {
-            values[sortedIndex + 1] = values[sortedIndex];
+            shiftValueRight(values, sortedIndex);
             sortedIndex--;
         }
 
@@ -61,6 +61,10 @@ final class InsertionSort {
 
     private static boolean hasLargerSortedValue(int[] values, int sortedIndex, int valueToInsert) {
         return sortedIndex >= 0 && values[sortedIndex] > valueToInsert;
+    }
+
+    private static void shiftValueRight(int[] values, int sortedIndex) {
+        values[sortedIndex + 1] = values[sortedIndex];
     }
 
     private static boolean isAlreadyOrdered(int[] values, int unsortedIndex) {

@@ -10,11 +10,10 @@ final class BipartiteChecker {
     static boolean isBipartite(Graph graph) {
         Objects.requireNonNull(graph, "graph");
 
-        int vertexCount = graph.vertexCount();
-        Partition[] partitions = new Partition[vertexCount];
+        Coloring coloring = new Coloring(graph.vertexCount());
 
-        for (int startVertex = 0; startVertex < vertexCount; startVertex++) {
-            if (partitions[startVertex] == null && !colorComponent(startVertex, graph, partitions)) {
+        for (int startVertex = 0; startVertex < coloring.size(); startVertex++) {
+            if (coloring.isUncolored(startVertex) && !colorComponent(startVertex, graph, coloring)) {
                 return false;
             }
         }
@@ -22,25 +21,24 @@ final class BipartiteChecker {
         return true;
     }
 
-    private static boolean colorComponent(int startVertex, Graph graph, Partition[] partitions) {
+    private static boolean colorComponent(int startVertex, Graph graph, Coloring coloring) {
         Deque<Integer> queue = new ArrayDeque<>();
-        partitions[startVertex] = Partition.LEFT;
+        coloring.assign(startVertex, Color.LEFT);
         queue.addLast(startVertex);
 
         while (!queue.isEmpty()) {
             int currentVertex = queue.removeFirst();
-            Partition currentPartition = partitions[currentVertex];
-            Partition oppositePartition = currentPartition.opposite();
+            Color currentColor = coloring.colorOf(currentVertex);
+            Color oppositeColor = currentColor.opposite();
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
-                Partition neighborPartition = partitions[neighbor];
-                if (neighborPartition == null) {
-                    partitions[neighbor] = oppositePartition;
+                if (coloring.isUncolored(neighbor)) {
+                    coloring.assign(neighbor, oppositeColor);
                     queue.addLast(neighbor);
                     continue;
                 }
 
-                if (neighborPartition == currentPartition) {
+                if (coloring.colorOf(neighbor) == currentColor) {
                     return false;
                 }
             }
@@ -49,12 +47,36 @@ final class BipartiteChecker {
         return true;
     }
 
-    private enum Partition {
+    private enum Color {
         LEFT,
         RIGHT;
 
-        Partition opposite() {
+        Color opposite() {
             return this == LEFT ? RIGHT : LEFT;
+        }
+    }
+
+    private static final class Coloring {
+        private final Color[] colors;
+
+        private Coloring(int vertexCount) {
+            this.colors = new Color[vertexCount];
+        }
+
+        int size() {
+            return colors.length;
+        }
+
+        boolean isUncolored(int vertex) {
+            return colors[vertex] == null;
+        }
+
+        Color colorOf(int vertex) {
+            return colors[vertex];
+        }
+
+        void assign(int vertex, Color color) {
+            colors[vertex] = color;
         }
     }
 }

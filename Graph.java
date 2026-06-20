@@ -47,6 +47,10 @@ final class Graph {
         return adjacencyList.get(vertex);
     }
 
+    boolean isBipartite() {
+        return BipartiteChecker.isBipartite(this);
+    }
+
     private static void validateGraphInput(int vertexCount, int[][] edges) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("vertexCount must be non-negative");

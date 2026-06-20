@@ -6,7 +6,11 @@ public final class HeapSort {
     }
 
     public static void sort(int[] values) {
-        new MaxHeap(values).sortIntoAscendingOrder();
+        if (values.length < 2) {
+            return;
+        }
+
+        new MaxHeap(values).sortValues();
     }
 
     public static void main(String[] args) {
@@ -26,20 +30,28 @@ public final class HeapSort {
             this.heapSize = values.length;
         }
 
-        private void sortIntoAscendingOrder() {
-            build();
+        private void sortValues() {
+            heapifyAllParents();
 
             for (int end = heapSize - 1; end > 0; end--) {
-                swap(0, end);
-                heapSize--;
-                siftDown(0);
+                moveMaxToSortedSuffix(end);
             }
         }
 
-        private void build() {
-            for (int parentIndex = heapSize / 2 - 1; parentIndex >= 0; parentIndex--) {
+        private void heapifyAllParents() {
+            for (int parentIndex = lastParentIndex(); parentIndex >= 0; parentIndex--) {
                 siftDown(parentIndex);
             }
+        }
+
+        private void moveMaxToSortedSuffix(int sortedSuffixStart) {
+            swap(0, sortedSuffixStart);
+            heapSize--;
+            siftDownFromRoot();
+        }
+
+        private void siftDownFromRoot() {
+            siftDown(0);
         }
 
         private void siftDown(int rootIndex) {
@@ -62,15 +74,23 @@ public final class HeapSort {
             int leftChildIndex = leftChildIndex(parentIndex);
             int rightChildIndex = rightChildIndex(parentIndex);
 
-            if (leftChildIndex < heapSize && values[leftChildIndex] > values[largestIndex]) {
+            if (hasGreaterValueAt(leftChildIndex, largestIndex)) {
                 largestIndex = leftChildIndex;
             }
 
-            if (rightChildIndex < heapSize && values[rightChildIndex] > values[largestIndex]) {
+            if (hasGreaterValueAt(rightChildIndex, largestIndex)) {
                 largestIndex = rightChildIndex;
             }
 
             return largestIndex;
+        }
+
+        private boolean hasGreaterValueAt(int candidateIndex, int currentLargestIndex) {
+            return candidateIndex < heapSize && values[candidateIndex] > values[currentLargestIndex];
+        }
+
+        private int lastParentIndex() {
+            return heapSize / 2 - 1;
         }
 
         private int leftChildIndex(int parentIndex) {

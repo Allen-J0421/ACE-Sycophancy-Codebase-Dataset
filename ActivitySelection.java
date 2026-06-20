@@ -29,12 +29,14 @@ public final class ActivitySelection {
     public static SelectionResult selectMaximumNonOverlappingActivities(
         List<ActivityInterval> activities
     ) {
-        Objects.requireNonNull(activities, "activities");
-        if (activities.isEmpty()) {
+        List<ActivityInterval> validatedActivities = List.copyOf(
+            Objects.requireNonNull(activities, "activities")
+        );
+        if (validatedActivities.isEmpty()) {
             return new SelectionResult(List.of());
         }
 
-        ActivityInterval[] sortedActivities = copyActivities(activities);
+        ActivityInterval[] sortedActivities = validatedActivities.toArray(new ActivityInterval[0]);
         sortByFinishTime(sortedActivities);
         return selectActivities(sortedActivities);
     }
@@ -69,14 +71,6 @@ public final class ActivitySelection {
             activities[i] = new ActivityInterval(startTimes[i], finishTimes[i]);
         }
         return activities;
-    }
-
-    private static ActivityInterval[] copyActivities(List<ActivityInterval> activities) {
-        ActivityInterval[] copiedActivities = new ActivityInterval[activities.size()];
-        for (int i = 0; i < activities.size(); i++) {
-            copiedActivities[i] = Objects.requireNonNull(activities.get(i), "activities[" + i + "]");
-        }
-        return copiedActivities;
     }
 
     private static ActivityInterval[] sortByFinishTime(ActivityInterval[] activities) {

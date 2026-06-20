@@ -25,9 +25,7 @@ public class KosarajuStronglyConnectedComponents implements StronglyConnectedCom
         while (!finishOrder.isEmpty()) {
             int u = finishOrder.pop();
             if (!visited[u]) {
-                List<Integer> vertices = new ArrayList<>();
-                collectComponent(u, reversed, visited, vertices);
-                components.add(new StronglyConnectedComponent(vertices));
+                components.add(new StronglyConnectedComponent(collectComponent(u, reversed, visited)));
             }
         }
 
@@ -62,7 +60,8 @@ public class KosarajuStronglyConnectedComponents implements StronglyConnectedCom
         }
     }
 
-    private void collectComponent(int start, DirectedGraph reversed, boolean[] visited, List<Integer> vertices) {
+    private List<Integer> collectComponent(int start, DirectedGraph reversed, boolean[] visited) {
+        List<Integer> vertices = new ArrayList<>();
         Deque<Integer> stack = new ArrayDeque<>();
         visited[start] = true;
         stack.push(start);
@@ -77,5 +76,6 @@ public class KosarajuStronglyConnectedComponents implements StronglyConnectedCom
                 }
             }
         }
+        return vertices;
     }
 }

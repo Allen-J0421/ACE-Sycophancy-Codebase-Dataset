@@ -2,6 +2,8 @@ import java.util.stream.Collectors;
 
 public class StronglyConnectedComponentsFormatter {
 
+    private StronglyConnectedComponentsFormatter() {}
+
     public static String format(StronglyConnectedComponentsResult result) {
         StringBuilder sb = new StringBuilder("Strongly Connected Components:\n");
         for (StronglyConnectedComponent scc : result) {

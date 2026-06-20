@@ -23,15 +23,20 @@ public class DirectedGraph {
     }
 
     public DirectedGraph reverse() {
-        List<List<Integer>> reversed = new ArrayList<>(vertexCount + 1);
-        for (int i = 0; i <= vertexCount; i++) {
-            reversed.add(new ArrayList<>());
-        }
+        List<List<Integer>> reversed = emptyAdjacencyList(vertexCount);
         for (int u = 1; u <= vertexCount; u++) {
             for (int v : adjacencyList.get(u)) {
                 reversed.get(v).add(u);
             }
         }
         return new DirectedGraph(vertexCount, reversed);
+    }
+
+    static List<List<Integer>> emptyAdjacencyList(int vertexCount) {
+        List<List<Integer>> list = new ArrayList<>(vertexCount + 1);
+        for (int i = 0; i <= vertexCount; i++) {
+            list.add(new ArrayList<>());
+        }
+        return list;
     }
 }

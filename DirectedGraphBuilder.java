@@ -22,10 +22,7 @@ public class DirectedGraphBuilder {
         if (vertexCount <= 0) {
             throw new IllegalStateException("withVertexCount must be called before build()");
         }
-        List<List<Integer>> adjList = new ArrayList<>(vertexCount + 1);
-        for (int i = 0; i <= vertexCount; i++) {
-            adjList.add(new ArrayList<>());
-        }
+        List<List<Integer>> adjList = DirectedGraph.emptyAdjacencyList(vertexCount);
         for (Edge edge : edges) {
             int from = edge.getSource();
             int to = edge.getDestination();

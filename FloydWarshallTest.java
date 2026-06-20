@@ -28,7 +28,7 @@ public final class FloydWarshallTest {
                 {FloydWarshall.INF, 0, 3},
                 {FloydWarshall.INF, FloydWarshall.INF, 0}
         };
-        int[][] original = copyMatrix(graph);
+        int[][] original = MatrixUtils.copyOf(graph);
 
         FloydWarshall.shortestPaths(graph);
 
@@ -92,14 +92,6 @@ public final class FloydWarshallTest {
         String expected = "0 INF" + lineSeparator + "INF 0" + lineSeparator;
 
         assertEquals(expected, DistanceMatrixFormatter.format(distances));
-    }
-
-    private static int[][] copyMatrix(int[][] matrix) {
-        int[][] copy = new int[matrix.length][];
-        for (int row = 0; row < matrix.length; row++) {
-            copy[row] = Arrays.copyOf(matrix[row], matrix[row].length);
-        }
-        return copy;
     }
 
     private static void assertMatrixEquals(int[][] expected, int[][] actual) {

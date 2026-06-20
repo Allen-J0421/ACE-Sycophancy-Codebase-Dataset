@@ -6,7 +6,7 @@ public final class FloydWarshall {
 
     public static int[][] shortestPaths(int[][] graph) {
         int vertexCount = MatrixValidator.requireSquare(graph, "Graph matrix");
-        int[][] distances = copyMatrix(graph);
+        int[][] distances = MatrixUtils.copyOf(graph);
 
         for (int intermediate = 0; intermediate < vertexCount; intermediate++) {
             for (int source = 0; source < vertexCount; source++) {
@@ -68,14 +68,6 @@ public final class FloydWarshall {
         return addDistances(
                 distances[source][intermediate],
                 distances[intermediate][target]);
-    }
-
-    private static int[][] copyMatrix(int[][] matrix) {
-        int[][] copy = new int[matrix.length][matrix.length];
-        for (int row = 0; row < matrix.length; row++) {
-            System.arraycopy(matrix[row], 0, copy[row], 0, matrix.length);
-        }
-        return copy;
     }
 
     private static int addDistances(int firstDistance, int secondDistance) {

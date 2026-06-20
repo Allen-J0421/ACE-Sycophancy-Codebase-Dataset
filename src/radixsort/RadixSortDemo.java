@@ -1,6 +1,8 @@
+package radixsort;
+
 import java.util.Arrays;
 
-final class RadixSortDemo {
+public final class RadixSortDemo {
     private static final int[] SAMPLE_VALUES = { 170, -45, 75, 90, Integer.MIN_VALUE, 24, 2, 66 };
 
     private RadixSortDemo() {

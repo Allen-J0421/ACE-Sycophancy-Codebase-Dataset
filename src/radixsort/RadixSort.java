@@ -1,3 +1,5 @@
+package radixsort;
+
 import java.util.Objects;
 
 public final class RadixSort {
@@ -13,8 +15,7 @@ public final class RadixSort {
             return;
         }
 
-        int[] sorted = sortedCopy(values);
-        System.arraycopy(sorted, 0, values, 0, values.length);
+        System.arraycopy(sortedCopy(values), 0, values, 0, values.length);
     }
 
     public static int[] sortedCopy(int[] values) {
@@ -23,17 +24,28 @@ public final class RadixSort {
             return values.clone();
         }
 
+        SignSplit split = splitBySign(values);
+        sortAscending(split.negatives);
+        sortAscending(split.nonNegatives);
+        return merge(split.negatives, split.nonNegatives);
+    }
+
+    private static SignSplit splitBySign(int[] values) {
         int negativeCount = countNegatives(values);
         long[] negatives = new long[negativeCount];
         long[] nonNegatives = new long[values.length - negativeCount];
-        partitionBySign(values, negatives, nonNegatives);
 
-        sortAscending(negatives);
-        sortAscending(nonNegatives);
+        int negativeIndex = 0;
+        int nonNegativeIndex = 0;
+        for (int value : values) {
+            if (value < 0) {
+                negatives[negativeIndex++] = -(long) value;
+            } else {
+                nonNegatives[nonNegativeIndex++] = value;
+            }
+        }
 
-        int[] sorted = new int[values.length];
-        mergePartitions(negatives, nonNegatives, sorted);
-        return sorted;
+        return new SignSplit(negatives, nonNegatives);
     }
 
     private static int countNegatives(int[] values) {
@@ -46,26 +58,18 @@ public final class RadixSort {
         return negativeCount;
     }
 
-    private static void partitionBySign(int[] values, long[] negatives, long[] nonNegatives) {
-        int negativeIndex = 0;
-        int nonNegativeIndex = 0;
-        for (int value : values) {
-            if (value < 0) {
-                negatives[negativeIndex++] = -(long) value;
-            } else {
-                nonNegatives[nonNegativeIndex++] = value;
-            }
-        }
-    }
-
-    private static void mergePartitions(long[] negatives, long[] nonNegatives, int[] destination) {
+    private static int[] merge(long[] negatives, long[] nonNegatives) {
+        int[] sorted = new int[negatives.length + nonNegatives.length];
         int writeIndex = 0;
+
         for (int i = negatives.length - 1; i >= 0; i--) {
-            destination[writeIndex++] = (int) -negatives[i];
+            sorted[writeIndex++] = (int) -negatives[i];
         }
         for (long value : nonNegatives) {
-            destination[writeIndex++] = (int) value;
+            sorted[writeIndex++] = (int) value;
         }
+
+        return sorted;
     }
 
     private static void sortAscending(long[] values) {
@@ -113,5 +117,15 @@ public final class RadixSort {
 
     private static int digitAt(long value, long exp) {
         return (int) ((value / exp) % RADIX);
+    }
+
+    private static final class SignSplit {
+        private final long[] negatives;
+        private final long[] nonNegatives;
+
+        private SignSplit(long[] negatives, long[] nonNegatives) {
+            this.negatives = negatives;
+            this.nonNegatives = nonNegatives;
+        }
     }
 }

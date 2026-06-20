@@ -10,10 +10,7 @@ public class ActivitySelection {
         if (start.length != finish.length) {
             throw new IllegalArgumentException("start and finish arrays must have equal length");
         }
-        int n = start.length;
-        if (n == 0) return 0;
-
-        List<Activity> activities = IntStream.range(0, n)
+        List<Activity> activities = IntStream.range(0, start.length)
             .mapToObj(i -> new Activity(start[i], finish[i]))
             .sorted(Comparator.comparingInt(Activity::finish))
             .toList();

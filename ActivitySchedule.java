@@ -1,31 +1,32 @@
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 final class ActivitySchedule {
-    private final Activity[] activities;
+    private final List<Activity> activities;
 
-    private ActivitySchedule(Activity[] activities) {
+    private ActivitySchedule(List<Activity> activities) {
         this.activities = activities;
     }
 
     static ActivitySchedule from(int[] startTimes, int[] finishTimes) {
         validate(startTimes, finishTimes);
 
-        Activity[] activities = new Activity[startTimes.length];
+        List<Activity> activities = new ArrayList<>(startTimes.length);
 
         for (int i = 0; i < startTimes.length; i++) {
-            activities[i] = new Activity(startTimes[i], finishTimes[i]);
+            activities.add(new Activity(startTimes[i], finishTimes[i]));
         }
 
         return new ActivitySchedule(activities);
     }
 
     boolean isEmpty() {
-        return activities.length == 0;
+        return activities.isEmpty();
     }
 
-    Activity[] activitiesSortedByFinishTime() {
-        Activity[] sortedActivities = Arrays.copyOf(activities, activities.length);
-        Arrays.sort(sortedActivities, Activity.BY_FINISH_TIME);
+    List<Activity> activitiesSortedByFinishTime() {
+        List<Activity> sortedActivities = new ArrayList<>(activities);
+        sortedActivities.sort(Activity.BY_FINISH_TIME);
         return sortedActivities;
     }
 

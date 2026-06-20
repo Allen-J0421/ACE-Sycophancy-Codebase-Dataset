@@ -1,3 +1,5 @@
+import java.util.List;
+
 final class ActivitySelector {
     private ActivitySelector() {
     }
@@ -12,12 +14,12 @@ final class ActivitySelector {
         return countCompatibleActivities(schedule.activitiesSortedByFinishTime());
     }
 
-    private static int countCompatibleActivities(Activity[] activities) {
+    private static int countCompatibleActivities(List<Activity> activities) {
         int selectedCount = 1;
-        Activity lastSelected = activities[0];
+        Activity lastSelected = activities.get(0);
 
-        for (int i = 1; i < activities.length; i++) {
-            Activity candidate = activities[i];
+        for (int i = 1; i < activities.size(); i++) {
+            Activity candidate = activities.get(i);
 
             if (candidate.startsAfter(lastSelected)) {
                 selectedCount++;

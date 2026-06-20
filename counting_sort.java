@@ -16,37 +16,29 @@ final class CountingSort {
             return new int[0];
         }
 
-        Bounds bounds = findBounds(values);
+        Bounds bounds = Bounds.from(values);
         int[] cumulativeCounts = buildCumulativeCounts(values, bounds);
         return buildSortedArray(values, cumulativeCounts, bounds);
     }
 
-    private static Bounds findBounds(int[] values) {
-        int minVal = values[0];
-        int maxVal = values[0];
-        for (int i = 1; i < values.length; i++) {
-            if (values[i] < minVal) {
-                minVal = values[i];
-            }
-            if (values[i] > maxVal) {
-                maxVal = values[i];
-            }
-        }
-
-        return new Bounds(minVal, maxVal);
+    private static int[] buildCumulativeCounts(int[] values, Bounds bounds) {
+        int[] counts = buildCounts(values, bounds);
+        accumulateCounts(counts);
+        return counts;
     }
 
-    private static int[] buildCumulativeCounts(int[] values, Bounds bounds) {
+    private static int[] buildCounts(int[] values, Bounds bounds) {
         int[] counts = new int[bounds.size()];
         for (int value : values) {
             counts[bounds.indexOf(value)]++;
         }
+        return counts;
+    }
 
+    private static void accumulateCounts(int[] counts) {
         for (int i = 1; i < counts.length; i++) {
             counts[i] += counts[i - 1];
         }
-
-        return counts;
     }
 
     private static int[] buildSortedArray(int[] values, int[] counts, Bounds bounds) {
@@ -68,6 +60,21 @@ final class CountingSort {
         private Bounds(int min, int max) {
             this.min = min;
             this.size = calculateSize(min, max);
+        }
+
+        private static Bounds from(int[] values) {
+            int minVal = values[0];
+            int maxVal = values[0];
+            for (int i = 1; i < values.length; i++) {
+                if (values[i] < minVal) {
+                    minVal = values[i];
+                }
+                if (values[i] > maxVal) {
+                    maxVal = values[i];
+                }
+            }
+
+            return new Bounds(minVal, maxVal);
         }
 
         private int size() {

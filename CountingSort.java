@@ -18,12 +18,11 @@ public final class CountingSort {
             return Arrays.copyOf(values, values.length);
         }
 
-        Bounds bounds = findBounds(values);
-        int[] prefixCounts = buildPrefixCounts(values, bounds.min, bounds.max);
-        return placeValues(values, prefixCounts, bounds.min);
+        SortPlan plan = buildSortPlan(values);
+        return placeValues(values, plan);
     }
 
-    private static Bounds findBounds(int[] values) {
+    private static SortPlan buildSortPlan(int[] values) {
         int min = values[0];
         int max = values[0];
         for (int value : values) {
@@ -34,10 +33,12 @@ public final class CountingSort {
                 max = value;
             }
         }
-        return new Bounds(min, max);
+
+        int[] cumulativeCounts = buildCumulativeCounts(values, min, max);
+        return new SortPlan(min, cumulativeCounts);
     }
 
-    private static int[] buildPrefixCounts(int[] values, int min, int max) {
+    private static int[] buildCumulativeCounts(int[] values, int min, int max) {
         long range = (long) max - min + 1L;
         if (range > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Input range is too large for counting sort");
@@ -54,23 +55,23 @@ public final class CountingSort {
         return counts;
     }
 
-    private static int[] placeValues(int[] values, int[] prefixCounts, int min) {
+    private static int[] placeValues(int[] values, SortPlan plan) {
         int[] sorted = new int[values.length];
         for (int i = values.length - 1; i >= 0; i--) {
             int value = values[i];
-            int countIndex = value - min;
-            sorted[--prefixCounts[countIndex]] = value;
+            int countIndex = value - plan.min;
+            sorted[--plan.cumulativeCounts[countIndex]] = value;
         }
         return sorted;
     }
 
-    private static final class Bounds {
+    private static final class SortPlan {
         private final int min;
-        private final int max;
+        private final int[] cumulativeCounts;
 
-        private Bounds(int min, int max) {
+        private SortPlan(int min, int[] cumulativeCounts) {
             this.min = min;
-            this.max = max;
+            this.cumulativeCounts = cumulativeCounts;
         }
     }
 }

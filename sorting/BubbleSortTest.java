@@ -17,29 +17,34 @@ public final class BubbleSortTest {
     public static void main(String[] args) {
         BubbleSort sorter = new BubbleSort();
 
-        // Primitive int[] path.
-        checkInts("already sorted", new int[]{1, 2, 3}, new int[]{1, 2, 3});
-        checkInts("reverse order", new int[]{3, 2, 1}, new int[]{1, 2, 3});
-        checkInts("with duplicates", new int[]{2, 1, 2, 1}, new int[]{1, 1, 2, 2});
-        checkInts("empty array", new int[]{}, new int[]{});
-        checkInts("single element", new int[]{42}, new int[]{42});
-        checkInts("negatives", new int[]{0, -1, 5, -10}, new int[]{-10, -1, 0, 5});
-        checkInts("original demo data",
+        // Primitive int[] ascending convenience path.
+        sortAscAndCheck("already sorted", new int[]{1, 2, 3}, new int[]{1, 2, 3});
+        sortAscAndCheck("reverse order", new int[]{3, 2, 1}, new int[]{1, 2, 3});
+        sortAscAndCheck("with duplicates", new int[]{2, 1, 2, 1}, new int[]{1, 1, 2, 2});
+        sortAscAndCheck("empty array", new int[]{}, new int[]{});
+        sortAscAndCheck("single element", new int[]{42}, new int[]{42});
+        sortAscAndCheck("negatives", new int[]{0, -1, 5, -10}, new int[]{-10, -1, 0, 5});
+        sortAscAndCheck("original demo data",
                 new int[]{64, 34, 25, 12, 22, 11, 90},
                 new int[]{11, 12, 22, 25, 34, 64, 90});
+
+        // Primitive int[] with a custom comparator (no boxing).
+        int[] descending = {1, 4, 2, 3};
+        BubbleSort.sort(descending, IntComparator.DESCENDING);
+        assertInts("primitive descending", descending, new int[]{4, 3, 2, 1});
 
         // Generic comparator path.
         Integer[] natural = {5, 3, 4, 1, 2};
         sorter.sort(natural);
-        checkObjects("generic natural order", natural, new Integer[]{1, 2, 3, 4, 5});
+        assertObjects("generic natural order", natural, new Integer[]{1, 2, 3, 4, 5});
 
         Integer[] reversed = {1, 2, 3};
         sorter.sort(reversed, Comparator.reverseOrder());
-        checkObjects("generic reverse order", reversed, new Integer[]{3, 2, 1});
+        assertObjects("generic reverse order", reversed, new Integer[]{3, 2, 1});
 
         String[] words = {"banana", "apple", "cherry"};
         sorter.sort(words);
-        checkObjects("strings", words, new String[]{"apple", "banana", "cherry"});
+        assertObjects("strings", words, new String[]{"apple", "banana", "cherry"});
 
         System.out.printf("%nTests: %d passed, %d failed%n", passed, failed);
         if (failed > 0) {
@@ -47,16 +52,20 @@ public final class BubbleSortTest {
         }
     }
 
-    private static void checkInts(String name, int[] input, int[] expected) {
+    private static void sortAscAndCheck(String name, int[] input, int[] expected) {
         BubbleSort.sort(input);
-        if (Arrays.equals(input, expected)) {
+        assertInts(name, input, expected);
+    }
+
+    private static void assertInts(String name, int[] actual, int[] expected) {
+        if (Arrays.equals(actual, expected)) {
             pass(name);
         } else {
-            fail(name, Arrays.toString(expected), Arrays.toString(input));
+            fail(name, Arrays.toString(expected), Arrays.toString(actual));
         }
     }
 
-    private static <T> void checkObjects(String name, T[] actual, T[] expected) {
+    private static <T> void assertObjects(String name, T[] actual, T[] expected) {
         if (Arrays.equals(actual, expected)) {
             pass(name);
         } else {

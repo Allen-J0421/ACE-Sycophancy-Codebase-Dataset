@@ -9,12 +9,13 @@ import java.util.Objects;
  * algorithm stops early. Worst case is O(n²) comparisons; a sorted (or nearly
  * sorted) input runs in O(n).
  *
- * <p>This class offers two entry points:
+ * <p>The class offers symmetric object and primitive entry points:
  * <ul>
  *   <li>the generic {@link #sort(Object[], Comparator)} required by
  *       {@link Sorter}, for object arrays; and</li>
- *   <li>a primitive {@link #sort(int[])} overload that preserves the original
- *       allocation-free {@code int[]} behavior.</li>
+ *   <li>{@link #sort(int[], IntComparator)} for primitive {@code int} arrays,
+ *       with a {@link #sort(int[])} convenience for ascending order. These
+ *       preserve the original allocation-free {@code int[]} behavior.</li>
  * </ul>
  */
 public final class BubbleSort implements Sorter {
@@ -28,9 +29,7 @@ public final class BubbleSort implements Sorter {
             boolean swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
                 if (comparator.compare(array[j], array[j + 1]) > 0) {
-                    T temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
+                    swap(array, j, j + 1);
                     swapped = true;
                 }
             }
@@ -43,22 +42,28 @@ public final class BubbleSort implements Sorter {
     /**
      * Sorts a primitive {@code int} array in place in ascending order.
      *
-     * <p>This mirrors the behavior of the original {@code bubbleSort} routine
-     * while deriving the length from the array itself rather than a separate
-     * {@code n} parameter.
-     *
      * @param array the array to sort; must not be {@code null}
      */
     public static void sort(int[] array) {
+        sort(array, IntComparator.ASCENDING);
+    }
+
+    /**
+     * Sorts a primitive {@code int} array in place using {@code comparator},
+     * with no boxing.
+     *
+     * @param array      the array to sort; must not be {@code null}
+     * @param comparator the ordering to impose; must not be {@code null}
+     */
+    public static void sort(int[] array, IntComparator comparator) {
         Objects.requireNonNull(array, "array");
+        Objects.requireNonNull(comparator, "comparator");
         int n = array.length;
         for (int i = 0; i < n - 1; i++) {
             boolean swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
-                if (array[j] > array[j + 1]) {
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
+                if (comparator.compare(array[j], array[j + 1]) > 0) {
+                    swap(array, j, j + 1);
                     swapped = true;
                 }
             }
@@ -66,5 +71,17 @@ public final class BubbleSort implements Sorter {
                 break;
             }
         }
+    }
+
+    private static <T> void swap(T[] array, int i, int j) {
+        T temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
 }

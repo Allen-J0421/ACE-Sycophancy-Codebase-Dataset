@@ -6,7 +6,8 @@ Strategy interface.
 
 ## Structure
 
-All sources live in the `sorting` package:
+A standard Gradle layout; production sources live in `src/main/java/sorting`
+and JUnit 5 tests in `src/test/java/sorting`.
 
 | File                     | Responsibility                                                       |
 |--------------------------|---------------------------------------------------------------------|
@@ -21,7 +22,10 @@ All sources live in the `sorting` package:
 | `SortSupport.java`       | Package-private shared helpers (element swap, argument checks).      |
 | `IntArrayFormatter.java` | Formats `int[]` for display, separate from the algorithm and I/O.   |
 | `SortingDemo.java`       | `main` entry point; demonstrates swapping strategies.               |
-| `SortingTest.java`       | Dependency-free test harness; non-zero exit on failure.             |
+
+Tests live alongside under `src/test/java/sorting`: `SorterTest` (parameterized
+across all algorithms), `InstrumentationTest`, `BubbleSortPrimitiveTest`, and
+`IntArrayFormatterTest`.
 
 ## Algorithms
 
@@ -68,14 +72,15 @@ overloads use, so the uninstrumented path carries no overhead. The primitive
 Refactored from the original single-file `bubble_sort.java`: separated the
 algorithm, formatting, demo, and tests; made the algorithm generic and
 comparator-driven; gave the primitive path comparator symmetry; then added the
-insertion/merge/quick implementations behind the `Sorter` interface. The
+insertion/merge/quick implementations behind the `Sorter` interface; added a
+`SortObserver` trace hook; then moved to a Gradle build with JUnit 5 tests. The
 original primitive bubble-sort output is still reproduced by `SortingDemo`.
 
 ## Build & run
 
-```sh
-javac sorting/*.java
+Uses the Gradle wrapper, so no local Gradle install is required:
 
-java sorting.SortingDemo   # run the demo
-java sorting.SortingTest   # run the tests
+```sh
+./gradlew test   # compile and run the JUnit 5 suite
+./gradlew run    # run the demo (sorting.SortingDemo)
 ```

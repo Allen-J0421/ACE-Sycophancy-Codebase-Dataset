@@ -29,3 +29,8 @@ out/
 target/
 build/
 hs_err_pid*.log
+
+# --- Gradle ---
+.gradle/
+# Keep the committed wrapper jar despite the *.jar rule above.
+!gradle/wrapper/gradle-wrapper.jar

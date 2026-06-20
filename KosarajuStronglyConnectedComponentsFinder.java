@@ -16,7 +16,7 @@ public final class KosarajuStronglyConnectedComponentsFinder
 
         DirectedGraph reversedGraph = graph.reverse();
         boolean[] visited = new boolean[graph.vertexCount()];
-        List<List<Integer>> components = new ArrayList<>();
+        List<StronglyConnectedComponent> components = new ArrayList<>();
 
         while (!finishingOrder.isEmpty()) {
             int vertex = finishingOrder.pop();
@@ -24,7 +24,11 @@ public final class KosarajuStronglyConnectedComponentsFinder
                 continue;
             }
 
-            components.add(traversal.collectReachableVertices(vertex, reversedGraph, visited));
+            components.add(
+                StronglyConnectedComponent.fromVertices(
+                    traversal.collectReachableVertices(vertex, reversedGraph, visited)
+                )
+            );
         }
 
         return new StronglyConnectedComponentsResult(components);

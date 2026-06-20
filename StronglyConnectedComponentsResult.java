@@ -3,13 +3,13 @@ import java.util.Collections;
 import java.util.List;
 
 public final class StronglyConnectedComponentsResult {
-    private final List<List<Integer>> components;
+    private final List<StronglyConnectedComponent> components;
 
-    public StronglyConnectedComponentsResult(List<List<Integer>> components) {
+    public StronglyConnectedComponentsResult(List<StronglyConnectedComponent> components) {
         this.components = freezeComponents(components);
     }
 
-    public List<List<Integer>> components() {
+    public List<StronglyConnectedComponent> components() {
         return components;
     }
 
@@ -20,11 +20,8 @@ public final class StronglyConnectedComponentsResult {
     public String toDisplayString() {
         StringBuilder output = new StringBuilder("Strongly Connected Components:\n");
 
-        for (List<Integer> component : components) {
-            for (int vertex : component) {
-                output.append(vertex).append(' ');
-            }
-            output.append('\n');
+        for (StronglyConnectedComponent component : components) {
+            output.append(component.toDisplayString()).append('\n');
         }
 
         return output.toString();
@@ -35,17 +32,19 @@ public final class StronglyConnectedComponentsResult {
         return toDisplayString();
     }
 
-    private static List<List<Integer>> freezeComponents(List<List<Integer>> components) {
+    private static List<StronglyConnectedComponent> freezeComponents(
+        List<StronglyConnectedComponent> components
+    ) {
         if (components == null) {
             throw new IllegalArgumentException("Components must not be null.");
         }
 
-        List<List<Integer>> immutableComponents = new ArrayList<>(components.size());
-        for (List<Integer> component : components) {
+        List<StronglyConnectedComponent> immutableComponents = new ArrayList<>(components.size());
+        for (StronglyConnectedComponent component : components) {
             if (component == null) {
-                throw new IllegalArgumentException("Components must not contain null lists.");
+                throw new IllegalArgumentException("Components must not contain null values.");
             }
-            immutableComponents.add(List.copyOf(component));
+            immutableComponents.add(component);
         }
 
         return Collections.unmodifiableList(immutableComponents);

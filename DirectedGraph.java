@@ -9,18 +9,22 @@ public final class DirectedGraph {
         this.adjacency = adjacency;
     }
 
-    public static DirectedGraph fromEdges(int vertexCount, int[][] edges) {
+    public static DirectedGraph fromEdges(int vertexCount, Edge... edges) {
+        return fromEdges(vertexCount, List.of(edges));
+    }
+
+    public static DirectedGraph fromEdges(int vertexCount, List<Edge> edges) {
         if (edges == null) {
             throw new IllegalArgumentException("Edges must not be null.");
         }
 
         List<List<Integer>> adjacency = createEmptyAdjacency(vertexCount);
 
-        for (int[] edge : edges) {
+        for (Edge edge : edges) {
             validateEdge(edge);
 
-            int from = edge[0];
-            int to = edge[1];
+            int from = edge.from();
+            int to = edge.to();
             validateVertex(from, vertexCount);
             validateVertex(to, vertexCount);
             adjacency.get(from).add(to);
@@ -72,9 +76,9 @@ public final class DirectedGraph {
         return Collections.unmodifiableList(immutableAdjacency);
     }
 
-    private static void validateEdge(int[] edge) {
-        if (edge == null || edge.length != 2) {
-            throw new IllegalArgumentException("Each edge must contain exactly two vertices.");
+    private static void validateEdge(Edge edge) {
+        if (edge == null) {
+            throw new IllegalArgumentException("Edges must not contain null values.");
         }
     }
 

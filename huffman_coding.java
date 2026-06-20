@@ -18,6 +18,24 @@ class HuffmanCoding {
     private HuffmanCoding() {
     }
 
+    static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
+        return HuffmanTree.build(symbols, frequencies).codesInTraversalOrder();
+    }
+
+    static ArrayList<String> huffmanCodesBySymbol(String symbols, int[] frequencies) {
+        return HuffmanTree.build(symbols, frequencies).codesBySymbolOrder();
+    }
+
+    public static void main(String[] args) {
+        String s = "abcdef";
+        int[] freq = {5, 9, 12, 13, 16, 45};
+        ArrayList<String> codes = huffmanCodes(s, freq);
+
+        for (String code : codes) {
+            System.out.print(code + " ");
+        }
+    }
+
     private static final class Node {
         private final long frequency;
         private final int tieBreakIndex;
@@ -134,14 +152,6 @@ class HuffmanCoding {
         }
     }
 
-    static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
-        return HuffmanTree.build(symbols, frequencies).codesInTraversalOrder();
-    }
-
-    static ArrayList<String> huffmanCodesBySymbol(String symbols, int[] frequencies) {
-        return HuffmanTree.build(symbols, frequencies).codesBySymbolOrder();
-    }
-
     private static void validateInput(String symbols, int[] frequencies) {
         Objects.requireNonNull(symbols, "Input string must not be null");
         Objects.requireNonNull(frequencies, "Frequency array must not be null");
@@ -158,16 +168,6 @@ class HuffmanCoding {
             if (frequency < 0) {
                 throw new IllegalArgumentException("Frequencies must not be negative");
             }
-        }
-    }
-
-    public static void main(String[] args) {
-        String s = "abcdef";
-        int[] freq = {5, 9, 12, 13, 16, 45};
-        ArrayList<String> codes = huffmanCodes(s, freq);
-
-        for (String code : codes) {
-            System.out.print(code + " ");
         }
     }
 }

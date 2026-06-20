@@ -56,7 +56,12 @@ final class Graph {
     }
 
     GraphBuilder copyBuilder() {
-        return builder(vertexCount(), type).addEdges(edges);
+        return GraphBuilder.fromGraph(this);
+    }
+
+    Graph transform(GraphTransformation transformation) {
+        Objects.requireNonNull(transformation, "transformation");
+        return transformation.transform(this);
     }
 
     <Result> Result analyze(GraphAnalysis<Result> analysis) {

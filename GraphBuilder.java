@@ -22,6 +22,11 @@ final class GraphBuilder {
         return new GraphBuilder(vertexCount, GraphType.UNDIRECTED);
     }
 
+    static GraphBuilder fromGraph(Graph graph) {
+        Graph nonNullGraph = Objects.requireNonNull(graph, "graph");
+        return new GraphBuilder(nonNullGraph.vertexCount(), nonNullGraph.type()).addEdges(nonNullGraph.edges());
+    }
+
     GraphBuilder addEdge(int from, int to) {
         return addEdge(Edge.between(from, to));
     }

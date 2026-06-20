@@ -5,6 +5,15 @@ final class GraphTransformations {
     private GraphTransformations() {
     }
 
+    static GraphTransformation identity() {
+        return new GraphTransformation() {
+            @Override
+            public Graph compute(Graph graph) {
+                return graph;
+            }
+        };
+    }
+
     static GraphTransformation copy() {
         return new GraphTransformation() {
             @Override
@@ -30,5 +39,16 @@ final class GraphTransformations {
                 return builder.build();
             }
         };
+    }
+
+    static GraphTransformation chain(GraphTransformation... transformations) {
+        Objects.requireNonNull(transformations, "transformations");
+
+        GraphTransformation chainedTransformation = identity();
+        for (GraphTransformation transformation : transformations) {
+            chainedTransformation = chainedTransformation.andThen(Objects.requireNonNull(transformation, "transformation"));
+        }
+
+        return chainedTransformation;
     }
 }

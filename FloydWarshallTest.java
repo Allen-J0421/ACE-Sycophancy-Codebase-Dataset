@@ -28,7 +28,7 @@ public final class FloydWarshallTest {
                 {FloydWarshall.INF, 0, 3},
                 {FloydWarshall.INF, FloydWarshall.INF, 0}
         };
-        int[][] original = MatrixUtils.copyOf(graph);
+        int[][] original = Matrices.copyOf(graph);
 
         FloydWarshall.shortestPaths(graph);
 

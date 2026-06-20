@@ -1,5 +1,7 @@
-final class MatrixValidator {
-    private MatrixValidator() {
+import java.util.Arrays;
+
+final class Matrices {
+    private Matrices() {
     }
 
     static int requireSquare(int[][] matrix, String name) {
@@ -36,5 +38,15 @@ final class MatrixValidator {
         }
 
         return columnCount;
+    }
+
+    static int[][] copyOf(int[][] matrix) {
+        requireRectangular(matrix, "Matrix");
+
+        int[][] copy = new int[matrix.length][];
+        for (int row = 0; row < matrix.length; row++) {
+            copy[row] = Arrays.copyOf(matrix[row], matrix[row].length);
+        }
+        return copy;
     }
 }

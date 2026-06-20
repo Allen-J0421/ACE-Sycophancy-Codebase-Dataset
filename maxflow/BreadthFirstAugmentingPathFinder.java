@@ -22,7 +22,12 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
                 if (!visited[nextVertex] && residualNetwork.hasResidualCapacity(currentVertex, nextVertex)) {
                     parent[nextVertex] = currentVertex;
                     if (nextVertex == sink) {
-                        return Optional.of(new AugmentingPath(source, sink, parent));
+                        return Optional.of(
+                            new AugmentingPath(source, sink, parent, bottleneckCapacity(
+                                residualNetwork,
+                                parent,
+                                source,
+                                sink)));
                     }
 
                     visited[nextVertex] = true;
@@ -32,5 +37,20 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
         }
 
         return Optional.empty();
+    }
+
+    private static int bottleneckCapacity(
+        ResidualNetwork residualNetwork,
+        int[] parent,
+        int source,
+        int sink
+    ) {
+        int pathFlow = Integer.MAX_VALUE;
+        for (int vertex = sink; vertex != source; vertex = parent[vertex]) {
+            int predecessor = parent[vertex];
+            pathFlow = Math.min(pathFlow, residualNetwork.residualCapacity(predecessor, vertex));
+        }
+
+        return pathFlow;
     }
 }

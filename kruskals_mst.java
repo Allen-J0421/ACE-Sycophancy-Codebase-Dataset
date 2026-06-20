@@ -2,15 +2,7 @@ import java.util.Arrays;
 
 class KruskalMST {
 
-    static class Edge implements Comparable<Edge> {
-        final int from, to, weight;
-
-        Edge(int from, int to, int weight) {
-            this.from = from;
-            this.to = to;
-            this.weight = weight;
-        }
-
+    record Edge(int from, int to, int weight) implements Comparable<Edge> {
         @Override
         public int compareTo(Edge other) {
             return Integer.compare(this.weight, other.weight);
@@ -26,8 +18,8 @@ class KruskalMST {
         int edgesAdded = 0;
 
         for (Edge edge : sorted) {
-            if (uf.union(edge.from, edge.to)) {
-                totalCost += edge.weight;
+            if (uf.union(edge.from(), edge.to())) {
+                totalCost += edge.weight();
                 if (++edgesAdded == vertexCount - 1) break;
             }
         }

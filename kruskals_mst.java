@@ -155,12 +155,17 @@ final class DisjointSet {
         }
     }
 
-    /** Returns the representative of {@code i}'s set, compressing the path along the way. */
+    /**
+     * Returns the representative of {@code i}'s set, compressing the path along
+     * the way. Iterative (path halving) so it cannot overflow the stack on
+     * deep chains, while keeping the near-constant amortised cost of compression.
+     */
     int find(int i) {
-        if (parent[i] != i) {
-            parent[i] = find(parent[i]);
+        while (parent[i] != i) {
+            parent[i] = parent[parent[i]]; // point i at its grandparent
+            i = parent[i];
         }
-        return parent[i];
+        return i;
     }
 
     /** Returns {@code true} if {@code x} and {@code y} already belong to the same set. */

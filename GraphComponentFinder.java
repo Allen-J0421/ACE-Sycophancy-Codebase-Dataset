@@ -1,6 +1,5 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -10,7 +9,7 @@ final class GraphComponentFinder {
     private GraphComponentFinder() {
     }
 
-    static List<List<Integer>> findConnectedComponents(Graph graph) {
+    static ConnectedComponentsResult findConnectedComponents(Graph graph) {
         Objects.requireNonNull(graph, "graph");
 
         int vertexCount = graph.vertexCount();
@@ -20,16 +19,17 @@ final class GraphComponentFinder {
 
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             if (!visited[vertex]) {
-                components.add(traverseComponent(graph, vertex, visited));
+                components.add(traverseComponent(graph, vertex, vertexCount, visited));
             }
         }
 
-        return Collections.unmodifiableList(components);
+        return new ConnectedComponentsResult(components);
     }
 
     private static List<Integer> traverseComponent(
             Graph graph,
             int startVertex,
+            int vertexCount,
             boolean[] visited) {
         Queue<Integer> pendingVertices = new ArrayDeque<>();
         List<Integer> component = new ArrayList<>();
@@ -42,7 +42,7 @@ final class GraphComponentFinder {
             component.add(currentVertex);
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
-                validateNeighborVertex(neighbor, graph.vertexCount());
+                validateNeighborVertex(neighbor, vertexCount);
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
                     pendingVertices.add(neighbor);
@@ -50,7 +50,7 @@ final class GraphComponentFinder {
             }
         }
 
-        return Collections.unmodifiableList(component);
+        return List.copyOf(component);
     }
 
     private static void validateVertexCount(int vertexCount) {

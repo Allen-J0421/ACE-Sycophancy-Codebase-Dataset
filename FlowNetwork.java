@@ -2,6 +2,10 @@ public final class FlowNetwork {
     private final int[][] capacities;
     private final Vertex[] vertices;
 
+    public static FlowNetwork fromCapacities(int[][] capacities) {
+        return new FlowNetwork(capacities);
+    }
+
     public FlowNetwork(int[][] capacities) {
         validate(capacities);
         this.capacities = IntMatrix.copyOf(capacities);
@@ -33,8 +37,35 @@ public final class FlowNetwork {
         return capacities[from.index()][to.index()];
     }
 
-    public int[][] copyCapacities() {
+    public int[][] toCapacityMatrix() {
         return IntMatrix.copyOf(capacities);
+    }
+
+    public int[][] copyCapacities() {
+        return toCapacityMatrix();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof FlowNetwork)) {
+            return false;
+        }
+
+        FlowNetwork network = (FlowNetwork) other;
+        return IntMatrix.equals(capacities, network.capacities);
+    }
+
+    @Override
+    public int hashCode() {
+        return IntMatrix.hashCode(capacities);
+    }
+
+    @Override
+    public String toString() {
+        return "FlowNetwork" + IntMatrix.toDisplayString(capacities);
     }
 
     private void validateVertex(Vertex vertex) {

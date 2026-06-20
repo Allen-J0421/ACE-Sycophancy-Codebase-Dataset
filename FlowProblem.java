@@ -17,7 +17,7 @@ public final class FlowProblem {
     }
 
     public static FlowProblem fromCapacities(int[][] capacities, int source, int sink) {
-        FlowNetwork network = new FlowNetwork(capacities);
+        FlowNetwork network = FlowNetwork.fromCapacities(capacities);
         return new FlowProblem(network, network.vertexAt(source), network.vertexAt(sink));
     }
 
@@ -31,5 +31,33 @@ public final class FlowProblem {
 
     public Vertex sink() {
         return sink;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof FlowProblem)) {
+            return false;
+        }
+
+        FlowProblem problem = (FlowProblem) other;
+        return network.equals(problem.network)
+            && source.equals(problem.source)
+            && sink.equals(problem.sink);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = network.hashCode();
+        result = 31 * result + source.hashCode();
+        result = 31 * result + sink.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "FlowProblem[source=" + source + ", sink=" + sink + ", network=" + network + "]";
     }
 }

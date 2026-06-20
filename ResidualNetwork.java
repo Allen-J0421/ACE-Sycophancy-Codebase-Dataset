@@ -3,7 +3,7 @@ public final class ResidualNetwork {
     private final Vertex[] vertices;
 
     public ResidualNetwork(FlowNetwork network) {
-        capacities = network.copyCapacities();
+        capacities = network.toCapacityMatrix();
         vertices = network.vertices();
     }
 
@@ -36,6 +36,6 @@ public final class ResidualNetwork {
     }
 
     public FlowNetwork asFlowNetwork() {
-        return new FlowNetwork(capacities);
+        return FlowNetwork.fromCapacities(capacities);
     }
 }

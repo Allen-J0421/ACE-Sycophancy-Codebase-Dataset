@@ -31,20 +31,19 @@ public class FloydWarshallDemo {
 
     private static void printDistMatrix(FloydWarshall.Result result) {
         int n = result.vertexCount();
-        int colWidth = 3; // minimum width for "INF"
+        String[][] cells = new String[n][n];
+        int colWidth = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 int d = result.getDistance(i, j);
-                if (d < FloydWarshall.INF) {
-                    colWidth = Math.max(colWidth, String.valueOf(d).length());
-                }
+                cells[i][j] = d >= FloydWarshall.INF ? "INF" : String.valueOf(d);
+                colWidth = Math.max(colWidth, cells[i][j].length());
             }
         }
         String fmt = "%-" + (colWidth + 1) + "s";
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                int d = result.getDistance(i, j);
-                System.out.printf(fmt, d >= FloydWarshall.INF ? "INF" : d);
+        for (String[] row : cells) {
+            for (String cell : row) {
+                System.out.printf(fmt, cell);
             }
             System.out.println();
         }

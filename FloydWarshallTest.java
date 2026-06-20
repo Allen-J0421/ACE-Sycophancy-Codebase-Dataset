@@ -100,6 +100,7 @@ public class FloydWarshallTest {
             {INF, 0}
         };
         FloydWarshall.Result r = FloydWarshall.compute(graph);
+        assertDistMatrix(r, new int[][]{{0, 1}, {INF, 0}});
         assertTrue("0->1 reachable", r.isReachable(0, 1));
         assertTrue("1->0 unreachable", !r.isReachable(1, 0));
         assertTrue("1->0 empty path", r.getPath(1, 0).isEmpty());
@@ -107,8 +108,7 @@ public class FloydWarshallTest {
 
     private static void testSingleVertex() {
         FloydWarshall.Result r = FloydWarshall.compute(new int[][]{{0}});
-        assertEqual("single dist[0][0]", 0, r.getDistance(0, 0));
-        assertEqual("single vertexCount", 1, r.vertexCount());
+        assertDistMatrix(r, new int[][]{{0}});
         assertTrue("single path [0]", r.getPath(0, 0).equals(List.of(0)));
     }
 

@@ -5,7 +5,7 @@ public final class DetectCycle {
     public static void main(String[] args) {
         DirectedGraph graph = sampleGraph();
 
-        System.out.println(CycleDetector.hasCycle(graph));
+        System.out.println(GraphAlgorithms.hasCycle(graph));
     }
 
     private static DirectedGraph sampleGraph() {

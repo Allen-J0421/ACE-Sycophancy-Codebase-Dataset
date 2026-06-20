@@ -4,22 +4,35 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.IntConsumer;
 
-public final class TopologicalSorter {
-    private TopologicalSorter() {
+public final class GraphAlgorithms {
+    private GraphAlgorithms() {
     }
 
-    public static List<Integer> sort(DirectedGraphView graph) {
+    public static boolean hasCycle(DirectedGraphView graph) {
+        Objects.requireNonNull(graph, "graph");
+        return traverseTopologically(graph, vertex -> { }) != graph.vertexCount();
+    }
+
+    public static List<Integer> topologicalSort(DirectedGraphView graph) {
         Objects.requireNonNull(graph, "graph");
 
+        List<Integer> topologicalOrder = new ArrayList<>(graph.vertexCount());
+        traverseTopologically(graph, topologicalOrder::add);
+        return Collections.unmodifiableList(topologicalOrder);
+    }
+
+    private static int traverseTopologically(DirectedGraphView graph, IntConsumer vertexConsumer) {
         int[] inDegree = computeInDegrees(graph);
         Deque<Integer> readyVertices = new ArrayDeque<>();
         enqueueZeroInDegreeVertices(inDegree, readyVertices);
 
-        List<Integer> topologicalOrder = new ArrayList<>(graph.vertexCount());
+        int processedVertexCount = 0;
         while (!readyVertices.isEmpty()) {
             int currentVertex = readyVertices.removeFirst();
-            topologicalOrder.add(currentVertex);
+            processedVertexCount++;
+            vertexConsumer.accept(currentVertex);
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
                 if (--inDegree[neighbor] == 0) {
@@ -28,7 +41,7 @@ public final class TopologicalSorter {
             }
         }
 
-        return Collections.unmodifiableList(topologicalOrder);
+        return processedVertexCount;
     }
 
     private static int[] computeInDegrees(DirectedGraphView graph) {

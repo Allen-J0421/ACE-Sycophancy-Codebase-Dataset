@@ -1,11 +1,10 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-class InsertionSort {
+public class InsertionSort {
 
     private InsertionSort() {}
 
@@ -123,10 +122,5 @@ class InsertionSort {
         List<T> copy = new ArrayList<>(list);
         sort(copy, comparator);
         return copy;
-    }
-
-    public static void main(String[] args) {
-        int[] arr = {12, 11, 13, 5, 6};
-        System.out.println(Arrays.toString(sortedCopy(arr)));
     }
 }

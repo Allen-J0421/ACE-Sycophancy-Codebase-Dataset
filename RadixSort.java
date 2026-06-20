@@ -22,24 +22,20 @@ public final class RadixSort {
             return;
         }
 
-        SortWorkspace workspace = new SortWorkspace(values.length);
+        SortWorkspace workspace = new SortWorkspace(values);
         int maxValue = findMax(values);
-        int[] source = values;
-        int[] target = workspace.buffer;
-        boolean valuesContainSortedResult = true;
 
         for (long exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
-            countingSortByDigit(source, target, workspace.counts, exponent);
-
-            int[] previousSource = source;
-            source = target;
-            target = previousSource;
-            valuesContainSortedResult = !valuesContainSortedResult;
+            countingSortByDigit(
+                workspace.source(),
+                workspace.target(),
+                workspace.counts(),
+                exponent
+            );
+            workspace.swapBuffers();
         }
 
-        if (!valuesContainSortedResult) {
-            System.arraycopy(source, 0, values, 0, values.length);
-        }
+        workspace.copyResultBackIfNeeded();
     }
 
     private static int[] requireSupportedValues(int[] values) {
@@ -99,11 +95,41 @@ public final class RadixSort {
     }
 
     private static final class SortWorkspace {
+        private final int[] originalValues;
         private final int[] buffer;
         private final int[] counts = new int[RADIX];
+        private int[] source;
+        private int[] target;
 
-        private SortWorkspace(int length) {
-            this.buffer = new int[length];
+        private SortWorkspace(int[] values) {
+            this.originalValues = values;
+            this.buffer = new int[values.length];
+            this.source = values;
+            this.target = buffer;
+        }
+
+        private int[] source() {
+            return source;
+        }
+
+        private int[] target() {
+            return target;
+        }
+
+        private int[] counts() {
+            return counts;
+        }
+
+        private void swapBuffers() {
+            int[] previousSource = source;
+            source = target;
+            target = previousSource;
+        }
+
+        private void copyResultBackIfNeeded() {
+            if (source != originalValues) {
+                System.arraycopy(source, 0, originalValues, 0, originalValues.length);
+            }
         }
     }
 }

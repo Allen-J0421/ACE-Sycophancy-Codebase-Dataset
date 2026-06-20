@@ -18,8 +18,8 @@ class KruskalMST {
     }
 
     public static int minimumSpanningTreeCost(int vertexCount, int[][] edges) {
-        validateGraph(vertexCount, edges);
-        return minimumSpanningTreeCost(vertexCount, copyEdgesSortedByWeight(edges));
+        validateVertexCount(vertexCount);
+        return minimumSpanningTreeCost(vertexCount, copyValidEdgesSortedByWeight(vertexCount, edges));
     }
 
     private static int minimumSpanningTreeCost(int vertexCount, Edge[] sortedEdges) {
@@ -46,10 +46,12 @@ class KruskalMST {
         System.out.println(minimumSpanningTreeCost(4, sampleEdges()));
     }
 
-    private static Edge[] copyEdgesSortedByWeight(int[][] edges) {
+    private static Edge[] copyValidEdgesSortedByWeight(int vertexCount, int[][] edges) {
+        validateEdgesPresent(edges);
+
         Edge[] sortedEdges = new Edge[edges.length];
         for (int i = 0; i < edges.length; i++) {
-            sortedEdges[i] = Edge.from(edges[i]);
+            sortedEdges[i] = Edge.from(edges[i], vertexCount, i);
         }
         Arrays.sort(sortedEdges);
         return sortedEdges;
@@ -63,15 +65,15 @@ class KruskalMST {
         return Math.max(0, vertexCount - 1);
     }
 
-    private static void validateGraph(int vertexCount, int[][] edges) {
+    private static void validateVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("vertexCount must not be negative");
         }
+    }
+
+    private static void validateEdgesPresent(int[][] edges) {
         if (edges == null) {
             throw new IllegalArgumentException("edges must not be null");
-        }
-        for (int i = 0; i < edges.length; i++) {
-            validateEdge(vertexCount, edges[i], i);
         }
     }
 
@@ -106,7 +108,8 @@ class KruskalMST {
             this.weight = weight;
         }
 
-        private static Edge from(int[] edge) {
+        private static Edge from(int[] edge, int vertexCount, int edgeIndex) {
+            validateEdge(vertexCount, edge, edgeIndex);
             return new Edge(edge[SOURCE], edge[DESTINATION], edge[WEIGHT]);
         }
 

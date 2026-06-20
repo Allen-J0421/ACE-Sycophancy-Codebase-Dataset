@@ -7,6 +7,10 @@ final class InsertionSort {
     }
 
     static void sort(int[] values) {
+        if (isTriviallySorted(values)) {
+            return;
+        }
+
         for (int unsortedIndex = FIRST_UNSORTED_INDEX; unsortedIndex < values.length; unsortedIndex++) {
             insert(values, unsortedIndex);
         }
@@ -69,5 +73,9 @@ final class InsertionSort {
 
     private static boolean isAlreadyOrdered(int[] values, int unsortedIndex) {
         return values[unsortedIndex - 1] <= values[unsortedIndex];
+    }
+
+    private static boolean isTriviallySorted(int[] values) {
+        return values.length < 2;
     }
 }

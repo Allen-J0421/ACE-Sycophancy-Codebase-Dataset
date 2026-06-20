@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,13 +16,32 @@ import java.util.Objects;
  */
 public class ActivitySelection {
 
-    /** An activity with a start time and a finish time. Immutable. */
-    public record Activity(int start, int finish) {
+    /**
+     * An activity with a start time and a finish time. Immutable.
+     *
+     * <p>Activities order naturally by finish time, which is the order in which the
+     * greedy algorithm considers them.
+     */
+    public record Activity(int start, int finish) implements Comparable<Activity> {
         public Activity {
             if (start > finish) {
                 throw new IllegalArgumentException(
                     "start (" + start + ") must not be after finish (" + finish + ")");
             }
+        }
+
+        /**
+         * Whether this activity can be scheduled after {@code earlier} without
+         * overlapping it, i.e. it starts strictly after {@code earlier} finishes.
+         * Activities that merely touch at a single instant are not compatible.
+         */
+        public boolean startsAfter(Activity earlier) {
+            return start > earlier.finish;
+        }
+
+        @Override
+        public int compareTo(Activity other) {
+            return Integer.compare(finish, other.finish);
         }
     }
 
@@ -56,12 +74,12 @@ public class ActivitySelection {
         }
 
         List<Activity> byFinish = new ArrayList<>(activities);
-        byFinish.sort(Comparator.comparingInt(Activity::finish));
+        byFinish.sort(null); // natural order: by finish time
 
         List<Activity> selected = new ArrayList<>();
         Activity last = null;
         for (Activity candidate : byFinish) {
-            if (last == null || candidate.start() > last.finish()) {
+            if (last == null || candidate.startsAfter(last)) {
                 selected.add(candidate);
                 last = candidate;
             }

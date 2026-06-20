@@ -11,11 +11,11 @@ public final class BipartiteGraph {
     }
 
     public static boolean isBipartite(Graph graph) {
-        VertexColor[] colors = new VertexColor[graph.vertexCount()];
+        ColoringState coloring = new ColoringState(graph.vertexCount());
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
-            if (colors[vertex] == null
-                    && !isComponentBipartite(vertex, graph, colors)) {
+            if (!coloring.isColored(vertex)
+                    && !isComponentBipartite(vertex, graph, coloring)) {
                 return false;
             }
         }
@@ -26,22 +26,22 @@ public final class BipartiteGraph {
     private static boolean isComponentBipartite(
             int startVertex,
             Graph graph,
-            VertexColor[] colors) {
+            ColoringState coloring) {
         Deque<Integer> queue = new ArrayDeque<>();
-        colors[startVertex] = VertexColor.FIRST;
+        coloring.colorStartVertex(startVertex);
         queue.offer(startVertex);
 
         while (!queue.isEmpty()) {
             int currentVertex = queue.poll();
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
-                if (colors[neighbor] == null) {
-                    colors[neighbor] = colors[currentVertex].opposite();
+                if (!coloring.isColored(neighbor)) {
+                    coloring.colorWithOpposite(neighbor, currentVertex);
                     queue.offer(neighbor);
                     continue;
                 }
 
-                if (colors[neighbor] == colors[currentVertex]) {
+                if (coloring.hasSameColor(currentVertex, neighbor)) {
                     return false;
                 }
             }
@@ -56,6 +56,30 @@ public final class BipartiteGraph {
 
         VertexColor opposite() {
             return this == FIRST ? SECOND : FIRST;
+        }
+    }
+
+    private static final class ColoringState {
+        private final VertexColor[] colors;
+
+        private ColoringState(int vertexCount) {
+            this.colors = new VertexColor[vertexCount];
+        }
+
+        private boolean isColored(int vertex) {
+            return colors[vertex] != null;
+        }
+
+        private void colorStartVertex(int vertex) {
+            colors[vertex] = VertexColor.FIRST;
+        }
+
+        private void colorWithOpposite(int vertex, int referenceVertex) {
+            colors[vertex] = colors[referenceVertex].opposite();
+        }
+
+        private boolean hasSameColor(int firstVertex, int secondVertex) {
+            return colors[firstVertex] == colors[secondVertex];
         }
     }
 }

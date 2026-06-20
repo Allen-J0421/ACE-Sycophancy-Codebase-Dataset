@@ -1,10 +1,13 @@
 final class InsertionSort {
 
+    private static final int FIRST_UNSORTED_INDEX = 1;
+    private static final char VALUE_SEPARATOR = ' ';
+
     private InsertionSort() {
     }
 
     static void sort(int[] values) {
-        for (int unsortedIndex = 1; unsortedIndex < values.length; unsortedIndex++) {
+        for (int unsortedIndex = FIRST_UNSORTED_INDEX; unsortedIndex < values.length; unsortedIndex++) {
             insert(values, unsortedIndex);
         }
     }
@@ -28,7 +31,7 @@ final class InsertionSort {
         StringBuilder output = new StringBuilder();
 
         for (int value : values) {
-            output.append(value).append(' ');
+            output.append(value).append(VALUE_SEPARATOR);
         }
 
         return output.toString();

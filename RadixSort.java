@@ -12,8 +12,7 @@ public final class RadixSort {
     }
 
     public static int[] sortedCopy(int[] values) {
-        int[] validatedValues = requireSupportedValues(values);
-        int[] copy = Arrays.copyOf(validatedValues, validatedValues.length);
+        int[] copy = copyOfSupportedValues(values);
         sortValidated(copy);
         return copy;
     }
@@ -55,6 +54,11 @@ public final class RadixSort {
         }
 
         return values;
+    }
+
+    private static int[] copyOfSupportedValues(int[] values) {
+        int[] validatedValues = requireSupportedValues(values);
+        return Arrays.copyOf(validatedValues, validatedValues.length);
     }
 
     private static int findMax(int[] values) {

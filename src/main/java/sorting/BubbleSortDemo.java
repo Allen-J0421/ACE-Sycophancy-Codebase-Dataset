@@ -1,3 +1,5 @@
+package sorting;
+
 public final class BubbleSortDemo {
     private static final int[] SAMPLE_VALUES = {64, 34, 25, 12, 22, 11, 90};
     private static final String SORTED_ARRAY_LABEL = "Sorted array: ";

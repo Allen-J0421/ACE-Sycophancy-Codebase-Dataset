@@ -4,9 +4,11 @@ import java.util.Objects;
 
 final class Graph {
 
+    private final int vertexCount;
     private final List<List<Integer>> adjacencyList;
 
-    private Graph(List<List<Integer>> adjacencyList) {
+    private Graph(int vertexCount, List<List<Integer>> adjacencyList) {
+        this.vertexCount = vertexCount;
         this.adjacencyList = adjacencyList;
     }
 
@@ -34,11 +36,11 @@ final class Graph {
             adjacencyList.set(i, List.copyOf(adjacencyList.get(i)));
         }
 
-        return new Graph(List.copyOf(adjacencyList));
+        return new Graph(vertexCount, List.copyOf(adjacencyList));
     }
 
     int vertexCount() {
-        return adjacencyList.size();
+        return vertexCount;
     }
 
     List<Integer> neighborsOf(int vertex) {

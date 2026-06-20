@@ -1,13 +1,8 @@
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.Objects;
 
 final class BipartiteChecker {
-
-    private static final int UNCOLORED = -1;
-    private static final int FIRST_COLOR = 0;
-    private static final int SECOND_COLOR = 1;
 
     private BipartiteChecker() {
     }
@@ -16,11 +11,10 @@ final class BipartiteChecker {
         Objects.requireNonNull(graph, "graph");
 
         int vertexCount = graph.vertexCount();
-        int[] colors = new int[vertexCount];
-        Arrays.fill(colors, UNCOLORED);
+        Partition[] partitions = new Partition[vertexCount];
 
         for (int startVertex = 0; startVertex < vertexCount; startVertex++) {
-            if (colors[startVertex] == UNCOLORED && !colorComponent(startVertex, graph, colors)) {
+            if (partitions[startVertex] == null && !colorComponent(startVertex, graph, partitions)) {
                 return false;
             }
         }
@@ -28,29 +22,39 @@ final class BipartiteChecker {
         return true;
     }
 
-    private static boolean colorComponent(int startVertex, Graph graph, int[] colors) {
+    private static boolean colorComponent(int startVertex, Graph graph, Partition[] partitions) {
         Deque<Integer> queue = new ArrayDeque<>();
-        colors[startVertex] = FIRST_COLOR;
+        partitions[startVertex] = Partition.LEFT;
         queue.addLast(startVertex);
 
         while (!queue.isEmpty()) {
             int currentVertex = queue.removeFirst();
-            int nextColor = colors[currentVertex] == FIRST_COLOR ? SECOND_COLOR : FIRST_COLOR;
+            Partition currentPartition = partitions[currentVertex];
+            Partition oppositePartition = currentPartition.opposite();
 
             for (int neighbor : graph.neighborsOf(currentVertex)) {
-                int neighborColor = colors[neighbor];
-                if (neighborColor == UNCOLORED) {
-                    colors[neighbor] = nextColor;
+                Partition neighborPartition = partitions[neighbor];
+                if (neighborPartition == null) {
+                    partitions[neighbor] = oppositePartition;
                     queue.addLast(neighbor);
                     continue;
                 }
 
-                if (neighborColor == colors[currentVertex]) {
+                if (neighborPartition == currentPartition) {
                     return false;
                 }
             }
         }
 
         return true;
+    }
+
+    private enum Partition {
+        LEFT,
+        RIGHT;
+
+        Partition opposite() {
+            return this == LEFT ? RIGHT : LEFT;
+        }
     }
 }

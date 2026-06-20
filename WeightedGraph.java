@@ -1,10 +1,12 @@
+import java.util.List;
+
 public final class WeightedGraph {
     private static final int EDGE_WIDTH = 3;
 
     private final int vertices;
-    private final WeightedEdge[] edges;
+    private final List<WeightedEdge> edges;
 
-    private WeightedGraph(int vertices, WeightedEdge[] edges) {
+    private WeightedGraph(int vertices, List<WeightedEdge> edges) {
         this.vertices = vertices;
         this.edges = edges;
     }
@@ -40,18 +42,14 @@ public final class WeightedGraph {
             validateVertex(edge.to(), vertices, "edge end");
             normalizedEdges[i] = edge;
         }
-        return new WeightedGraph(vertices, normalizedEdges);
+        return new WeightedGraph(vertices, List.of(normalizedEdges));
     }
 
     public int vertices() {
         return vertices;
     }
 
-    public WeightedEdge[] edges() {
-        return edges.clone();
-    }
-
-    WeightedEdge[] edgeArray() {
+    public List<WeightedEdge> edges() {
         return edges;
     }
 

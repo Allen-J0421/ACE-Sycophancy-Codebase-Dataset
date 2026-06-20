@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.List;
 
 public final class BellmanFord {
     private static final int INF = 100_000_000;
@@ -21,7 +22,7 @@ public final class BellmanFord {
 
     public static ShortestPathResult computeShortestPaths(WeightedGraph graph, int source) {
         validateSource(source, graph.vertices());
-        WeightedEdge[] edges = graph.edgeArray();
+        List<WeightedEdge> edges = graph.edges();
         int[] distances = initializeDistances(graph.vertices(), source);
 
         for (int pass = 0; pass < graph.vertices() - 1; pass++) {
@@ -64,7 +65,7 @@ public final class BellmanFord {
         return true;
     }
 
-    private static boolean hasNegativeCycle(WeightedEdge[] edges, int[] distances) {
+    private static boolean hasNegativeCycle(List<WeightedEdge> edges, int[] distances) {
         for (WeightedEdge edge : edges) {
             if (distances[edge.from()] != INF
                     && distances[edge.from()] + edge.weight() < distances[edge.to()]) {

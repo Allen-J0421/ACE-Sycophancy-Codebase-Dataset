@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public final class ShortestPathResult {
     private final boolean negativeCycle;
     private final int[] distances;
@@ -21,5 +23,35 @@ public final class ShortestPathResult {
 
     public int[] distances() {
         return distances.clone();
+    }
+
+    public int distanceTo(int vertex) {
+        ensureDistancesAvailable();
+        validateVertex(vertex);
+        return distances[vertex];
+    }
+
+    public int vertexCount() {
+        return distances.length;
+    }
+
+    @Override
+    public String toString() {
+        if (negativeCycle) {
+            return "ShortestPathResult{negativeCycle=true}";
+        }
+        return "ShortestPathResult{distances=" + Arrays.toString(distances) + "}";
+    }
+
+    private void ensureDistancesAvailable() {
+        if (negativeCycle) {
+            throw new IllegalStateException("distances are unavailable when a negative cycle is detected");
+        }
+    }
+
+    private void validateVertex(int vertex) {
+        if (vertex < 0 || vertex >= distances.length) {
+            throw new IllegalArgumentException("vertex must be within the result range");
+        }
     }
 }

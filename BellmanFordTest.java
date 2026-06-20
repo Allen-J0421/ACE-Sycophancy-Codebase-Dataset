@@ -10,6 +10,7 @@ final class BellmanFordTest {
         testNegativeCycleDetection();
         testLegacyNegativeCycleDetection();
         testInvalidEdgeValidation();
+        testGraphEdgesAreImmutable();
         System.out.println("All BellmanFord tests passed.");
     }
 
@@ -19,6 +20,8 @@ final class BellmanFordTest {
         ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
         assertFalse(result.hasNegativeCycle(), "expected a valid shortest-path result");
         assertArrayEquals(new int[] {0, 5, 6, 6, 7}, result.distances(), "incorrect shortest paths");
+        assertEquals(6, result.distanceTo(3), "incorrect distance lookup");
+        assertEquals(5, result.vertexCount(), "incorrect vertex count");
     }
 
     private static void testLegacyShortestPaths() {
@@ -54,6 +57,16 @@ final class BellmanFordTest {
         }
     }
 
+    private static void testGraphEdgesAreImmutable() {
+        WeightedGraph graph = BellmanFordFixtures.sampleGraph();
+        try {
+            graph.edges().add(WeightedEdge.of(3, 4, 1));
+            throw new AssertionError("expected graph edges view to be immutable");
+        } catch (UnsupportedOperationException expected) {
+            assertTrue(true, "immutable list should reject modifications");
+        }
+    }
+
     private static void assertArrayEquals(int[] expected, int[] actual, String message) {
         if (!Arrays.equals(expected, actual)) {
             throw new AssertionError(message + ": expected " + Arrays.toString(expected)
@@ -69,5 +82,11 @@ final class BellmanFordTest {
 
     private static void assertFalse(boolean condition, String message) {
         assertTrue(!condition, message);
+    }
+
+    private static void assertEquals(int expected, int actual, String message) {
+        if (expected != actual) {
+            throw new AssertionError(message + ": expected " + expected + " but was " + actual);
+        }
     }
 }

@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 final class BellmanFordDemo {
     private BellmanFordDemo() {
     }
@@ -14,6 +12,6 @@ final class BellmanFordDemo {
             return;
         }
 
-        System.out.println(Arrays.toString(result.distances()));
+        System.out.println(result);
     }
 }

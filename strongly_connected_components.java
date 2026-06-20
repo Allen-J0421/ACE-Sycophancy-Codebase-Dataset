@@ -39,16 +39,17 @@ final class StronglyConnectedComponents {
         }
     }
 
-    private static void dfsComponent(int startNode, int[][] reverseAdjacency, boolean[] visited, List<Integer> component) {
+    private static int dfsComponent(int startNode, int[][] reverseAdjacency, boolean[] visited, int[] component) {
         int[] stack = new int[reverseAdjacency.length];
         int stackSize = 0;
+        int componentSize = 0;
 
         stack[stackSize++] = startNode;
         visited[startNode] = true;
 
         while (stackSize > 0) {
             int node = stack[--stackSize];
-            component.add(node);
+            component[componentSize++] = node;
 
             for (int neighbor : reverseAdjacency[node]) {
                 if (!visited[neighbor]) {
@@ -57,6 +58,8 @@ final class StronglyConnectedComponents {
                 }
             }
         }
+
+        return componentSize;
     }
 
     static int[][] findStronglyConnectedComponents(int vertexCount, int[][] edges) {
@@ -83,21 +86,13 @@ final class StronglyConnectedComponents {
         while (!order.isEmpty()) {
             int node = order.pop();
             if (!visited[node]) {
-                List<Integer> component = new ArrayList<>();
-                dfsComponent(node, graph.reverseAdjacency, visited, component);
-                components.add(toIntArray(component));
+                int[] component = new int[graph.vertexCount];
+                int componentSize = dfsComponent(node, graph.reverseAdjacency, visited, component);
+                components.add(Arrays.copyOf(component, componentSize));
             }
         }
 
         return components.toArray(new int[components.size()][]);
-    }
-
-    private static int[] toIntArray(List<Integer> values) {
-        int[] result = new int[values.size()];
-        for (int i = 0; i < values.size(); i++) {
-            result[i] = values.get(i);
-        }
-        return result;
     }
 
     private static final class Graph {

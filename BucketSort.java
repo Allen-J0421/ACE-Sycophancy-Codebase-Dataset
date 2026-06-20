@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public final class BucketSort {
 
@@ -8,6 +8,8 @@ public final class BucketSort {
     }
 
     public static void sort(float[] values) {
+        Objects.requireNonNull(values, "values");
+
         if (values.length == 0) {
             return;
         }
@@ -68,12 +70,5 @@ public final class BucketSort {
                 "Bucket sort expects values in the range [0.0, 1.0): " + value
             );
         }
-    }
-
-    public static void main(String[] args) {
-        float[] values = {0.897f, 0.565f, 0.656f, 0.1234f, 0.665f, 0.3434f};
-        sort(values);
-        System.out.println("Sorted array is:");
-        System.out.println(Arrays.toString(values));
     }
 }

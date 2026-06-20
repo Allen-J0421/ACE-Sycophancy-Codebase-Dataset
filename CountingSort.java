@@ -45,8 +45,7 @@ public final class CountingSort {
         }
 
         int[] source = input == output ? input.clone() : input;
-        SortState sortState = buildSortState(source);
-        populateSortedValues(source, output, sortState.prefixCounts(), sortState.range());
+        planSort(source, output).execute();
     }
 
     /**
@@ -62,10 +61,10 @@ public final class CountingSort {
         copyInto(values, values);
     }
 
-    private static SortState buildSortState(int[] values) {
-        Range range = findRange(values);
-        int[] prefixCounts = buildPrefixCounts(values, range);
-        return new SortState(range, prefixCounts);
+    private static SortOperation planSort(int[] input, int[] output) {
+        Range range = findRange(input);
+        int[] prefixCounts = buildPrefixCounts(input, range);
+        return new SortOperation(input, output, range, prefixCounts);
     }
 
     private static void requireSameLength(int[] input, int[] output) {
@@ -107,21 +106,20 @@ public final class CountingSort {
         return counts;
     }
 
-    private static void populateSortedValues(
-        int[] values,
+    private record SortOperation(
+        int[] input,
         int[] output,
-        int[] prefixCounts,
-        Range range
+        Range range,
+        int[] prefixCounts
     ) {
-        for (int i = values.length - 1; i >= 0; i--) {
-            int value = values[i];
-            int countIndex = range.indexOf(value);
-            output[prefixCounts[countIndex] - 1] = value;
-            prefixCounts[countIndex]--;
+        private void execute() {
+            for (int i = input.length - 1; i >= 0; i--) {
+                int value = input[i];
+                int countIndex = range.indexOf(value);
+                output[prefixCounts[countIndex] - 1] = value;
+                prefixCounts[countIndex]--;
+            }
         }
-    }
-
-    private record SortState(Range range, int[] prefixCounts) {
     }
 
     private record Range(int minValue, int maxValue) {

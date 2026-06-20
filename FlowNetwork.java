@@ -3,7 +3,7 @@ public final class FlowNetwork {
 
     public FlowNetwork(int[][] capacities) {
         validate(capacities);
-        this.capacities = copyOf(capacities);
+        this.capacities = IntMatrix.copyOf(capacities);
     }
 
     public int size() {
@@ -15,7 +15,7 @@ public final class FlowNetwork {
     }
 
     public int[][] copyCapacities() {
-        return copyOf(capacities);
+        return IntMatrix.copyOf(capacities);
     }
 
     private static void validate(int[][] capacities) {
@@ -34,13 +34,5 @@ public final class FlowNetwork {
                 }
             }
         }
-    }
-
-    private static int[][] copyOf(int[][] source) {
-        int[][] copy = new int[source.length][source.length];
-        for (int row = 0; row < source.length; row++) {
-            System.arraycopy(source[row], 0, copy[row], 0, source.length);
-        }
-        return copy;
     }
 }

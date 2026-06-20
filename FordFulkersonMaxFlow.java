@@ -13,7 +13,8 @@ public final class FordFulkersonMaxFlow {
         });
 
         MaxFlowSolver solver = new MaxFlowSolver();
-        MaxFlowResult result = solver.solve(network, 0, 5);
+        FlowProblem problem = new FlowProblem(network, 0, 5);
+        MaxFlowResult result = solver.solve(problem);
 
         System.out.println("The maximum possible flow is " + result.getMaxFlow());
     }

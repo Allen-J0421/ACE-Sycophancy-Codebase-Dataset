@@ -4,7 +4,7 @@ public final class MaxFlowResult {
 
     public MaxFlowResult(int maxFlow, int[][] residualGraph) {
         this.maxFlow = maxFlow;
-        this.residualGraph = copyOf(residualGraph);
+        this.residualGraph = IntMatrix.copyOf(residualGraph);
     }
 
     public int getMaxFlow() {
@@ -12,14 +12,6 @@ public final class MaxFlowResult {
     }
 
     public int[][] copyResidualGraph() {
-        return copyOf(residualGraph);
-    }
-
-    private static int[][] copyOf(int[][] source) {
-        int[][] copy = new int[source.length][source.length];
-        for (int row = 0; row < source.length; row++) {
-            System.arraycopy(source[row], 0, copy[row], 0, source.length);
-        }
-        return copy;
+        return IntMatrix.copyOf(residualGraph);
     }
 }

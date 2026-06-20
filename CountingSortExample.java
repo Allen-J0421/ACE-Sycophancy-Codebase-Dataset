@@ -7,7 +7,10 @@ public final class CountingSortExample {
 
     public static void main(String[] args) {
         int[] values = {2, 5, 3, 0, 2, 3, 0, 3, -4, -1};
-        int[] sortedValues = CountingSort.sortedCopy(values);
-        System.out.println(Arrays.toString(sortedValues));
+        int[] sortedCopy = CountingSort.sortedCopy(values);
+        System.out.println(Arrays.toString(sortedCopy));
+
+        CountingSort.sortInPlace(values);
+        System.out.println(Arrays.toString(values));
     }
 }

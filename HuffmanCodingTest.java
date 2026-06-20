@@ -4,6 +4,7 @@ import java.util.List;
 public class HuffmanCodingTest {
     public static void main(String[] args) {
         shouldBuildCodebookOnceForBothOrderings();
+        shouldExposeImmutableCodeViews();
         shouldGenerateExpectedTraversalOrderCodes();
         shouldGenerateExpectedSymbolOrderCodes();
         shouldHandleSingleSymbol();
@@ -25,6 +26,21 @@ public class HuffmanCodingTest {
                 Arrays.asList("1100", "1101", "100", "101", "111", "0"),
                 codebook.inSymbolOrder(),
                 "codebook should expose symbol-order codes"
+        );
+    }
+
+    private static void shouldExposeImmutableCodeViews() {
+        HuffmanCoding.Codebook codebook = HuffmanCoding.codebook("abcdef", new int[]{5, 9, 12, 13, 16, 45});
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> codebook.inTraversalOrder().add("oops"),
+                "traversal-order view should be immutable"
+        );
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> codebook.inSymbolOrder().add("oops"),
+                "symbol-order view should be immutable"
         );
     }
 

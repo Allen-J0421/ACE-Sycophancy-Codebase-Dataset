@@ -10,15 +10,15 @@ public class HuffmanCoding {
     private static final String SAMPLE_SYMBOLS = "abcdef";
     private static final int[] SAMPLE_FREQUENCIES = {5, 9, 12, 13, 16, 45};
 
-    static ArrayList<String> huffmanCodes(String symbols, int[] frequencies) {
+    static List<String> huffmanCodes(String symbols, int[] frequencies) {
         return codebook(symbols, frequencies).inTraversalOrder();
     }
 
-    static ArrayList<String> huffmanCodes(int[] frequencies) {
+    static List<String> huffmanCodes(int[] frequencies) {
         return codebook(frequencies).inTraversalOrder();
     }
 
-    static ArrayList<String> huffmanCodesBySymbolOrder(String symbols, int[] frequencies) {
+    static List<String> huffmanCodesBySymbolOrder(String symbols, int[] frequencies) {
         return codebook(symbols, frequencies).inSymbolOrder();
     }
 
@@ -60,13 +60,15 @@ public class HuffmanCoding {
     }
 
     public static void main(String[] args) {
-        ArrayList<String> codes = huffmanCodes(SAMPLE_SYMBOLS, SAMPLE_FREQUENCIES);
+        List<String> codes = huffmanCodes(SAMPLE_SYMBOLS, SAMPLE_FREQUENCIES);
         printCodes(codes);
     }
 
     static final class Codebook {
         private final ArrayList<String> traversalCodes = new ArrayList<>();
         private final String[] symbolCodes;
+        private List<String> traversalOrder;
+        private List<String> symbolOrder;
 
         private Codebook(int symbolCount) {
             symbolCodes = new String[symbolCount];
@@ -77,12 +79,17 @@ public class HuffmanCoding {
             symbolCodes[symbolIndex] = code;
         }
 
-        ArrayList<String> inTraversalOrder() {
-            return new ArrayList<>(traversalCodes);
+        private void freeze() {
+            traversalOrder = List.copyOf(traversalCodes);
+            symbolOrder = List.copyOf(Arrays.asList(symbolCodes));
         }
 
-        ArrayList<String> inSymbolOrder() {
-            return new ArrayList<>(Arrays.asList(symbolCodes));
+        List<String> inTraversalOrder() {
+            return traversalOrder;
+        }
+
+        List<String> inSymbolOrder() {
+            return symbolOrder;
         }
     }
 
@@ -117,12 +124,11 @@ public class HuffmanCoding {
         }
 
         private Codebook buildCodebook(int symbolCount) {
-            if (symbolCount == 0) {
-                return new Codebook(0);
-            }
-
             Codebook codebook = new Codebook(symbolCount);
-            collectCodes(root, new StringBuilder(), codebook);
+            if (symbolCount > 0) {
+                collectCodes(root, new StringBuilder(), codebook);
+            }
+            codebook.freeze();
             return codebook;
         }
 

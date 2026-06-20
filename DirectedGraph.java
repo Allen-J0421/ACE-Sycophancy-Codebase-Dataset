@@ -23,10 +23,10 @@ public final class DirectedGraph<V> {
 
     private final Map<V, List<V>> adjacency;
 
-    DirectedGraph(Map<V, List<V>> adjacency) {
+    DirectedGraph(Map<V, ? extends List<V>> adjacency) {
         // Defensive copy preserving insertion order; lists made unmodifiable.
         Map<V, List<V>> copy = new LinkedHashMap<>();
-        for (Map.Entry<V, List<V>> entry : adjacency.entrySet()) {
+        for (Map.Entry<V, ? extends List<V>> entry : adjacency.entrySet()) {
             copy.put(entry.getKey(), Collections.unmodifiableList(new ArrayList<>(entry.getValue())));
         }
         this.adjacency = Collections.unmodifiableMap(copy);

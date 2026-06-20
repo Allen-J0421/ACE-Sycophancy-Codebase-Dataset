@@ -63,6 +63,8 @@ public final class DirectedGraphBuilder<V> {
      *         vertices and edges
      */
     public DirectedGraph<V> build() {
-        return new DirectedGraph<>(new LinkedHashMap<>(adjacency));
+        // DirectedGraph's constructor already takes a defensive deep copy, so
+        // passing the live map directly is safe and avoids a redundant copy.
+        return new DirectedGraph<>(adjacency);
     }
 }

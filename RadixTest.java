@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -12,6 +14,8 @@ class RadixTest {
         keepsMaximumLookupIndependentFromSortValidation();
         formatsValuesAndRanges();
         parsesDemoArguments();
+        demoRunWritesSortedOutput();
+        demoRunReportsInvalidInput();
         rejectsUnsupportedSortInputs();
         rejectsInvalidRanges();
         sortsSingleDigitPass();
@@ -105,6 +109,31 @@ class RadixTest {
         assertArrayEquals(new int[] {3, -1, 2}, parsed);
     }
 
+    private static void demoRunWritesSortedOutput() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+        int exitCode = RadixDemo.run(new String[] {"3", "-1", "2"}, new PrintStream(out), new PrintStream(err));
+
+        assertEquals(0, exitCode);
+        assertEquals("-1 2 3 ", out.toString());
+        assertEquals("", err.toString());
+    }
+
+    private static void demoRunReportsInvalidInput() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+        int exitCode = RadixDemo.run(new String[] {"3", "x"}, new PrintStream(out), new PrintStream(err));
+
+        assertEquals(1, exitCode);
+        assertEquals("", out.toString());
+        assertEquals(
+                "Invalid integer: x" + System.lineSeparator()
+                        + "Usage: java RadixDemo [integer ...]" + System.lineSeparator(),
+                err.toString());
+    }
+
     private static void rejectsUnsupportedSortInputs() {
         assertThrows(() -> Radix.radixSort(null));
         assertThrows(() -> Radix.countSort(new int[] {2, -1}, 2, 1));
@@ -141,6 +170,12 @@ class RadixTest {
 
     private static void assertEquals(String expected, String actual) {
         if (!expected.equals(actual)) {
+            throw new AssertionError("Expected " + expected + " but got " + actual);
+        }
+    }
+
+    private static void assertEquals(int expected, int actual) {
+        if (expected != actual) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
         }
     }

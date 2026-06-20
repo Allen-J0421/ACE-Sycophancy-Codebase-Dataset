@@ -1,6 +1,7 @@
 class BubbleSort {
 
     private static final String SORTED_ARRAY_LABEL = "Sorted array: ";
+    private static final String VALUE_SEPARATOR = " ";
 
     static void bubbleSort(int[] values) {
         bubbleSort(values, values.length);
@@ -45,7 +46,7 @@ class BubbleSort {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
-            result.append(values[i]).append(" ");
+            result.append(values[i]).append(VALUE_SEPARATOR);
         }
 
         return result.toString();

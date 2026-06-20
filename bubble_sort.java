@@ -1,7 +1,6 @@
 class BubbleSort {
 
     private static final String SORTED_ARRAY_LABEL = "Sorted array: ";
-    private static final String VALUE_SEPARATOR = " ";
 
     static void bubbleSort(int[] values) {
         bubbleSort(values, values.length);
@@ -19,17 +18,13 @@ class BubbleSort {
         boolean swapped = false;
 
         for (int j = 0; j < unsortedLength - 1; j++) {
-            if (isOutOfOrder(values, j)) {
+            if (values[j] > values[j + 1]) {
                 swap(values, j, j + 1);
                 swapped = true;
             }
         }
 
         return swapped;
-    }
-
-    private static boolean isOutOfOrder(int[] values, int index) {
-        return values[index] > values[index + 1];
     }
 
     private static void swap(int[] values, int firstIndex, int secondIndex) {
@@ -46,7 +41,7 @@ class BubbleSort {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
-            result.append(values[i]).append(VALUE_SEPARATOR);
+            result.append(values[i]).append(" ");
         }
 
         return result.toString();

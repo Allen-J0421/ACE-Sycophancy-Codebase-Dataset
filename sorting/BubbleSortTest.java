@@ -13,6 +13,7 @@ public class BubbleSortTest {
         new Case("reverse sorted", new int[]{5, 4, 3, 2, 1},                new int[]{1, 2, 3, 4, 5}),
         new Case("duplicates",     new int[]{3, 1, 2, 1, 3},                new int[]{1, 1, 2, 3, 3}),
         new Case("general",        new int[]{64, 34, 25, 12, 22, 11, 90},   new int[]{11, 12, 22, 25, 34, 64, 90}),
+        new Case("negatives",      new int[]{-3, -1, -4, -1, -5, -9},       new int[]{-9, -5, -4, -3, -1, -1}),
     };
 
     public static void main(String[] args) {

@@ -19,14 +19,19 @@ public class BubbleSortTest {
     };
 
     public static void main(String[] args) {
+        int failures = 0;
         for (Case c : CASES) {
             int[] result = c.input().clone();
             BubbleSort.sort(result);
             if (!Arrays.equals(result, c.expected())) {
-                throw new AssertionError(c.name() + ": expected "
+                System.err.println("FAIL " + c.name() + ": expected "
                     + Arrays.toString(c.expected())
                     + " but got " + Arrays.toString(result));
+                failures++;
             }
+        }
+        if (failures > 0) {
+            throw new AssertionError(failures + " of " + CASES.length + " tests failed.");
         }
         System.out.println("All " + CASES.length + " tests passed.");
     }

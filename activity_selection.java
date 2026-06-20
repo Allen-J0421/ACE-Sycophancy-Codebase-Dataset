@@ -22,10 +22,10 @@ public class ActivitySelection {
     }
 
     private static int countSelected(List<Activity> sortedByFinish) {
-        int count = 1;
-        int lastFinish = sortedByFinish.get(0).finish();
+        int count = 0;
+        int lastFinish = Integer.MIN_VALUE;
 
-        for (Activity activity : sortedByFinish.subList(1, sortedByFinish.size())) {
+        for (Activity activity : sortedByFinish) {
             if (activity.start() > lastFinish) {
                 count++;
                 lastFinish = activity.finish();

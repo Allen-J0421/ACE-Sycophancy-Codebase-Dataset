@@ -47,7 +47,10 @@ final class TestGraphs {
     }
 
     static int[][] invalidRectangularMatrix() {
-        return Matrices.copyOf(INVALID_RECTANGULAR_MATRIX);
+        return new int[][] {
+            {0},
+            {1, 0}
+        };
     }
 
     static int[][] matrixWithNullRow() {

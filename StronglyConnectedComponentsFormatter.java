@@ -4,7 +4,7 @@ public class StronglyConnectedComponentsFormatter {
 
     public String format(StronglyConnectedComponentsResult result) {
         StringBuilder sb = new StringBuilder("Strongly Connected Components:\n");
-        for (StronglyConnectedComponent scc : result.getComponents()) {
+        for (StronglyConnectedComponent scc : result) {
             sb.append(scc.getVertices().stream()
                     .map(String::valueOf)
                     .collect(Collectors.joining(" ")));

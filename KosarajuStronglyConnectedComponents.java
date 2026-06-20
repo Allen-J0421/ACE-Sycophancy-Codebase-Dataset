@@ -34,7 +34,6 @@ public class KosarajuStronglyConnectedComponents implements StronglyConnectedCom
         return new StronglyConnectedComponentsResult(components);
     }
 
-    // Iterative post-order DFS: each frame tracks which neighbor to visit next.
     private void collectFinishOrder(int start, DirectedGraph graph, boolean[] visited, Deque<Integer> finishOrder) {
         Deque<int[]> callStack = new ArrayDeque<>();
         visited[start] = true;

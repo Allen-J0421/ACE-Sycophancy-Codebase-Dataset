@@ -10,12 +10,10 @@ public class ActivitySelection {
         if (start.length != finish.length) {
             throw new IllegalArgumentException("start and finish arrays must have equal length");
         }
-        List<Activity> activities = IntStream.range(0, start.length)
+        return countSelected(IntStream.range(0, start.length)
             .mapToObj(i -> new Activity(start[i], finish[i]))
             .sorted(Comparator.comparingInt(Activity::finish))
-            .toList();
-
-        return countSelected(activities);
+            .toList());
     }
 
     private static int countSelected(List<Activity> sortedByFinish) {

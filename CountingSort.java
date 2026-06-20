@@ -1,6 +1,8 @@
-import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Stable counting sort for integer arrays.
+ */
 public final class CountingSort {
 
     private CountingSort() {
@@ -85,11 +87,5 @@ public final class CountingSort {
         private int indexOf(int value) {
             return value - minValue;
         }
-    }
-
-    public static void main(String[] args) {
-        int[] values = {2, 5, 3, 0, 2, 3, 0, 3, -4, -1};
-        int[] sortedValues = sortedCopy(values);
-        System.out.println(Arrays.toString(sortedValues));
     }
 }

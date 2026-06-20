@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 
 class MST {
+    private static final String EDGE_HEADER = "Edge \tWeight";
     private static final int NO_EDGE = 0;
     private static final int ROOT_PARENT = -1;
     private static final int START_VERTEX = 0;
@@ -79,7 +80,8 @@ class MST {
             this.weight = weight;
         }
 
-        private String format() {
+        @Override
+        public String toString() {
             return from + " - " + to + "\t" + weight;
         }
     }
@@ -144,9 +146,9 @@ class MST {
     }
 
     private static void printMinimumSpanningTree(List<MstEdge> edges) {
-        System.out.println("Edge \tWeight");
+        System.out.println(EDGE_HEADER);
         for (MstEdge edge : edges) {
-            System.out.println(edge.format());
+            System.out.println(edge);
         }
     }
 

@@ -1,7 +1,7 @@
 BUILD_DIR ?= /tmp/connected-components-build
-SOURCES := ConnectedComponents.java ConnectedComponentsDemo.java UndirectedGraph.java connected_components.java
+SOURCES := $(wildcard *.java)
 
-.PHONY: build run clean
+.PHONY: build run test clean
 
 build:
 	mkdir -p $(BUILD_DIR)
@@ -9,6 +9,9 @@ build:
 
 run: build
 	java -cp $(BUILD_DIR) ConnectedComponentsDemo
+
+test: build
+	java -cp $(BUILD_DIR) ConnectedComponentsTest
 
 clean:
 	rm -rf $(BUILD_DIR)

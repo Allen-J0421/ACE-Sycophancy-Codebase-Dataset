@@ -1,3 +1,5 @@
+package com.algorithms.scc;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

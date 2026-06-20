@@ -1,3 +1,5 @@
+package com.algorithms.scc;
+
 /**
  * Demonstrates the strongly-connected-components pipeline end to end:
  * build a graph, find its components with Kosaraju's algorithm, and print them.

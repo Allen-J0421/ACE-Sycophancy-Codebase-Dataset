@@ -1,3 +1,5 @@
+package com.algorithms.scc;
+
 /**
  * Strategy for decomposing a directed graph into its strongly connected
  * components. Different algorithms (Kosaraju, Tarjan, ...) can be plugged in

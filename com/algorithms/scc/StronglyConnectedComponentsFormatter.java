@@ -1,3 +1,5 @@
+package com.algorithms.scc;
+
 /**
  * Renders a {@link StronglyConnectedComponentsResult} as human-readable text,
  * one component per line with its vertices separated by spaces.

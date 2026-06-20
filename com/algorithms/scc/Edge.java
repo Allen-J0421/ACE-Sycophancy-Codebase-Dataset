@@ -1,3 +1,5 @@
+package com.algorithms.scc;
+
 import java.util.Objects;
 
 /**

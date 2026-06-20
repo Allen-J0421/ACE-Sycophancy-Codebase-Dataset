@@ -1,13 +1,12 @@
 package maxflow;
 
-import java.util.Optional;
-
 public final class FordFulkersonSolver implements MaxFlowSolver {
     private final FlowProblem problem;
     private final AugmentingPathFinder augmentingPathFinder;
+    private final FlowAugmentor augmentor;
 
     public FordFulkersonSolver(FlowProblem problem) {
-        this(problem, new BreadthFirstAugmentingPathFinder());
+        this(problem, new BreadthFirstAugmentingPathFinder(), new ResidualFlowAugmentor());
     }
 
     public FordFulkersonSolver(
@@ -16,38 +15,45 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
         int sink,
         AugmentingPathFinder augmentingPathFinder
     ) {
-        this(FlowProblem.of(network, source, sink), augmentingPathFinder);
+        this(FlowProblem.of(network, source, sink), augmentingPathFinder, new ResidualFlowAugmentor());
     }
 
     public FordFulkersonSolver(FlowNetwork network, int source, int sink) {
-        this(FlowProblem.of(network, source, sink), new BreadthFirstAugmentingPathFinder());
+        this(
+            FlowProblem.of(network, source, sink),
+            new BreadthFirstAugmentingPathFinder(),
+            new ResidualFlowAugmentor());
     }
 
-    public FordFulkersonSolver(FlowProblem problem, AugmentingPathFinder augmentingPathFinder) {
+    public FordFulkersonSolver(
+        FlowProblem problem,
+        AugmentingPathFinder augmentingPathFinder
+    ) {
+        this(problem, augmentingPathFinder, new ResidualFlowAugmentor());
+    }
+
+    FordFulkersonSolver(
+        FlowProblem problem,
+        AugmentingPathFinder augmentingPathFinder,
+        FlowAugmentor augmentor
+    ) {
         if (problem == null) {
             throw new IllegalArgumentException("problem must not be null");
         }
         if (augmentingPathFinder == null) {
             throw new IllegalArgumentException("augmentingPathFinder must not be null");
         }
+        if (augmentor == null) {
+            throw new IllegalArgumentException("augmentor must not be null");
+        }
 
         this.problem = problem;
         this.augmentingPathFinder = augmentingPathFinder;
+        this.augmentor = augmentor;
     }
 
     @Override
     public MaxFlowResult solve() {
-        ResidualNetwork residualNetwork = problem.network().createResidualNetwork();
-        int maxFlow = 0;
-
-        Optional<AugmentingPath> augmentingPath =
-            augmentingPathFinder.findPath(residualNetwork, problem.source(), problem.sink());
-        while (augmentingPath.isPresent()) {
-            AugmentingPath path = augmentingPath.get();
-            maxFlow += residualNetwork.augmentPath(path);
-            augmentingPath = augmentingPathFinder.findPath(residualNetwork, problem.source(), problem.sink());
-        }
-
-        return new MaxFlowResult(maxFlow, problem.source(), problem.sink(), residualNetwork.snapshotCapacities());
+        return new MaxFlowComputation(problem, augmentingPathFinder, augmentor).compute();
     }
 }

@@ -1,15 +1,15 @@
 public final class AllPairsShortestPaths {
 
     private final IntSquareMatrix distances;
-    private final IntSquareMatrix nextHop;
+    private final NextHopTable nextHopTable;
 
     AllPairsShortestPaths(int[][] distances, int[][] nextHop) {
-        this(IntSquareMatrix.from(distances), IntSquareMatrix.from(nextHop));
+        this(IntSquareMatrix.from(distances), NextHopTable.from(nextHop));
     }
 
-    AllPairsShortestPaths(IntSquareMatrix distances, IntSquareMatrix nextHop) {
+    AllPairsShortestPaths(IntSquareMatrix distances, NextHopTable nextHopTable) {
         this.distances = distances;
-        this.nextHop = nextHop;
+        this.nextHopTable = nextHopTable;
     }
 
     public int vertexCount() {
@@ -25,27 +25,11 @@ public final class AllPairsShortestPaths {
     }
 
     public VertexPath path(int source, int target) {
-        if (nextHop.get(source, target) == -1) {
-            return VertexPath.empty();
-        }
-
-        java.util.ArrayList<Integer> path = new java.util.ArrayList<>();
-        int current = source;
-        path.add(current);
-
-        while (current != target) {
-            current = nextHop.get(current, target);
-            if (current == -1) {
-                return VertexPath.empty();
-            }
-            path.add(current);
-        }
-
-        return VertexPath.of(path);
+        return nextHopTable.path(source, target);
     }
 
     public boolean isReachable(int source, int target) {
-        return nextHop.get(source, target) != -1;
+        return nextHopTable.isReachable(source, target);
     }
 
     public boolean hasNegativeCycle() {

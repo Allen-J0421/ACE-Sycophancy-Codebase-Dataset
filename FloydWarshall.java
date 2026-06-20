@@ -53,7 +53,7 @@ public final class FloydWarshall {
             }
         }
 
-        return new AllPairsShortestPaths(distances, nextHop);
+        return new AllPairsShortestPaths(IntSquareMatrix.from(distances), NextHopTable.from(nextHop));
     }
 
     private void initializeNextHop(IntSquareMatrix adjacencyMatrix, int[][] nextHop, int unreachableDistance) {

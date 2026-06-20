@@ -10,8 +10,10 @@ public final class CountingSortTest {
 
     public static void main(String[] args) {
         testSortedCopyHandlesEdgeCases();
+        testSortedCopyDoesNotMutateInput();
         testCopyIntoWritesExpectedValues();
         testCopyIntoSupportsAliasedInputAndOutput();
+        testCopyIntoDoesNotMutateSeparateInput();
         testSortInPlaceMutatesTheInput();
         testCompatibilityWrappers();
         testInvalidInputs();
@@ -34,12 +36,32 @@ public final class CountingSortTest {
         assertArrayEquals(new int[] {-1, 0, 3, 3}, output);
     }
 
+    private static void testSortedCopyDoesNotMutateInput() {
+        int[] values = {8, -3, 8, 1};
+        int[] original = values.clone();
+
+        CountingSort.sortedCopy(values);
+
+        assertArrayEquals(original, values);
+    }
+
     private static void testCopyIntoSupportsAliasedInputAndOutput() {
         int[] values = {9, -2, 9, 1, 0};
 
         CountingSort.copyInto(values, values);
 
         assertArrayEquals(new int[] {-2, 0, 1, 9, 9}, values);
+    }
+
+    private static void testCopyIntoDoesNotMutateSeparateInput() {
+        int[] input = {6, -4, 2, 6};
+        int[] original = input.clone();
+        int[] output = new int[input.length];
+
+        CountingSort.copyInto(input, output);
+
+        assertArrayEquals(original, input);
+        assertArrayEquals(new int[] {-4, 2, 6, 6}, output);
     }
 
     private static void testSortInPlaceMutatesTheInput() {

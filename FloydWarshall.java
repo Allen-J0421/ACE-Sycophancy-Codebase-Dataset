@@ -11,7 +11,7 @@ public final class FloydWarshall {
         int[][] distances = Matrices.copyOf(graph);
 
         for (int via = 0; via < vertexCount; via++) {
-            relaxPathsVia(distances, vertexCount, via);
+            relaxPathsVia(distances, via);
         }
 
         return distances;
@@ -33,45 +33,38 @@ public final class FloydWarshall {
         return distance != NO_PATH;
     }
 
-    private static void relaxPathsVia(int[][] distances, int vertexCount, int via) {
+    private static void relaxPathsVia(int[][] distances, int via) {
         int[] viaRow = distances[via];
-        for (int from = 0; from < vertexCount; from++) {
-            int[] fromRow = distances[from];
-            for (int to = 0; to < vertexCount; to++) {
-                relax(fromRow, viaRow, via, to);
-            }
+        for (int[] fromRow : distances) {
+            relaxRow(fromRow, viaRow, via);
         }
     }
 
-    private static void relax(int[] fromRow, int[] viaRow, int via, int to) {
-        if (!canRelax(fromRow, viaRow, via, to)) {
+    private static void relaxRow(int[] fromRow, int[] viaRow, int via) {
+        int distanceToVia = fromRow[via];
+        if (!isReachable(distanceToVia)) {
             return;
         }
 
-        int candidateDistance = pathDistanceThrough(fromRow, viaRow, via, to);
-        if (isShorterPath(candidateDistance, fromRow[to])) {
+        for (int to = 0; to < fromRow.length; to++) {
+            relaxDistance(fromRow, viaRow, distanceToVia, to);
+        }
+    }
+
+    private static void relaxDistance(int[] fromRow, int[] viaRow, int distanceToVia, int to) {
+        int distanceFromVia = viaRow[to];
+        if (!isReachable(distanceFromVia)) {
+            return;
+        }
+
+        int candidateDistance = addDistances(distanceToVia, distanceFromVia);
+        if (candidateDistance < fromRow[to]) {
             fromRow[to] = candidateDistance;
         }
     }
 
     private static boolean hasNegativeSelfDistance(int[][] distances, int vertex) {
         return distances[vertex][vertex] < 0;
-    }
-
-    private static boolean canRelax(int[] fromRow, int[] viaRow, int via, int to) {
-        return isReachable(distanceToVia(fromRow, via)) && isReachable(viaRow[to]);
-    }
-
-    private static boolean isShorterPath(int candidateDistance, int currentDistance) {
-        return candidateDistance < currentDistance;
-    }
-
-    private static int pathDistanceThrough(int[] fromRow, int[] viaRow, int via, int to) {
-        return addDistances(distanceToVia(fromRow, via), viaRow[to]);
-    }
-
-    private static int distanceToVia(int[] fromRow, int via) {
-        return fromRow[via];
     }
 
     private static int addDistances(int left, int right) {

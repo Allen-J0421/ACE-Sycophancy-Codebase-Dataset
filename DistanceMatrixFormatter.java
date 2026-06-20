@@ -1,4 +1,6 @@
 public final class DistanceMatrixFormatter {
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+
     private DistanceMatrixFormatter() {
     }
 
@@ -7,7 +9,7 @@ public final class DistanceMatrixFormatter {
 
         StringBuilder output = new StringBuilder();
         for (int[] row : distances) {
-            output.append(formatRow(row)).append(System.lineSeparator());
+            output.append(formatRow(row)).append(LINE_SEPARATOR);
         }
         return output.toString();
     }

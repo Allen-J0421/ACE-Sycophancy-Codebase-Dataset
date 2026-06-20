@@ -1,17 +1,27 @@
 /**
  * A small, self-contained library for deciding whether an undirected graph is
- * bipartite.
+ * bipartite, built around a generic adjacency-list representation.
  *
- * <p>The package separates four concerns:
+ * <p>Graph representation is layered so new variants can be added without
+ * touching the algorithms:
  * <ul>
- *   <li>{@link bipartite.Edge} and {@link bipartite.UndirectedGraph} model an
- *       immutable graph;</li>
- *   <li>{@link bipartite.GraphInputValidator} validates construction inputs;</li>
- *   <li>{@link bipartite.BipartiteChecker} runs the breadth-first 2-coloring
- *       algorithm;</li>
- *   <li>{@link bipartite.BipartiteResult} is the sealed outcome — either the two
- *       vertex partitions or an odd-cycle witness.</li>
+ *   <li>{@link bipartite.Graph} is the read-only interface algorithms depend
+ *       on;</li>
+ *   <li>{@link bipartite.AbstractAdjacencyListGraph} is a generic adjacency-list
+ *       base parameterised by an incidence type, leaving "what an edge carries"
+ *       and "directed vs. undirected" to subclasses;</li>
+ *   <li>{@link bipartite.UndirectedGraph}, {@link bipartite.DirectedGraph}, and
+ *       {@link bipartite.WeightedUndirectedGraph} are the concrete
+ *       implementations;</li>
+ *   <li>{@link bipartite.GraphEdge} (with {@link bipartite.Edge} and
+ *       {@link bipartite.WeightedEdge}) is the edge contract, and
+ *       {@link bipartite.GraphInputValidator} validates construction inputs.</li>
  * </ul>
+ *
+ * <p>{@link bipartite.BipartiteChecker} runs a breadth-first 2-coloring against
+ * any {@link bipartite.Graph} and returns the sealed
+ * {@link bipartite.BipartiteResult} — either the two vertex partitions or an
+ * odd-cycle witness.
  *
  * <p>{@link bipartite.Main} provides a runnable demonstration and
  * {@link bipartite.BipartiteCheckerTests} a dependency-free test harness.

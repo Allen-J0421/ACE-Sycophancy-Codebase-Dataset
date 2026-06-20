@@ -21,9 +21,13 @@ public final class BipartiteCheckerTests {
         emptyGraphIsBipartite();
         disconnectedGraphIsBipartite();
         partitionsCoverAllVertices();
+        checkerRunsOnWeightedGraphViaInterface();
+        weightedNeighborsCarryWeights();
+        directedGraphStoresOneWayEdges();
         rejectsEdgeOutOfRange();
         rejectsMalformedEdgePair();
         rejectsSelfLoop();
+        rejectsWeightedSelfLoop();
         rejectsNegativeVertexCount();
         rejectsNullGraph();
 
@@ -83,6 +87,42 @@ public final class BipartiteCheckerTests {
                 && List.of(0, 2).equals(bipartite.partitionA())
                 && List.of(1, 3).equals(bipartite.partitionB());
         check("partitions cover every vertex exactly once", ok);
+    }
+
+    private static void checkerRunsOnWeightedGraphViaInterface() {
+        // A weighted 4-cycle is bipartite; the checker reaches it through the
+        // Graph interface and ignores the weights.
+        Graph graph = WeightedUndirectedGraph.of(4, List.of(
+                new WeightedEdge(0, 1, 2.5),
+                new WeightedEdge(1, 2, 1.0),
+                new WeightedEdge(2, 3, 4.0),
+                new WeightedEdge(3, 0, 0.5)));
+        check("checker runs on a weighted graph via the Graph interface",
+                CHECKER.check(graph).isBipartite());
+    }
+
+    private static void weightedNeighborsCarryWeights() {
+        WeightedUndirectedGraph graph = WeightedUndirectedGraph.of(2,
+                List.of(new WeightedEdge(0, 1, 3.5)));
+        List<WeightedEdge> outgoing = graph.weightedNeighbors(0);
+        boolean ok = outgoing.size() == 1
+                && outgoing.get(0).u() == 0
+                && outgoing.get(0).v() == 1
+                && outgoing.get(0).weight() == 3.5
+                // ... and the reciprocal incidence is stored on vertex 1.
+                && graph.weightedNeighbors(1).equals(List.of(new WeightedEdge(1, 0, 3.5)));
+        check("weighted neighbors carry weights symmetrically", ok);
+    }
+
+    private static void directedGraphStoresOneWayEdges() {
+        DirectedGraph graph = DirectedGraph.of(2, new int[][] {{0, 1}});
+        check("directed graph stores one-way edges",
+                graph.neighbors(0).equals(List.of(1)) && graph.neighbors(1).isEmpty());
+    }
+
+    private static void rejectsWeightedSelfLoop() {
+        check("rejects weighted self-loop edge",
+                throwsIllegalArgument(() -> new WeightedEdge(1, 1, 2.0)));
     }
 
     private static void rejectsEdgeOutOfRange() {

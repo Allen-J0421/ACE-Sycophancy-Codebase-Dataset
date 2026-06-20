@@ -19,6 +19,11 @@ import java.util.Map;
  * reconstructs such an odd cycle from the breadth-first search tree as a
  * verifiable witness. The check runs in {@code O(V + E)} time and {@code O(V)}
  * additional space.
+ *
+ * <p>It depends only on the {@link Graph} interface, so it runs unchanged on any
+ * implementation (for example {@link UndirectedGraph} or
+ * {@link WeightedUndirectedGraph}). Bipartiteness is an undirected-graph
+ * property, so the graph passed in is expected to have symmetric adjacency.
  */
 public final class BipartiteChecker {
 
@@ -30,13 +35,13 @@ public final class BipartiteChecker {
     /**
      * Checks whether the given graph is bipartite.
      *
-     * @param graph the graph to inspect
+     * @param graph the graph to inspect (any {@link Graph} implementation)
      * @return a {@link BipartiteResult.Bipartite} with the two vertex partitions
      *         if the graph is bipartite, otherwise a
      *         {@link BipartiteResult.NotBipartite} carrying an odd-cycle witness
      * @throws NullPointerException if {@code graph} is null
      */
-    public BipartiteResult check(UndirectedGraph graph) {
+    public BipartiteResult check(Graph graph) {
         if (graph == null) {
             throw new NullPointerException("graph must not be null");
         }
@@ -70,7 +75,7 @@ public final class BipartiteChecker {
      * @return {@code null} if the component is 2-colorable, otherwise the
      *         odd-length cycle formed by the first conflicting edge
      */
-    private static List<Integer> colorComponent(UndirectedGraph graph, int start,
+    private static List<Integer> colorComponent(Graph graph, int start,
                                                 int[] color, int[] parent) {
         Deque<Integer> queue = new ArrayDeque<>();
         color[start] = COLOR_A;

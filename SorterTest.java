@@ -16,16 +16,12 @@ import java.util.Comparator;
  */
 public final class SorterTest {
 
-    /** Every implementation here is exercised by the full battery below. */
-    private static final Sorter[] IMPLEMENTATIONS = {
-        new InsertionSorter(),
-        new BubbleSorter(),
-    };
-
     private static int failures = 0;
 
     public static void main(String[] args) {
-        for (Sorter sorter : IMPLEMENTATIONS) {
+        // Every registered strategy is exercised through the Sorter interface,
+        // so adding a SortingStrategy constant automatically extends coverage.
+        for (Sorter sorter : SortingStrategy.values()) {
             runBattery(sorter);
         }
 
@@ -37,7 +33,9 @@ public final class SorterTest {
     }
 
     private static void runBattery(Sorter sorter) {
-        String impl = sorter.getClass().getSimpleName();
+        String impl = (sorter instanceof Enum)
+                ? ((Enum<?>) sorter).name()
+                : sorter.getClass().getSimpleName();
         System.out.println("--- " + impl + " ---");
 
         emptyArray(impl, sorter);

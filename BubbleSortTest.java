@@ -13,11 +13,11 @@ public final class BubbleSortTest {
         verifiesSortHandlesEmptyValues();
         verifiesSortedCopyReturnsSortedValues();
         verifiesSortedCopyDoesNotMutateInput();
-        verifiesFormatsArrayForDisplay();
-        verifiesFormatsEmptyArrayForDisplay();
+        verifiesFormatterFormatsArrayForDisplay();
+        verifiesFormatterFormatsEmptyArrayForDisplay();
         verifiesSortRejectsNullValues();
         verifiesSortedCopyRejectsNullValues();
-        verifiesDisplayStringRejectsNullValues();
+        verifiesFormatterRejectsNullValues();
     }
 
     private static void verifiesSortMutatesUnorderedValues() {
@@ -62,14 +62,14 @@ public final class BubbleSortTest {
         assertArrayEquals(new int[] {1, 4, 6, 9}, sortedValues);
     }
 
-    private static void verifiesFormatsArrayForDisplay() {
-        String output = BubbleSort.toDisplayString(new int[] {7, 8, 9});
+    private static void verifiesFormatterFormatsArrayForDisplay() {
+        String output = IntArrayFormatter.format(new int[] {7, 8, 9});
 
         assertEquals("7 8 9", output);
     }
 
-    private static void verifiesFormatsEmptyArrayForDisplay() {
-        String output = BubbleSort.toDisplayString(new int[] {});
+    private static void verifiesFormatterFormatsEmptyArrayForDisplay() {
+        String output = IntArrayFormatter.format(new int[] {});
 
         assertEquals("", output);
     }
@@ -82,8 +82,8 @@ public final class BubbleSortTest {
         assertThrowsNullPointer(() -> BubbleSort.sortedCopy(null));
     }
 
-    private static void verifiesDisplayStringRejectsNullValues() {
-        assertThrowsNullPointer(() -> BubbleSort.toDisplayString(null));
+    private static void verifiesFormatterRejectsNullValues() {
+        assertThrowsNullPointer(() -> IntArrayFormatter.format(null));
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual) {

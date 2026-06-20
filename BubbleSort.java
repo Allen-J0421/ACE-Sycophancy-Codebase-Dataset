@@ -1,8 +1,6 @@
 import java.util.Objects;
 
 public final class BubbleSort {
-    private static final char VALUE_SEPARATOR = ' ';
-
     private BubbleSort() {
         // Utility class.
     }
@@ -27,25 +25,6 @@ public final class BubbleSort {
         int[] sortedValues = values.clone();
         sort(sortedValues);
         return sortedValues;
-    }
-
-    public static void printArray(int[] values) {
-        System.out.println(toDisplayString(values));
-    }
-
-    public static String toDisplayString(int[] values) {
-        Objects.requireNonNull(values, "values");
-
-        StringBuilder output = new StringBuilder();
-
-        for (int value : values) {
-            if (!output.isEmpty()) {
-                output.append(VALUE_SEPARATOR);
-            }
-            output.append(value);
-        }
-
-        return output.toString();
     }
 
     private static boolean hasFewerThanTwoValues(int[] values) {

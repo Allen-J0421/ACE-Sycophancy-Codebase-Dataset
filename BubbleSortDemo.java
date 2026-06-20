@@ -7,6 +7,6 @@ public final class BubbleSortDemo {
 
     public static void main(String[] args) {
         System.out.println(SORTED_ARRAY_LABEL);
-        BubbleSort.printArray(BubbleSort.sortedCopy(SAMPLE_VALUES));
+        IntArrayFormatter.print(BubbleSort.sortedCopy(SAMPLE_VALUES));
     }
 }

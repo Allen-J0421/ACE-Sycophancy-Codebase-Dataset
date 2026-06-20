@@ -1,16 +1,59 @@
-final class Radix {
+public final class Radix {
     private static final int RADIX = 10;
 
     private Radix() {
     }
 
-    static int getMax(int[] values, int length) {
+    public static int getMax(int[] values, int length) {
         validateRange(values, length);
 
         if (length == 0) {
             throw new IllegalArgumentException("Cannot find the maximum of an empty range.");
         }
 
+        return maxOf(values, length);
+    }
+
+    public static void countSort(int[] values, int length, int exponent) {
+        validateSortableRange(values, length);
+        if (exponent <= 0) {
+            throw new IllegalArgumentException("Exponent must be positive.");
+        }
+        countingSortByDigit(values, length, exponent);
+    }
+
+    @Deprecated
+    public static void radixsort(int[] values, int length) {
+        radixSort(values, length);
+    }
+
+    public static void radixSort(int[] values) {
+        validateNotNull(values);
+        radixSort(values, values.length);
+    }
+
+    public static void radixSort(int[] values, int length) {
+        validateSortableRange(values, length);
+        if (length < 2) {
+            return;
+        }
+
+        int max = maxOf(values, length);
+
+        for (long exponent = 1; max / exponent > 0; exponent *= RADIX) {
+            countingSortByDigit(values, length, exponent);
+        }
+    }
+
+    public static void print(int[] values, int length) {
+        validateRange(values, length);
+
+        for (int i = 0; i < length; i++) {
+            System.out.print(values[i] + " ");
+        }
+    }
+
+    private static int maxOf(int[] values, int length) {
         int max = values[0];
         for (int i = 1; i < length; i++) {
             if (values[i] > max) {
@@ -20,47 +63,7 @@ final class Radix {
         return max;
     }
 
-    static void countSort(int[] values, int length, int exponent) {
-        validateSortableRange(values, length);
-        if (exponent <= 0) {
-            throw new IllegalArgumentException("Exponent must be positive.");
-        }
-        countingSortByDigit(values, length, exponent);
-    }
-
-    static void radixsort(int[] values, int length) {
-        radixSort(values, length);
-    }
-
-    static void radixSort(int[] values) {
-        validateNotNull(values);
-        radixSort(values, values.length);
-    }
-
-    static void radixSort(int[] values, int length) {
-        validateSortableRange(values, length);
-        if (length < 2) {
-            return;
-        }
-
-        int max = getMax(values, length);
-
-        for (long exponent = 1; max / exponent > 0; exponent *= RADIX) {
-            countingSortByDigit(values, length, exponent);
-        }
-    }
-
-    static void print(int[] values, int length) {
-        validateRange(values, length);
-
-        for (int i = 0; i < length; i++) {
-            System.out.print(values[i] + " ");
-        }
-    }
-
     private static void countingSortByDigit(int[] values, int length, long exponent) {
-        validateSortableRange(values, length);
-
         int[] output = new int[length];
         int[] counts = new int[RADIX];
 

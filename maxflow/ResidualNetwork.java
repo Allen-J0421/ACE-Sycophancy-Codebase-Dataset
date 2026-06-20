@@ -1,22 +1,22 @@
 package maxflow;
 
 public final class ResidualNetwork {
-    private final int[][] residualCapacities;
+    private final SquareMatrix residualCapacities;
 
-    ResidualNetwork(int[][] capacities) {
-        this.residualCapacities = copyMatrix(capacities);
+    ResidualNetwork(SquareMatrix capacities) {
+        this.residualCapacities = capacities.copy();
     }
 
     public int vertexCount() {
-        return residualCapacities.length;
+        return residualCapacities.size();
     }
 
     public int residualCapacity(int from, int to) {
-        return residualCapacities[from][to];
+        return residualCapacities.get(from, to);
     }
 
     public boolean hasResidualCapacity(int from, int to) {
-        return residualCapacities[from][to] > 0;
+        return residualCapacities.hasPositiveValue(from, to);
     }
 
     public int bottleneckCapacity(AugmentingPath path) {
@@ -24,7 +24,7 @@ public final class ResidualNetwork {
 
         for (int vertex = path.sink(); vertex != path.source(); vertex = path.parentOf(vertex)) {
             int predecessor = path.parentOf(vertex);
-            pathFlow = Math.min(pathFlow, residualCapacities[predecessor][vertex]);
+            pathFlow = Math.min(pathFlow, residualCapacities.get(predecessor, vertex));
         }
 
         return pathFlow;
@@ -34,22 +34,14 @@ public final class ResidualNetwork {
         int flow = bottleneckCapacity(path);
         for (int vertex = path.sink(); vertex != path.source(); vertex = path.parentOf(vertex)) {
             int predecessor = path.parentOf(vertex);
-            residualCapacities[predecessor][vertex] -= flow;
-            residualCapacities[vertex][predecessor] += flow;
+            residualCapacities.add(predecessor, vertex, -flow);
+            residualCapacities.add(vertex, predecessor, flow);
         }
 
         return flow;
     }
 
     int[][] snapshotCapacities() {
-        return copyMatrix(residualCapacities);
-    }
-
-    private static int[][] copyMatrix(int[][] sourceMatrix) {
-        int[][] copy = new int[sourceMatrix.length][sourceMatrix.length];
-        for (int row = 0; row < sourceMatrix.length; row++) {
-            System.arraycopy(sourceMatrix[row], 0, copy[row], 0, sourceMatrix[row].length);
-        }
-        return copy;
+        return residualCapacities.snapshot();
     }
 }

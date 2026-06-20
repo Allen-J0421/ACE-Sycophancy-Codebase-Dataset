@@ -3,13 +3,11 @@ package maxflow;
 import java.util.Optional;
 
 public final class FordFulkersonSolver implements MaxFlowSolver {
-    private final FlowNetwork network;
-    private final int source;
-    private final int sink;
+    private final FlowProblem problem;
     private final AugmentingPathFinder augmentingPathFinder;
 
-    public FordFulkersonSolver(FlowNetwork network, int source, int sink) {
-        this(network, source, sink, new BreadthFirstAugmentingPathFinder());
+    public FordFulkersonSolver(FlowProblem problem) {
+        this(problem, new BreadthFirstAugmentingPathFinder());
     }
 
     public FordFulkersonSolver(
@@ -18,45 +16,38 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
         int sink,
         AugmentingPathFinder augmentingPathFinder
     ) {
-        if (network == null) {
-            throw new IllegalArgumentException("network must not be null");
+        this(FlowProblem.of(network, source, sink), augmentingPathFinder);
+    }
+
+    public FordFulkersonSolver(FlowNetwork network, int source, int sink) {
+        this(FlowProblem.of(network, source, sink), new BreadthFirstAugmentingPathFinder());
+    }
+
+    public FordFulkersonSolver(FlowProblem problem, AugmentingPathFinder augmentingPathFinder) {
+        if (problem == null) {
+            throw new IllegalArgumentException("problem must not be null");
         }
         if (augmentingPathFinder == null) {
             throw new IllegalArgumentException("augmentingPathFinder must not be null");
         }
 
-        this.network = network;
-        this.source = validateVertex(source, network.vertexCount(), "source");
-        this.sink = validateVertex(sink, network.vertexCount(), "sink");
+        this.problem = problem;
         this.augmentingPathFinder = augmentingPathFinder;
-
-        if (source == sink) {
-            throw new IllegalArgumentException("source and sink must be different vertices");
-        }
     }
 
     @Override
     public MaxFlowResult solve() {
-        ResidualNetwork residualNetwork = network.createResidualNetwork();
+        ResidualNetwork residualNetwork = problem.network().createResidualNetwork();
         int maxFlow = 0;
 
         Optional<AugmentingPath> augmentingPath =
-            augmentingPathFinder.findPath(residualNetwork, source, sink);
+            augmentingPathFinder.findPath(residualNetwork, problem.source(), problem.sink());
         while (augmentingPath.isPresent()) {
             AugmentingPath path = augmentingPath.get();
             maxFlow += residualNetwork.augmentPath(path);
-            augmentingPath = augmentingPathFinder.findPath(residualNetwork, source, sink);
+            augmentingPath = augmentingPathFinder.findPath(residualNetwork, problem.source(), problem.sink());
         }
 
-        return new MaxFlowResult(maxFlow, source, sink, residualNetwork.snapshotCapacities());
-    }
-
-    private static int validateVertex(int vertex, int vertexCount, String label) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException(
-                label + " vertex must be between 0 and " + (vertexCount - 1));
-        }
-
-        return vertex;
+        return new MaxFlowResult(maxFlow, problem.source(), problem.sink(), residualNetwork.snapshotCapacities());
     }
 }

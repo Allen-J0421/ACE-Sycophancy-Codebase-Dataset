@@ -8,6 +8,7 @@ public final class BucketSortTest {
     public static void main(String[] args) {
         sortsValuesInPlace();
         returnsSortedCopyWithoutMutatingInput();
+        returnsDistinctArrayForSortedCopy();
         sortsDuplicateValues();
         sortsValuesNearUpperBound();
         rejectsOutOfRangeValues();
@@ -40,6 +41,15 @@ public final class BucketSortTest {
             copy,
             "sortedCopy should return sorted data"
         );
+    }
+
+    private static void returnsDistinctArrayForSortedCopy() {
+        float[] original = {0.31f, 0.21f};
+        float[] copy = BucketSort.sortedCopy(original);
+
+        if (copy == original) {
+            throw new AssertionError("sortedCopy should return a distinct array instance");
+        }
     }
 
     private static void sortsDuplicateValues() {

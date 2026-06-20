@@ -1,9 +1,17 @@
+import java.util.Objects;
+
 public final class BubbleSort {
     private BubbleSort() {
         // Utility class.
     }
 
     public static void sort(int[] values) {
+        Objects.requireNonNull(values, "values");
+
+        if (values.length < 2) {
+            return;
+        }
+
         for (int i = 0; i < values.length - 1; i++) {
             boolean swapped = false;
 
@@ -21,6 +29,12 @@ public final class BubbleSort {
     }
 
     public static void printArray(int[] values) {
+        System.out.println(toDisplayString(values));
+    }
+
+    public static String toDisplayString(int[] values) {
+        Objects.requireNonNull(values, "values");
+
         StringBuilder output = new StringBuilder();
 
         for (int value : values) {
@@ -30,7 +44,7 @@ public final class BubbleSort {
             output.append(value);
         }
 
-        System.out.println(output);
+        return output.toString();
     }
 
     public static void main(String[] args) {

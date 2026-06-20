@@ -21,12 +21,12 @@ final class BellmanFord {
         int[] distances = initialDistances(graph.vertexCount, source);
 
         for (int pass = 1; pass < graph.vertexCount; pass++) {
-            if (!relaxEdges(graph.edges, distances)) {
+            if (!graph.relaxEdges(distances)) {
                 break;
             }
         }
 
-        if (hasReachableNegativeCycle(graph.edges, distances)) {
+        if (graph.hasReachableNegativeCycle(distances)) {
             return negativeCycleResult();
         }
 
@@ -42,28 +42,6 @@ final class BellmanFord {
 
     private static int[] negativeCycleResult() {
         return new int[]{NEGATIVE_CYCLE_MARKER};
-    }
-
-    private static boolean relaxEdges(Edge[] edges, int[] distances) {
-        boolean changed = false;
-
-        for (Edge edge : edges) {
-            if (edge.relax(distances)) {
-                changed = true;
-            }
-        }
-
-        return changed;
-    }
-
-    private static boolean hasReachableNegativeCycle(Edge[] edges, int[] distances) {
-        for (Edge edge : edges) {
-            if (edge.canRelax(distances)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static String formatDistances(int[] distances) {
@@ -147,6 +125,28 @@ final class BellmanFord {
             if (source < 0 || source >= vertexCount) {
                 throw new IllegalArgumentException("Source vertex is out of range");
             }
+        }
+
+        private boolean relaxEdges(int[] distances) {
+            boolean changed = false;
+
+            for (Edge edge : edges) {
+                if (edge.relax(distances)) {
+                    changed = true;
+                }
+            }
+
+            return changed;
+        }
+
+        private boolean hasReachableNegativeCycle(int[] distances) {
+            for (Edge edge : edges) {
+                if (edge.canRelax(distances)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

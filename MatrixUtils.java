@@ -22,4 +22,14 @@ final class MatrixUtils {
 
         return copy;
     }
+
+    static boolean hasNegativeDiagonalEntry(int[][] matrix) {
+        for (int index = 0; index < matrix.length; index++) {
+            if (matrix[index][index] < 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

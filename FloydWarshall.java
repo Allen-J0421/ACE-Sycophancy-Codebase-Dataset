@@ -1,5 +1,6 @@
 public final class FloydWarshall {
-    public static final int INF = Integer.MAX_VALUE;
+    public static final int NO_PATH = Integer.MAX_VALUE;
+    public static final int INF = NO_PATH;
 
     private FloydWarshall() {
     }
@@ -32,7 +33,7 @@ public final class FloydWarshall {
     }
 
     public static boolean isReachable(int distance) {
-        return distance != INF;
+        return distance != NO_PATH;
     }
 
     private static void relax(

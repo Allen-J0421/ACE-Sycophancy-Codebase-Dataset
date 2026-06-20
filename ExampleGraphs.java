@@ -4,11 +4,11 @@ final class ExampleGraphs {
 
     static int[][] weightedDirectedGraph() {
         return new int[][]{
-                {0, 4, FloydWarshall.INF, 5, FloydWarshall.INF},
-                {FloydWarshall.INF, 0, 1, FloydWarshall.INF, 6},
-                {2, FloydWarshall.INF, 0, 3, FloydWarshall.INF},
-                {FloydWarshall.INF, FloydWarshall.INF, 1, 0, 2},
-                {1, FloydWarshall.INF, FloydWarshall.INF, 4, 0}
+                {0, 4, FloydWarshall.NO_PATH, 5, FloydWarshall.NO_PATH},
+                {FloydWarshall.NO_PATH, 0, 1, FloydWarshall.NO_PATH, 6},
+                {2, FloydWarshall.NO_PATH, 0, 3, FloydWarshall.NO_PATH},
+                {FloydWarshall.NO_PATH, FloydWarshall.NO_PATH, 1, 0, 2},
+                {1, FloydWarshall.NO_PATH, FloydWarshall.NO_PATH, 4, 0}
         };
     }
 

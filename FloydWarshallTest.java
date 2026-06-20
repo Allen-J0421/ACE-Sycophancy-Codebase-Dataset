@@ -24,9 +24,9 @@ public final class FloydWarshallTest {
 
     private static void doesNotMutateInput() {
         int[][] graph = {
-                {0, 2, FloydWarshall.INF},
-                {FloydWarshall.INF, 0, 3},
-                {FloydWarshall.INF, FloydWarshall.INF, 0}
+                {0, 2, FloydWarshall.NO_PATH},
+                {FloydWarshall.NO_PATH, 0, 3},
+                {FloydWarshall.NO_PATH, FloydWarshall.NO_PATH, 0}
         };
         int[][] original = Matrices.copyOf(graph);
 
@@ -37,9 +37,9 @@ public final class FloydWarshallTest {
 
     private static void detectsNegativeCycles() {
         int[][] graph = {
-                {0, 1, FloydWarshall.INF},
-                {FloydWarshall.INF, 0, -2},
-                {-2, FloydWarshall.INF, 0}
+                {0, 1, FloydWarshall.NO_PATH},
+                {FloydWarshall.NO_PATH, 0, -2},
+                {-2, FloydWarshall.NO_PATH, 0}
         };
 
         int[][] distances = FloydWarshall.shortestPaths(graph);
@@ -73,9 +73,9 @@ public final class FloydWarshallTest {
 
     private static void throwsOnDistanceOverflow() {
         int[][] graph = {
-                {0, Integer.MAX_VALUE - 1, FloydWarshall.INF},
-                {FloydWarshall.INF, 0, 2},
-                {FloydWarshall.INF, FloydWarshall.INF, 0}
+                {0, Integer.MAX_VALUE - 1, FloydWarshall.NO_PATH},
+                {FloydWarshall.NO_PATH, 0, 2},
+                {FloydWarshall.NO_PATH, FloydWarshall.NO_PATH, 0}
         };
 
         assertThrows(
@@ -85,8 +85,8 @@ public final class FloydWarshallTest {
 
     private static void formatsUnreachableDistances() {
         int[][] distances = {
-                {0, FloydWarshall.INF},
-                {FloydWarshall.INF, 0}
+                {0, FloydWarshall.NO_PATH},
+                {FloydWarshall.NO_PATH, 0}
         };
         String lineSeparator = System.lineSeparator();
         String expected = "0 INF" + lineSeparator + "INF 0" + lineSeparator;

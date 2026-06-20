@@ -4,7 +4,7 @@ public final class DirectedGraph implements DirectedGraphView {
     private final List<List<Integer>> adjacencyList;
 
     DirectedGraph(List<List<Integer>> adjacencyList) {
-        this.adjacencyList = GraphSupport.freezeAdjacencyList(adjacencyList);
+        this.adjacencyList = adjacencyList;
     }
 
     public int vertexCount() {

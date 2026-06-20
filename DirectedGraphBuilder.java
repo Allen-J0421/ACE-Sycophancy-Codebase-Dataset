@@ -21,7 +21,7 @@ public final class DirectedGraphBuilder {
     }
 
     public DirectedGraph build() {
-        return new DirectedGraph(adjacencyList);
+        return new DirectedGraph(GraphSupport.freezeAdjacencyList(adjacencyList));
     }
 
     private void validateVertex(int vertex) {

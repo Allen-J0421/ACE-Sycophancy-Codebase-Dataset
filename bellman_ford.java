@@ -66,16 +66,18 @@ final class BellmanFord {
      */
     private static int relaxPass(WeightedGraph graph, int[] dist, int[] predecessors) {
         int improved = NO_VERTEX;
-        for (WeightedEdge edge : graph.edges()) {
-            int from = dist[edge.from()];
-            if (from == Distances.UNREACHABLE) {
+        for (int from = 0; from < graph.vertices(); from++) {
+            int distFrom = dist[from];
+            if (distFrom == Distances.UNREACHABLE) {
                 continue; // can't extend a path we haven't reached (also avoids overflow)
             }
-            int candidate = from + edge.weight();
-            if (candidate < dist[edge.to()]) {
-                dist[edge.to()] = candidate;
-                predecessors[edge.to()] = edge.from();
-                improved = edge.to();
+            for (WeightedGraph.Arc arc : graph.outgoing(from)) {
+                int candidate = distFrom + arc.weight();
+                if (candidate < dist[arc.to()]) {
+                    dist[arc.to()] = candidate;
+                    predecessors[arc.to()] = from;
+                    improved = arc.to();
+                }
             }
         }
         return improved;

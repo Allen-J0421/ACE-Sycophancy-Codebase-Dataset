@@ -63,13 +63,16 @@ public class FloydWarshall {
     }
 
     public static Result compute(int[][] graph) {
+        if (graph == null) {
+            throw new IllegalArgumentException("Graph must not be null");
+        }
         int n = graph.length;
         if (n == 0) {
             throw new IllegalArgumentException("Graph must be non-empty");
         }
         for (int[] row : graph) {
-            if (row.length != n) {
-                throw new IllegalArgumentException("Graph must be a square matrix");
+            if (row == null || row.length != n) {
+                throw new IllegalArgumentException("Graph must be a square matrix with no null rows");
             }
         }
 

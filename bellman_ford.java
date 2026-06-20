@@ -30,7 +30,7 @@ class BellmanFord {
     private static boolean relaxEdges(int[] dist, Edge[] edges) {
         boolean updated = false;
         for (Edge edge : edges) {
-            if (relaxEdge(dist, edge)) {
+            if (edge.relax(dist, INF)) {
                 updated = true;
             }
         }
@@ -39,23 +39,11 @@ class BellmanFord {
 
     private static boolean hasNegativeCycle(int[] dist, Edge[] edges) {
         for (Edge edge : edges) {
-            if (canRelax(dist, edge)) {
+            if (edge.canRelax(dist, INF)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private static boolean relaxEdge(int[] dist, Edge edge) {
-        if (!canRelax(dist, edge)) {
-            return false;
-        }
-        dist[edge.v] = dist[edge.u] + edge.wt;
-        return true;
-    }
-
-    private static boolean canRelax(int[] dist, Edge edge) {
-        return dist[edge.u] != INF && dist[edge.u] + edge.wt < dist[edge.v];
     }
 
     private static final class Graph {
@@ -93,6 +81,18 @@ class BellmanFord {
 
         static Edge of(int u, int v, int wt) {
             return new Edge(u, v, wt);
+        }
+
+        boolean relax(int[] dist, int inf) {
+            if (!canRelax(dist, inf)) {
+                return false;
+            }
+            dist[v] = dist[u] + wt;
+            return true;
+        }
+
+        boolean canRelax(int[] dist, int inf) {
+            return dist[u] != inf && dist[u] + wt < dist[v];
         }
     }
 

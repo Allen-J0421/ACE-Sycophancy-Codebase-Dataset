@@ -5,13 +5,15 @@ final class ComponentFormatter {
 
     static String format(ConnectedComponentsResult result) {
         StringBuilder output = new StringBuilder();
+        boolean isFirstComponent = true;
 
-        for (int componentIndex = 0; componentIndex < result.componentCount(); componentIndex++) {
-            if (componentIndex > 0) {
+        for (ConnectedComponent component : result) {
+            if (!isFirstComponent) {
                 output.append(System.lineSeparator());
             }
 
-            appendComponent(output, result.componentAt(componentIndex));
+            appendComponent(output, component);
+            isFirstComponent = false;
         }
 
         return output.toString();
@@ -24,12 +26,15 @@ final class ComponentFormatter {
     }
 
     private static void appendComponent(StringBuilder output, ConnectedComponent component) {
-        for (int vertexIndex = 0; vertexIndex < component.size(); vertexIndex++) {
-            if (vertexIndex > 0) {
+        boolean isFirstVertex = true;
+
+        for (Vertex vertex : component) {
+            if (!isFirstVertex) {
                 output.append(' ');
             }
 
-            output.append(component.vertices().get(vertexIndex).index());
+            output.append(vertex.index());
+            isFirstVertex = false;
         }
     }
 }

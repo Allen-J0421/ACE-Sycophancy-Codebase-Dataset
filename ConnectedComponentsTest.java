@@ -19,9 +19,12 @@ final class ConnectedComponentsTest {
         ConnectedComponentsResult result =
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
+        assertFalse(result.isEmpty(), "sample graph should produce components");
         assertEquals(2, result.componentCount(), "sample graph component count");
-        assertVertexIndexesEqual(List.of(0, 3, 2, 1), result.componentAt(0).vertices(), "first sample component");
-        assertVertexIndexesEqual(List.of(4, 5), result.componentAt(1).vertices(), "second sample component");
+        assertNestedVertexIndexesEqual(
+                List.of(List.of(0, 3, 2, 1), List.of(4, 5)),
+                toVertexIndexes(result),
+                "sample graph components");
     }
 
     private static void verifiesSingleVertexComponents() {
@@ -29,16 +32,21 @@ final class ConnectedComponentsTest {
 
         ConnectedComponentsResult result = GraphComponentFinder.findConnectedComponents(graph);
 
+        assertFalse(result.isEmpty(), "isolated graph should produce components");
         assertEquals(3, result.componentCount(), "isolated vertex component count");
-        assertVertexIndexesEqual(List.of(0), result.componentAt(0).vertices(), "first isolated component");
-        assertVertexIndexesEqual(List.of(1), result.componentAt(1).vertices(), "second isolated component");
-        assertVertexIndexesEqual(List.of(2), result.componentAt(2).vertices(), "third isolated component");
+        assertNestedVertexIndexesEqual(
+                List.of(List.of(0), List.of(1), List.of(2)),
+                toVertexIndexes(result),
+                "isolated vertex components");
     }
 
     private static void verifiesFormattedOutput() {
         ConnectedComponentsResult result =
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
+        ConnectedComponent component = result.componentAt(0);
+        assertFalse(component.isEmpty(), "sample component should not be empty");
+        assertEquals(0, component.vertexAt(0).index(), "first sample component vertex");
         assertEquals("0 3 2 1" + System.lineSeparator() + "4 5",
                 result.format(),
                 "formatted output");
@@ -49,11 +57,11 @@ final class ConnectedComponentsTest {
                 GraphComponentFinder.findConnectedComponents(GraphExamples.createSampleGraph());
 
         assertThrows(UnsupportedOperationException.class,
-                () -> result.components().add(new ConnectedComponent(List.of(new Vertex(99)))),
-                "result component list immutability");
+                () -> removeFirstComponent(result),
+                "result iterator immutability");
         assertThrows(UnsupportedOperationException.class,
-                () -> result.componentAt(0).vertices().add(new Vertex(99)),
-                "component vertex list immutability");
+                () -> removeFirstVertex(result.componentAt(0)),
+                "component iterator immutability");
     }
 
     private static void verifiesInvalidNeighborGraphIsRejected() {
@@ -102,16 +110,51 @@ final class ConnectedComponentsTest {
                 "invalid vertex list graph");
     }
 
-    private static void assertVertexIndexesEqual(
-            List<Integer> expected,
-            List<Vertex> actual,
-            String description) {
-        List<Integer> actualIndexes = actual.stream()
+    private static List<List<Integer>> toVertexIndexes(ConnectedComponentsResult result) {
+        return resultToComponentIndexes(result);
+    }
+
+    private static List<List<Integer>> resultToComponentIndexes(ConnectedComponentsResult result) {
+        return stream(result)
+                .map(ConnectedComponentsTest::componentToVertexIndexes)
+                .collect(Collectors.toList());
+    }
+
+    private static List<Integer> componentToVertexIndexes(ConnectedComponent component) {
+        return stream(component)
                 .map(Vertex::index)
                 .collect(Collectors.toList());
-        if (!expected.equals(actualIndexes)) {
+    }
+
+    private static <T> java.util.stream.Stream<T> stream(Iterable<T> values) {
+        return java.util.stream.StreamSupport.stream(values.spliterator(), false);
+    }
+
+    private static void removeFirstComponent(ConnectedComponentsResult result) {
+        java.util.Iterator<ConnectedComponent> iterator = result.iterator();
+        iterator.next();
+        iterator.remove();
+    }
+
+    private static void removeFirstVertex(ConnectedComponent component) {
+        java.util.Iterator<Vertex> iterator = component.iterator();
+        iterator.next();
+        iterator.remove();
+    }
+
+    private static void assertNestedVertexIndexesEqual(
+            List<List<Integer>> expected,
+            List<List<Integer>> actual,
+            String description) {
+        if (!expected.equals(actual)) {
             throw new AssertionError(
-                    description + " expected " + expected + " but was " + actualIndexes);
+                    description + " expected " + expected + " but was " + actual);
+        }
+    }
+
+    private static void assertFalse(boolean condition, String description) {
+        if (condition) {
+            throw new AssertionError(description);
         }
     }
 

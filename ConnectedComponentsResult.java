@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-final class ConnectedComponentsResult {
+final class ConnectedComponentsResult implements Iterable<ConnectedComponent> {
 
     private final List<ConnectedComponent> components;
 
@@ -16,6 +17,10 @@ final class ConnectedComponentsResult {
         return components.size();
     }
 
+    boolean isEmpty() {
+        return components.isEmpty();
+    }
+
     ConnectedComponent componentAt(int componentIndex) {
         if (componentIndex < 0 || componentIndex >= components.size()) {
             throw new IllegalArgumentException("Component index out of bounds: " + componentIndex);
@@ -24,12 +29,13 @@ final class ConnectedComponentsResult {
         return components.get(componentIndex);
     }
 
-    List<ConnectedComponent> components() {
-        return components;
-    }
-
     String format() {
         return ComponentFormatter.format(this);
+    }
+
+    @Override
+    public Iterator<ConnectedComponent> iterator() {
+        return components.iterator();
     }
 
     @Override

@@ -28,7 +28,7 @@ public final class ResidualNetwork {
     }
 
     public void augment(AugmentingPath path) {
-        for (Vertex vertex = path.sink(); vertex.index() != path.source().index(); vertex = path.parentOf(vertex)) {
+        for (Vertex vertex = path.sink(); !vertex.equals(path.source()); vertex = path.parentOf(vertex)) {
             Vertex previous = path.parentOf(vertex);
             capacities[previous.index()][vertex.index()] -= path.bottleneck();
             capacities[vertex.index()][previous.index()] += path.bottleneck();

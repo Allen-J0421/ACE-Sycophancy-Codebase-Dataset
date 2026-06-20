@@ -8,22 +8,23 @@ public final class RadixSort {
     }
 
     public static void sort(int[] values) {
-        sortValidated(requireSupportedValues(values));
+        InputAnalysis input = analyze(values);
+        sortValidated(input.values(), input.maxValue());
     }
 
     public static int[] sortedCopy(int[] values) {
-        int[] copy = copyOfSupportedValues(values);
-        sortValidated(copy);
+        InputAnalysis input = analyze(values);
+        int[] copy = Arrays.copyOf(input.values(), input.values().length);
+        sortValidated(copy, input.maxValue());
         return copy;
     }
 
-    private static void sortValidated(int[] values) {
+    private static void sortValidated(int[] values, int maxValue) {
         if (values.length < 2) {
             return;
         }
 
         SortWorkspace workspace = new SortWorkspace(values);
-        int maxValue = findMax(values);
 
         for (long exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
             countingSortByDigit(
@@ -38,33 +39,28 @@ public final class RadixSort {
         workspace.copyResultBackIfNeeded();
     }
 
-    private static int[] requireSupportedValues(int[] values) {
+    private static InputAnalysis analyze(int[] values) {
         Objects.requireNonNull(values, "values");
+        if (values.length == 0) {
+            return new InputAnalysis(values, 0);
+        }
 
-        for (int value : values) {
+        int maxValue = values[0];
+
+        for (int index = 0; index < values.length; index++) {
+            int value = values[index];
             if (value < 0) {
                 throw new IllegalArgumentException(
                     "Radix sort only supports non-negative integers."
                 );
             }
-        }
 
-        return values;
-    }
-
-    private static int[] copyOfSupportedValues(int[] values) {
-        int[] validatedValues = requireSupportedValues(values);
-        return Arrays.copyOf(validatedValues, validatedValues.length);
-    }
-
-    private static int findMax(int[] values) {
-        int maxValue = values[0];
-        for (int index = 1; index < values.length; index++) {
-            if (values[index] > maxValue) {
-                maxValue = values[index];
+            if (value > maxValue) {
+                maxValue = value;
             }
         }
-        return maxValue;
+
+        return new InputAnalysis(values, maxValue);
     }
 
     private static void countingSortByDigit(
@@ -130,6 +126,24 @@ public final class RadixSort {
             if (source != originalValues) {
                 System.arraycopy(source, 0, originalValues, 0, originalValues.length);
             }
+        }
+    }
+
+    private static final class InputAnalysis {
+        private final int[] values;
+        private final int maxValue;
+
+        private InputAnalysis(int[] values, int maxValue) {
+            this.values = values;
+            this.maxValue = maxValue;
+        }
+
+        private int[] values() {
+            return values;
+        }
+
+        private int maxValue() {
+            return maxValue;
         }
     }
 }

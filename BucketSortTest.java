@@ -10,6 +10,7 @@ public final class BucketSortTest {
         returnsSortedCopyWithoutMutatingInput();
         returnsDistinctArrayForSortedCopy();
         sortsDuplicateValues();
+        sortsValuesAtLowerBound();
         sortsValuesNearUpperBound();
         rejectsOutOfRangeValues();
         rejectsNullInput();
@@ -61,6 +62,17 @@ public final class BucketSortTest {
             new float[]{0.12f, 0.12f, 0.41f, 0.41f, 0.73f},
             values,
             "sort should handle duplicate values"
+        );
+    }
+
+    private static void sortsValuesAtLowerBound() {
+        float[] values = {0.25f, 0.0f, 0.75f};
+        BucketSort.sort(values);
+
+        assertArrayEquals(
+            new float[]{0.0f, 0.25f, 0.75f},
+            values,
+            "sort should support the lower bound"
         );
     }
 

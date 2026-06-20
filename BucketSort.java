@@ -27,16 +27,52 @@ public final class BucketSort {
             return;
         }
 
-        BucketSet buckets = new BucketSet(values.length);
+        int[] bucketSizes = countValuesPerBucket(values);
+        float[][] buckets = createBuckets(bucketSizes);
         distribute(values, buckets);
-        buckets.sortEach();
-        buckets.writeBack(values);
+        sortBuckets(buckets, bucketSizes);
+        mergeBuckets(buckets, bucketSizes, values);
     }
 
-    private static void distribute(float[] values, BucketSet buckets) {
+    private static int[] countValuesPerBucket(float[] values) {
+        int[] bucketSizes = new int[values.length];
+
         for (float value : values) {
             validateValue(value);
-            buckets.add(value);
+            bucketSizes[bucketIndexFor(value, bucketSizes.length)]++;
+        }
+
+        return bucketSizes;
+    }
+
+    private static float[][] createBuckets(int[] bucketSizes) {
+        float[][] buckets = new float[bucketSizes.length][];
+        for (int i = 0; i < bucketSizes.length; i++) {
+            buckets[i] = new float[bucketSizes[i]];
+        }
+        return buckets;
+    }
+
+    private static void distribute(float[] values, float[][] buckets) {
+        int[] insertionIndexes = new int[buckets.length];
+        for (float value : values) {
+            int bucketIndex = bucketIndexFor(value, buckets.length);
+            buckets[bucketIndex][insertionIndexes[bucketIndex]++] = value;
+        }
+    }
+
+    private static void sortBuckets(float[][] buckets, int[] bucketSizes) {
+        for (int i = 0; i < buckets.length; i++) {
+            insertionSort(buckets[i], bucketSizes[i]);
+        }
+    }
+
+    private static void mergeBuckets(float[][] buckets, int[] bucketSizes, float[] target) {
+        int targetIndex = 0;
+        for (int i = 0; i < buckets.length; i++) {
+            int bucketSize = bucketSizes[i];
+            System.arraycopy(buckets[i], 0, target, targetIndex, bucketSize);
+            targetIndex += bucketSize;
         }
     }
 
@@ -66,70 +102,6 @@ public final class BucketSort {
                     + "): "
                     + value
             );
-        }
-    }
-
-    private static final class BucketSet {
-
-        private final Bucket[] buckets;
-
-        private BucketSet(int bucketCount) {
-            buckets = new Bucket[bucketCount];
-
-            for (int i = 0; i < bucketCount; i++) {
-                buckets[i] = new Bucket();
-            }
-        }
-
-        private void sortEach() {
-            for (Bucket bucket : buckets) {
-                bucket.sort();
-            }
-        }
-
-        private void writeBack(float[] target) {
-            int targetIndex = 0;
-            for (Bucket bucket : buckets) {
-                targetIndex = bucket.writeTo(target, targetIndex);
-            }
-        }
-
-        private void add(float value) {
-            int bucketIndex = bucketIndexFor(value, buckets.length);
-            buckets[bucketIndex].add(value);
-        }
-    }
-
-    private static final class Bucket {
-
-        private float[] values = new float[0];
-        private int size;
-
-        private void add(float value) {
-            ensureCapacity(size + 1);
-            values[size] = value;
-            size++;
-        }
-
-        private void sort() {
-            insertionSort(values, size);
-        }
-
-        private int writeTo(float[] target, int targetIndex) {
-            System.arraycopy(values, 0, target, targetIndex, size);
-            return targetIndex + size;
-        }
-
-        private void ensureCapacity(int minCapacity) {
-            if (values.length >= minCapacity) {
-                return;
-            }
-
-            int newCapacity = Math.max(1, values.length * 2);
-            while (newCapacity < minCapacity) {
-                newCapacity *= 2;
-            }
-            values = Arrays.copyOf(values, newCapacity);
         }
     }
 }

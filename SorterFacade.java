@@ -4,18 +4,18 @@ import java.util.Comparator;
 /**
  * Static convenience facade over the {@link Sorter} strategies.
  *
- * <p>Every method comes in two forms: one that takes an explicit
- * {@link SortingStrategy} and one that omits it and uses {@link #DEFAULT}
- * ({@link SortingStrategy#INSERTION}). The algorithms themselves live in the
- * {@link Sorter} implementations; this class just exposes a no-instantiation,
- * statically-callable API.
+ * <p>Acts as a generic entry point for sorting: every method comes in two forms,
+ * one that takes an explicit {@link SortingStrategy} and one that omits it and
+ * uses {@link #DEFAULT} ({@link SortingStrategy#INSERTION}). The algorithms
+ * themselves live in the {@link Sorter} implementations; this class just exposes
+ * a no-instantiation, statically-callable API.
  */
-public final class InsertionSort {
+public final class SorterFacade {
 
     /** Strategy used by the overloads that don't take one explicitly. */
     public static final SortingStrategy DEFAULT = SortingStrategy.INSERTION;
 
-    private InsertionSort() {
+    private SorterFacade() {
         // Utility class; not meant to be instantiated.
     }
 

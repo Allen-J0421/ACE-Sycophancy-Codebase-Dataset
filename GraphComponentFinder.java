@@ -1,6 +1,8 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 final class GraphComponentFinder {
@@ -8,21 +10,24 @@ final class GraphComponentFinder {
     private GraphComponentFinder() {
     }
 
-    static List<List<Integer>> findConnectedComponents(UndirectedGraph graph) {
-        boolean[] visited = new boolean[graph.vertexCount()];
+    static List<List<Integer>> findConnectedComponents(Graph graph) {
+        Objects.requireNonNull(graph, "graph");
+
+        int vertexCount = graph.vertexCount();
+        boolean[] visited = new boolean[vertexCount];
         List<List<Integer>> components = new ArrayList<>();
 
-        for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
+        for (int vertex = 0; vertex < vertexCount; vertex++) {
             if (!visited[vertex]) {
                 components.add(traverseComponent(graph, vertex, visited));
             }
         }
 
-        return components;
+        return Collections.unmodifiableList(components);
     }
 
     private static List<Integer> traverseComponent(
-            UndirectedGraph graph,
+            Graph graph,
             int startVertex,
             boolean[] visited) {
         Queue<Integer> pendingVertices = new ArrayDeque<>();
@@ -43,6 +48,6 @@ final class GraphComponentFinder {
             }
         }
 
-        return component;
+        return Collections.unmodifiableList(component);
     }
 }

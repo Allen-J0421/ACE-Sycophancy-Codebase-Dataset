@@ -12,6 +12,7 @@ final class ConnectedComponentsTest {
         verifiesFormattedOutput();
         verifiesResultIsImmutable();
         verifiesInvalidNeighborGraphIsRejected();
+        verifiesInvalidVertexListGraphIsRejected();
     }
 
     private static void verifiesConnectedComponentsForSampleGraph() {
@@ -76,6 +77,29 @@ final class ConnectedComponentsTest {
         assertThrows(IllegalArgumentException.class,
                 () -> GraphComponentFinder.findConnectedComponents(invalidGraph),
                 "invalid neighbor graph");
+    }
+
+    private static void verifiesInvalidVertexListGraphIsRejected() {
+        Graph invalidGraph = new Graph() {
+            @Override
+            public int vertexCount() {
+                return 2;
+            }
+
+            @Override
+            public List<Vertex> vertices() {
+                return List.of(new Vertex(0), new Vertex(0));
+            }
+
+            @Override
+            public List<Vertex> neighborsOf(Vertex vertex) {
+                return List.of();
+            }
+        };
+
+        assertThrows(IllegalArgumentException.class,
+                () -> GraphComponentFinder.findConnectedComponents(invalidGraph),
+                "invalid vertex list graph");
     }
 
     private static void assertVertexIndexesEqual(

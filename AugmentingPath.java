@@ -2,9 +2,9 @@ public final class AugmentingPath {
     private final Vertex source;
     private final Vertex sink;
     private final int bottleneck;
-    private final int[] parents;
+    private final Vertex[] parents;
 
-    public AugmentingPath(Vertex source, Vertex sink, int bottleneck, int[] parents) {
+    public AugmentingPath(Vertex source, Vertex sink, int bottleneck, Vertex[] parents) {
         this.source = source;
         this.sink = sink;
         this.bottleneck = bottleneck;
@@ -24,6 +24,6 @@ public final class AugmentingPath {
     }
 
     public Vertex parentOf(Vertex vertex) {
-        return new Vertex(parents[vertex.index()]);
+        return parents[vertex.index()];
     }
 }

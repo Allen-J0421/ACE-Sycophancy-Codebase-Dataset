@@ -17,7 +17,8 @@ public final class FlowProblem {
     }
 
     public static FlowProblem fromCapacities(int[][] capacities, int source, int sink) {
-        return new FlowProblem(new FlowNetwork(capacities), new Vertex(source), new Vertex(sink));
+        FlowNetwork network = new FlowNetwork(capacities);
+        return new FlowProblem(network, network.vertexAt(source), network.vertexAt(sink));
     }
 
     public FlowNetwork network() {

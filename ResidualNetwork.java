@@ -1,8 +1,10 @@
 public final class ResidualNetwork {
     private final int[][] capacities;
+    private final Vertex[] vertices;
 
     public ResidualNetwork(FlowNetwork network) {
         capacities = network.copyCapacities();
+        vertices = network.vertices();
     }
 
     public int size() {
@@ -11,6 +13,14 @@ public final class ResidualNetwork {
 
     public boolean hasCapacity(Vertex from, Vertex to) {
         return capacity(from, to) > 0;
+    }
+
+    public Vertex vertexAt(int index) {
+        return vertices[index];
+    }
+
+    public Vertex[] vertices() {
+        return vertices.clone();
     }
 
     public int capacity(Vertex from, Vertex to) {

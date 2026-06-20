@@ -1,5 +1,4 @@
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -7,29 +6,27 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
     @Override
     public Optional<AugmentingPath> find(ResidualNetwork network, FlowProblem problem) {
         boolean[] visited = new boolean[network.size()];
-        int[] parents = new int[network.size()];
-        Queue<Integer> queue = new ArrayDeque<>();
+        Vertex[] parents = new Vertex[network.size()];
+        Vertex[] vertices = network.vertices();
+        Queue<Vertex> queue = new ArrayDeque<>();
 
-        Arrays.fill(parents, -1);
-        queue.add(problem.source().index());
+        queue.add(problem.source());
         visited[problem.source().index()] = true;
 
         while (!queue.isEmpty()) {
-            int current = queue.poll();
+            Vertex current = queue.poll();
 
-            for (int next = 0; next < network.size(); next++) {
-                Vertex currentVertex = new Vertex(current);
-                Vertex nextVertex = new Vertex(next);
-                if (visited[next] || !network.hasCapacity(currentVertex, nextVertex)) {
+            for (Vertex next : vertices) {
+                if (visited[next.index()] || !network.hasCapacity(current, next)) {
                     continue;
                 }
 
-                parents[next] = current;
-                if (next == problem.sink().index()) {
+                parents[next.index()] = current;
+                if (next.equals(problem.sink())) {
                     return Optional.of(createPath(network, problem, parents));
                 }
 
-                visited[next] = true;
+                visited[next.index()] = true;
                 queue.add(next);
             }
         }
@@ -37,11 +34,11 @@ public final class BreadthFirstAugmentingPathFinder implements AugmentingPathFin
         return Optional.empty();
     }
 
-    private AugmentingPath createPath(ResidualNetwork network, FlowProblem problem, int[] parents) {
+    private AugmentingPath createPath(ResidualNetwork network, FlowProblem problem, Vertex[] parents) {
         int bottleneck = Integer.MAX_VALUE;
 
-        for (Vertex vertex = problem.sink(); vertex.index() != problem.source().index(); vertex = new Vertex(parents[vertex.index()])) {
-            Vertex previous = new Vertex(parents[vertex.index()]);
+        for (Vertex vertex = problem.sink(); !vertex.equals(problem.source()); vertex = parents[vertex.index()]) {
+            Vertex previous = parents[vertex.index()];
             bottleneck = Math.min(bottleneck, network.capacity(previous, vertex));
         }
 

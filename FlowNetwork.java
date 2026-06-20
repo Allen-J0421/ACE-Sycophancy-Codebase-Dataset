@@ -1,9 +1,11 @@
 public final class FlowNetwork {
     private final int[][] capacities;
+    private final Vertex[] vertices;
 
     public FlowNetwork(int[][] capacities) {
         validate(capacities);
         this.capacities = IntMatrix.copyOf(capacities);
+        this.vertices = createVertices(capacities.length);
     }
 
     public int size() {
@@ -12,6 +14,17 @@ public final class FlowNetwork {
 
     public boolean contains(Vertex vertex) {
         return vertex != null && vertex.index() < capacities.length;
+    }
+
+    public Vertex vertexAt(int index) {
+        if (index < 0 || index >= vertices.length) {
+            throw new IllegalArgumentException("Vertex index must belong to the network.");
+        }
+        return vertices[index];
+    }
+
+    public Vertex[] vertices() {
+        return vertices.clone();
     }
 
     public int capacity(Vertex from, Vertex to) {
@@ -46,5 +59,13 @@ public final class FlowNetwork {
                 }
             }
         }
+    }
+
+    private static Vertex[] createVertices(int size) {
+        Vertex[] vertices = new Vertex[size];
+        for (int index = 0; index < size; index++) {
+            vertices[index] = new Vertex(index);
+        }
+        return vertices;
     }
 }

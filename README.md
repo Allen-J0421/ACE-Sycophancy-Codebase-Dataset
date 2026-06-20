@@ -102,6 +102,35 @@ Run the bundled demo:
 javac *.java && java DetectCycleDemo
 ```
 
+## Custom graph operations (visitor pattern)
+
+Define new operations over a graph — degree statistics, reachability, edge
+counting — *without modifying `DirectedGraph`*. A `GraphTraversal` engine walks
+the graph and dispatches to a `GraphVisitor`; each new operation is a new visitor.
+
+```java
+// out-degree distribution: how many vertices have each out-degree
+OutDegreeDistributionVisitor degrees = new OutDegreeDistributionVisitor();
+GraphTraversal.visitAll(graph, degrees);
+degrees.distribution();                       // e.g. {0=1, 1=2, 2=1}
+
+// vertices reachable from a source (BFS), source included
+ReachableVerticesVisitor reachable = new ReachableVerticesVisitor();
+GraphTraversal.traverseFrom(graph, 0, reachable);
+reachable.reachable();                        // e.g. [0, 1, 2, 3]
+
+// your own operation — just implement the hooks you need
+GraphVisitor edgeCounter = new GraphVisitor() {
+    int count;
+    public void visitEdge(int from, int to) { count++; }
+};
+GraphTraversal.visitAll(graph, edgeCounter);
+```
+
+`GraphVisitor` has no-op default hooks (`visitVertex`, `visitEdge`), so a visitor
+overrides only what it cares about. `GraphTraversal` offers `visitAll` (every
+vertex and edge) and `traverseFrom` (BFS from a source).
+
 ## Tests
 
 ```sh

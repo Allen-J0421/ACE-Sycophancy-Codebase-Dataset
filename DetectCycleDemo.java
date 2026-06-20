@@ -29,5 +29,15 @@ final class DetectCycleDemo {
             CycleDetector detector = CycleDetector.create(algorithm).withLogging(logger);
             detector.findCycle(graph);
         }
+
+        // Visitor-based traversal: custom operations over the same graph,
+        // computed without any change to DirectedGraph.
+        OutDegreeDistributionVisitor degrees = new OutDegreeDistributionVisitor();
+        GraphTraversal.visitAll(graph, degrees);
+        System.out.println("out-degree distribution: " + degrees.distribution());
+
+        ReachableVerticesVisitor reachable = new ReachableVerticesVisitor();
+        GraphTraversal.traverseFrom(graph, 0, reachable);
+        System.out.println("reachable from 0: " + reachable.reachable());
     }
 }

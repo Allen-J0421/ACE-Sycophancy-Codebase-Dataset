@@ -5,6 +5,8 @@ class ArticulationPoints {
 
     private static final int NO_PARENT = -1;
     private static final int NO_ARTICULATION_POINT = -1;
+    private static final int EDGE_FIRST_VERTEX = 0;
+    private static final int EDGE_SECOND_VERTEX = 1;
 
     private ArticulationPoints() {
     }
@@ -16,7 +18,7 @@ class ArticulationPoints {
     private static List<List<Integer>> constructAdjacencyList(int vertexCount, int[][] edges) {
         List<List<Integer>> adjacencyList = createEmptyAdjacencyList(vertexCount);
         for (int[] edge : edges) {
-            addUndirectedEdge(adjacencyList, edge[0], edge[1]);
+            addUndirectedEdge(adjacencyList, edge);
         }
         return adjacencyList;
     }
@@ -27,6 +29,14 @@ class ArticulationPoints {
             adjacencyList.add(new ArrayList<>());
         }
         return adjacencyList;
+    }
+
+    private static void addUndirectedEdge(List<List<Integer>> adjacencyList, int[] edge) {
+        addUndirectedEdge(
+                adjacencyList,
+                edge[EDGE_FIRST_VERTEX],
+                edge[EDGE_SECOND_VERTEX]
+        );
     }
 
     private static void addUndirectedEdge(

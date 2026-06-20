@@ -6,6 +6,10 @@ import java.util.Objects;
 
 public final class ActivitySelection {
 
+    private static final Comparator<ActivityInterval> BY_FINISH_THEN_START =
+        Comparator.comparingInt(ActivityInterval::finishTime)
+            .thenComparingInt(ActivityInterval::startTime);
+
     private ActivitySelection() {
         // Utility class.
     }
@@ -19,10 +23,20 @@ public final class ActivitySelection {
         int[] finishTimes
     ) {
         ActivityInterval[] activities = buildIntervals(startTimes, finishTimes);
-        if (activities.length == 0) {
+        return selectMaximumNonOverlappingActivities(Arrays.asList(activities));
+    }
+
+    public static SelectionResult selectMaximumNonOverlappingActivities(
+        List<ActivityInterval> activities
+    ) {
+        Objects.requireNonNull(activities, "activities");
+        if (activities.isEmpty()) {
             return new SelectionResult(List.of());
         }
-        return selectActivities(sortByFinishTime(activities));
+
+        ActivityInterval[] sortedActivities = copyActivities(activities);
+        sortByFinishTime(sortedActivities);
+        return selectActivities(sortedActivities);
     }
 
     public static void main(String[] args) {
@@ -57,11 +71,16 @@ public final class ActivitySelection {
         return activities;
     }
 
+    private static ActivityInterval[] copyActivities(List<ActivityInterval> activities) {
+        ActivityInterval[] copiedActivities = new ActivityInterval[activities.size()];
+        for (int i = 0; i < activities.size(); i++) {
+            copiedActivities[i] = Objects.requireNonNull(activities.get(i), "activities[" + i + "]");
+        }
+        return copiedActivities;
+    }
+
     private static ActivityInterval[] sortByFinishTime(ActivityInterval[] activities) {
-        Arrays.sort(
-            activities,
-            Comparator.comparingInt(ActivityInterval::finishTime).thenComparingInt(ActivityInterval::startTime)
-        );
+        Arrays.sort(activities, BY_FINISH_THEN_START);
         return activities;
     }
 
@@ -97,6 +116,10 @@ public final class ActivitySelection {
 
         public int count() {
             return selectedActivities.size();
+        }
+
+        public boolean isEmpty() {
+            return selectedActivities.isEmpty();
         }
     }
 }

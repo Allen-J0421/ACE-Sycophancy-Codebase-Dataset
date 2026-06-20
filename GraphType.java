@@ -1,0 +1,4 @@
+enum GraphType {
+    DIRECTED,
+    UNDIRECTED
+}

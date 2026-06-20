@@ -4,36 +4,48 @@ import java.util.List;
 import java.util.Objects;
 
 final class Graph {
+    private final GraphType type;
     private final List<List<Integer>> adjacencyList;
 
-    private Graph(List<List<Integer>> adjacencyList) {
+    Graph(GraphType type, List<List<Integer>> adjacencyList) {
+        this.type = Objects.requireNonNull(type, "type");
         this.adjacencyList = adjacencyList;
     }
 
     static Graph fromEdges(int vertexCount, int[][] edges) {
-        validateVertexCount(vertexCount);
         Objects.requireNonNull(edges, "edges");
-
-        List<List<Integer>> adjacencyList = new ArrayList<>();
-        for (int vertex = 0; vertex < vertexCount; vertex++) {
-            adjacencyList.add(new ArrayList<>());
-        }
 
         for (int edgeIndex = 0; edgeIndex < edges.length; edgeIndex++) {
             int[] edge = Objects.requireNonNull(edges[edgeIndex], "edge at index " + edgeIndex);
             validateEdge(edge, vertexCount, edgeIndex);
-
-            int from = edge[0];
-            int to = edge[1];
-            adjacencyList.get(from).add(to);
-            adjacencyList.get(to).add(from);
         }
 
-        return new Graph(toUnmodifiableAdjacencyList(adjacencyList));
+        GraphBuilder builder = GraphBuilder.undirected(vertexCount);
+        for (int[] edge : edges) {
+            builder.addEdge(edge[0], edge[1]);
+        }
+
+        return builder.build();
+    }
+
+    static GraphBuilder builder(int vertexCount, GraphType type) {
+        return new GraphBuilder(vertexCount, type);
     }
 
     int vertexCount() {
         return adjacencyList.size();
+    }
+
+    GraphType type() {
+        return type;
+    }
+
+    boolean isDirected() {
+        return type == GraphType.DIRECTED;
+    }
+
+    boolean isUndirected() {
+        return type == GraphType.UNDIRECTED;
     }
 
     List<Integer> neighborsOf(int vertex) {
@@ -53,6 +65,7 @@ final class Graph {
     }
 
     private static void validateEdge(int[] edge, int vertexCount, int edgeIndex) {
+        validateVertexCount(vertexCount);
         if (edge.length != 2) {
             throw new IllegalArgumentException("edge at index " + edgeIndex + " must contain exactly two vertices");
         }
@@ -82,5 +95,9 @@ final class Graph {
         }
 
         return Collections.unmodifiableList(immutableAdjacencyList);
+    }
+
+    static List<List<Integer>> freezeAdjacencyList(List<List<Integer>> adjacencyList) {
+        return toUnmodifiableAdjacencyList(adjacencyList);
     }
 }

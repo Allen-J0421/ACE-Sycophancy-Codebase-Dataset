@@ -112,7 +112,7 @@ final class DetectCycle {
 
     public static void main(String[] args) {
         DirectedGraph graph = buildSampleGraph();
-        System.out.println(containsCycle(graph.adjacencyList()) ? "true" : "false");
+        System.out.println(Boolean.toString(containsCycle(graph.adjacencyList())));
     }
 
     private static final class DirectedGraph {

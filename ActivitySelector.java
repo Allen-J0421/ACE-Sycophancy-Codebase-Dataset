@@ -48,7 +48,7 @@ final class ActivitySelector {
         for (int i = 1; i < activities.length; i++) {
             Activity candidate = activities[i];
 
-            if (candidate.getStartTime() > lastSelected.getFinishTime()) {
+            if (candidate.startsAfter(lastSelected)) {
                 selectedCount++;
                 lastSelected = candidate;
             }

@@ -7,11 +7,11 @@ final class Activity {
         this.finishTime = finishTime;
     }
 
-    int getStartTime() {
-        return startTime;
-    }
-
     int getFinishTime() {
         return finishTime;
+    }
+
+    boolean startsAfter(Activity other) {
+        return startTime > other.finishTime;
     }
 }

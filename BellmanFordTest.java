@@ -6,7 +6,9 @@ final class BellmanFordTest {
 
     public static void main(String[] args) {
         testShortestPaths();
+        testLegacyShortestPaths();
         testNegativeCycleDetection();
+        testLegacyNegativeCycleDetection();
         testInvalidEdgeValidation();
         System.out.println("All BellmanFord tests passed.");
     }
@@ -19,16 +21,28 @@ final class BellmanFordTest {
         assertArrayEquals(new int[] {0, 5, 6, 6, 7}, result.distances(), "incorrect shortest paths");
     }
 
-    private static void testNegativeCycleDetection() {
-        WeightedGraph graph = WeightedGraph.of(
-            3,
-            WeightedEdge.of(0, 1, 1),
-            WeightedEdge.of(1, 2, -1),
-            WeightedEdge.of(2, 0, -1)
-        );
+    private static void testLegacyShortestPaths() {
+        int[] distances = BellmanFord.shortestPaths(5, BellmanFordFixtures.sampleEdgeData(), 0);
+        assertArrayEquals(new int[] {0, 5, 6, 6, 7}, distances, "incorrect legacy shortest paths");
+    }
 
+    private static void testNegativeCycleDetection() {
+        WeightedGraph graph = BellmanFordFixtures.negativeCycleGraph();
         ShortestPathResult result = BellmanFord.computeShortestPaths(graph, 0);
         assertTrue(result.hasNegativeCycle(), "expected negative cycle detection");
+    }
+
+    private static void testLegacyNegativeCycleDetection() {
+        int[] result = BellmanFord.shortestPaths(
+            3,
+            new int[][] {
+                {0, 1, 1},
+                {1, 2, -1},
+                {2, 0, -1}
+            },
+            0
+        );
+        assertArrayEquals(new int[] {-1}, result, "legacy API should return the negative-cycle sentinel");
     }
 
     private static void testInvalidEdgeValidation() {

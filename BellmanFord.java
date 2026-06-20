@@ -51,23 +51,23 @@ public final class BellmanFord {
     }
 
     private static boolean relax(WeightedEdge edge, int[] distances) {
-        if (distances[edge.from] == INF) {
+        if (distances[edge.from()] == INF) {
             return false;
         }
 
-        int candidateDistance = distances[edge.from] + edge.weight;
-        if (candidateDistance >= distances[edge.to]) {
+        int candidateDistance = distances[edge.from()] + edge.weight();
+        if (candidateDistance >= distances[edge.to()]) {
             return false;
         }
 
-        distances[edge.to] = candidateDistance;
+        distances[edge.to()] = candidateDistance;
         return true;
     }
 
     private static boolean hasNegativeCycle(WeightedEdge[] edges, int[] distances) {
         for (WeightedEdge edge : edges) {
-            if (distances[edge.from] != INF
-                    && distances[edge.from] + edge.weight < distances[edge.to]) {
+            if (distances[edge.from()] != INF
+                    && distances[edge.from()] + edge.weight() < distances[edge.to()]) {
                 return true;
             }
         }

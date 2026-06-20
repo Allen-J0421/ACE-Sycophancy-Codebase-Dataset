@@ -1,7 +1,7 @@
-final class WeightedEdge {
-    final int from;
-    final int to;
-    final int weight;
+public final class WeightedEdge {
+    private final int from;
+    private final int to;
+    private final int weight;
 
     private WeightedEdge(int from, int to, int weight) {
         this.from = from;
@@ -9,7 +9,19 @@ final class WeightedEdge {
         this.weight = weight;
     }
 
-    static WeightedEdge of(int from, int to, int weight) {
+    public static WeightedEdge of(int from, int to, int weight) {
         return new WeightedEdge(from, to, weight);
+    }
+
+    public int from() {
+        return from;
+    }
+
+    public int to() {
+        return to;
+    }
+
+    public int weight() {
+        return weight;
     }
 }

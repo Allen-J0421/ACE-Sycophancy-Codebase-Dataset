@@ -1,4 +1,4 @@
-final class ShortestPathResult {
+public final class ShortestPathResult {
     private final boolean negativeCycle;
     private final int[] distances;
 
@@ -15,11 +15,11 @@ final class ShortestPathResult {
         return new ShortestPathResult(true, new int[0]);
     }
 
-    boolean hasNegativeCycle() {
+    public boolean hasNegativeCycle() {
         return negativeCycle;
     }
 
-    int[] distances() {
+    public int[] distances() {
         return distances.clone();
     }
 }

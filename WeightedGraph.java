@@ -1,4 +1,4 @@
-final class WeightedGraph {
+public final class WeightedGraph {
     private static final int EDGE_WIDTH = 3;
 
     private final int vertices;
@@ -9,7 +9,7 @@ final class WeightedGraph {
         this.edges = edges;
     }
 
-    static WeightedGraph from(int vertices, int[][] edgeData) {
+    public static WeightedGraph from(int vertices, int[][] edgeData) {
         validateVerticesCount(vertices);
         validateEdgeData(edgeData);
 
@@ -24,7 +24,7 @@ final class WeightedGraph {
         return of(vertices, edges);
     }
 
-    static WeightedGraph of(int vertices, WeightedEdge... edges) {
+    public static WeightedGraph of(int vertices, WeightedEdge... edges) {
         validateVerticesCount(vertices);
         if (edges == null) {
             throw new IllegalArgumentException("edges must not be null");
@@ -36,15 +36,19 @@ final class WeightedGraph {
             if (edge == null) {
                 throw new IllegalArgumentException("edges must not contain null entries");
             }
-            validateVertex(edge.from, vertices, "edge start");
-            validateVertex(edge.to, vertices, "edge end");
+            validateVertex(edge.from(), vertices, "edge start");
+            validateVertex(edge.to(), vertices, "edge end");
             normalizedEdges[i] = edge;
         }
         return new WeightedGraph(vertices, normalizedEdges);
     }
 
-    int vertices() {
+    public int vertices() {
         return vertices;
+    }
+
+    public WeightedEdge[] edges() {
+        return edges.clone();
     }
 
     WeightedEdge[] edgeArray() {

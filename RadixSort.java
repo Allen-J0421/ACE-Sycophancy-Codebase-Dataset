@@ -28,7 +28,7 @@ public final class RadixSort {
         int[] target = workspace.buffer;
         boolean valuesContainSortedResult = true;
 
-        for (int exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
+        for (long exponent = 1; maxValue / exponent > 0; exponent *= RADIX) {
             countingSortByDigit(source, target, workspace.counts, exponent);
 
             int[] previousSource = source;
@@ -75,7 +75,7 @@ public final class RadixSort {
         int[] source,
         int[] target,
         int[] counts,
-        int exponent
+        long exponent
     ) {
         Arrays.fill(counts, 0);
 
@@ -94,8 +94,8 @@ public final class RadixSort {
         }
     }
 
-    private static int digitAt(int value, int exponent) {
-        return (value / exponent) % RADIX;
+    private static int digitAt(int value, long exponent) {
+        return (int) ((value / exponent) % RADIX);
     }
 
     private static final class SortWorkspace {

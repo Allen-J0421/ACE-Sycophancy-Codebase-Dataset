@@ -54,6 +54,11 @@ public final class RadixSortSelfTest {
             new int[] {0, 1, 10, 100, 1000},
             "mixed digit widths should sort correctly"
         );
+        assertSortedCopyEquals(
+            new int[] {Integer.MAX_VALUE, 7, 70, 0, 700000000},
+            new int[] {0, 7, 70, 700000000, Integer.MAX_VALUE},
+            "large values near Integer.MAX_VALUE should sort correctly"
+        );
     }
 
     private static void verifiesUnsupportedInputFails() {

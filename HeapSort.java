@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public final class HeapSort {
     private static final int ROOT_INDEX = 0;
 
@@ -13,15 +11,6 @@ public final class HeapSort {
 
         new MaxHeap(values).sortValues();
     }
-
-    public static void main(String[] args) {
-        int[] arr = { 9, 4, 3, 8, 10, 2, 5 };
-
-        sort(arr);
-
-        System.out.println(Arrays.toString(arr));
-    }
-
     private static final class MaxHeap {
         private final int[] values;
         private final UnsortedPrefix unsortedPrefix;

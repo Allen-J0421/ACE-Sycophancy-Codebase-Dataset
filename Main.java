@@ -7,15 +7,18 @@ import java.util.List;
 public final class Main {
 
     public static void main(String[] args) {
-        int inf = Graph.INF;
-
-        Graph graph = Graph.of(new int[][] {
-                {0,   4,   inf, 5,   inf},
-                {inf, 0,   1,   inf, 6},
-                {2,   inf, 0,   3,   inf},
-                {inf, inf, 1,   0,   2},
-                {1,   inf, inf, 4,   0}
-        });
+        Graph graph = Graph.builder(5)
+                .addEdge(0, 1, 4)
+                .addEdge(0, 3, 5)
+                .addEdge(1, 2, 1)
+                .addEdge(1, 4, 6)
+                .addEdge(2, 0, 2)
+                .addEdge(2, 3, 3)
+                .addEdge(3, 2, 1)
+                .addEdge(3, 4, 2)
+                .addEdge(4, 0, 1)
+                .addEdge(4, 3, 4)
+                .build();
 
         ShortestPaths result = FloydWarshall.shortestPaths(graph);
 

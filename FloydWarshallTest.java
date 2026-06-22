@@ -31,6 +31,9 @@ public final class FloydWarshallTest {
         neighborsListDirectEdges();
         vertexWithNoOutgoingEdgesHasNoNeighbors();
         neighborsRejectOutOfRangeVertex();
+        builderProducesEquivalentGraph();
+        builderRejectsInvalidEdges();
+        builderRejectsNonPositiveVertexCount();
 
         t.report();
         if (!t.allPassed()) {
@@ -171,6 +174,42 @@ public final class FloydWarshallTest {
     private static void neighborsRejectOutOfRangeVertex() {
         Graph g = Graph.of(new int[][] {{0}});
         t.throwsIndexOutOfBounds("neighbors rejects out-of-range vertex", () -> g.neighbors(1));
+    }
+
+    private static void builderProducesEquivalentGraph() {
+        Graph viaMatrix = Graph.of(new int[][] {
+                {0,   4,   INF, 5,   INF},
+                {INF, 0,   1,   INF, 6},
+                {2,   INF, 0,   3,   INF},
+                {INF, INF, 1,   0,   2},
+                {1,   INF, INF, 4,   0}
+        });
+        Graph viaBuilder = Graph.builder(5)
+                .addEdge(0, 1, 4)
+                .addEdge(0, 3, 5)
+                .addEdge(1, 2, 1)
+                .addEdge(1, 4, 6)
+                .addEdge(2, 0, 2)
+                .addEdge(2, 3, 3)
+                .addEdge(3, 2, 1)
+                .addEdge(3, 4, 2)
+                .addEdge(4, 0, 1)
+                .addEdge(4, 3, 4)
+                .build();
+        t.isTrue("builder equals matrix construction", viaMatrix.equals(viaBuilder));
+    }
+
+    private static void builderRejectsInvalidEdges() {
+        t.throwsIndexOutOfBounds("builder rejects out-of-range vertex",
+                () -> Graph.builder(2).addEdge(0, 2, 1));
+        t.throwsIllegalArgument("builder rejects self-loop",
+                () -> Graph.builder(2).addEdge(1, 1, 1));
+        t.throwsIllegalArgument("builder rejects INF weight",
+                () -> Graph.builder(2).addEdge(0, 1, Graph.INF));
+    }
+
+    private static void builderRejectsNonPositiveVertexCount() {
+        t.throwsIllegalArgument("builder rejects zero vertices", () -> Graph.builder(0));
     }
 
     private static void graphRejectsOutOfRangeVertex() {

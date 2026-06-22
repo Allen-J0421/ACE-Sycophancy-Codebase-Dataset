@@ -49,6 +49,18 @@ public final class Graph {
         return new Graph(copy);
     }
 
+    /**
+     * Starts building a graph by adding edges one at a time, which is clearer
+     * and less error-prone than writing out a dense matrix of {@link #INF}
+     * sentinels by hand.
+     *
+     * @param vertexCount the number of vertices; must be positive
+     * @throws IllegalArgumentException if {@code vertexCount} is not positive
+     */
+    public static Builder builder(int vertexCount) {
+        return new Builder(vertexCount);
+    }
+
     /** Number of vertices in the graph. */
     public int size() {
         return matrix.length;
@@ -106,5 +118,63 @@ public final class Graph {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(matrix);
+    }
+
+    /**
+     * Fluent builder for {@link Graph}. Starts from a graph with no edges (every
+     * off-diagonal weight {@link #INF}, the diagonal {@code 0}) and lets callers
+     * add directed edges incrementally.
+     */
+    public static final class Builder {
+
+        private final int[][] matrix;
+
+        private Builder(int vertexCount) {
+            if (vertexCount <= 0) {
+                throw new IllegalArgumentException(
+                        "vertexCount must be positive, got " + vertexCount);
+            }
+            matrix = new int[vertexCount][vertexCount];
+            for (int i = 0; i < vertexCount; i++) {
+                Arrays.fill(matrix[i], INF);
+                matrix[i][i] = 0;
+            }
+        }
+
+        /**
+         * Adds (or overwrites) the directed edge {@code from -> to}.
+         *
+         * @param from   the source vertex
+         * @param to     the target vertex (must differ from {@code from})
+         * @param weight the edge weight; may be negative but must be less than
+         *               {@link #INF}, which is reserved to mean "no edge"
+         * @return this builder, for chaining
+         * @throws IndexOutOfBoundsException if a vertex is out of range
+         * @throws IllegalArgumentException  if {@code from == to} or the weight
+         *                                   is not less than {@link #INF}
+         */
+        public Builder addEdge(int from, int to, int weight) {
+            Vertices.requireValid(from, matrix.length, "source");
+            Vertices.requireValid(to, matrix.length, "target");
+            if (from == to) {
+                throw new IllegalArgumentException(
+                        "self-loops are not supported (from == to == " + from + ")");
+            }
+            if (weight >= INF) {
+                throw new IllegalArgumentException(
+                        "edge weight " + weight + " must be less than INF (" + INF + ")");
+            }
+            matrix[from][to] = weight;
+            return this;
+        }
+
+        /**
+         * Builds an immutable {@link Graph} from the edges added so far. The
+         * builder may continue to be used afterwards without affecting the
+         * returned graph.
+         */
+        public Graph build() {
+            return Graph.of(matrix);
+        }
     }
 }

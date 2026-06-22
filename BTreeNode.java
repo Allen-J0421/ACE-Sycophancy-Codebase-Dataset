@@ -1,3 +1,5 @@
+import java.util.List;
+
 class BTreeNode {
     private int[] keys;
     private int minDegree;
@@ -27,7 +29,7 @@ class BTreeNode {
                 i--;
             }
             int childIndex = i + 1;
-            if (children[childIndex].keyCount == 2 * minDegree - 1) {
+            if (children[childIndex].isFull()) {
                 splitChild(childIndex, children[childIndex]);
                 if (keys[childIndex] < key) {
                     childIndex++;
@@ -60,15 +62,15 @@ class BTreeNode {
         keyCount++;
     }
 
-    void traverse() {
+    void collectKeys(List<Integer> result) {
         for (int i = 0; i < keyCount; i++) {
             if (!leaf) {
-                children[i].traverse();
+                children[i].collectKeys(result);
             }
-            System.out.print(" " + keys[i]);
+            result.add(keys[i]);
         }
         if (!leaf) {
-            children[keyCount].traverse();
+            children[keyCount].collectKeys(result);
         }
     }
 

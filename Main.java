@@ -10,9 +10,7 @@ public class Main {
         tree.insert(7);
         tree.insert(17);
 
-        System.out.print("Traversal of the constructed tree:");
-        tree.traverse();
-        System.out.println();
+        System.out.println("Tree keys: " + tree.getKeys());
 
         int[] searchKeys = {6, 15};
         for (int key : searchKeys) {

@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class BTree {
     private BTreeNode root;
     private final int minDegree;
@@ -10,10 +13,16 @@ public class BTree {
         this.root = null;
     }
 
-    public void traverse() {
+    public List<Integer> getKeys() {
+        List<Integer> result = new ArrayList<>();
         if (root != null) {
-            root.traverse();
+            root.collectKeys(result);
         }
+        return result;
+    }
+
+    public void traverse() {
+        System.out.println(getKeys());
     }
 
     public boolean contains(int key) {

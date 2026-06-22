@@ -1,5 +1,8 @@
 package rbtree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A red-black tree supporting ordered insertion of any {@link Comparable} type.
  *
@@ -81,14 +84,29 @@ public class RedBlackTree<T extends Comparable<T>> {
         }
     }
 
+    /** Returns the stored values in ascending (in-order) order. */
+    public List<T> toSortedList() {
+        List<T> values = new ArrayList<>();
+        collectInOrder(root, values);
+        return values;
+    }
+
     /** Prints the values in ascending order, space-separated. */
     public void inorderTraversal() {
-        TreePrinter.inorder(root);
+        TreePrinter.printValues(toSortedList());
     }
 
     /** Prints a sideways, indented view of the tree structure. */
     public void printTree() {
         TreePrinter.print(root);
+    }
+
+    private void collectInOrder(Node<T> node, List<T> out) {
+        if (node != null) {
+            collectInOrder(node.left, out);
+            out.add(node.data);
+            collectInOrder(node.right, out);
+        }
     }
 
     private Node<T> rotateLeft(Node<T> node) {

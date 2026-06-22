@@ -1,10 +1,12 @@
 package rbtree;
 
+import java.util.List;
+
 /**
  * Rendering of a tree to standard output.
  *
  * <p>Separating presentation from the {@link RedBlackTree} keeps the data
- * structure free of I/O concerns. Nodes are printed via their {@code toString}
+ * structure free of I/O concerns. Values are printed via their {@code toString}
  * representation, so the printer is agnostic to the tree's element type. The
  * output is identical to the original {@code inorderTraversalHelper} /
  * {@code printTreeHelper} methods.
@@ -17,12 +19,10 @@ final class TreePrinter {
     private TreePrinter() {
     }
 
-    /** Prints node values in ascending order, each followed by a space. */
-    static void inorder(Node<?> node) {
-        if (node != null) {
-            inorder(node.left);
-            System.out.printf("%s ", node.data);
-            inorder(node.right);
+    /** Prints the given values in order, each followed by a space. */
+    static void printValues(List<?> values) {
+        for (Object value : values) {
+            System.out.printf("%s ", value);
         }
     }
 

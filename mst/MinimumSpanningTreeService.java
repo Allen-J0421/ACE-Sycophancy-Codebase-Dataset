@@ -11,15 +11,7 @@ public final class MinimumSpanningTreeService {
         return solver.findMinimumSpanningTree(graph);
     }
 
-    public MinimumSpanningTreeResult findMinimumSpanningTree(int vertexCount, int[][] rawEdges) {
-        return findMinimumSpanningTree(GraphFactory.fromEdgeMatrix(vertexCount, rawEdges));
-    }
-
     public int minimumSpanningTreeCost(Graph graph) {
         return solver.minimumSpanningTreeCost(graph);
-    }
-
-    public int minimumSpanningTreeCost(int vertexCount, int[][] rawEdges) {
-        return minimumSpanningTreeCost(GraphFactory.fromEdgeMatrix(vertexCount, rawEdges));
     }
 }

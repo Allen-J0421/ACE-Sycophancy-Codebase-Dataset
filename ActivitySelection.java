@@ -10,10 +10,10 @@ public class ActivitySelection {
     }
 
     public static int activitySelection(int[] start, int[] finish) {
-        return countSelectedActivities(sortByFinishTime(buildActivities(start, finish)));
+        return countSelectedActivities(toSortedActivities(start, finish));
     }
 
-    private static Activity[] buildActivities(int[] start, int[] finish) {
+    private static Activity[] toSortedActivities(int[] start, int[] finish) {
         Objects.requireNonNull(start, "start must not be null");
         Objects.requireNonNull(finish, "finish must not be null");
 
@@ -25,10 +25,6 @@ public class ActivitySelection {
         for (int i = 0; i < start.length; i++) {
             activities[i] = new Activity(start[i], finish[i]);
         }
-        return activities;
-    }
-
-    private static Activity[] sortByFinishTime(Activity[] activities) {
         Arrays.sort(activities, BY_FINISH_TIME);
         return activities;
     }
@@ -75,6 +71,11 @@ public class ActivitySelection {
 
         private boolean canFollow(Activity other) {
             return startTime > other.finishTime;
+        }
+
+        @Override
+        public String toString() {
+            return "[" + startTime + ", " + finishTime + "]";
         }
     }
 }

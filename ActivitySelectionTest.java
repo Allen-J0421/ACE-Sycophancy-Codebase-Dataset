@@ -1,18 +1,21 @@
 public class ActivitySelectionTest {
     public static void main(String[] args) {
-        assertEquals(
-            4,
-            ActivitySelection.activitySelection(
+        assertSelectionCount(
+            new SelectionCase(
+                4,
                 new int[] {1, 3, 0, 5, 8, 5},
-                new int[] {2, 4, 6, 7, 9, 9}
-            ),
-            "selects the expected number of compatible activities"
+                new int[] {2, 4, 6, 7, 9, 9},
+                "selects the expected number of compatible activities"
+            )
         );
 
-        assertEquals(
-            0,
-            ActivitySelection.activitySelection(new int[] {}, new int[] {}),
-            "returns zero for empty input"
+        assertSelectionCount(
+            new SelectionCase(
+                0,
+                new int[] {},
+                new int[] {},
+                "returns zero for empty input"
+            )
         );
 
         assertThrows(
@@ -27,10 +30,21 @@ public class ActivitySelectionTest {
             "rejects null start input"
         );
 
+        assertSelectionCount(
+            new SelectionCase(
+                1,
+                new int[] {1, 2},
+                new int[] {2, 3},
+                "preserves the strict compatibility rule when activities touch"
+            )
+        );
+    }
+
+    private static void assertSelectionCount(SelectionCase testCase) {
         assertEquals(
-            1,
-            ActivitySelection.activitySelection(new int[] {1, 2}, new int[] {2, 3}),
-            "preserves the strict compatibility rule when activities touch"
+            testCase.expectedCount(),
+            ActivitySelection.activitySelection(testCase.startTimes(), testCase.finishTimes()),
+            testCase.message()
         );
     }
 
@@ -63,5 +77,13 @@ public class ActivitySelectionTest {
     @FunctionalInterface
     private interface ThrowingRunnable {
         void run() throws Throwable;
+    }
+
+    private record SelectionCase(
+        int expectedCount,
+        int[] startTimes,
+        int[] finishTimes,
+        String message
+    ) {
     }
 }

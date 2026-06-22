@@ -1,7 +1,7 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Queue;
 
 class ConnectedComponents {
 
@@ -22,7 +22,7 @@ class ConnectedComponents {
 
     private static List<Integer> bfsFrom(Graph graph, int start, boolean[] visited) {
         List<Integer> component = new ArrayList<>();
-        Queue<Integer> queue = new LinkedList<>();
+        Deque<Integer> queue = new ArrayDeque<>();
         visited[start] = true;
         queue.add(start);
 

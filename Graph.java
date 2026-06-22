@@ -7,6 +7,9 @@ class Graph {
     private final List<List<Integer>> adjacencyList;
 
     Graph(int vertexCount) {
+        if (vertexCount < 0) {
+            throw new IllegalArgumentException("vertexCount must be non-negative");
+        }
         this.vertexCount = vertexCount;
         adjacencyList = new ArrayList<>();
         for (int i = 0; i < vertexCount; i++) {
@@ -25,6 +28,11 @@ class Graph {
     }
 
     List<Integer> neighborsOf(int vertex) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException(
+                "Vertex must be in range [0, " + (vertexCount - 1) + "]"
+            );
+        }
         return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 

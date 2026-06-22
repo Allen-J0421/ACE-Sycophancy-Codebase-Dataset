@@ -21,15 +21,11 @@ final class SelectionRequest {
     }
 
     int selectWith(PivotSelector pivotSelector) {
-        return QuickSelectEngine.select(this, pivotSelector);
+        return QuickSelectEngine.select(toContext(), pivotSelector);
     }
 
-    int[] workingValues() {
-        return workingValues;
-    }
-
-    int targetIndex() {
-        return targetIndex;
+    private SelectionContext toContext() {
+        return new SelectionContext(workingValues, targetIndex);
     }
 
     private static void validateRank(int[] values, int rank) {

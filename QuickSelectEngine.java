@@ -1,31 +1,26 @@
 final class QuickSelectEngine {
 
-    private final int[] values;
-    private final int targetIndex;
+    private final SelectionContext context;
     private final Partitioner partitioner;
-    private final SearchBounds searchBounds;
 
-    QuickSelectEngine(int[] values, int targetIndex, PivotSelector pivotSelector) {
-        this.values = values;
-        this.targetIndex = targetIndex;
-        this.partitioner = new Partitioner(values, pivotSelector);
-        this.searchBounds = SearchBounds.initial(values.length);
+    QuickSelectEngine(SelectionContext context, PivotSelector pivotSelector) {
+        this.context = context;
+        this.partitioner = new Partitioner(context, pivotSelector);
     }
 
-    static int select(SelectionRequest request, PivotSelector pivotSelector) {
-        return new QuickSelectEngine(request.workingValues(), request.targetIndex(), pivotSelector)
-            .select();
+    static int select(SelectionContext context, PivotSelector pivotSelector) {
+        return new QuickSelectEngine(context, pivotSelector).select();
     }
 
     int select() {
-        while (searchBounds.isActive()) {
-            int partitionIndex = partitioner.partition(searchBounds);
+        while (context.searchBounds().isActive()) {
+            int partitionIndex = partitioner.partition();
 
-            if (partitionIndex == targetIndex) {
-                return values[partitionIndex];
+            if (context.isTargetIndex(partitionIndex)) {
+                return context.valueAt(partitionIndex);
             }
 
-            searchBounds.narrowToward(targetIndex, partitionIndex);
+            context.narrowSearchBounds(partitionIndex);
         }
 
         throw new IllegalStateException("Quickselect failed to locate the target index");

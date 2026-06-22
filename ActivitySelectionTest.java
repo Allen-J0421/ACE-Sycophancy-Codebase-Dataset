@@ -29,6 +29,7 @@ public class ActivitySelectionTest {
         for (SelectionCase testCase : selectionCases) {
             assertSelectionCount(testCase);
             assertSelectedActivities(testCase);
+            assertSelectedActivitySlots(testCase);
             assertSelectionResult(testCase);
             assertLegacyAlias(testCase);
         }
@@ -76,6 +77,24 @@ public class ActivitySelectionTest {
             testCase.expectedActivities(),
             result.activities(),
             testCase.message() + " with the expected result activities"
+        );
+    }
+
+    private static void assertSelectedActivitySlots(SelectionCase testCase) {
+        ActivitySelection.SelectionResult result =
+            ActivitySelection.buildSelectionResult(testCase.startTimes(), testCase.finishTimes());
+
+        ActivitySelection.ActivitySlot[] slots = result.selectedActivities();
+        int[][] actualActivities = new int[slots.length][2];
+        for (int i = 0; i < slots.length; i++) {
+            actualActivities[i][0] = slots[i].startTime();
+            actualActivities[i][1] = slots[i].finishTime();
+        }
+
+        assertDeepEquals(
+            testCase.expectedActivities(),
+            actualActivities,
+            testCase.message() + " with the expected slot objects"
         );
     }
 

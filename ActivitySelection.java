@@ -49,8 +49,8 @@ public class ActivitySelection {
             return startTime > other.finishTime;
         }
 
-        private int[] toPair() {
-            return new int[] {startTime, finishTime};
+        private ActivitySlot toSlot() {
+            return new ActivitySlot(startTime, finishTime);
         }
 
         @Override
@@ -80,11 +80,11 @@ public class ActivitySelection {
 
         private SelectionResult selectionResult() {
             Activity[] selectedActivities = selectCompatibleActivities();
-            int[][] selectedPairs = new int[selectedActivities.length][2];
+            ActivitySlot[] selectedSlots = new ActivitySlot[selectedActivities.length];
             for (int i = 0; i < selectedActivities.length; i++) {
-                selectedPairs[i] = selectedActivities[i].toPair();
+                selectedSlots[i] = selectedActivities[i].toSlot();
             }
-            return new SelectionResult(selectedPairs);
+            return new SelectionResult(selectedSlots);
         }
 
         private Activity[] selectCompatibleActivities() {
@@ -121,9 +121,9 @@ public class ActivitySelection {
     }
 
     public static final class SelectionResult {
-        private final int[][] activities;
+        private final ActivitySlot[] activities;
 
-        private SelectionResult(int[][] activities) {
+        private SelectionResult(ActivitySlot[] activities) {
             this.activities = copyActivities(activities);
         }
 
@@ -131,16 +131,51 @@ public class ActivitySelection {
             return activities.length;
         }
 
-        public int[][] activities() {
+        public ActivitySlot[] selectedActivities() {
             return copyActivities(activities);
         }
 
-        private static int[][] copyActivities(int[][] activities) {
-            int[][] copy = new int[activities.length][];
+        public int[][] activities() {
+            int[][] pairs = new int[activities.length][2];
             for (int i = 0; i < activities.length; i++) {
-                copy[i] = Arrays.copyOf(activities[i], activities[i].length);
+                pairs[i] = activities[i].toPair();
+            }
+            return pairs;
+        }
+
+        private static ActivitySlot[] copyActivities(ActivitySlot[] activities) {
+            ActivitySlot[] copy = new ActivitySlot[activities.length];
+            for (int i = 0; i < activities.length; i++) {
+                copy[i] = activities[i];
             }
             return copy;
+        }
+    }
+
+    public static final class ActivitySlot {
+        private final int startTime;
+        private final int finishTime;
+
+        private ActivitySlot(int startTime, int finishTime) {
+            this.startTime = startTime;
+            this.finishTime = finishTime;
+        }
+
+        public int startTime() {
+            return startTime;
+        }
+
+        public int finishTime() {
+            return finishTime;
+        }
+
+        private int[] toPair() {
+            return new int[] {startTime, finishTime};
+        }
+
+        @Override
+        public String toString() {
+            return "[" + startTime + ", " + finishTime + "]";
         }
     }
 }

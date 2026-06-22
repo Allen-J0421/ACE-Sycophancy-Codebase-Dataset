@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 record Graph(int vertexCount, List<Edge> edges) {
@@ -36,18 +35,8 @@ record Graph(int vertexCount, List<Edge> edges) {
         return vertexCount <= 1;
     }
 
-    List<Edge> edgesSortedByWeight() {
-        List<Edge> sortedEdges = new ArrayList<>(edges);
-        sortedEdges.sort(Comparator.comparingInt(Edge::weight));
-        return sortedEdges;
-    }
-
-    void validateSpanningTree(MstResult result) {
-        if (isTriviallyConnected() || result.spans(this)) {
-            return;
-        }
-
-        throw new IllegalArgumentException("Input graph must be connected to form an MST.");
+    boolean canBeSpannedWith(int edgeCount) {
+        return isTriviallyConnected() || edgeCount == requiredEdgeCount();
     }
 
     private static void validateVertexCount(int vertexCount) {

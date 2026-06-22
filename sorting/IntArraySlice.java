@@ -1,43 +1,28 @@
 package sorting;
 
-final class IntArraySlice {
+record IntArraySlice(int[] values, int startInclusive, int endExclusive) {
 
-    private final int[] values;
-    private final IndexRange range;
-
-    private IntArraySlice(int[] values, IndexRange range) {
-        this.values = values;
-        this.range = range;
+    IntArraySlice {
+        requireArray(values);
+        requireRange(values.length, startInclusive, endExclusive);
     }
 
     static IntArraySlice entireArray(int[] values) {
         requireArray(values);
-        return new IntArraySlice(values, IndexRange.forArray(values.length));
+        return new IntArraySlice(values, 0, values.length);
     }
 
     static IntArraySlice of(int[] values, int startInclusive, int endExclusive) {
         requireArray(values);
-        return new IntArraySlice(values, IndexRange.of(values.length, startInclusive, endExclusive));
+        return new IntArraySlice(values, startInclusive, endExclusive);
     }
 
     IntArraySlice copy() {
-        return new IntArraySlice(values.clone(), range);
-    }
-
-    int[] values() {
-        return values;
-    }
-
-    int startInclusive() {
-        return range.startInclusive();
-    }
-
-    int endExclusive() {
-        return range.endExclusive();
+        return new IntArraySlice(values.clone(), startInclusive, endExclusive);
     }
 
     boolean hasFewerThanTwoElements() {
-        return range.hasFewerThanTwoElements();
+        return endExclusive - startInclusive < 2;
     }
 
     int valueAt(int index) {
@@ -58,6 +43,13 @@ final class IntArraySlice {
     private static void requireArray(int[] values) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
+        }
+    }
+
+    private static void requireRange(int length, int startInclusive, int endExclusive) {
+        if (startInclusive < 0 || endExclusive < startInclusive || endExclusive > length) {
+            throw new IllegalArgumentException(
+                    "invalid range: [" + startInclusive + ", " + endExclusive + ") for length " + length);
         }
     }
 }

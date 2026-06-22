@@ -38,6 +38,8 @@ public class AVLTreeTest {
         removeNullRejected();
         removeAllLeavesEmptyTree();
         removeKeepsTreeSortedAndBalanced();
+        treeStringEmptyAndSingleNode();
+        treeStringRendersLabelledHierarchy();
 
         if (failures == 0) {
             System.out.println("All AVL tree tests passed.");
@@ -285,6 +287,30 @@ public class AVLTreeTest {
 
         int maxAllowedHeight = (int) Math.ceil(1.44 * (Math.log(tree.size() + 2) / Math.log(2)));
         check("remove-half within AVL bound", true, tree.height() <= maxAllowedHeight);
+    }
+
+    private static void treeStringEmptyAndSingleNode() {
+        check("treeString empty", "(empty)", new AVLTree<Integer>().toTreeString());
+        check("treeString single node", "42", newTree(42).toTreeString());
+    }
+
+    private static void treeStringRendersLabelledHierarchy() {
+        // Structure of this insertion order:
+        //   30
+        //   ├── L: 20  (two children)
+        //   │   ├── L: 10
+        //   │   └── R: 25
+        //   └── R: 40  (right child only — the L:/R: label disambiguates this)
+        //       └── R: 50
+        AVLTree<Integer> tree = newTree(10, 20, 30, 40, 50, 25);
+        String expected = String.join("\n",
+                "30",
+                "├── L: 20",
+                "│   ├── L: 10",
+                "│   └── R: 25",
+                "└── R: 40",
+                "    └── R: 50");
+        check("treeString hierarchy", expected, tree.toTreeString());
     }
 
     /** A deliberately non-{@link Comparable} key type for comparator tests. */

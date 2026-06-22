@@ -162,6 +162,52 @@ public class AVLTree<T> implements Iterable<T> {
         return inOrder().toString();
     }
 
+    /**
+     * Returns a multi-line, indented diagram of the tree's structure, with each
+     * child labelled {@code L:} or {@code R:} so left-only and right-only
+     * children are distinguishable. An empty tree renders as {@code (empty)}.
+     *
+     * <p>Example for keys inserted as 10, 20, 30, 40, 50, 25:
+     * <pre>
+     * 30
+     * ├── L: 20
+     * │   ├── L: 10
+     * │   └── R: 25
+     * └── R: 40
+     *     └── R: 50
+     * </pre>
+     *
+     * @return a human-readable rendering of the tree hierarchy (no trailing newline)
+     */
+    public String toTreeString() {
+        if (root == null) {
+            return "(empty)";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.key).append('\n');
+        appendChildren(root, "", sb);
+        // Drop the trailing newline so the result reads like a single value.
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private void appendChildren(Node<T> node, String prefix, StringBuilder sb) {
+        if (node.left != null) {
+            appendChild(node.left, "L", prefix, node.right == null, sb);
+        }
+        if (node.right != null) {
+            appendChild(node.right, "R", prefix, true, sb);
+        }
+    }
+
+    private void appendChild(Node<T> node, String label, String prefix, boolean last,
+                             StringBuilder sb) {
+        sb.append(prefix)
+          .append(last ? "└── " : "├── ")
+          .append(label).append(": ").append(node.key).append('\n');
+        appendChildren(node, prefix + (last ? "    " : "│   "), sb);
+    }
+
     // --- Internal recursion and balancing -------------------------------
 
     /**

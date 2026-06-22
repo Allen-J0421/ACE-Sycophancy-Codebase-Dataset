@@ -1,6 +1,13 @@
-class CuttingRod {
+/**
+ * Dynamic-programming solution to the rod-cutting problem.
+ */
+public final class CuttingRod {
 
-    static int cutRod(int[] prices) {
+    private CuttingRod() {
+        // Utility class.
+    }
+
+    public static int cutRod(int[] prices) {
         if (prices == null || prices.length <= 1) {
             return 0;
         }

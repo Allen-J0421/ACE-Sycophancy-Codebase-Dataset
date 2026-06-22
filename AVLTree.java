@@ -1,6 +1,9 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * A self-balancing binary search tree (AVL tree).
@@ -89,10 +92,17 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
         return out;
     }
 
-    /** Iterates the keys in ascending order. */
+    /**
+     * Returns an iterator over the keys in ascending order.
+     *
+     * <p>The traversal is lazy: nodes are visited on demand using an explicit
+     * stack, so iteration uses O(h) memory (h = tree height) rather than
+     * materializing all n keys up front. The iterator is fail-fast — modifying
+     * the tree during iteration leaves it in an undefined state.
+     */
     @Override
     public Iterator<T> iterator() {
-        return inOrder().iterator();
+        return new InOrderIterator<>(root);
     }
 
     /** Returns the keys in ascending order, e.g. {@code [10, 20, 30]}. */
@@ -194,6 +204,43 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
             inOrder(node.left, out);
             out.add(node.key);
             inOrder(node.right, out);
+        }
+    }
+
+    /**
+     * Lazy in-order iterator. The stack holds the path of left-descendants
+     * still waiting to be yielded, so at any moment it contains at most one
+     * node per level of the tree — O(h) memory.
+     */
+    private static final class InOrderIterator<T> implements Iterator<T> {
+        private final Deque<Node<T>> stack = new ArrayDeque<>();
+
+        InOrderIterator(Node<T> root) {
+            pushLeftSpine(root);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public T next() {
+            if (stack.isEmpty()) {
+                throw new NoSuchElementException();
+            }
+            Node<T> node = stack.pop();
+            // The node's left subtree is already consumed; queue up the keys
+            // that come after it by descending the left spine of its right child.
+            pushLeftSpine(node.right);
+            return node.key;
+        }
+
+        private void pushLeftSpine(Node<T> node) {
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
         }
     }
 }

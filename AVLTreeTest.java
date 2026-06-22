@@ -25,6 +25,7 @@ public class AVLTreeTest {
         nullKeyRejected();
         worksWithStrings();
         iterableYieldsAscendingOrder();
+        lazyIteratorDrainsInOrderThenThrows();
         staysBalancedUnderManyInsertions();
 
         if (failures == 0) {
@@ -92,6 +93,33 @@ public class AVLTreeTest {
             seen.add(value);
         }
         check("iterator ascending", Arrays.asList(1, 2, 3), seen);
+    }
+
+    /**
+     * Exercises the lazy iterator on a larger, rotation-heavy tree and confirms
+     * it drains in sorted order and then signals exhaustion correctly.
+     */
+    private static void lazyIteratorDrainsInOrderThenThrows() {
+        AVLTree<Integer> tree = new AVLTree<>();
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 0; i < 500; i++) {
+            tree.insert(i);
+            expected.add(i);
+        }
+
+        List<Integer> seen = new ArrayList<>();
+        java.util.Iterator<Integer> it = tree.iterator();
+        while (it.hasNext()) {
+            seen.add(it.next());
+        }
+        check("lazy iterator full drain", expected, seen);
+
+        try {
+            it.next();
+            check("lazy iterator exhausted", "NoSuchElementException", "no exception thrown");
+        } catch (java.util.NoSuchElementException expectedEx) {
+            check("lazy iterator exhausted", true, true);
+        }
     }
 
     /**

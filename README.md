@@ -16,6 +16,7 @@ share the low-link DFS technique, not an algorithm.
 
 | File | Responsibility |
 |------|----------------|
+| `LowLinkState.java` | Shared DFS state: discovery times + low-link logic |
 | `Graph.java` | Undirected graph (adjacency list) with edge identity, validation |
 | `GraphConnectivity.java` | Articulation points + bridges; stateless, iterative |
 | `ConnectivityResult.java` | Result holder: articulation points + bridges |
@@ -24,6 +25,12 @@ share the low-link DFS technique, not an algorithm.
 | `Main.java` | Runnable demo of all three analyses |
 | `GraphConnectivityTest.java` | Dependency-free test runner (undirected) |
 | `StronglyConnectedComponentsTest.java` | Dependency-free test runner (SCC) |
+
+Both connectivity algorithms share `LowLinkState`, which owns each vertex's
+discovery time and low-link value and the operations that maintain them
+(`discover`, `relaxAgainstAncestor`, `propagateFromChild`, `isLowLinkRoot`). The
+traversal control flow and the algorithm-specific verdicts (cut vertices/edges
+vs. SCC extraction) stay with each algorithm, since those genuinely differ.
 
 ## Build and run
 

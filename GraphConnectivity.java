@@ -48,33 +48,21 @@ public final class GraphConnectivity {
     private static final class Search {
 
         private final Graph graph;
-
-        /** Discovery time of each vertex in the DFS traversal. */
-        private final int[] discovery;
-
-        /** Lowest discovery time reachable from each vertex's DFS subtree. */
-        private final int[] low;
-
-        private final boolean[] visited;
+        private final LowLinkState state;
         private final boolean[] isArticulationPoint;
         private final List<Graph.Edge> bridges = new ArrayList<>();
-
-        /** Monotonically increasing DFS timestamp counter. */
-        private int timer;
 
         Search(Graph graph) {
             int vertexCount = graph.vertexCount();
             this.graph = graph;
-            this.discovery = new int[vertexCount];
-            this.low = new int[vertexCount];
-            this.visited = new boolean[vertexCount];
+            this.state = new LowLinkState(vertexCount);
             this.isArticulationPoint = new boolean[vertexCount];
         }
 
         ConnectivityResult run() {
             int vertexCount = graph.vertexCount();
             for (int u = 0; u < vertexCount; u++) {
-                if (!visited[u]) {
+                if (!state.isDiscovered(u)) {
                     explore(u);
                 }
             }
@@ -99,8 +87,7 @@ public final class GraphConnectivity {
          * iterative equivalent of returning from a recursive call.
          */
         private void explore(int root) {
-            visited[root] = true;
-            discovery[root] = low[root] = ++timer;
+            state.discover(root);
 
             Deque<Frame> stack = new ArrayDeque<>();
             stack.push(new Frame(root, null));
@@ -117,15 +104,14 @@ public final class GraphConnectivity {
                         // Self-loop: irrelevant to articulation points and bridges.
                         continue;
                     }
-                    if (!visited[v]) {
+                    if (!state.isDiscovered(v)) {
                         frame.children++;
-                        visited[v] = true;
-                        discovery[v] = low[v] = ++timer;
+                        state.discover(v);
                         stack.push(new Frame(v, edge));
                     } else if (!edge.equals(frame.parentEdge)) {
                         // Back edge — but skip only the single tree edge we arrived on.
                         // A parallel edge to the parent has a different id, so it counts.
-                        low[u] = Math.min(low[u], discovery[v]);
+                        state.relaxAgainstAncestor(u, v);
                     }
                 } else {
                     // u is fully explored; fold its result into its parent.
@@ -157,19 +143,19 @@ public final class GraphConnectivity {
             }
 
             int parent = incoming.other(u);
-            low[parent] = Math.min(low[parent], low[u]);
+            state.propagateFromChild(parent, u);
 
             // The incoming tree edge is a bridge when u's subtree has no back edge
             // reaching the parent or above (strict inequality, so a parallel edge
             // back to the parent disqualifies it).
-            if (low[u] > discovery[parent]) {
+            if (state.low(u) > state.discovery(parent)) {
                 bridges.add(incoming);
             }
 
             // A non-root vertex is a cut vertex when one of its children's subtrees
             // cannot reach above it via a back edge.
             boolean parentIsRoot = parentFrame.parentEdge == null;
-            if (!parentIsRoot && low[u] >= discovery[parent]) {
+            if (!parentIsRoot && state.low(u) >= state.discovery(parent)) {
                 isArticulationPoint[parent] = true;
             }
         }

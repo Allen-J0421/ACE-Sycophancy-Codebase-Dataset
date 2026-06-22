@@ -1,6 +1,5 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
@@ -44,15 +43,8 @@ public final class StronglyConnectedComponents {
      */
     private static final class Search {
 
-        private static final int UNVISITED = -1;
-
         private final DirectedGraph graph;
-
-        /** Discovery index of each vertex, or {@link #UNVISITED}. */
-        private final int[] discovery;
-
-        /** Lowest discovery index reachable from each vertex while it is on the stack. */
-        private final int[] low;
+        private final LowLinkState state;
 
         /** Whether each vertex is currently on the component stack. */
         private final boolean[] onStack;
@@ -62,22 +54,17 @@ public final class StronglyConnectedComponents {
 
         private final List<List<Integer>> components = new ArrayList<>();
 
-        /** Monotonically increasing DFS discovery counter. */
-        private int timer;
-
         Search(DirectedGraph graph) {
             int vertexCount = graph.vertexCount();
             this.graph = graph;
-            this.discovery = new int[vertexCount];
-            this.low = new int[vertexCount];
+            this.state = new LowLinkState(vertexCount);
             this.onStack = new boolean[vertexCount];
-            Arrays.fill(discovery, UNVISITED);
         }
 
         List<List<Integer>> run() {
             int vertexCount = graph.vertexCount();
             for (int v = 0; v < vertexCount; v++) {
-                if (discovery[v] == UNVISITED) {
+                if (!state.isDiscovered(v)) {
                     explore(v);
                 }
             }
@@ -111,21 +98,21 @@ public final class StronglyConnectedComponents {
 
                 if (frame.nextArc < outNeighbors.size()) {
                     int w = outNeighbors.get(frame.nextArc++);
-                    if (discovery[w] == UNVISITED) {
+                    if (!state.isDiscovered(w)) {
                         discover(w);
                         work.push(new Frame(w));
                     } else if (onStack[w]) {
                         // Back or cross arc into a vertex still on the stack.
-                        low[v] = Math.min(low[v], discovery[w]);
+                        state.relaxAgainstAncestor(v, w);
                     }
                 } else {
                     // v is fully explored; propagate its low-link to its parent.
                     work.pop();
                     Frame parentFrame = work.peek();
                     if (parentFrame != null) {
-                        low[parentFrame.vertex] = Math.min(low[parentFrame.vertex], low[v]);
+                        state.propagateFromChild(parentFrame.vertex, v);
                     }
-                    if (low[v] == discovery[v]) {
+                    if (state.isLowLinkRoot(v)) {
                         popComponent(v);
                     }
                 }
@@ -133,7 +120,7 @@ public final class StronglyConnectedComponents {
         }
 
         private void discover(int v) {
-            discovery[v] = low[v] = timer++;
+            state.discover(v);
             componentStack.push(v);
             onStack[v] = true;
         }

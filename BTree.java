@@ -8,6 +8,12 @@ public final class BTree {
     private final int minDegree;
     private Node root;
 
+    public static BTree fromKeys(int minDegree, int... keys) {
+        BTree tree = new BTree(minDegree);
+        tree.insertAll(keys);
+        return tree;
+    }
+
     public BTree(int minDegree) {
         validateMinDegree(minDegree);
         this.minDegree = minDegree;

@@ -10,8 +10,6 @@ final class BTreeSamples {
     }
 
     static BTree fromKeys(int minDegree, int... keys) {
-        BTree tree = new BTree(minDegree);
-        tree.insertAll(keys);
-        return tree;
+        return BTree.fromKeys(minDegree, keys);
     }
 }

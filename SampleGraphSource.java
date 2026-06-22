@@ -1,8 +1,6 @@
-final class SampleGraphs {
-    private SampleGraphs() {
-    }
-
-    static Graph fiveVertexExample() {
+final class SampleGraphSource implements GraphSource {
+    @Override
+    public Graph load() {
         AdjacencyMatrix adjacencyMatrix = AdjacencyMatrix.fromRows(new int[][] {
             {0, 2, 0, 6, 0},
             {2, 0, 3, 8, 5},

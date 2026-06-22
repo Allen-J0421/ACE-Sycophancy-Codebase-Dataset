@@ -3,8 +3,10 @@ public final class MST {
     }
 
     public static void main(String[] args) {
-        MinimumSpanningTreeAlgorithm algorithm = new PrimsMinimumSpanningTree();
-        MstResult result = algorithm.compute(SampleGraphs.fiveVertexExample());
-        System.out.println(MstFormatter.format(result));
+        MstApplication application = new MstApplication(
+                new SampleGraphSource(),
+                new PrimsMinimumSpanningTree(),
+                new TabularMstFormatter());
+        System.out.println(application.run());
     }
 }

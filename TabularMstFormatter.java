@@ -1,8 +1,6 @@
-final class MstFormatter {
-    private MstFormatter() {
-    }
-
-    static String format(MstResult result) {
+final class TabularMstFormatter implements MstResultFormatter {
+    @Override
+    public String format(MstResult result) {
         StringBuilder output = new StringBuilder("Edge \tWeight");
         for (Edge edge : result.edges()) {
             output.append(System.lineSeparator())

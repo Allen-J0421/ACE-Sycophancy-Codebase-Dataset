@@ -10,7 +10,8 @@ src/
     Graph.java                      # immutable undirected graph (adjacency list)
     GraphBuilder.java               # builds a Graph from a vertex count + edge list
     ConnectedComponentsFinder.java  # partitions a Graph into Components (pluggable traversal)
-    Components.java                 # immutable result: count / componentOf / connected
+    Components.java                 # immutable partition: iterate / stream / get / connected
+    Component.java                  # one component: id / vertices / size / contains / stream
     Demo.java                       # runnable sample (graph.Demo)
     traversal/
       TraversalStrategy.java        # strategy interface for visiting a component
@@ -47,10 +48,21 @@ Graph graph = new GraphBuilder(6)
     .build();
 
 Components components = new ConnectedComponentsFinder().find(graph);
-components.count();           // number of components
-components.componentOf(0);    // id of the component containing vertex 0
-components.connected(0, 3);   // whether two vertices share a component
-components.asList();          // unmodifiable view of the components
+components.count();                  // number of components
+components.connected(0, 3);          // whether two vertices share a component
+components.componentOf(0);           // id of the component containing vertex 0
+components.componentContaining(0);   // the Component containing vertex 0
+components.get(1);                   // the component with id 1
+
+for (Component c : components) {     // navigate consistently — iterate ...
+    c.id();
+    c.size();
+    c.contains(3);
+    c.vertices();                    // unmodifiable list of vertices
+}
+components.stream()                  // ... or stream
+    .filter(c -> c.size() > 1)
+    .count();
 ```
 
 ### Choosing a traversal strategy

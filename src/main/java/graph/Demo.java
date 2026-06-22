@@ -1,6 +1,5 @@
 package graph;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 /** Demonstrates {@link ConnectedComponentsFinder} on a small sample graph. */
@@ -16,9 +15,9 @@ public final class Demo {
 
         Components components = new ConnectedComponentsFinder().find(graph);
 
-        for (List<Integer> component : components.asList()) {
+        for (Component component : components) {
             System.out.println(component.stream()
-                .map(String::valueOf)
+                .mapToObj(String::valueOf)
                 .collect(Collectors.joining(" ")));
         }
 

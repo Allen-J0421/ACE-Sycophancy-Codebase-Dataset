@@ -25,8 +25,8 @@ class ConnectedComponentsFinderTest {
 
     /** Normalises a result to a set of vertex-sets so assertions ignore ordering. */
     private static Set<Set<Integer>> asVertexSets(Components components) {
-        return components.asList().stream()
-            .map(HashSet::new)
+        return components.stream()
+            .map(component -> new HashSet<>(component.vertices()))
             .collect(Collectors.toSet());
     }
 
@@ -41,7 +41,7 @@ class ConnectedComponentsFinderTest {
     void emptyGraphHasNoComponents(TraversalStrategy strategy) {
         Components result = new ConnectedComponentsFinder(strategy).find(new GraphBuilder(0).build());
         assertEquals(0, result.count());
-        assertTrue(result.asList().isEmpty());
+        assertTrue(result.stream().findAny().isEmpty());
     }
 
     @ParameterizedTest
@@ -74,7 +74,10 @@ class ConnectedComponentsFinderTest {
     void everyVertexAppearsInExactlyOneComponent(TraversalStrategy strategy) {
         Graph graph = new GraphBuilder(5).addEdge(0, 1).addEdge(3, 4).build();
         Components result = new ConnectedComponentsFinder(strategy).find(graph);
-        List<Integer> all = result.asList().stream().flatMap(List::stream).sorted().toList();
+        List<Integer> all = result.stream()
+            .flatMap(component -> component.vertices().stream())
+            .sorted()
+            .toList();
         assertEquals(List.of(0, 1, 2, 3, 4), all);
     }
 
@@ -90,7 +93,7 @@ class ConnectedComponentsFinderTest {
     void defaultStrategyIsBreadthFirst() {
         // BFS from the sample graph visits the first component in level order.
         Components result = new ConnectedComponentsFinder().find(sampleGraph());
-        assertEquals(List.of(0, 3, 2, 1), result.asList().get(0));
+        assertEquals(List.of(0, 3, 2, 1), result.get(0).vertices());
     }
 
     @Test

@@ -80,15 +80,19 @@ final class QuickSelect {
         int pivotValue = values[endIndex];
         int pivotIndex = startIndex;
 
-        for (int i = startIndex; i < endIndex; i++) {
-            if (values[i] < pivotValue) {
-                swap(values, i, pivotIndex);
+        for (int scanIndex = startIndex; scanIndex < endIndex; scanIndex++) {
+            if (belongsBeforePivot(values[scanIndex], pivotValue)) {
+                swap(values, scanIndex, pivotIndex);
                 pivotIndex++;
             }
         }
 
         swap(values, pivotIndex, endIndex);
         return pivotIndex;
+    }
+
+    private static boolean belongsBeforePivot(int value, int pivotValue) {
+        return value < pivotValue;
     }
 
     private static void validateSelectionBounds(

@@ -29,30 +29,17 @@ class PrimsMST implements MstAlgorithm {
             }
         }
 
-        return new MstResult(state.buildEdges(startVertex));
-    }
-
-    public static void main(String[] args) {
-        int[][] matrix = {
-            { 0, 2, 0, 6, 0 },
-            { 2, 0, 3, 8, 5 },
-            { 0, 3, 0, 0, 7 },
-            { 6, 8, 0, 0, 9 },
-            { 0, 5, 7, 9, 0 }
-        };
-
-        MstAlgorithm algorithm = new PrimsMST();
-        MstFormatter formatter = new TabularMstFormatter();
-        MstResult result = algorithm.computeMST(Graph.fromMatrix(matrix));
-        System.out.println(formatter.format(result));
+        return new MstResult(state.buildEdges());
     }
 
     private static class VertexState {
         private final int[] parent;
         private final int[] minEdgeWeight;
         private final boolean[] inMST;
+        private final int startVertex;
 
         VertexState(int vertexCount, int startVertex) {
+            this.startVertex = startVertex;
             parent = new int[vertexCount];
             minEdgeWeight = new int[vertexCount];
             inMST = new boolean[vertexCount];
@@ -78,13 +65,14 @@ class PrimsMST implements MstAlgorithm {
         }
 
         void relaxEdge(Edge edge) {
-            if (!inMST[edge.to()] && edge.weight() < minEdgeWeight[edge.to()]) {
-                parent[edge.to()] = edge.from();
-                minEdgeWeight[edge.to()] = edge.weight();
+            int to = edge.to();
+            if (!inMST[to] && edge.weight() < minEdgeWeight[to]) {
+                parent[to] = edge.from();
+                minEdgeWeight[to] = edge.weight();
             }
         }
 
-        List<Edge> buildEdges(int startVertex) {
+        List<Edge> buildEdges() {
             List<Edge> edges = new ArrayList<>();
             for (int i = 0; i < parent.length; i++) {
                 if (i != startVertex) {

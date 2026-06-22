@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class Graph {
@@ -28,6 +29,19 @@ class Graph {
             }
         }
         return edges;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Graph)) return false;
+        Graph other = (Graph) obj;
+        return Arrays.deepEquals(adjacencyMatrix, other.adjacencyMatrix);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(adjacencyMatrix);
     }
 
     private static void validate(int[][] matrix) {

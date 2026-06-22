@@ -4,6 +4,12 @@ import java.util.Arrays;
  * Utility methods for selecting ordered elements from an integer array.
  */
 final class QuickSelect {
+    private enum SearchDirection {
+        FOUND,
+        SEARCH_LEFT,
+        SEARCH_RIGHT
+    }
+
     private QuickSelect() {
     }
 
@@ -34,15 +40,16 @@ final class QuickSelect {
 
         while (left <= right) {
             int pivotIndex = partitionUnchecked(values, left, right);
+            SearchDirection direction = directionFor(pivotIndex, targetIndex);
 
-            if (pivotIndex == targetIndex) {
+            if (direction == SearchDirection.FOUND) {
                 return values[pivotIndex];
             }
 
-            if (pivotIndex < targetIndex) {
-                left = pivotIndex + 1;
-            } else {
+            if (direction == SearchDirection.SEARCH_LEFT) {
                 right = pivotIndex - 1;
+            } else {
+                left = pivotIndex + 1;
             }
         }
 
@@ -55,6 +62,18 @@ final class QuickSelect {
     public static int partition(int[] values, int startIndex, int endIndex) {
         validatePartitionBounds(values, startIndex, endIndex);
         return partitionUnchecked(values, startIndex, endIndex);
+    }
+
+    private static SearchDirection directionFor(int pivotIndex, int targetIndex) {
+        if (pivotIndex == targetIndex) {
+            return SearchDirection.FOUND;
+        }
+
+        if (pivotIndex > targetIndex) {
+            return SearchDirection.SEARCH_LEFT;
+        }
+
+        return SearchDirection.SEARCH_RIGHT;
     }
 
     private static int partitionUnchecked(int[] values, int startIndex, int endIndex) {

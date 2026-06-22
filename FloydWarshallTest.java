@@ -28,6 +28,9 @@ public final class FloydWarshallTest {
         directEdgePathIsTwoVertices();
         graphRejectsOutOfRangeVertex();
         shortestPathsRejectOutOfRangeVertex();
+        neighborsListDirectEdges();
+        vertexWithNoOutgoingEdgesHasNoNeighbors();
+        neighborsRejectOutOfRangeVertex();
 
         t.report();
         if (!t.allPassed()) {
@@ -141,6 +144,33 @@ public final class FloydWarshallTest {
 
     private static void directEdgePathIsTwoVertices() {
         t.equal("direct edge path", List.of(0, 1), knownExample().path(0, 1));
+    }
+
+    private static void neighborsListDirectEdges() {
+        Graph g = Graph.of(new int[][] {
+                {0,   4,   INF, 5,   INF},
+                {INF, 0,   1,   INF, 6},
+                {2,   INF, 0,   3,   INF},
+                {INF, INF, 1,   0,   2},
+                {1,   INF, INF, 4,   0}
+        });
+        t.equal("neighbors of vertex 0", List.of(1, 3), g.neighbors(0));
+        t.equal("neighbors of vertex 1", List.of(2, 4), g.neighbors(1));
+        // Self is never a neighbor even though the diagonal weight is 0.
+        t.isTrue("vertex is not its own neighbor", !g.neighbors(2).contains(2));
+    }
+
+    private static void vertexWithNoOutgoingEdgesHasNoNeighbors() {
+        Graph g = Graph.of(new int[][] {
+                {0,   7},
+                {INF, 0}
+        });
+        t.equal("no outgoing edges", List.of(), g.neighbors(1));
+    }
+
+    private static void neighborsRejectOutOfRangeVertex() {
+        Graph g = Graph.of(new int[][] {{0}});
+        t.throwsIndexOutOfBounds("neighbors rejects out-of-range vertex", () -> g.neighbors(1));
     }
 
     private static void graphRejectsOutOfRangeVertex() {

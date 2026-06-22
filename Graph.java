@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * An immutable directed graph represented as a dense distance matrix.
@@ -61,6 +63,25 @@ public final class Graph {
         Vertices.requireValid(i, matrix.length, "source");
         Vertices.requireValid(j, matrix.length, "target");
         return matrix[i][j];
+    }
+
+    /**
+     * Returns the vertices directly reachable from {@code vertex} via a single
+     * outgoing edge, in ascending order. A vertex is never its own neighbor.
+     *
+     * @param vertex the source vertex
+     * @return a new, modifiable list of adjacent vertices (empty if none)
+     * @throws IndexOutOfBoundsException if {@code vertex} is not in {@code [0, size()-1]}
+     */
+    public List<Integer> neighbors(int vertex) {
+        Vertices.requireValid(vertex, matrix.length, "vertex");
+        List<Integer> result = new ArrayList<>();
+        for (int j = 0; j < matrix.length; j++) {
+            if (j != vertex && matrix[vertex][j] != INF) {
+                result.add(j);
+            }
+        }
+        return result;
     }
 
     /**

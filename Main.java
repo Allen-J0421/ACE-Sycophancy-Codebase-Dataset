@@ -22,6 +22,11 @@ public final class Main {
         printMatrix(result.distances());
 
         System.out.println();
+        for (int v = 0; v < graph.size(); v++) {
+            System.out.printf("neighbors of %d: %s%n", v, graph.neighbors(v));
+        }
+
+        System.out.println();
         printPath(result, 1, 0);
         printPath(result, 4, 1);
         printPath(result, 0, 4);

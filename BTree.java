@@ -12,14 +12,6 @@ final class BTree {
         this.minDegree = minDegree;
     }
 
-    void traverse() {
-        System.out.print(traversalString());
-    }
-
-    String traversalString() {
-        return root == null ? "" : root.traversalString();
-    }
-
     List<Integer> keysInOrder() {
         return root == null ? new ArrayList<>() : root.keysInOrder();
     }

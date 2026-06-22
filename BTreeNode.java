@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.function.IntConsumer;
 
 final class BTreeNode {
@@ -95,21 +94,6 @@ final class BTreeNode {
         children[childIndex] = fullChild;
         insertChildAt(childIndex, sibling);
         insertKeyAt(childIndex, fullChild.keys[minDegree - 1]);
-    }
-
-    void traverse() {
-        System.out.print(traversalString());
-    }
-
-    String traversalString() {
-        StringJoiner joiner = new StringJoiner(" ");
-        forEachKeyInOrder(key -> joiner.add(Integer.toString(key)));
-        return joiner.toString();
-    }
-
-    @Override
-    public String toString() {
-        return traversalString();
     }
 
     List<Integer> keysInOrder() {

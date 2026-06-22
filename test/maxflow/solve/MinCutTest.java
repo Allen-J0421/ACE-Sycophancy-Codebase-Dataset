@@ -32,7 +32,7 @@ class MinCutTest {
     }
 
     private static MinCut cutOf(FlowNetwork network, int source, int sink) {
-        return MinCut.of(network, new FordFulkersonSolver().solve(network, source, sink));
+        return MinCut.of(network, new FordFulkersonSolver().solve(new MaxFlowProblem(network, source, sink)));
     }
 
     @Test
@@ -54,7 +54,7 @@ class MinCutTest {
         FlowNetwork network = classicNetwork();
         for (AugmentingPathFinder finder : java.util.List.of(
                 new BreadthFirstPathFinder(), new DepthFirstPathFinder(), new CapacityScalingPathFinder())) {
-            MaxFlowResult result = new FordFulkersonSolver(finder).solve(network, 0, 5);
+            MaxFlowResult result = new FordFulkersonSolver(finder).solve(new MaxFlowProblem(network, 0, 5));
             MinCut cut = MinCut.of(network, result);
             assertEquals(result.value(), cut.capacity(), finder.name());
         }
@@ -87,7 +87,7 @@ class MinCutTest {
     @DisplayName("every cut edge crosses S->T, is saturated, and the capacities sum to the cut")
     void cutEdgesCrossAndSaturate() {
         FlowNetwork network = classicNetwork();
-        MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 5);
+        MaxFlowResult result = new FordFulkersonSolver().solve(new MaxFlowProblem(network, 0, 5));
         MinCut cut = MinCut.of(network, result);
 
         Set<Edge> flows = new HashSet<>(result.flowEdges());
@@ -132,7 +132,7 @@ class MinCutTest {
     @DisplayName("rejects null arguments")
     void rejectsNulls() {
         FlowNetwork network = classicNetwork();
-        MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 5);
+        MaxFlowResult result = new FordFulkersonSolver().solve(new MaxFlowProblem(network, 0, 5));
         assertThrows(NullPointerException.class, () -> MinCut.of(null, result));
         assertThrows(NullPointerException.class, () -> MinCut.of(network, null));
     }

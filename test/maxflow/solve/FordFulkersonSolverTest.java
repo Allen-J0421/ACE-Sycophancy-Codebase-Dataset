@@ -38,18 +38,22 @@ class FordFulkersonSolverTest {
                 new FordFulkersonSolver(new CapacityScalingPathFinder()));
     }
 
+    private static MaxFlowResult solve(MaxFlowSolver solver, FlowNetwork network, int source, int sink) {
+        return solver.solve(new MaxFlowProblem(network, source, sink));
+    }
+
     @Test
     @DisplayName("computes the textbook maximum flow of 23, regardless of strategy")
     void classicMaxFlow() {
         for (MaxFlowSolver solver : strategies()) {
-            assertEquals(Capacity.of(23), solver.solve(classicNetwork(), 0, 5).value());
+            assertEquals(Capacity.of(23), solve(solver, classicNetwork(), 0, 5).value());
         }
     }
 
     @Test
     @DisplayName("records the source and sink it was solved for")
     void recordsSourceAndSink() {
-        MaxFlowResult result = new FordFulkersonSolver().solve(classicNetwork(), 0, 5);
+        MaxFlowResult result = solve(new FordFulkersonSolver(), classicNetwork(), 0, 5);
         assertEquals(0, result.source());
         assertEquals(5, result.sink());
     }
@@ -60,7 +64,7 @@ class FordFulkersonSolverTest {
         int source = 0;
         int sink = 5;
         for (MaxFlowSolver solver : strategies()) {
-            MaxFlowResult result = solver.solve(classicNetwork(), source, sink);
+            MaxFlowResult result = solve(solver, classicNetwork(), source, sink);
             int[] net = new int[6]; // outflow - inflow per vertex
             for (Edge edge : result.flowEdges()) {
                 net[edge.from()] += edge.value().units();
@@ -78,7 +82,7 @@ class FordFulkersonSolverTest {
     @DisplayName("every reported edge carries a positive flow within its capacity")
     void flowEdgesRespectCapacity() {
         FlowNetwork network = classicNetwork();
-        MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 5);
+        MaxFlowResult result = solve(new FordFulkersonSolver(), network, 0, 5);
         for (Edge edge : result.flowEdges()) {
             assertTrue(edge.value().isPositive(), "flow is positive on " + edge);
             assertTrue(edge.value().compareTo(network.capacity(edge.from(), edge.to())) <= 0,
@@ -96,7 +100,7 @@ class FordFulkersonSolverTest {
                 {0, 0, 0, 0},
         });
         for (MaxFlowSolver solver : strategies()) {
-            assertEquals(Capacity.of(5), solver.solve(network, 0, 3).value());
+            assertEquals(Capacity.of(5), solve(solver, network, 0, 3).value());
         }
     }
 
@@ -104,7 +108,7 @@ class FordFulkersonSolverTest {
     @DisplayName("returns zero flow when the sink is disconnected from the source")
     void disconnectedHasZeroFlow() {
         FlowNetwork network = FlowNetwork.builder(3).addEdge(0, 1, 5).build();
-        MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 2);
+        MaxFlowResult result = solve(new FordFulkersonSolver(), network, 0, 2);
         assertEquals(Capacity.ZERO, result.value());
         assertTrue(result.flowEdges().isEmpty());
     }
@@ -113,17 +117,13 @@ class FordFulkersonSolverTest {
     @DisplayName("saturates a single direct edge")
     void singleEdge() {
         FlowNetwork network = FlowNetwork.builder(2).addEdge(0, 1, 7).build();
-        assertEquals(Capacity.of(7), new FordFulkersonSolver().solve(network, 0, 1).value());
+        assertEquals(Capacity.of(7), solve(new FordFulkersonSolver(), network, 0, 1).value());
     }
 
     @Test
-    @DisplayName("rejects an invalid source, sink, or equal endpoints")
-    void rejectsInvalidEndpoints() {
-        FlowNetwork network = classicNetwork();
-        MaxFlowSolver solver = new FordFulkersonSolver();
-        assertThrows(IllegalArgumentException.class, () -> solver.solve(network, -1, 5));
-        assertThrows(IllegalArgumentException.class, () -> solver.solve(network, 0, 6));
-        assertThrows(IllegalArgumentException.class, () -> solver.solve(network, 3, 3));
+    @DisplayName("rejects a null problem")
+    void rejectsNullProblem() {
+        assertThrows(NullPointerException.class, () -> new FordFulkersonSolver().solve(null));
     }
 
     @Test

@@ -10,6 +10,7 @@ import maxflow.path.CapacityScalingPathFinder;
 import maxflow.path.DepthFirstPathFinder;
 import maxflow.solve.AugmentationCounter;
 import maxflow.solve.FordFulkersonSolver;
+import maxflow.solve.MaxFlowProblem;
 import maxflow.solve.MaxFlowResult;
 
 /**
@@ -26,8 +27,7 @@ public final class StrategyComparison {
 
     public static void main(String[] args) {
         FlowNetwork network = layeredNetwork(5, 5);
-        int source = 0;
-        int sink = network.vertexCount() - 1;
+        MaxFlowProblem problem = new MaxFlowProblem(network, 0, network.vertexCount() - 1);
 
         Map<String, AugmentingPathFinder> strategies = new LinkedHashMap<>();
         strategies.put("BFS (Edmonds-Karp)", new BreadthFirstPathFinder());
@@ -35,11 +35,11 @@ public final class StrategyComparison {
         strategies.put("Capacity scaling", new CapacityScalingPathFinder());
 
         System.out.printf("Layered network: %d vertices, source %d, sink %d%n%n",
-                network.vertexCount(), source, sink);
+                network.vertexCount(), problem.source(), problem.sink());
         System.out.printf("%-24s %10s %14s%n", "strategy", "max flow", "augmentations");
         strategies.forEach((label, finder) -> {
             AugmentationCounter counter = new AugmentationCounter();
-            MaxFlowResult result = new FordFulkersonSolver(finder).solve(network, source, sink, counter);
+            MaxFlowResult result = new FordFulkersonSolver(finder).solve(problem, counter);
             System.out.printf("%-24s %10s %14d%n", label, result.value(), counter.count());
         });
     }

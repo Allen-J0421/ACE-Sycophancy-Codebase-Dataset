@@ -38,14 +38,18 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
     }
 
     @Override
-    public MaxFlowResult solve(FlowNetwork network, int source, int sink) {
-        return solve(network, source, sink, SolveListener.NONE);
+    public MaxFlowResult solve(MaxFlowProblem problem) {
+        return solve(problem, SolveListener.NONE);
     }
 
     @Override
-    public MaxFlowResult solve(FlowNetwork network, int source, int sink, SolveListener listener) {
-        validate(network, source, sink);
+    public MaxFlowResult solve(MaxFlowProblem problem, SolveListener listener) {
+        Objects.requireNonNull(problem, "problem");
         Objects.requireNonNull(listener, "listener");
+
+        FlowNetwork network = problem.network();
+        int source = problem.source();
+        int sink = problem.sink();
 
         ResidualGraph residual = new ResidualGraph(network);
         Capacity maxFlow = Capacity.ZERO;
@@ -82,18 +86,6 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
         var vertices = path.vertices();
         for (int i = 0; i + 1 < vertices.size(); i++) {
             residual.pushFlow(vertices.get(i), vertices.get(i + 1), amount);
-        }
-    }
-
-    private static void validate(FlowNetwork network, int source, int sink) {
-        if (!network.isVertex(source)) {
-            throw new IllegalArgumentException("source " + source + " is not a vertex of the network");
-        }
-        if (!network.isVertex(sink)) {
-            throw new IllegalArgumentException("sink " + sink + " is not a vertex of the network");
-        }
-        if (source == sink) {
-            throw new IllegalArgumentException("source and sink must differ (both " + source + ")");
         }
     }
 }

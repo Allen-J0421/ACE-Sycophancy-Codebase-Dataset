@@ -45,7 +45,7 @@ class SolverInstrumentationTest {
         };
 
         MaxFlowResult result = new FordFulkersonSolver(new BreadthFirstPathFinder())
-                .solve(classicNetwork(), 0, 5, both);
+                .solve(new MaxFlowProblem(classicNetwork(), 0, 5), both);
 
         assertEquals(Capacity.of(23), result.value());
         assertTrue(counter.count() > 0, "a non-trivial flow needs at least one augmentation");
@@ -61,7 +61,7 @@ class SolverInstrumentationTest {
         FlowNetwork disconnected = FlowNetwork.builder(3).addEdge(0, 1, 5).build();
         AugmentationCounter counter = new AugmentationCounter();
 
-        MaxFlowResult result = new FordFulkersonSolver().solve(disconnected, 0, 2, counter);
+        MaxFlowResult result = new FordFulkersonSolver().solve(new MaxFlowProblem(disconnected, 0, 2), counter);
 
         assertEquals(Capacity.ZERO, result.value());
         assertEquals(0, counter.count());
@@ -72,10 +72,11 @@ class SolverInstrumentationTest {
     void counterAccumulatesAcrossSolves() {
         AugmentationCounter counter = new AugmentationCounter();
         FordFulkersonSolver solver = new FordFulkersonSolver();
+        MaxFlowProblem problem = new MaxFlowProblem(classicNetwork(), 0, 5);
 
-        solver.solve(classicNetwork(), 0, 5, counter);
+        solver.solve(problem, counter);
         long afterFirst = counter.count();
-        solver.solve(classicNetwork(), 0, 5, counter);
+        solver.solve(problem, counter);
 
         assertEquals(2 * afterFirst, counter.count(), "second solve adds the same number again");
     }
@@ -91,7 +92,8 @@ class SolverInstrumentationTest {
         long dfs = augmentations(new DepthFirstPathFinder(), network, sink);
         long scaling = augmentations(new CapacityScalingPathFinder(), network, sink);
 
-        Capacity flow = new FordFulkersonSolver(new BreadthFirstPathFinder()).solve(network, 0, sink).value();
+        MaxFlowProblem problem = new MaxFlowProblem(network, 0, sink);
+        Capacity flow = new FordFulkersonSolver(new BreadthFirstPathFinder()).solve(problem).value();
         for (long count : List.of(bfs, dfs, scaling)) {
             assertTrue(count > 0, "every strategy performs at least one augmentation");
         }
@@ -99,7 +101,7 @@ class SolverInstrumentationTest {
         assertTrue(scaling <= bfs, "capacity scaling should not exceed BFS on this network");
         assertTrue(scaling <= dfs, "capacity scaling should not exceed DFS on this network");
         assertEquals(flow,
-                new FordFulkersonSolver(new CapacityScalingPathFinder()).solve(network, 0, sink).value(),
+                new FordFulkersonSolver(new CapacityScalingPathFinder()).solve(problem).value(),
                 "all strategies compute the same maximum flow");
     }
 
@@ -107,22 +109,22 @@ class SolverInstrumentationTest {
     @DisplayName("the listener overload validates its argument")
     void rejectsNullListener() {
         assertThrows(NullPointerException.class,
-                () -> new FordFulkersonSolver().solve(classicNetwork(), 0, 5, null));
+                () -> new FordFulkersonSolver().solve(new MaxFlowProblem(classicNetwork(), 0, 5), null));
     }
 
     @Test
     @DisplayName("the no-op listener and the default interface method ignore events")
     void noOpListenerIgnoresEvents() {
+        MaxFlowProblem problem = new MaxFlowProblem(classicNetwork(), 0, 5);
+
         // SolveListener.NONE is a real listener that simply does nothing.
-        MaxFlowResult viaNone =
-                new FordFulkersonSolver().solve(classicNetwork(), 0, 5, SolveListener.NONE);
+        MaxFlowResult viaNone = new FordFulkersonSolver().solve(problem, SolveListener.NONE);
         assertEquals(Capacity.of(23), viaNone.value());
 
         // A solver that does not override the instrumented overload falls back to the plain solve.
-        MaxFlowSolver plain = (network, source, sink) ->
-                new FordFulkersonSolver().solve(network, source, sink);
+        MaxFlowSolver plain = p -> new FordFulkersonSolver().solve(p);
         AugmentationCounter counter = new AugmentationCounter();
-        MaxFlowResult viaDefault = plain.solve(classicNetwork(), 0, 5, counter);
+        MaxFlowResult viaDefault = plain.solve(problem, counter);
         assertEquals(Capacity.of(23), viaDefault.value());
         assertEquals(0, counter.count(), "the default method does not invoke the listener");
     }
@@ -135,7 +137,7 @@ class SolverInstrumentationTest {
 
     private static long augmentations(maxflow.path.AugmentingPathFinder finder, FlowNetwork network, int sink) {
         AugmentationCounter counter = new AugmentationCounter();
-        new FordFulkersonSolver(finder).solve(network, 0, sink, counter);
+        new FordFulkersonSolver(finder).solve(new MaxFlowProblem(network, 0, sink), counter);
         return counter.count();
     }
 

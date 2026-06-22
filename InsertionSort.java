@@ -8,12 +8,18 @@ public final class InsertionSort {
 
     public static void sort(int[] values) {
         requireArray(values);
-        if (values.length < 2) {
+        sortRange(values, 0, values.length);
+    }
+
+    public static void sortRange(int[] values, int startInclusive, int endExclusive) {
+        requireArray(values);
+        requireRange(values.length, startInclusive, endExclusive);
+        if (endExclusive - startInclusive < 2) {
             return;
         }
 
-        for (int currentIndex = 1; currentIndex < values.length; currentIndex++) {
-            insertValue(values, currentIndex);
+        for (int currentIndex = startInclusive + 1; currentIndex < endExclusive; currentIndex++) {
+            insertValue(values, startInclusive, currentIndex);
         }
     }
 
@@ -25,18 +31,34 @@ public final class InsertionSort {
         return copy;
     }
 
-    private static void insertValue(int[] values, int currentIndex) {
+    public static boolean isSorted(int[] values) {
+        requireArray(values);
+
+        for (int index = 1; index < values.length; index++) {
+            if (values[index - 1] > values[index]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static void insertValue(int[] values, int startInclusive, int currentIndex) {
         int valueToInsert = values[currentIndex];
-        int insertionIndex = findInsertionIndex(values, currentIndex, valueToInsert);
+        int insertionIndex = findInsertionIndex(values, startInclusive, currentIndex, valueToInsert);
 
         shiftRight(values, insertionIndex, currentIndex);
         values[insertionIndex] = valueToInsert;
     }
 
-    private static int findInsertionIndex(int[] values, int currentIndex, int valueToInsert) {
+    private static int findInsertionIndex(
+            int[] values,
+            int startInclusive,
+            int currentIndex,
+            int valueToInsert) {
         int scanIndex = currentIndex - 1;
 
-        while (scanIndex >= 0 && values[scanIndex] > valueToInsert) {
+        while (scanIndex >= startInclusive && values[scanIndex] > valueToInsert) {
             scanIndex--;
         }
 
@@ -44,14 +66,10 @@ public final class InsertionSort {
     }
 
     private static void shiftRight(int[] values, int startIndex, int endIndex) {
-        for (int index = endIndex; index > startIndex; index--) {
-            values[index] = values[index - 1];
+        int length = endIndex - startIndex;
+        if (length > 0) {
+            System.arraycopy(values, startIndex, values, startIndex + 1, length);
         }
-    }
-
-    public static String toDisplayString(int[] values) {
-        requireArray(values);
-        return Arrays.toString(values);
     }
 
     private static void requireArray(int[] values) {
@@ -60,10 +78,10 @@ public final class InsertionSort {
         }
     }
 
-    public static void main(String[] args) {
-        int[] values = {12, 11, 13, 5, 6};
-
-        System.out.println("Original: " + toDisplayString(values));
-        System.out.println("Sorted:   " + toDisplayString(sortedCopy(values)));
+    private static void requireRange(int length, int startInclusive, int endExclusive) {
+        if (startInclusive < 0 || endExclusive < startInclusive || endExclusive > length) {
+            throw new IllegalArgumentException(
+                    "invalid range: [" + startInclusive + ", " + endExclusive + ") for length " + length);
+        }
     }
 }

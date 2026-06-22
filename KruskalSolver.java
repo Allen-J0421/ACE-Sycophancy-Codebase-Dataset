@@ -1,27 +1,40 @@
 final class KruskalSolver {
     MstResult compute(Graph graph) {
         DisjointSet disjointSet = new DisjointSet(graph.vertexCount());
-        int totalWeight = 0;
-        int edgesUsed = 0;
+        MstState state = new MstState();
 
         for (Edge edge : graph.edgesSortedByWeight()) {
             if (!disjointSet.union(edge.from(), edge.to())) {
                 continue;
             }
 
-            totalWeight += edge.weight();
-            edgesUsed++;
+            state.include(edge);
 
-            if (edgesUsed == graph.requiredEdgeCount()) {
-                return new MstResult(totalWeight, edgesUsed);
+            if (state.edgesUsed() == graph.requiredEdgeCount()) {
+                return state.toResult();
             }
         }
 
-        MstResult result = new MstResult(totalWeight, edgesUsed);
-        if (graph.isTriviallyConnected() || result.spans(graph)) {
-            return result;
+        MstResult result = state.toResult();
+        graph.validateSpanningTree(result);
+        return result;
+    }
+
+    private static final class MstState {
+        private int totalWeight;
+        private int edgesUsed;
+
+        private void include(Edge edge) {
+            totalWeight += edge.weight();
+            edgesUsed++;
         }
 
-        throw new IllegalArgumentException("Input graph must be connected to form an MST.");
+        private int edgesUsed() {
+            return edgesUsed;
+        }
+
+        private MstResult toResult() {
+            return new MstResult(totalWeight, edgesUsed);
+        }
     }
 }

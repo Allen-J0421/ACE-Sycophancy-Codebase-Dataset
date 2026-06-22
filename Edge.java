@@ -1,6 +1,8 @@
 record Edge(int from, int to, int weight) {
+    private static final int RAW_EDGE_FIELD_COUNT = 3;
+
     static Edge fromRaw(int[] rawEdge, int vertexCount) {
-        if (rawEdge == null || rawEdge.length != GraphInputParser.EDGE_FIELD_COUNT) {
+        if (rawEdge == null || rawEdge.length != RAW_EDGE_FIELD_COUNT) {
             throw new IllegalArgumentException("Each edge must contain exactly 3 integers.");
         }
 

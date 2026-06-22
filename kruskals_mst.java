@@ -3,7 +3,7 @@ final class KruskalMST {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] rawEdges) {
-        Graph graph = GraphInputParser.parse(vertexCount, rawEdges);
+        Graph graph = Graph.fromRawEdges(vertexCount, rawEdges);
         return new KruskalSolver().compute(graph).totalWeight();
     }
 

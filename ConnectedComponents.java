@@ -1,7 +1,9 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class ConnectedComponents {
 
@@ -20,7 +22,9 @@ class ConnectedComponents {
                 components.add(bfsFrom(graph, vertex, visited));
             }
         }
-        return components;
+        return components.stream()
+                .map(Collections::unmodifiableList)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private static List<Integer> bfsFrom(Graph graph, int start, boolean[] visited) {

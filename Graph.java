@@ -20,6 +20,9 @@ class Graph {
     void addEdge(int u, int v) {
         validateVertex(u);
         validateVertex(v);
+        if (u == v) {
+            throw new IllegalArgumentException("Self-loops are not supported");
+        }
         adjacencyList.get(u).add(v);
         adjacencyList.get(v).add(u);
     }

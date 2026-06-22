@@ -20,8 +20,9 @@ final class BalancedParentheses {
         for (char current : input.toCharArray()) {
             if (isOpeningBracket(current)) {
                 openBrackets.push(current);
-            } else if (isClosingBracket(current)) {
-                if (openBrackets.isEmpty() || !isMatchingPair(openBrackets.pop(), current)) {
+            } else {
+                Character expectedOpening = expectedOpeningBracket(current);
+                if (expectedOpening != null && !hasMatchingOpeningBracket(openBrackets, expectedOpening)) {
                     return false;
                 }
             }
@@ -34,13 +35,15 @@ final class BalancedParentheses {
         return OPENING_BRACKETS.contains(c);
     }
 
-    private static boolean isClosingBracket(char c) {
-        return MATCHING_OPENING_BRACKETS.containsKey(c);
+    private static Character expectedOpeningBracket(char closing) {
+        return MATCHING_OPENING_BRACKETS.get(closing);
     }
 
-    private static boolean isMatchingPair(char opening, char closing) {
-        Character expectedOpening = MATCHING_OPENING_BRACKETS.get(closing);
-        return expectedOpening != null && expectedOpening == opening;
+    private static boolean hasMatchingOpeningBracket(
+        Deque<Character> openBrackets,
+        char expectedOpening
+    ) {
+        return !openBrackets.isEmpty() && openBrackets.pop() == expectedOpening;
     }
 
     public static void main(String[] args) {

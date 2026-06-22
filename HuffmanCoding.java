@@ -6,8 +6,6 @@ import java.util.PriorityQueue;
 public final class HuffmanCoding {
     private static final char LEFT_BIT = '0';
     private static final char RIGHT_BIT = '1';
-    private static final String DEMO_SYMBOLS = "abcdef";
-    private static final int[] DEMO_FREQUENCIES = {5, 9, 12, 13, 16, 45};
 
     private HuffmanCoding() {
         // Utility class.
@@ -124,10 +122,5 @@ public final class HuffmanCoding {
             visit(node.right);
             path.setLength(path.length() - 1);
         }
-    }
-
-    public static void main(String[] args) {
-        ArrayList<String> codes = huffmanCodes(DEMO_SYMBOLS, DEMO_FREQUENCIES);
-        System.out.print(String.join(" ", codes) + " ");
     }
 }

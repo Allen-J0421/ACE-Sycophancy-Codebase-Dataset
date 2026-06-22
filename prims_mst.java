@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalInt;
 
 class PrimsMST implements MstAlgorithm {
 
@@ -18,10 +19,11 @@ class PrimsMST implements MstAlgorithm {
         VertexState state = new VertexState(n, startVertex);
 
         for (int count = 0; count < n - 1; count++) {
-            int u = state.nextVertex();
-            if (u == -1) {
+            OptionalInt next = state.nextVertex();
+            if (!next.isPresent()) {
                 throw new IllegalArgumentException("Graph is disconnected; MST does not exist");
             }
+            int u = next.getAsInt();
             state.include(u);
 
             for (Edge edge : graph.edgesFrom(u)) {
@@ -29,7 +31,11 @@ class PrimsMST implements MstAlgorithm {
             }
         }
 
-        return new MstResult(state.buildEdges());
+        List<Edge> mstEdges = state.buildEdges();
+        if (mstEdges.size() != n - 1) {
+            throw new IllegalArgumentException("Graph is disconnected; MST does not exist");
+        }
+        return new MstResult(mstEdges);
     }
 
     private static class VertexState {
@@ -48,7 +54,7 @@ class PrimsMST implements MstAlgorithm {
             parent[startVertex] = -1;
         }
 
-        int nextVertex() {
+        OptionalInt nextVertex() {
             int min = Integer.MAX_VALUE;
             int minVertex = -1;
             for (int v = 0; v < minEdgeWeight.length; v++) {
@@ -57,7 +63,7 @@ class PrimsMST implements MstAlgorithm {
                     minVertex = v;
                 }
             }
-            return minVertex;
+            return minVertex == -1 ? OptionalInt.empty() : OptionalInt.of(minVertex);
         }
 
         void include(int vertex) {
@@ -75,7 +81,7 @@ class PrimsMST implements MstAlgorithm {
         List<Edge> buildEdges() {
             List<Edge> edges = new ArrayList<>();
             for (int i = 0; i < parent.length; i++) {
-                if (i != startVertex) {
+                if (i != startVertex && minEdgeWeight[i] != Integer.MAX_VALUE) {
                     edges.add(new Edge(parent[i], i, minEdgeWeight[i]));
                 }
             }

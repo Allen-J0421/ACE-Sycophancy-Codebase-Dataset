@@ -40,13 +40,21 @@ public final class ShortestPaths {
     /**
      * Shortest-path distance from {@code i} to {@code j}, or {@link Graph#INF}
      * if {@code j} is unreachable from {@code i}.
+     *
+     * @throws IndexOutOfBoundsException if either vertex is not in {@code [0, size()-1]}
      */
     public int distance(int i, int j) {
+        requireVertices(i, j);
         return dist[i][j];
     }
 
-    /** Whether any path exists from {@code i} to {@code j}. */
+    /**
+     * Whether any path exists from {@code i} to {@code j}.
+     *
+     * @throws IndexOutOfBoundsException if either vertex is not in {@code [0, size()-1]}
+     */
     public boolean hasPath(int i, int j) {
+        requireVertices(i, j);
         return i == j || next[i][j] != NO_PATH;
     }
 
@@ -56,8 +64,10 @@ public final class ShortestPaths {
      *
      * @return the vertex sequence, {@code [i]} when {@code i == j}, or an empty
      *         list when {@code j} is unreachable from {@code i}
+     * @throws IndexOutOfBoundsException if either vertex is not in {@code [0, size()-1]}
      */
     public List<Integer> path(int i, int j) {
+        requireVertices(i, j);
         if (!hasPath(i, j)) {
             return List.of();
         }
@@ -74,5 +84,10 @@ public final class ShortestPaths {
     /** A {@link Graph} view of the shortest-path distance matrix. */
     public Graph distances() {
         return Graph.of(dist);
+    }
+
+    private void requireVertices(int i, int j) {
+        Vertices.requireValid(i, dist.length, "source");
+        Vertices.requireValid(j, dist.length, "target");
     }
 }

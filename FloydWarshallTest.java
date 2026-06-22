@@ -26,6 +26,8 @@ public final class FloydWarshallTest {
         pathToSelfIsSingleVertex();
         unreachablePathIsEmpty();
         directEdgePathIsTwoVertices();
+        graphRejectsOutOfRangeVertex();
+        shortestPathsRejectOutOfRangeVertex();
 
         t.report();
         if (!t.allPassed()) {
@@ -139,5 +141,21 @@ public final class FloydWarshallTest {
 
     private static void directEdgePathIsTwoVertices() {
         t.equal("direct edge path", List.of(0, 1), knownExample().path(0, 1));
+    }
+
+    private static void graphRejectsOutOfRangeVertex() {
+        Graph g = Graph.of(new int[][] {
+                {0,   4},
+                {INF, 0}
+        });
+        t.throwsIndexOutOfBounds("graph weight rejects negative vertex", () -> g.weight(-1, 0));
+        t.throwsIndexOutOfBounds("graph weight rejects too-large vertex", () -> g.weight(0, 2));
+    }
+
+    private static void shortestPathsRejectOutOfRangeVertex() {
+        ShortestPaths sp = knownExample();
+        t.throwsIndexOutOfBounds("distance rejects out-of-range vertex", () -> sp.distance(0, 5));
+        t.throwsIndexOutOfBounds("hasPath rejects out-of-range vertex", () -> sp.hasPath(-1, 0));
+        t.throwsIndexOutOfBounds("path rejects out-of-range vertex", () -> sp.path(0, 99));
     }
 }

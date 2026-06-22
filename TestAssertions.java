@@ -56,6 +56,16 @@ public final class TestAssertions {
         }
     }
 
+    /** Asserts that running {@code action} throws {@link IndexOutOfBoundsException}. */
+    public void throwsIndexOutOfBounds(String name, Runnable action) {
+        try {
+            action.run();
+            fail(name, "IndexOutOfBoundsException", "no exception");
+        } catch (IndexOutOfBoundsException expected) {
+            pass(name);
+        }
+    }
+
     /** Whether every assertion so far has passed. */
     public boolean allPassed() {
         return failed == 0;

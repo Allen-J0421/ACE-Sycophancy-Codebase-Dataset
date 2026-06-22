@@ -52,8 +52,14 @@ public final class Graph {
         return matrix.length;
     }
 
-    /** Weight of the edge from {@code i} to {@code j}, or {@link #INF} if absent. */
+    /**
+     * Weight of the edge from {@code i} to {@code j}, or {@link #INF} if absent.
+     *
+     * @throws IndexOutOfBoundsException if either vertex is not in {@code [0, size()-1]}
+     */
     public int weight(int i, int j) {
+        Vertices.requireValid(i, matrix.length, "source");
+        Vertices.requireValid(j, matrix.length, "target");
         return matrix[i][j];
     }
 

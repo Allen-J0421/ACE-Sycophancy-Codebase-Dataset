@@ -1,3 +1,5 @@
+package sorting;
+
 import java.util.Arrays;
 
 public final class InsertionSort {
@@ -8,19 +10,22 @@ public final class InsertionSort {
 
     public static void sort(int[] values) {
         requireArray(values);
-        sortRange(values, 0, values.length);
+        sort(values, IndexRange.forArray(values.length));
     }
 
     public static void sortRange(int[] values, int startInclusive, int endExclusive) {
         requireArray(values);
-        requireRange(values.length, startInclusive, endExclusive);
-        if (endExclusive - startInclusive < 2) {
-            return;
-        }
+        sort(values, IndexRange.of(values.length, startInclusive, endExclusive));
+    }
 
-        for (int currentIndex = startInclusive + 1; currentIndex < endExclusive; currentIndex++) {
-            insertValue(values, startInclusive, currentIndex);
-        }
+    public static boolean isSorted(int[] values) {
+        requireArray(values);
+        return isSorted(values, IndexRange.forArray(values.length));
+    }
+
+    public static boolean isSortedRange(int[] values, int startInclusive, int endExclusive) {
+        requireArray(values);
+        return isSorted(values, IndexRange.of(values.length, startInclusive, endExclusive));
     }
 
     public static int[] sortedCopy(int[] values) {
@@ -31,10 +36,20 @@ public final class InsertionSort {
         return copy;
     }
 
-    public static boolean isSorted(int[] values) {
-        requireArray(values);
+    private static void sort(int[] values, IndexRange range) {
+        if (range.hasFewerThanTwoElements()) {
+            return;
+        }
 
-        for (int index = 1; index < values.length; index++) {
+        for (int currentIndex = range.startInclusive() + 1;
+                currentIndex < range.endExclusive();
+                currentIndex++) {
+            insertValue(values, range.startInclusive(), currentIndex);
+        }
+    }
+
+    private static boolean isSorted(int[] values, IndexRange range) {
+        for (int index = range.startInclusive() + 1; index < range.endExclusive(); index++) {
             if (values[index - 1] > values[index]) {
                 return false;
             }
@@ -75,13 +90,6 @@ public final class InsertionSort {
     private static void requireArray(int[] values) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
-        }
-    }
-
-    private static void requireRange(int length, int startInclusive, int endExclusive) {
-        if (startInclusive < 0 || endExclusive < startInclusive || endExclusive > length) {
-            throw new IllegalArgumentException(
-                    "invalid range: [" + startInclusive + ", " + endExclusive + ") for length " + length);
         }
     }
 }

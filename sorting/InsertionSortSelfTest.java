@@ -1,3 +1,5 @@
+package sorting;
+
 import java.util.Arrays;
 
 public final class InsertionSortSelfTest {
@@ -11,6 +13,7 @@ public final class InsertionSortSelfTest {
         verifiesSortedCopyDoesNotMutateInput();
         verifiesPartialRangeSorting();
         verifiesSortedDetection();
+        verifiesPartialRangeSortedDetection();
         verifiesInputValidation();
 
         System.out.println("All insertion sort checks passed.");
@@ -45,10 +48,22 @@ public final class InsertionSortSelfTest {
         assertTrue(!InsertionSort.isSorted(new int[] {2, 1}), "isSorted should reject unordered arrays");
     }
 
+    private static void verifiesPartialRangeSortedDetection() {
+        assertTrue(
+                InsertionSort.isSortedRange(new int[] {9, 1, 2, 3, 0}, 1, 4),
+                "isSortedRange should inspect only the requested slice");
+        assertTrue(
+                !InsertionSort.isSortedRange(new int[] {9, 3, 2, 1, 0}, 1, 4),
+                "isSortedRange should reject unordered slices");
+    }
+
     private static void verifiesInputValidation() {
         assertThrows(() -> InsertionSort.sort(null), "sort should reject null input");
         assertThrows(() -> InsertionSort.sortRange(new int[] {1, 2, 3}, -1, 2), "sortRange should reject bad start");
         assertThrows(() -> InsertionSort.sortRange(new int[] {1, 2, 3}, 1, 4), "sortRange should reject bad end");
+        assertThrows(
+                () -> InsertionSort.isSortedRange(new int[] {1, 2, 3}, 2, 1),
+                "isSortedRange should reject an inverted range");
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual, String message) {

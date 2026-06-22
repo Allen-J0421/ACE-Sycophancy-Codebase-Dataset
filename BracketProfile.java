@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class BracketProfile {
+    private static final BracketProfile STANDARD = of(Map.of('(', ')', '{', '}', '[', ']'));
+
     private final Map<Character, BracketToken> bracketTokens;
 
     private BracketProfile(Map<Character, BracketToken> bracketTokens) {
@@ -12,7 +14,7 @@ public final class BracketProfile {
     }
 
     public static BracketProfile standard() {
-        return of(Map.of('(', ')', '{', '}', '[', ']'));
+        return STANDARD;
     }
 
     public static BracketProfile of(Map<Character, Character> openingToClosing) {

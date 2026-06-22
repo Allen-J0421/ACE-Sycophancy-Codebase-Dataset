@@ -21,7 +21,7 @@ public final class BalancedParentheses {
 
     public static void main(String[] args) {
         String sample = args.length > 0 ? args[0] : DEFAULT_SAMPLE;
-        System.out.println(isBalanced(sample));
+        System.out.println(String.valueOf(isBalanced(sample)));
     }
 
     private static final class BalanceChecker {
@@ -52,8 +52,8 @@ public final class BalancedParentheses {
                 return true;
             }
 
-            return !expectedClosings.isEmpty()
-                && expectedClosings.pop() == token.character();
+            Character expectedClosing = expectedClosings.poll();
+            return expectedClosing != null && expectedClosing.charValue() == token.character();
         }
     }
 }

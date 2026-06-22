@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 public final class BubbleSort {
 
@@ -6,8 +7,12 @@ public final class BubbleSort {
         // Utility class.
     }
 
-    public static void bubbleSort(int[] values) {
+    public static void sortInPlace(int[] values) {
         validate(values);
+        sortValuesInPlace(values);
+    }
+
+    public static void bubbleSort(int[] values) {
         sortInPlace(values);
     }
 
@@ -15,7 +20,7 @@ public final class BubbleSort {
         validate(values);
 
         int[] copy = Arrays.copyOf(values, values.length);
-        sortInPlace(copy);
+        sortValuesInPlace(copy);
         return copy;
     }
 
@@ -29,7 +34,7 @@ public final class BubbleSort {
         }
     }
 
-    private static void sortInPlace(int[] values) {
+    private static void sortValuesInPlace(int[] values) {
         int end = values.length - 1;
         while (end > 0) {
             int lastSwapIndex = bubblePass(values, end);
@@ -64,21 +69,18 @@ public final class BubbleSort {
     }
 
     private static String formatArray(int[] values) {
-        StringBuilder builder = new StringBuilder();
+        StringJoiner joiner = new StringJoiner(" ");
 
-        for (int index = 0; index < values.length; index++) {
-            if (index > 0) {
-                builder.append(' ');
-            }
-            builder.append(values[index]);
+        for (int value : values) {
+            joiner.add(Integer.toString(value));
         }
 
-        return builder.toString();
+        return joiner.toString();
     }
 
     private static void runDemo() {
         int[] values = createDemoValues();
-        bubbleSort(values);
+        sortValuesInPlace(values);
         System.out.println("Sorted array: ");
         System.out.println(formatArray(values));
     }

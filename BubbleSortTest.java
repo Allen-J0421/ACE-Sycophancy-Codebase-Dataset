@@ -1,64 +1,57 @@
 public final class BubbleSortTest {
 
+    private static final int[] UNSORTED_INPUT = { 64, 34, 25, 12, 22, 11, 90 };
+    private static final int[] UNSORTED_OUTPUT = { 11, 12, 22, 25, 34, 64, 90 };
+    private static final int[] ALREADY_SORTED_INPUT = { 1, 2, 3, 4 };
+    private static final int[] EMPTY_INPUT = {};
+    private static final int[] SINGLE_INPUT = { 7 };
+    private static final int[] SOURCE_INPUT = { 5, 1, 4, 2, 8 };
+    private static final int[] SORTED_COPY_OUTPUT = { 1, 2, 4, 5, 8 };
+
     private BubbleSortTest() {
         // Test utility class.
     }
 
     public static void main(String[] args) {
-        shouldSortUnorderedInput();
-        shouldLeaveSortedInputUnchanged();
-        shouldHandleEmptyAndSingleElementArrays();
+        shouldSortCases();
         shouldCreateSortedCopyWithoutMutatingSource();
         shouldRejectNullInput();
         System.out.println("All BubbleSort tests passed.");
     }
 
-    private static void shouldSortUnorderedInput() {
-        int[] values = { 64, 34, 25, 12, 22, 11, 90 };
-
-        BubbleSort.bubbleSort(values);
-
-        assertArrayEquals(new int[] { 11, 12, 22, 25, 34, 64, 90 }, values);
-    }
-
-    private static void shouldLeaveSortedInputUnchanged() {
-        int[] values = { 1, 2, 3, 4 };
-
-        BubbleSort.bubbleSort(values);
-
-        assertArrayEquals(new int[] { 1, 2, 3, 4 }, values);
-    }
-
-    private static void shouldHandleEmptyAndSingleElementArrays() {
-        int[] empty = {};
-        int[] single = { 7 };
-
-        BubbleSort.bubbleSort(empty);
-        BubbleSort.bubbleSort(single);
-
-        assertArrayEquals(new int[] {}, empty);
-        assertArrayEquals(new int[] { 7 }, single);
+    private static void shouldSortCases() {
+        assertSortsInPlace(UNSORTED_INPUT, UNSORTED_OUTPUT);
+        assertSortsInPlace(ALREADY_SORTED_INPUT, ALREADY_SORTED_INPUT);
+        assertSortsInPlace(EMPTY_INPUT, EMPTY_INPUT);
+        assertSortsInPlace(SINGLE_INPUT, SINGLE_INPUT);
     }
 
     private static void shouldCreateSortedCopyWithoutMutatingSource() {
-        int[] source = { 5, 1, 4, 2, 8 };
-
+        int[] source = SOURCE_INPUT.clone();
         int[] sorted = BubbleSort.sortedCopy(source);
 
-        assertArrayEquals(new int[] { 5, 1, 4, 2, 8 }, source);
-        assertArrayEquals(new int[] { 1, 2, 4, 5, 8 }, sorted);
+        assertIntArrayEquals(SOURCE_INPUT, source);
+        assertIntArrayEquals(SORTED_COPY_OUTPUT, sorted);
     }
 
     private static void shouldRejectNullInput() {
         try {
-            BubbleSort.bubbleSort(null);
+            BubbleSort.sortInPlace(null);
             throw new AssertionError("Expected IllegalArgumentException for null input");
         } catch (IllegalArgumentException expected) {
             // Expected path.
         }
     }
 
-    private static void assertArrayEquals(int[] expected, int[] actual) {
+    private static void assertSortsInPlace(int[] input, int[] expected) {
+        int[] values = input.clone();
+
+        BubbleSort.sortInPlace(values);
+
+        assertIntArrayEquals(expected, values);
+    }
+
+    private static void assertIntArrayEquals(int[] expected, int[] actual) {
         if (expected.length != actual.length) {
             throw new AssertionError("Array length mismatch");
         }

@@ -14,6 +14,7 @@ public final class PrimsMSTTest {
         testTabularOutputMatchesBaseline();
         testEmptyMatrixRejected();
         testNonSquareMatrixRejected();
+        testDisconnectedGraphRejected();
 
         if (failures == 0) {
             System.out.println("All tests passed.");
@@ -51,6 +52,16 @@ public final class PrimsMSTTest {
     private static void testNonSquareMatrixRejected() {
         checkThrows("non-square matrix",
                 () -> WeightedGraph.fromAdjacencyMatrix(new int[][] { { 0, 1 }, { 1 } }));
+    }
+
+    private static void testDisconnectedGraphRejected() {
+        // Vertex 2 is isolated from the {0, 1} component.
+        WeightedGraph disconnected = WeightedGraph.fromAdjacencyMatrix(new int[][] {
+            { 0, 1, 0 },
+            { 1, 0, 0 },
+            { 0, 0, 0 },
+        });
+        checkThrows("disconnected graph", () -> new PrimsMST().computeMst(disconnected));
     }
 
     private static void check(String name, Object expected, Object actual) {

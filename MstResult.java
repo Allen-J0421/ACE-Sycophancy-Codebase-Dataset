@@ -1,4 +1,3 @@
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,15 +14,11 @@ public final class MstResult {
 
     /** Returns the edges that make up the spanning tree, in discovery order. */
     public List<Edge> edges() {
-        return Collections.unmodifiableList(edges);
+        return edges; // already an immutable copy
     }
 
     /** Returns the total weight of the spanning tree. */
     public int totalWeight() {
-        int total = 0;
-        for (Edge edge : edges) {
-            total += edge.weight();
-        }
-        return total;
+        return edges.stream().mapToInt(Edge::weight).sum();
     }
 }

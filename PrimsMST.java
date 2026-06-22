@@ -35,6 +35,9 @@ public final class PrimsMST implements MstAlgorithm {
 
         for (int step = 0; step < vertexCount - 1; step++) {
             int next = nearestVertexOutsideTree(state);
+            if (next == -1) {
+                throw new IllegalArgumentException("Graph is not connected; no spanning tree exists");
+            }
             state.inTree[next] = true;
             relaxNeighbours(graph, state, next);
         }
@@ -72,6 +75,10 @@ public final class PrimsMST implements MstAlgorithm {
         List<Edge> edges = new ArrayList<>();
         for (int v = 1; v < graph.vertexCount(); v++) {
             int parent = state.parent[v];
+            if (parent == -1) {
+                throw new IllegalArgumentException(
+                        "Graph is not connected; vertex " + v + " is unreachable");
+            }
             edges.add(new Edge(parent, v, graph.weight(parent, v)));
         }
         return new MstResult(edges);

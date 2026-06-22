@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.stream.Collectors;
 
 class Main {
     public static void main(String[] args) {
@@ -11,10 +12,9 @@ class Main {
         List<List<Integer>> components = ConnectedComponents.find(graph);
 
         for (List<Integer> component : components) {
-            for (int vertex : component) {
-                System.out.print(vertex + " ");
-            }
-            System.out.println();
+            System.out.println(component.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(" ")));
         }
     }
 }

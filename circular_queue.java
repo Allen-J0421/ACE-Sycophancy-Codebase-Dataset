@@ -41,6 +41,14 @@ class CircularQueue {
     }
 
     public int getFront() {
+        return peekFront();
+    }
+
+    public int getRear() {
+        return peekRear();
+    }
+
+    public int peekFront() {
         if (isEmpty()) {
             return EMPTY_VALUE;
         }
@@ -48,7 +56,7 @@ class CircularQueue {
         return elements[front];
     }
 
-    public int getRear() {
+    public int peekRear() {
         if (isEmpty()) {
             return EMPTY_VALUE;
         }

@@ -1,7 +1,5 @@
 public final class CuttingRodTest {
 
-    private static final int[] CLASSIC_SAMPLE_PRICES = {0, 1, 5, 8, 9, 10, 17, 17, 20};
-
     private CuttingRodTest() {
         // Utility class.
     }
@@ -26,17 +24,19 @@ public final class CuttingRodTest {
     }
 
     private static void shouldSolveClassicSample() {
-        assertEquals(22, CuttingRod.maxRevenue(CLASSIC_SAMPLE_PRICES), "classic sample");
+        assertEquals(22, CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePrices()),
+                "classic sample");
     }
 
     private static void shouldSolveShorterRodLength() {
-        assertEquals(10, CuttingRod.maxRevenue(CLASSIC_SAMPLE_PRICES, 4), "rod length 4");
+        assertEquals(10, CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePrices(), 4),
+                "rod length 4");
     }
 
     private static void shouldKeepCompatibilityShim() {
         assertEquals(
-                CuttingRod.maxRevenue(CLASSIC_SAMPLE_PRICES),
-                CuttingRod.cutRod(CLASSIC_SAMPLE_PRICES),
+                CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePrices()),
+                CuttingRod.cutRod(RodCuttingFixtures.classicSamplePrices()),
                 "compatibility shim");
     }
 

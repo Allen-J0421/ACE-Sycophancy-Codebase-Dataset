@@ -45,16 +45,19 @@ public final class CuttingRod {
 
     private static int bestRevenueForLength(int[] prices, int[] maxRevenue, int currentLength) {
         int bestForLength = 0;
-        int maxCutLength = Math.min(currentLength, prices.length - 1);
-        if (maxCutLength <= 0) {
-            return 0;
-        }
+        int maxCutLength = availableCutLength(prices, currentLength);
 
         for (int firstCut = 1; firstCut <= maxCutLength; firstCut++) {
-            bestForLength = Math.max(
-                    bestForLength,
-                    prices[firstCut] + maxRevenue[currentLength - firstCut]);
+            int revenue = prices[firstCut] + maxRevenue[currentLength - firstCut];
+            if (revenue > bestForLength) {
+                bestForLength = revenue;
+            }
         }
+
         return bestForLength;
+    }
+
+    private static int availableCutLength(int[] prices, int currentLength) {
+        return Math.min(currentLength, prices.length - 1);
     }
 }

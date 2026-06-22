@@ -1,18 +1,30 @@
 import java.util.Arrays;
 
+/**
+ * Utility methods for selecting ordered elements from an integer array.
+ */
 final class QuickSelect {
 
     private QuickSelect() {
     }
 
+    /**
+     * Returns the k-th smallest value in the whole array.
+     *
+     * <p>The input array is partitioned in place. Pass a copy when the original
+     * ordering must be preserved.
+     */
     public static int kthSmallest(int[] values, int k) {
-        if (values == null) {
-            throw new IllegalArgumentException("Array must not be null");
-        }
-
+        validateArray(values);
         return kthSmallest(values, 0, values.length - 1, k);
     }
 
+    /**
+     * Returns the k-th smallest value within the inclusive bounds.
+     *
+     * <p>{@code k} is one-based and refers to the array position, matching the
+     * original API contract.
+     */
     public static int kthSmallest(int[] values, int low, int high, int k) {
         validateRange(values, low, high, k);
 
@@ -37,6 +49,9 @@ final class QuickSelect {
         throw new IllegalStateException("Unable to select the requested element");
     }
 
+    /**
+     * Partitions the inclusive range around the last value as pivot.
+     */
     public static int partition(int[] values, int low, int high) {
         validatePartitionBounds(values, low, high);
         return partitionUnchecked(values, low, high);
@@ -66,16 +81,20 @@ final class QuickSelect {
     }
 
     private static void validatePartitionBounds(int[] values, int low, int high) {
+        validateArray(values);
+
+        if (low < 0 || high >= values.length || low > high) {
+            throw new IllegalArgumentException("Invalid search bounds");
+        }
+    }
+
+    private static void validateArray(int[] values) {
         if (values == null) {
             throw new IllegalArgumentException("Array must not be null");
         }
 
         if (values.length == 0) {
             throw new IllegalArgumentException("Array must not be empty");
-        }
-
-        if (low < 0 || high >= values.length || low > high) {
-            throw new IllegalArgumentException("Invalid search bounds");
         }
     }
 
@@ -86,7 +105,7 @@ final class QuickSelect {
     }
 
     public static void main(String[] args) {
-        int[] array = new int[] { 10, 4, 5, 8, 6, 11, 26 };
+        int[] array = { 10, 4, 5, 8, 6, 11, 26 };
         int kPosition = 3;
 
         if (kPosition < 1 || kPosition > array.length) {

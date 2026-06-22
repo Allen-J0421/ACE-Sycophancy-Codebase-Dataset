@@ -9,7 +9,7 @@ public final class QuickSelectDemo {
         int kPosition = 3;
 
         try {
-            int result = QuickSelect.selectKthSmallest(values.clone(), kPosition);
+            int result = QuickSelect.selectKthSmallestCopy(values, kPosition);
             System.out.println("K-th smallest element in array : " + result);
         } catch (IllegalArgumentException exception) {
             System.out.println("Index out of bound");

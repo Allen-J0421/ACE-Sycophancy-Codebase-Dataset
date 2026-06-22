@@ -60,4 +60,9 @@ public final class QuickSelect {
 
         throw new IllegalStateException("Quickselect failed to find the requested element");
     }
+
+    public static int selectKthSmallestCopy(int[] values, int k) {
+        validateSelectionRequest(values, k);
+        return selectKthSmallest(values.clone(), k);
+    }
 }

@@ -14,11 +14,15 @@ public class ActivitySelection {
     }
 
     public static int maximumCompatibleActivityCount(int[] start, int[] finish) {
-        return selectMaximumCompatibleActivities(start, finish).length;
+        return buildSelectionResult(start, finish).count();
     }
 
     public static int[][] selectMaximumCompatibleActivities(int[] start, int[] finish) {
-        return ActivitySchedule.fromParallelArrays(start, finish).toSelectionPairs();
+        return buildSelectionResult(start, finish).activities();
+    }
+
+    public static SelectionResult buildSelectionResult(int[] start, int[] finish) {
+        return ActivitySchedule.fromParallelArrays(start, finish).selectionResult();
     }
 
     public static void main(String[] args) {
@@ -74,17 +78,13 @@ public class ActivitySelection {
             return new ActivitySchedule(activities);
         }
 
-        private int countSelectedActivities() {
-            return selectCompatibleActivities().length;
-        }
-
-        private int[][] toSelectionPairs() {
+        private SelectionResult selectionResult() {
             Activity[] selectedActivities = selectCompatibleActivities();
             int[][] selectedPairs = new int[selectedActivities.length][2];
             for (int i = 0; i < selectedActivities.length; i++) {
                 selectedPairs[i] = selectedActivities[i].toPair();
             }
-            return selectedPairs;
+            return new SelectionResult(selectedPairs);
         }
 
         private Activity[] selectCompatibleActivities() {
@@ -117,6 +117,30 @@ public class ActivitySelection {
             if (start.length != finish.length) {
                 throw new IllegalArgumentException("start and finish must have the same length");
             }
+        }
+    }
+
+    public static final class SelectionResult {
+        private final int[][] activities;
+
+        private SelectionResult(int[][] activities) {
+            this.activities = copyActivities(activities);
+        }
+
+        public int count() {
+            return activities.length;
+        }
+
+        public int[][] activities() {
+            return copyActivities(activities);
+        }
+
+        private static int[][] copyActivities(int[][] activities) {
+            int[][] copy = new int[activities.length][];
+            for (int i = 0; i < activities.length; i++) {
+                copy[i] = Arrays.copyOf(activities[i], activities[i].length);
+            }
+            return copy;
         }
     }
 }

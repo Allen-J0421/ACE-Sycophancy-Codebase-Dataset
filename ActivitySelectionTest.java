@@ -29,6 +29,7 @@ public class ActivitySelectionTest {
         for (SelectionCase testCase : selectionCases) {
             assertSelectionCount(testCase);
             assertSelectedActivities(testCase);
+            assertSelectionResult(testCase);
             assertLegacyAlias(testCase);
         }
 
@@ -59,6 +60,22 @@ public class ActivitySelectionTest {
             ),
             ActivitySelection.activitySelection(testCase.startTimes(), testCase.finishTimes()),
             testCase.message() + " through the legacy alias"
+        );
+    }
+
+    private static void assertSelectionResult(SelectionCase testCase) {
+        ActivitySelection.SelectionResult result =
+            ActivitySelection.buildSelectionResult(testCase.startTimes(), testCase.finishTimes());
+
+        assertEquals(
+            testCase.expectedCount(),
+            result.count(),
+            testCase.message() + " with the expected result count"
+        );
+        assertDeepEquals(
+            testCase.expectedActivities(),
+            result.activities(),
+            testCase.message() + " with the expected result activities"
         );
     }
 

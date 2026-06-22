@@ -63,7 +63,7 @@ class BTreeNode {
         }
 
         splitChild(childIndex, children[childIndex]);
-        return keys[childIndex] < key ? childIndex + 1 : childIndex;
+        return shouldInsertIntoRightChild(childIndex, key) ? childIndex + 1 : childIndex;
     }
 
     void splitChild(int childIndex, BTreeNode child) {
@@ -131,13 +131,17 @@ class BTreeNode {
 
     BTreeNode search(int key) {
         int index = searchPosition(key);
-        if (index < keyCount && key == keys[index]) {
+        if (hasKeyAt(index, key)) {
             return this;
         }
         if (leaf) {
             return null;
         }
         return children[index].search(key);
+    }
+
+    private boolean hasKeyAt(int index, int key) {
+        return index < keyCount && key == keys[index];
     }
 
     private int searchPosition(int key) {
@@ -149,8 +153,12 @@ class BTreeNode {
     }
 
     void insertAfterRootSplit(int key) {
-        int childIndex = keys[0] < key ? 1 : 0;
+        int childIndex = shouldInsertIntoRightChild(0, key) ? 1 : 0;
         children[childIndex].insertNonFull(key);
+    }
+
+    private boolean shouldInsertIntoRightChild(int childIndex, int key) {
+        return keys[childIndex] < key;
     }
 }
 
@@ -181,6 +189,12 @@ class BTree {
 
     boolean contains(int key) {
         return search(key) != null;
+    }
+
+    void insertAll(int[] keys) {
+        for (int key : keys) {
+            insert(key);
+        }
     }
 
     void insert(int key) {
@@ -234,17 +248,15 @@ class Main {
 
     private static BTree buildSampleTree() {
         BTree tree = new BTree(MINIMUM_DEGREE);
-        for (int value : SAMPLE_VALUES) {
-            tree.insert(value);
-        }
+        tree.insertAll(SAMPLE_VALUES);
         return tree;
     }
 
     private static void printSearchResult(BTree tree, int key) {
-        if (tree.contains(key)) {
-            System.out.println(" | Present");
-        } else {
-            System.out.println(" | Not Present");
-        }
+        System.out.println(searchMessage(tree, key));
+    }
+
+    private static String searchMessage(BTree tree, int key) {
+        return tree.contains(key) ? " | Present" : " | Not Present";
     }
 }

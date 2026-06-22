@@ -2,7 +2,8 @@
  * Dynamic-programming solution to the rod-cutting problem.
  *
  * The price table is 1-indexed: {@code prices[length]} is the value of a
- * single piece of that length, and {@code prices[0]} is unused.
+ * single piece of that length, and {@code prices[0]} is unused. Missing price
+ * entries are treated as unavailable cut lengths.
  *
  * The public {@code cutRod(...)} methods are kept as compatibility shims over
  * the clearer {@code maxRevenue(...)} API.
@@ -29,7 +30,6 @@ public final class CuttingRod {
         if (prices == null || rodLength <= 0) {
             return 0;
         }
-        validatePriceTable(prices, rodLength);
 
         int[] revenues = new int[rodLength + 1];
         for (int currentLength = 1; currentLength <= rodLength; currentLength++) {
@@ -43,22 +43,14 @@ public final class CuttingRod {
         return prices.length - 1;
     }
 
-    private static void validatePriceTable(int[] prices, int rodLength) {
-        if (prices == null) {
-            throw new IllegalArgumentException("prices must not be null");
-        }
-        if (rodLength < 0) {
-            throw new IllegalArgumentException("rodLength must be non-negative");
-        }
-        if (rodLength >= prices.length) {
-            throw new IllegalArgumentException(
-                    "rodLength must be less than prices.length for a 1-indexed price table");
-        }
-    }
-
     private static int bestRevenueForLength(int[] prices, int[] maxRevenue, int currentLength) {
         int bestForLength = 0;
-        for (int firstCut = 1; firstCut <= currentLength; firstCut++) {
+        int maxCutLength = Math.min(currentLength, prices.length - 1);
+        if (maxCutLength <= 0) {
+            return 0;
+        }
+
+        for (int firstCut = 1; firstCut <= maxCutLength; firstCut++) {
             bestForLength = Math.max(
                     bestForLength,
                     prices[firstCut] + maxRevenue[currentLength - firstCut]);

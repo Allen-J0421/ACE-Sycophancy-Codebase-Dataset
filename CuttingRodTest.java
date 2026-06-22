@@ -12,7 +12,7 @@ public final class CuttingRodTest {
         shouldSolveClassicSample();
         shouldSolveShorterRodLength();
         shouldKeepCompatibilityShim();
-        shouldRejectTooSmallPriceTable();
+        shouldHandleShortPriceTable();
         System.out.println("All CuttingRod tests passed.");
     }
 
@@ -40,11 +40,8 @@ public final class CuttingRodTest {
                 "compatibility shim");
     }
 
-    private static void shouldRejectTooSmallPriceTable() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> CuttingRod.maxRevenue(new int[] {0, 1, 5}, 5),
-                "undersized price table");
+    private static void shouldHandleShortPriceTable() {
+        assertEquals(11, CuttingRod.maxRevenue(new int[] {0, 1, 5}, 5), "short price table");
     }
 
     private static void assertEquals(int expected, int actual, String caseName) {
@@ -52,27 +49,5 @@ public final class CuttingRodTest {
             throw new AssertionError(
                     caseName + ": expected " + expected + " but got " + actual);
         }
-    }
-
-    private static void assertThrows(
-            Class<? extends Throwable> expectedType, ThrowingRunnable action, String caseName) {
-        try {
-            action.run();
-        } catch (Throwable actual) {
-            if (expectedType.isInstance(actual)) {
-                return;
-            }
-            throw new AssertionError(
-                    caseName + ": expected " + expectedType.getSimpleName()
-                            + " but got " + actual.getClass().getSimpleName(),
-                    actual);
-        }
-
-        throw new AssertionError(caseName + ": expected " + expectedType.getSimpleName());
-    }
-
-    @FunctionalInterface
-    private interface ThrowingRunnable {
-        void run() throws Throwable;
     }
 }

@@ -10,11 +10,9 @@ public final class Demo {
     }
 
     public static void main(String[] args) {
-        Graph graph = new Graph(6);
-        graph.addEdge(1, 2);
-        graph.addEdge(0, 3);
-        graph.addEdge(2, 0);
-        graph.addEdge(5, 4);
+        Graph graph = new GraphBuilder(6)
+            .addEdges(new int[][] {{1, 2}, {0, 3}, {2, 0}, {5, 4}})
+            .build();
 
         Components components = new ConnectedComponentsFinder().find(graph);
 

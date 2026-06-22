@@ -31,18 +31,15 @@ class ConnectedComponentsFinderTest {
     }
 
     private static Graph sampleGraph() {
-        Graph graph = new Graph(6);
-        graph.addEdge(1, 2);
-        graph.addEdge(0, 3);
-        graph.addEdge(2, 0);
-        graph.addEdge(5, 4);
-        return graph;
+        return new GraphBuilder(6)
+            .addEdges(new int[][] {{1, 2}, {0, 3}, {2, 0}, {5, 4}})
+            .build();
     }
 
     @ParameterizedTest
     @MethodSource("strategies")
     void emptyGraphHasNoComponents(TraversalStrategy strategy) {
-        Components result = new ConnectedComponentsFinder(strategy).find(new Graph(0));
+        Components result = new ConnectedComponentsFinder(strategy).find(new GraphBuilder(0).build());
         assertEquals(0, result.count());
         assertTrue(result.asList().isEmpty());
     }
@@ -50,7 +47,7 @@ class ConnectedComponentsFinderTest {
     @ParameterizedTest
     @MethodSource("strategies")
     void isolatedVerticesEachFormTheirOwnComponent(TraversalStrategy strategy) {
-        Components result = new ConnectedComponentsFinder(strategy).find(new Graph(3));
+        Components result = new ConnectedComponentsFinder(strategy).find(new GraphBuilder(3).build());
         assertEquals(3, result.count());
         assertEquals(Set.of(Set.of(0), Set.of(1), Set.of(2)), asVertexSets(result));
     }
@@ -58,9 +55,7 @@ class ConnectedComponentsFinderTest {
     @ParameterizedTest
     @MethodSource("strategies")
     void singlePathIsOneComponent(TraversalStrategy strategy) {
-        Graph graph = new Graph(3);
-        graph.addEdge(0, 1);
-        graph.addEdge(1, 2);
+        Graph graph = new GraphBuilder(3).addEdge(0, 1).addEdge(1, 2).build();
         Components result = new ConnectedComponentsFinder(strategy).find(graph);
         assertEquals(1, result.count());
         assertEquals(Set.of(Set.of(0, 1, 2)), asVertexSets(result));
@@ -77,9 +72,7 @@ class ConnectedComponentsFinderTest {
     @ParameterizedTest
     @MethodSource("strategies")
     void everyVertexAppearsInExactlyOneComponent(TraversalStrategy strategy) {
-        Graph graph = new Graph(5);
-        graph.addEdge(0, 1);
-        graph.addEdge(3, 4);
+        Graph graph = new GraphBuilder(5).addEdge(0, 1).addEdge(3, 4).build();
         Components result = new ConnectedComponentsFinder(strategy).find(graph);
         List<Integer> all = result.asList().stream().flatMap(List::stream).sorted().toList();
         assertEquals(List.of(0, 1, 2, 3, 4), all);

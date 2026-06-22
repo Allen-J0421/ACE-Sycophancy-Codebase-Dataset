@@ -7,7 +7,8 @@ Finds the connected components of an undirected graph using breadth-first search
 ```
 src/
   main/java/graph/
-    Graph.java                      # undirected graph (adjacency list, validated)
+    Graph.java                      # immutable undirected graph (adjacency list)
+    GraphBuilder.java               # builds a Graph from a vertex count + edge list
     ConnectedComponentsFinder.java  # partitions a Graph into Components (pluggable traversal)
     Components.java                 # immutable result: count / componentOf / connected
     Demo.java                       # runnable sample (graph.Demo)
@@ -41,9 +42,9 @@ java -jar junit-platform-console-standalone.jar execute \
 ## API sketch
 
 ```java
-Graph graph = new Graph(6);
-graph.addEdge(1, 2);
-graph.addEdge(0, 3);
+Graph graph = new GraphBuilder(6)
+    .addEdges(new int[][] {{1, 2}, {0, 3}, {2, 0}, {5, 4}})
+    .build();
 
 Components components = new ConnectedComponentsFinder().find(graph);
 components.count();           // number of components

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import graph.Graph;
+import graph.GraphBuilder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,10 +21,7 @@ class TraversalStrategyTest {
 
     /** A path 0-1-2 plus an isolated vertex 3. */
     private static Graph pathWithIsolatedVertex() {
-        Graph graph = new Graph(4);
-        graph.addEdge(0, 1);
-        graph.addEdge(1, 2);
-        return graph;
+        return new GraphBuilder(4).addEdge(0, 1).addEdge(1, 2).build();
     }
 
     @ParameterizedTest
@@ -64,9 +62,7 @@ class TraversalStrategyTest {
     @Test
     void breadthFirstVisitsInLevelOrder() {
         // 0 connected to 1 and 2; BFS yields the source then its neighbours.
-        Graph star = new Graph(3);
-        star.addEdge(0, 1);
-        star.addEdge(0, 2);
+        Graph star = new GraphBuilder(3).addEdge(0, 1).addEdge(0, 2).build();
         List<Integer> reached = new BreadthFirstTraversal().traverseFrom(star, 0, new boolean[3]);
         assertEquals(List.of(0, 1, 2), reached);
     }
@@ -74,10 +70,7 @@ class TraversalStrategyTest {
     @Test
     void depthFirstFollowsAPathToItsEndBeforeBacktracking() {
         // Path 0-1-2-3: DFS descends fully before returning.
-        Graph path = new Graph(4);
-        path.addEdge(0, 1);
-        path.addEdge(1, 2);
-        path.addEdge(2, 3);
+        Graph path = new GraphBuilder(4).addEdge(0, 1).addEdge(1, 2).addEdge(2, 3).build();
         List<Integer> reached = new DepthFirstTraversal().traverseFrom(path, 0, new boolean[4]);
         assertEquals(List.of(0, 1, 2, 3), reached);
     }

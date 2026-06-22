@@ -1,16 +1,7 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public final class HuffmanCodingSelfTest {
-    private static final String CLASSIC_SYMBOLS = "abcdef";
-    private static final int[] CLASSIC_FREQUENCIES = {5, 9, 12, 13, 16, 45};
-    private static final java.util.List<String> CLASSIC_CODES =
-            Arrays.asList("1100", "1101", "100", "101", "111", "0");
-
-    private static final String SINGLE_SYMBOLS = "a";
-    private static final int[] SINGLE_FREQUENCIES = {7};
-
     private HuffmanCodingSelfTest() {
         // Test entry point.
     }
@@ -26,11 +17,19 @@ public final class HuffmanCodingSelfTest {
     }
 
     private static void shouldEncodeClassicExample() {
-        assertCodes(CLASSIC_SYMBOLS, CLASSIC_FREQUENCIES, CLASSIC_CODES, "classic example");
+        assertCodes(
+                HuffmanExamples.CLASSIC_SYMBOLS,
+                HuffmanExamples.CLASSIC_FREQUENCIES,
+                HuffmanExamples.CLASSIC_CODES,
+                "classic example");
     }
 
     private static void shouldHandleSingleSymbol() {
-        assertCodes(SINGLE_SYMBOLS, SINGLE_FREQUENCIES, Arrays.asList("0"), "single-symbol input");
+        assertCodes(
+                HuffmanExamples.SINGLE_SYMBOL,
+                HuffmanExamples.SINGLE_FREQUENCIES,
+                Collections.singletonList("0"),
+                "single-symbol input");
     }
 
     private static void shouldHandleEmptyInput() {
@@ -51,7 +50,7 @@ public final class HuffmanCodingSelfTest {
     }
 
     private static void shouldHandleEqualFrequencies() {
-        assertCodes("ab", new int[] {1, 1}, Arrays.asList("0", "1"), "equal frequencies");
+        assertCodes("ab", new int[] {1, 1}, java.util.Arrays.asList("0", "1"), "equal frequencies");
     }
 
     private static void assertCodes(

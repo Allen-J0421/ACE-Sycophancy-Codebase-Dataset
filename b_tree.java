@@ -195,6 +195,12 @@ class BTree {
         this.minimumDegree = minimumDegree;
     }
 
+    static BTree of(int minimumDegree, int... keys) {
+        BTree tree = new BTree(minimumDegree);
+        tree.insertAll(keys);
+        return tree;
+    }
+
     String traversal() {
         StringBuilder traversal = new StringBuilder();
         if (!isEmpty()) {
@@ -215,7 +221,7 @@ class BTree {
         return search(key) != null;
     }
 
-    void insertAll(int[] keys) {
+    void insertAll(int... keys) {
         for (int key : keys) {
             insert(key);
         }
@@ -260,6 +266,8 @@ class Main {
     private static final int MINIMUM_DEGREE = 3;
     private static final int[] SAMPLE_VALUES = {10, 20, 5, 6, 12, 30, 7, 17};
     private static final int[] SEARCH_KEYS = {6, 15};
+    private static final String PRESENT_MESSAGE = " | Present";
+    private static final String NOT_PRESENT_MESSAGE = " | Not Present";
 
     public static void main(String[] args) {
         BTree tree = buildSampleTree();
@@ -274,9 +282,7 @@ class Main {
     }
 
     private static BTree buildSampleTree() {
-        BTree tree = new BTree(MINIMUM_DEGREE);
-        tree.insertAll(SAMPLE_VALUES);
-        return tree;
+        return BTree.of(MINIMUM_DEGREE, SAMPLE_VALUES);
     }
 
     private static void printSearchResult(BTree tree, int key) {
@@ -284,6 +290,6 @@ class Main {
     }
 
     private static String searchMessage(BTree tree, int key) {
-        return tree.contains(key) ? " | Present" : " | Not Present";
+        return tree.contains(key) ? PRESENT_MESSAGE : NOT_PRESENT_MESSAGE;
     }
 }

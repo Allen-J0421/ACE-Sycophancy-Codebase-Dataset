@@ -10,16 +10,15 @@ public class ActivitySelection {
     }
 
     public static int activitySelection(int[] start, int[] finish) {
-        return countSelectedActivities(toSortedActivities(start, finish));
+        return maximumCompatibleActivityCount(start, finish);
+    }
+
+    public static int maximumCompatibleActivityCount(int[] start, int[] finish) {
+        return new ActivitySchedule(toSortedActivities(start, finish)).countSelectedActivities();
     }
 
     private static Activity[] toSortedActivities(int[] start, int[] finish) {
-        Objects.requireNonNull(start, "start must not be null");
-        Objects.requireNonNull(finish, "finish must not be null");
-
-        if (start.length != finish.length) {
-            throw new IllegalArgumentException("start and finish must have the same length");
-        }
+        validateInputs(start, finish);
 
         Activity[] activities = new Activity[start.length];
         for (int i = 0; i < start.length; i++) {
@@ -29,24 +28,13 @@ public class ActivitySelection {
         return activities;
     }
 
-    private static int countSelectedActivities(Activity[] activities) {
-        if (activities.length == 0) {
-            return 0;
+    private static void validateInputs(int[] start, int[] finish) {
+        Objects.requireNonNull(start, "start must not be null");
+        Objects.requireNonNull(finish, "finish must not be null");
+
+        if (start.length != finish.length) {
+            throw new IllegalArgumentException("start and finish must have the same length");
         }
-
-        int count = 1;
-        Activity lastSelected = activities[0];
-
-        // Greedily keep the earliest-finishing compatible activity.
-        for (int i = 1; i < activities.length; i++) {
-            Activity current = activities[i];
-            if (current.canFollow(lastSelected)) {
-                count++;
-                lastSelected = current;
-            }
-        }
-
-        return count;
     }
 
     public static void main(String[] args) {
@@ -76,6 +64,34 @@ public class ActivitySelection {
         @Override
         public String toString() {
             return "[" + startTime + ", " + finishTime + "]";
+        }
+    }
+
+    private static final class ActivitySchedule {
+        private final Activity[] activities;
+
+        private ActivitySchedule(Activity[] activities) {
+            this.activities = activities;
+        }
+
+        private int countSelectedActivities() {
+            if (activities.length == 0) {
+                return 0;
+            }
+
+            int count = 1;
+            Activity lastSelected = activities[0];
+
+            // Greedily keep the earliest-finishing compatible activity.
+            for (int i = 1; i < activities.length; i++) {
+                Activity current = activities[i];
+                if (current.canFollow(lastSelected)) {
+                    count++;
+                    lastSelected = current;
+                }
+            }
+
+            return count;
         }
     }
 }

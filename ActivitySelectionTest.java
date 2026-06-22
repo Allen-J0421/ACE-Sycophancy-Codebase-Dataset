@@ -1,5 +1,15 @@
 public class ActivitySelectionTest {
     public static void main(String[] args) {
+        selectsExpectedNumberOfCompatibleActivities();
+        returnsZeroForEmptyInput();
+        rejectsMismatchedInputLengths();
+        rejectsNullStartInput();
+        rejectsNullFinishInput();
+        preservesStrictCompatibilityRuleWhenActivitiesTouch();
+        aliasMethodMatchesPrimaryMethod();
+    }
+
+    private static void selectsExpectedNumberOfCompatibleActivities() {
         assertSelectionCount(
             new SelectionCase(
                 4,
@@ -8,7 +18,9 @@ public class ActivitySelectionTest {
                 "selects the expected number of compatible activities"
             )
         );
+    }
 
+    private static void returnsZeroForEmptyInput() {
         assertSelectionCount(
             new SelectionCase(
                 0,
@@ -17,19 +29,33 @@ public class ActivitySelectionTest {
                 "returns zero for empty input"
             )
         );
+    }
 
+    private static void rejectsMismatchedInputLengths() {
         assertThrows(
             IllegalArgumentException.class,
             () -> ActivitySelection.activitySelection(new int[] {1, 2}, new int[] {3}),
             "rejects mismatched input lengths"
         );
+    }
 
+    private static void rejectsNullStartInput() {
         assertThrows(
             NullPointerException.class,
             () -> ActivitySelection.activitySelection(null, new int[] {}),
             "rejects null start input"
         );
+    }
 
+    private static void rejectsNullFinishInput() {
+        assertThrows(
+            NullPointerException.class,
+            () -> ActivitySelection.activitySelection(new int[] {}, null),
+            "rejects null finish input"
+        );
+    }
+
+    private static void preservesStrictCompatibilityRuleWhenActivitiesTouch() {
         assertSelectionCount(
             new SelectionCase(
                 1,
@@ -40,10 +66,32 @@ public class ActivitySelectionTest {
         );
     }
 
+    private static void aliasMethodMatchesPrimaryMethod() {
+        SelectionCase testCase =
+            new SelectionCase(
+                2,
+                new int[] {1, 3, 4},
+                new int[] {2, 5, 6},
+                "keeps the alias method aligned with the primary method"
+            );
+
+        assertEquals(
+            ActivitySelection.maximumCompatibleActivityCount(
+                testCase.startTimes(),
+                testCase.finishTimes()
+            ),
+            ActivitySelection.activitySelection(testCase.startTimes(), testCase.finishTimes()),
+            testCase.message()
+        );
+    }
+
     private static void assertSelectionCount(SelectionCase testCase) {
         assertEquals(
             testCase.expectedCount(),
-            ActivitySelection.activitySelection(testCase.startTimes(), testCase.finishTimes()),
+            ActivitySelection.maximumCompatibleActivityCount(
+                testCase.startTimes(),
+                testCase.finishTimes()
+            ),
             testCase.message()
         );
     }

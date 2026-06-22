@@ -7,6 +7,7 @@ public final class QuickSelectTest {
     public static void main(String[] args) {
         shouldSelectTheKthSmallestElement();
         shouldHandleDuplicateValues();
+        shouldHandleAlreadySortedInput();
         shouldNotMutateInputWhenUsingDefaultVariant();
         shouldMutateInputWhenUsingInPlaceVariant();
         shouldRejectInvalidInputs();
@@ -23,6 +24,12 @@ public final class QuickSelectTest {
     private static void shouldHandleDuplicateValues() {
         assertSelectionEquals(3, new int[] { 7, 1, 7, 3, 7, 2 }, 3);
         assertSelectionEquals(7, new int[] { 7, 1, 7, 3, 7, 2 }, 4);
+    }
+
+    private static void shouldHandleAlreadySortedInput() {
+        assertSelectionEquals(1, new int[] { 1, 2, 3, 4, 5, 6 }, 1);
+        assertSelectionEquals(4, new int[] { 1, 2, 3, 4, 5, 6 }, 4);
+        assertSelectionEquals(6, new int[] { 1, 2, 3, 4, 5, 6 }, 6);
     }
 
     private static void shouldNotMutateInputWhenUsingDefaultVariant() {

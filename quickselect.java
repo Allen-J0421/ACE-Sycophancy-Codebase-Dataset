@@ -54,18 +54,37 @@ public final class QuickSelect {
     }
 
     private static int partition(int[] values, int low, int high) {
+        int selectedPivotIndex = choosePivotIndex(values, low, high);
+        swap(values, selectedPivotIndex, high);
+
         int pivotValue = values[high];
-        int pivotIndex = low;
+        int storeIndex = low;
 
         for (int i = low; i < high; i++) {
             if (values[i] < pivotValue) {
-                swap(values, i, pivotIndex);
-                pivotIndex++;
+                swap(values, i, storeIndex);
+                storeIndex++;
             }
         }
 
-        swap(values, pivotIndex, high);
-        return pivotIndex;
+        swap(values, storeIndex, high);
+        return storeIndex;
+    }
+
+    private static int choosePivotIndex(int[] values, int low, int high) {
+        int mid = low + ((high - low) / 2);
+
+        int lowValue = values[low];
+        int midValue = values[mid];
+        int highValue = values[high];
+
+        if ((lowValue <= midValue && midValue <= highValue) || (highValue <= midValue && midValue <= lowValue)) {
+            return mid;
+        }
+        if ((midValue <= lowValue && lowValue <= highValue) || (highValue <= lowValue && lowValue <= midValue)) {
+            return low;
+        }
+        return high;
     }
 
     private static void swap(int[] values, int i, int j) {

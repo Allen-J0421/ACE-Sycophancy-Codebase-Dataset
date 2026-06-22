@@ -1,9 +1,11 @@
-record Edge(int from, int to, int weight) implements Comparable<Edge> {
-    Edge {
+package mst;
+
+public record Edge(int from, int to, int weight) implements Comparable<Edge> {
+    public Edge {
         // No per-edge validation here; Graph validates vertices against its size.
     }
 
-    static Edge fromMatrixRow(int[] row) {
+    public static Edge fromMatrixRow(int[] row) {
         if (row == null || row.length != 3) {
             throw new IllegalArgumentException("Each edge must contain exactly three values: from, to, weight.");
         }

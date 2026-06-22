@@ -1,11 +1,13 @@
+package mst;
+
 import java.util.Arrays;
 
-final class GraphFactory {
+public final class GraphFactory {
     private GraphFactory() {
         // Factory class.
     }
 
-    static Graph fromEdgeMatrix(int vertexCount, int[][] rawEdges) {
+    public static Graph fromEdgeMatrix(int vertexCount, int[][] rawEdges) {
         if (rawEdges == null) {
             throw new IllegalArgumentException("Edges must not be null.");
         }

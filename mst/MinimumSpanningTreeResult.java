@@ -1,7 +1,9 @@
+package mst;
+
 import java.util.List;
 
-record MinimumSpanningTreeResult(int totalWeight, List<Edge> edges, boolean connected) {
-    MinimumSpanningTreeResult {
+public record MinimumSpanningTreeResult(int totalWeight, List<Edge> edges, boolean connected) {
+    public MinimumSpanningTreeResult {
         if (edges == null) {
             throw new IllegalArgumentException("Edges must not be null.");
         }
@@ -9,7 +11,7 @@ record MinimumSpanningTreeResult(int totalWeight, List<Edge> edges, boolean conn
         edges = List.copyOf(edges);
     }
 
-    boolean isConnected() {
+    public boolean isConnected() {
         return connected;
     }
 }

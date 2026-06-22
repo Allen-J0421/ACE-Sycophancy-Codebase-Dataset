@@ -1,4 +1,6 @@
-interface MinimumSpanningTreeSolver {
+package mst;
+
+public interface MinimumSpanningTreeSolver {
     MinimumSpanningTreeResult findMinimumSpanningTree(Graph graph);
 
     default int minimumSpanningTreeCost(Graph graph) {

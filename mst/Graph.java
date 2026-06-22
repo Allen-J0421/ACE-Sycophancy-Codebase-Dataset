@@ -1,7 +1,9 @@
+package mst;
+
 import java.util.List;
 
-record Graph(int vertexCount, List<Edge> edges) {
-    Graph {
+public record Graph(int vertexCount, List<Edge> edges) {
+    public Graph {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count must be non-negative.");
         }

@@ -1,7 +1,5 @@
 package sorting;
 
-import java.util.Arrays;
-
 final class IntArraySlice {
 
     private final int[] values;
@@ -22,53 +20,35 @@ final class IntArraySlice {
         return new IntArraySlice(values, IndexRange.of(values.length, startInclusive, endExclusive));
     }
 
-    void sortWithInsertion() {
-        if (range.hasFewerThanTwoElements()) {
-            return;
-        }
-
-        for (int currentIndex = range.startInclusive() + 1;
-                currentIndex < range.endExclusive();
-                currentIndex++) {
-            insertValue(currentIndex);
-        }
+    IntArraySlice copy() {
+        return new IntArraySlice(values.clone(), range);
     }
 
-    boolean isSorted() {
-        for (int index = range.startInclusive() + 1; index < range.endExclusive(); index++) {
-            if (values[index - 1] > values[index]) {
-                return false;
-            }
-        }
-
-        return true;
+    int[] values() {
+        return values;
     }
 
-    int[] sortedCopy() {
-        int[] copy = Arrays.copyOf(values, values.length);
-        new IntArraySlice(copy, range).sortWithInsertion();
-        return copy;
+    int startInclusive() {
+        return range.startInclusive();
     }
 
-    private void insertValue(int currentIndex) {
-        int valueToInsert = values[currentIndex];
-        int insertionIndex = findInsertionIndex(currentIndex, valueToInsert);
-
-        shiftRight(insertionIndex, currentIndex);
-        values[insertionIndex] = valueToInsert;
+    int endExclusive() {
+        return range.endExclusive();
     }
 
-    private int findInsertionIndex(int currentIndex, int valueToInsert) {
-        int scanIndex = currentIndex - 1;
-
-        while (scanIndex >= range.startInclusive() && values[scanIndex] > valueToInsert) {
-            scanIndex--;
-        }
-
-        return scanIndex + 1;
+    boolean hasFewerThanTwoElements() {
+        return range.hasFewerThanTwoElements();
     }
 
-    private void shiftRight(int startIndex, int endIndex) {
+    int valueAt(int index) {
+        return values[index];
+    }
+
+    void setValueAt(int index, int value) {
+        values[index] = value;
+    }
+
+    void shiftRight(int startIndex, int endIndex) {
         int length = endIndex - startIndex;
         if (length > 0) {
             System.arraycopy(values, startIndex, values, startIndex + 1, length);

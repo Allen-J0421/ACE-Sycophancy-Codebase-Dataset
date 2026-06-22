@@ -7,22 +7,24 @@ public final class InsertionSort {
     }
 
     public static void sort(int[] values) {
-        IntArraySlice.entireArray(values).sortWithInsertion();
+        InsertionSortAlgorithm.sort(IntArraySlice.entireArray(values));
     }
 
     public static void sortRange(int[] values, int startInclusive, int endExclusive) {
-        IntArraySlice.of(values, startInclusive, endExclusive).sortWithInsertion();
+        InsertionSortAlgorithm.sort(IntArraySlice.of(values, startInclusive, endExclusive));
     }
 
     public static boolean isSorted(int[] values) {
-        return IntArraySlice.entireArray(values).isSorted();
+        return InsertionSortAlgorithm.isSorted(IntArraySlice.entireArray(values));
     }
 
     public static boolean isSortedRange(int[] values, int startInclusive, int endExclusive) {
-        return IntArraySlice.of(values, startInclusive, endExclusive).isSorted();
+        return InsertionSortAlgorithm.isSorted(IntArraySlice.of(values, startInclusive, endExclusive));
     }
 
     public static int[] sortedCopy(int[] values) {
-        return IntArraySlice.entireArray(values).sortedCopy();
+        IntArraySlice copy = IntArraySlice.entireArray(values).copy();
+        InsertionSortAlgorithm.sort(copy);
+        return copy.values();
     }
 }

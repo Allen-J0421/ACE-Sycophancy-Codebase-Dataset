@@ -1,29 +1,21 @@
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class BalancedParenthesesTest {
     @ParameterizedTest
-    @ValueSource(strings = {
-        "[()()]{}",
-        "(a + b) * [c]",
-        "",
-        "no brackets here"
+    @CsvSource({
+        "'[()()]{}', true",
+        "'(a + b) * [c]', true",
+        "'', true",
+        "'no brackets here', true",
+        "'[(])', false",
+        "'(()', false",
+        "'())', false",
+        "'}{', false"
     })
-    void returnsTrueForBalancedInputs(String input) {
-        assertTrue(BalancedParentheses.isBalanced(input));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-        "[(])",
-        "(()",
-        "())",
-        "}{"
-    })
-    void returnsFalseForUnbalancedInputs(String input) {
-        assertFalse(BalancedParentheses.isBalanced(input));
+    void returnsExpectedBalanceResult(String input, boolean expectedBalanced) {
+        assertEquals(expectedBalanced, BalancedParentheses.isBalanced(input));
     }
 }

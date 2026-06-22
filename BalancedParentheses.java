@@ -1,46 +1,70 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Map;
-import java.util.Set;
 
 public class BalancedParentheses {
-    private static final Map<Character, Character> MATCHING_OPENERS = Map.of(
-        ')', '(',
-        '}', '{',
-        ']', '['
-    );
-    private static final Set<Character> OPENING_BRACKETS = Set.copyOf(MATCHING_OPENERS.values());
     private static final String DEFAULT_SAMPLE = "[()()]{}";
 
     private BalancedParentheses() {}
 
     public static boolean isBalanced(String s) {
-        Deque<Character> brackets = new ArrayDeque<>();
+        Deque<BracketPair> openBrackets = new ArrayDeque<>();
 
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
+            BracketPair openingBracket = BracketPair.fromOpening(c);
 
-            if (OPENING_BRACKETS.contains(c)) {
-                brackets.push(c);
+            if (openingBracket != null) {
+                openBrackets.push(openingBracket);
                 continue;
             }
 
-            if (MATCHING_OPENERS.containsKey(c)) {
-                if (brackets.isEmpty() || !hasExpectedOpeningBracket(brackets.pop(), c)) {
+            BracketPair closingBracket = BracketPair.fromClosing(c);
+            if (closingBracket != null) {
+                if (openBrackets.isEmpty() || openBrackets.pop() != closingBracket) {
                     return false;
                 }
             }
         }
 
-        return brackets.isEmpty();
-    }
-
-    private static boolean hasExpectedOpeningBracket(char openingBracket, char closingBracket) {
-        return MATCHING_OPENERS.get(closingBracket) == openingBracket;
+        return openBrackets.isEmpty();
     }
 
     public static void main(String[] args) {
         String s = args.length > 0 ? args[0] : DEFAULT_SAMPLE;
         System.out.println((isBalanced(s) ? "true" : "false"));
+    }
+
+    private enum BracketPair {
+        PARENTHESES('(', ')'),
+        BRACES('{', '}'),
+        BRACKETS('[', ']');
+
+        private final char opening;
+        private final char closing;
+
+        BracketPair(char opening, char closing) {
+            this.opening = opening;
+            this.closing = closing;
+        }
+
+        private static BracketPair fromOpening(char candidate) {
+            for (BracketPair pair : values()) {
+                if (pair.opening == candidate) {
+                    return pair;
+                }
+            }
+
+            return null;
+        }
+
+        private static BracketPair fromClosing(char candidate) {
+            for (BracketPair pair : values()) {
+                if (pair.closing == candidate) {
+                    return pair;
+                }
+            }
+
+            return null;
+        }
     }
 }

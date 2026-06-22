@@ -1,15 +1,36 @@
 package graph;
 
-import java.util.ArrayDeque;
+import graph.traversal.BreadthFirstTraversal;
+import graph.traversal.TraversalStrategy;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Finds the {@link Components} of an undirected {@link Graph} using
- * breadth-first search.
+ * Finds the {@link Components} of an undirected {@link Graph}.
+ *
+ * <p>The graph traversal is pluggable via a {@link TraversalStrategy}: the
+ * finder repeatedly traverses from each not-yet-visited vertex to collect one
+ * component at a time. Breadth-first and depth-first traversal yield the same
+ * partition, differing only in the order of vertices within each component.
  */
 public final class ConnectedComponentsFinder {
+
+    private final TraversalStrategy traversal;
+
+    /** Creates a finder that traverses breadth-first. */
+    public ConnectedComponentsFinder() {
+        this(new BreadthFirstTraversal());
+    }
+
+    /**
+     * Creates a finder that uses the given traversal strategy.
+     *
+     * @throws NullPointerException if {@code traversal} is {@code null}
+     */
+    public ConnectedComponentsFinder(TraversalStrategy traversal) {
+        this.traversal = Objects.requireNonNull(traversal, "traversal");
+    }
 
     /** Returns the connected components of {@code graph}. */
     public Components find(Graph graph) {
@@ -18,31 +39,9 @@ public final class ConnectedComponentsFinder {
 
         for (int vertex = 0; vertex < graph.vertexCount(); vertex++) {
             if (!visited[vertex]) {
-                components.add(exploreFrom(graph, vertex, visited));
+                components.add(traversal.traverseFrom(graph, vertex, visited));
             }
         }
         return new Components(components, graph.vertexCount());
-    }
-
-    /** Collects every vertex reachable from {@code source}, marking it visited. */
-    private List<Integer> exploreFrom(Graph graph, int source, boolean[] visited) {
-        List<Integer> component = new ArrayList<>();
-        Deque<Integer> queue = new ArrayDeque<>();
-
-        visited[source] = true;
-        queue.add(source);
-
-        while (!queue.isEmpty()) {
-            int current = queue.poll();
-            component.add(current);
-
-            for (int neighbour : graph.neighbours(current)) {
-                if (!visited[neighbour]) {
-                    visited[neighbour] = true;
-                    queue.add(neighbour);
-                }
-            }
-        }
-        return component;
     }
 }

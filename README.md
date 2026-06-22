@@ -8,10 +8,14 @@ Finds the connected components of an undirected graph using breadth-first search
 src/
   main/java/graph/
     Graph.java                      # undirected graph (adjacency list, validated)
-    ConnectedComponentsFinder.java  # BFS that partitions a Graph into Components
+    ConnectedComponentsFinder.java  # partitions a Graph into Components (pluggable traversal)
     Components.java                 # immutable result: count / componentOf / connected
     Demo.java                       # runnable sample (graph.Demo)
-  test/java/graph/                  # JUnit 5 suite mirroring the main package
+    traversal/
+      TraversalStrategy.java        # strategy interface for visiting a component
+      BreadthFirstTraversal.java    # queue-based (default)
+      DepthFirstTraversal.java      # explicit-stack, iterative
+  test/java/graph/                  # JUnit 5 suite mirroring the main packages
 junit-platform-console-standalone.jar
 run-tests.sh
 ```
@@ -46,4 +50,16 @@ components.count();           // number of components
 components.componentOf(0);    // id of the component containing vertex 0
 components.connected(0, 3);   // whether two vertices share a component
 components.asList();          // unmodifiable view of the components
+```
+
+### Choosing a traversal strategy
+
+The finder traverses breadth-first by default; pass a `TraversalStrategy` to
+swap in depth-first (or your own). Both produce the **same** components — only
+the vertex order within each component differs.
+
+```java
+import graph.traversal.DepthFirstTraversal;
+
+Components dfs = new ConnectedComponentsFinder(new DepthFirstTraversal()).find(graph);
 ```

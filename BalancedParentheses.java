@@ -1,5 +1,6 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -11,8 +12,13 @@ public class BalancedParentheses {
     private BalancedParentheses() {}
 
     public static boolean isBalanced(CharSequence input) {
+        return isBalanced(input, DEFAULT_BRACKETS);
+    }
+
+    public static boolean isBalanced(CharSequence input, BracketProfile bracketProfile) {
         Objects.requireNonNull(input, "input");
-        return new BalanceChecker(DEFAULT_BRACKETS).check(input);
+        Objects.requireNonNull(bracketProfile, "bracketProfile");
+        return new BalanceChecker(bracketProfile).check(input);
     }
 
     public static void main(String[] args) {
@@ -53,7 +59,7 @@ public class BalancedParentheses {
         }
     }
 
-    private static final class BracketProfile {
+    public static final class BracketProfile {
         private final Map<Character, Character> openingToClosing;
         private final Set<Character> closingBrackets;
 
@@ -62,13 +68,20 @@ public class BalancedParentheses {
             this.closingBrackets = closingBrackets;
         }
 
-        private static BracketProfile standard() {
-            Map<Character, Character> openingToClosing = Map.of(
+        public static BracketProfile standard() {
+            return of(Map.of(
                 '(', ')',
                 '{', '}',
                 '[', ']'
-            );
-            return new BracketProfile(openingToClosing, Set.copyOf(openingToClosing.values()));
+            ));
+        }
+
+        public static BracketProfile of(Map<Character, Character> openingToClosing) {
+            Objects.requireNonNull(openingToClosing, "openingToClosing");
+            Map<Character, Character> normalizedPairs = Map.copyOf(openingToClosing);
+            Set<Character> closingBrackets = Set.copyOf(normalizedPairs.values());
+            validatePairs(normalizedPairs, closingBrackets);
+            return new BracketProfile(normalizedPairs, closingBrackets);
         }
 
         private Character expectedClosingFor(char candidate) {
@@ -77,6 +90,21 @@ public class BalancedParentheses {
 
         private boolean isClosingBracket(char candidate) {
             return closingBrackets.contains(candidate);
+        }
+
+        private static void validatePairs(
+            Map<Character, Character> openingToClosing,
+            Set<Character> closingBrackets
+        ) {
+            if (closingBrackets.size() != openingToClosing.size()) {
+                throw new IllegalArgumentException("closing brackets must be unique");
+            }
+
+            Set<Character> overlappingBrackets = new HashSet<>(openingToClosing.keySet());
+            overlappingBrackets.retainAll(closingBrackets);
+            if (!overlappingBrackets.isEmpty()) {
+                throw new IllegalArgumentException("opening and closing brackets must be distinct");
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.CharBuffer;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,6 +30,28 @@ public class BalancedParenthesesTest {
     void supportsNonStringCharSequences() {
         assertTrue(BalancedParentheses.isBalanced(new StringBuilder("{[()()]}")));
         assertTrue(BalancedParentheses.isBalanced(CharBuffer.wrap("[{}()]")));
+    }
+
+    @Test
+    void supportsCustomBracketProfiles() {
+        BalancedParentheses.BracketProfile angleAndPipeProfile = BalancedParentheses.BracketProfile.of(
+            Map.of('<', '>', '|', '!')
+        );
+
+        assertTrue(BalancedParentheses.isBalanced("<|!>", angleAndPipeProfile));
+        assertFalse(BalancedParentheses.isBalanced("<|>", angleAndPipeProfile));
+    }
+
+    @Test
+    void rejectsInvalidBracketProfiles() {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> BalancedParentheses.BracketProfile.of(Map.of('(', ')', '[', ')'))
+        );
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> BalancedParentheses.BracketProfile.of(Map.of('(', ')', ')', ']'))
+        );
     }
 
     @Test

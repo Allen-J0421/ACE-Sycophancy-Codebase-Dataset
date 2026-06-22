@@ -14,7 +14,11 @@ public class ActivitySelection {
     }
 
     public static int maximumCompatibleActivityCount(int[] start, int[] finish) {
-        return ActivitySchedule.fromParallelArrays(start, finish).countSelectedActivities();
+        return selectMaximumCompatibleActivities(start, finish).length;
+    }
+
+    public static int[][] selectMaximumCompatibleActivities(int[] start, int[] finish) {
+        return ActivitySchedule.fromParallelArrays(start, finish).toSelectionPairs();
     }
 
     public static void main(String[] args) {
@@ -39,6 +43,10 @@ public class ActivitySelection {
 
         private boolean canFollow(Activity other) {
             return startTime > other.finishTime;
+        }
+
+        private int[] toPair() {
+            return new int[] {startTime, finishTime};
         }
 
         @Override
@@ -67,23 +75,39 @@ public class ActivitySelection {
         }
 
         private int countSelectedActivities() {
+            return selectCompatibleActivities().length;
+        }
+
+        private int[][] toSelectionPairs() {
+            Activity[] selectedActivities = selectCompatibleActivities();
+            int[][] selectedPairs = new int[selectedActivities.length][2];
+            for (int i = 0; i < selectedActivities.length; i++) {
+                selectedPairs[i] = selectedActivities[i].toPair();
+            }
+            return selectedPairs;
+        }
+
+        private Activity[] selectCompatibleActivities() {
             if (activities.length == 0) {
-                return 0;
+                return new Activity[0];
             }
 
-            int count = 1;
+            Activity[] selectedActivities = new Activity[activities.length];
+            int selectedCount = 1;
             Activity lastSelected = activities[0];
+            selectedActivities[0] = lastSelected;
 
             // Greedily keep the earliest-finishing compatible activity.
             for (int i = 1; i < activities.length; i++) {
                 Activity current = activities[i];
                 if (current.canFollow(lastSelected)) {
-                    count++;
+                    selectedActivities[selectedCount] = current;
+                    selectedCount++;
                     lastSelected = current;
                 }
             }
 
-            return count;
+            return Arrays.copyOf(selectedActivities, selectedCount);
         }
 
         private static void validateInputs(int[] start, int[] finish) {

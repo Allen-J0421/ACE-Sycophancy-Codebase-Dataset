@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class ActivitySelectionTest {
     public static void main(String[] args) {
         SelectionCase[] selectionCases = {
@@ -5,24 +7,28 @@ public class ActivitySelectionTest {
                 4,
                 new int[] {1, 3, 0, 5, 8, 5},
                 new int[] {2, 4, 6, 7, 9, 9},
+                new int[][] {{1, 2}, {3, 4}, {5, 7}, {8, 9}},
                 "selects the expected number of compatible activities"
             ),
             new SelectionCase(
                 0,
                 new int[] {},
                 new int[] {},
+                new int[][] {},
                 "returns zero for empty input"
             ),
             new SelectionCase(
                 1,
                 new int[] {1, 2},
                 new int[] {2, 3},
+                new int[][] {{1, 2}},
                 "preserves the strict compatibility rule when activities touch"
             )
         };
 
         for (SelectionCase testCase : selectionCases) {
             assertSelectionCount(testCase);
+            assertSelectedActivities(testCase);
             assertLegacyAlias(testCase);
         }
 
@@ -56,6 +62,17 @@ public class ActivitySelectionTest {
         );
     }
 
+    private static void assertSelectedActivities(SelectionCase testCase) {
+        assertDeepEquals(
+            testCase.expectedActivities(),
+            ActivitySelection.selectMaximumCompatibleActivities(
+                testCase.startTimes(),
+                testCase.finishTimes()
+            ),
+            testCase.message() + " with the expected chosen activities"
+        );
+    }
+
     private static void assertSelectionCount(SelectionCase testCase) {
         assertEquals(
             testCase.expectedCount(),
@@ -65,6 +82,18 @@ public class ActivitySelectionTest {
             ),
             testCase.message()
         );
+    }
+
+    private static void assertDeepEquals(int[][] expected, int[][] actual, String message) {
+        if (!Arrays.deepEquals(expected, actual)) {
+            throw new AssertionError(
+                message
+                    + ": expected "
+                    + Arrays.deepToString(expected)
+                    + " but got "
+                    + Arrays.deepToString(actual)
+            );
+        }
     }
 
     private static void assertEquals(int expected, int actual, String message) {
@@ -102,6 +131,7 @@ public class ActivitySelectionTest {
         int expectedCount,
         int[] startTimes,
         int[] finishTimes,
+        int[][] expectedActivities,
         String message
     ) {
     }

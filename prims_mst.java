@@ -2,12 +2,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class PrimsMST {
+class PrimsMST implements MstAlgorithm {
 
-    MstResult computeMST(Graph graph) {
+    @Override
+    public MstResult computeMST(Graph graph) {
+        return computeMST(graph, 0);
+    }
+
+    @Override
+    public MstResult computeMST(Graph graph, int startVertex) {
         int n = graph.vertexCount();
+        if (startVertex < 0 || startVertex >= n) {
+            throw new IllegalArgumentException(
+                "Start vertex " + startVertex + " is out of range [0, " + (n - 1) + "]");
+        }
+
         VertexState state = new VertexState(n);
-        state.setSource(0);
+        state.setSource(startVertex);
 
         for (int count = 0; count < n - 1; count++) {
             int u = state.nextVertex();
@@ -21,7 +32,7 @@ class PrimsMST {
             }
         }
 
-        return new MstResult(state.buildEdges(graph));
+        return new MstResult(state.buildEdges());
     }
 
     public static void main(String[] args) {
@@ -33,8 +44,8 @@ class PrimsMST {
             { 0, 5, 7, 9, 0 }
         };
 
-        Graph graph = new Graph(matrix);
-        MstResult result = new PrimsMST().computeMST(graph);
+        MstAlgorithm algorithm = new PrimsMST();
+        MstResult result = algorithm.computeMST(Graph.fromMatrix(matrix));
         result.print();
     }
 
@@ -78,10 +89,10 @@ class PrimsMST {
             }
         }
 
-        List<Edge> buildEdges(Graph graph) {
+        List<Edge> buildEdges() {
             List<Edge> edges = new ArrayList<>();
             for (int i = 1; i < parent.length; i++) {
-                edges.add(new Edge(parent[i], i, graph.weight(parent[i], i)));
+                edges.add(new Edge(parent[i], i, minEdgeWeight[i]));
             }
             return edges;
         }

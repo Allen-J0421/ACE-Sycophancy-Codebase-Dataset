@@ -2,6 +2,10 @@ class Graph {
     private final int[][] adjacencyMatrix;
     private final int vertexCount;
 
+    static Graph fromMatrix(int[][] matrix) {
+        return new Graph(matrix);
+    }
+
     Graph(int[][] matrix) {
         validate(matrix);
         this.vertexCount = matrix.length;

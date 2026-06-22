@@ -1,77 +1,138 @@
-import java.io.*;
-import java.lang.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-class MST {
+final class MST {
+    private static final int NO_EDGE = 0;
 
-    int minKey(int key[], Boolean mstSet[])
-    {
+    private MST() {
+    }
 
-        int min = Integer.MAX_VALUE, min_index = -1;
+    private record Edge(int from, int to, int weight) {
+    }
 
-        for (int v = 0; v < mstSet.length; v++)
-            if (mstSet[v] == false && key[v] < min) {
-                min = key[v];
-                min_index = v;
+    private record MstResult(List<Edge> edges) {
+    }
+
+    public static void main(String[] args) {
+        int[][] graph = sampleGraph();
+        MstResult result = computeMinimumSpanningTree(graph);
+        printResult(result);
+    }
+
+    static MstResult computeMinimumSpanningTree(int[][] graph) {
+        validateGraph(graph);
+
+        int vertexCount = graph.length;
+        int[] parent = new int[vertexCount];
+        int[] minEdgeWeight = new int[vertexCount];
+        boolean[] includedInTree = new boolean[vertexCount];
+
+        Arrays.fill(parent, -1);
+        Arrays.fill(minEdgeWeight, Integer.MAX_VALUE);
+        minEdgeWeight[0] = 0;
+
+        for (int visitedVertices = 0; visitedVertices < vertexCount; visitedVertices++) {
+            int currentVertex = selectNextVertex(minEdgeWeight, includedInTree);
+            if (currentVertex == -1) {
+                throw new IllegalStateException("Graph must be connected.");
             }
 
-        return min_index;
-    }
-
-    void printMST(int parent[], int graph[][])
-    {
-        System.out.println("Edge \tWeight");
-        for (int i = 1; i < graph.length; i++)
-            System.out.println(parent[i] + " - " + i + "\t"
-                               + graph[parent[i]][i]);
-    }
-
-    void primMST(int graph[][])
-    {
-        int V = graph.length;
-
-        int parent[] = new int[V];
-
-        int key[] = new int[V];
-
-        Boolean mstSet[] = new Boolean[V];
-
-        for (int i = 0; i < V; i++) {
-            key[i] = Integer.MAX_VALUE;
-            mstSet[i] = false;
+            includedInTree[currentVertex] = true;
+            updateAdjacentVertices(graph, currentVertex, parent, minEdgeWeight, includedInTree);
         }
 
-        key[0] = 0;
+        return buildResult(graph, parent);
+    }
 
-        parent[0] = -1;
+    private static int selectNextVertex(int[] minEdgeWeight, boolean[] includedInTree) {
+        int bestWeight = Integer.MAX_VALUE;
+        int bestVertex = -1;
 
-        for (int count = 0; count < V - 1; count++) {
+        for (int vertex = 0; vertex < includedInTree.length; vertex++) {
+            if (!includedInTree[vertex] && minEdgeWeight[vertex] < bestWeight) {
+                bestWeight = minEdgeWeight[vertex];
+                bestVertex = vertex;
+            }
+        }
 
-            int u = minKey(key, mstSet);
+        return bestVertex;
+    }
 
-            mstSet[u] = true;
+    private static void updateAdjacentVertices(
+            int[][] graph,
+            int currentVertex,
+            int[] parent,
+            int[] minEdgeWeight,
+            boolean[] includedInTree) {
+        for (int candidateVertex = 0; candidateVertex < graph.length; candidateVertex++) {
+            int edgeWeight = graph[currentVertex][candidateVertex];
+            if (hasUsableEdge(edgeWeight)
+                    && !includedInTree[candidateVertex]
+                    && edgeWeight < minEdgeWeight[candidateVertex]) {
+                parent[candidateVertex] = currentVertex;
+                minEdgeWeight[candidateVertex] = edgeWeight;
+            }
+        }
+    }
 
-            for (int v = 0; v < V; v++)
+    private static MstResult buildResult(int[][] graph, int[] parent) {
+        List<Edge> edges = new ArrayList<>();
 
-                if (graph[u][v] != 0 && mstSet[v] == false
-                    && graph[u][v] < key[v]) {
-                    parent[v] = u;
-                    key[v] = graph[u][v];
+        for (int vertex = 1; vertex < graph.length; vertex++) {
+            int fromVertex = parent[vertex];
+            if (fromVertex == -1) {
+                throw new IllegalStateException("Graph must be connected.");
+            }
+
+            edges.add(new Edge(fromVertex, vertex, graph[fromVertex][vertex]));
+        }
+
+        return new MstResult(edges);
+    }
+
+    private static boolean hasUsableEdge(int edgeWeight) {
+        return edgeWeight != NO_EDGE;
+    }
+
+    private static void validateGraph(int[][] graph) {
+        if (graph == null || graph.length == 0) {
+            throw new IllegalArgumentException("Graph must contain at least one vertex.");
+        }
+
+        for (int row = 0; row < graph.length; row++) {
+            if (graph[row] == null || graph[row].length != graph.length) {
+                throw new IllegalArgumentException("Graph must be a square adjacency matrix.");
+            }
+        }
+
+        for (int row = 0; row < graph.length; row++) {
+            if (graph[row][row] != NO_EDGE) {
+                throw new IllegalArgumentException("Graph diagonal must be zero.");
+            }
+
+            for (int column = row + 1; column < graph.length; column++) {
+                if (graph[row][column] != graph[column][row]) {
+                    throw new IllegalArgumentException("Graph must be undirected and symmetric.");
                 }
+            }
         }
-
-        printMST(parent, graph);
     }
 
-    public static void main(String[] args)
-    {
-        MST t = new MST();
-        int graph[][] = new int[][] { { 0, 2, 0, 6, 0 },
-                                      { 2, 0, 3, 8, 5 },
-                                      { 0, 3, 0, 0, 7 },
-                                      { 6, 8, 0, 0, 9 },
-                                      { 0, 5, 7, 9, 0 } };
+    private static void printResult(MstResult result) {
+        System.out.println("Edge \tWeight");
+        for (Edge edge : result.edges()) {
+            System.out.println(edge.from() + " - " + edge.to() + "\t" + edge.weight());
+        }
+    }
 
-        t.primMST(graph);
+    private static int[][] sampleGraph() {
+        return new int[][] {
+            {0, 2, 0, 6, 0},
+            {2, 0, 3, 8, 5},
+            {0, 3, 0, 0, 7},
+            {6, 8, 0, 0, 9},
+            {0, 5, 7, 9, 0}
+        };
     }
 }

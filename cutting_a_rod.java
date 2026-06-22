@@ -1,34 +1,42 @@
+import java.util.Arrays;
+
 final class CuttingRod {
 
     static int cutRod(int[] priceTableWithSentinel) {
         PriceTable priceTable = PriceTable.fromSentinelArray(priceTableWithSentinel);
-        int rodLength = priceTable.maxLength();
-        int[] bestRevenueByLength = new int[rodLength + 1];
-
-        for (int currentLength = 1; currentLength <= rodLength; currentLength++) {
-            bestRevenueByLength[currentLength] =
-                    computeBestRevenue(priceTable, bestRevenueByLength, currentLength);
-        }
-
-        return bestRevenueByLength[rodLength];
+        return new RodCuttingSolver(priceTable).solve();
     }
 
-    private static int computeBestRevenue(
-            PriceTable priceTable,
-            int[] bestRevenueByLength,
-            int targetLength
-    ) {
-        int bestRevenue = 0;
+    private static final class RodCuttingSolver {
+        private final PriceTable priceTable;
+        private final int[] bestRevenueByLength;
 
-        for (int firstCutLength = 1; firstCutLength <= targetLength; firstCutLength++) {
-            bestRevenue = Math.max(
-                    bestRevenue,
-                    priceTable.priceFor(firstCutLength)
-                            + bestRevenueByLength[targetLength - firstCutLength]
-            );
+        private RodCuttingSolver(PriceTable priceTable) {
+            this.priceTable = priceTable;
+            this.bestRevenueByLength = new int[priceTable.maxLength() + 1];
         }
 
-        return bestRevenue;
+        int solve() {
+            for (int currentLength = 1; currentLength <= priceTable.maxLength(); currentLength++) {
+                bestRevenueByLength[currentLength] = computeBestRevenue(currentLength);
+            }
+
+            return bestRevenueByLength[priceTable.maxLength()];
+        }
+
+        private int computeBestRevenue(int targetLength) {
+            int bestRevenue = 0;
+
+            for (int firstCutLength = 1; firstCutLength <= targetLength; firstCutLength++) {
+                bestRevenue = Math.max(
+                        bestRevenue,
+                        priceTable.priceFor(firstCutLength)
+                                + bestRevenueByLength[targetLength - firstCutLength]
+                );
+            }
+
+            return bestRevenue;
+        }
     }
 
     private static final class PriceTable {
@@ -45,7 +53,7 @@ final class CuttingRod {
                 );
             }
 
-            return new PriceTable(priceTableWithSentinel);
+            return new PriceTable(Arrays.copyOf(priceTableWithSentinel, priceTableWithSentinel.length));
         }
 
         int maxLength() {

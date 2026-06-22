@@ -19,19 +19,34 @@ public class CircularQueue {
     }
 
     public void enqueue(int value) {
-        if (isFull()) {
+        if (!offer(value)) {
             System.out.println(FULL_MESSAGE);
-            return;
+        }
+    }
+
+    public int dequeue() {
+        Integer value = poll();
+        if (value == null) {
+            System.out.println(EMPTY_MESSAGE);
+            return EMPTY_VALUE;
+        }
+
+        return value;
+    }
+
+    public boolean offer(int value) {
+        if (isFull()) {
+            return false;
         }
 
         elements[nextRearIndex()] = value;
         size++;
+        return true;
     }
 
-    public int dequeue() {
+    public Integer poll() {
         if (isEmpty()) {
-            System.out.println(EMPTY_MESSAGE);
-            return EMPTY_VALUE;
+            return null;
         }
 
         int value = elements[front];

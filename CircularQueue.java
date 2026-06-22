@@ -64,16 +64,24 @@ public class CircularQueue {
     }
 
     public int peekFront() {
+        return valueOrEmpty(peek());
+    }
+
+    public int peekRear() {
+        return valueOrEmpty(peekLast());
+    }
+
+    public Integer peek() {
         if (isEmpty()) {
-            return EMPTY_VALUE;
+            return null;
         }
 
         return elements[front];
     }
 
-    public int peekRear() {
+    public Integer peekLast() {
         if (isEmpty()) {
-            return EMPTY_VALUE;
+            return null;
         }
 
         return elements[rearIndex()];
@@ -105,5 +113,13 @@ public class CircularQueue {
 
     private int indexFromFront(int offset) {
         return (front + offset) % capacity();
+    }
+
+    private int valueOrEmpty(Integer value) {
+        if (value == null) {
+            return EMPTY_VALUE;
+        }
+
+        return value;
     }
 }

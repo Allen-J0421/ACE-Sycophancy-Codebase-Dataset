@@ -3,7 +3,7 @@
  * using binary (square-and-multiply) exponentiation, which runs in
  * O(log exponent) multiplications rather than O(exponent).
  */
-final class ModularExponentiation {
+public final class ModularExponentiation {
 
     private ModularExponentiation() {
         // Utility class; not meant to be instantiated.

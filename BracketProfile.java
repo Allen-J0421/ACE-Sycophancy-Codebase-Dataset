@@ -7,10 +7,15 @@ import java.util.Set;
 public final class BracketProfile {
     private static final BracketProfile STANDARD = of(Map.of('(', ')', '{', '}', '[', ']'));
 
-    private final Map<Character, BracketToken> bracketTokens;
+    private final Map<Character, Character> openingToClosing;
+    private final Set<Character> closingBrackets;
 
-    private BracketProfile(Map<Character, BracketToken> bracketTokens) {
-        this.bracketTokens = bracketTokens;
+    private BracketProfile(
+        Map<Character, Character> openingToClosing,
+        Set<Character> closingBrackets
+    ) {
+        this.openingToClosing = openingToClosing;
+        this.closingBrackets = closingBrackets;
     }
 
     public static BracketProfile standard() {
@@ -19,36 +24,48 @@ public final class BracketProfile {
 
     public static BracketProfile of(Map<Character, Character> openingToClosing) {
         Objects.requireNonNull(openingToClosing, "openingToClosing");
-        return new BracketProfile(buildBracketTokens(Map.copyOf(openingToClosing)));
+        return buildProfile(Map.copyOf(openingToClosing));
     }
 
-    BracketToken tokenFor(char c) {
-        return bracketTokens.get(Character.valueOf(c));
+    boolean isBracket(char c) {
+        return openingToClosing.containsKey(Character.valueOf(c))
+            || closingBrackets.contains(Character.valueOf(c));
     }
 
-    private static Map<Character, BracketToken> buildBracketTokens(
-        Map<Character, Character> openingToClosing
-    ) {
-        Map<Character, BracketToken> tokens = new HashMap<>();
+    boolean isOpeningBracket(char c) {
+        return openingToClosing.containsKey(Character.valueOf(c));
+    }
+
+    char expectedClosingOf(char c) {
+        Character closing = openingToClosing.get(Character.valueOf(c));
+        if (closing == null) {
+            throw new IllegalArgumentException("unknown opening bracket: " + c);
+        }
+        return closing.charValue();
+    }
+
+    private static BracketProfile buildProfile(Map<Character, Character> openingToClosing) {
+        Map<Character, Character> openings = new HashMap<>();
         Set<Character> openingBrackets = new HashSet<>();
         Set<Character> closingBrackets = new HashSet<>();
         for (Map.Entry<Character, Character> entry : openingToClosing.entrySet()) {
             char opening = entry.getKey().charValue();
             char closing = entry.getValue().charValue();
 
-            if (!closingBrackets.add(closing)) {
-                throw new IllegalArgumentException("closing brackets must be unique");
-            }
             if (opening == closing
                 || openingBrackets.contains(closing)
                 || closingBrackets.contains(opening)) {
-                throw new IllegalArgumentException("opening and closing brackets must be distinct");
+                throw new IllegalArgumentException(
+                    "opening and closing brackets must be distinct"
+                );
+            }
+            if (!closingBrackets.add(closing)) {
+                throw new IllegalArgumentException("closing brackets must be unique");
             }
 
             openingBrackets.add(opening);
-            tokens.put(Character.valueOf(opening), BracketToken.opening(opening, closing));
-            tokens.put(Character.valueOf(closing), BracketToken.closing(closing));
+            openings.put(Character.valueOf(opening), Character.valueOf(closing));
         }
-        return Map.copyOf(tokens);
+        return new BracketProfile(Map.copyOf(openings), Set.copyOf(closingBrackets));
     }
 }

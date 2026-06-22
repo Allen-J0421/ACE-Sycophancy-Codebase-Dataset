@@ -1,29 +1,29 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-final class WeightedGraph {
+final class WeightedGraph implements Graph {
     private static final int NO_EDGE = 0;
 
-    private final int[][] adjacencyMatrix;
+    private final List<List<Neighbor>> neighborsByVertex;
 
-    private WeightedGraph(int[][] adjacencyMatrix) {
-        this.adjacencyMatrix = copyMatrix(adjacencyMatrix);
+    private WeightedGraph(List<List<Neighbor>> neighborsByVertex) {
+        this.neighborsByVertex = neighborsByVertex;
     }
 
     static WeightedGraph fromAdjacencyMatrix(int[][] adjacencyMatrix) {
         validateMatrix(adjacencyMatrix);
-        return new WeightedGraph(adjacencyMatrix);
+        return new WeightedGraph(buildNeighbors(adjacencyMatrix));
     }
 
-    int vertexCount() {
-        return adjacencyMatrix.length;
+    @Override
+    public int vertexCount() {
+        return neighborsByVertex.size();
     }
 
-    boolean hasEdge(int from, int to) {
-        return adjacencyMatrix[from][to] != NO_EDGE;
-    }
-
-    int weightBetween(int from, int to) {
-        return adjacencyMatrix[from][to];
+    @Override
+    public List<Neighbor> neighborsOf(int vertex) {
+        return neighborsByVertex.get(vertex);
     }
 
     private static void validateMatrix(int[][] adjacencyMatrix) {
@@ -50,11 +50,23 @@ final class WeightedGraph {
         }
     }
 
-    private static int[][] copyMatrix(int[][] adjacencyMatrix) {
-        int[][] copiedMatrix = new int[adjacencyMatrix.length][];
+    private static List<List<Neighbor>> buildNeighbors(int[][] adjacencyMatrix) {
+        List<List<Neighbor>> neighborsByVertex = new ArrayList<>(adjacencyMatrix.length);
+
         for (int row = 0; row < adjacencyMatrix.length; row++) {
-            copiedMatrix[row] = Arrays.copyOf(adjacencyMatrix[row], adjacencyMatrix[row].length);
+            int[] copiedRow = Arrays.copyOf(adjacencyMatrix[row], adjacencyMatrix[row].length);
+            List<Neighbor> neighbors = new ArrayList<>();
+
+            for (int column = 0; column < copiedRow.length; column++) {
+                int edgeWeight = copiedRow[column];
+                if (edgeWeight != NO_EDGE) {
+                    neighbors.add(new Neighbor(column, edgeWeight));
+                }
+            }
+
+            neighborsByVertex.add(List.copyOf(neighbors));
         }
-        return copiedMatrix;
+
+        return List.copyOf(neighborsByVertex);
     }
 }

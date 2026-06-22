@@ -6,7 +6,7 @@ final class PrimsMinimumSpanningTree {
     private PrimsMinimumSpanningTree() {
     }
 
-    static MstResult compute(WeightedGraph graph) {
+    static MstResult compute(Graph graph) {
         int vertexCount = graph.vertexCount();
         int[] parentByVertex = new int[vertexCount];
         int[] bestWeightByVertex = new int[vertexCount];
@@ -26,7 +26,7 @@ final class PrimsMinimumSpanningTree {
             relaxAdjacentVertices(graph, currentVertex, parentByVertex, bestWeightByVertex, includedInTree);
         }
 
-        return buildResult(graph, parentByVertex);
+        return buildResult(parentByVertex, bestWeightByVertex);
     }
 
     private static int selectNextVertex(int[] bestWeightByVertex, boolean[] includedInTree) {
@@ -44,17 +44,18 @@ final class PrimsMinimumSpanningTree {
     }
 
     private static void relaxAdjacentVertices(
-            WeightedGraph graph,
+            Graph graph,
             int currentVertex,
             int[] parentByVertex,
             int[] bestWeightByVertex,
             boolean[] includedInTree) {
-        for (int candidateVertex = 0; candidateVertex < graph.vertexCount(); candidateVertex++) {
-            if (!graph.hasEdge(currentVertex, candidateVertex) || includedInTree[candidateVertex]) {
+        for (Neighbor neighbor : graph.neighborsOf(currentVertex)) {
+            int candidateVertex = neighbor.vertex();
+            if (includedInTree[candidateVertex]) {
                 continue;
             }
 
-            int candidateWeight = graph.weightBetween(currentVertex, candidateVertex);
+            int candidateWeight = neighbor.weight();
             if (candidateWeight < bestWeightByVertex[candidateVertex]) {
                 parentByVertex[candidateVertex] = currentVertex;
                 bestWeightByVertex[candidateVertex] = candidateWeight;
@@ -62,16 +63,16 @@ final class PrimsMinimumSpanningTree {
         }
     }
 
-    private static MstResult buildResult(WeightedGraph graph, int[] parentByVertex) {
+    private static MstResult buildResult(int[] parentByVertex, int[] bestWeightByVertex) {
         List<Edge> edges = new ArrayList<>();
 
-        for (int vertex = 1; vertex < graph.vertexCount(); vertex++) {
+        for (int vertex = 1; vertex < parentByVertex.length; vertex++) {
             int parentVertex = parentByVertex[vertex];
             if (parentVertex == -1) {
                 throw new IllegalStateException("Graph must be connected.");
             }
 
-            edges.add(new Edge(parentVertex, vertex, graph.weightBetween(parentVertex, vertex)));
+            edges.add(new Edge(parentVertex, vertex, bestWeightByVertex[vertex]));
         }
 
         return new MstResult(edges);

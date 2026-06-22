@@ -8,31 +8,8 @@ final class KruskalMST {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] rawEdges) {
-        validateVertexCount(vertexCount);
-
-        Edge[] sortedEdges = toSortedEdges(rawEdges, vertexCount);
-        DisjointSet disjointSet = new DisjointSet(vertexCount);
-        int totalCost = 0;
-        int edgesUsed = 0;
-
-        for (Edge edge : sortedEdges) {
-            if (!disjointSet.union(edge.from(), edge.to())) {
-                continue;
-            }
-
-            totalCost += edge.weight();
-            edgesUsed++;
-
-            if (edgesUsed == vertexCount - 1) {
-                return totalCost;
-            }
-        }
-
-        if (vertexCount <= 1) {
-            return totalCost;
-        }
-
-        throw new IllegalArgumentException("Input graph must be connected to form an MST.");
+        Graph graph = Graph.from(vertexCount, rawEdges);
+        return new KruskalSolver(graph).compute().totalWeight();
     }
 
     public static void main(String[] args) {
@@ -43,24 +20,47 @@ final class KruskalMST {
         System.out.println(kruskalsMST(4, edges));
     }
 
+    private record Graph(int vertexCount, Edge[] edges) {
+        private static Graph from(int vertexCount, int[][] rawEdges) {
+            validateVertexCount(vertexCount);
+
+            if (rawEdges == null) {
+                throw new IllegalArgumentException("Edges cannot be null.");
+            }
+
+            Edge[] parsedEdges = new Edge[rawEdges.length];
+            for (int i = 0; i < rawEdges.length; i++) {
+                parsedEdges[i] = Edge.fromRaw(rawEdges[i], vertexCount);
+            }
+
+            return new Graph(vertexCount, parsedEdges);
+        }
+
+        private int requiredEdgeCount() {
+            return Math.max(0, vertexCount - 1);
+        }
+
+        private boolean isTriviallyConnected() {
+            return vertexCount <= 1;
+        }
+
+        private Edge[] sortedEdgesByWeight() {
+            Edge[] sortedEdges = edges.clone();
+            Arrays.sort(sortedEdges, Comparator.comparingInt(Edge::weight));
+            return sortedEdges;
+        }
+    }
+
+    private record MstResult(int totalWeight, int edgesUsed) {
+        private boolean spans(Graph graph) {
+            return edgesUsed == graph.requiredEdgeCount();
+        }
+    }
+
     private static void validateVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count cannot be negative.");
         }
-    }
-
-    private static Edge[] toSortedEdges(int[][] rawEdges, int vertexCount) {
-        if (rawEdges == null) {
-            throw new IllegalArgumentException("Edges cannot be null.");
-        }
-
-        Edge[] edges = new Edge[rawEdges.length];
-        for (int i = 0; i < rawEdges.length; i++) {
-            edges[i] = Edge.fromRaw(rawEdges[i], vertexCount);
-        }
-
-        Arrays.sort(edges, Comparator.comparingInt(Edge::weight));
-        return edges;
     }
 
     private record Edge(int from, int to, int weight) {
@@ -83,6 +83,41 @@ final class KruskalMST {
                     "Vertex index out of bounds: " + vertex
                 );
             }
+        }
+    }
+
+    private static final class KruskalSolver {
+        private final Graph graph;
+        private final DisjointSet disjointSet;
+
+        private KruskalSolver(Graph graph) {
+            this.graph = graph;
+            this.disjointSet = new DisjointSet(graph.vertexCount());
+        }
+
+        private MstResult compute() {
+            int totalWeight = 0;
+            int edgesUsed = 0;
+
+            for (Edge edge : graph.sortedEdgesByWeight()) {
+                if (!disjointSet.union(edge.from(), edge.to())) {
+                    continue;
+                }
+
+                totalWeight += edge.weight();
+                edgesUsed++;
+
+                if (edgesUsed == graph.requiredEdgeCount()) {
+                    return new MstResult(totalWeight, edgesUsed);
+                }
+            }
+
+            MstResult result = new MstResult(totalWeight, edgesUsed);
+            if (graph.isTriviallyConnected() || result.spans(graph)) {
+                return result;
+            }
+
+            throw new IllegalArgumentException("Input graph must be connected to form an MST.");
         }
     }
 

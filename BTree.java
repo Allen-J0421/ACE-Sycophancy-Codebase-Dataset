@@ -38,10 +38,7 @@ public class BTree {
 
     private BTreeNode growRoot(int key) {
         BTreeNode newRoot = new BTreeNode(minDegree, false);
-        newRoot.children[0] = root;
-        newRoot.splitChild(0);
-        int childIndex = newRoot.keys[0] < key ? 1 : 0;
-        newRoot.children[childIndex].insert(key);
+        newRoot.initAsNewRoot(root, key);
         return newRoot;
     }
 
@@ -145,6 +142,13 @@ public class BTree {
                 return true;
             }
             return !leaf && children[i].containsKey(key);
+        }
+
+        void initAsNewRoot(BTreeNode fullChild, int key) {
+            children[0] = fullChild;
+            splitChild(0);
+            int childIndex = keys[0] < key ? 1 : 0;
+            children[childIndex].insert(key);
         }
 
         boolean isFull() {

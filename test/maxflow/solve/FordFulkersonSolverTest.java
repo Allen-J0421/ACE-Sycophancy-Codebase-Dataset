@@ -11,6 +11,7 @@ import maxflow.graph.Capacity;
 import maxflow.graph.Edge;
 import maxflow.graph.FlowNetwork;
 import maxflow.path.BreadthFirstPathFinder;
+import maxflow.path.CapacityScalingPathFinder;
 import maxflow.path.DepthFirstPathFinder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,8 @@ class FordFulkersonSolverTest {
     private static List<MaxFlowSolver> strategies() {
         return List.of(
                 new FordFulkersonSolver(new BreadthFirstPathFinder()),
-                new FordFulkersonSolver(new DepthFirstPathFinder()));
+                new FordFulkersonSolver(new DepthFirstPathFinder()),
+                new FordFulkersonSolver(new CapacityScalingPathFinder()));
     }
 
     @Test

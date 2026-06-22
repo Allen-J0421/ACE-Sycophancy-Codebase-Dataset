@@ -1,9 +1,11 @@
+package queue;
+
+import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.AbstractQueue;
 
 public final class CircularQueue<T> extends AbstractQueue<T> {
 
@@ -22,10 +24,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         }
 
         elements = new Object[capacity];
-        head = 0;
-        tail = 0;
-        size = 0;
-        modificationCount = 0;
+        resetState();
     }
 
     public void enqueue(T value) {
@@ -112,44 +111,16 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         return capacity() - size;
     }
 
+    @Override
     public void clear() {
         Arrays.fill(elements, null);
-        head = 0;
-        tail = 0;
-        size = 0;
+        resetState();
         modificationCount++;
     }
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<>() {
-            private final int expectedModificationCount = modificationCount;
-            private int offset;
-
-            @Override
-            public boolean hasNext() {
-                ensureUnmodified();
-                return offset < size;
-            }
-
-            @Override
-            public T next() {
-                ensureUnmodified();
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-
-                T value = elementAt(indexFromHead(offset));
-                offset++;
-                return value;
-            }
-
-            private void ensureUnmodified() {
-                if (expectedModificationCount != modificationCount) {
-                    throw new ConcurrentModificationException();
-                }
-            }
-        };
+        return new QueueIterator();
     }
 
     @Override
@@ -177,6 +148,12 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         return (head + offset) % elements.length;
     }
 
+    private void resetState() {
+        head = 0;
+        tail = 0;
+        size = 0;
+    }
+
     private void requireNotEmpty() {
         if (isEmpty()) {
             throw new IllegalStateException(EMPTY_QUEUE_MESSAGE);
@@ -200,5 +177,34 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
     @SuppressWarnings("unchecked")
     private T elementAt(int index) {
         return (T) elements[index];
+    }
+
+    private final class QueueIterator implements Iterator<T> {
+        private final int expectedModificationCount = modificationCount;
+        private int offset;
+
+        @Override
+        public boolean hasNext() {
+            ensureUnmodified();
+            return offset < size;
+        }
+
+        @Override
+        public T next() {
+            ensureUnmodified();
+            if (offset >= size) {
+                throw new NoSuchElementException();
+            }
+
+            T value = elementAt(indexFromHead(offset));
+            offset++;
+            return value;
+        }
+
+        private void ensureUnmodified() {
+            if (expectedModificationCount != modificationCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
     }
 }

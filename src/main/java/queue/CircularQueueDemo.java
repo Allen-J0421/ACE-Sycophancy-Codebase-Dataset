@@ -1,3 +1,5 @@
+package queue;
+
 public final class CircularQueueDemo {
 
     private CircularQueueDemo() {

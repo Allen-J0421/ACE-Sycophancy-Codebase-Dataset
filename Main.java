@@ -5,9 +5,7 @@ public final class Main {
     public static void main(String[] args) {
         BTree tree = buildSampleTree();
 
-        System.out.print("Traversal of the constructed tree is");
-        tree.traverse();
-        System.out.println();
+        System.out.println("Traversal of the constructed tree is " + tree);
 
         printSearchResult(tree, 6);
         printSearchResult(tree, 15);

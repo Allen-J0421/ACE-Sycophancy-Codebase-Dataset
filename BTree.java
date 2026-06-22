@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.function.IntConsumer;
 
 public final class BTree {
     private final int minDegree;
@@ -24,20 +27,29 @@ public final class BTree {
         return root != null && root.contains(key);
     }
 
+    public boolean isEmpty() {
+        return root == null;
+    }
+
+    public void forEachKey(IntConsumer action) {
+        Objects.requireNonNull(action, "action");
+        if (root != null) {
+            root.forEachKey(action);
+        }
+    }
+
     public List<Integer> toList() {
         List<Integer> orderedKeys = new ArrayList<>();
-        if (root != null) {
-            root.collectKeys(orderedKeys);
-        }
+        forEachKey(orderedKeys::add);
         return orderedKeys;
     }
 
     public String traversal() {
-        return formatKeys(toList());
+        return toString();
     }
 
     public void traverse() {
-        System.out.print(traversal());
+        System.out.print(this);
     }
 
     private void splitRootIfNeeded() {
@@ -57,12 +69,11 @@ public final class BTree {
         }
     }
 
-    private static String formatKeys(List<Integer> keys) {
-        StringBuilder builder = new StringBuilder();
-        for (int key : keys) {
-            builder.append(' ').append(key);
-        }
-        return builder.toString();
+    @Override
+    public String toString() {
+        StringJoiner joiner = new StringJoiner(" ");
+        forEachKey(key -> joiner.add(Integer.toString(key)));
+        return joiner.toString();
     }
 
     private static final class Node {
@@ -115,16 +126,16 @@ public final class BTree {
             return !leaf && children[index].contains(targetKey);
         }
 
-        private void collectKeys(List<Integer> destination) {
+        private void forEachKey(IntConsumer action) {
             for (int i = 0; i < keyCount; i++) {
                 if (!leaf) {
-                    children[i].collectKeys(destination);
+                    children[i].forEachKey(action);
                 }
-                destination.add(keys[i]);
+                action.accept(keys[i]);
             }
 
             if (!leaf) {
-                children[keyCount].collectKeys(destination);
+                children[keyCount].forEachKey(action);
             }
         }
 

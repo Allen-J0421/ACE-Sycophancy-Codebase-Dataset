@@ -1,5 +1,3 @@
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Objects;
 
 public final class BalancedParentheses {
@@ -26,34 +24,35 @@ public final class BalancedParentheses {
 
     private static final class BalanceChecker {
         private final BracketProfile bracketProfile;
-        private final Deque<Character> closingStack = new ArrayDeque<>();
+        private char[] closingStack;
+        private int depth;
 
         private BalanceChecker(BracketProfile bracketProfile) {
             this.bracketProfile = bracketProfile;
         }
 
         private boolean check(CharSequence input) {
+            closingStack = new char[input.length()];
+            depth = 0;
             for (int i = 0, length = input.length(); i < length; i++) {
                 if (!accept(input.charAt(i))) {
                     return false;
                 }
             }
-            return closingStack.isEmpty();
+            return depth == 0;
         }
 
         private boolean accept(char c) {
-            BracketToken token = bracketProfile.tokenFor(c);
-            if (token == null) {
+            if (!bracketProfile.containsBracket(c)) {
                 return true;
             }
 
-            if (token.isOpening()) {
-                closingStack.push(token.expectedClosing());
+            if (bracketProfile.isOpeningBracket(c)) {
+                closingStack[depth++] = bracketProfile.expectedClosingOf(c);
                 return true;
             }
 
-            Character expectedClosing = closingStack.poll();
-            return expectedClosing != null && expectedClosing.charValue() == token.character();
+            return depth > 0 && closingStack[--depth] == c;
         }
     }
 }

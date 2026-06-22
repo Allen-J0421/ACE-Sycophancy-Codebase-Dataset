@@ -26,6 +26,23 @@ public final class BracketProfile {
         return bracketTokens.get(Character.valueOf(c));
     }
 
+    boolean containsBracket(char c) {
+        return bracketTokens.containsKey(Character.valueOf(c));
+    }
+
+    boolean isOpeningBracket(char c) {
+        BracketToken token = tokenFor(c);
+        return token != null && token.isOpening();
+    }
+
+    char expectedClosingOf(char c) {
+        BracketToken token = tokenFor(c);
+        if (token == null) {
+            throw new IllegalArgumentException("unknown opening bracket: " + c);
+        }
+        return token.expectedClosing();
+    }
+
     private static Map<Character, BracketToken> buildBracketTokens(
         Map<Character, Character> openingToClosing
     ) {

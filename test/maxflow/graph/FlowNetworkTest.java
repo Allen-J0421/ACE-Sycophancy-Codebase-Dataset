@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -83,6 +85,48 @@ class FlowNetworkTest {
             FlowNetwork first = builder.build();
             builder.addEdge(0, 1, 99);
             assertEquals(5, first.capacity(0, 1), "earlier network must not see later edits");
+        }
+
+        @Test
+        @DisplayName("accepts a pre-built Edge")
+        void acceptsEdge() {
+            FlowNetwork network = FlowNetwork.builder(3)
+                    .addEdge(new Edge(0, 1, 16))
+                    .addEdge(new Edge(1, 2, 10))
+                    .build();
+            assertEquals(16, network.capacity(0, 1));
+            assertEquals(10, network.capacity(1, 2));
+        }
+
+        @Test
+        @DisplayName("still enforces the upper vertex bound for an Edge")
+        void edgeStillBoundedByVertexCount() {
+            FlowNetwork.Builder builder = FlowNetwork.builder(2);
+            assertThrows(IllegalArgumentException.class, () -> builder.addEdge(new Edge(0, 5, 3)));
+        }
+    }
+
+    @Nested
+    @DisplayName("edge enumeration")
+    class Edges {
+
+        @Test
+        @DisplayName("returns one Edge per capacity-bearing edge, in row-major order")
+        void enumeratesEdges() {
+            FlowNetwork network = FlowNetwork.fromMatrix(new int[][] {
+                    {0, 16, 13},
+                    {0, 0, 10},
+                    {0, 0, 0},
+            });
+            assertEquals(
+                    List.of(new Edge(0, 1, 16), new Edge(0, 2, 13), new Edge(1, 2, 10)),
+                    network.edges());
+        }
+
+        @Test
+        @DisplayName("omits absent edges and is empty for an edgeless network")
+        void omitsAbsentEdges() {
+            assertTrue(FlowNetwork.builder(3).build().edges().isEmpty());
         }
     }
 

@@ -1,6 +1,8 @@
 package maxflow.graph;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * An immutable directed flow network represented as a capacity matrix.
@@ -34,6 +36,24 @@ public final class FlowNetwork {
     /** Returns true if {@code vertex} is a valid vertex identifier. */
     public boolean isVertex(int vertex) {
         return vertex >= 0 && vertex < capacity.length;
+    }
+
+    /**
+     * Returns the network's capacity-bearing edges as {@link Edge}s (with
+     * {@link Edge#value()} being the capacity), in row-major order. This is the
+     * representation-independent way to enumerate edges, replacing manual iteration
+     * over the capacity matrix.
+     */
+    public List<Edge> edges() {
+        List<Edge> edges = new ArrayList<>();
+        for (int from = 0; from < capacity.length; from++) {
+            for (int to = 0; to < capacity.length; to++) {
+                if (capacity[from][to] > 0) {
+                    edges.add(new Edge(from, to, capacity[from][to]));
+                }
+            }
+        }
+        return edges;
     }
 
     /** Returns a defensive copy of the underlying capacity matrix. */
@@ -93,16 +113,21 @@ public final class FlowNetwork {
          *         a self-loop, or the capacity is negative
          */
         public Builder addEdge(int from, int to, int capacity) {
-            requireVertex(from, "from");
-            requireVertex(to, "to");
-            if (from == to) {
-                throw new IllegalArgumentException("Self-loops are not allowed at vertex " + from);
-            }
-            if (capacity < 0) {
-                throw new IllegalArgumentException(
-                        "Capacity must be non-negative, was " + capacity);
-            }
-            this.capacity[from][to] = capacity;
+            return addEdge(new Edge(from, to, capacity));
+        }
+
+        /**
+         * Adds (or overwrites) an edge, interpreting its {@link Edge#value()} as the
+         * capacity. The {@code Edge} guarantees distinct, non-negative endpoints and a
+         * non-negative value; this method additionally enforces the upper vertex bound.
+         *
+         * @throws IllegalArgumentException if either endpoint is not a vertex of the
+         *         network under construction
+         */
+        public Builder addEdge(Edge edge) {
+            requireVertex(edge.from(), "from");
+            requireVertex(edge.to(), "to");
+            this.capacity[edge.from()][edge.to()] = edge.value();
             return this;
         }
 

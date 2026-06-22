@@ -1,5 +1,6 @@
 package maxflow;
 
+import maxflow.graph.Edge;
 import maxflow.graph.FlowNetwork;
 import maxflow.solve.FordFulkersonSolver;
 import maxflow.solve.MaxFlowResult;
@@ -33,7 +34,7 @@ public final class FordFulkersonDemo {
 
         System.out.println("The maximum possible flow is " + result.value());
         System.out.println("Flow per edge:");
-        for (MaxFlowResult.FlowEdge edge : result.flowEdges()) {
+        for (Edge edge : result.flowEdges()) {
             System.out.println("  " + edge);
         }
     }

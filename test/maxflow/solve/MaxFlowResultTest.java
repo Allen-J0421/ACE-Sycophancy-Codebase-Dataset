@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import maxflow.solve.MaxFlowResult.FlowEdge;
+import maxflow.graph.Edge;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ class MaxFlowResultTest {
     @Test
     @DisplayName("exposes value, source, sink and flow edges")
     void exposesState() {
-        List<FlowEdge> edges = List.of(new FlowEdge(0, 1, 7));
+        List<Edge> edges = List.of(new Edge(0, 1, 7));
         MaxFlowResult result = new MaxFlowResult(0, 5, 7, edges);
 
         assertEquals(7, result.value());
@@ -35,12 +35,6 @@ class MaxFlowResultTest {
     void flowEdgesAreImmutable() {
         MaxFlowResult result = new MaxFlowResult(0, 1, 0, List.of());
         assertThrows(UnsupportedOperationException.class,
-                () -> result.flowEdges().add(new FlowEdge(0, 1, 1)));
-    }
-
-    @Test
-    @DisplayName("FlowEdge renders readably")
-    void flowEdgeToString() {
-        assertEquals("0 -> 1: 5", new FlowEdge(0, 1, 5).toString());
+                () -> result.flowEdges().add(new Edge(0, 1, 1)));
     }
 }

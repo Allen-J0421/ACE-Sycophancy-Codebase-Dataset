@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import maxflow.graph.Edge;
 import maxflow.graph.FlowNetwork;
 import maxflow.path.BreadthFirstPathFinder;
 import maxflow.path.DepthFirstPathFinder;
-import maxflow.solve.MaxFlowResult.FlowEdge;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -59,9 +59,9 @@ class FordFulkersonSolverTest {
         for (MaxFlowSolver solver : strategies()) {
             MaxFlowResult result = solver.solve(classicNetwork(), source, sink);
             int[] net = new int[6]; // outflow - inflow per vertex
-            for (FlowEdge edge : result.flowEdges()) {
-                net[edge.from()] += edge.flow();
-                net[edge.to()] -= edge.flow();
+            for (Edge edge : result.flowEdges()) {
+                net[edge.from()] += edge.value();
+                net[edge.to()] -= edge.value();
             }
             for (int v = 0; v < net.length; v++) {
                 int expected = v == source ? result.value() : v == sink ? -result.value() : 0;
@@ -75,9 +75,9 @@ class FordFulkersonSolverTest {
     void flowEdgesRespectCapacity() {
         FlowNetwork network = classicNetwork();
         MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 5);
-        for (FlowEdge edge : result.flowEdges()) {
-            assertTrue(edge.flow() > 0, "flow is positive on " + edge);
-            assertTrue(edge.flow() <= network.capacity(edge.from(), edge.to()),
+        for (Edge edge : result.flowEdges()) {
+            assertTrue(edge.value() > 0, "flow is positive on " + edge);
+            assertTrue(edge.value() <= network.capacity(edge.from(), edge.to()),
                     "flow within capacity on " + edge);
         }
     }

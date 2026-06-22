@@ -1,5 +1,6 @@
 package maxflow.solve;
 
+import maxflow.graph.Edge;
 import maxflow.graph.FlowNetwork;
 import maxflow.graph.ResidualGraph;
 import maxflow.path.AugmentingPath;
@@ -53,20 +54,15 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
     }
 
     /** Reads the net flow on every original edge out of the final residual graph. */
-    private static List<MaxFlowResult.FlowEdge> extractFlowEdges(FlowNetwork network,
-                                                                 ResidualGraph residual) {
-        List<MaxFlowResult.FlowEdge> edges = new ArrayList<>();
-        for (int from = 0; from < network.vertexCount(); from++) {
-            for (int to = 0; to < network.vertexCount(); to++) {
-                if (network.capacity(from, to) > 0) {
-                    int flow = residual.flowOn(from, to);
-                    if (flow > 0) {
-                        edges.add(new MaxFlowResult.FlowEdge(from, to, flow));
-                    }
-                }
+    private static List<Edge> extractFlowEdges(FlowNetwork network, ResidualGraph residual) {
+        List<Edge> flowEdges = new ArrayList<>();
+        for (Edge capacityEdge : network.edges()) {
+            int flow = residual.flowOn(capacityEdge.from(), capacityEdge.to());
+            if (flow > 0) {
+                flowEdges.add(capacityEdge.withValue(flow));
             }
         }
-        return edges;
+        return flowEdges;
     }
 
     /** Returns the augmenting-path strategy this solver uses. */

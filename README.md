@@ -41,6 +41,7 @@ each algorithm, since those genuinely differ.
 | `Edge.java` | Edge with stable identity and `other(v)` |
 | `UndirectedGraph.java` | Undirected `Graph`; edges shared between both endpoints |
 | `DirectedGraph.java` | Directed `Graph`; arcs stored at their tail |
+| `GraphBuilder.java` | Fluent, auto-sizing builder for either graph type |
 | `LowLinkState.java` | Shared DFS state: discovery times + low-link logic |
 | `GraphConnectivity.java` | Articulation points + bridges; stateless, iterative |
 | `ConnectivityResult.java` | Result holder: articulation points + bridges |
@@ -56,6 +57,7 @@ javac -d out *.java     # compile
 java -cp out Main       # run the demo
 java -cp out GraphConnectivityTest            # undirected tests (exits non-zero on failure)
 java -cp out StronglyConnectedComponentsTest  # SCC tests (exits non-zero on failure)
+java -cp out GraphBuilderTest                 # builder tests (exits non-zero on failure)
 ```
 
 The demo prints:
@@ -88,6 +90,20 @@ List<List<Integer>> sccs = new StronglyConnectedComponents().find(graph);  // [[
 
 Each component lists its vertices in ascending order, and components are ordered
 by their smallest vertex, so the result is deterministic.
+
+### Building graphs fluently
+
+`GraphBuilder` avoids declaring the vertex count up front (it sizes to the highest
+vertex referenced) and reads well for graphs built incrementally:
+
+```java
+Graph g = GraphBuilder.undirected().edge(0, 1).edge(1, 2).edge(2, 0).build();
+Graph d = GraphBuilder.directed().edges(new int[][] {{0, 1}, {1, 2}}).vertices(5).build();
+```
+
+Use `vertices(n)` to include isolated vertices no edge touches. The constructors
+and `fromEdges` factories remain — for a small fixed graph, `fromEdges` is still
+the most compact option.
 
 ## Multigraphs
 

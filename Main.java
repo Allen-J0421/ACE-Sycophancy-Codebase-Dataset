@@ -17,8 +17,9 @@ public final class Main {
     }
 
     private static void demonstrateUndirectedConnectivity() {
-        UndirectedGraph graph =
-                UndirectedGraph.fromEdges(5, new int[][] {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
+        Graph graph = GraphBuilder.undirected()
+                .edge(0, 1).edge(1, 4).edge(2, 3).edge(2, 4).edge(3, 4)
+                .build();
         ConnectivityResult result = new GraphConnectivity().analyze(graph);
 
         System.out.println("Articulation points: " + formatVertices(result.articulationPoints()));
@@ -26,8 +27,9 @@ public final class Main {
     }
 
     private static void demonstrateStronglyConnectedComponents() {
-        DirectedGraph graph =
-                DirectedGraph.fromEdges(5, new int[][] {{1, 0}, {0, 2}, {2, 1}, {0, 3}, {3, 4}});
+        Graph graph = GraphBuilder.directed()
+                .edge(1, 0).edge(0, 2).edge(2, 1).edge(0, 3).edge(3, 4)
+                .build();
         List<List<Integer>> components = new StronglyConnectedComponents().find(graph);
 
         StringJoiner joiner = new StringJoiner(" ");

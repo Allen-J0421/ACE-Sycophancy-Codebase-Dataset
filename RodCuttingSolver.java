@@ -1,20 +1,20 @@
 final class RodCuttingSolver {
     private final PriceTable priceTable;
-    private final int[] bestRevenueByLength;
+    private final RevenueTable revenueTable;
     private final int rodLength;
 
     RodCuttingSolver(PriceTable priceTable) {
         this.priceTable = priceTable;
         this.rodLength = priceTable.maxLength();
-        this.bestRevenueByLength = new int[rodLength + 1];
+        this.revenueTable = new RevenueTable(rodLength);
     }
 
     int solve() {
         for (int currentLength = 1; currentLength <= rodLength; currentLength++) {
-            bestRevenueByLength[currentLength] = computeBestRevenue(currentLength);
+            revenueTable.recordBestRevenue(currentLength, computeBestRevenue(currentLength));
         }
 
-        return bestRevenueByLength[rodLength];
+        return revenueTable.bestRevenueFor(rodLength);
     }
 
     private int computeBestRevenue(int targetLength) {
@@ -24,7 +24,7 @@ final class RodCuttingSolver {
             bestRevenue = Math.max(
                     bestRevenue,
                     priceTable.priceFor(firstCutLength)
-                            + bestRevenueByLength[targetLength - firstCutLength]
+                            + revenueTable.bestRevenueFor(targetLength - firstCutLength)
             );
         }
 

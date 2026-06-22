@@ -30,6 +30,13 @@ final class PriceTable {
     }
 
     int priceFor(int rodLength) {
+        validateLength(rodLength);
         return pricesByLength[rodLength - 1];
+    }
+
+    private void validateLength(int rodLength) {
+        if (rodLength <= 0 || rodLength > maxLength()) {
+            throw new IllegalArgumentException("Rod length is out of bounds: " + rodLength);
+        }
     }
 }

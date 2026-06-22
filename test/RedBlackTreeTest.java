@@ -114,9 +114,10 @@ class RedBlackTreeTest {
     }
 
     /** Inserts each value in turn, asserting all invariants after every single insert. */
-    private static void insertCheckingEachStep(RedBlackTree<Integer> tree, List<Integer> values) {
-        List<Integer> soFar = new ArrayList<>();
-        for (int v : values) {
+    private static <T extends Comparable<T>> void insertCheckingEachStep(
+            RedBlackTree<T> tree, List<T> values) {
+        List<T> soFar = new ArrayList<>();
+        for (T v : values) {
             tree.insert(v);
             soFar.add(v);
             assertRedBlackInvariants(tree, soFar);
@@ -163,10 +164,7 @@ class RedBlackTreeTest {
         void nonIntegerComparable() {
             RedBlackTree<String> tree = new RedBlackTree<>();
             List<String> words = Arrays.asList("delta", "alpha", "charlie", "bravo", "echo");
-            for (String w : words) {
-                tree.insert(w);
-            }
-            assertRedBlackInvariants(tree, words);
+            insertCheckingEachStep(tree, words);
             assertEquals(List.of("alpha", "bravo", "charlie", "delta", "echo"), tree.toSortedList());
         }
 

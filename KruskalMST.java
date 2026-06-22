@@ -10,7 +10,7 @@ final class KruskalMST {
     }
 
     static MinimumSpanningTree compute(int vertexCount, int[][] rawEdges) {
-        return compute(Graph.fromRawEdges(vertexCount, rawEdges));
+        return compute(Graphs.fromRawEdges(vertexCount, rawEdges));
     }
 
     static MinimumSpanningTree compute(Graph graph) {

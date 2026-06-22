@@ -1,20 +1,8 @@
-import java.util.ArrayList;
 import java.util.List;
 
 record Graph(int vertexCount, List<Edge> edges) {
-    static Graph fromRawEdges(int vertexCount, int[][] rawEdges) {
-        validateVertexCount(vertexCount);
-
-        if (rawEdges == null) {
-            throw new IllegalArgumentException("Edges cannot be null.");
-        }
-
-        List<Edge> parsedEdges = new ArrayList<>(rawEdges.length);
-        for (int[] rawEdge : rawEdges) {
-            parsedEdges.add(Edge.fromRaw(rawEdge, vertexCount));
-        }
-
-        return new Graph(vertexCount, parsedEdges);
+    static Graph of(int vertexCount, List<Edge> edges) {
+        return new Graph(vertexCount, edges);
     }
 
     Graph {

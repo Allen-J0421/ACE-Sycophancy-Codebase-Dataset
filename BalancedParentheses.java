@@ -42,17 +42,17 @@ public class BalancedParentheses {
         }
 
         private boolean accept(char candidate) {
-            Character expectedClosing = bracketProfile.expectedClosingFor(candidate);
-            if (expectedClosing != null) {
-                expectedClosings.push(expectedClosing);
+            BracketProfile.BracketToken token = bracketProfile.tokenFor(candidate);
+            if (token == null) {
                 return true;
             }
 
-            if (!bracketProfile.isClosingBracket(candidate)) {
+            if (token.isOpening()) {
+                expectedClosings.push(token.expectedClosing());
                 return true;
             }
 
-            return !expectedClosings.isEmpty() && expectedClosings.pop() == candidate;
+            return !expectedClosings.isEmpty() && expectedClosings.pop() == token.character();
         }
     }
 }

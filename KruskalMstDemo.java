@@ -12,7 +12,7 @@ final class KruskalMstDemo {
             {0, 3, 5}
         };
 
-        MinimumSpanningTreeResult result = KruskalMST.findMinimumSpanningTree(Graph.fromEdgeMatrix(4, edges));
+        MinimumSpanningTreeResult result = KruskalMST.findMinimumSpanningTree(GraphFactory.fromEdgeMatrix(4, edges));
         System.out.println(result.totalWeight());
         System.out.println(result.isConnected());
     }

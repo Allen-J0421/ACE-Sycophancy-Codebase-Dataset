@@ -6,7 +6,7 @@ final class KruskalMST {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] rawEdges) {
-        return SOLVER.minimumSpanningTreeCost(Graph.fromEdgeMatrix(vertexCount, rawEdges));
+        return SOLVER.minimumSpanningTreeCost(GraphFactory.fromEdgeMatrix(vertexCount, rawEdges));
     }
 
     static int minimumSpanningTreeCost(Graph graph) {

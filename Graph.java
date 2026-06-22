@@ -13,16 +13,6 @@ record Graph(int vertexCount, List<Edge> edges) {
         validateEdges(vertexCount, edges);
     }
 
-    static Graph fromEdgeMatrix(int vertexCount, int[][] rawEdges) {
-        if (rawEdges == null) {
-            throw new IllegalArgumentException("Edges must not be null.");
-        }
-
-        return new Graph(vertexCount, java.util.Arrays.stream(rawEdges)
-            .map(Edge::fromMatrixRow)
-            .toList());
-    }
-
     private static void validateEdges(int vertexCount, List<Edge> edges) {
         for (Edge edge : edges) {
             validateVertex(edge.from(), vertexCount);

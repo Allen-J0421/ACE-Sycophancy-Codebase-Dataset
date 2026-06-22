@@ -1,12 +1,15 @@
 package rbtree;
 
 /**
- * A red-black tree supporting ordered integer insertion.
+ * A red-black tree supporting ordered insertion of any {@link Comparable} type.
  *
  * <p>This is a faithful refactoring of the original single-file implementation.
  * The insertion algorithm is unchanged in behavior; the cleanups are structural:
  *
  * <ul>
+ *   <li>The tree is generic over {@code T extends Comparable<T>} rather than
+ *       hardcoded to {@code int}. Ordering uses {@link Comparable#compareTo},
+ *       which reduces to the original {@code <} comparison for integers.</li>
  *   <li>Color is modeled with the {@link Color} enum instead of {@code char}
  *       sentinels.</li>
  *   <li>The four parallel boolean flags ({@code ll}, {@code rr}, {@code lr},
@@ -21,8 +24,10 @@ package rbtree;
  *   <li>Pretty-printing and in-order traversal output are delegated to
  *       {@link TreePrinter}.</li>
  * </ul>
+ *
+ * @param <T> the type of value stored in the tree
  */
-public class RedBlackTree {
+public class RedBlackTree<T extends Comparable<T>> {
 
     /**
      * The rotation a parent recursion frame must apply to rebalance after an
@@ -41,7 +46,7 @@ public class RedBlackTree {
         LEFT_RIGHT
     }
 
-    private Node root;
+    private Node<T> root;
     private RotationCase pendingRotation = RotationCase.NONE;
 
     public RedBlackTree() {
@@ -49,9 +54,9 @@ public class RedBlackTree {
     }
 
     /** Inserts a value, keeping the tree balanced and the root black. */
-    public void insert(int data) {
+    public void insert(T data) {
         if (root == null) {
-            root = new Node(data);
+            root = new Node<>(data);
             root.color = Color.BLACK;
         } else {
             root = insertHelp(root, data);
@@ -68,9 +73,9 @@ public class RedBlackTree {
         TreePrinter.print(root);
     }
 
-    private Node rotateLeft(Node node) {
-        Node pivot = node.right;
-        Node orphan = pivot.left;
+    private Node<T> rotateLeft(Node<T> node) {
+        Node<T> pivot = node.right;
+        Node<T> orphan = pivot.left;
         pivot.left = node;
         node.right = orphan;
         node.parent = pivot;
@@ -80,9 +85,9 @@ public class RedBlackTree {
         return pivot;
     }
 
-    private Node rotateRight(Node node) {
-        Node pivot = node.left;
-        Node orphan = pivot.right;
+    private Node<T> rotateRight(Node<T> node) {
+        Node<T> pivot = node.left;
+        Node<T> orphan = pivot.right;
         pivot.right = node;
         node.left = orphan;
         node.parent = pivot;
@@ -97,13 +102,13 @@ public class RedBlackTree {
      * (possibly new) subtree root. On the way back up it applies any rotation
      * requested by the child frame and detects red-red violations.
      */
-    private Node insertHelp(Node node, int data) {
+    private Node<T> insertHelp(Node<T> node, T data) {
         if (node == null) {
-            return new Node(data);
+            return new Node<>(data);
         }
 
         boolean redConflict = false;
-        if (data < node.data) {
+        if (data.compareTo(node.data) < 0) {
             node.left = insertHelp(node.left, data);
             node.left.parent = node;
             redConflict = node != root && isRed(node) && isRed(node.left);
@@ -126,7 +131,7 @@ public class RedBlackTree {
      * root, recoloring the rotated nodes as the original algorithm did. Clears
      * the pending request afterwards.
      */
-    private Node applyPendingRotation(Node node) {
+    private Node<T> applyPendingRotation(Node<T> node) {
         switch (pendingRotation) {
             case LEFT:
                 node = rotateLeft(node);
@@ -164,10 +169,10 @@ public class RedBlackTree {
      * the uncle, this either recolors locally or schedules a rotation on the
      * grandparent frame via {@link #pendingRotation}.
      */
-    private Node fixRedConflict(Node node) {
-        Node parent = node.parent;
+    private Node<T> fixRedConflict(Node<T> node) {
+        Node<T> parent = node.parent;
         if (parent.right == node) {
-            Node uncle = parent.left;
+            Node<T> uncle = parent.left;
             if (isRed(uncle)) {
                 recolorWithRedUncle(node, uncle, parent);
             } else if (isRed(node.left)) {
@@ -176,7 +181,7 @@ public class RedBlackTree {
                 pendingRotation = RotationCase.LEFT;
             }
         } else {
-            Node uncle = parent.right;
+            Node<T> uncle = parent.right;
             if (isRed(uncle)) {
                 recolorWithRedUncle(node, uncle, parent);
             } else if (isRed(node.left)) {
@@ -193,7 +198,7 @@ public class RedBlackTree {
      * the uncle are blackened and the grandparent is reddened (unless it is the
      * root, which must stay black), pushing the potential violation upward.
      */
-    private void recolorWithRedUncle(Node node, Node uncle, Node parent) {
+    private void recolorWithRedUncle(Node<T> node, Node<T> uncle, Node<T> parent) {
         uncle.color = Color.BLACK;
         node.color = Color.BLACK;
         if (parent != root) {
@@ -202,7 +207,7 @@ public class RedBlackTree {
     }
 
     /** Null-safe redness test; a {@code null} (leaf) node is treated as black. */
-    private static boolean isRed(Node node) {
+    private static boolean isRed(Node<?> node) {
         return node != null && node.color == Color.RED;
     }
 }

@@ -4,8 +4,10 @@ package rbtree;
  * Rendering of a tree to standard output.
  *
  * <p>Separating presentation from the {@link RedBlackTree} keeps the data
- * structure free of I/O concerns. The output is identical to the original
- * {@code inorderTraversalHelper} / {@code printTreeHelper} methods.
+ * structure free of I/O concerns. Nodes are printed via their {@code toString}
+ * representation, so the printer is agnostic to the tree's element type. The
+ * output is identical to the original {@code inorderTraversalHelper} /
+ * {@code printTreeHelper} methods.
  */
 final class TreePrinter {
 
@@ -16,20 +18,20 @@ final class TreePrinter {
     }
 
     /** Prints node values in ascending order, each followed by a space. */
-    static void inorder(Node node) {
+    static void inorder(Node<?> node) {
         if (node != null) {
             inorder(node.left);
-            System.out.printf("%d ", node.data);
+            System.out.printf("%s ", node.data);
             inorder(node.right);
         }
     }
 
     /** Prints a sideways view of the tree (right subtree on top). */
-    static void print(Node root) {
+    static void print(Node<?> root) {
         print(root, 0);
     }
 
-    private static void print(Node node, int space) {
+    private static void print(Node<?> node, int space) {
         if (node == null) {
             return;
         }
@@ -40,7 +42,7 @@ final class TreePrinter {
         for (int i = INDENT; i < space; i++) {
             System.out.printf(" ");
         }
-        System.out.printf("%d", node.data);
+        System.out.printf("%s", node.data);
         System.out.printf("\n");
 
         print(node.left, space);

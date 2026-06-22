@@ -7,15 +7,17 @@ package rbtree;
  * tree algorithm and the {@link TreePrinter}, both of which live in this
  * package. Nodes are created {@link Color#RED} by default, matching the
  * standard red-black insertion rule (a freshly inserted node is always red).
+ *
+ * @param <T> the type of value held by the node
  */
-class Node {
-    int data;
-    Node left;
-    Node right;
-    Node parent;
+class Node<T> {
+    T data;
+    Node<T> left;
+    Node<T> right;
+    Node<T> parent;
     Color color;
 
-    Node(int data) {
+    Node(T data) {
         this.data = data;
         this.left = null;
         this.right = null;

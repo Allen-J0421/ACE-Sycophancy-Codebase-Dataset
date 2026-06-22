@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 
-public class huffman_coding {
+public final class huffman_coding {
+    private huffman_coding() {
+        // Compatibility entry point.
+    }
+
     public static ArrayList<String> huffmanCodes(String s, int[] freq) {
         return HuffmanCoding.huffmanCodes(s, freq);
     }

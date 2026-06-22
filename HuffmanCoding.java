@@ -4,24 +4,27 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public final class HuffmanCoding {
+    private static final char LEFT_BIT = '0';
+    private static final char RIGHT_BIT = '1';
+
     private HuffmanCoding() {
         // Utility class.
     }
 
-    private static final class TreeNode {
+    private static final class HuffmanNode {
         final int frequency;
         final int symbolIndex;
-        final TreeNode left;
-        final TreeNode right;
+        final HuffmanNode left;
+        final HuffmanNode right;
 
-        TreeNode(int frequency, int symbolIndex) {
+        HuffmanNode(int frequency, int symbolIndex) {
             this.frequency = frequency;
             this.symbolIndex = symbolIndex;
             this.left = null;
             this.right = null;
         }
 
-        TreeNode(TreeNode left, TreeNode right) {
+        HuffmanNode(HuffmanNode left, HuffmanNode right) {
             this.frequency = left.frequency + right.frequency;
             this.symbolIndex = Math.min(left.symbolIndex, right.symbolIndex);
             this.left = left;
@@ -33,8 +36,8 @@ public final class HuffmanCoding {
         }
     }
 
-    private static final Comparator<TreeNode> NODE_ORDER =
-            Comparator.comparingInt((TreeNode node) -> node.frequency)
+    private static final Comparator<HuffmanNode> NODE_ORDER =
+            Comparator.comparingInt((HuffmanNode node) -> node.frequency)
                     .thenComparingInt(node -> node.symbolIndex);
 
     public static ArrayList<String> huffmanCodes(String s, int[] freq) {
@@ -65,22 +68,22 @@ public final class HuffmanCoding {
         return new ArrayList<>(Collections.nCopies(size, ""));
     }
 
-    private static TreeNode buildTree(int[] freq) {
-        PriorityQueue<TreeNode> queue = new PriorityQueue<>(NODE_ORDER);
+    private static HuffmanNode buildTree(int[] freq) {
+        PriorityQueue<HuffmanNode> queue = new PriorityQueue<>(NODE_ORDER);
         for (int i = 0; i < freq.length; i++) {
-            queue.add(new TreeNode(freq[i], i));
+            queue.add(new HuffmanNode(freq[i], i));
         }
 
         while (queue.size() > 1) {
-            TreeNode left = queue.poll();
-            TreeNode right = queue.poll();
-            queue.add(new TreeNode(left, right));
+            HuffmanNode left = queue.poll();
+            HuffmanNode right = queue.poll();
+            queue.add(new HuffmanNode(left, right));
         }
 
         return queue.peek();
     }
 
-    private static void collectCodes(TreeNode node, StringBuilder path, ArrayList<String> codes) {
+    private static void collectCodes(HuffmanNode node, StringBuilder path, ArrayList<String> codes) {
         if (node == null) {
             return;
         }
@@ -90,11 +93,11 @@ public final class HuffmanCoding {
             return;
         }
 
-        path.append('0');
+        path.append(LEFT_BIT);
         collectCodes(node.left, path, codes);
         path.setLength(path.length() - 1);
 
-        path.append('1');
+        path.append(RIGHT_BIT);
         collectCodes(node.right, path, codes);
         path.setLength(path.length() - 1);
     }

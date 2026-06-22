@@ -35,9 +35,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
     public T dequeue() {
         requireNotEmpty();
-        T removedValue = removeHead();
-        modificationCount++;
-        return removedValue;
+        return poll();
     }
 
     public T peekFront() {
@@ -75,7 +73,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         }
 
         insertAtTail(value);
-        modificationCount++;
+        recordMutation();
         return true;
     }
 
@@ -86,7 +84,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         }
 
         T removedValue = removeHead();
-        modificationCount++;
+        recordMutation();
         return removedValue;
     }
 
@@ -115,7 +113,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
     public void clear() {
         Arrays.fill(elements, null);
         resetState();
-        modificationCount++;
+        recordMutation();
     }
 
     @Override
@@ -152,6 +150,10 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         head = 0;
         tail = 0;
         size = 0;
+    }
+
+    private void recordMutation() {
+        modificationCount++;
     }
 
     private void requireNotEmpty() {

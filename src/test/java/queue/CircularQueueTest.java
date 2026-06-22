@@ -2,7 +2,12 @@ package queue;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.Objects;
+
+import static queue.TestSupport.assertEquals;
+import static queue.TestSupport.assertFalse;
+import static queue.TestSupport.assertNull;
+import static queue.TestSupport.assertThrows;
+import static queue.TestSupport.assertTrue;
 
 public final class CircularQueueTest {
 
@@ -103,52 +108,5 @@ public final class CircularQueueTest {
 
         assertThrows(NullPointerException.class, () -> queue.offer(null), "offer should reject null elements");
         assertThrows(NullPointerException.class, () -> queue.enqueue(null), "enqueue should reject null elements");
-    }
-
-    private static void assertTrue(boolean condition, String message) {
-        if (!condition) {
-            throw new AssertionError(message);
-        }
-    }
-
-    private static void assertFalse(boolean condition, String message) {
-        assertTrue(!condition, message);
-    }
-
-    private static void assertNull(Object actual, String message) {
-        if (actual != null) {
-            throw new AssertionError(message + ": expected null but was " + actual);
-        }
-    }
-
-    private static void assertEquals(Object expected, Object actual, String message) {
-        if (!Objects.equals(expected, actual)) {
-            throw new AssertionError(message + ": expected " + expected + " but was " + actual);
-        }
-    }
-
-    private static <T extends Throwable> void assertThrows(
-            Class<T> expectedType,
-            ThrowingRunnable action,
-            String message) {
-        try {
-            action.run();
-        } catch (Throwable throwable) {
-            if (expectedType.isInstance(throwable)) {
-                return;
-            }
-
-            throw new AssertionError(
-                    message + ": expected " + expectedType.getSimpleName()
-                            + " but caught " + throwable.getClass().getSimpleName(),
-                    throwable);
-        }
-
-        throw new AssertionError(message + ": expected " + expectedType.getSimpleName() + " but nothing was thrown");
-    }
-
-    @FunctionalInterface
-    private interface ThrowingRunnable {
-        void run();
     }
 }

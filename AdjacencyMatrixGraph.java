@@ -2,18 +2,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-final class WeightedGraph implements Graph {
+final class AdjacencyMatrixGraph implements Graph {
     private static final int NO_EDGE = 0;
 
     private final List<List<Neighbor>> neighborsByVertex;
 
-    private WeightedGraph(List<List<Neighbor>> neighborsByVertex) {
+    private AdjacencyMatrixGraph(List<List<Neighbor>> neighborsByVertex) {
         this.neighborsByVertex = neighborsByVertex;
     }
 
-    static WeightedGraph fromAdjacencyMatrix(int[][] adjacencyMatrix) {
+    static AdjacencyMatrixGraph fromMatrix(int[][] adjacencyMatrix) {
         validateMatrix(adjacencyMatrix);
-        return new WeightedGraph(buildNeighbors(adjacencyMatrix));
+        return new AdjacencyMatrixGraph(buildNeighbors(adjacencyMatrix));
     }
 
     @Override

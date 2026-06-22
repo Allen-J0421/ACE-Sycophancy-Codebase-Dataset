@@ -2,8 +2,8 @@ final class SampleGraphs {
     private SampleGraphs() {
     }
 
-    static WeightedGraph fiveVertexExample() {
-        return WeightedGraph.fromAdjacencyMatrix(new int[][] {
+    static Graph fiveVertexExample() {
+        return AdjacencyMatrixGraph.fromMatrix(new int[][] {
             {0, 2, 0, 6, 0},
             {2, 0, 3, 8, 5},
             {0, 3, 0, 0, 7},

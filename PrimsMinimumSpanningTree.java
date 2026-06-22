@@ -2,11 +2,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-final class PrimsMinimumSpanningTree {
-    private PrimsMinimumSpanningTree() {
-    }
-
-    static MstResult compute(Graph graph) {
+final class PrimsMinimumSpanningTree implements MinimumSpanningTreeAlgorithm {
+    @Override
+    public MstResult compute(Graph graph) {
         int vertexCount = graph.vertexCount();
         int[] parentByVertex = new int[vertexCount];
         int[] bestWeightByVertex = new int[vertexCount];

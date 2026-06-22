@@ -17,20 +17,13 @@ public final class QuickSelect {
     }
 
     public static int selectKthSmallest(int[] values, int k) {
-        return select(values, k, true);
+        validateSelectionRequest(values, k);
+        return selectByTargetIndex(values.clone(), k - 1);
     }
 
     public static int selectKthSmallestInPlace(int[] values, int k) {
-        return select(values, k, false);
-    }
-
-    private static int select(int[] values, int k, boolean copyInput) {
         validateSelectionRequest(values, k);
-
-        int[] workingValues = copyInput ? values.clone() : values;
-        int targetIndex = k - 1;
-
-        return selectByTargetIndex(workingValues, targetIndex);
+        return selectByTargetIndex(values, k - 1);
     }
 
     private static int selectByTargetIndex(int[] values, int targetIndex) {

@@ -25,7 +25,7 @@ public final class QuickSelect {
         return pivotIndex;
     }
 
-    public static int selectKthSmallest(int[] values, int k) {
+    private static void validateSelectionRequest(int[] values, int k) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
         }
@@ -35,6 +35,10 @@ public final class QuickSelect {
         if (k < 1 || k > values.length) {
             throw new IllegalArgumentException("k must be between 1 and values.length");
         }
+    }
+
+    public static int selectKthSmallest(int[] values, int k) {
+        validateSelectionRequest(values, k);
 
         int low = 0;
         int high = values.length - 1;
@@ -55,17 +59,5 @@ public final class QuickSelect {
         }
 
         throw new IllegalStateException("Quickselect failed to find the requested element");
-    }
-
-    public static void main(String[] args) {
-        int[] values = { 10, 4, 5, 8, 6, 11, 26 };
-        int kPosition = 3;
-
-        try {
-            int result = selectKthSmallest(values.clone(), kPosition);
-            System.out.println("K-th smallest element in array : " + result);
-        } catch (IllegalArgumentException exception) {
-            System.out.println("Index out of bound");
-        }
     }
 }

@@ -7,6 +7,9 @@ import java.util.AbstractQueue;
 
 public final class CircularQueue<T> extends AbstractQueue<T> {
 
+    private static final String EMPTY_QUEUE_MESSAGE = "Queue is empty.";
+    private static final String FULL_QUEUE_MESSAGE = "Queue is full.";
+
     private final Object[] elements;
     private int head;
     private int tail;
@@ -27,28 +30,24 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
     public void enqueue(T value) {
         if (!offer(value)) {
-            throw new IllegalStateException("Queue is full.");
+            throw new IllegalStateException(FULL_QUEUE_MESSAGE);
         }
     }
 
     public T dequeue() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Queue is empty.");
-        }
-        return poll();
+        requireNotEmpty();
+        T removedValue = removeHead();
+        modificationCount++;
+        return removedValue;
     }
 
     public T peekFront() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Queue is empty.");
-        }
-        return peek();
+        requireNotEmpty();
+        return elementAt(head);
     }
 
     public T peekRear() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Queue is empty.");
-        }
+        requireNotEmpty();
         return elementAt(indexFromHead(size - 1));
     }
 
@@ -76,9 +75,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
             return false;
         }
 
-        elements[tail] = value;
-        tail = advance(tail);
-        size++;
+        insertAtTail(value);
         modificationCount++;
         return true;
     }
@@ -89,10 +86,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
             return null;
         }
 
-        T removedValue = elementAt(head);
-        elements[head] = null;
-        head = advance(head);
-        size--;
+        T removedValue = removeHead();
         modificationCount++;
         return removedValue;
     }
@@ -112,6 +106,10 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
     public int capacity() {
         return elements.length;
+    }
+
+    public int remainingCapacity() {
+        return capacity() - size;
     }
 
     public void clear() {
@@ -177,6 +175,26 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
     private int indexFromHead(int offset) {
         return (head + offset) % elements.length;
+    }
+
+    private void requireNotEmpty() {
+        if (isEmpty()) {
+            throw new IllegalStateException(EMPTY_QUEUE_MESSAGE);
+        }
+    }
+
+    private void insertAtTail(T value) {
+        elements[tail] = value;
+        tail = advance(tail);
+        size++;
+    }
+
+    private T removeHead() {
+        T removedValue = elementAt(head);
+        elements[head] = null;
+        head = advance(head);
+        size--;
+        return removedValue;
     }
 
     @SuppressWarnings("unchecked")

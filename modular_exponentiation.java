@@ -1,26 +1,24 @@
 class ModularExponentiation {
-    public int powMod(int x, int n, int M) {
-        int res = 1;
+    public int powMod(int base, int exponent, int modulus) {
+        if (modulus == 1) return 0;
 
-        while (n >= 1) {
+        long result = 1;
+        long b = base % modulus;
 
-            if ((n & 1) == 1) {
-                res = (int)((1L * res * x) % M);
-
-                n--;
-             } else {
-
-                x = (int)((1L * x * x) % M);
-                n /= 2;
+        while (exponent > 0) {
+            if ((exponent & 1) == 1) {
+                result = (result * b) % modulus;
             }
+            b = (b * b) % modulus;
+            exponent >>= 1;
         }
 
-        return res;
+        return (int) result;
     }
 
     public static void main(String[] args) {
-        int x = 3, n = 2, M = 4;
+        int base = 3, exponent = 2, modulus = 4;
         ModularExponentiation obj = new ModularExponentiation();
-        System.out.println(obj.powMod(x, n, M));
+        System.out.println(obj.powMod(base, exponent, modulus));
     }
 }

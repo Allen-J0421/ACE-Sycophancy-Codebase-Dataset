@@ -3,6 +3,13 @@ package mst;
 import java.util.List;
 
 public record Graph(int vertexCount, List<Edge> edges) {
+    public static Graph of(int vertexCount, Edge... edges) {
+        if (edges == null) {
+            throw new IllegalArgumentException("Edges must not be null.");
+        }
+        return new Graph(vertexCount, List.of(edges));
+    }
+
     public Graph {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count must be non-negative.");

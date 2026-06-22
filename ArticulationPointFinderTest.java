@@ -32,6 +32,7 @@ public final class ArticulationPointFinderTest {
         outOfRangeEdgeIsRejected();
         malformedEdgeIsRejected();
         finderIsReusableAcrossGraphs();
+        deepGraphDoesNotOverflowTheStack();
     }
 
     private void emptyGraphHasNoArticulationPoints() {
@@ -94,6 +95,22 @@ public final class ArticulationPointFinderTest {
         Graph triangle = Graph.fromEdges(3, new int[][] {{0, 1}, {1, 2}, {2, 0}});
         check("reuse: path then triangle (1)", finder.find(path), List.of(1));
         check("reuse: path then triangle (2)", finder.find(triangle), List.of());
+    }
+
+    private void deepGraphDoesNotOverflowTheStack() {
+        // A long path is the worst case for recursion depth; the iterative
+        // traversal must handle it without a StackOverflowError. Every interior
+        // vertex of a path is a cut vertex, so the count is vertexCount - 2.
+        int vertexCount = 200_000;
+        int[][] edges = new int[vertexCount - 1][2];
+        for (int i = 0; i < vertexCount - 1; i++) {
+            edges[i] = new int[] {i, i + 1};
+        }
+        List<Integer> points = find(Graph.fromEdges(vertexCount, edges));
+        boolean correct = points.size() == vertexCount - 2
+                && points.get(0) == 1
+                && points.get(points.size() - 1) == vertexCount - 2;
+        check("deep path of " + vertexCount + " vertices", correct, true);
     }
 
     private static List<Integer> find(Graph graph) {

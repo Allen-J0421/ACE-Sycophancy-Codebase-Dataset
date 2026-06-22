@@ -1,5 +1,6 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
@@ -12,13 +13,17 @@ import java.util.NoSuchElementException;
  * left and right subtrees differ by at most one. This guarantees O(log n)
  * insertion and lookup.
  *
- * <p>The tree is generic over any {@link Comparable} key type and stores at most
- * one node per distinct key (duplicate insertions are ignored). It is not
- * thread-safe; external synchronization is required for concurrent use.
+ * <p>Keys are ordered either by their {@linkplain Comparable natural ordering}
+ * or by a {@link Comparator} supplied at construction, mirroring
+ * {@link java.util.TreeMap}. When no comparator is given, keys must implement
+ * {@code Comparable}; otherwise insertion throws {@link ClassCastException}.
+ * The tree stores at most one node per distinct key (duplicates, as judged by
+ * the active ordering, are ignored). It is not thread-safe; external
+ * synchronization is required for concurrent use.
  *
  * @param <T> the type of keys stored in the tree
  */
-public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
+public class AVLTree<T> implements Iterable<T> {
 
     /**
      * An internal tree node. This is an implementation detail and is never
@@ -36,8 +41,39 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
         }
     }
 
+    /** Ordering supplied at construction, or {@code null} for natural ordering. */
+    private final Comparator<? super T> comparator;
+
     private Node<T> root;
     private int size;
+
+    /**
+     * Creates a tree that orders keys by their natural ordering. Keys must
+     * implement {@link Comparable}.
+     */
+    public AVLTree() {
+        this.comparator = null;
+    }
+
+    /**
+     * Creates a tree that orders keys using the given comparator. This allows
+     * custom orderings and keys that do not implement {@link Comparable}.
+     *
+     * @param comparator the ordering to use; must not be {@code null} (use the
+     *                    no-arg constructor for natural ordering)
+     */
+    public AVLTree(Comparator<? super T> comparator) {
+        if (comparator == null) {
+            throw new NullPointerException(
+                    "comparator must not be null; use AVLTree() for natural ordering");
+        }
+        this.comparator = comparator;
+    }
+
+    /** Returns the comparator used to order keys, or {@code null} for natural ordering. */
+    public Comparator<? super T> comparator() {
+        return comparator;
+    }
 
     /** Inserts {@code key} into the tree. Duplicate keys are ignored. */
     public void insert(T key) {
@@ -51,7 +87,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
     public boolean contains(T key) {
         Node<T> current = root;
         while (current != null) {
-            int cmp = key.compareTo(current.key);
+            int cmp = compare(key, current.key);
             if (cmp < 0) {
                 current = current.left;
             } else if (cmp > 0) {
@@ -113,13 +149,28 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
 
     // --- Internal recursion and balancing -------------------------------
 
+    /**
+     * Compares two keys using the configured comparator, or their natural
+     * ordering when none was supplied.
+     *
+     * @throws ClassCastException if natural ordering is in effect and the keys
+     *                            are not mutually comparable
+     */
+    @SuppressWarnings("unchecked")
+    private int compare(T a, T b) {
+        if (comparator != null) {
+            return comparator.compare(a, b);
+        }
+        return ((Comparable<? super T>) a).compareTo(b);
+    }
+
     private Node<T> insert(Node<T> node, T key) {
         if (node == null) {
             size++;
             return new Node<>(key);
         }
 
-        int cmp = key.compareTo(node.key);
+        int cmp = compare(key, node.key);
         if (cmp < 0) {
             node.left = insert(node.left, key);
         } else if (cmp > 0) {
@@ -138,7 +189,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
 
         // Left-heavy
         if (balance > 1) {
-            if (insertedKey.compareTo(node.left.key) > 0) {
+            if (compare(insertedKey, node.left.key) > 0) {
                 node.left = leftRotate(node.left); // Left-Right case
             }
             return rightRotate(node);
@@ -146,7 +197,7 @@ public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
 
         // Right-heavy
         if (balance < -1) {
-            if (insertedKey.compareTo(node.right.key) < 0) {
+            if (compare(insertedKey, node.right.key) < 0) {
                 node.right = rightRotate(node.right); // Right-Left case
             }
             return leftRotate(node);

@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,6 +28,11 @@ public class AVLTreeTest {
         iterableYieldsAscendingOrder();
         lazyIteratorDrainsInOrderThenThrows();
         staysBalancedUnderManyInsertions();
+        comparatorControlsOrdering();
+        comparatorSupportsNonComparableKeys();
+        comparatorIsExposed();
+        nullComparatorRejected();
+        naturalOrderingOnNonComparableThrows();
 
         if (failures == 0) {
             System.out.println("All AVL tree tests passed.");
@@ -145,6 +151,70 @@ public class AVLTreeTest {
         check("balanced height within AVL bound", true, withinBound);
     }
 
+    private static void comparatorControlsOrdering() {
+        AVLTree<Integer> tree = new AVLTree<>(Comparator.reverseOrder());
+        for (int key : new int[] {10, 20, 30, 5, 25}) {
+            tree.insert(key);
+        }
+        // In-order traversal follows the comparator, so it is descending here.
+        check("comparator in-order", Arrays.asList(30, 25, 20, 10, 5), tree.inOrder());
+    }
+
+    private static void comparatorSupportsNonComparableKeys() {
+        // Point does not implement Comparable; ordering comes solely from the comparator.
+        AVLTree<Point> tree = new AVLTree<>(
+                Comparator.comparingInt((Point p) -> p.x).thenComparingInt(p -> p.y));
+        tree.insert(new Point(2, 1));
+        tree.insert(new Point(1, 9));
+        tree.insert(new Point(2, 0));
+        tree.insert(new Point(1, 9)); // duplicate by the comparator
+
+        check("non-comparable size", 3, tree.size());
+        check("non-comparable contains", true, tree.contains(new Point(2, 0)));
+        List<String> ordered = new ArrayList<>();
+        for (Point p : tree) {
+            ordered.add(p.x + "," + p.y);
+        }
+        check("non-comparable order", Arrays.asList("1,9", "2,0", "2,1"), ordered);
+    }
+
+    private static void comparatorIsExposed() {
+        Comparator<Integer> cmp = Comparator.reverseOrder();
+        check("comparator() returns supplied", cmp, new AVLTree<>(cmp).comparator());
+        check("comparator() null for natural", null, new AVLTree<Integer>().comparator());
+    }
+
+    private static void nullComparatorRejected() {
+        try {
+            new AVLTree<Integer>((Comparator<Integer>) null);
+            check("null comparator rejected", "NullPointerException", "no exception thrown");
+        } catch (NullPointerException expected) {
+            check("null comparator rejected", true, true);
+        }
+    }
+
+    private static void naturalOrderingOnNonComparableThrows() {
+        AVLTree<Point> tree = new AVLTree<>(); // no comparator, Point is not Comparable
+        tree.insert(new Point(0, 0)); // first insert never compares; the second must
+        try {
+            tree.insert(new Point(1, 1));
+            check("natural ordering on non-comparable", "ClassCastException", "no exception thrown");
+        } catch (ClassCastException expected) {
+            check("natural ordering on non-comparable", true, true);
+        }
+    }
+
+    /** A deliberately non-{@link Comparable} key type for comparator tests. */
+    private static final class Point {
+        final int x;
+        final int y;
+
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     // --- helpers --------------------------------------------------------
 
     private static AVLTree<Integer> newTree(int... keys) {
@@ -156,7 +226,7 @@ public class AVLTreeTest {
     }
 
     private static void check(String name, Object expected, Object actual) {
-        if (expected.equals(actual)) {
+        if (java.util.Objects.equals(expected, actual)) {
             System.out.println("PASS: " + name);
         } else {
             failures++;

@@ -16,6 +16,7 @@ final class DisjointSet {
     }
 
     int find(int node) {
+        validateNode(node);
         if (parent[node] != node) {
             parent[node] = find(parent[node]);
         }
@@ -23,6 +24,9 @@ final class DisjointSet {
     }
 
     boolean union(int first, int second) {
+        validateNode(first);
+        validateNode(second);
+
         int rootFirst = find(first);
         int rootSecond = find(second);
         if (rootFirst == rootSecond) {
@@ -38,5 +42,11 @@ final class DisjointSet {
             rank[rootFirst]++;
         }
         return true;
+    }
+
+    private void validateNode(int node) {
+        if (node < 0 || node >= parent.length) {
+            throw new IllegalArgumentException("Node " + node + " is out of bounds.");
+        }
     }
 }

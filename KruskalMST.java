@@ -1,4 +1,6 @@
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 final class KruskalMST {
     private KruskalMST() {
@@ -6,57 +8,36 @@ final class KruskalMST {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] rawEdges) {
-        return minimumSpanningTreeCost(vertexCount, parseEdges(rawEdges));
+        return minimumSpanningTree(Graph.fromEdgeMatrix(vertexCount, rawEdges)).totalWeight();
     }
 
-    static int minimumSpanningTreeCost(int vertexCount, Edge[] edges) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("Vertex count must be non-negative.");
-        }
-        if (edges == null) {
-            throw new IllegalArgumentException("Edges must not be null.");
+    static MinimumSpanningTreeResult minimumSpanningTree(Graph graph) {
+        if (graph == null) {
+            throw new IllegalArgumentException("Graph must not be null.");
         }
 
-        Edge[] sortedEdges = Arrays.copyOf(edges, edges.length);
-        Arrays.sort(sortedEdges);
+        List<Edge> sortedEdges = new ArrayList<>(graph.edges());
+        Collections.sort(sortedEdges);
 
-        DisjointSet disjointSet = new DisjointSet(vertexCount);
-        int totalCost = 0;
-        int edgesUsed = 0;
+        DisjointSet disjointSet = new DisjointSet(graph.vertexCount());
+        List<Edge> selectedEdges = new ArrayList<>();
+        int totalWeight = 0;
 
         for (Edge edge : sortedEdges) {
-            validateVertex(edge.from, vertexCount);
-            validateVertex(edge.to, vertexCount);
-
-            if (disjointSet.union(edge.from, edge.to)) {
-                totalCost += edge.weight;
-                if (++edgesUsed == vertexCount - 1) {
+            if (disjointSet.union(edge.from(), edge.to())) {
+                selectedEdges.add(edge);
+                totalWeight += edge.weight();
+                if (selectedEdges.size() == graph.vertexCount() - 1) {
                     break;
                 }
             }
         }
 
-        return totalCost;
-    }
-
-    private static Edge[] parseEdges(int[][] rawEdges) {
-        if (rawEdges == null) {
-            throw new IllegalArgumentException("Edges must not be null.");
-        }
-
-        Edge[] edges = new Edge[rawEdges.length];
-        for (int i = 0; i < rawEdges.length; i++) {
-            edges[i] = Edge.fromMatrixRow(rawEdges[i]);
-        }
-        return edges;
-    }
-
-    private static void validateVertex(int vertex, int vertexCount) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException(
-                "Vertex " + vertex + " is out of bounds for graph with " + vertexCount + " vertices."
-            );
-        }
+        return new MinimumSpanningTreeResult(
+            totalWeight,
+            selectedEdges,
+            graph.vertexCount() == 0 || selectedEdges.size() == graph.vertexCount() - 1
+        );
     }
 
     public static void main(String[] args) {
@@ -68,6 +49,8 @@ final class KruskalMST {
             {0, 3, 5}
         };
 
-        System.out.println(kruskalsMST(4, edges));
+        MinimumSpanningTreeResult result = minimumSpanningTree(Graph.fromEdgeMatrix(4, edges));
+        System.out.println(result.totalWeight());
+        System.out.println(result.isConnected());
     }
 }

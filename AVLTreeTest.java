@@ -33,6 +33,11 @@ public class AVLTreeTest {
         comparatorIsExposed();
         nullComparatorRejected();
         naturalOrderingOnNonComparableThrows();
+        removeReturnsWhetherKeyWasPresent();
+        removeLeafOneChildAndTwoChildren();
+        removeNullRejected();
+        removeAllLeavesEmptyTree();
+        removeKeepsTreeSortedAndBalanced();
 
         if (failures == 0) {
             System.out.println("All AVL tree tests passed.");
@@ -202,6 +207,84 @@ public class AVLTreeTest {
         } catch (ClassCastException expected) {
             check("natural ordering on non-comparable", true, true);
         }
+    }
+
+    private static void removeReturnsWhetherKeyWasPresent() {
+        AVLTree<Integer> tree = newTree(10, 20, 30);
+        check("remove present returns true", true, tree.remove(20));
+        check("remove absent returns false", false, tree.remove(99));
+        check("remove twice returns false", false, tree.remove(20));
+        check("remove updates size", 2, tree.size());
+        check("remove updates contents", Arrays.asList(10, 30), tree.inOrder());
+    }
+
+    private static void removeLeafOneChildAndTwoChildren() {
+        // Leaf removal.
+        AVLTree<Integer> leaf = newTree(20, 10, 30);
+        leaf.remove(10);
+        check("remove leaf", Arrays.asList(20, 30), leaf.inOrder());
+
+        // One-child removal: 30 has a single child (25).
+        AVLTree<Integer> oneChild = newTree(20, 10, 30, 25);
+        oneChild.remove(30);
+        check("remove one-child", Arrays.asList(10, 20, 25), oneChild.inOrder());
+
+        // Two-child removal: the root, replaced by its in-order successor.
+        AVLTree<Integer> twoChild = newTree(20, 10, 30, 25, 35);
+        twoChild.remove(30);
+        check("remove two-child", Arrays.asList(10, 20, 25, 35), twoChild.inOrder());
+        check("remove two-child size", 4, twoChild.size());
+    }
+
+    private static void removeNullRejected() {
+        AVLTree<Integer> tree = newTree(1, 2, 3);
+        try {
+            tree.remove(null);
+            check("remove null rejected", "NullPointerException", "no exception thrown");
+        } catch (NullPointerException expected) {
+            check("remove null rejected", true, true);
+        }
+    }
+
+    private static void removeAllLeavesEmptyTree() {
+        AVLTree<Integer> tree = newTree(5, 3, 8, 1, 4, 7, 9);
+        for (int key : new int[] {5, 3, 8, 1, 4, 7, 9}) {
+            tree.remove(key);
+        }
+        check("remove all isEmpty", true, tree.isEmpty());
+        check("remove all size", 0, tree.size());
+        check("remove all height", 0, tree.height());
+        check("remove all contains", false, tree.contains(5));
+    }
+
+    /**
+     * Removes half of a large tree and confirms the result is still sorted,
+     * complete, and within the AVL height bound — i.e. deletion rebalances
+     * correctly, not just insertion.
+     */
+    private static void removeKeepsTreeSortedAndBalanced() {
+        int n = 4_000;
+        AVLTree<Integer> tree = new AVLTree<>();
+        for (int i = 0; i < n; i++) {
+            tree.insert(i);
+        }
+
+        List<Integer> expected = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                tree.remove(i); // remove the evens
+            } else {
+                expected.add(i);
+            }
+        }
+
+        check("remove-half size", expected.size(), tree.size());
+        check("remove-half sorted", expected, tree.inOrder());
+        check("remove-half evens gone", false, tree.contains(0));
+        check("remove-half odds kept", true, tree.contains(n - 1));
+
+        int maxAllowedHeight = (int) Math.ceil(1.44 * (Math.log(tree.size() + 2) / Math.log(2)));
+        check("remove-half within AVL bound", true, tree.height() <= maxAllowedHeight);
     }
 
     /** A deliberately non-{@link Comparable} key type for comparator tests. */

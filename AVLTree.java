@@ -30,7 +30,7 @@ public class AVLTree<T> implements Iterable<T> {
      * exposed through the public API, so its fields can stay package-light.
      */
     private static final class Node<T> {
-        final T key;
+        T key; // overwritten during two-child deletion (successor copy)
         Node<T> left;
         Node<T> right;
         int height;
@@ -81,6 +81,21 @@ public class AVLTree<T> implements Iterable<T> {
             throw new NullPointerException("AVL tree does not permit null keys");
         }
         root = insert(root, key);
+    }
+
+    /**
+     * Removes {@code key} from the tree, re-balancing as needed.
+     *
+     * @return {@code true} if the key was present and removed, {@code false} if
+     *         it was not in the tree
+     */
+    public boolean remove(T key) {
+        if (key == null) {
+            throw new NullPointerException("AVL tree does not permit null keys");
+        }
+        int sizeBefore = size;
+        root = remove(root, key);
+        return size != sizeBefore;
     }
 
     /** Returns {@code true} if {@code key} is present in the tree. */
@@ -180,16 +195,58 @@ public class AVLTree<T> implements Iterable<T> {
         }
 
         updateHeight(node);
-        return rebalance(node, key);
+        return rebalance(node);
     }
 
-    /** Restores the AVL invariant at {@code node} after an insertion. */
-    private Node<T> rebalance(Node<T> node, T insertedKey) {
+    private Node<T> remove(Node<T> node, T key) {
+        if (node == null) {
+            return null; // key not found
+        }
+
+        int cmp = compare(key, node.key);
+        if (cmp < 0) {
+            node.left = remove(node.left, key);
+        } else if (cmp > 0) {
+            node.right = remove(node.right, key);
+        } else if (node.left == null || node.right == null) {
+            // Zero or one child: splice the node out by promoting its child.
+            size--;
+            node = (node.left != null) ? node.left : node.right;
+        } else {
+            // Two children: replace with the in-order successor, then remove
+            // that successor (a node with at most one child) from the right.
+            Node<T> successor = min(node.right);
+            node.key = successor.key;
+            node.right = remove(node.right, successor.key);
+        }
+
+        if (node == null) {
+            return null; // the removed node was a leaf
+        }
+        updateHeight(node);
+        return rebalance(node);
+    }
+
+    /** Returns the left-most (smallest) node of the given subtree. */
+    private static <T> Node<T> min(Node<T> node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node;
+    }
+
+    /**
+     * Restores the AVL invariant at {@code node} after a single insertion or
+     * removal. The rotation case is chosen from the balance factors of the
+     * heavy child, which works for both operations (an inserted/removed key is
+     * not needed).
+     */
+    private Node<T> rebalance(Node<T> node) {
         int balance = balanceFactor(node);
 
         // Left-heavy
         if (balance > 1) {
-            if (compare(insertedKey, node.left.key) > 0) {
+            if (balanceFactor(node.left) < 0) {
                 node.left = leftRotate(node.left); // Left-Right case
             }
             return rightRotate(node);
@@ -197,7 +254,7 @@ public class AVLTree<T> implements Iterable<T> {
 
         // Right-heavy
         if (balance < -1) {
-            if (compare(insertedKey, node.right.key) < 0) {
+            if (balanceFactor(node.right) > 0) {
                 node.right = rightRotate(node.right); // Right-Left case
             }
             return leftRotate(node);

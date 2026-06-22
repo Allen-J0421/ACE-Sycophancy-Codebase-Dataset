@@ -1,9 +1,9 @@
 class BTreeNode {
-    int[] keys;
-    int minDegree;
-    BTreeNode[] children;
-    int keyCount;
-    boolean leaf;
+    private int[] keys;
+    private int minDegree;
+    private BTreeNode[] children;
+    private int keyCount;
+    private boolean leaf;
 
     BTreeNode(int minDegree, boolean leaf) {
         this.minDegree = minDegree;
@@ -84,5 +84,19 @@ class BTreeNode {
             return null;
         }
         return children[i].search(key);
+    }
+
+    boolean isFull() {
+        return keyCount == 2 * minDegree - 1;
+    }
+
+    // Promotes the middle key of fullRoot into a new root and inserts key into the correct subtree.
+    static BTreeNode splitRoot(BTreeNode fullRoot, int key) {
+        BTreeNode newRoot = new BTreeNode(fullRoot.minDegree, false);
+        newRoot.children[0] = fullRoot;
+        newRoot.splitChild(0, fullRoot);
+        int childIndex = newRoot.keys[0] < key ? 1 : 0;
+        newRoot.children[childIndex].insertNonFull(key);
+        return newRoot;
     }
 }

@@ -23,15 +23,9 @@ public class BTree {
     public void insert(int key) {
         if (root == null) {
             root = new BTreeNode(minDegree, true);
-            root.keys[0] = key;
-            root.keyCount = 1;
-        } else if (root.keyCount == 2 * minDegree - 1) {
-            BTreeNode newRoot = new BTreeNode(minDegree, false);
-            newRoot.children[0] = root;
-            newRoot.splitChild(0, root);
-            int childIndex = newRoot.keys[0] < key ? 1 : 0;
-            newRoot.children[childIndex].insertNonFull(key);
-            root = newRoot;
+            root.insertNonFull(key);
+        } else if (root.isFull()) {
+            root = BTreeNode.splitRoot(root, key);
         } else {
             root.insertNonFull(key);
         }

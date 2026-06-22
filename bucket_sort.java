@@ -57,8 +57,8 @@ class Main {
         bucket.set(insertionIndex, value);
     }
 
-    private static int shiftLargerValuesRight(List<Float> bucket, float value, int startIndex) {
-        int index = startIndex;
+    private static int shiftLargerValuesRight(List<Float> bucket, float value, int lastSortedIndex) {
+        int index = lastSortedIndex;
         while (index >= 0 && bucket.get(index) > value) {
             bucket.set(index + 1, bucket.get(index));
             index--;
@@ -67,8 +67,8 @@ class Main {
     }
 
     public static void insertionSort(List<Float> bucket) {
-        for (int i = 1; i < bucket.size(); i++) {
-            insertIntoSortedPrefix(bucket, i);
+        for (int unsortedIndex = 1; unsortedIndex < bucket.size(); unsortedIndex++) {
+            insertIntoSortedPrefix(bucket, unsortedIndex);
         }
     }
 

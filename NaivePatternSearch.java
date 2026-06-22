@@ -3,9 +3,6 @@ import java.util.List;
 import java.util.Objects;
 
 public final class NaivePatternSearch {
-    private static final String DEFAULT_TEXT = "aabaacaadaabaaba";
-    private static final String DEFAULT_PATTERN = "aaba";
-
     private NaivePatternSearch() {
     }
 
@@ -40,18 +37,7 @@ public final class NaivePatternSearch {
         return true;
     }
 
-    private static String formatMatches(List<Integer> matches) {
-        StringBuilder output = new StringBuilder();
-
-        for (int match : matches) {
-            output.append(match).append(' ');
-        }
-
-        return output.toString();
-    }
-
     public static void main(String[] args) {
-        List<Integer> matches = findOccurrences(DEFAULT_PATTERN, DEFAULT_TEXT);
-        System.out.print(formatMatches(matches));
+        NaivePatternSearchDemo.main(args);
     }
 }

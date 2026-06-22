@@ -11,6 +11,7 @@ public final class NaivePatternSearchTest {
         returnsEveryPositionForEmptyPattern();
         returnsNoMatchesWhenPatternIsLongerThanText();
         preservesLegacySearchMethod();
+        formatsDemoOutputWithLegacyTrailingSpace();
     }
 
     private static void findsSampleMatches() {
@@ -41,11 +42,21 @@ public final class NaivePatternSearchTest {
                 0, 2);
     }
 
+    private static void formatsDemoOutputWithLegacyTrailingSpace() {
+        assertEquals("0 9 12 ", NaivePatternSearchDemo.formatMatches(Arrays.asList(0, 9, 12)));
+    }
+
     private static void assertMatches(List<Integer> actual, Integer... expected) {
         List<Integer> expectedMatches = Arrays.asList(expected);
 
         if (!actual.equals(expectedMatches)) {
             throw new AssertionError("Expected " + expectedMatches + " but found " + actual);
+        }
+    }
+
+    private static void assertEquals(String expected, String actual) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError("Expected \"" + expected + "\" but found \"" + actual + "\"");
         }
     }
 }

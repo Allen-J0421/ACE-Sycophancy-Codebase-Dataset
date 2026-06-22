@@ -1,27 +1,26 @@
-class BubbleSort {
+public final class BubbleSort {
 
     private BubbleSort() {
         // Utility class.
     }
 
-    static void bubbleSort(int[] values) {
+    public static void bubbleSort(int[] values) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
         }
 
-        for (int end = values.length - 1; end > 0; end--) {
-            boolean swapped = false;
+        int end = values.length - 1;
+        while (end > 0) {
+            int lastSwapIndex = 0;
 
             for (int index = 0; index < end; index++) {
                 if (values[index] > values[index + 1]) {
                     swap(values, index, index + 1);
-                    swapped = true;
+                    lastSwapIndex = index + 1;
                 }
             }
 
-            if (!swapped) {
-                return;
-            }
+            end = lastSwapIndex - 1;
         }
     }
 

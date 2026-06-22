@@ -8,6 +8,7 @@ public final class NaivePatternSearchTest {
         findsExpectedMatches();
         preservesLegacySearchMethod();
         formatsDemoOutputWithLegacyTrailingSpace();
+        rendersDefaultDemoOutput();
         rejectsNullPattern();
         rejectsNullText();
         rejectsNullMatchFormatting();
@@ -37,6 +38,10 @@ public final class NaivePatternSearchTest {
 
     private static void formatsDemoOutputWithLegacyTrailingSpace() {
         assertEquals("0 9 12 ", NaivePatternSearchDemo.formatMatches(List.of(0, 9, 12)));
+    }
+
+    private static void rendersDefaultDemoOutput() {
+        assertEquals("0 9 12 ", NaivePatternSearchDemo.defaultOutput());
     }
 
     private static void rejectsNullPattern() {

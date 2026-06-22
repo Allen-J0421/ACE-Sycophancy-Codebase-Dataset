@@ -9,8 +9,15 @@ public final class NaivePatternSearchDemo {
     }
 
     public static void main(String[] args) {
-        List<Integer> matches = NaivePatternSearch.findOccurrences(DEFAULT_PATTERN, DEFAULT_TEXT);
-        System.out.print(formatMatches(matches));
+        System.out.print(defaultOutput());
+    }
+
+    static String defaultOutput() {
+        return formatMatches(defaultMatches());
+    }
+
+    private static List<Integer> defaultMatches() {
+        return NaivePatternSearch.findOccurrences(DEFAULT_PATTERN, DEFAULT_TEXT);
     }
 
     static String formatMatches(List<Integer> matches) {

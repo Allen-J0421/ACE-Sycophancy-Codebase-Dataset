@@ -33,6 +33,14 @@ public final class ArticulationPointFinderTest {
         malformedEdgeIsRejected();
         finderIsReusableAcrossGraphs();
         deepGraphDoesNotOverflowTheStack();
+
+        // Multigraph cases: parallel edges and self-loops must not change the
+        // articulation-point verdict. (A back edge to the immediate parent only
+        // contributes disc[parent], which the algorithm's `>=` test absorbs.)
+        parallelEdgesBetweenTwoVerticesHaveNoArticulationPoint();
+        parallelEdgesAlongPathPreserveInteriorCutVertices();
+        parallelEdgeAcrossTriangleHasNoArticulationPoint();
+        selfLoopIsIgnored();
     }
 
     private void emptyGraphHasNoArticulationPoints() {
@@ -95,6 +103,30 @@ public final class ArticulationPointFinderTest {
         Graph triangle = Graph.fromEdges(3, new int[][] {{0, 1}, {1, 2}, {2, 0}});
         check("reuse: path then triangle (1)", finder.find(path), List.of(1));
         check("reuse: path then triangle (2)", finder.find(triangle), List.of());
+    }
+
+    private void parallelEdgesBetweenTwoVerticesHaveNoArticulationPoint() {
+        // Two vertices joined by two parallel edges form a biconnected pair.
+        Graph graph = Graph.fromEdges(2, new int[][] {{0, 1}, {0, 1}});
+        check("parallel edges between two vertices", find(graph), List.of());
+    }
+
+    private void parallelEdgesAlongPathPreserveInteriorCutVertices() {
+        // Doubling the 1-2 edge does not relieve 1 or 2 of being cut vertices.
+        Graph graph = Graph.fromEdges(4, new int[][] {{0, 1}, {1, 2}, {1, 2}, {2, 3}});
+        check("parallel edge on a path", find(graph), List.of(1, 2));
+    }
+
+    private void parallelEdgeAcrossTriangleHasNoArticulationPoint() {
+        // A triangle with one edge doubled remains biconnected.
+        Graph graph = Graph.fromEdges(3, new int[][] {{0, 1}, {1, 2}, {2, 0}, {2, 0}});
+        check("parallel edge across a triangle", find(graph), List.of());
+    }
+
+    private void selfLoopIsIgnored() {
+        // A self-loop on the middle vertex of a path is inert; 1 stays a cut vertex.
+        Graph graph = Graph.fromEdges(3, new int[][] {{0, 1}, {1, 2}, {1, 1}});
+        check("self-loop ignored", find(graph), List.of(1));
     }
 
     private void deepGraphDoesNotOverflowTheStack() {

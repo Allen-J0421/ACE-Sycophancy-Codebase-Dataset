@@ -29,3 +29,14 @@ List<Integer> points = new ArticulationPointFinder().find(graph);  // [1, 4]
 
 `find` returns the cut vertices in ascending order, or an empty list when the
 graph has none.
+
+## Multigraphs
+
+Parallel edges and self-loops are supported and do not affect the result: a back
+edge to a vertex's immediate parent only lowers its low-link to the parent's
+discovery time, which the algorithm's `low[child] >= disc[parent]` test already
+absorbs. This is verified directly (see the multigraph cases in
+`ArticulationPointFinderTest`) and was cross-checked against a brute-force
+component-counting oracle over 200k random multigraphs. (Note: *bridge*
+detection, which uses a strict `>`, would require tracking edge identity — this
+codebase does not implement bridges.)

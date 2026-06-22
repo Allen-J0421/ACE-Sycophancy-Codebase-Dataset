@@ -3,11 +3,7 @@ JAVA ?= java
 BUILD_DIR ?= /tmp/naive-pattern-searching-classes
 MAIN_CLASS := NaivePatternSearchDemo
 TEST_CLASS := NaivePatternSearchTest
-
-SOURCES := \
-	NaivePatternSearch.java \
-	NaivePatternSearchDemo.java \
-	NaivePatternSearchTest.java
+SOURCES := $(wildcard *.java)
 
 .PHONY: all build test run clean
 

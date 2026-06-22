@@ -1,77 +1,77 @@
-import java.io.*;
-import java.lang.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-class MST {
+class PrimsMST {
 
-    int minKey(int key[], Boolean mstSet[])
-    {
+    List<Edge> computeMST(Graph graph) {
+        int n = graph.vertexCount();
+        int[] parent = new int[n];
+        int[] minEdgeWeight = new int[n];
+        boolean[] inMST = new boolean[n];
 
-        int min = Integer.MAX_VALUE, min_index = -1;
-
-        for (int v = 0; v < mstSet.length; v++)
-            if (mstSet[v] == false && key[v] < min) {
-                min = key[v];
-                min_index = v;
-            }
-
-        return min_index;
-    }
-
-    void printMST(int parent[], int graph[][])
-    {
-        System.out.println("Edge \tWeight");
-        for (int i = 1; i < graph.length; i++)
-            System.out.println(parent[i] + " - " + i + "\t"
-                               + graph[parent[i]][i]);
-    }
-
-    void primMST(int graph[][])
-    {
-        int V = graph.length;
-
-        int parent[] = new int[V];
-
-        int key[] = new int[V];
-
-        Boolean mstSet[] = new Boolean[V];
-
-        for (int i = 0; i < V; i++) {
-            key[i] = Integer.MAX_VALUE;
-            mstSet[i] = false;
+        for (int i = 0; i < n; i++) {
+            minEdgeWeight[i] = Integer.MAX_VALUE;
         }
-
-        key[0] = 0;
-
+        minEdgeWeight[0] = 0;
         parent[0] = -1;
 
-        for (int count = 0; count < V - 1; count++) {
+        for (int count = 0; count < n - 1; count++) {
+            int u = findMinWeightVertex(minEdgeWeight, inMST);
+            inMST[u] = true;
 
-            int u = minKey(key, mstSet);
-
-            mstSet[u] = true;
-
-            for (int v = 0; v < V; v++)
-
-                if (graph[u][v] != 0 && mstSet[v] == false
-                    && graph[u][v] < key[v]) {
+            for (int v = 0; v < n; v++) {
+                int w = graph.weight(u, v);
+                if (w != 0 && !inMST[v] && w < minEdgeWeight[v]) {
                     parent[v] = u;
-                    key[v] = graph[u][v];
+                    minEdgeWeight[v] = w;
                 }
+            }
         }
 
-        printMST(parent, graph);
+        return buildEdges(parent, graph, n);
     }
 
-    public static void main(String[] args)
-    {
-        MST t = new MST();
-        int graph[][] = new int[][] { { 0, 2, 0, 6, 0 },
-                                      { 2, 0, 3, 8, 5 },
-                                      { 0, 3, 0, 0, 7 },
-                                      { 6, 8, 0, 0, 9 },
-                                      { 0, 5, 7, 9, 0 } };
+    private int findMinWeightVertex(int[] minEdgeWeight, boolean[] inMST) {
+        int min = Integer.MAX_VALUE;
+        int minVertex = -1;
 
-        t.primMST(graph);
+        for (int v = 0; v < minEdgeWeight.length; v++) {
+            if (!inMST[v] && minEdgeWeight[v] < min) {
+                min = minEdgeWeight[v];
+                minVertex = v;
+            }
+        }
+
+        return minVertex;
+    }
+
+    private List<Edge> buildEdges(int[] parent, Graph graph, int n) {
+        List<Edge> edges = new ArrayList<>();
+        for (int i = 1; i < n; i++) {
+            edges.add(new Edge(parent[i], i, graph.weight(parent[i], i)));
+        }
+        return edges;
+    }
+
+    static void printMST(List<Edge> edges) {
+        System.out.println("Edge \tWeight");
+        for (Edge edge : edges) {
+            System.out.println(edge);
+        }
+    }
+
+    public static void main(String[] args) {
+        int[][] matrix = {
+            { 0, 2, 0, 6, 0 },
+            { 2, 0, 3, 8, 5 },
+            { 0, 3, 0, 0, 7 },
+            { 6, 8, 0, 0, 9 },
+            { 0, 5, 7, 9, 0 }
+        };
+
+        Graph graph = new Graph(matrix);
+        PrimsMST solver = new PrimsMST();
+        List<Edge> mst = solver.computeMST(graph);
+        printMST(mst);
     }
 }

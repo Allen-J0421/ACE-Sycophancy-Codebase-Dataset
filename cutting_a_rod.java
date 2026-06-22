@@ -1,17 +1,11 @@
 final class CuttingRod {
 
     static int cutRod(int[] priceTableWithSentinel) {
-        return RodCuttingProblem
-                .fromSentinelPriceTable(priceTableWithSentinel)
-                .solve()
-                .maxRevenue();
+        return RodCuttingProblem.fromSentinelPriceTable(priceTableWithSentinel).maxRevenue();
     }
 
     static int maxRevenueForPricesByLength(int[] pricesByLength) {
-        return RodCuttingProblem
-                .fromPricesByLength(pricesByLength)
-                .solve()
-                .maxRevenue();
+        return RodCuttingProblem.fromPricesByLength(pricesByLength).maxRevenue();
     }
 
     static RodCuttingSolution solveForSentinelPriceTable(int[] priceTableWithSentinel) {
@@ -25,6 +19,6 @@ final class CuttingRod {
     public static void main(String[] args) {
         int[] pricesByLength = {1, 5, 8, 9, 10, 17, 17, 20};
         RodCuttingProblem problem = RodCuttingProblem.fromPricesByLength(pricesByLength);
-        System.out.println(problem.solve().maxRevenue());
+        System.out.println(problem.maxRevenue());
     }
 }

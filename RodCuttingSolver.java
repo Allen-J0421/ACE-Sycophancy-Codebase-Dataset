@@ -19,6 +19,7 @@ final class RodCuttingSolver {
         }
 
         return new RodCuttingSolution(
+                rodLength,
                 revenueTable.bestRevenueFor(rodLength),
                 cutChoiceTable.reconstructCuts(rodLength)
         );

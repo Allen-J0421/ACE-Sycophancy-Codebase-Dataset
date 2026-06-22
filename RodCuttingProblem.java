@@ -17,6 +17,14 @@ final class RodCuttingProblem {
         return priceTable.maxLength();
     }
 
+    int maxRevenue() {
+        return solve().maxRevenue();
+    }
+
+    int pieceCount() {
+        return solve().pieceCount();
+    }
+
     RodCuttingSolution solve() {
         return new RodCuttingSolver(priceTable).solve();
     }

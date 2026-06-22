@@ -1,10 +1,13 @@
 final class KruskalMST {
+    private static final MinimumSpanningTreeCalculator CALCULATOR =
+        new KruskalMinimumSpanningTreeCalculator();
+
     private KruskalMST() {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] rawEdges) {
         Graph graph = Graph.fromRawEdges(vertexCount, rawEdges);
-        return new KruskalSolver().compute(graph).totalWeight();
+        return CALCULATOR.compute(graph).totalWeight();
     }
 
     public static void main(String[] args) {

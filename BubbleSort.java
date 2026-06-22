@@ -26,31 +26,20 @@ public final class BubbleSort {
     }
 
     private static void sortValuesInPlace(int[] values) {
-        int end = values.length - 1;
-        while (end > 0) {
-            int lastSwapIndex = bubblePass(values, end);
-            if (lastSwapIndex == 0) {
+        for (int end = values.length - 1; end > 0; end--) {
+            boolean swapped = false;
+
+            for (int index = 0; index < end; index++) {
+                if (values[index] > values[index + 1]) {
+                    swap(values, index, index + 1);
+                    swapped = true;
+                }
+            }
+
+            if (!swapped) {
                 return;
             }
-            end = lastSwapIndex - 1;
         }
-    }
-
-    private static int bubblePass(int[] values, int endExclusive) {
-        int lastSwapIndex = 0;
-
-        for (int index = 0; index < endExclusive; index++) {
-            if (isOutOfOrder(values, index)) {
-                swap(values, index, index + 1);
-                lastSwapIndex = index + 1;
-            }
-        }
-
-        return lastSwapIndex;
-    }
-
-    private static boolean isOutOfOrder(int[] values, int index) {
-        return values[index] > values[index + 1];
     }
 
     private static void swap(int[] values, int leftIndex, int rightIndex) {

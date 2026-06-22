@@ -3,8 +3,7 @@ package mst;
 import java.util.ArrayList;
 import java.util.List;
 
-final class KruskalMinimumSpanningTreeSolver implements MinimumSpanningTreeSolver {
-    @Override
+final class KruskalMinimumSpanningTreeSolver {
     public MinimumSpanningTreeResult findMinimumSpanningTree(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("Graph must not be null.");
@@ -33,6 +32,10 @@ final class KruskalMinimumSpanningTreeSolver implements MinimumSpanningTreeSolve
             selectedEdges,
             graph.vertexCount() == 0 || selectedEdges.size() == graph.vertexCount() - 1
         );
+    }
+
+    int minimumSpanningTreeCost(Graph graph) {
+        return findMinimumSpanningTree(graph).totalWeight();
     }
 
     private static final class DisjointSet {

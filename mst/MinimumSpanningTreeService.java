@@ -1,17 +1,10 @@
 package mst;
 
 public final class MinimumSpanningTreeService {
-    private final MinimumSpanningTreeSolver solver;
+    private final KruskalMinimumSpanningTreeSolver solver;
 
     public MinimumSpanningTreeService() {
-        this(new KruskalMinimumSpanningTreeSolver());
-    }
-
-    public MinimumSpanningTreeService(MinimumSpanningTreeSolver solver) {
-        if (solver == null) {
-            throw new IllegalArgumentException("Solver must not be null.");
-        }
-        this.solver = solver;
+        this.solver = new KruskalMinimumSpanningTreeSolver();
     }
 
     public MinimumSpanningTreeResult findMinimumSpanningTree(Graph graph) {

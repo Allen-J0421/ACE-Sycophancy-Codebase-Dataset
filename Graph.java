@@ -6,7 +6,7 @@ class Graph {
         return new Graph(matrix);
     }
 
-    Graph(int[][] matrix) {
+    private Graph(int[][] matrix) {
         validate(matrix);
         this.vertexCount = matrix.length;
         this.adjacencyMatrix = copyMatrix(matrix);

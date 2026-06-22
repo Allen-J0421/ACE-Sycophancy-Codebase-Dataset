@@ -17,12 +17,4 @@ class MstResult {
     int totalWeight() {
         return totalWeight;
     }
-
-    void print() {
-        System.out.println("Edge \tWeight");
-        for (Edge edge : edges) {
-            System.out.println(edge);
-        }
-        System.out.println("Total weight: " + totalWeight);
-    }
 }

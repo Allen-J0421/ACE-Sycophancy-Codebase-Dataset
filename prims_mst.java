@@ -32,7 +32,7 @@ class PrimsMST implements MstAlgorithm {
             }
         }
 
-        return new MstResult(state.buildEdges());
+        return new MstResult(state.buildEdges(startVertex));
     }
 
     public static void main(String[] args) {
@@ -45,8 +45,9 @@ class PrimsMST implements MstAlgorithm {
         };
 
         MstAlgorithm algorithm = new PrimsMST();
+        MstFormatter formatter = new TabularMstFormatter();
         MstResult result = algorithm.computeMST(Graph.fromMatrix(matrix));
-        result.print();
+        System.out.println(formatter.format(result));
     }
 
     private static class VertexState {
@@ -89,10 +90,12 @@ class PrimsMST implements MstAlgorithm {
             }
         }
 
-        List<Edge> buildEdges() {
+        List<Edge> buildEdges(int startVertex) {
             List<Edge> edges = new ArrayList<>();
-            for (int i = 1; i < parent.length; i++) {
-                edges.add(new Edge(parent[i], i, minEdgeWeight[i]));
+            for (int i = 0; i < parent.length; i++) {
+                if (i != startVertex) {
+                    edges.add(new Edge(parent[i], i, minEdgeWeight[i]));
+                }
             }
             return edges;
         }

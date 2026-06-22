@@ -4,9 +4,14 @@ class CuttingRod {
     private static final int SENTINEL_INDEX = 0;
 
     static int cutRod(int[] pricesByLength) {
-        validatePrices(pricesByLength);
+        validatePriceTable(pricesByLength);
+        return cutRod(pricesByLength, pricesByLength.length - 1);
+    }
 
-        int rodLength = pricesByLength.length - 1;
+    static int cutRod(int[] pricesByLength, int rodLength) {
+        validatePriceTable(pricesByLength);
+        validateRodLength(pricesByLength, rodLength);
+
         int[] maxRevenue = new int[rodLength + 1];
         maxRevenue[SENTINEL_INDEX] = EMPTY_ROD_REVENUE;
 
@@ -17,9 +22,15 @@ class CuttingRod {
         return maxRevenue[rodLength];
     }
 
-    private static void validatePrices(int[] pricesByLength) {
+    private static void validatePriceTable(int[] pricesByLength) {
         if (pricesByLength == null || pricesByLength.length == 0) {
             throw new IllegalArgumentException("pricesByLength must include a sentinel value at index 0");
+        }
+    }
+
+    private static void validateRodLength(int[] pricesByLength, int rodLength) {
+        if (rodLength < 0 || rodLength >= pricesByLength.length) {
+            throw new IllegalArgumentException("rodLength must be within the pricesByLength table");
         }
     }
 

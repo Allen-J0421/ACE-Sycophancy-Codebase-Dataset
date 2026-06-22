@@ -28,9 +28,9 @@ public final class FlowNetwork {
         return capacity.length;
     }
 
-    /** Returns the capacity of the directed edge {@code from -> to} (0 if absent). */
-    public int capacity(int from, int to) {
-        return capacity[from][to];
+    /** Returns the capacity of the directed edge {@code from -> to} (zero if absent). */
+    public Capacity capacity(int from, int to) {
+        return Capacity.of(capacity[from][to]);
     }
 
     /** Returns true if {@code vertex} is a valid vertex identifier. */
@@ -127,7 +127,7 @@ public final class FlowNetwork {
         public Builder addEdge(Edge edge) {
             requireVertex(edge.from(), "from");
             requireVertex(edge.to(), "to");
-            this.capacity[edge.from()][edge.to()] = edge.value();
+            this.capacity[edge.from()][edge.to()] = edge.value().units();
             return this;
         }
 

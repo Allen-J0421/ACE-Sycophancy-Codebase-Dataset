@@ -1,6 +1,9 @@
 package maxflow.path;
 
 import java.util.List;
+import java.util.Objects;
+
+import maxflow.graph.Capacity;
 
 /**
  * An immutable augmenting path: an ordered list of vertices from a source to a
@@ -13,18 +16,19 @@ import java.util.List;
 public final class AugmentingPath {
 
     private final List<Integer> vertices;
-    private final int bottleneck;
+    private final Capacity bottleneck;
 
     /**
      * @param vertices   the path's vertices in order from source to sink
      *                   (at least two, source first and sink last)
      * @param bottleneck the maximum flow the path can carry; must be positive
      */
-    public AugmentingPath(List<Integer> vertices, int bottleneck) {
+    public AugmentingPath(List<Integer> vertices, Capacity bottleneck) {
         if (vertices.size() < 2) {
             throw new IllegalArgumentException("An augmenting path needs at least two vertices");
         }
-        if (bottleneck <= 0) {
+        Objects.requireNonNull(bottleneck, "bottleneck");
+        if (!bottleneck.isPositive()) {
             throw new IllegalArgumentException("bottleneck must be positive, was " + bottleneck);
         }
         this.vertices = List.copyOf(vertices);
@@ -37,7 +41,7 @@ public final class AugmentingPath {
     }
 
     /** Returns the maximum amount of flow that can be pushed along this path. */
-    public int bottleneck() {
+    public Capacity bottleneck() {
         return bottleneck;
     }
 

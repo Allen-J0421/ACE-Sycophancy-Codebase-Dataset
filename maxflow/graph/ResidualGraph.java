@@ -24,8 +24,8 @@ public final class ResidualGraph {
     }
 
     /** Returns the remaining residual capacity of the edge {@code from -> to}. */
-    public int residualCapacity(int from, int to) {
-        return residual[from][to];
+    public Capacity residualCapacity(int from, int to) {
+        return Capacity.of(residual[from][to]);
     }
 
     /** Returns true if more flow can currently be pushed along {@code from -> to}. */
@@ -33,7 +33,11 @@ public final class ResidualGraph {
         return residual[from][to] > 0;
     }
 
-    /** Receives each residual edge leaving a vertex during a traversal. */
+    /**
+     * Receives each residual edge leaving a vertex during a traversal. The residual
+     * capacity is passed as a raw {@code int} rather than a {@link Capacity}: this
+     * callback fires in the inner loop of every search, so it stays allocation-free.
+     */
     @FunctionalInterface
     public interface EdgeConsumer {
         void accept(int to, int residualCapacity);
@@ -54,22 +58,24 @@ public final class ResidualGraph {
     }
 
     /**
-     * Pushes {@code amount} units of flow along {@code from -> to}, decreasing the
-     * forward residual capacity and increasing the reverse residual capacity.
+     * Pushes {@code amount} of flow along {@code from -> to}, decreasing the forward
+     * residual capacity and increasing the reverse residual capacity.
      *
-     * @throws IllegalArgumentException if {@code amount} exceeds the residual capacity
+     * @throws IllegalArgumentException if {@code amount} is zero, or exceeds the
+     *         residual capacity
      */
-    public void pushFlow(int from, int to, int amount) {
-        if (amount <= 0) {
+    public void pushFlow(int from, int to, Capacity amount) {
+        if (!amount.isPositive()) {
             throw new IllegalArgumentException("Flow amount must be positive, was " + amount);
         }
-        if (amount > residual[from][to]) {
+        int units = amount.units();
+        if (units > residual[from][to]) {
             throw new IllegalArgumentException(
-                    "Cannot push " + amount + " units along " + from + " -> " + to
+                    "Cannot push " + amount + " along " + from + " -> " + to
                             + "; residual capacity is " + residual[from][to]);
         }
-        residual[from][to] -= amount;
-        residual[to][from] += amount;
+        residual[from][to] -= units;
+        residual[to][from] += units;
     }
 
     /**
@@ -77,7 +83,7 @@ public final class ResidualGraph {
      * i.e. {@code capacity - residualCapacity}, clamped at zero so reverse residual
      * edges are not reported as negative flow.
      */
-    public int flowOn(int from, int to) {
-        return Math.max(0, network.capacity(from, to) - residual[from][to]);
+    public Capacity flowOn(int from, int to) {
+        return Capacity.of(Math.max(0, network.capacity(from, to).units() - residual[from][to]));
     }
 }

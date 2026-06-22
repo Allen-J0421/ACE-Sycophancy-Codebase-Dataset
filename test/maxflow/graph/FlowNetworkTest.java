@@ -27,16 +27,16 @@ class FlowNetworkTest {
                     .addEdge(1, 2, 10)
                     .build();
 
-            assertEquals(16, network.capacity(0, 1));
-            assertEquals(10, network.capacity(1, 2));
+            assertEquals(Capacity.of(16), network.capacity(0, 1));
+            assertEquals(Capacity.of(10), network.capacity(1, 2));
         }
 
         @Test
         @DisplayName("reports zero capacity for absent edges")
         void absentEdgeHasZeroCapacity() {
             FlowNetwork network = FlowNetwork.builder(3).addEdge(0, 1, 5).build();
-            assertEquals(0, network.capacity(0, 2));
-            assertEquals(0, network.capacity(2, 0));
+            assertEquals(Capacity.ZERO, network.capacity(0, 2));
+            assertEquals(Capacity.ZERO, network.capacity(2, 0));
         }
 
         @Test
@@ -46,7 +46,7 @@ class FlowNetworkTest {
                     .addEdge(0, 1, 5)
                     .addEdge(0, 1, 9)
                     .build();
-            assertEquals(9, network.capacity(0, 1));
+            assertEquals(Capacity.of(9), network.capacity(0, 1));
         }
 
         @Test
@@ -84,7 +84,7 @@ class FlowNetworkTest {
             FlowNetwork.Builder builder = FlowNetwork.builder(2).addEdge(0, 1, 5);
             FlowNetwork first = builder.build();
             builder.addEdge(0, 1, 99);
-            assertEquals(5, first.capacity(0, 1), "earlier network must not see later edits");
+            assertEquals(Capacity.of(5), first.capacity(0, 1), "earlier network must not see later edits");
         }
 
         @Test
@@ -94,8 +94,8 @@ class FlowNetworkTest {
                     .addEdge(new Edge(0, 1, 16))
                     .addEdge(new Edge(1, 2, 10))
                     .build();
-            assertEquals(16, network.capacity(0, 1));
-            assertEquals(10, network.capacity(1, 2));
+            assertEquals(Capacity.of(16), network.capacity(0, 1));
+            assertEquals(Capacity.of(10), network.capacity(1, 2));
         }
 
         @Test
@@ -144,9 +144,9 @@ class FlowNetworkTest {
             };
             FlowNetwork network = FlowNetwork.fromMatrix(matrix);
             assertEquals(3, network.vertexCount());
-            assertEquals(16, network.capacity(0, 1));
-            assertEquals(13, network.capacity(0, 2));
-            assertEquals(10, network.capacity(1, 2));
+            assertEquals(Capacity.of(16), network.capacity(0, 1));
+            assertEquals(Capacity.of(13), network.capacity(0, 2));
+            assertEquals(Capacity.of(10), network.capacity(1, 2));
         }
 
         @Test
@@ -191,7 +191,7 @@ class FlowNetworkTest {
             FlowNetwork network = FlowNetwork.builder(2).addEdge(0, 1, 7).build();
             int[][] copy = network.toMatrix();
             copy[0][1] = 123;
-            assertEquals(7, network.capacity(0, 1), "mutating the copy must not affect the network");
+            assertEquals(Capacity.of(7), network.capacity(0, 1), "mutating the copy must not affect the network");
             assertArrayEquals(new int[] {0, 7}, network.toMatrix()[0]);
         }
     }

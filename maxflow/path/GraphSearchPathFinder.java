@@ -1,5 +1,6 @@
 package maxflow.path;
 
+import maxflow.graph.Capacity;
 import maxflow.graph.ResidualGraph;
 
 import java.util.ArrayList;
@@ -50,9 +51,9 @@ abstract class GraphSearchPathFinder implements AugmentingPathFinder {
     private static AugmentingPath reconstructPath(ResidualGraph residual, int[] parent,
                                                   int source, int sink) {
         List<Integer> vertices = new ArrayList<>();
-        int bottleneck = Integer.MAX_VALUE;
+        Capacity bottleneck = Capacity.INFINITE;
         for (int v = sink; v != source; v = parent[v]) {
-            bottleneck = Math.min(bottleneck, residual.residualCapacity(parent[v], v));
+            bottleneck = bottleneck.min(residual.residualCapacity(parent[v], v));
             vertices.add(v);
         }
         vertices.add(source);

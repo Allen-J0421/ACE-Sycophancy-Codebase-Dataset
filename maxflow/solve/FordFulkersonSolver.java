@@ -1,5 +1,6 @@
 package maxflow.solve;
 
+import maxflow.graph.Capacity;
 import maxflow.graph.Edge;
 import maxflow.graph.FlowNetwork;
 import maxflow.graph.ResidualGraph;
@@ -41,13 +42,13 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
         validate(network, source, sink);
 
         ResidualGraph residual = new ResidualGraph(network);
-        int maxFlow = 0;
+        Capacity maxFlow = Capacity.ZERO;
 
         Optional<AugmentingPath> path;
         while ((path = pathFinder.findPath(residual, source, sink)).isPresent()) {
-            int bottleneck = path.get().bottleneck();
+            Capacity bottleneck = path.get().bottleneck();
             pushAlong(residual, path.get(), bottleneck);
-            maxFlow += bottleneck;
+            maxFlow = maxFlow.plus(bottleneck);
         }
 
         return new MaxFlowResult(source, sink, maxFlow, extractFlowEdges(network, residual));
@@ -57,8 +58,8 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
     private static List<Edge> extractFlowEdges(FlowNetwork network, ResidualGraph residual) {
         List<Edge> flowEdges = new ArrayList<>();
         for (Edge capacityEdge : network.edges()) {
-            int flow = residual.flowOn(capacityEdge.from(), capacityEdge.to());
-            if (flow > 0) {
+            Capacity flow = residual.flowOn(capacityEdge.from(), capacityEdge.to());
+            if (flow.isPositive()) {
                 flowEdges.add(capacityEdge.withValue(flow));
             }
         }
@@ -70,7 +71,7 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
         return pathFinder;
     }
 
-    private static void pushAlong(ResidualGraph residual, AugmentingPath path, int amount) {
+    private static void pushAlong(ResidualGraph residual, AugmentingPath path, Capacity amount) {
         var vertices = path.vertices();
         for (int i = 0; i + 1 < vertices.size(); i++) {
             residual.pushFlow(vertices.get(i), vertices.get(i + 1), amount);

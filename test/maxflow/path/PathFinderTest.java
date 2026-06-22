@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 
+import maxflow.graph.Capacity;
 import maxflow.graph.FlowNetwork;
 import maxflow.graph.ResidualGraph;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,7 @@ class PathFinderTest {
 
         assertTrue(found.isPresent());
         assertEquals(List.of(0, 1, 2), found.get().vertices());
-        assertEquals(3, found.get().bottleneck(), "bottleneck is the smaller of 5 and 3");
+        assertEquals(Capacity.of(3), found.get().bottleneck(), "bottleneck is the smaller of 5 and 3");
     }
 
     @Test

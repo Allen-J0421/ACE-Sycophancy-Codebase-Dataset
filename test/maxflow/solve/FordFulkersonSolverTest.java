@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import maxflow.graph.Capacity;
 import maxflow.graph.Edge;
 import maxflow.graph.FlowNetwork;
 import maxflow.path.BreadthFirstPathFinder;
@@ -39,7 +40,7 @@ class FordFulkersonSolverTest {
     @DisplayName("computes the textbook maximum flow of 23, regardless of strategy")
     void classicMaxFlow() {
         for (MaxFlowSolver solver : strategies()) {
-            assertEquals(23, solver.solve(classicNetwork(), 0, 5).value());
+            assertEquals(Capacity.of(23), solver.solve(classicNetwork(), 0, 5).value());
         }
     }
 
@@ -60,11 +61,12 @@ class FordFulkersonSolverTest {
             MaxFlowResult result = solver.solve(classicNetwork(), source, sink);
             int[] net = new int[6]; // outflow - inflow per vertex
             for (Edge edge : result.flowEdges()) {
-                net[edge.from()] += edge.value();
-                net[edge.to()] -= edge.value();
+                net[edge.from()] += edge.value().units();
+                net[edge.to()] -= edge.value().units();
             }
+            int total = result.value().units();
             for (int v = 0; v < net.length; v++) {
-                int expected = v == source ? result.value() : v == sink ? -result.value() : 0;
+                int expected = v == source ? total : v == sink ? -total : 0;
                 assertEquals(expected, net[v], "conservation at vertex " + v);
             }
         }
@@ -76,8 +78,8 @@ class FordFulkersonSolverTest {
         FlowNetwork network = classicNetwork();
         MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 5);
         for (Edge edge : result.flowEdges()) {
-            assertTrue(edge.value() > 0, "flow is positive on " + edge);
-            assertTrue(edge.value() <= network.capacity(edge.from(), edge.to()),
+            assertTrue(edge.value().isPositive(), "flow is positive on " + edge);
+            assertTrue(edge.value().compareTo(network.capacity(edge.from(), edge.to())) <= 0,
                     "flow within capacity on " + edge);
         }
     }
@@ -92,7 +94,7 @@ class FordFulkersonSolverTest {
                 {0, 0, 0, 0},
         });
         for (MaxFlowSolver solver : strategies()) {
-            assertEquals(5, solver.solve(network, 0, 3).value());
+            assertEquals(Capacity.of(5), solver.solve(network, 0, 3).value());
         }
     }
 
@@ -101,7 +103,7 @@ class FordFulkersonSolverTest {
     void disconnectedHasZeroFlow() {
         FlowNetwork network = FlowNetwork.builder(3).addEdge(0, 1, 5).build();
         MaxFlowResult result = new FordFulkersonSolver().solve(network, 0, 2);
-        assertEquals(0, result.value());
+        assertEquals(Capacity.ZERO, result.value());
         assertTrue(result.flowEdges().isEmpty());
     }
 
@@ -109,7 +111,7 @@ class FordFulkersonSolverTest {
     @DisplayName("saturates a single direct edge")
     void singleEdge() {
         FlowNetwork network = FlowNetwork.builder(2).addEdge(0, 1, 7).build();
-        assertEquals(7, new FordFulkersonSolver().solve(network, 0, 1).value());
+        assertEquals(Capacity.of(7), new FordFulkersonSolver().solve(network, 0, 1).value());
     }
 
     @Test

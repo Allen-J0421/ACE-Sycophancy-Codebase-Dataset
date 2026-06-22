@@ -15,7 +15,7 @@ class EdgeTest {
         Edge edge = new Edge(0, 3, 16);
         assertEquals(0, edge.from());
         assertEquals(3, edge.to());
-        assertEquals(16, edge.value());
+        assertEquals(Capacity.of(16), edge.value());
     }
 
     @Test
@@ -43,7 +43,7 @@ class EdgeTest {
         Edge capacity = new Edge(1, 2, 10);
         Edge flow = capacity.withValue(4);
         assertEquals(new Edge(1, 2, 4), flow);
-        assertEquals(10, capacity.value(), "the original edge is unchanged");
+        assertEquals(Capacity.of(10), capacity.value(), "the original edge is unchanged");
     }
 
     @Test

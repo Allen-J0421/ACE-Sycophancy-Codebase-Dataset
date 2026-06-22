@@ -33,6 +33,26 @@ public final class ResidualGraph {
         return residual[from][to] > 0;
     }
 
+    /** Receives each residual edge leaving a vertex during a traversal. */
+    @FunctionalInterface
+    public interface EdgeConsumer {
+        void accept(int to, int residualCapacity);
+    }
+
+    /**
+     * Invokes {@code consumer} for every vertex reachable from {@code from} along an
+     * edge with positive residual capacity. This lets traversals iterate the graph's
+     * adjacencies without depending on its underlying representation.
+     */
+    public void forEachResidualEdge(int from, EdgeConsumer consumer) {
+        int[] row = residual[from];
+        for (int to = 0; to < row.length; to++) {
+            if (row[to] > 0) {
+                consumer.accept(to, row[to]);
+            }
+        }
+    }
+
     /**
      * Pushes {@code amount} units of flow along {@code from -> to}, decreasing the
      * forward residual capacity and increasing the reverse residual capacity.

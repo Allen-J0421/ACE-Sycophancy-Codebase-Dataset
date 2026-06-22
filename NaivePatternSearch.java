@@ -14,7 +14,12 @@ public final class NaivePatternSearch {
         int textLength = text.length();
         List<Integer> matches = new ArrayList<>();
 
-        for (int startIndex = 0; startIndex <= textLength - patternLength; startIndex++) {
+        if (patternLength > textLength) {
+            return matches;
+        }
+
+        int lastStartIndex = textLength - patternLength;
+        for (int startIndex = 0; startIndex <= lastStartIndex; startIndex++) {
             if (matchesAt(text, pattern, startIndex, patternLength)) {
                 matches.add(startIndex);
             }

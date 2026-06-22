@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.List;
 
 public class ActivitySelectionTest {
     public static void main(String[] args) {
@@ -84,18 +85,23 @@ public class ActivitySelectionTest {
         ActivitySelection.SelectionResult result =
             ActivitySelection.buildSelectionResult(testCase.startTimes(), testCase.finishTimes());
 
-        ActivitySelection.ActivitySlot[] slots = result.selectedActivities();
-        int[][] actualActivities = new int[slots.length][2];
-        for (int i = 0; i < slots.length; i++) {
-            actualActivities[i][0] = slots[i].startTime();
-            actualActivities[i][1] = slots[i].finishTime();
-        }
+        int[][] actualActivities = toPairs(result.selectedActivities());
 
         assertDeepEquals(
             testCase.expectedActivities(),
             actualActivities,
             testCase.message() + " with the expected slot objects"
         );
+    }
+
+    private static int[][] toPairs(List<ActivitySelection.ActivitySlot> slots) {
+        int[][] actualActivities = new int[slots.size()][2];
+        for (int i = 0; i < slots.size(); i++) {
+            ActivitySelection.ActivitySlot slot = slots.get(i);
+            actualActivities[i][0] = slot.startTime();
+            actualActivities[i][1] = slot.finishTime();
+        }
+        return actualActivities;
     }
 
     private static void assertSelectedActivities(SelectionCase testCase) {

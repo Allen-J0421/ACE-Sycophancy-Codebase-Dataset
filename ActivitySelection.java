@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 public class ActivitySelection {
@@ -79,35 +81,28 @@ public class ActivitySelection {
         }
 
         private SelectionResult selectionResult() {
-            Activity[] selectedActivities = selectCompatibleActivities();
-            ActivitySlot[] selectedSlots = new ActivitySlot[selectedActivities.length];
-            for (int i = 0; i < selectedActivities.length; i++) {
-                selectedSlots[i] = selectedActivities[i].toSlot();
-            }
-            return new SelectionResult(selectedSlots);
+            return new SelectionResult(selectCompatibleActivities());
         }
 
-        private Activity[] selectCompatibleActivities() {
+        private List<ActivitySlot> selectCompatibleActivities() {
             if (activities.length == 0) {
-                return new Activity[0];
+                return List.of();
             }
 
-            Activity[] selectedActivities = new Activity[activities.length];
-            int selectedCount = 1;
+            List<ActivitySlot> selectedActivities = new ArrayList<>();
             Activity lastSelected = activities[0];
-            selectedActivities[0] = lastSelected;
+            selectedActivities.add(lastSelected.toSlot());
 
             // Greedily keep the earliest-finishing compatible activity.
             for (int i = 1; i < activities.length; i++) {
                 Activity current = activities[i];
                 if (current.canFollow(lastSelected)) {
-                    selectedActivities[selectedCount] = current;
-                    selectedCount++;
+                    selectedActivities.add(current.toSlot());
                     lastSelected = current;
                 }
             }
 
-            return Arrays.copyOf(selectedActivities, selectedCount);
+            return selectedActivities;
         }
 
         private static void validateInputs(int[] start, int[] finish) {
@@ -121,61 +116,32 @@ public class ActivitySelection {
     }
 
     public static final class SelectionResult {
-        private final ActivitySlot[] activities;
+        private final List<ActivitySlot> activities;
 
-        private SelectionResult(ActivitySlot[] activities) {
-            this.activities = copyActivities(activities);
+        private SelectionResult(List<ActivitySlot> activities) {
+            this.activities = List.copyOf(activities);
         }
 
         public int count() {
-            return activities.length;
+            return activities.size();
         }
 
-        public ActivitySlot[] selectedActivities() {
-            return copyActivities(activities);
+        public List<ActivitySlot> selectedActivities() {
+            return activities;
         }
 
         public int[][] activities() {
-            int[][] pairs = new int[activities.length][2];
-            for (int i = 0; i < activities.length; i++) {
-                pairs[i] = activities[i].toPair();
+            int[][] pairs = new int[activities.size()][2];
+            for (int i = 0; i < activities.size(); i++) {
+                pairs[i] = activities.get(i).toPair();
             }
             return pairs;
         }
-
-        private static ActivitySlot[] copyActivities(ActivitySlot[] activities) {
-            ActivitySlot[] copy = new ActivitySlot[activities.length];
-            for (int i = 0; i < activities.length; i++) {
-                copy[i] = activities[i];
-            }
-            return copy;
-        }
     }
 
-    public static final class ActivitySlot {
-        private final int startTime;
-        private final int finishTime;
-
-        private ActivitySlot(int startTime, int finishTime) {
-            this.startTime = startTime;
-            this.finishTime = finishTime;
-        }
-
-        public int startTime() {
-            return startTime;
-        }
-
-        public int finishTime() {
-            return finishTime;
-        }
-
+    public static record ActivitySlot(int startTime, int finishTime) {
         private int[] toPair() {
             return new int[] {startTime, finishTime};
-        }
-
-        @Override
-        public String toString() {
-            return "[" + startTime + ", " + finishTime + "]";
         }
     }
 }

@@ -161,11 +161,15 @@ final class QuickSelectDemo {
     private static void printKthSmallest(int[] values, int position) {
         if (!isValidPosition(values, position)) {
             System.out.println(OUT_OF_BOUNDS_MESSAGE);
-        } else {
-            int[] workingCopy = Arrays.copyOf(values, values.length);
-            System.out.println(
-                RESULT_PREFIX + QuickSelect.kthSmallest(workingCopy, position));
+            return;
         }
+
+        System.out.println(formatResult(values, position));
+    }
+
+    private static String formatResult(int[] values, int position) {
+        int[] workingCopy = Arrays.copyOf(values, values.length);
+        return RESULT_PREFIX + QuickSelect.kthSmallest(workingCopy, position);
     }
 
     private static boolean isValidPosition(int[] values, int position) {

@@ -42,7 +42,7 @@ public class BalancedParentheses {
         }
 
         private boolean accept(char candidate) {
-            BracketProfile.BracketToken token = bracketProfile.tokenFor(candidate);
+            BracketToken token = bracketProfile.tokenFor(candidate);
             if (token == null) {
                 return true;
             }

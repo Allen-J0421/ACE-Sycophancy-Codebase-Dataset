@@ -57,36 +57,4 @@ public final class BracketProfile {
 
         return Map.copyOf(bracketTokens);
     }
-
-    static final class BracketToken {
-        private final char character;
-        private final char expectedClosing;
-        private final boolean opening;
-
-        private BracketToken(char character, char expectedClosing, boolean opening) {
-            this.character = character;
-            this.expectedClosing = expectedClosing;
-            this.opening = opening;
-        }
-
-        private static BracketToken opening(char character, char expectedClosing) {
-            return new BracketToken(character, expectedClosing, true);
-        }
-
-        private static BracketToken closing(char character) {
-            return new BracketToken(character, character, false);
-        }
-
-        char character() {
-            return character;
-        }
-
-        char expectedClosing() {
-            return expectedClosing;
-        }
-
-        boolean isOpening() {
-            return opening;
-        }
-    }
 }

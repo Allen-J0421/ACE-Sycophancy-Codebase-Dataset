@@ -6,7 +6,7 @@ class EuclideanAlgorithms {
         final int gcd, x, y;
         private final int a, b;
 
-        GcdResult(int gcd, int x, int y, int a, int b) {
+        private GcdResult(int gcd, int x, int y, int a, int b) {
             this.gcd = gcd; this.x = x; this.y = y; this.a = a; this.b = b;
         }
 

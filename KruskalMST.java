@@ -6,8 +6,15 @@ final class KruskalMST {
     }
 
     public static int kruskalsMST(int vertexCount, int[][] rawEdges) {
-        Graph graph = Graph.fromRawEdges(vertexCount, rawEdges);
-        return CALCULATOR.compute(graph).totalWeight();
+        return compute(vertexCount, rawEdges).totalWeight();
+    }
+
+    static MinimumSpanningTree compute(int vertexCount, int[][] rawEdges) {
+        return compute(Graph.fromRawEdges(vertexCount, rawEdges));
+    }
+
+    static MinimumSpanningTree compute(Graph graph) {
+        return CALCULATOR.compute(graph);
     }
 
     public static void main(String[] args) {

@@ -4,29 +4,27 @@ import java.util.List;
 
 final class KruskalMinimumSpanningTreeCalculator implements MinimumSpanningTreeCalculator {
     @Override
-    public MstResult compute(Graph graph) {
+    public MinimumSpanningTree compute(Graph graph) {
         DisjointSet disjointSet = new DisjointSet(graph.vertexCount());
+        List<Edge> selectedEdges = new ArrayList<>();
         int totalWeight = 0;
-        int edgesUsed = 0;
 
         for (Edge edge : sortedEdgesByWeight(graph.edges())) {
             if (!disjointSet.union(edge.from(), edge.to())) {
                 continue;
             }
 
+            selectedEdges.add(edge);
             totalWeight += edge.weight();
-            edgesUsed++;
 
-            if (edgesUsed == graph.requiredEdgeCount()) {
-                return new MstResult(totalWeight, edgesUsed);
+            if (selectedEdges.size() == graph.requiredEdgeCount()) {
+                return new MinimumSpanningTree(totalWeight, selectedEdges);
             }
         }
 
-        if (!graph.canBeSpannedWith(edgesUsed)) {
-            throw new IllegalArgumentException("Input graph must be connected to form an MST.");
-        }
-
-        return new MstResult(totalWeight, edgesUsed);
+        MinimumSpanningTree spanningTree = new MinimumSpanningTree(totalWeight, selectedEdges);
+        graph.validateSpanningTree(spanningTree);
+        return spanningTree;
     }
 
     private List<Edge> sortedEdgesByWeight(List<Edge> edges) {

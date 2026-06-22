@@ -1,3 +1,3 @@
 interface MinimumSpanningTreeCalculator {
-    MstResult compute(Graph graph);
+    MinimumSpanningTree compute(Graph graph);
 }

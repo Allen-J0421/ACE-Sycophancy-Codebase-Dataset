@@ -39,6 +39,14 @@ record Graph(int vertexCount, List<Edge> edges) {
         return isTriviallyConnected() || edgeCount == requiredEdgeCount();
     }
 
+    void validateSpanningTree(MinimumSpanningTree spanningTree) {
+        if (canBeSpannedWith(spanningTree.edgeCount())) {
+            return;
+        }
+
+        throw new IllegalArgumentException("Input graph must be connected to form an MST.");
+    }
+
     private static void validateVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count cannot be negative.");

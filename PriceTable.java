@@ -20,10 +20,11 @@ public final class PriceTable {
         return prices.length - 1;
     }
 
+    public boolean hasPriceFor(int rodLength) {
+        return rodLength > 0 && rodLength < prices.length;
+    }
+
     public int priceFor(int rodLength) {
-        if (rodLength <= 0 || rodLength >= prices.length) {
-            return 0;
-        }
-        return prices[rodLength];
+        return hasPriceFor(rodLength) ? prices[rodLength] : 0;
     }
 }

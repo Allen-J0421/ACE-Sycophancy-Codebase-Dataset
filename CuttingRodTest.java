@@ -6,6 +6,7 @@ public final class CuttingRodTest {
 
     public static void main(String[] args) {
         shouldCopyInputPriceTables();
+        shouldReportAvailablePriceLengths();
         shouldReturnZeroForNullInput();
         shouldReturnZeroForNonPositiveLength();
         shouldSolveClassicSample();
@@ -21,6 +22,13 @@ public final class CuttingRodTest {
         prices[1] = 100;
 
         assertEquals(8, priceTable.priceFor(3), "copied price table");
+    }
+
+    private static void shouldReportAvailablePriceLengths() {
+        PriceTable priceTable = PriceTable.of(new int[] {0, 1, 5});
+
+        assertTrue(priceTable.hasPriceFor(1), "length 1 available");
+        assertFalse(priceTable.hasPriceFor(3), "length 3 unavailable");
     }
 
     private static void shouldReturnZeroForNullInput() {
@@ -60,6 +68,18 @@ public final class CuttingRodTest {
         if (expected != actual) {
             throw new AssertionError(
                     caseName + ": expected " + expected + " but got " + actual);
+        }
+    }
+
+    private static void assertTrue(boolean condition, String caseName) {
+        if (!condition) {
+            throw new AssertionError(caseName + ": expected true");
+        }
+    }
+
+    private static void assertFalse(boolean condition, String caseName) {
+        if (condition) {
+            throw new AssertionError(caseName + ": expected false");
         }
     }
 }

@@ -92,11 +92,14 @@ class myQueue extends CircularQueue {
     }
 
     public static void main(String[] args) {
-        runDemo();
+        QueueDemo.run();
     }
+}
 
-    private static void runDemo() {
-        CircularQueue queue = new myQueue(5);
+class QueueDemo {
+
+    static void run() {
+        CircularQueue queue = new CircularQueue(5);
         queue.enqueue(10);
         queue.enqueue(20);
         queue.enqueue(30);

@@ -1,53 +1,43 @@
 public class ActivitySelectionTest {
     public static void main(String[] args) {
-        selectsExpectedNumberOfCompatibleActivities();
-        returnsZeroForEmptyInput();
-        rejectsMismatchedInputLengths();
-        rejectsNullStartInput();
-        rejectsNullFinishInput();
-        preservesStrictCompatibilityRuleWhenActivitiesTouch();
-        aliasMethodMatchesPrimaryMethod();
-    }
-
-    private static void selectsExpectedNumberOfCompatibleActivities() {
-        assertSelectionCount(
+        SelectionCase[] selectionCases = {
             new SelectionCase(
                 4,
                 new int[] {1, 3, 0, 5, 8, 5},
                 new int[] {2, 4, 6, 7, 9, 9},
                 "selects the expected number of compatible activities"
-            )
-        );
-    }
-
-    private static void returnsZeroForEmptyInput() {
-        assertSelectionCount(
+            ),
             new SelectionCase(
                 0,
                 new int[] {},
                 new int[] {},
                 "returns zero for empty input"
+            ),
+            new SelectionCase(
+                1,
+                new int[] {1, 2},
+                new int[] {2, 3},
+                "preserves the strict compatibility rule when activities touch"
             )
-        );
-    }
+        };
 
-    private static void rejectsMismatchedInputLengths() {
+        for (SelectionCase testCase : selectionCases) {
+            assertSelectionCount(testCase);
+            assertLegacyAlias(testCase);
+        }
+
         assertThrows(
             IllegalArgumentException.class,
             () -> ActivitySelection.activitySelection(new int[] {1, 2}, new int[] {3}),
             "rejects mismatched input lengths"
         );
-    }
 
-    private static void rejectsNullStartInput() {
         assertThrows(
             NullPointerException.class,
             () -> ActivitySelection.activitySelection(null, new int[] {}),
             "rejects null start input"
         );
-    }
 
-    private static void rejectsNullFinishInput() {
         assertThrows(
             NullPointerException.class,
             () -> ActivitySelection.activitySelection(new int[] {}, null),
@@ -55,33 +45,14 @@ public class ActivitySelectionTest {
         );
     }
 
-    private static void preservesStrictCompatibilityRuleWhenActivitiesTouch() {
-        assertSelectionCount(
-            new SelectionCase(
-                1,
-                new int[] {1, 2},
-                new int[] {2, 3},
-                "preserves the strict compatibility rule when activities touch"
-            )
-        );
-    }
-
-    private static void aliasMethodMatchesPrimaryMethod() {
-        SelectionCase testCase =
-            new SelectionCase(
-                2,
-                new int[] {1, 3, 4},
-                new int[] {2, 5, 6},
-                "keeps the alias method aligned with the primary method"
-            );
-
+    private static void assertLegacyAlias(SelectionCase testCase) {
         assertEquals(
             ActivitySelection.maximumCompatibleActivityCount(
                 testCase.startTimes(),
                 testCase.finishTimes()
             ),
             ActivitySelection.activitySelection(testCase.startTimes(), testCase.finishTimes()),
-            testCase.message()
+            testCase.message() + " through the legacy alias"
         );
     }
 

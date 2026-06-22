@@ -14,27 +14,7 @@ public class ActivitySelection {
     }
 
     public static int maximumCompatibleActivityCount(int[] start, int[] finish) {
-        return new ActivitySchedule(toSortedActivities(start, finish)).countSelectedActivities();
-    }
-
-    private static Activity[] toSortedActivities(int[] start, int[] finish) {
-        validateInputs(start, finish);
-
-        Activity[] activities = new Activity[start.length];
-        for (int i = 0; i < start.length; i++) {
-            activities[i] = new Activity(start[i], finish[i]);
-        }
-        Arrays.sort(activities, BY_FINISH_TIME);
-        return activities;
-    }
-
-    private static void validateInputs(int[] start, int[] finish) {
-        Objects.requireNonNull(start, "start must not be null");
-        Objects.requireNonNull(finish, "finish must not be null");
-
-        if (start.length != finish.length) {
-            throw new IllegalArgumentException("start and finish must have the same length");
-        }
+        return ActivitySchedule.fromParallelArrays(start, finish).countSelectedActivities();
     }
 
     public static void main(String[] args) {
@@ -74,6 +54,18 @@ public class ActivitySelection {
             this.activities = activities;
         }
 
+        private static ActivitySchedule fromParallelArrays(int[] start, int[] finish) {
+            validateInputs(start, finish);
+
+            Activity[] activities = new Activity[start.length];
+            for (int i = 0; i < start.length; i++) {
+                activities[i] = new Activity(start[i], finish[i]);
+            }
+
+            Arrays.sort(activities, BY_FINISH_TIME);
+            return new ActivitySchedule(activities);
+        }
+
         private int countSelectedActivities() {
             if (activities.length == 0) {
                 return 0;
@@ -92,6 +84,15 @@ public class ActivitySelection {
             }
 
             return count;
+        }
+
+        private static void validateInputs(int[] start, int[] finish) {
+            Objects.requireNonNull(start, "start must not be null");
+            Objects.requireNonNull(finish, "finish must not be null");
+
+            if (start.length != finish.length) {
+                throw new IllegalArgumentException("start and finish must have the same length");
+            }
         }
     }
 }

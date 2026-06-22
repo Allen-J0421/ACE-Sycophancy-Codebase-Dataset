@@ -16,11 +16,17 @@ public final class QuickSelect {
         }
     }
 
+    /**
+     * Returns the k-th smallest element without mutating the caller's array.
+     */
     public static int selectKthSmallest(int[] values, int k) {
         validateSelectionRequest(values, k);
         return selectByTargetIndex(values.clone(), k - 1);
     }
 
+    /**
+     * Returns the k-th smallest element and may reorder the provided array.
+     */
     public static int selectKthSmallestInPlace(int[] values, int k) {
         validateSelectionRequest(values, k);
         return selectByTargetIndex(values, k - 1);

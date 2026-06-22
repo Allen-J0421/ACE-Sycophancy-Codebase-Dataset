@@ -14,6 +14,12 @@ public final class BTree {
         return tree;
     }
 
+    public static BTree fromKeys(int minDegree, Iterable<Integer> keys) {
+        BTree tree = new BTree(minDegree);
+        tree.insertAll(keys);
+        return tree;
+    }
+
     public BTree(int minDegree) {
         validateMinDegree(minDegree);
         this.minDegree = minDegree;
@@ -30,6 +36,13 @@ public final class BTree {
     }
 
     public void insertAll(int... keys) {
+        Objects.requireNonNull(keys, "keys");
+        for (int key : keys) {
+            insert(key);
+        }
+    }
+
+    public void insertAll(Iterable<Integer> keys) {
         Objects.requireNonNull(keys, "keys");
         for (int key : keys) {
             insert(key);

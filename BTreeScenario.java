@@ -1,19 +1,36 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 final class BTreeScenario {
     private final int minDegree;
-    private final int[] insertedKeys;
+    private final List<Integer> insertedKeys;
     private final List<Integer> expectedKeys;
-    private final int[] presentKeys;
-    private final int[] missingKeys;
+    private final List<Integer> presentKeys;
+    private final List<Integer> missingKeys;
 
-    BTreeScenario(int minDegree, int[] insertedKeys, List<Integer> expectedKeys, int[] presentKeys, int[] missingKeys) {
+    private BTreeScenario(
+            int minDegree,
+            List<Integer> insertedKeys,
+            List<Integer> expectedKeys,
+            List<Integer> presentKeys,
+            List<Integer> missingKeys) {
         this.minDegree = minDegree;
-        this.insertedKeys = insertedKeys.clone();
+        this.insertedKeys = List.copyOf(insertedKeys);
         this.expectedKeys = List.copyOf(expectedKeys);
-        this.presentKeys = presentKeys.clone();
-        this.missingKeys = missingKeys.clone();
+        this.presentKeys = List.copyOf(presentKeys);
+        this.missingKeys = List.copyOf(missingKeys);
+    }
+
+    static BTreeScenario fromKeys(int minDegree, int[] insertedKeys, int[] presentKeys, int[] missingKeys) {
+        List<Integer> insertedKeyList = toList(insertedKeys);
+        return new BTreeScenario(
+                minDegree,
+                insertedKeyList,
+                sortedCopy(insertedKeyList),
+                toList(presentKeys),
+                toList(missingKeys)
+        );
     }
 
     BTree createTree() {
@@ -24,8 +41,8 @@ final class BTreeScenario {
         return minDegree;
     }
 
-    int[] insertedKeys() {
-        return insertedKeys.clone();
+    List<Integer> insertedKeys() {
+        return insertedKeys;
     }
 
     List<Integer> expectedKeys() {
@@ -33,11 +50,17 @@ final class BTreeScenario {
     }
 
     List<Integer> presentKeys() {
-        return toList(presentKeys);
+        return presentKeys;
     }
 
     List<Integer> missingKeys() {
-        return toList(missingKeys);
+        return missingKeys;
+    }
+
+    private static List<Integer> sortedCopy(List<Integer> values) {
+        List<Integer> sorted = new ArrayList<>(values);
+        Collections.sort(sorted);
+        return sorted;
     }
 
     private static List<Integer> toList(int[] values) {

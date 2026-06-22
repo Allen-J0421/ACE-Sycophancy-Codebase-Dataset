@@ -1,15 +1,34 @@
 package sorting;
 
-final class InsertionSortAlgorithm implements IntArraySortAlgorithm {
-
-    static final InsertionSortAlgorithm INSTANCE = new InsertionSortAlgorithm();
+final class InsertionSortAlgorithm {
 
     private InsertionSortAlgorithm() {
         // Utility class.
     }
 
-    @Override
-    public void sort(IntArraySlice slice) {
+    static void sort(int[] values) {
+        sort(IntArraySlice.entireArray(values));
+    }
+
+    static void sort(int[] values, int startInclusive, int endExclusive) {
+        sort(IntArraySlice.of(values, startInclusive, endExclusive));
+    }
+
+    static boolean isSorted(int[] values) {
+        return isSorted(IntArraySlice.entireArray(values));
+    }
+
+    static boolean isSorted(int[] values, int startInclusive, int endExclusive) {
+        return isSorted(IntArraySlice.of(values, startInclusive, endExclusive));
+    }
+
+    static int[] sortedCopy(int[] values) {
+        IntArraySlice copy = IntArraySlice.entireArray(values).copy();
+        sort(copy);
+        return copy.values();
+    }
+
+    private static void sort(IntArraySlice slice) {
         if (slice.hasFewerThanTwoElements()) {
             return;
         }
@@ -21,8 +40,7 @@ final class InsertionSortAlgorithm implements IntArraySortAlgorithm {
         }
     }
 
-    @Override
-    public boolean isSorted(IntArraySlice slice) {
+    private static boolean isSorted(IntArraySlice slice) {
         for (int index = slice.startInclusive() + 1; index < slice.endExclusive(); index++) {
             if (slice.valueAt(index - 1) > slice.valueAt(index)) {
                 return false;

@@ -4,11 +4,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-class Graph {
+public class Graph {
     private final int vertexCount;
     private final List<Set<Integer>> adjacencyList;
 
-    Graph(int vertexCount) {
+    public Graph(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("vertexCount must be non-negative");
         }
@@ -19,7 +19,7 @@ class Graph {
         }
     }
 
-    void addEdge(int u, int v) {
+    public void addEdge(int u, int v) {
         validateVertex(u);
         validateVertex(v);
         if (u == v) {
@@ -29,20 +29,23 @@ class Graph {
         adjacencyList.get(v).add(u);
     }
 
-    Set<Integer> neighborsOf(int vertex) {
+    public Set<Integer> neighborsOf(int vertex) {
         validateVertex(vertex);
         return Collections.unmodifiableSet(adjacencyList.get(vertex));
     }
 
+    public int vertexCount() {
+        return vertexCount;
+    }
+
     private void validateVertex(int vertex) {
+        if (vertexCount == 0) {
+            throw new IllegalArgumentException("Graph has no vertices");
+        }
         if (vertex < 0 || vertex >= vertexCount) {
             throw new IllegalArgumentException(
                 "Vertex must be in range [0, " + (vertexCount - 1) + "]"
             );
         }
-    }
-
-    int vertexCount() {
-        return vertexCount;
     }
 }

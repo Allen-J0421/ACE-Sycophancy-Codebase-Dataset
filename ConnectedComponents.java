@@ -5,11 +5,11 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class ConnectedComponents {
+public class ConnectedComponents {
 
     private ConnectedComponents() {}
 
-    static List<List<Integer>> find(Graph graph) {
+    public static List<List<Integer>> find(Graph graph) {
         if (graph == null) {
             throw new IllegalArgumentException("graph must not be null");
         }

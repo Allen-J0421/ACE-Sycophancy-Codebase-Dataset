@@ -19,10 +19,6 @@ class Graph {
         return vertexCount;
     }
 
-    int weight(int from, int to) {
-        return adjacencyMatrix[from][to];
-    }
-
     List<Edge> edgesFrom(int vertex) {
         List<Edge> edges = new ArrayList<>();
         for (int to = 0; to < vertexCount; to++) {

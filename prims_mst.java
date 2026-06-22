@@ -5,11 +5,6 @@ import java.util.List;
 class PrimsMST implements MstAlgorithm {
 
     @Override
-    public MstResult computeMST(Graph graph) {
-        return computeMST(graph, 0);
-    }
-
-    @Override
     public MstResult computeMST(Graph graph, int startVertex) {
         if (graph == null) {
             throw new IllegalArgumentException("Graph must not be null");
@@ -20,8 +15,7 @@ class PrimsMST implements MstAlgorithm {
                 "Start vertex " + startVertex + " is out of range [0, " + (n - 1) + "]");
         }
 
-        VertexState state = new VertexState(n);
-        state.setSource(startVertex);
+        VertexState state = new VertexState(n, startVertex);
 
         for (int count = 0; count < n - 1; count++) {
             int u = state.nextVertex();
@@ -58,16 +52,13 @@ class PrimsMST implements MstAlgorithm {
         private final int[] minEdgeWeight;
         private final boolean[] inMST;
 
-        VertexState(int vertexCount) {
+        VertexState(int vertexCount, int startVertex) {
             parent = new int[vertexCount];
             minEdgeWeight = new int[vertexCount];
             inMST = new boolean[vertexCount];
             Arrays.fill(minEdgeWeight, Integer.MAX_VALUE);
-        }
-
-        void setSource(int vertex) {
-            minEdgeWeight[vertex] = 0;
-            parent[vertex] = -1;
+            minEdgeWeight[startVertex] = 0;
+            parent[startVertex] = -1;
         }
 
         int nextVertex() {
@@ -87,9 +78,9 @@ class PrimsMST implements MstAlgorithm {
         }
 
         void relaxEdge(Edge edge) {
-            if (!inMST[edge.to] && edge.weight < minEdgeWeight[edge.to]) {
-                parent[edge.to] = edge.from;
-                minEdgeWeight[edge.to] = edge.weight;
+            if (!inMST[edge.to()] && edge.weight() < minEdgeWeight[edge.to()]) {
+                parent[edge.to()] = edge.from();
+                minEdgeWeight[edge.to()] = edge.weight();
             }
         }
 

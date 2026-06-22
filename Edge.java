@@ -1,13 +1,17 @@
 class Edge {
-    final int from;
-    final int to;
-    final int weight;
+    private final int from;
+    private final int to;
+    private final int weight;
 
     Edge(int from, int to, int weight) {
         this.from = from;
         this.to = to;
         this.weight = weight;
     }
+
+    int from() { return from; }
+    int to() { return to; }
+    int weight() { return weight; }
 
     @Override
     public boolean equals(Object obj) {

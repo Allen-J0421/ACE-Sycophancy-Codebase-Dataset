@@ -7,7 +7,7 @@ class MstResult {
 
     MstResult(List<Edge> edges) {
         this.edges = Collections.unmodifiableList(edges);
-        this.totalWeight = edges.stream().mapToInt(e -> e.weight).sum();
+        this.totalWeight = edges.stream().mapToInt(Edge::weight).sum();
     }
 
     List<Edge> edges() {

@@ -49,11 +49,19 @@ public final class BalancedParentheses {
             }
 
             if (token.isOpening()) {
-                closingStack[depth++] = token.expectedClosing();
+                pushExpectedClosing(token.expectedClosing());
                 return true;
             }
 
-            return depth > 0 && closingStack[--depth] == token.character();
+            return matchesClosing(token.character());
+        }
+
+        private void pushExpectedClosing(char closing) {
+            closingStack[depth++] = closing;
+        }
+
+        private boolean matchesClosing(char closing) {
+            return depth > 0 && closingStack[--depth] == closing;
         }
     }
 }

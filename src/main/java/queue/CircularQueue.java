@@ -1,16 +1,12 @@
 package queue;
 
-import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public final class CircularQueue<T> extends AbstractQueue<T> implements BoundedQueue<T> {
-
-    private static final String EMPTY_QUEUE_MESSAGE = "Queue is empty.";
-    private static final String FULL_QUEUE_MESSAGE = "Queue is full.";
+public final class CircularQueue<T> extends AbstractBoundedQueue<T> {
 
     private final Object[] elements;
     private int head;
@@ -25,39 +21,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements BoundedQ
 
         elements = new Object[capacity];
         resetState();
-    }
-
-    public void enqueue(T value) {
-        if (!offer(value)) {
-            throw new IllegalStateException(FULL_QUEUE_MESSAGE);
-        }
-    }
-
-    public T dequeue() {
-        requireNotEmpty();
-        return poll();
-    }
-
-    public T peekFront() {
-        requireNotEmpty();
-        return elementAt(head);
-    }
-
-    public T peekRear() {
-        requireNotEmpty();
-        return elementAt(indexFromHead(size - 1));
-    }
-
-    public T getFront() {
-        return peekFront();
-    }
-
-    public T getRear() {
-        return peekRear();
-    }
-
-    public boolean isEmpty() {
-        return size == 0;
     }
 
     @Override
@@ -90,6 +53,11 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements BoundedQ
             return null;
         }
         return elementAt(head);
+    }
+
+    @Override
+    protected T peekLast() {
+        return elementAt(indexFromHead(size - 1));
     }
 
     @Override
@@ -146,12 +114,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements BoundedQ
 
     private void recordMutation() {
         modificationCount++;
-    }
-
-    private void requireNotEmpty() {
-        if (isEmpty()) {
-            throw new IllegalStateException(EMPTY_QUEUE_MESSAGE);
-        }
     }
 
     private void insertAtTail(T value) {

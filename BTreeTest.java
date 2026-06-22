@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.List;
 
 public final class BTreeTest {
@@ -22,27 +21,18 @@ public final class BTreeTest {
     }
 
     private static void shouldPreserveSortedTraversalAcrossInsertions() {
-        BTree tree = BTreeSamples.newDefaultTree();
-
-        BTreeTestSupport.assertTreeContents(tree, defaultSortedKeys());
+        BTreeTestSupport.assertMatchesScenario(BTreeSamples.defaultScenario());
     }
 
     private static void shouldSupportMembershipChecks() {
-        BTree tree = BTreeSamples.fromKeys(2, 8, 9, 10, 11, 15, 20, 17);
-
-        BTreeTestSupport.assertContains(tree, 10);
-        BTreeTestSupport.assertContains(tree, 17);
-        BTreeTestSupport.assertDoesNotContain(tree, 4);
-        BTreeTestSupport.assertTreeContents(tree, Arrays.asList(8, 9, 10, 11, 15, 17, 20));
+        BTreeTestSupport.assertMatchesScenario(BTreeSamples.membershipScenario());
     }
 
     private static void shouldSupportBulkInsertion() {
-        BTree tree = BTree.fromKeys(3, 10, 20, 5, 6, 12, 30, 7, 17);
+        BTreeScenario scenario = BTreeSamples.defaultScenario();
+        BTree tree = new BTree(scenario.minDegree());
+        tree.insertAll(scenario.insertedKeys());
 
-        BTreeTestSupport.assertTreeContents(tree, defaultSortedKeys());
-    }
-
-    private static List<Integer> defaultSortedKeys() {
-        return Arrays.asList(5, 6, 7, 10, 12, 17, 20, 30);
+        BTreeTestSupport.assertTreeContents(tree, scenario.expectedKeys());
     }
 }

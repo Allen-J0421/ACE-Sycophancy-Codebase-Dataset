@@ -32,6 +32,19 @@ final class BTreeTestSupport {
         assertEquals(expectedKeys.isEmpty(), tree.isEmpty(), "Unexpected empty-state result.");
     }
 
+    static void assertMatchesScenario(BTreeScenario scenario) {
+        BTree tree = scenario.createTree();
+        assertTreeContents(tree, scenario.expectedKeys());
+
+        for (int key : scenario.presentKeys()) {
+            assertContains(tree, key);
+        }
+
+        for (int key : scenario.missingKeys()) {
+            assertDoesNotContain(tree, key);
+        }
+    }
+
     static void assertContains(BTree tree, int key) {
         assertTrue(tree.contains(key), "Expected inserted key to be found: " + key);
     }

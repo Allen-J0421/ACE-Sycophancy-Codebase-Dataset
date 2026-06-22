@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  *
  * @param <T> the type of keys stored in the tree
  */
-public class AVLTree<T extends Comparable<T>> {
+public class AVLTree<T extends Comparable<? super T>> implements Iterable<T> {
 
     /**
      * An internal tree node. This is an implementation detail and is never
@@ -86,6 +87,18 @@ public class AVLTree<T extends Comparable<T>> {
         List<T> out = new ArrayList<>(size);
         inOrder(root, out);
         return out;
+    }
+
+    /** Iterates the keys in ascending order. */
+    @Override
+    public Iterator<T> iterator() {
+        return inOrder().iterator();
+    }
+
+    /** Returns the keys in ascending order, e.g. {@code [10, 20, 30]}. */
+    @Override
+    public String toString() {
+        return inOrder().toString();
     }
 
     // --- Internal recursion and balancing -------------------------------

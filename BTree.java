@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 import java.util.function.Consumer;
 
-final class BTree<T extends Comparable<? super T>> {
+public final class BTree<T extends Comparable<? super T>> implements Iterable<T> {
     private static final class Node<T extends Comparable<? super T>> {
         private final int minDegree;
         private final Object[] keys;
@@ -145,15 +146,15 @@ final class BTree<T extends Comparable<? super T>> {
         this.minDegree = minDegree;
     }
 
-    List<T> keysInOrder() {
+    public List<T> keysInOrder() {
         return root == null ? new ArrayList<>() : root.keysInOrder();
     }
 
-    boolean contains(T key) {
+    public boolean contains(T key) {
         return root != null && root.contains(key);
     }
 
-    void insert(T key) {
+    public void insert(T key) {
         if (root == null) {
             root = new Node<>(minDegree, true);
             root.insertNonFull(key);
@@ -170,5 +171,10 @@ final class BTree<T extends Comparable<? super T>> {
         }
 
         root.insertNonFull(key);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return keysInOrder().iterator();
     }
 }

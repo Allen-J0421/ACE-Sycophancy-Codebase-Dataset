@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.StringJoiner;
 
 final class Main {
@@ -20,7 +19,7 @@ final class Main {
 
     private static void printTraversal(BTree<Integer> tree) {
         System.out.print("Traversal of the constructed tree is ");
-        System.out.print(formatKeys(tree.keysInOrder()));
+        System.out.print(formatKeys(tree));
         System.out.println();
     }
 
@@ -32,9 +31,9 @@ final class Main {
         }
     }
 
-    private static String formatKeys(List<Integer> keys) {
+    private static String formatKeys(BTree<Integer> tree) {
         StringJoiner joiner = new StringJoiner(" ");
-        for (Integer key : keys) {
+        for (Integer key : tree) {
             joiner.add(Integer.toString(key));
         }
         return joiner.toString();

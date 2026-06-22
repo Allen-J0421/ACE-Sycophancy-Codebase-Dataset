@@ -5,13 +5,12 @@ public final class Main {
 
         System.out.println("Traversal of the constructed tree is " + tree);
 
-        printSearchResults(tree, scenario.presentKeys());
-        printSearchResults(tree, scenario.missingKeys());
+        printSearchResults(tree, scenario.searchExpectations());
     }
 
-    private static void printSearchResults(BTree tree, Iterable<Integer> keys) {
-        for (int key : keys) {
-            if (tree.contains(key)) {
+    private static void printSearchResults(BTree tree, Iterable<BTreeScenario.SearchExpectation> expectations) {
+        for (BTreeScenario.SearchExpectation expectation : expectations) {
+            if (tree.contains(expectation.key())) {
                 System.out.println(" | Present");
             } else {
                 System.out.println(" | Not Present");

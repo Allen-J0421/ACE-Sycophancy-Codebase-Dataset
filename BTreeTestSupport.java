@@ -36,12 +36,8 @@ final class BTreeTestSupport {
         BTree tree = scenario.createTree();
         assertTreeContents(tree, scenario.expectedKeys());
 
-        for (int key : scenario.presentKeys()) {
-            assertContains(tree, key);
-        }
-
-        for (int key : scenario.missingKeys()) {
-            assertDoesNotContain(tree, key);
+        for (BTreeScenario.SearchExpectation expectation : scenario.searchExpectations()) {
+            assertSearchExpectation(tree, expectation);
         }
     }
 
@@ -51,6 +47,15 @@ final class BTreeTestSupport {
 
     static void assertDoesNotContain(BTree tree, int key) {
         assertFalse(tree.contains(key), "Expected missing key to be absent: " + key);
+    }
+
+    static void assertSearchExpectation(BTree tree, BTreeScenario.SearchExpectation expectation) {
+        if (expectation.isPresent()) {
+            assertContains(tree, expectation.key());
+            return;
+        }
+
+        assertDoesNotContain(tree, expectation.key());
     }
 
     private static String formatKeys(List<Integer> keys) {

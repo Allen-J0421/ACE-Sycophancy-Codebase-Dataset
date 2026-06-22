@@ -6,31 +6,17 @@ final class BTreeScenario {
     private final int minDegree;
     private final List<Integer> insertedKeys;
     private final List<Integer> expectedKeys;
-    private final List<Integer> presentKeys;
-    private final List<Integer> missingKeys;
+    private final List<SearchExpectation> searchExpectations;
 
-    private BTreeScenario(
-            int minDegree,
-            List<Integer> insertedKeys,
-            List<Integer> expectedKeys,
-            List<Integer> presentKeys,
-            List<Integer> missingKeys) {
+    private BTreeScenario(int minDegree, List<Integer> insertedKeys, List<SearchExpectation> searchExpectations) {
         this.minDegree = minDegree;
         this.insertedKeys = List.copyOf(insertedKeys);
-        this.expectedKeys = List.copyOf(expectedKeys);
-        this.presentKeys = List.copyOf(presentKeys);
-        this.missingKeys = List.copyOf(missingKeys);
+        this.expectedKeys = sortedCopy(insertedKeys);
+        this.searchExpectations = List.copyOf(searchExpectations);
     }
 
-    static BTreeScenario fromKeys(int minDegree, int[] insertedKeys, int[] presentKeys, int[] missingKeys) {
-        List<Integer> insertedKeyList = toList(insertedKeys);
-        return new BTreeScenario(
-                minDegree,
-                insertedKeyList,
-                sortedCopy(insertedKeyList),
-                toList(presentKeys),
-                toList(missingKeys)
-        );
+    static BTreeScenario fromKeys(int minDegree, int[] insertedKeys, SearchExpectation... searchExpectations) {
+        return new BTreeScenario(minDegree, toList(insertedKeys), List.of(searchExpectations));
     }
 
     BTree createTree() {
@@ -49,12 +35,16 @@ final class BTreeScenario {
         return expectedKeys;
     }
 
-    List<Integer> presentKeys() {
-        return presentKeys;
+    List<SearchExpectation> searchExpectations() {
+        return searchExpectations;
     }
 
-    List<Integer> missingKeys() {
-        return missingKeys;
+    static SearchExpectation present(int key) {
+        return new SearchExpectation(key, true);
+    }
+
+    static SearchExpectation missing(int key) {
+        return new SearchExpectation(key, false);
     }
 
     private static List<Integer> sortedCopy(List<Integer> values) {
@@ -69,5 +59,23 @@ final class BTreeScenario {
             result.add(value);
         }
         return result;
+    }
+
+    static final class SearchExpectation {
+        private final int key;
+        private final boolean present;
+
+        private SearchExpectation(int key, boolean present) {
+            this.key = key;
+            this.present = present;
+        }
+
+        int key() {
+            return key;
+        }
+
+        boolean isPresent() {
+            return present;
+        }
     }
 }

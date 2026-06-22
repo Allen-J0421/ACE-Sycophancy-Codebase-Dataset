@@ -136,12 +136,16 @@ class BTreeNode {
     }
 
     void traverse() {
-        StringBuilder traversal = new StringBuilder();
-        appendTraversal(traversal);
-        System.out.print(traversal);
+        System.out.print(traversal());
     }
 
-    void appendTraversal(StringBuilder traversal) {
+    String traversal() {
+        StringBuilder traversal = new StringBuilder();
+        appendTraversal(traversal);
+        return traversal.toString();
+    }
+
+    private void appendTraversal(StringBuilder traversal) {
         for (int index = 0; index < keyCount; index++) {
             if (!leaf) {
                 children[index].appendTraversal(traversal);
@@ -202,11 +206,7 @@ class BTree {
     }
 
     String traversal() {
-        StringBuilder traversal = new StringBuilder();
-        if (!isEmpty()) {
-            root.appendTraversal(traversal);
-        }
-        return traversal.toString();
+        return isEmpty() ? "" : root.traversal();
     }
 
     void traverse() {

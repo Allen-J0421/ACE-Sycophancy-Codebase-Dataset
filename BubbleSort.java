@@ -58,8 +58,4 @@ public final class BubbleSort {
         values[leftIndex] = values[rightIndex];
         values[rightIndex] = temp;
     }
-
-    public static void main(String[] args) {
-        BubbleSortDemo.main(args);
-    }
 }

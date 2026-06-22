@@ -48,7 +48,10 @@ public class CuttingRod {
     }
 
     public static void main(String[] args) {
-        int[] pricesByLength = {0, 1, 5, 8, 9, 10, 17, 17, 20};
-        System.out.println(cutRod(pricesByLength));
+        System.out.println(cutRod(samplePricesByLength()));
+    }
+
+    private static int[] samplePricesByLength() {
+        return new int[] {0, 1, 5, 8, 9, 10, 17, 17, 20};
     }
 }

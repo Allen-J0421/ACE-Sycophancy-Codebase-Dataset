@@ -7,22 +7,15 @@ public final class QuickSelect {
     }
 
     public static int selectKthSmallest(int[] values, int rank) {
-        validateRank(values, rank);
-        return selectValidated(Arrays.copyOf(values, values.length), rank);
+        return SelectionRequest.copying(values, rank).select();
     }
 
     public static int selectKthSmallestInPlace(int[] values, int rank) {
-        validateRank(values, rank);
-        return selectValidated(values, rank);
+        return SelectionRequest.inPlace(values, rank).select();
     }
 
     public static int kthSmallest(int[] values, int k) {
         return selectKthSmallest(values, k);
-    }
-
-    private static int selectValidated(int[] values, int rank) {
-        return new QuickSelectEngine(values, rank - 1, MedianOfThreePivotSelector.INSTANCE)
-            .select();
     }
 
     private static void validateRank(int[] values, int rank) {
@@ -37,6 +30,31 @@ public final class QuickSelect {
         if (rank < 1 || rank > values.length) {
             throw new IllegalArgumentException(
                 "rank must be between 1 and " + values.length + " inclusive");
+        }
+    }
+
+    private static final class SelectionRequest {
+
+        private final int[] values;
+        private final int rank;
+
+        private SelectionRequest(int[] values, int rank) {
+            this.values = values;
+            this.rank = rank;
+        }
+
+        private static SelectionRequest copying(int[] values, int rank) {
+            validateRank(values, rank);
+            return new SelectionRequest(Arrays.copyOf(values, values.length), rank);
+        }
+
+        private static SelectionRequest inPlace(int[] values, int rank) {
+            validateRank(values, rank);
+            return new SelectionRequest(values, rank);
+        }
+
+        private int select() {
+            return QuickSelectEngine.select(values, rank - 1);
         }
     }
 

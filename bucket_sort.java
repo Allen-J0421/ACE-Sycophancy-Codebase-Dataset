@@ -77,11 +77,14 @@ class Main {
         }
     }
 
-    public static void main(String[] args) {
+    private static float[] sortedSampleValues() {
         float[] values = SAMPLE_VALUES.clone();
         bucketSort(values);
+        return values;
+    }
 
+    public static void main(String[] args) {
         System.out.println(SORTED_ARRAY_MESSAGE);
-        printArray(values);
+        printArray(sortedSampleValues());
     }
 }

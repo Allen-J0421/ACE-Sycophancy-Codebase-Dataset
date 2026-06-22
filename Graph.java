@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 class Graph {
@@ -21,6 +22,10 @@ class Graph {
     }
 
     List<Edge> edgesFrom(int vertex) {
+        if (vertex < 0 || vertex >= vertexCount) {
+            throw new IllegalArgumentException(
+                "Vertex " + vertex + " is out of range [0, " + (vertexCount - 1) + "]");
+        }
         List<Edge> edges = new ArrayList<>();
         for (int to = 0; to < vertexCount; to++) {
             int w = adjacencyMatrix[vertex][to];
@@ -28,7 +33,12 @@ class Graph {
                 edges.add(new Edge(vertex, to, w));
             }
         }
-        return edges;
+        return Collections.unmodifiableList(edges);
+    }
+
+    @Override
+    public String toString() {
+        return "Graph{vertices=" + vertexCount + "}";
     }
 
     @Override

@@ -1,13 +1,13 @@
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 class MstResult {
     private final List<Edge> edges;
     private final int totalWeight;
 
     MstResult(List<Edge> edges) {
-        this.edges = Collections.unmodifiableList(edges);
-        this.totalWeight = edges.stream().mapToInt(Edge::weight).sum();
+        this.edges = List.copyOf(edges);
+        this.totalWeight = this.edges.stream().mapToInt(Edge::weight).sum();
     }
 
     List<Edge> edges() {
@@ -28,6 +28,11 @@ class MstResult {
 
     @Override
     public int hashCode() {
-        return 31 * totalWeight + edges.hashCode();
+        return Objects.hash(totalWeight, edges);
+    }
+
+    @Override
+    public String toString() {
+        return "MstResult{edges=" + edges + ", totalWeight=" + totalWeight + "}";
     }
 }

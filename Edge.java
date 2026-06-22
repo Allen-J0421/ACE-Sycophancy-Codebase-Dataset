@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 class Edge {
     private final int from;
     private final int to;
@@ -23,10 +25,7 @@ class Edge {
 
     @Override
     public int hashCode() {
-        int result = from;
-        result = 31 * result + to;
-        result = 31 * result + weight;
-        return result;
+        return Objects.hash(from, to, weight);
     }
 
     @Override

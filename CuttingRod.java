@@ -3,6 +3,9 @@
  *
  * The price table is 1-indexed: {@code prices[length]} is the value of a
  * single piece of that length, and {@code prices[0]} is unused.
+ *
+ * The public {@code cutRod(...)} methods are kept as compatibility shims over
+ * the clearer {@code maxRevenue(...)} API.
  */
 public final class CuttingRod {
 
@@ -11,28 +14,36 @@ public final class CuttingRod {
     }
 
     public static int cutRod(int[] prices) {
-        return prices == null ? 0 : cutRod(prices, defaultRodLength(prices));
+        return maxRevenue(prices);
     }
 
     public static int cutRod(int[] prices, int rodLength) {
+        return maxRevenue(prices, rodLength);
+    }
+
+    public static int maxRevenue(int[] prices) {
+        return prices == null ? 0 : maxRevenue(prices, defaultRodLength(prices));
+    }
+
+    public static int maxRevenue(int[] prices, int rodLength) {
         if (prices == null || rodLength <= 0) {
             return 0;
         }
-        validateInputs(prices, rodLength);
+        validatePriceTable(prices, rodLength);
 
-        int[] maxRevenue = new int[rodLength + 1];
+        int[] revenues = new int[rodLength + 1];
         for (int currentLength = 1; currentLength <= rodLength; currentLength++) {
-            maxRevenue[currentLength] = bestRevenueForLength(prices, maxRevenue, currentLength);
+            revenues[currentLength] = bestRevenueForLength(prices, revenues, currentLength);
         }
 
-        return maxRevenue[rodLength];
+        return revenues[rodLength];
     }
 
     private static int defaultRodLength(int[] prices) {
         return prices.length - 1;
     }
 
-    private static void validateInputs(int[] prices, int rodLength) {
+    private static void validatePriceTable(int[] prices, int rodLength) {
         if (prices == null) {
             throw new IllegalArgumentException("prices must not be null");
         }

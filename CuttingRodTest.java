@@ -1,5 +1,7 @@
 public final class CuttingRodTest {
 
+    private static final int[] CLASSIC_SAMPLE_PRICES = {0, 1, 5, 8, 9, 10, 17, 17, 20};
+
     private CuttingRodTest() {
         // Utility class.
     }
@@ -9,6 +11,7 @@ public final class CuttingRodTest {
         shouldReturnZeroForNonPositiveLength();
         shouldSolveClassicSample();
         shouldSolveShorterRodLength();
+        shouldKeepCompatibilityShim();
         shouldRejectTooSmallPriceTable();
         System.out.println("All CuttingRod tests passed.");
     }
@@ -18,31 +21,30 @@ public final class CuttingRodTest {
     }
 
     private static void shouldReturnZeroForNonPositiveLength() {
-        assertEquals(0, CuttingRod.cutRod(new int[] {0, 1, 2}, 0), "rod length 0");
-        assertEquals(0, CuttingRod.cutRod(new int[] {0, 1, 2}, -3), "negative rod length");
+        assertEquals(0, CuttingRod.maxRevenue(new int[] {0, 1, 2}, 0), "rod length 0");
+        assertEquals(0, CuttingRod.maxRevenue(new int[] {0, 1, 2}, -3), "negative rod length");
     }
 
     private static void shouldSolveClassicSample() {
-        int[] samplePrices = {0, 1, 5, 8, 9, 10, 17, 17, 20};
-        assertEquals(22, CuttingRod.cutRod(samplePrices), "classic sample");
+        assertEquals(22, CuttingRod.maxRevenue(CLASSIC_SAMPLE_PRICES), "classic sample");
     }
 
     private static void shouldSolveShorterRodLength() {
-        int[] samplePrices = {0, 1, 5, 8, 9, 10, 17, 17, 20};
-        assertEquals(10, CuttingRod.cutRod(samplePrices, 4), "rod length 4");
+        assertEquals(10, CuttingRod.maxRevenue(CLASSIC_SAMPLE_PRICES, 4), "rod length 4");
+    }
+
+    private static void shouldKeepCompatibilityShim() {
+        assertEquals(
+                CuttingRod.maxRevenue(CLASSIC_SAMPLE_PRICES),
+                CuttingRod.cutRod(CLASSIC_SAMPLE_PRICES),
+                "compatibility shim");
     }
 
     private static void shouldRejectTooSmallPriceTable() {
-        boolean threw = false;
-        try {
-            CuttingRod.cutRod(new int[] {0, 1, 5}, 5);
-        } catch (IllegalArgumentException expected) {
-            threw = true;
-        }
-
-        if (!threw) {
-            throw new AssertionError("expected IllegalArgumentException for an undersized price table");
-        }
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> CuttingRod.maxRevenue(new int[] {0, 1, 5}, 5),
+                "undersized price table");
     }
 
     private static void assertEquals(int expected, int actual, String caseName) {
@@ -50,5 +52,27 @@ public final class CuttingRodTest {
             throw new AssertionError(
                     caseName + ": expected " + expected + " but got " + actual);
         }
+    }
+
+    private static void assertThrows(
+            Class<? extends Throwable> expectedType, ThrowingRunnable action, String caseName) {
+        try {
+            action.run();
+        } catch (Throwable actual) {
+            if (expectedType.isInstance(actual)) {
+                return;
+            }
+            throw new AssertionError(
+                    caseName + ": expected " + expectedType.getSimpleName()
+                            + " but got " + actual.getClass().getSimpleName(),
+                    actual);
+        }
+
+        throw new AssertionError(caseName + ": expected " + expectedType.getSimpleName());
+    }
+
+    @FunctionalInterface
+    private interface ThrowingRunnable {
+        void run() throws Throwable;
     }
 }

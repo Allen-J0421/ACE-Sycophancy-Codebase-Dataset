@@ -20,6 +20,18 @@ public class ActivitySelectionTest {
             () -> ActivitySelection.activitySelection(new int[] {1, 2}, new int[] {3}),
             "rejects mismatched input lengths"
         );
+
+        assertThrows(
+            NullPointerException.class,
+            () -> ActivitySelection.activitySelection(null, new int[] {}),
+            "rejects null start input"
+        );
+
+        assertEquals(
+            1,
+            ActivitySelection.activitySelection(new int[] {1, 2}, new int[] {2, 3}),
+            "preserves the strict compatibility rule when activities touch"
+        );
     }
 
     private static void assertEquals(int expected, int actual, String message) {

@@ -3,29 +3,14 @@ import java.util.Comparator;
 import java.util.Objects;
 
 public class ActivitySelection {
+    private static final Comparator<Activity> BY_FINISH_TIME =
+        Comparator.comparingInt(Activity::finishTime);
+
     private ActivitySelection() {
     }
 
     public static int activitySelection(int[] start, int[] finish) {
-        Activity[] activities = buildActivities(start, finish);
-        if (activities.length == 0) {
-            return 0;
-        }
-
-        Arrays.sort(activities, Comparator.comparingInt(Activity::finish));
-
-        int count = 1;
-        Activity lastSelected = activities[0];
-
-        for (int i = 1; i < activities.length; i++) {
-            Activity current = activities[i];
-            if (current.start() > lastSelected.finish()) {
-                count++;
-                lastSelected = current;
-            }
-        }
-
-        return count;
+        return countSelectedActivities(sortByFinishTime(buildActivities(start, finish)));
     }
 
     private static Activity[] buildActivities(int[] start, int[] finish) {
@@ -43,6 +28,31 @@ public class ActivitySelection {
         return activities;
     }
 
+    private static Activity[] sortByFinishTime(Activity[] activities) {
+        Arrays.sort(activities, BY_FINISH_TIME);
+        return activities;
+    }
+
+    private static int countSelectedActivities(Activity[] activities) {
+        if (activities.length == 0) {
+            return 0;
+        }
+
+        int count = 1;
+        Activity lastSelected = activities[0];
+
+        // Greedily keep the earliest-finishing compatible activity.
+        for (int i = 1; i < activities.length; i++) {
+            Activity current = activities[i];
+            if (current.canFollow(lastSelected)) {
+                count++;
+                lastSelected = current;
+            }
+        }
+
+        return count;
+    }
+
     public static void main(String[] args) {
         int[] start = {1, 3, 0, 5, 8, 5};
         int[] finish = {2, 4, 6, 7, 9, 9};
@@ -50,6 +60,21 @@ public class ActivitySelection {
         System.out.println(activitySelection(start, finish));
     }
 
-    private record Activity(int start, int finish) {
+    private static final class Activity {
+        private final int startTime;
+        private final int finishTime;
+
+        private Activity(int startTime, int finishTime) {
+            this.startTime = startTime;
+            this.finishTime = finishTime;
+        }
+
+        private int finishTime() {
+            return finishTime;
+        }
+
+        private boolean canFollow(Activity other) {
+            return startTime > other.finishTime;
+        }
     }
 }

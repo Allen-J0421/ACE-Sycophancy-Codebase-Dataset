@@ -1,5 +1,6 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +20,11 @@ public class BalancedParenthesesTest {
     })
     void returnsExpectedBalanceResult(String input, boolean expectedBalanced) {
         assertEquals(expectedBalanced, BalancedParentheses.isBalanced(input));
+    }
+
+    @Test
+    void supportsNonStringCharSequences() {
+        assertTrue(BalancedParentheses.isBalanced(new StringBuilder("{[()()]}")));
     }
 
     @Test

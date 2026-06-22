@@ -8,26 +8,20 @@ public class BalancedParentheses {
     private BalancedParentheses() {}
 
     public static boolean isBalanced(String s) {
-        Objects.requireNonNull(s, "input");
-        Deque<Character> expectedClosings = new ArrayDeque<>();
+        return isBalanced((CharSequence) s);
+    }
 
-        for (int i = 0; i < s.length(); i++) {
-            BracketToken token = BracketToken.from(s.charAt(i));
-            if (token == null) {
-                continue;
-            }
+    public static boolean isBalanced(CharSequence input) {
+        Objects.requireNonNull(input, "input");
+        BalanceChecker checker = new BalanceChecker();
 
-            if (token.isOpening()) {
-                expectedClosings.push(token.matchingCharacter());
-                continue;
-            }
-
-            if (expectedClosings.isEmpty() || expectedClosings.pop() != token.character()) {
+        for (int i = 0; i < input.length(); i++) {
+            if (!checker.accept(input.charAt(i))) {
                 return false;
             }
         }
 
-        return expectedClosings.isEmpty();
+        return checker.isBalanced();
     }
 
     public static void main(String[] args) {
@@ -35,21 +29,62 @@ public class BalancedParentheses {
         System.out.println((isBalanced(s) ? "true" : "false"));
     }
 
-    private record BracketToken(char character, char matchingCharacter, boolean opening) {
+    private static final class BalanceChecker {
+        private final Deque<Character> expectedClosings = new ArrayDeque<>();
+
+        private boolean accept(char candidate) {
+            BracketToken token = BracketToken.from(candidate);
+            if (token == null) {
+                return true;
+            }
+
+            if (token.isOpening()) {
+                expectedClosings.push(token.expectedClosing());
+                return true;
+            }
+
+            return !expectedClosings.isEmpty() && expectedClosings.pop() == token.expectedClosing();
+        }
+
+        private boolean isBalanced() {
+            return expectedClosings.isEmpty();
+        }
+    }
+
+    private enum BracketToken {
+        OPEN_PAREN(')', true),
+        OPEN_BRACE('}', true),
+        OPEN_BRACKET(']', true),
+        CLOSE_PAREN(')', false),
+        CLOSE_BRACE('}', false),
+        CLOSE_BRACKET(']', false);
+
+        private final char expectedClosing;
+        private final boolean opening;
+
+        BracketToken(char expectedClosing, boolean opening) {
+            this.expectedClosing = expectedClosing;
+            this.opening = opening;
+        }
+
         private static BracketToken from(char candidate) {
             return switch (candidate) {
-                case '(' -> new BracketToken(candidate, ')', true);
-                case '{' -> new BracketToken(candidate, '}', true);
-                case '[' -> new BracketToken(candidate, ']', true);
-                case ')' -> new BracketToken(candidate, '(', false);
-                case '}' -> new BracketToken(candidate, '{', false);
-                case ']' -> new BracketToken(candidate, '[', false);
+                case '(' -> OPEN_PAREN;
+                case '{' -> OPEN_BRACE;
+                case '[' -> OPEN_BRACKET;
+                case ')' -> CLOSE_PAREN;
+                case '}' -> CLOSE_BRACE;
+                case ']' -> CLOSE_BRACKET;
                 default -> null;
             };
         }
 
         private boolean isOpening() {
             return opening;
+        }
+
+        private char expectedClosing() {
+            return expectedClosing;
         }
     }
 }

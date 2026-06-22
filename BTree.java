@@ -119,7 +119,7 @@ public final class BTree {
         }
 
         private boolean contains(int targetKey) {
-            int index = findKeyIndex(targetKey);
+            int index = findFirstGreaterOrEqualIndex(targetKey);
             if (matchesKeyAt(index, targetKey)) {
                 return true;
             }
@@ -146,19 +146,15 @@ public final class BTree {
                 return;
             }
 
-            int childIndex = findKeyIndex(key);
+            int childIndex = findFirstGreaterOrEqualIndex(key);
             childIndex = prepareChildForInsert(childIndex, key);
             children[childIndex].insertNonFull(key);
         }
 
         private void insertIntoLeaf(int key) {
-            int insertAt = keyCount - 1;
-            while (insertAt >= 0 && keys[insertAt] > key) {
-                keys[insertAt + 1] = keys[insertAt];
-                insertAt--;
-            }
-
-            keys[insertAt + 1] = key;
+            int insertAt = findFirstGreaterOrEqualIndex(key);
+            shiftKeysRightFrom(insertAt);
+            keys[insertAt] = key;
             keyCount++;
         }
 
@@ -180,45 +176,39 @@ public final class BTree {
             int medianKey = child.keys[medianKeyIndex()];
 
             sibling.keyCount = minDegree - 1;
-            copyUpperHalfOfKeys(child, sibling);
+            copyUpperHalfOfKeysToSibling(child, sibling);
             if (!child.leaf) {
-                copyUpperHalfOfChildren(child, sibling);
+                copyUpperHalfOfChildrenToSibling(child, sibling);
             }
 
             child.keyCount = minDegree - 1;
-            shiftChildrenRight(childIndex + 1);
+            shiftChildrenRightFrom(childIndex + 1);
             children[childIndex + 1] = sibling;
 
-            shiftKeysRight(childIndex);
+            shiftKeysRightFrom(childIndex);
             keys[childIndex] = medianKey;
             keyCount++;
         }
 
-        private void copyUpperHalfOfKeys(Node source, Node destination) {
-            for (int i = 0; i < minDegree - 1; i++) {
-                destination.keys[i] = source.keys[i + minDegree];
-            }
+        private void copyUpperHalfOfKeysToSibling(Node source, Node sibling) {
+            System.arraycopy(source.keys, minDegree, sibling.keys, 0, minDegree - 1);
         }
 
-        private void copyUpperHalfOfChildren(Node source, Node destination) {
-            for (int i = 0; i < minDegree; i++) {
-                destination.children[i] = source.children[i + minDegree];
-            }
+        private void copyUpperHalfOfChildrenToSibling(Node source, Node sibling) {
+            System.arraycopy(source.children, minDegree, sibling.children, 0, minDegree);
         }
 
-        private void shiftChildrenRight(int fromIndex) {
-            for (int i = keyCount; i >= fromIndex; i--) {
-                children[i + 1] = children[i];
-            }
+        private void shiftChildrenRightFrom(int fromIndex) {
+            int length = keyCount - fromIndex + 1;
+            System.arraycopy(children, fromIndex, children, fromIndex + 1, length);
         }
 
-        private void shiftKeysRight(int fromIndex) {
-            for (int i = keyCount - 1; i >= fromIndex; i--) {
-                keys[i + 1] = keys[i];
-            }
+        private void shiftKeysRightFrom(int fromIndex) {
+            int length = keyCount - fromIndex;
+            System.arraycopy(keys, fromIndex, keys, fromIndex + 1, length);
         }
 
-        private int findKeyIndex(int targetKey) {
+        private int findFirstGreaterOrEqualIndex(int targetKey) {
             int index = 0;
             while (index < keyCount && targetKey > keys[index]) {
                 index++;

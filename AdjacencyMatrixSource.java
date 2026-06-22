@@ -1,3 +1,0 @@
-interface AdjacencyMatrixSource {
-    AdjacencyMatrix load();
-}

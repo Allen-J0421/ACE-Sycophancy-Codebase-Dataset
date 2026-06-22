@@ -1,6 +1,6 @@
-final class SampleAdjacencyMatrixSource implements AdjacencyMatrixSource {
+final class SampleGraphSource implements GraphSource {
     @Override
-    public AdjacencyMatrix load() {
+    public Graph load() {
         return AdjacencyMatrix.fromRows(new int[][] {
             {0, 2, 0, 6, 0},
             {2, 0, 3, 8, 5},

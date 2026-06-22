@@ -1,23 +1,19 @@
 final class MstApplication {
-    private final AdjacencyMatrixSource adjacencyMatrixSource;
-    private final GraphFactory graphFactory;
+    private final GraphSource graphSource;
     private final MinimumSpanningTreeAlgorithm algorithm;
     private final MstResultFormatter formatter;
 
     MstApplication(
-            AdjacencyMatrixSource adjacencyMatrixSource,
-            GraphFactory graphFactory,
+            GraphSource graphSource,
             MinimumSpanningTreeAlgorithm algorithm,
             MstResultFormatter formatter) {
-        this.adjacencyMatrixSource = adjacencyMatrixSource;
-        this.graphFactory = graphFactory;
+        this.graphSource = graphSource;
         this.algorithm = algorithm;
         this.formatter = formatter;
     }
 
     String run() {
-        AdjacencyMatrix adjacencyMatrix = adjacencyMatrixSource.load();
-        Graph graph = graphFactory.create(adjacencyMatrix);
+        Graph graph = graphSource.load();
         MstResult result = algorithm.compute(graph);
         return formatter.format(result);
     }

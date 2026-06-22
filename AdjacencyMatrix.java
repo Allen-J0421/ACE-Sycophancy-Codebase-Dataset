@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-final class AdjacencyMatrix {
+final class AdjacencyMatrix implements Graph {
     private static final int NO_EDGE = 0;
 
     private final int[][] rows;
@@ -16,11 +16,13 @@ final class AdjacencyMatrix {
         return new AdjacencyMatrix(copyRows(rows));
     }
 
-    int vertexCount() {
+    @Override
+    public int vertexCount() {
         return rows.length;
     }
 
-    List<Neighbor> neighborsOf(int vertex) {
+    @Override
+    public List<Neighbor> neighborsOf(int vertex) {
         List<Neighbor> neighbors = new ArrayList<>();
 
         for (int candidateVertex = 0; candidateVertex < rows[vertex].length; candidateVertex++) {

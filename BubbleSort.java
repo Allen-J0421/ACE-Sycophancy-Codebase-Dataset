@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.StringJoiner;
 
 public final class BubbleSort {
 
@@ -18,10 +17,6 @@ public final class BubbleSort {
         int[] copy = Arrays.copyOf(values, values.length);
         sortValuesInPlace(copy);
         return copy;
-    }
-
-    private static int[] createDemoValues() {
-        return new int[] { 64, 34, 25, 12, 22, 11, 90 };
     }
 
     private static void validate(int[] values) {
@@ -64,24 +59,7 @@ public final class BubbleSort {
         values[rightIndex] = temp;
     }
 
-    private static String formatArray(int[] values) {
-        StringJoiner joiner = new StringJoiner(" ");
-
-        for (int value : values) {
-            joiner.add(Integer.toString(value));
-        }
-
-        return joiner.toString();
-    }
-
-    private static void runDemo() {
-        int[] values = createDemoValues();
-        sortInPlace(values);
-        System.out.println("Sorted array: ");
-        System.out.println(formatArray(values));
-    }
-
     public static void main(String[] args) {
-        runDemo();
+        BubbleSortDemo.main(args);
     }
 }

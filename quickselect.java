@@ -4,10 +4,6 @@ import java.util.Arrays;
  * Utility methods for selecting ordered elements from an integer array.
  */
 final class QuickSelect {
-    private static final int SAMPLE_K_POSITION = 3;
-    private static final String OUT_OF_BOUNDS_MESSAGE = "Index out of bound";
-    private static final String RESULT_PREFIX = "K-th smallest element in array : ";
-
     private QuickSelect() {
     }
 
@@ -108,6 +104,19 @@ final class QuickSelect {
     }
 
     public static void main(String[] args) {
+        QuickSelectDemo.main(args);
+    }
+}
+
+final class QuickSelectDemo {
+    private static final int SAMPLE_K_POSITION = 3;
+    private static final String OUT_OF_BOUNDS_MESSAGE = "Index out of bound";
+    private static final String RESULT_PREFIX = "K-th smallest element in array : ";
+
+    private QuickSelectDemo() {
+    }
+
+    public static void main(String[] args) {
         printKthSmallest(sampleValues(), SAMPLE_K_POSITION);
     }
 
@@ -116,7 +125,7 @@ final class QuickSelect {
             System.out.println(OUT_OF_BOUNDS_MESSAGE);
         } else {
             int[] workingCopy = Arrays.copyOf(values, values.length);
-            System.out.println(RESULT_PREFIX + kthSmallest(workingCopy, k));
+            System.out.println(RESULT_PREFIX + QuickSelect.kthSmallest(workingCopy, k));
         }
     }
 

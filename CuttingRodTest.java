@@ -7,11 +7,10 @@ public final class CuttingRodTest {
     public static void main(String[] args) {
         shouldCopyInputPriceTables();
         shouldReportAvailablePriceLengths();
-        shouldReturnZeroForNullInput();
+        shouldReturnZeroForNullTable();
         shouldReturnZeroForNonPositiveLength();
         shouldSolveClassicSample();
         shouldSolveShorterRodLength();
-        shouldKeepCompatibilityShim();
         shouldHandleShortPriceTable();
         System.out.println("All CuttingRod tests passed.");
     }
@@ -31,36 +30,29 @@ public final class CuttingRodTest {
         assertFalse(priceTable.hasPriceFor(3), "length 3 unavailable");
     }
 
-    private static void shouldReturnZeroForNullInput() {
-        assertEquals(0, CuttingRod.cutRod(null), "null input");
+    private static void shouldReturnZeroForNullTable() {
+        assertEquals(0, CuttingRod.maxRevenue(null), "null input");
     }
 
     private static void shouldReturnZeroForNonPositiveLength() {
-        assertEquals(0, CuttingRod.maxRevenue(new int[] {0, 1, 2}, 0), "rod length 0");
-        assertEquals(0, CuttingRod.maxRevenue(new int[] {0, 1, 2}, -3), "negative rod length");
+        assertEquals(0, CuttingRod.maxRevenue(PriceTable.of(new int[] {0, 1, 2}), 0),
+                "rod length 0");
+        assertEquals(0, CuttingRod.maxRevenue(PriceTable.of(new int[] {0, 1, 2}), -3),
+                "negative rod length");
     }
 
     private static void shouldSolveClassicSample() {
-        assertEquals(22, CuttingRod.maxRevenueForTable(
-                RodCuttingFixtures.classicSamplePriceTable()),
+        assertEquals(22, CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePriceTable()),
                 "classic sample");
     }
 
     private static void shouldSolveShorterRodLength() {
-        assertEquals(10, CuttingRod.maxRevenueForTable(
-                RodCuttingFixtures.classicSamplePriceTable(), 4),
+        assertEquals(10, CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePriceTable(), 4),
                 "rod length 4");
     }
 
-    private static void shouldKeepCompatibilityShim() {
-        assertEquals(
-                CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePrices()),
-                CuttingRod.cutRod(RodCuttingFixtures.classicSamplePrices()),
-                "compatibility shim");
-    }
-
     private static void shouldHandleShortPriceTable() {
-        assertEquals(11, CuttingRod.maxRevenueForTable(PriceTable.of(new int[] {0, 1, 5}), 5),
+        assertEquals(11, CuttingRod.maxRevenue(PriceTable.of(new int[] {0, 1, 5}), 5),
                 "short price table");
     }
 

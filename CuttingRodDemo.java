@@ -5,7 +5,6 @@ public final class CuttingRodDemo {
     }
 
     public static void main(String[] args) {
-        System.out.println(CuttingRod.maxRevenueForTable(
-                RodCuttingFixtures.classicSamplePriceTable()));
+        System.out.println(CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePriceTable()));
     }
 }

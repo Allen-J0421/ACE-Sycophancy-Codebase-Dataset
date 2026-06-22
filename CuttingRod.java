@@ -1,9 +1,6 @@
 /**
  * Dynamic-programming solution to the rod-cutting problem.
  *
- * The public {@code cutRod(...)} methods are kept as compatibility shims over
- * the clearer {@code maxRevenue(...)} API.
- *
  * Price tables are 1-indexed, with {@code prices[0]} unused.
  */
 public final class CuttingRod {
@@ -12,31 +9,11 @@ public final class CuttingRod {
         // Utility class.
     }
 
-    public static int cutRod(int[] prices) {
-        return maxRevenue(prices);
+    public static int maxRevenue(PriceTable priceTable) {
+        return priceTable == null ? 0 : maxRevenue(priceTable, priceTable.maxRodLength());
     }
 
-    public static int cutRod(int[] prices, int rodLength) {
-        return maxRevenue(prices, rodLength);
-    }
-
-    public static int maxRevenue(int[] prices) {
-        return prices == null ? 0 : maxRevenueForTable(PriceTable.of(prices));
-    }
-
-    public static int maxRevenue(int[] prices, int rodLength) {
-        if (prices == null || rodLength <= 0) {
-            return 0;
-        }
-
-        return maxRevenueForTable(PriceTable.of(prices), rodLength);
-    }
-
-    public static int maxRevenueForTable(PriceTable priceTable) {
-        return priceTable == null ? 0 : maxRevenueForTable(priceTable, priceTable.maxRodLength());
-    }
-
-    public static int maxRevenueForTable(PriceTable priceTable, int rodLength) {
+    public static int maxRevenue(PriceTable priceTable, int rodLength) {
         if (priceTable == null || rodLength <= 0) {
             return 0;
         }

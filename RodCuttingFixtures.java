@@ -6,10 +6,6 @@ final class RodCuttingFixtures {
         // Utility class.
     }
 
-    static int[] classicSamplePrices() {
-        return CLASSIC_SAMPLE_PRICES.clone();
-    }
-
     static PriceTable classicSamplePriceTable() {
         return PriceTable.of(CLASSIC_SAMPLE_PRICES);
     }

@@ -63,7 +63,7 @@ class PrimsMST implements MstAlgorithm {
                     minVertex = v;
                 }
             }
-            return minVertex == -1 ? OptionalInt.empty() : OptionalInt.of(minVertex);
+            return min < Integer.MAX_VALUE ? OptionalInt.of(minVertex) : OptionalInt.empty();
         }
 
         void include(int vertex) {

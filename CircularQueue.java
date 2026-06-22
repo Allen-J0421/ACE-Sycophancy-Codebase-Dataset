@@ -1,0 +1,94 @@
+public class CircularQueue {
+
+    private static final int EMPTY_VALUE = -1;
+    private static final String FULL_MESSAGE = "Queue is full!";
+    private static final String EMPTY_MESSAGE = "Queue is empty!";
+
+    private final int[] elements;
+    private int front;
+    private int size;
+
+    public CircularQueue(int capacity) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Queue capacity must be positive");
+        }
+
+        elements = new int[capacity];
+        front = 0;
+        size = 0;
+    }
+
+    public void enqueue(int value) {
+        if (isFull()) {
+            System.out.println(FULL_MESSAGE);
+            return;
+        }
+
+        elements[nextRearIndex()] = value;
+        size++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            System.out.println(EMPTY_MESSAGE);
+            return EMPTY_VALUE;
+        }
+
+        int value = elements[front];
+        front = indexFromFront(1);
+        size--;
+        return value;
+    }
+
+    public int getFront() {
+        return peekFront();
+    }
+
+    public int getRear() {
+        return peekRear();
+    }
+
+    public int peekFront() {
+        if (isEmpty()) {
+            return EMPTY_VALUE;
+        }
+
+        return elements[front];
+    }
+
+    public int peekRear() {
+        if (isEmpty()) {
+            return EMPTY_VALUE;
+        }
+
+        return elements[rearIndex()];
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean isFull() {
+        return size == capacity();
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public int capacity() {
+        return elements.length;
+    }
+
+    private int nextRearIndex() {
+        return indexFromFront(size);
+    }
+
+    private int rearIndex() {
+        return indexFromFront(size - 1);
+    }
+
+    private int indexFromFront(int offset) {
+        return (front + offset) % capacity();
+    }
+}

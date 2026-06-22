@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class Graph {
@@ -14,12 +15,17 @@ class Graph {
     }
 
     void addEdge(int u, int v) {
+        if (u < 0 || u >= vertexCount || v < 0 || v >= vertexCount) {
+            throw new IllegalArgumentException(
+                "Vertex indices must be in range [0, " + (vertexCount - 1) + "]"
+            );
+        }
         adjacencyList.get(u).add(v);
         adjacencyList.get(v).add(u);
     }
 
     List<Integer> neighborsOf(int vertex) {
-        return adjacencyList.get(vertex);
+        return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
     int vertexCount() {

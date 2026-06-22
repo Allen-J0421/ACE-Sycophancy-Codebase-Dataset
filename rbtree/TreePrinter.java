@@ -38,12 +38,8 @@ final class TreePrinter {
         space += INDENT;
         print(node.right, space);
 
-        System.out.printf("\n");
-        for (int i = INDENT; i < space; i++) {
-            System.out.printf(" ");
-        }
-        System.out.printf("%s", node.data);
-        System.out.printf("\n");
+        String indent = " ".repeat(space - INDENT);
+        System.out.print("\n" + indent + node.data + "\n");
 
         print(node.left, space);
     }

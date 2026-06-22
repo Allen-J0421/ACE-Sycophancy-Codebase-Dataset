@@ -8,8 +8,6 @@ final class Graphs {
     }
 
     static Graph fromRawEdges(int vertexCount, int[][] rawEdges) {
-        validateVertexCount(vertexCount);
-
         if (rawEdges == null) {
             throw new IllegalArgumentException("Edges cannot be null.");
         }
@@ -27,22 +25,6 @@ final class Graphs {
             throw new IllegalArgumentException("Each edge must contain exactly 3 integers.");
         }
 
-        int from = rawEdge[0];
-        int to = rawEdge[1];
-        validateVertex(from, vertexCount);
-        validateVertex(to, vertexCount);
-        return new Edge(from, to, rawEdge[2]);
-    }
-
-    private static void validateVertexCount(int vertexCount) {
-        if (vertexCount < 0) {
-            throw new IllegalArgumentException("Vertex count cannot be negative.");
-        }
-    }
-
-    private static void validateVertex(int vertex, int vertexCount) {
-        if (vertex < 0 || vertex >= vertexCount) {
-            throw new IllegalArgumentException("Vertex index out of bounds: " + vertex);
-        }
+        return new Edge(rawEdge[0], rawEdge[1], rawEdge[2]);
     }
 }

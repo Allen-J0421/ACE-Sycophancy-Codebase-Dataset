@@ -13,6 +13,7 @@ record Graph(int vertexCount, List<Edge> edges) {
         }
 
         edges = List.copyOf(edges);
+        validateEdges(edges, vertexCount);
     }
 
     int requiredEdgeCount() {
@@ -38,6 +39,16 @@ record Graph(int vertexCount, List<Edge> edges) {
     private static void validateVertexCount(int vertexCount) {
         if (vertexCount < 0) {
             throw new IllegalArgumentException("Vertex count cannot be negative.");
+        }
+    }
+
+    private static void validateEdges(List<Edge> edges, int vertexCount) {
+        for (Edge edge : edges) {
+            if (edge == null) {
+                throw new IllegalArgumentException("Edges cannot contain null values.");
+            }
+
+            edge.validateForVertexCount(vertexCount);
         }
     }
 }

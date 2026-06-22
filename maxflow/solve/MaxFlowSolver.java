@@ -1,4 +1,6 @@
-package maxflow;
+package maxflow.solve;
+
+import maxflow.graph.FlowNetwork;
 
 /**
  * Computes the maximum flow from a source vertex to a sink vertex in a

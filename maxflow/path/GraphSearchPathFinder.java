@@ -1,4 +1,6 @@
-package maxflow;
+package maxflow.path;
+
+import maxflow.graph.ResidualGraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;

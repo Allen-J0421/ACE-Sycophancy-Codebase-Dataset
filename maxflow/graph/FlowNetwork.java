@@ -1,4 +1,4 @@
-package maxflow;
+package maxflow.graph;
 
 import java.util.Arrays;
 

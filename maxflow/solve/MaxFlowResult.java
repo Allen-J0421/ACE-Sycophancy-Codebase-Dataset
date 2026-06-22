@@ -1,11 +1,13 @@
-package maxflow;
+package maxflow.solve;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The outcome of a maximum-flow computation: the total flow value, the source and
  * sink it was computed for, and the flow routed along each original edge.
+ *
+ * <p>A pure, immutable value object; a {@link MaxFlowSolver} populates it. It has
+ * no knowledge of the residual graph it was derived from.
  */
 public final class MaxFlowResult {
 
@@ -22,31 +24,20 @@ public final class MaxFlowResult {
     private final int value;
     private final List<FlowEdge> edges;
 
-    private MaxFlowResult(int source, int sink, int value, List<FlowEdge> edges) {
+    /**
+     * @param source the source vertex the flow was computed for
+     * @param sink   the sink vertex the flow was computed for
+     * @param value  the total flow value (must be non-negative)
+     * @param edges  the edges carrying positive flow
+     */
+    public MaxFlowResult(int source, int sink, int value, List<FlowEdge> edges) {
+        if (value < 0) {
+            throw new IllegalArgumentException("flow value must be non-negative, was " + value);
+        }
         this.source = source;
         this.sink = sink;
         this.value = value;
         this.edges = List.copyOf(edges);
-    }
-
-    /**
-     * Builds a result by reading the net flow on every original edge of the
-     * network out of the final residual graph.
-     */
-    public static MaxFlowResult from(ResidualGraph residual, int source, int sink, int value) {
-        FlowNetwork network = residual.network();
-        List<FlowEdge> edges = new ArrayList<>();
-        for (int from = 0; from < network.vertexCount(); from++) {
-            for (int to = 0; to < network.vertexCount(); to++) {
-                if (network.capacity(from, to) > 0) {
-                    int flow = residual.flowOn(from, to);
-                    if (flow > 0) {
-                        edges.add(new FlowEdge(from, to, flow));
-                    }
-                }
-            }
-        }
-        return new MaxFlowResult(source, sink, value, edges);
     }
 
     /** Returns the maximum flow value from source to sink. */

@@ -1,4 +1,4 @@
-package maxflow;
+package maxflow.path;
 
 /**
  * Finds an augmenting path using breadth-first search, so the path with the

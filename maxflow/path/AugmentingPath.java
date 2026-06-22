@@ -1,4 +1,4 @@
-package maxflow;
+package maxflow.path;
 
 import java.util.List;
 

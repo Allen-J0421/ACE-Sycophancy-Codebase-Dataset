@@ -1,7 +1,12 @@
 package maxflow;
 
+import maxflow.graph.FlowNetwork;
+import maxflow.solve.FordFulkersonSolver;
+import maxflow.solve.MaxFlowResult;
+import maxflow.solve.MaxFlowSolver;
+
 /**
- * Demonstrates the {@link maxflow} package on the classic six-vertex network,
+ * Demonstrates the {@code maxflow} library on the classic six-vertex network,
  * reproducing the behaviour of the original single-file program (maximum flow 23)
  * and additionally printing the flow routed along each edge.
  */

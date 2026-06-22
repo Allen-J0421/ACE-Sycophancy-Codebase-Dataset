@@ -1,4 +1,4 @@
-package maxflow;
+package maxflow.graph;
 
 /**
  * The mutable residual graph used while computing a maximum flow.
@@ -79,10 +79,5 @@ public final class ResidualGraph {
      */
     public int flowOn(int from, int to) {
         return Math.max(0, network.capacity(from, to) - residual[from][to]);
-    }
-
-    /** Returns the network this residual graph was derived from. */
-    public FlowNetwork network() {
-        return network;
     }
 }

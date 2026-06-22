@@ -35,10 +35,10 @@ class BTreeNode {
     }
 
     boolean isFull() {
-        return keyCount == maxKeys();
+        return keyCount == maximumKeyCount();
     }
 
-    private int maxKeys() {
+    private int maximumKeyCount() {
         return 2 * minimumDegree - 1;
     }
 
@@ -88,12 +88,24 @@ class BTreeNode {
 
     private BTreeNode createRightSibling(BTreeNode node) {
         BTreeNode sibling = new BTreeNode(node.minimumDegree, node.leaf);
-        sibling.keyCount = node.minimumDegree - 1;
-        System.arraycopy(node.keys, node.minimumDegree, sibling.keys, 0, node.minimumDegree - 1);
+        sibling.keyCount = splitKeyCount(node);
+        copyRightHalfKeys(node, sibling);
         if (!node.leaf) {
-            System.arraycopy(node.children, node.minimumDegree, sibling.children, 0, node.minimumDegree);
+            copyRightHalfChildren(node, sibling);
         }
         return sibling;
+    }
+
+    private int splitKeyCount(BTreeNode node) {
+        return node.minimumDegree - 1;
+    }
+
+    private void copyRightHalfKeys(BTreeNode source, BTreeNode target) {
+        System.arraycopy(source.keys, source.minimumDegree, target.keys, 0, splitKeyCount(source));
+    }
+
+    private void copyRightHalfChildren(BTreeNode source, BTreeNode target) {
+        System.arraycopy(source.children, source.minimumDegree, target.children, 0, source.minimumDegree);
     }
 
     private int medianKey(BTreeNode node) {
@@ -101,7 +113,7 @@ class BTreeNode {
     }
 
     private void trimToLeftHalf(BTreeNode node) {
-        node.keyCount = node.minimumDegree - 1;
+        node.keyCount = splitKeyCount(node);
     }
 
     private void insertChildAt(int index, BTreeNode child) {

@@ -2,31 +2,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-final class AdjacencyMatrixGraph implements Graph {
+final class Graphs {
     private static final int NO_EDGE = 0;
 
-    private final List<List<Neighbor>> neighborsByVertex;
-
-    private AdjacencyMatrixGraph(List<List<Neighbor>> neighborsByVertex) {
-        this.neighborsByVertex = neighborsByVertex;
+    private Graphs() {
     }
 
-    static AdjacencyMatrixGraph fromMatrix(int[][] adjacencyMatrix) {
-        validateMatrix(adjacencyMatrix);
-        return new AdjacencyMatrixGraph(buildNeighbors(adjacencyMatrix));
+    static Graph fromAdjacencyMatrix(int[][] adjacencyMatrix) {
+        validateAdjacencyMatrix(adjacencyMatrix);
+        return new NeighborListGraph(buildNeighbors(adjacencyMatrix));
     }
 
-    @Override
-    public int vertexCount() {
-        return neighborsByVertex.size();
-    }
-
-    @Override
-    public List<Neighbor> neighborsOf(int vertex) {
-        return neighborsByVertex.get(vertex);
-    }
-
-    private static void validateMatrix(int[][] adjacencyMatrix) {
+    private static void validateAdjacencyMatrix(int[][] adjacencyMatrix) {
         if (adjacencyMatrix == null || adjacencyMatrix.length == 0) {
             throw new IllegalArgumentException("Graph must contain at least one vertex.");
         }

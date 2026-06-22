@@ -1,24 +1,27 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-class BalancedParentheses {
+final class BalancedParentheses {
     private static final String OPENING_BRACKETS = "({[";
     private static final String CLOSING_BRACKETS = ")}]";
 
-    public static boolean isBalanced(String s) {
-        Deque<Character> brackets = new ArrayDeque<>();
+    private BalancedParentheses() {
+    }
 
-        for (char c : s.toCharArray()) {
-            if (isOpeningBracket(c)) {
-                brackets.push(c);
-            } else if (isClosingBracket(c)) {
-                if (brackets.isEmpty() || !isMatchingPair(brackets.pop(), c)) {
+    public static boolean isBalanced(String input) {
+        Deque<Character> openBrackets = new ArrayDeque<>();
+
+        for (char current : input.toCharArray()) {
+            if (isOpeningBracket(current)) {
+                openBrackets.push(current);
+            } else if (isClosingBracket(current)) {
+                if (openBrackets.isEmpty() || !isMatchingPair(openBrackets.pop(), current)) {
                     return false;
                 }
             }
         }
 
-        return brackets.isEmpty();
+        return openBrackets.isEmpty();
     }
 
     private static boolean isOpeningBracket(char c) {
@@ -35,7 +38,7 @@ class BalancedParentheses {
     }
 
     public static void main(String[] args) {
-        String s = "[()()]{}";
-        System.out.println(isBalanced(s));
+        String sample = "[()()]{}";
+        System.out.println(isBalanced(sample));
     }
 }

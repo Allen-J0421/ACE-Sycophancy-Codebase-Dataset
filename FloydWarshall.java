@@ -3,7 +3,8 @@
  *
  * <p>The algorithm runs in {@code O(V^3)} time and {@code O(V^2)} space and
  * supports negative edge weights. It does not mutate its input: callers receive
- * a fresh {@link Graph} of shortest-path distances.
+ * a fresh {@link ShortestPaths} carrying both distances and path-reconstruction
+ * data.
  */
 public final class FloydWarshall {
 
@@ -12,17 +13,18 @@ public final class FloydWarshall {
     }
 
     /**
-     * Returns a graph whose cells hold the shortest-path distance between every
-     * pair of vertices.
+     * Computes shortest-path distances and paths between every pair of vertices.
      *
      * @param graph the input graph
-     * @return shortest-path distances, with {@link Graph#INF} for unreachable pairs
+     * @return distances (with {@link Graph#INF} for unreachable pairs) and the
+     *         means to reconstruct the actual shortest paths
      * @throws IllegalArgumentException if the graph contains a negative cycle,
      *                                  for which shortest paths are undefined
      */
-    public static Graph shortestPaths(Graph graph) {
+    public static ShortestPaths shortestPaths(Graph graph) {
         int n = graph.size();
         int[][] dist = graph.toMatrix();
+        int[][] next = initialNextHops(graph, dist);
 
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < n; i++) {
@@ -37,13 +39,31 @@ public final class FloydWarshall {
                     int throughK = dist[i][k] + dist[k][j];
                     if (throughK < dist[i][j]) {
                         dist[i][j] = throughK;
+                        next[i][j] = next[i][k];
                     }
                 }
             }
         }
 
         detectNegativeCycle(dist);
-        return Graph.of(dist);
+        return new ShortestPaths(dist, next);
+    }
+
+    /**
+     * Seeds the next-hop matrix from the direct edges: the first hop from
+     * {@code i} toward {@code j} is {@code j} itself when a direct edge exists.
+     */
+    private static int[][] initialNextHops(Graph graph, int[][] dist) {
+        int n = graph.size();
+        int[][] next = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                next[i][j] = (i != j && dist[i][j] != Graph.INF)
+                        ? j
+                        : ShortestPaths.NO_PATH;
+            }
+        }
+        return next;
     }
 
     /**

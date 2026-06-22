@@ -1,6 +1,8 @@
+import java.util.List;
+
 /**
- * Demonstrates {@link FloydWarshall} on a small sample graph and prints the
- * resulting all-pairs shortest-path matrix.
+ * Demonstrates {@link FloydWarshall}: prints the all-pairs shortest-path matrix
+ * and reconstructs a few concrete shortest paths.
  */
 public final class Main {
 
@@ -15,8 +17,14 @@ public final class Main {
                 {1,   inf, inf, 4,   0}
         });
 
-        Graph shortest = FloydWarshall.shortestPaths(graph);
-        printMatrix(shortest);
+        ShortestPaths result = FloydWarshall.shortestPaths(graph);
+
+        printMatrix(result.distances());
+
+        System.out.println();
+        printPath(result, 1, 0);
+        printPath(result, 4, 1);
+        printPath(result, 0, 4);
     }
 
     /** Prints the distance matrix, rendering {@link Graph#INF} as "INF". */
@@ -32,5 +40,16 @@ public final class Main {
             sb.append(System.lineSeparator());
         }
         System.out.print(sb);
+    }
+
+    /** Prints the shortest path and its distance between two vertices. */
+    private static void printPath(ShortestPaths result, int from, int to) {
+        List<Integer> path = result.path(from, to);
+        if (path.isEmpty()) {
+            System.out.printf("%d -> %d: unreachable%n", from, to);
+        } else {
+            System.out.printf("%d -> %d (distance %d): %s%n",
+                    from, to, result.distance(from, to), path);
+        }
     }
 }

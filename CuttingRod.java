@@ -1,12 +1,10 @@
 /**
  * Dynamic-programming solution to the rod-cutting problem.
  *
- * The price table is 1-indexed: {@code prices[length]} is the value of a
- * single piece of that length, and {@code prices[0]} is unused. Missing price
- * entries are treated as unavailable cut lengths.
- *
  * The public {@code cutRod(...)} methods are kept as compatibility shims over
  * the clearer {@code maxRevenue(...)} API.
+ *
+ * Price tables are 1-indexed, with {@code prices[0]} unused.
  */
 public final class CuttingRod {
 
@@ -23,7 +21,7 @@ public final class CuttingRod {
     }
 
     public static int maxRevenue(int[] prices) {
-        return prices == null ? 0 : maxRevenue(prices, defaultRodLength(prices));
+        return prices == null ? 0 : maxRevenueForTable(PriceTable.of(prices));
     }
 
     public static int maxRevenue(int[] prices, int rodLength) {
@@ -31,33 +29,36 @@ public final class CuttingRod {
             return 0;
         }
 
+        return maxRevenueForTable(PriceTable.of(prices), rodLength);
+    }
+
+    public static int maxRevenueForTable(PriceTable priceTable) {
+        return priceTable == null ? 0 : maxRevenueForTable(priceTable, priceTable.maxRodLength());
+    }
+
+    public static int maxRevenueForTable(PriceTable priceTable, int rodLength) {
+        if (priceTable == null || rodLength <= 0) {
+            return 0;
+        }
+
         int[] revenues = new int[rodLength + 1];
         for (int currentLength = 1; currentLength <= rodLength; currentLength++) {
-            revenues[currentLength] = bestRevenueForLength(prices, revenues, currentLength);
+            revenues[currentLength] = bestRevenueForLength(priceTable, revenues, currentLength);
         }
 
         return revenues[rodLength];
     }
 
-    private static int defaultRodLength(int[] prices) {
-        return prices.length - 1;
-    }
-
-    private static int bestRevenueForLength(int[] prices, int[] maxRevenue, int currentLength) {
+    private static int bestRevenueForLength(
+            PriceTable priceTable, int[] maxRevenue, int currentLength) {
         int bestForLength = 0;
-        int maxCutLength = availableCutLength(prices, currentLength);
-
-        for (int firstCut = 1; firstCut <= maxCutLength; firstCut++) {
-            int revenue = prices[firstCut] + maxRevenue[currentLength - firstCut];
+        for (int firstCut = 1; firstCut <= currentLength; firstCut++) {
+            int revenue = priceTable.priceFor(firstCut) + maxRevenue[currentLength - firstCut];
             if (revenue > bestForLength) {
                 bestForLength = revenue;
             }
         }
 
         return bestForLength;
-    }
-
-    private static int availableCutLength(int[] prices, int currentLength) {
-        return Math.min(currentLength, prices.length - 1);
     }
 }

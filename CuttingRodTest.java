@@ -5,6 +5,7 @@ public final class CuttingRodTest {
     }
 
     public static void main(String[] args) {
+        shouldCopyInputPriceTables();
         shouldReturnZeroForNullInput();
         shouldReturnZeroForNonPositiveLength();
         shouldSolveClassicSample();
@@ -12,6 +13,14 @@ public final class CuttingRodTest {
         shouldKeepCompatibilityShim();
         shouldHandleShortPriceTable();
         System.out.println("All CuttingRod tests passed.");
+    }
+
+    private static void shouldCopyInputPriceTables() {
+        int[] prices = {0, 1, 5, 8};
+        PriceTable priceTable = PriceTable.of(prices);
+        prices[1] = 100;
+
+        assertEquals(8, priceTable.priceFor(3), "copied price table");
     }
 
     private static void shouldReturnZeroForNullInput() {
@@ -24,12 +33,14 @@ public final class CuttingRodTest {
     }
 
     private static void shouldSolveClassicSample() {
-        assertEquals(22, CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePrices()),
+        assertEquals(22, CuttingRod.maxRevenueForTable(
+                RodCuttingFixtures.classicSamplePriceTable()),
                 "classic sample");
     }
 
     private static void shouldSolveShorterRodLength() {
-        assertEquals(10, CuttingRod.maxRevenue(RodCuttingFixtures.classicSamplePrices(), 4),
+        assertEquals(10, CuttingRod.maxRevenueForTable(
+                RodCuttingFixtures.classicSamplePriceTable(), 4),
                 "rod length 4");
     }
 
@@ -41,7 +52,8 @@ public final class CuttingRodTest {
     }
 
     private static void shouldHandleShortPriceTable() {
-        assertEquals(11, CuttingRod.maxRevenue(new int[] {0, 1, 5}, 5), "short price table");
+        assertEquals(11, CuttingRod.maxRevenueForTable(PriceTable.of(new int[] {0, 1, 5}), 5),
+                "short price table");
     }
 
     private static void assertEquals(int expected, int actual, String caseName) {

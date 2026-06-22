@@ -88,14 +88,24 @@ class BTreeNode {
     }
 
     void traverse() {
+        System.out.print(traversalString());
+    }
+
+    String traversalString() {
+        StringBuilder out = new StringBuilder();
+        appendTraversal(out);
+        return out.toString();
+    }
+
+    private void appendTraversal(StringBuilder out) {
         for (int i = 0; i < keyCount; i++) {
             if (!leaf) {
-                children[i].traverse();
+                children[i].appendTraversal(out);
             }
-            System.out.print(" " + keys[i]);
+            out.append(" ").append(keys[i]);
         }
         if (!leaf) {
-            children[keyCount].traverse();
+            children[keyCount].appendTraversal(out);
         }
     }
 
@@ -124,13 +134,19 @@ class BTree {
     }
 
     void traverse() {
-        if (root != null) {
-            root.traverse();
-        }
+        System.out.print(traversalString());
+    }
+
+    String traversalString() {
+        return root == null ? "" : root.traversalString();
     }
 
     BTreeNode search(int key) {
         return root == null ? null : root.search(key);
+    }
+
+    boolean contains(int key) {
+        return search(key) != null;
     }
 
     void insert(int key) {
@@ -171,12 +187,12 @@ class Main {
 
     private static void printTraversal(BTree tree) {
         System.out.print("Traversal of the constructed tree is ");
-        tree.traverse();
+        System.out.print(tree.traversalString());
         System.out.println();
     }
 
     private static void printSearchResult(BTree tree, int key) {
-        if (tree.search(key) != null) {
+        if (tree.contains(key)) {
             System.out.println(" | Present");
         } else {
             System.out.println(" | Not Present");

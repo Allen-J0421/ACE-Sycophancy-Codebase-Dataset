@@ -1,36 +1,43 @@
-public class InsertionSort {
+class InsertionSort {
 
-    void sort(int arr[])
-    {
-        int n = arr.length;
-        for (int i = 1; i < n; ++i) {
-            int key = arr[i];
-            int j = i - 1;
+    private InsertionSort() {
+        // Utility class.
+    }
 
-            while (j >= 0 && arr[j] > key) {
-                arr[j + 1] = arr[j];
-                j = j - 1;
-            }
-            arr[j + 1] = key;
+    static void sort(int[] values) {
+        if (values == null || values.length < 2) {
+            return;
+        }
+
+        for (int currentIndex = 1; currentIndex < values.length; currentIndex++) {
+            insertValue(values, currentIndex);
         }
     }
 
-    static void printArray(int arr[])
-    {
-        int n = arr.length;
-        for (int i = 0; i < n; ++i)
-            System.out.print(arr[i] + " ");
+    private static void insertValue(int[] values, int currentIndex) {
+        int valueToInsert = values[currentIndex];
+        int scanIndex = currentIndex - 1;
+
+        while (scanIndex >= 0 && values[scanIndex] > valueToInsert) {
+            values[scanIndex + 1] = values[scanIndex];
+            scanIndex--;
+        }
+
+        values[scanIndex + 1] = valueToInsert;
+    }
+
+    static void printArray(int[] values) {
+        for (int value : values) {
+            System.out.print(value + " ");
+        }
 
         System.out.println();
     }
 
-    public static void main(String args[])
-    {
-        int arr[] = { 12, 11, 13, 5, 6 };
+    public static void main(String[] args) {
+        int[] values = {12, 11, 13, 5, 6};
 
-        InsertionSort ob = new InsertionSort();
-        ob.sort(arr);
-
-        printArray(arr);
+        sort(values);
+        printArray(values);
     }
 }

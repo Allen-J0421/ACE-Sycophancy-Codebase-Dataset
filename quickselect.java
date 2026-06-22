@@ -37,38 +37,43 @@ public final class QuickSelect {
         int high = values.length - 1;
 
         while (low <= high) {
-            int partitionIndex = partition(values, low, high);
+            PartitionRange partitionRange = partition(values, low, high);
 
-            if (partitionIndex == targetIndex) {
-                return values[partitionIndex];
-            }
-
-            if (partitionIndex < targetIndex) {
-                low = partitionIndex + 1;
+            if (targetIndex < partitionRange.low) {
+                high = partitionRange.low - 1;
+            } else if (targetIndex > partitionRange.high) {
+                low = partitionRange.high + 1;
             } else {
-                high = partitionIndex - 1;
+                return values[targetIndex];
             }
         }
 
         throw new IllegalStateException("Quickselect failed to find the requested element");
     }
 
-    private static int partition(int[] values, int low, int high) {
+    private static PartitionRange partition(int[] values, int low, int high) {
         int selectedPivotIndex = choosePivotIndex(values, low, high);
         swap(values, selectedPivotIndex, high);
 
         int pivotValue = values[high];
-        int storeIndex = low;
+        int lessThanPivotIndex = low;
+        int index = low;
+        int greaterThanPivotIndex = high;
 
-        for (int i = low; i < high; i++) {
-            if (values[i] < pivotValue) {
-                swap(values, i, storeIndex);
-                storeIndex++;
+        while (index <= greaterThanPivotIndex) {
+            if (values[index] < pivotValue) {
+                swap(values, index, lessThanPivotIndex);
+                lessThanPivotIndex++;
+                index++;
+            } else if (values[index] > pivotValue) {
+                swap(values, index, greaterThanPivotIndex);
+                greaterThanPivotIndex--;
+            } else {
+                index++;
             }
         }
 
-        swap(values, storeIndex, high);
-        return storeIndex;
+        return new PartitionRange(lessThanPivotIndex, greaterThanPivotIndex);
     }
 
     private static int choosePivotIndex(int[] values, int low, int high) {
@@ -91,5 +96,15 @@ public final class QuickSelect {
         int temp = values[i];
         values[i] = values[j];
         values[j] = temp;
+    }
+
+    private static final class PartitionRange {
+        private final int low;
+        private final int high;
+
+        private PartitionRange(int low, int high) {
+            this.low = low;
+            this.high = high;
+        }
     }
 }

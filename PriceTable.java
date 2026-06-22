@@ -1,9 +1,7 @@
-import java.util.Arrays;
-
 final class PriceTable {
-    private final int[] pricesByLength;
+    private final LengthIndexedValues pricesByLength;
 
-    private PriceTable(int[] pricesByLength) {
+    private PriceTable(LengthIndexedValues pricesByLength) {
         this.pricesByLength = pricesByLength;
     }
 
@@ -13,30 +11,29 @@ final class PriceTable {
         }
 
         return new PriceTable(
-                Arrays.copyOfRange(priceTableWithSentinel, 1, priceTableWithSentinel.length)
+                LengthIndexedValues.copying(1, sliceSentinelValue(priceTableWithSentinel))
         );
     }
 
     static PriceTable fromPricesByLength(int[] pricesByLength) {
-        if (pricesByLength == null) {
-            throw new IllegalArgumentException("Prices by length must not be null.");
-        }
-
-        return new PriceTable(Arrays.copyOf(pricesByLength, pricesByLength.length));
+        return new PriceTable(LengthIndexedValues.copying(1, pricesByLength));
     }
 
     int maxLength() {
-        return pricesByLength.length;
+        return pricesByLength.maximumLength();
     }
 
     int priceFor(int rodLength) {
-        validateLength(rodLength);
-        return pricesByLength[rodLength - 1];
+        return pricesByLength.valueAt(rodLength);
     }
 
-    private void validateLength(int rodLength) {
-        if (rodLength <= 0 || rodLength > maxLength()) {
-            throw new IllegalArgumentException("Rod length is out of bounds: " + rodLength);
+    private static int[] sliceSentinelValue(int[] priceTableWithSentinel) {
+        int[] pricesByLength = new int[priceTableWithSentinel.length - 1];
+
+        for (int index = 1; index < priceTableWithSentinel.length; index++) {
+            pricesByLength[index - 1] = priceTableWithSentinel[index];
         }
+
+        return pricesByLength;
     }
 }

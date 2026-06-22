@@ -30,7 +30,8 @@ class BalancedParentheses {
     }
 
     private static boolean isMatchingPair(char opening, char closing) {
-        return OPENING_BRACKETS.indexOf(opening) == CLOSING_BRACKETS.indexOf(closing);
+        int openingIndex = OPENING_BRACKETS.indexOf(opening);
+        return openingIndex != -1 && CLOSING_BRACKETS.charAt(openingIndex) == closing;
     }
 
     public static void main(String[] args) {

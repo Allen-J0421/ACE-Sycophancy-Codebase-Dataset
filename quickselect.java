@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-final class QuickSelect {
+public final class QuickSelect {
 
     private static final PivotSelector DEFAULT_PIVOT_SELECTOR =
         new MedianOfThreePivotSelector();
@@ -126,10 +126,6 @@ final class QuickSelect {
 
     private static final class MedianOfThreePivotSelector implements PivotSelector {
 
-        private MedianOfThreePivotSelector() {
-            // Utility class.
-        }
-
         @Override
         public int selectPivotIndex(int[] values, int low, int high) {
             int mid = low + (high - low) / 2;
@@ -165,21 +161,5 @@ final class QuickSelect {
 
     public static void main(String[] args) {
         QuickSelectDemo.main(args);
-    }
-}
-
-final class QuickSelectDemo {
-
-    private QuickSelectDemo() {
-        // Utility class.
-    }
-
-    public static void main(String[] args) {
-        int[] values = { 10, 4, 5, 8, 6, 11, 26 };
-        int rank = 3;
-
-        System.out.println(
-            "K-th smallest element in array: "
-            + QuickSelect.selectKthSmallest(values, rank));
     }
 }

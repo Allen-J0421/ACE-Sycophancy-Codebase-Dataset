@@ -19,39 +19,33 @@ public final class BracketProfile {
 
     public static BracketProfile of(Map<Character, Character> openingToClosing) {
         Objects.requireNonNull(openingToClosing, "openingToClosing");
-
-        Map<Character, Character> pairs = Map.copyOf(openingToClosing);
-        Set<Character> closingBrackets = Set.copyOf(pairs.values());
-        validatePairs(pairs, closingBrackets);
-        return new BracketProfile(buildBracketTokens(pairs));
+        return new BracketProfile(buildBracketTokens(Map.copyOf(openingToClosing)));
     }
 
     BracketToken tokenFor(char c) {
         return bracketTokens.get(Character.valueOf(c));
     }
 
-    private static void validatePairs(
-        Map<Character, Character> openingToClosing,
-        Set<Character> closingBrackets
-    ) {
-        if (closingBrackets.size() != openingToClosing.size()) {
-            throw new IllegalArgumentException("closing brackets must be unique");
-        }
-
-        Set<Character> overlap = new HashSet<>(openingToClosing.keySet());
-        overlap.retainAll(closingBrackets);
-        if (!overlap.isEmpty()) {
-            throw new IllegalArgumentException("opening and closing brackets must be distinct");
-        }
-    }
-
     private static Map<Character, BracketToken> buildBracketTokens(
         Map<Character, Character> openingToClosing
     ) {
         Map<Character, BracketToken> tokens = new HashMap<>();
+        Set<Character> openingBrackets = new HashSet<>();
+        Set<Character> closingBrackets = new HashSet<>();
         for (Map.Entry<Character, Character> entry : openingToClosing.entrySet()) {
             char opening = entry.getKey().charValue();
             char closing = entry.getValue().charValue();
+
+            if (!closingBrackets.add(closing)) {
+                throw new IllegalArgumentException("closing brackets must be unique");
+            }
+            if (opening == closing
+                || openingBrackets.contains(closing)
+                || closingBrackets.contains(opening)) {
+                throw new IllegalArgumentException("opening and closing brackets must be distinct");
+            }
+
+            openingBrackets.add(opening);
             tokens.put(Character.valueOf(opening), BracketToken.opening(opening, closing));
             tokens.put(Character.valueOf(closing), BracketToken.closing(closing));
         }

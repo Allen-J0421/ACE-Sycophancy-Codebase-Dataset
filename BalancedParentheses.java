@@ -21,24 +21,24 @@ public final class BalancedParentheses {
 
     public static void main(String[] args) {
         String sample = args.length > 0 ? args[0] : DEFAULT_SAMPLE;
-        System.out.println(String.valueOf(isBalanced(sample)));
+        System.out.println(isBalanced(sample));
     }
 
     private static final class BalanceChecker {
         private final BracketProfile bracketProfile;
-        private final Deque<Character> expectedClosings = new ArrayDeque<>();
+        private final Deque<Character> closingStack = new ArrayDeque<>();
 
         private BalanceChecker(BracketProfile bracketProfile) {
             this.bracketProfile = bracketProfile;
         }
 
         private boolean check(CharSequence input) {
-            for (int i = 0; i < input.length(); i++) {
+            for (int i = 0, length = input.length(); i < length; i++) {
                 if (!accept(input.charAt(i))) {
                     return false;
                 }
             }
-            return expectedClosings.isEmpty();
+            return closingStack.isEmpty();
         }
 
         private boolean accept(char c) {
@@ -48,11 +48,11 @@ public final class BalancedParentheses {
             }
 
             if (token.isOpening()) {
-                expectedClosings.push(token.expectedClosing());
+                closingStack.push(token.expectedClosing());
                 return true;
             }
 
-            Character expectedClosing = expectedClosings.poll();
+            Character expectedClosing = closingStack.poll();
             return expectedClosing != null && expectedClosing.charValue() == token.character();
         }
     }

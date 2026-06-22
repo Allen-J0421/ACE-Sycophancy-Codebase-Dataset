@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 final class BTree {
     private final int minDegree;
     private BTreeNode root;
@@ -17,6 +20,10 @@ final class BTree {
         return root == null ? "" : root.traversalString();
     }
 
+    List<Integer> keysInOrder() {
+        return root == null ? new ArrayList<>() : root.keysInOrder();
+    }
+
     BTreeNode search(int key) {
         return root == null ? null : root.search(key);
     }
@@ -34,7 +41,8 @@ final class BTree {
 
         if (root.isFull()) {
             BTreeNode newRoot = new BTreeNode(minDegree, false);
-            newRoot.splitChild(0, root);
+            newRoot.attachChild(0, root);
+            newRoot.splitChild(0);
             newRoot.insertNonFull(key);
             root = newRoot;
             return;
@@ -42,4 +50,5 @@ final class BTree {
 
         root.insertNonFull(key);
     }
+
 }

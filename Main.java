@@ -1,3 +1,6 @@
+import java.util.List;
+import java.util.StringJoiner;
+
 final class Main {
     public static void main(String[] args) {
         BTree tree = createDemoTree();
@@ -17,7 +20,7 @@ final class Main {
 
     private static void printTraversal(BTree tree) {
         System.out.print("Traversal of the constructed tree is ");
-        System.out.print(tree.traversalString());
+        System.out.print(formatKeys(tree.keysInOrder()));
         System.out.println();
     }
 
@@ -27,5 +30,13 @@ final class Main {
         } else {
             System.out.println(" | Not Present");
         }
+    }
+
+    private static String formatKeys(List<Integer> keys) {
+        StringJoiner joiner = new StringJoiner(" ");
+        for (Integer key : keys) {
+            joiner.add(Integer.toString(key));
+        }
+        return joiner.toString();
     }
 }

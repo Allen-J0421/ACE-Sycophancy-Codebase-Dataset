@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
+
 final class BTreeNode {
     private final int minDegree;
     private final int[] keys;
@@ -43,6 +47,10 @@ final class BTreeNode {
         keyCount++;
     }
 
+    void attachChild(int index, BTreeNode child) {
+        children[index] = child;
+    }
+
     private void insertChildAt(int index, BTreeNode child) {
         for (int i = keyCount; i > index; i--) {
             children[i + 1] = children[i];
@@ -58,7 +66,7 @@ final class BTreeNode {
 
         int childIndex = findInsertionIndex(key);
         if (children[childIndex].isFull()) {
-            splitChild(childIndex, children[childIndex]);
+            splitChild(childIndex);
             if (keys[childIndex] < key) {
                 childIndex++;
             }
@@ -66,7 +74,8 @@ final class BTreeNode {
         children[childIndex].insertNonFull(key);
     }
 
-    void splitChild(int childIndex, BTreeNode fullChild) {
+    void splitChild(int childIndex) {
+        BTreeNode fullChild = children[childIndex];
         BTreeNode sibling = new BTreeNode(minDegree, fullChild.leaf);
         sibling.keyCount = minDegree - 1;
 
@@ -92,9 +101,9 @@ final class BTreeNode {
     }
 
     String traversalString() {
-        StringBuilder out = new StringBuilder();
-        appendTraversal(out);
-        return out.toString();
+        StringJoiner joiner = new StringJoiner(" ");
+        appendTraversal(joiner);
+        return joiner.toString();
     }
 
     @Override
@@ -102,15 +111,33 @@ final class BTreeNode {
         return traversalString();
     }
 
-    private void appendTraversal(StringBuilder out) {
+    private void appendTraversal(StringJoiner joiner) {
         for (int i = 0; i < keyCount; i++) {
             if (!leaf) {
-                children[i].appendTraversal(out);
+                children[i].appendTraversal(joiner);
             }
-            out.append(" ").append(keys[i]);
+            joiner.add(Integer.toString(keys[i]));
         }
         if (!leaf) {
-            children[keyCount].appendTraversal(out);
+            children[keyCount].appendTraversal(joiner);
+        }
+    }
+
+    List<Integer> keysInOrder() {
+        List<Integer> output = new ArrayList<>();
+        appendKeysInOrder(output);
+        return output;
+    }
+
+    private void appendKeysInOrder(List<Integer> output) {
+        for (int i = 0; i < keyCount; i++) {
+            if (!leaf) {
+                children[i].appendKeysInOrder(output);
+            }
+            output.add(keys[i]);
+        }
+        if (!leaf) {
+            children[keyCount].appendKeysInOrder(output);
         }
     }
 

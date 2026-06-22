@@ -5,6 +5,7 @@ import maxflow.graph.FlowNetwork;
 import maxflow.solve.FordFulkersonSolver;
 import maxflow.solve.MaxFlowResult;
 import maxflow.solve.MaxFlowSolver;
+import maxflow.solve.MinCut;
 
 /**
  * Demonstrates the {@code maxflow} library on the classic six-vertex network,
@@ -37,5 +38,11 @@ public final class FordFulkersonDemo {
         for (Edge edge : result.flowEdges()) {
             System.out.println("  " + edge);
         }
+
+        MinCut cut = MinCut.of(network, result);
+        System.out.println("Minimum cut (capacity " + cut.capacity() + "):");
+        System.out.println("  source side: " + cut.sourceSide());
+        System.out.println("  sink side:   " + cut.sinkSide());
+        System.out.println("  cut edges:   " + cut.cutEdges());
     }
 }

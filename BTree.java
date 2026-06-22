@@ -15,12 +15,19 @@ public final class BTree {
 
     public void insert(int key) {
         if (root == null) {
-            root = Node.leaf(minDegree, key);
+            root = createLeafNode(key);
             return;
         }
 
         splitRootIfNeeded();
         root.insertNonFull(key);
+    }
+
+    public void insertAll(int... keys) {
+        Objects.requireNonNull(keys, "keys");
+        for (int key : keys) {
+            insert(key);
+        }
     }
 
     public boolean contains(int key) {
@@ -44,20 +51,12 @@ public final class BTree {
         return orderedKeys;
     }
 
-    public String traversal() {
-        return toString();
-    }
-
-    public void traverse() {
-        System.out.print(this);
-    }
-
     private void splitRootIfNeeded() {
         if (!root.isFull()) {
             return;
         }
 
-        Node newRoot = Node.internal(minDegree);
+        Node newRoot = createInternalNode();
         newRoot.setChild(0, root);
         newRoot.splitChild(0);
         root = newRoot;
@@ -76,37 +75,39 @@ public final class BTree {
         return joiner.toString();
     }
 
-    private static final class Node {
-        private final int minDegree;
+    private Node createLeafNode(int firstKey) {
+        Node node = new Node(true);
+        node.keys[0] = firstKey;
+        node.keyCount = 1;
+        return node;
+    }
+
+    private Node createInternalNode() {
+        return new Node(false);
+    }
+
+    private int maxKeysPerNode() {
+        return 2 * minDegree - 1;
+    }
+
+    private int maxChildrenPerNode() {
+        return 2 * minDegree;
+    }
+
+    private int medianKeyIndex() {
+        return minDegree - 1;
+    }
+
+    private final class Node {
         private final int[] keys;
         private final Node[] children;
         private final boolean leaf;
         private int keyCount;
 
-        private Node(int minDegree, boolean leaf) {
-            this.minDegree = minDegree;
+        private Node(boolean leaf) {
             this.leaf = leaf;
-            this.keys = new int[maxKeysFor(minDegree)];
-            this.children = new Node[maxChildrenFor(minDegree)];
-        }
-
-        private static Node leaf(int minDegree, int firstKey) {
-            Node node = new Node(minDegree, true);
-            node.keys[0] = firstKey;
-            node.keyCount = 1;
-            return node;
-        }
-
-        private static Node internal(int minDegree) {
-            return new Node(minDegree, false);
-        }
-
-        private static int maxKeysFor(int minDegree) {
-            return 2 * minDegree - 1;
-        }
-
-        private static int maxChildrenFor(int minDegree) {
-            return 2 * minDegree;
+            this.keys = new int[maxKeysPerNode()];
+            this.children = new Node[maxChildrenPerNode()];
         }
 
         private boolean isFull() {
@@ -175,7 +176,7 @@ public final class BTree {
 
         private void splitChild(int childIndex) {
             Node child = children[childIndex];
-            Node sibling = new Node(child.minDegree, child.leaf);
+            Node sibling = new Node(child.leaf);
             int medianKey = child.keys[medianKeyIndex()];
 
             sibling.keyCount = minDegree - 1;
@@ -227,10 +228,6 @@ public final class BTree {
 
         private boolean matchesKeyAt(int index, int targetKey) {
             return index < keyCount && keys[index] == targetKey;
-        }
-
-        private int medianKeyIndex() {
-            return minDegree - 1;
         }
     }
 }

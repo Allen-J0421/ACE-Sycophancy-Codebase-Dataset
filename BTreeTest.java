@@ -29,12 +29,7 @@ public final class BTreeTest {
     }
 
     private static void shouldPreserveSortedTraversalAcrossInsertions() {
-        BTree tree = new BTree(3);
-        int[] insertedKeys = {10, 20, 5, 6, 12, 30, 7, 17};
-
-        for (int key : insertedKeys) {
-            tree.insert(key);
-        }
+        BTree tree = BTreeSamples.newDefaultTree();
 
         List<Integer> expectedKeys = Arrays.asList(5, 6, 7, 10, 12, 17, 20, 30);
         assertEquals(expectedKeys, tree.toList(), "Expected in-order traversal to stay sorted.");
@@ -42,12 +37,7 @@ public final class BTreeTest {
     }
 
     private static void shouldSupportMembershipChecks() {
-        BTree tree = new BTree(2);
-        int[] insertedKeys = {8, 9, 10, 11, 15, 20, 17};
-
-        for (int key : insertedKeys) {
-            tree.insert(key);
-        }
+        BTree tree = BTreeSamples.fromKeys(2, 8, 9, 10, 11, 15, 20, 17);
 
         assertTrue(tree.contains(10), "Expected inserted key to be found.");
         assertTrue(tree.contains(17), "Expected inserted key to be found.");

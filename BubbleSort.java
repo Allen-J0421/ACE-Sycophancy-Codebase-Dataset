@@ -12,10 +12,6 @@ public final class BubbleSort {
         sortValuesInPlace(values);
     }
 
-    public static void bubbleSort(int[] values) {
-        sortInPlace(values);
-    }
-
     public static int[] sortedCopy(int[] values) {
         validate(values);
 
@@ -80,7 +76,7 @@ public final class BubbleSort {
 
     private static void runDemo() {
         int[] values = createDemoValues();
-        sortValuesInPlace(values);
+        sortInPlace(values);
         System.out.println("Sorted array: ");
         System.out.println(formatArray(values));
     }

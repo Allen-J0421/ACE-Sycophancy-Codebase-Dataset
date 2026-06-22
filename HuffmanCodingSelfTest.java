@@ -16,11 +16,12 @@ public final class HuffmanCodingSelfTest {
     }
 
     public static void main(String[] args) {
-        shouldEncodeClassicExample();
-        shouldHandleSingleSymbol();
-        shouldHandleEmptyInput();
-        shouldRejectMismatchedLengths();
-        shouldRejectNegativeFrequencies();
+        runTest("classic example", HuffmanCodingSelfTest::shouldEncodeClassicExample);
+        runTest("single symbol", HuffmanCodingSelfTest::shouldHandleSingleSymbol);
+        runTest("empty input", HuffmanCodingSelfTest::shouldHandleEmptyInput);
+        runTest("mismatched lengths", HuffmanCodingSelfTest::shouldRejectMismatchedLengths);
+        runTest("negative frequencies", HuffmanCodingSelfTest::shouldRejectNegativeFrequencies);
+        runTest("equal frequencies", HuffmanCodingSelfTest::shouldHandleEqualFrequencies);
         System.out.println("All HuffmanCoding self-tests passed.");
     }
 
@@ -47,6 +48,10 @@ public final class HuffmanCodingSelfTest {
         expectFailure(
                 () -> HuffmanCoding.huffmanCodes("ab", new int[] {1, -2}),
                 "negative frequency");
+    }
+
+    private static void shouldHandleEqualFrequencies() {
+        assertCodes("ab", new int[] {1, 1}, Arrays.asList("0", "1"), "equal frequencies");
     }
 
     private static void assertCodes(
@@ -76,5 +81,13 @@ public final class HuffmanCodingSelfTest {
         }
 
         throw new AssertionError(scenario + " failed: expected IllegalArgumentException");
+    }
+
+    private static void runTest(String name, Runnable test) {
+        try {
+            test.run();
+        } catch (Throwable error) {
+            throw new AssertionError(name + " failed", error);
+        }
     }
 }

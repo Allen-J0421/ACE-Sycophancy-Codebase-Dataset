@@ -9,15 +9,11 @@ public final class BTree {
     private Node root;
 
     public static BTree fromKeys(int minDegree, int... keys) {
-        BTree tree = new BTree(minDegree);
-        tree.insertAll(keys);
-        return tree;
+        return new BTree(minDegree).insertAll(keys);
     }
 
     public static BTree fromKeys(int minDegree, Iterable<Integer> keys) {
-        BTree tree = new BTree(minDegree);
-        tree.insertAll(keys);
-        return tree;
+        return new BTree(minDegree).insertAll(keys);
     }
 
     public BTree(int minDegree) {
@@ -35,18 +31,20 @@ public final class BTree {
         root.insertNonFull(key);
     }
 
-    public void insertAll(int... keys) {
+    public BTree insertAll(int... keys) {
         Objects.requireNonNull(keys, "keys");
         for (int key : keys) {
             insert(key);
         }
+        return this;
     }
 
-    public void insertAll(Iterable<Integer> keys) {
+    public BTree insertAll(Iterable<Integer> keys) {
         Objects.requireNonNull(keys, "keys");
         for (int key : keys) {
             insert(key);
         }
+        return this;
     }
 
     public boolean contains(int key) {

@@ -77,5 +77,22 @@ final class BTreeScenario {
         boolean isPresent() {
             return present;
         }
+
+        boolean matches(BTree tree) {
+            return tree.contains(key) == present;
+        }
+
+        String actualStatusLabel(BTree tree) {
+            return tree.contains(key) ? "Present" : "Not Present";
+        }
+
+        String failureMessage(BTree tree) {
+            return "Expected key " + key + " to be " + expectedStatusLabel()
+                    + ", but it was " + actualStatusLabel(tree) + '.';
+        }
+
+        private String expectedStatusLabel() {
+            return present ? "Present" : "Not Present";
+        }
     }
 }

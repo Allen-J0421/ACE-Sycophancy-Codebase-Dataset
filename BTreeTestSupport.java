@@ -50,12 +50,7 @@ final class BTreeTestSupport {
     }
 
     static void assertSearchExpectation(BTree tree, BTreeScenario.SearchExpectation expectation) {
-        if (expectation.isPresent()) {
-            assertContains(tree, expectation.key());
-            return;
-        }
-
-        assertDoesNotContain(tree, expectation.key());
+        assertTrue(expectation.matches(tree), expectation.failureMessage(tree));
     }
 
     private static String formatKeys(List<Integer> keys) {

@@ -93,6 +93,7 @@ class CircularQueue {
     }
 }
 
+@Deprecated
 class myQueue extends CircularQueue {
 
     public myQueue(int capacity) {
@@ -104,7 +105,10 @@ class myQueue extends CircularQueue {
     }
 }
 
-class QueueDemo {
+final class QueueDemo {
+
+    private QueueDemo() {
+    }
 
     static void run() {
         CircularQueue queue = new CircularQueue(5);

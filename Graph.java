@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 class Graph {
     private final int[][] adjacencyMatrix;
     private final int vertexCount;
@@ -18,6 +21,17 @@ class Graph {
 
     int weight(int from, int to) {
         return adjacencyMatrix[from][to];
+    }
+
+    List<Edge> edgesFrom(int vertex) {
+        List<Edge> edges = new ArrayList<>();
+        for (int to = 0; to < vertexCount; to++) {
+            int w = adjacencyMatrix[vertex][to];
+            if (w != 0) {
+                edges.add(new Edge(vertex, to, w));
+            }
+        }
+        return edges;
     }
 
     private static void validate(int[][] matrix) {

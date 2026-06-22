@@ -11,6 +11,9 @@ class PrimsMST implements MstAlgorithm {
 
     @Override
     public MstResult computeMST(Graph graph, int startVertex) {
+        if (graph == null) {
+            throw new IllegalArgumentException("Graph must not be null");
+        }
         int n = graph.vertexCount();
         if (startVertex < 0 || startVertex >= n) {
             throw new IllegalArgumentException(
@@ -27,8 +30,8 @@ class PrimsMST implements MstAlgorithm {
             }
             state.include(u);
 
-            for (int v = 0; v < n; v++) {
-                state.relaxEdge(u, v, graph.weight(u, v));
+            for (Edge edge : graph.edgesFrom(u)) {
+                state.relaxEdge(edge);
             }
         }
 
@@ -83,10 +86,10 @@ class PrimsMST implements MstAlgorithm {
             inMST[vertex] = true;
         }
 
-        void relaxEdge(int from, int to, int weight) {
-            if (weight != 0 && !inMST[to] && weight < minEdgeWeight[to]) {
-                parent[to] = from;
-                minEdgeWeight[to] = weight;
+        void relaxEdge(Edge edge) {
+            if (!inMST[edge.to] && edge.weight < minEdgeWeight[edge.to]) {
+                parent[edge.to] = edge.from;
+                minEdgeWeight[edge.to] = edge.weight;
             }
         }
 

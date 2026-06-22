@@ -12,8 +12,8 @@ final class QuickSelectEngine {
         this.searchBounds = SearchBounds.initial(values.length);
     }
 
-    static int select(int[] values, int targetIndex) {
-        return new QuickSelectEngine(values, targetIndex, MedianOfThreePivotSelector.INSTANCE)
+    static int select(SelectionRequest request, PivotSelector pivotSelector) {
+        return new QuickSelectEngine(request.workingValues(), request.targetIndex(), pivotSelector)
             .select();
     }
 
@@ -96,34 +96,6 @@ final class QuickSelectEngine {
             } else {
                 high = partitionIndex - 1;
             }
-        }
-    }
-}
-
-interface PivotSelector {
-
-    int selectPivotIndex(int[] values, int low, int high);
-}
-
-enum MedianOfThreePivotSelector implements PivotSelector {
-    INSTANCE;
-
-    @Override
-    public int selectPivotIndex(int[] values, int low, int high) {
-        int mid = low + (high - low) / 2;
-
-        order(values, low, mid);
-        order(values, low, high);
-        order(values, mid, high);
-
-        return mid;
-    }
-
-    private void order(int[] values, int left, int right) {
-        if (values[left] > values[right]) {
-            int temp = values[left];
-            values[left] = values[right];
-            values[right] = temp;
         }
     }
 }

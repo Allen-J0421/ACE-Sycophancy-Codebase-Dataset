@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public final class HuffmanCoding {
@@ -11,7 +10,7 @@ public final class HuffmanCoding {
         // Utility class.
     }
 
-    private static final class HuffmanNode {
+    private static final class HuffmanNode implements Comparable<HuffmanNode> {
         final int frequency;
         final int symbolIndex;
         final HuffmanNode left;
@@ -34,11 +33,16 @@ public final class HuffmanCoding {
         boolean isLeaf() {
             return left == null && right == null;
         }
-    }
 
-    private static final Comparator<HuffmanNode> NODE_ORDER =
-            Comparator.comparingInt((HuffmanNode node) -> node.frequency)
-                    .thenComparingInt(node -> node.symbolIndex);
+        @Override
+        public int compareTo(HuffmanNode other) {
+            int byFrequency = Integer.compare(this.frequency, other.frequency);
+            if (byFrequency != 0) {
+                return byFrequency;
+            }
+            return Integer.compare(this.symbolIndex, other.symbolIndex);
+        }
+    }
 
     public static ArrayList<String> huffmanCodes(String s, int[] freq) {
         validateInput(s, freq);
@@ -78,7 +82,7 @@ public final class HuffmanCoding {
     }
 
     private static HuffmanNode buildTree(int[] freq) {
-        PriorityQueue<HuffmanNode> queue = new PriorityQueue<>(NODE_ORDER);
+        PriorityQueue<HuffmanNode> queue = new PriorityQueue<>();
         for (int i = 0; i < freq.length; i++) {
             queue.add(new HuffmanNode(freq[i], i));
         }

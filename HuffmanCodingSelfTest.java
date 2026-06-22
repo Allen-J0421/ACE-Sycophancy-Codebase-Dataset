@@ -3,6 +3,14 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public final class HuffmanCodingSelfTest {
+    private static final String CLASSIC_SYMBOLS = "abcdef";
+    private static final int[] CLASSIC_FREQUENCIES = {5, 9, 12, 13, 16, 45};
+    private static final java.util.List<String> CLASSIC_CODES =
+            Arrays.asList("1100", "1101", "100", "101", "111", "0");
+
+    private static final String SINGLE_SYMBOLS = "a";
+    private static final int[] SINGLE_FREQUENCIES = {7};
+
     private HuffmanCodingSelfTest() {
         // Test entry point.
     }
@@ -17,16 +25,11 @@ public final class HuffmanCodingSelfTest {
     }
 
     private static void shouldEncodeClassicExample() {
-        ArrayList<String> codes = HuffmanCoding.huffmanCodes(
-                "abcdef",
-                new int[] {5, 9, 12, 13, 16, 45});
-        assertEquals(Arrays.asList("1100", "1101", "100", "101", "111", "0"), codes,
-                "classic example");
+        assertCodes(CLASSIC_SYMBOLS, CLASSIC_FREQUENCIES, CLASSIC_CODES, "classic example");
     }
 
     private static void shouldHandleSingleSymbol() {
-        ArrayList<String> codes = HuffmanCoding.huffmanCodes("a", new int[] {7});
-        assertEquals(Arrays.asList("0"), codes, "single-symbol input");
+        assertCodes(SINGLE_SYMBOLS, SINGLE_FREQUENCIES, Arrays.asList("0"), "single-symbol input");
     }
 
     private static void shouldHandleEmptyInput() {
@@ -44,6 +47,15 @@ public final class HuffmanCodingSelfTest {
         expectFailure(
                 () -> HuffmanCoding.huffmanCodes("ab", new int[] {1, -2}),
                 "negative frequency");
+    }
+
+    private static void assertCodes(
+            String symbols,
+            int[] frequencies,
+            java.util.List<String> expected,
+            String scenario) {
+        ArrayList<String> actual = HuffmanCoding.huffmanCodes(symbols, frequencies);
+        assertEquals(expected, actual, scenario);
     }
 
     private static void assertEquals(

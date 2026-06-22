@@ -17,19 +17,25 @@ public final class QuickSelect {
     }
 
     public static int selectKthSmallest(int[] values, int k) {
-        validateSelectionRequest(values, k);
-        return selectKthSmallestInPlace(values.clone(), k);
+        return select(values, k, true);
     }
 
     public static int selectKthSmallestInPlace(int[] values, int k) {
-        validateSelectionRequest(values, k);
-        return selectKthSmallestUnchecked(values, k);
+        return select(values, k, false);
     }
 
-    private static int selectKthSmallestUnchecked(int[] values, int k) {
+    private static int select(int[] values, int k, boolean copyInput) {
+        validateSelectionRequest(values, k);
+
+        int[] workingValues = copyInput ? values.clone() : values;
+        int targetIndex = k - 1;
+
+        return selectByTargetIndex(workingValues, targetIndex);
+    }
+
+    private static int selectByTargetIndex(int[] values, int targetIndex) {
         int low = 0;
         int high = values.length - 1;
-        int targetIndex = k - 1;
 
         while (low <= high) {
             int partitionIndex = partition(values, low, high);

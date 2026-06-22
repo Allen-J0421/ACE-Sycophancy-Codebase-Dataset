@@ -209,12 +209,11 @@ public class RedBlackTree {
 
     private void printTreeHelper(Node node, int indentLevel) {
         if (node == null) return;
-        int childIndent = indentLevel + PRINT_INDENT_STEP;
-        printTreeHelper(node.right, childIndent);
+        printTreeHelper(node.right, indentLevel + PRINT_INDENT_STEP);
         System.out.println();
-        System.out.print(" ".repeat(childIndent - PRINT_INDENT_STEP));
+        System.out.print(" ".repeat(indentLevel));
         System.out.printf("%d%n", node.data);
-        printTreeHelper(node.left, childIndent);
+        printTreeHelper(node.left, indentLevel + PRINT_INDENT_STEP);
     }
 
     /** Prints the tree rotated 90° counter-clockwise so the right subtree appears at the top. */

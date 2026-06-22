@@ -2,8 +2,9 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * Demonstrates finding the articulation points and bridges of a small example
- * graph.
+ * Demonstrates the undirected connectivity analysis (articulation points and
+ * bridges) and the directed strongly-connected-components analysis on small
+ * example graphs.
  */
 public final class Main {
 
@@ -11,14 +12,28 @@ public final class Main {
     }
 
     public static void main(String[] args) {
-        int vertexCount = 5;
-        int[][] edges = {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}};
+        demonstrateUndirectedConnectivity();
+        demonstrateStronglyConnectedComponents();
+    }
 
-        Graph graph = Graph.fromEdges(vertexCount, edges);
+    private static void demonstrateUndirectedConnectivity() {
+        Graph graph = Graph.fromEdges(5, new int[][] {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
         ConnectivityResult result = new GraphConnectivity().analyze(graph);
 
         System.out.println("Articulation points: " + formatVertices(result.articulationPoints()));
         System.out.println("Bridges: " + formatEdges(result.bridges()));
+    }
+
+    private static void demonstrateStronglyConnectedComponents() {
+        DirectedGraph graph =
+                DirectedGraph.fromEdges(5, new int[][] {{1, 0}, {0, 2}, {2, 1}, {0, 3}, {3, 4}});
+        List<List<Integer>> components = new StronglyConnectedComponents().find(graph);
+
+        StringJoiner joiner = new StringJoiner(" ");
+        for (List<Integer> component : components) {
+            joiner.add(component.toString());
+        }
+        System.out.println("Strongly connected components: " + joiner);
     }
 
     /**

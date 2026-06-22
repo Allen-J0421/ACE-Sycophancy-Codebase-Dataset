@@ -1,25 +1,37 @@
-# Graph Connectivity: Articulation Points & Bridges
+# Graph Connectivity
 
-Finds the **articulation points** (cut vertices) and **bridges** (cut edges) of an
-undirected graph using Tarjan's depth-first-search algorithm. Both are derived
-from the same low-link traversal in a single `O(V + E)` pass.
+Connectivity algorithms for undirected and directed graphs, all built on
+iterative Tarjan-style low-link depth-first search (each `O(V + E)`):
+
+- **Undirected:** articulation points (cut vertices) and bridges (cut edges).
+- **Directed:** strongly connected components (SCCs).
+
+Undirected connectivity and SCCs are *separate* implementations on purpose:
+articulation points/bridges and SCCs are defined on different graph types and do
+not generalize into one another (modeling an undirected graph as a directed one
+and running SCC just collapses each connected component into a single SCC). They
+share the low-link DFS technique, not an algorithm.
 
 ## Layout
 
 | File | Responsibility |
 |------|----------------|
 | `Graph.java` | Undirected graph (adjacency list) with edge identity, validation |
-| `GraphConnectivity.java` | Tarjan's algorithm; stateless, reusable, iterative |
+| `GraphConnectivity.java` | Articulation points + bridges; stateless, iterative |
 | `ConnectivityResult.java` | Result holder: articulation points + bridges |
-| `Main.java` | Runnable demo on a small example graph |
-| `GraphConnectivityTest.java` | Dependency-free test runner |
+| `DirectedGraph.java` | Directed graph (out-adjacency list), validation |
+| `StronglyConnectedComponents.java` | Tarjan's SCC algorithm; stateless, iterative |
+| `Main.java` | Runnable demo of all three analyses |
+| `GraphConnectivityTest.java` | Dependency-free test runner (undirected) |
+| `StronglyConnectedComponentsTest.java` | Dependency-free test runner (SCC) |
 
 ## Build and run
 
 ```sh
 javac -d out *.java     # compile
 java -cp out Main       # run the demo
-java -cp out GraphConnectivityTest   # run the tests (exits non-zero on failure)
+java -cp out GraphConnectivityTest            # undirected tests (exits non-zero on failure)
+java -cp out StronglyConnectedComponentsTest  # SCC tests (exits non-zero on failure)
 ```
 
 The demo prints:
@@ -27,6 +39,7 @@ The demo prints:
 ```
 Articulation points: 1 4
 Bridges: 0-1 1-4
+Strongly connected components: [0, 1, 2] [3] [4]
 ```
 
 ## Usage
@@ -41,6 +54,16 @@ result.bridges();             // [Edge[u=0, v=1, id=0], Edge[u=1, v=4, id=1]]
 `articulationPoints()` returns the cut vertices in ascending order;
 `bridges()` returns the cut edges ordered by endpoints then id. Both are empty
 when the graph has none.
+
+For directed graphs:
+
+```java
+DirectedGraph graph = DirectedGraph.fromEdges(5, new int[][] {{1, 0}, {0, 2}, {2, 1}, {0, 3}, {3, 4}});
+List<List<Integer>> sccs = new StronglyConnectedComponents().find(graph);  // [[0, 1, 2], [3], [4]]
+```
+
+Each component lists its vertices in ascending order, and components are ordered
+by their smallest vertex, so the result is deterministic.
 
 ## Multigraphs
 

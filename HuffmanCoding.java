@@ -51,7 +51,7 @@ public final class HuffmanCoding {
             return codes;
         }
 
-        collectCodes(buildTree(freq), new StringBuilder(), codes);
+        new CodeCollector(codes).collect(buildTree(freq));
         return codes;
     }
 
@@ -61,6 +61,15 @@ public final class HuffmanCoding {
         }
         if (s.length() != freq.length) {
             throw new IllegalArgumentException("String length and frequency array length must match.");
+        }
+        validateFrequencies(freq);
+    }
+
+    private static void validateFrequencies(int[] freq) {
+        for (int i = 0; i < freq.length; i++) {
+            if (freq[i] < 0) {
+                throw new IllegalArgumentException("Frequency values must be non-negative: index " + i);
+            }
         }
     }
 
@@ -83,23 +92,36 @@ public final class HuffmanCoding {
         return queue.peek();
     }
 
-    private static void collectCodes(HuffmanNode node, StringBuilder path, ArrayList<String> codes) {
-        if (node == null) {
-            return;
+    private static final class CodeCollector {
+        private final ArrayList<String> codes;
+        private final StringBuilder path = new StringBuilder();
+
+        CodeCollector(ArrayList<String> codes) {
+            this.codes = codes;
         }
 
-        if (node.isLeaf()) {
-            codes.set(node.symbolIndex, path.length() == 0 ? "0" : path.toString());
-            return;
+        void collect(HuffmanNode root) {
+            visit(root);
         }
 
-        path.append(LEFT_BIT);
-        collectCodes(node.left, path, codes);
-        path.setLength(path.length() - 1);
+        private void visit(HuffmanNode node) {
+            if (node == null) {
+                return;
+            }
 
-        path.append(RIGHT_BIT);
-        collectCodes(node.right, path, codes);
-        path.setLength(path.length() - 1);
+            if (node.isLeaf()) {
+                codes.set(node.symbolIndex, path.length() == 0 ? "0" : path.toString());
+                return;
+            }
+
+            path.append(LEFT_BIT);
+            visit(node.left);
+            path.setLength(path.length() - 1);
+
+            path.append(RIGHT_BIT);
+            visit(node.right);
+            path.setLength(path.length() - 1);
+        }
     }
 
     public static void main(String[] args) {

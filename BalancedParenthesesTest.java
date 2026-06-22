@@ -34,7 +34,7 @@ public class BalancedParenthesesTest {
 
     @Test
     void supportsCustomBracketProfiles() {
-        BalancedParentheses.BracketProfile angleAndPipeProfile = BalancedParentheses.BracketProfile.of(
+        BracketProfile angleAndPipeProfile = BracketProfile.of(
             Map.of('<', '>', '|', '!')
         );
 
@@ -46,11 +46,11 @@ public class BalancedParenthesesTest {
     void rejectsInvalidBracketProfiles() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> BalancedParentheses.BracketProfile.of(Map.of('(', ')', '[', ')'))
+            () -> BracketProfile.of(Map.of('(', ')', '[', ')'))
         );
         assertThrows(
             IllegalArgumentException.class,
-            () -> BalancedParentheses.BracketProfile.of(Map.of('(', ')', ')', ']'))
+            () -> BracketProfile.of(Map.of('(', ')', ')', ']'))
         );
     }
 

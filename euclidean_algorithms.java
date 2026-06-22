@@ -36,19 +36,13 @@ class EuclideanAlgorithms {
     }
 
     static int gcd(int a, int b) {
-        validate(a, b);
-        return gcdHelper(a, b);
+        return extendedGcd(a, b).gcd;
     }
 
     static long lcm(int a, int b) {
         validate(a, b);
         if (a == 0 || b == 0) return 0;
-        return (long) a / gcdHelper(a, b) * b;
-    }
-
-    private static int gcdHelper(int a, int b) {
-        while (a != 0) { int t = a; a = b % a; b = t; }
-        return b;
+        return (long) a / gcd(a, b) * b;
     }
 
     private static void validate(int a, int b) {

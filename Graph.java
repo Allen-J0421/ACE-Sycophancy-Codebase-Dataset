@@ -20,9 +20,21 @@ class Graph {
         if (matrix == null || matrix.length == 0) {
             throw new IllegalArgumentException("Graph matrix must be non-empty");
         }
+        int n = matrix.length;
         for (int[] row : matrix) {
-            if (row == null || row.length != matrix.length) {
+            if (row == null || row.length != n) {
                 throw new IllegalArgumentException("Graph matrix must be square");
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (matrix[i][i] != 0) {
+                throw new IllegalArgumentException("Graph matrix diagonal must be zero (no self-loops)");
+            }
+            for (int j = i + 1; j < n; j++) {
+                if (matrix[i][j] != matrix[j][i]) {
+                    throw new IllegalArgumentException(
+                        "Graph matrix must be symmetric (undirected graph)");
+                }
             }
         }
     }

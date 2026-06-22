@@ -1,63 +1,27 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class PrimsMST {
 
-    List<Edge> computeMST(Graph graph) {
+    MstResult computeMST(Graph graph) {
         int n = graph.vertexCount();
-        int[] parent = new int[n];
-        int[] minEdgeWeight = new int[n];
-        boolean[] inMST = new boolean[n];
-
-        for (int i = 0; i < n; i++) {
-            minEdgeWeight[i] = Integer.MAX_VALUE;
-        }
-        minEdgeWeight[0] = 0;
-        parent[0] = -1;
+        VertexState state = new VertexState(n);
+        state.setSource(0);
 
         for (int count = 0; count < n - 1; count++) {
-            int u = findMinWeightVertex(minEdgeWeight, inMST);
-            inMST[u] = true;
+            int u = state.nextVertex();
+            if (u == -1) {
+                throw new IllegalArgumentException("Graph is disconnected; MST does not exist");
+            }
+            state.include(u);
 
             for (int v = 0; v < n; v++) {
-                int w = graph.weight(u, v);
-                if (w != 0 && !inMST[v] && w < minEdgeWeight[v]) {
-                    parent[v] = u;
-                    minEdgeWeight[v] = w;
-                }
+                state.relaxEdge(u, v, graph.weight(u, v));
             }
         }
 
-        return buildEdges(parent, graph, n);
-    }
-
-    private int findMinWeightVertex(int[] minEdgeWeight, boolean[] inMST) {
-        int min = Integer.MAX_VALUE;
-        int minVertex = -1;
-
-        for (int v = 0; v < minEdgeWeight.length; v++) {
-            if (!inMST[v] && minEdgeWeight[v] < min) {
-                min = minEdgeWeight[v];
-                minVertex = v;
-            }
-        }
-
-        return minVertex;
-    }
-
-    private List<Edge> buildEdges(int[] parent, Graph graph, int n) {
-        List<Edge> edges = new ArrayList<>();
-        for (int i = 1; i < n; i++) {
-            edges.add(new Edge(parent[i], i, graph.weight(parent[i], i)));
-        }
-        return edges;
-    }
-
-    static void printMST(List<Edge> edges) {
-        System.out.println("Edge \tWeight");
-        for (Edge edge : edges) {
-            System.out.println(edge);
-        }
+        return new MstResult(state.buildEdges(graph));
     }
 
     public static void main(String[] args) {
@@ -70,8 +34,56 @@ class PrimsMST {
         };
 
         Graph graph = new Graph(matrix);
-        PrimsMST solver = new PrimsMST();
-        List<Edge> mst = solver.computeMST(graph);
-        printMST(mst);
+        MstResult result = new PrimsMST().computeMST(graph);
+        result.print();
+    }
+
+    private static class VertexState {
+        private final int[] parent;
+        private final int[] minEdgeWeight;
+        private final boolean[] inMST;
+
+        VertexState(int vertexCount) {
+            parent = new int[vertexCount];
+            minEdgeWeight = new int[vertexCount];
+            inMST = new boolean[vertexCount];
+            Arrays.fill(minEdgeWeight, Integer.MAX_VALUE);
+        }
+
+        void setSource(int vertex) {
+            minEdgeWeight[vertex] = 0;
+            parent[vertex] = -1;
+        }
+
+        int nextVertex() {
+            int min = Integer.MAX_VALUE;
+            int minVertex = -1;
+            for (int v = 0; v < minEdgeWeight.length; v++) {
+                if (!inMST[v] && minEdgeWeight[v] < min) {
+                    min = minEdgeWeight[v];
+                    minVertex = v;
+                }
+            }
+            return minVertex;
+        }
+
+        void include(int vertex) {
+            inMST[vertex] = true;
+        }
+
+        void relaxEdge(int from, int to, int weight) {
+            if (weight != 0 && !inMST[to] && weight < minEdgeWeight[to]) {
+                parent[to] = from;
+                minEdgeWeight[to] = weight;
+            }
+        }
+
+        List<Edge> buildEdges(Graph graph) {
+            List<Edge> edges = new ArrayList<>();
+            for (int i = 1; i < parent.length; i++) {
+                edges.add(new Edge(parent[i], i, graph.weight(parent[i], i)));
+            }
+            return edges;
+        }
     }
 }

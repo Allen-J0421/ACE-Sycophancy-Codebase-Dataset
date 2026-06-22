@@ -71,10 +71,16 @@ class Main {
         copyBucketsToArray(buckets, values);
     }
 
-    private static void printArray(float[] values) {
+    private static String formatArray(float[] values) {
+        StringBuilder output = new StringBuilder();
         for (float value : values) {
-            System.out.print(value + " ");
+            output.append(value).append(' ');
         }
+        return output.toString();
+    }
+
+    private static void printArray(float[] values) {
+        System.out.print(formatArray(values));
     }
 
     private static float[] sortedSampleValues() {

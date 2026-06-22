@@ -1,3 +1,0 @@
-interface GraphSource {
-    Graph load();
-}

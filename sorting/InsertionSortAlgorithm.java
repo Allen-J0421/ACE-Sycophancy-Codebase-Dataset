@@ -1,12 +1,15 @@
 package sorting;
 
-final class InsertionSortAlgorithm {
+final class InsertionSortAlgorithm implements IntArraySortAlgorithm {
+
+    static final InsertionSortAlgorithm INSTANCE = new InsertionSortAlgorithm();
 
     private InsertionSortAlgorithm() {
         // Utility class.
     }
 
-    static void sort(IntArraySlice slice) {
+    @Override
+    public void sort(IntArraySlice slice) {
         if (slice.hasFewerThanTwoElements()) {
             return;
         }
@@ -18,7 +21,8 @@ final class InsertionSortAlgorithm {
         }
     }
 
-    static boolean isSorted(IntArraySlice slice) {
+    @Override
+    public boolean isSorted(IntArraySlice slice) {
         for (int index = slice.startInclusive() + 1; index < slice.endExclusive(); index++) {
             if (slice.valueAt(index - 1) > slice.valueAt(index)) {
                 return false;

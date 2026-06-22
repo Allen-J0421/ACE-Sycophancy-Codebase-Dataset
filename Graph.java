@@ -18,22 +18,23 @@ class Graph {
     }
 
     void addEdge(int u, int v) {
-        if (u < 0 || u >= vertexCount || v < 0 || v >= vertexCount) {
-            throw new IllegalArgumentException(
-                "Vertex indices must be in range [0, " + (vertexCount - 1) + "]"
-            );
-        }
+        validateVertex(u);
+        validateVertex(v);
         adjacencyList.get(u).add(v);
         adjacencyList.get(v).add(u);
     }
 
     List<Integer> neighborsOf(int vertex) {
+        validateVertex(vertex);
+        return Collections.unmodifiableList(adjacencyList.get(vertex));
+    }
+
+    private void validateVertex(int vertex) {
         if (vertex < 0 || vertex >= vertexCount) {
             throw new IllegalArgumentException(
                 "Vertex must be in range [0, " + (vertexCount - 1) + "]"
             );
         }
-        return Collections.unmodifiableList(adjacencyList.get(vertex));
     }
 
     int vertexCount() {

@@ -8,6 +8,9 @@ class ConnectedComponents {
     private ConnectedComponents() {}
 
     static List<List<Integer>> find(Graph graph) {
+        if (graph == null) {
+            throw new IllegalArgumentException("graph must not be null");
+        }
         int vertexCount = graph.vertexCount();
         boolean[] visited = new boolean[vertexCount];
         List<List<Integer>> components = new ArrayList<>();

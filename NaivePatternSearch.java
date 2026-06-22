@@ -16,21 +16,12 @@ public class NaivePatternSearch {
         List<Integer> occurrences = new ArrayList<>();
 
         for (int i = 0; i <= txtLen - patLen; i++) {
-            if (matchesAt(pat, txt, i)) {
+            if (txt.regionMatches(i, pat, 0, patLen)) {
                 occurrences.add(i);
             }
         }
 
         return occurrences;
-    }
-
-    private static boolean matchesAt(String pat, String txt, int offset) {
-        for (int j = 0; j < pat.length(); j++) {
-            if (txt.charAt(offset + j) != pat.charAt(j)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static void main(String[] args) {

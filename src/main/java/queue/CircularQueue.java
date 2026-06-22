@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public final class CircularQueue<T> extends AbstractQueue<T> {
+public final class CircularQueue<T> extends AbstractQueue<T> implements BoundedQueue<T> {
 
     private static final String EMPTY_QUEUE_MESSAGE = "Queue is empty.";
     private static final String FULL_QUEUE_MESSAGE = "Queue is full.";
@@ -60,10 +60,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         return size == 0;
     }
 
-    public boolean isFull() {
-        return size == elements.length;
-    }
-
     @Override
     public boolean offer(T value) {
         Objects.requireNonNull(value, "Queue elements must be non-null.");
@@ -103,10 +99,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
     public int capacity() {
         return elements.length;
-    }
-
-    public int remainingCapacity() {
-        return capacity() - size;
     }
 
     @Override

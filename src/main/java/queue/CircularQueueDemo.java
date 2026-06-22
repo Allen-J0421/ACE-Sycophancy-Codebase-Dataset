@@ -6,7 +6,7 @@ public final class CircularQueueDemo {
     }
 
     public static void main(String[] args) {
-        CircularQueue<Integer> queue = new CircularQueue<>(5);
+        BoundedQueue<Integer> queue = new CircularQueue<>(5);
 
         queue.enqueue(10);
         queue.enqueue(20);

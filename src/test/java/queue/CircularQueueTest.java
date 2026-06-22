@@ -26,7 +26,7 @@ public final class CircularQueueTest {
     }
 
     private static void testBasicQueueOperations() {
-        CircularQueue<Integer> queue = new CircularQueue<>(3);
+        BoundedQueue<Integer> queue = new CircularQueue<>(3);
 
         queue.enqueue(10);
         queue.enqueue(20);
@@ -43,7 +43,7 @@ public final class CircularQueueTest {
     }
 
     private static void testWrapAroundBehavior() {
-        CircularQueue<Integer> queue = new CircularQueue<>(3);
+        BoundedQueue<Integer> queue = new CircularQueue<>(3);
 
         queue.enqueue(1);
         queue.enqueue(2);
@@ -57,7 +57,7 @@ public final class CircularQueueTest {
     }
 
     private static void testCapacityBoundaries() {
-        CircularQueue<Integer> queue = new CircularQueue<>(2);
+        BoundedQueue<Integer> queue = new CircularQueue<>(2);
 
         assertTrue(queue.offer(7), "offer should succeed when there is room");
         assertTrue(queue.offer(8), "offer should succeed until the queue is full");
@@ -67,7 +67,7 @@ public final class CircularQueueTest {
     }
 
     private static void testClearAndRemainingCapacity() {
-        CircularQueue<String> queue = new CircularQueue<>(2);
+        BoundedQueue<String> queue = new CircularQueue<>(2);
 
         queue.enqueue("a");
         queue.enqueue("b");
@@ -79,7 +79,7 @@ public final class CircularQueueTest {
     }
 
     private static void testIteratorTraversalAndFailFastBehavior() {
-        CircularQueue<Integer> queue = new CircularQueue<>(4);
+        BoundedQueue<Integer> queue = new CircularQueue<>(4);
 
         queue.enqueue(5);
         queue.enqueue(6);
@@ -104,7 +104,7 @@ public final class CircularQueueTest {
     }
 
     private static void testNullElementsAreRejected() {
-        CircularQueue<String> queue = new CircularQueue<>(1);
+        BoundedQueue<String> queue = new CircularQueue<>(1);
 
         assertThrows(NullPointerException.class, () -> queue.offer(null), "offer should reject null elements");
         assertThrows(NullPointerException.class, () -> queue.enqueue(null), "enqueue should reject null elements");

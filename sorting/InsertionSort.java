@@ -9,22 +9,22 @@ public final class InsertionSort {
     }
 
     public static void sort(int[] values) {
-        IntArraySortSupport.sort(ALGORITHM, values);
+        ALGORITHM.sort(values);
     }
 
     public static void sortRange(int[] values, int startInclusive, int endExclusive) {
-        IntArraySortSupport.sortRange(ALGORITHM, values, startInclusive, endExclusive);
+        ALGORITHM.sort(values, startInclusive, endExclusive);
     }
 
     public static boolean isSorted(int[] values) {
-        return IntArraySortSupport.isSorted(ALGORITHM, values);
+        return ALGORITHM.isSorted(values);
     }
 
     public static boolean isSortedRange(int[] values, int startInclusive, int endExclusive) {
-        return IntArraySortSupport.isSortedRange(ALGORITHM, values, startInclusive, endExclusive);
+        return ALGORITHM.isSorted(values, startInclusive, endExclusive);
     }
 
     public static int[] sortedCopy(int[] values) {
-        return IntArraySortSupport.sortedCopy(ALGORITHM, values);
+        return ALGORITHM.sortedCopy(values);
     }
 }

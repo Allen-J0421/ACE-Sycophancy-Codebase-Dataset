@@ -7,7 +7,7 @@ public final class NaivePatternSearchTest {
     public static void main(String[] args) {
         findsExpectedMatches();
         preservesLegacySearchMethod();
-        formatsDemoOutputWithLegacyTrailingSpace();
+        formatsMatchOutputWithLegacyTrailingSpace();
         rendersDefaultDemoOutput();
         rejectsNullPattern();
         rejectsNullText();
@@ -36,8 +36,8 @@ public final class NaivePatternSearchTest {
                 List.of(0, 2));
     }
 
-    private static void formatsDemoOutputWithLegacyTrailingSpace() {
-        assertEquals("0 9 12 ", NaivePatternSearchDemo.formatMatches(List.of(0, 9, 12)));
+    private static void formatsMatchOutputWithLegacyTrailingSpace() {
+        assertEquals("0 9 12 ", MatchFormatter.format(List.of(0, 9, 12)));
     }
 
     private static void rendersDefaultDemoOutput() {
@@ -62,7 +62,7 @@ public final class NaivePatternSearchTest {
         assertThrows(
                 "null matches",
                 NullPointerException.class,
-                () -> NaivePatternSearchDemo.formatMatches(null));
+                () -> MatchFormatter.format(null));
     }
 
     private static void assertMatches(String name, List<Integer> actual, List<Integer> expected) {

@@ -1,7 +1,4 @@
 final class KruskalMST {
-    private static final MinimumSpanningTreeCalculator CALCULATOR =
-        new KruskalMinimumSpanningTreeCalculator();
-
     private KruskalMST() {
     }
 
@@ -14,7 +11,7 @@ final class KruskalMST {
     }
 
     static MinimumSpanningTree compute(Graph graph) {
-        return CALCULATOR.compute(graph);
+        return KruskalMinimumSpanningTreeFinder.find(graph);
     }
 
     public static void main(String[] args) {

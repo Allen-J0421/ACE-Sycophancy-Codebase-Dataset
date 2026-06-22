@@ -14,13 +14,13 @@ final class Graphs {
 
         List<Edge> parsedEdges = new ArrayList<>(rawEdges.length);
         for (int[] rawEdge : rawEdges) {
-            parsedEdges.add(parseEdge(rawEdge, vertexCount));
+            parsedEdges.add(parseEdge(rawEdge));
         }
 
         return Graph.of(vertexCount, parsedEdges);
     }
 
-    private static Edge parseEdge(int[] rawEdge, int vertexCount) {
+    private static Edge parseEdge(int[] rawEdge) {
         if (rawEdge == null || rawEdge.length != RAW_EDGE_FIELD_COUNT) {
             throw new IllegalArgumentException("Each edge must contain exactly 3 integers.");
         }

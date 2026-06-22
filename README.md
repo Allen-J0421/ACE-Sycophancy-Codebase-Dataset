@@ -6,31 +6,48 @@ iterative Tarjan-style low-link depth-first search (each `O(V + E)`):
 - **Undirected:** articulation points (cut vertices) and bridges (cut edges).
 - **Directed:** strongly connected components (SCCs).
 
-Undirected connectivity and SCCs are *separate* implementations on purpose:
+Undirected connectivity and SCCs remain *separate algorithms* on purpose:
 articulation points/bridges and SCCs are defined on different graph types and do
-not generalize into one another (modeling an undirected graph as a directed one
-and running SCC just collapses each connected component into a single SCC). They
-share the low-link DFS technique, not an algorithm.
+not generalize into one another. What they *do* share is the graph representation
+(`Graph`) and the low-link traversal state (`LowLinkState`).
+
+## Shared abstractions
+
+**`Graph`** is a common interface — a set of integer vertices plus, per vertex,
+the edges traversable leaving it (`edgesFrom(v)`; the neighbor is
+`edge.other(v)`). `UndirectedGraph` and `DirectedGraph` both implement it; the
+only structural difference is that an undirected edge appears in *both* endpoints'
+lists while a directed arc appears only in its tail's. Edges keep a stable
+`id`, so multigraph bridge detection still works. Because both algorithms accept
+any `Graph`, either can run on a shared graph object — but which analysis is
+*meaningful* on which graph is graph theory, not API:
+
+- Articulation points / bridges are meaningful only on an `UndirectedGraph`.
+- `StronglyConnectedComponents` gives SCCs on a `DirectedGraph`; run on an
+  `UndirectedGraph` it computes the **connected components** (every edge is
+  symmetric). This is a genuinely useful shared-type case and is tested.
+
+**`LowLinkState`** owns each vertex's discovery time and low-link value and the
+operations that maintain them (`discover`, `relaxAgainstAncestor`,
+`propagateFromChild`, `isLowLinkRoot`). The traversal control flow and the
+algorithm-specific verdicts (cut vertices/edges vs. SCC extraction) stay with
+each algorithm, since those genuinely differ.
 
 ## Layout
 
 | File | Responsibility |
 |------|----------------|
+| `Graph.java` | Common graph interface: vertices + `edgesFrom(v)` |
+| `Edge.java` | Edge with stable identity and `other(v)` |
+| `UndirectedGraph.java` | Undirected `Graph`; edges shared between both endpoints |
+| `DirectedGraph.java` | Directed `Graph`; arcs stored at their tail |
 | `LowLinkState.java` | Shared DFS state: discovery times + low-link logic |
-| `Graph.java` | Undirected graph (adjacency list) with edge identity, validation |
 | `GraphConnectivity.java` | Articulation points + bridges; stateless, iterative |
 | `ConnectivityResult.java` | Result holder: articulation points + bridges |
-| `DirectedGraph.java` | Directed graph (out-adjacency list), validation |
 | `StronglyConnectedComponents.java` | Tarjan's SCC algorithm; stateless, iterative |
 | `Main.java` | Runnable demo of all three analyses |
 | `GraphConnectivityTest.java` | Dependency-free test runner (undirected) |
 | `StronglyConnectedComponentsTest.java` | Dependency-free test runner (SCC) |
-
-Both connectivity algorithms share `LowLinkState`, which owns each vertex's
-discovery time and low-link value and the operations that maintain them
-(`discover`, `relaxAgainstAncestor`, `propagateFromChild`, `isLowLinkRoot`). The
-traversal control flow and the algorithm-specific verdicts (cut vertices/edges
-vs. SCC extraction) stay with each algorithm, since those genuinely differ.
 
 ## Build and run
 
@@ -52,7 +69,7 @@ Strongly connected components: [0, 1, 2] [3] [4]
 ## Usage
 
 ```java
-Graph graph = Graph.fromEdges(5, new int[][] {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
+UndirectedGraph graph = UndirectedGraph.fromEdges(5, new int[][] {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
 ConnectivityResult result = new GraphConnectivity().analyze(graph);
 result.articulationPoints();  // [1, 4]
 result.bridges();             // [Edge[u=0, v=1, id=0], Edge[u=1, v=4, id=1]]
@@ -75,7 +92,7 @@ by their smallest vertex, so the result is deterministic.
 ## Multigraphs
 
 Parallel edges and self-loops are supported. Edges carry a stable identity
-(`Graph.Edge.id()`), and the traversal skips only the specific tree edge it
+(`Edge.id()`), and the traversal skips only the specific tree edge it
 arrived on — so a parallel edge back to the parent is treated as a genuine back
 edge.
 

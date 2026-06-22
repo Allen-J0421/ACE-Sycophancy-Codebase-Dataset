@@ -17,7 +17,8 @@ public final class Main {
     }
 
     private static void demonstrateUndirectedConnectivity() {
-        Graph graph = Graph.fromEdges(5, new int[][] {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
+        UndirectedGraph graph =
+                UndirectedGraph.fromEdges(5, new int[][] {{0, 1}, {1, 4}, {2, 3}, {2, 4}, {3, 4}});
         ConnectivityResult result = new GraphConnectivity().analyze(graph);
 
         System.out.println("Articulation points: " + formatVertices(result.articulationPoints()));
@@ -55,12 +56,12 @@ public final class Main {
      * Formats bridges as {@code u-v} pairs for display, using {@code -1} to denote
      * a graph with none.
      */
-    private static String formatEdges(List<Graph.Edge> edges) {
+    private static String formatEdges(List<Edge> edges) {
         if (edges.isEmpty()) {
             return "-1";
         }
         StringJoiner joiner = new StringJoiner(" ");
-        for (Graph.Edge edge : edges) {
+        for (Edge edge : edges) {
             joiner.add(edge.u() + "-" + edge.v());
         }
         return joiner.toString();

@@ -30,6 +30,7 @@ public final class StronglyConnectedComponentsTest {
         disconnectedGraphHandledIndependently();
         parallelArcsDoNotChangeComponents();
         twoVerticesNeedBothDirectionsToMerge();
+        sccOnUndirectedGraphYieldsConnectedComponents();
 
         negativeVertexCountIsRejected();
         outOfRangeArcIsRejected();
@@ -96,6 +97,17 @@ public final class StronglyConnectedComponentsTest {
         // A single arc 0->1 leaves them in separate components.
         DirectedGraph graph = DirectedGraph.fromEdges(2, new int[][] {{0, 1}});
         check("one-way arc", scc(graph), List.of(List.of(0), List.of(1)));
+    }
+
+    private void sccOnUndirectedGraphYieldsConnectedComponents() {
+        // The analyzer accepts any Graph. On an undirected graph every edge is
+        // symmetric, so "strongly connected" reduces to "connected": the result is
+        // the connected components. Here {0,1,2} are linked and {3,4} are linked.
+        UndirectedGraph graph =
+                UndirectedGraph.fromEdges(5, new int[][] {{0, 1}, {1, 2}, {3, 4}});
+        check("SCC on undirected = connected components",
+                new StronglyConnectedComponents().find(graph),
+                List.of(List.of(0, 1, 2), List.of(3, 4)));
     }
 
     private void negativeVertexCountIsRejected() {

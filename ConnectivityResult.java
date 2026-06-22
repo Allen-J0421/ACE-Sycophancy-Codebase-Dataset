@@ -7,5 +7,5 @@ import java.util.List;
  * @param articulationPoints the cut vertices, in ascending order
  * @param bridges            the cut edges, ordered by endpoints then edge id
  */
-public record ConnectivityResult(List<Integer> articulationPoints, List<Graph.Edge> bridges) {
+public record ConnectivityResult(List<Integer> articulationPoints, List<Edge> bridges) {
 }

@@ -12,9 +12,14 @@ import java.util.List;
  * <p>A vertex is an articulation point if removing it increases the number of
  * connected components; an edge is a bridge if removing it does. Multigraphs are
  * handled correctly: the traversal skips only the specific tree edge it arrived
- * on (by {@link Graph.Edge#id() edge id}), so a parallel edge back to the parent
+ * on (by {@link Edge#id() edge id}), so a parallel edge back to the parent
  * is treated as a genuine back edge. This matters for bridges, whose strict
  * {@code low[child] > disc[parent]} test a parallel edge can flip.
+ *
+ * <p>Articulation points and bridges are only meaningful on an
+ * {@link UndirectedGraph}. The analysis accepts any {@link Graph}, but on a
+ * {@link DirectedGraph} (whose arcs are one-directional) the results are not
+ * meaningful.
  *
  * <p>Instances are stateless and therefore reusable and thread-safe: each call to
  * {@link #analyze(Graph)} allocates its own traversal state.
@@ -25,10 +30,10 @@ import java.util.List;
 public final class GraphConnectivity {
 
     /** Orders bridges deterministically by smaller endpoint, larger endpoint, then id. */
-    private static final Comparator<Graph.Edge> BRIDGE_ORDER = Comparator
-            .comparingInt((Graph.Edge e) -> Math.min(e.u(), e.v()))
+    private static final Comparator<Edge> BRIDGE_ORDER = Comparator
+            .comparingInt((Edge e) -> Math.min(e.u(), e.v()))
             .thenComparingInt(e -> Math.max(e.u(), e.v()))
-            .thenComparingInt(Graph.Edge::id);
+            .thenComparingInt(Edge::id);
 
     /**
      * Analyzes the given graph's connectivity.
@@ -50,7 +55,7 @@ public final class GraphConnectivity {
         private final Graph graph;
         private final LowLinkState state;
         private final boolean[] isArticulationPoint;
-        private final List<Graph.Edge> bridges = new ArrayList<>();
+        private final List<Edge> bridges = new ArrayList<>();
 
         Search(Graph graph) {
             int vertexCount = graph.vertexCount();
@@ -95,10 +100,10 @@ public final class GraphConnectivity {
             while (!stack.isEmpty()) {
                 Frame frame = stack.peek();
                 int u = frame.vertex;
-                List<Graph.Edge> incident = graph.incidentEdges(u);
+                List<Edge> incident = graph.edgesFrom(u);
 
                 if (frame.nextEdge < incident.size()) {
-                    Graph.Edge edge = incident.get(frame.nextEdge++);
+                    Edge edge = incident.get(frame.nextEdge++);
                     int v = edge.other(u);
                     if (v == u) {
                         // Self-loop: irrelevant to articulation points and bridges.
@@ -133,7 +138,7 @@ public final class GraphConnectivity {
          *                    {@code u} is the DFS root
          */
         private void foldIntoParent(int u, Frame frame, Frame parentFrame) {
-            Graph.Edge incoming = frame.parentEdge;
+            Edge incoming = frame.parentEdge;
             if (incoming == null) {
                 // The DFS root is a cut vertex only if it has more than one DFS child.
                 if (frame.children > 1) {
@@ -167,7 +172,7 @@ public final class GraphConnectivity {
         final int vertex;
 
         /** The tree edge by which {@link #vertex} was reached, or {@code null} for the root. */
-        final Graph.Edge parentEdge;
+        final Edge parentEdge;
 
         /** Index of the next incident edge to visit from {@link #vertex}. */
         int nextEdge;
@@ -175,7 +180,7 @@ public final class GraphConnectivity {
         /** Number of DFS-tree children discovered from {@link #vertex}. */
         int children;
 
-        Frame(int vertex, Graph.Edge parentEdge) {
+        Frame(int vertex, Edge parentEdge) {
             this.vertex = vertex;
             this.parentEdge = parentEdge;
         }

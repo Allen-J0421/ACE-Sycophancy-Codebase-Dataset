@@ -6,18 +6,19 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * Computes the strongly connected components (SCCs) of a directed graph using
- * Tarjan's algorithm in a single {@code O(V + E)} pass.
+ * Computes the strongly connected components (SCCs) of a graph using Tarjan's
+ * algorithm in a single {@code O(V + E)} pass.
  *
- * <p>Two vertices are in the same SCC if each is reachable from the other.
+ * <p>Two vertices are in the same SCC if each is reachable from the other. On a
+ * {@link DirectedGraph} these are the usual SCCs; on an {@link UndirectedGraph}
+ * every edge is symmetric, so the result is the graph's connected components.
  *
- * <p>This is the directed-graph counterpart to the undirected
- * {@link GraphConnectivity}; the two share the low-link DFS technique but are
- * otherwise independent, because SCCs and articulation points/bridges are defined
- * on different kinds of graphs.
+ * <p>This shares the low-link DFS technique with {@link GraphConnectivity} (via
+ * {@link LowLinkState}) but is otherwise an independent algorithm, because SCCs
+ * and articulation points/bridges are different concepts.
  *
  * <p>Instances are stateless and therefore reusable and thread-safe: each call to
- * {@link #find(DirectedGraph)} allocates its own traversal state. The traversal is
+ * {@link #find(Graph)} allocates its own traversal state. The traversal is
  * iterative, so it handles arbitrarily deep graphs without risking a
  * {@link StackOverflowError}.
  */
@@ -30,20 +31,20 @@ public final class StronglyConnectedComponents {
      * themselves are ordered by their smallest vertex, so the result is
      * deterministic.
      *
-     * @param graph the directed graph to analyze
+     * @param graph the graph to analyze
      * @return the list of strongly connected components
      */
-    public List<List<Integer>> find(DirectedGraph graph) {
+    public List<List<Integer>> find(Graph graph) {
         return new Search(graph).run();
     }
 
     /**
-     * Holds the mutable Tarjan-SCC state for a single {@link #find(DirectedGraph)}
+     * Holds the mutable Tarjan-SCC state for a single {@link #find(Graph)}
      * invocation, keeping {@link StronglyConnectedComponents} itself stateless.
      */
     private static final class Search {
 
-        private final DirectedGraph graph;
+        private final Graph graph;
         private final LowLinkState state;
 
         /** Whether each vertex is currently on the component stack. */
@@ -54,7 +55,7 @@ public final class StronglyConnectedComponents {
 
         private final List<List<Integer>> components = new ArrayList<>();
 
-        Search(DirectedGraph graph) {
+        Search(Graph graph) {
             int vertexCount = graph.vertexCount();
             this.graph = graph;
             this.state = new LowLinkState(vertexCount);
@@ -94,10 +95,10 @@ public final class StronglyConnectedComponents {
             while (!work.isEmpty()) {
                 Frame frame = work.peek();
                 int v = frame.vertex;
-                List<Integer> outNeighbors = graph.outNeighbors(v);
+                List<Edge> outEdges = graph.edgesFrom(v);
 
-                if (frame.nextArc < outNeighbors.size()) {
-                    int w = outNeighbors.get(frame.nextArc++);
+                if (frame.nextArc < outEdges.size()) {
+                    int w = outEdges.get(frame.nextArc++).other(v);
                     if (!state.isDiscovered(w)) {
                         discover(w);
                         work.push(new Frame(w));

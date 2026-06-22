@@ -15,4 +15,13 @@ public interface MaxFlowSolver {
      *         network, or if they are equal
      */
     MaxFlowResult solve(FlowNetwork network, int source, int sink);
+
+    /**
+     * Solves the maximum-flow problem, reporting progress to {@code listener}. The
+     * default implementation ignores the listener; solvers that support instrumentation
+     * (such as {@link FordFulkersonSolver}) override it.
+     */
+    default MaxFlowResult solve(FlowNetwork network, int source, int sink, SolveListener listener) {
+        return solve(network, source, sink);
+    }
 }

@@ -39,16 +39,23 @@ public final class FordFulkersonSolver implements MaxFlowSolver {
 
     @Override
     public MaxFlowResult solve(FlowNetwork network, int source, int sink) {
+        return solve(network, source, sink, SolveListener.NONE);
+    }
+
+    @Override
+    public MaxFlowResult solve(FlowNetwork network, int source, int sink, SolveListener listener) {
         validate(network, source, sink);
+        Objects.requireNonNull(listener, "listener");
 
         ResidualGraph residual = new ResidualGraph(network);
         Capacity maxFlow = Capacity.ZERO;
 
         Optional<AugmentingPath> path;
         while ((path = pathFinder.findPath(residual, source, sink)).isPresent()) {
-            Capacity bottleneck = path.get().bottleneck();
-            pushAlong(residual, path.get(), bottleneck);
-            maxFlow = maxFlow.plus(bottleneck);
+            AugmentingPath augmentingPath = path.get();
+            listener.onAugmentingPath(augmentingPath);
+            pushAlong(residual, augmentingPath, augmentingPath.bottleneck());
+            maxFlow = maxFlow.plus(augmentingPath.bottleneck());
         }
 
         return new MaxFlowResult(source, sink, maxFlow, extractFlowEdges(network, residual));

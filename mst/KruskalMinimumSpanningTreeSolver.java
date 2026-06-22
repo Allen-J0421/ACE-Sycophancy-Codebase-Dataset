@@ -3,7 +3,7 @@ package mst;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class KruskalMinimumSpanningTreeSolver implements MinimumSpanningTreeSolver {
+final class KruskalMinimumSpanningTreeSolver implements MinimumSpanningTreeSolver {
     @Override
     public MinimumSpanningTreeResult findMinimumSpanningTree(Graph graph) {
         if (graph == null) {

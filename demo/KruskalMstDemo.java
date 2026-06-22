@@ -1,8 +1,6 @@
 package demo;
 
-import mst.Graph;
-import mst.GraphFactory;
-import mst.KruskalMinimumSpanningTreeSolver;
+import mst.MinimumSpanningTreeService;
 import mst.MinimumSpanningTreeResult;
 
 public final class KruskalMstDemo {
@@ -19,8 +17,7 @@ public final class KruskalMstDemo {
             {0, 3, 5}
         };
 
-        Graph graph = GraphFactory.fromEdgeMatrix(4, edges);
-        MinimumSpanningTreeResult result = new KruskalMinimumSpanningTreeSolver().findMinimumSpanningTree(graph);
+        MinimumSpanningTreeResult result = new MinimumSpanningTreeService().findMinimumSpanningTree(4, edges);
         System.out.println(result.totalWeight());
         System.out.println(result.isConnected());
     }

@@ -1,20 +1,20 @@
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
 
 /**
  * Computes the articulation points (cut vertices) and bridges (cut edges) of an
- * undirected graph using Tarjan's depth-first search algorithm. Both are derived
- * from the same low-link traversal in a single {@code O(V + E)} pass.
+ * undirected graph using Tarjan's algorithm, expressed as a {@link DfsVisitor}
+ * over a shared {@link DepthFirstSearch}. The whole analysis is a single
+ * {@code O(V + E)} pass.
  *
  * <p>A vertex is an articulation point if removing it increases the number of
  * connected components; an edge is a bridge if removing it does. Multigraphs are
- * handled correctly: the traversal skips only the specific tree edge it arrived
- * on (by {@link Edge#id() edge id}), so a parallel edge back to the parent
- * is treated as a genuine back edge. This matters for bridges, whose strict
- * {@code low[child] > disc[parent]} test a parallel edge can flip.
+ * handled correctly: the traversal reports a parallel edge back to the parent as a
+ * genuine non-tree edge (only the single arrival edge is suppressed), which
+ * matters for bridges, whose strict {@code low[child] > disc[parent]} test a
+ * parallel edge can flip.
  *
  * <p>Articulation points and bridges are only meaningful on an
  * {@link UndirectedGraph}. The analysis accepts any {@link Graph}, but on a
@@ -22,10 +22,7 @@ import java.util.List;
  * meaningful.
  *
  * <p>Instances are stateless and therefore reusable and thread-safe: each call to
- * {@link #analyze(Graph)} allocates its own traversal state.
- *
- * <p>The traversal is implemented with an explicit stack rather than recursion, so
- * it handles arbitrarily deep graphs without risking a {@link StackOverflowError}.
+ * {@link #analyze(Graph)} allocates its own visitor.
  */
 public final class GraphConnectivity {
 
@@ -42,147 +39,99 @@ public final class GraphConnectivity {
      * @return its articulation points and bridges
      */
     public ConnectivityResult analyze(Graph graph) {
-        return new Search(graph).run();
+        ConnectivityVisitor visitor = new ConnectivityVisitor(graph.vertexCount());
+        new DepthFirstSearch().traverse(graph, visitor);
+        return visitor.toResult();
     }
 
     /**
-     * Holds the mutable depth-first-search state for a single
-     * {@link #analyze(Graph)} invocation, keeping {@link GraphConnectivity}
-     * itself stateless.
+     * Accumulates articulation points and bridges from the DFS hooks. Low-link
+     * values and discovery times live in {@link LowLinkState}; the DFS tree
+     * structure (parent, incoming edge, child count) is recorded as the traversal
+     * reports it.
      */
-    private static final class Search {
+    private static final class ConnectivityVisitor implements DfsVisitor {
 
-        private final Graph graph;
+        private final int vertexCount;
         private final LowLinkState state;
         private final boolean[] isArticulationPoint;
+        private final int[] parent;
+        private final Edge[] incomingEdge;
+        private final int[] childCount;
         private final List<Edge> bridges = new ArrayList<>();
 
-        Search(Graph graph) {
-            int vertexCount = graph.vertexCount();
-            this.graph = graph;
+        ConnectivityVisitor(int vertexCount) {
+            this.vertexCount = vertexCount;
             this.state = new LowLinkState(vertexCount);
             this.isArticulationPoint = new boolean[vertexCount];
+            this.parent = new int[vertexCount];
+            this.incomingEdge = new Edge[vertexCount];
+            this.childCount = new int[vertexCount];
+            Arrays.fill(parent, -1);
         }
 
-        ConnectivityResult run() {
-            int vertexCount = graph.vertexCount();
-            for (int u = 0; u < vertexCount; u++) {
-                if (!state.isDiscovered(u)) {
-                    explore(u);
-                }
-            }
-
-            List<Integer> articulationPoints = new ArrayList<>();
-            for (int u = 0; u < vertexCount; u++) {
-                if (isArticulationPoint[u]) {
-                    articulationPoints.add(u);
-                }
-            }
-            bridges.sort(BRIDGE_ORDER);
-            return new ConnectivityResult(
-                    List.copyOf(articulationPoints), List.copyOf(bridges));
+        @Override
+        public void discoverVertex(int v) {
+            state.discover(v);
         }
 
-        /**
-         * Explores the DFS tree rooted at {@code root} using an explicit stack.
-         *
-         * <p>The stack always holds the current root-to-node path, which lets each
-         * vertex fold its low-link, cut-vertex verdict, and the bridge status of its
-         * incoming edge into its parent the moment it is fully explored — the
-         * iterative equivalent of returning from a recursive call.
-         */
-        private void explore(int root) {
-            state.discover(root);
-
-            Deque<Frame> stack = new ArrayDeque<>();
-            stack.push(new Frame(root, null));
-
-            while (!stack.isEmpty()) {
-                Frame frame = stack.peek();
-                int u = frame.vertex;
-                List<Edge> incident = graph.edgesFrom(u);
-
-                if (frame.nextEdge < incident.size()) {
-                    Edge edge = incident.get(frame.nextEdge++);
-                    int v = edge.other(u);
-                    if (v == u) {
-                        // Self-loop: irrelevant to articulation points and bridges.
-                        continue;
-                    }
-                    if (!state.isDiscovered(v)) {
-                        frame.children++;
-                        state.discover(v);
-                        stack.push(new Frame(v, edge));
-                    } else if (!edge.equals(frame.parentEdge)) {
-                        // Back edge — but skip only the single tree edge we arrived on.
-                        // A parallel edge to the parent has a different id, so it counts.
-                        state.relaxAgainstAncestor(u, v);
-                    }
-                } else {
-                    // u is fully explored; fold its result into its parent.
-                    stack.pop();
-                    foldIntoParent(u, frame, stack.peek());
-                }
-            }
+        @Override
+        public void treeEdge(int from, int to, Edge edge) {
+            parent[to] = from;
+            incomingEdge[to] = edge;
+            childCount[from]++;
         }
 
-        /**
-         * Applies the post-order step for a fully explored vertex {@code u}: the DFS
-         * root becomes a cut vertex with more than one child, while any other vertex
-         * propagates its low-link upward, may mark its parent as a cut vertex, and may
-         * mark its incoming tree edge as a bridge.
-         *
-         * @param u           the vertex that has just finished exploring
-         * @param frame       {@code u}'s traversal frame
-         * @param parentFrame the frame of {@code u}'s parent, or {@code null} if
-         *                    {@code u} is the DFS root
-         */
-        private void foldIntoParent(int u, Frame frame, Frame parentFrame) {
-            Edge incoming = frame.parentEdge;
-            if (incoming == null) {
-                // The DFS root is a cut vertex only if it has more than one DFS child.
-                if (frame.children > 1) {
-                    isArticulationPoint[u] = true;
+        @Override
+        public void nonTreeEdge(int from, int to, Edge edge) {
+            // Ignore the single reverse traversal of the tree edge we arrived on:
+            // in an undirected graph it is the same edge, not a back edge. A
+            // parallel edge to the parent has a different id and is a real back
+            // edge (this is what makes multigraph bridge detection correct).
+            Edge treeEdge = incomingEdge[from];
+            if (treeEdge != null && edge.id() == treeEdge.id()) {
+                return;
+            }
+            state.relaxAgainstAncestor(from, to);
+        }
+
+        @Override
+        public void finishVertex(int v) {
+            int p = parent[v];
+            if (p == -1) {
+                // The DFS root is a cut vertex only if it has more than one child.
+                if (childCount[v] > 1) {
+                    isArticulationPoint[v] = true;
                 }
                 return;
             }
 
-            int parent = incoming.other(u);
-            state.propagateFromChild(parent, u);
+            state.propagateFromChild(p, v);
 
-            // The incoming tree edge is a bridge when u's subtree has no back edge
-            // reaching the parent or above (strict inequality, so a parallel edge
-            // back to the parent disqualifies it).
-            if (state.low(u) > state.discovery(parent)) {
-                bridges.add(incoming);
+            // The incoming tree edge is a bridge when v's subtree has no back edge
+            // reaching p or above (strict inequality, so a parallel edge back to p
+            // disqualifies it).
+            if (state.low(v) > state.discovery(p)) {
+                bridges.add(incomingEdge[v]);
             }
 
-            // A non-root vertex is a cut vertex when one of its children's subtrees
-            // cannot reach above it via a back edge.
-            boolean parentIsRoot = parentFrame.parentEdge == null;
-            if (!parentIsRoot && state.low(u) >= state.discovery(parent)) {
-                isArticulationPoint[parent] = true;
+            // A non-root vertex p is a cut vertex when one of its children's
+            // subtrees cannot reach above it via a back edge.
+            boolean parentIsRoot = parent[p] == -1;
+            if (!parentIsRoot && state.low(v) >= state.discovery(p)) {
+                isArticulationPoint[p] = true;
             }
         }
-    }
 
-    /** One vertex's state on the explicit DFS stack. */
-    private static final class Frame {
-
-        final int vertex;
-
-        /** The tree edge by which {@link #vertex} was reached, or {@code null} for the root. */
-        final Edge parentEdge;
-
-        /** Index of the next incident edge to visit from {@link #vertex}. */
-        int nextEdge;
-
-        /** Number of DFS-tree children discovered from {@link #vertex}. */
-        int children;
-
-        Frame(int vertex, Edge parentEdge) {
-            this.vertex = vertex;
-            this.parentEdge = parentEdge;
+        ConnectivityResult toResult() {
+            List<Integer> articulationPoints = new ArrayList<>();
+            for (int v = 0; v < vertexCount; v++) {
+                if (isArticulationPoint[v]) {
+                    articulationPoints.add(v);
+                }
+            }
+            bridges.sort(BRIDGE_ORDER);
+            return new ConnectivityResult(List.copyOf(articulationPoints), List.copyOf(bridges));
         }
     }
 }

@@ -9,7 +9,8 @@ iterative Tarjan-style low-link depth-first search (each `O(V + E)`):
 Undirected connectivity and SCCs remain *separate algorithms* on purpose:
 articulation points/bridges and SCCs are defined on different graph types and do
 not generalize into one another. What they *do* share is the graph representation
-(`Graph`) and the low-link traversal state (`LowLinkState`).
+(`Graph`), the DFS traversal engine (`DepthFirstSearch` / `DfsVisitor`), and the
+low-link traversal state (`LowLinkState`).
 
 ## Shared abstractions
 
@@ -27,11 +28,23 @@ any `Graph`, either can run on a shared graph object — but which analysis is
   `UndirectedGraph` it computes the **connected components** (every edge is
   symmetric). This is a genuinely useful shared-type case and is tested.
 
+**`DepthFirstSearch`** is a reusable iterative DFS engine that drives a
+`DfsVisitor` with four hooks — `discoverVertex`, `treeEdge`, `nonTreeEdge`,
+`finishVertex`. Both `GraphConnectivity` and `StronglyConnectedComponents` are
+just visitors over this engine, and new traversal algorithms (cycle detection,
+topological order, …) can be written the same way without touching the engine
+(see `DepthFirstSearchTest` for a cycle detector built only from the hooks). The
+engine reports *every* edge and stays free of algorithm semantics: on an
+undirected graph the reverse of a tree edge is reported as a non-tree edge, which
+bridge detection filters out (same edge id) but SCC processes (treating an
+undirected edge as bidirectional, which is why SCC on an undirected graph yields
+connected components).
+
 **`LowLinkState`** owns each vertex's discovery time and low-link value and the
 operations that maintain them (`discover`, `relaxAgainstAncestor`,
-`propagateFromChild`, `isLowLinkRoot`). The traversal control flow and the
-algorithm-specific verdicts (cut vertices/edges vs. SCC extraction) stay with
-each algorithm, since those genuinely differ.
+`propagateFromChild`, `isLowLinkRoot`). The algorithm-specific verdicts (cut
+vertices/edges vs. SCC extraction) live in each visitor, since those genuinely
+differ.
 
 ## Layout
 
@@ -42,11 +55,14 @@ each algorithm, since those genuinely differ.
 | `UndirectedGraph.java` | Undirected `Graph`; edges shared between both endpoints |
 | `DirectedGraph.java` | Directed `Graph`; arcs stored at their tail |
 | `GraphBuilder.java` | Fluent, auto-sizing builder for either graph type |
+| `DepthFirstSearch.java` | Reusable iterative DFS engine |
+| `DfsVisitor.java` | Traversal hooks: discover / tree edge / non-tree edge / finish |
 | `LowLinkState.java` | Shared DFS state: discovery times + low-link logic |
-| `GraphConnectivity.java` | Articulation points + bridges; stateless, iterative |
+| `GraphConnectivity.java` | Articulation points + bridges, as a `DfsVisitor` |
 | `ConnectivityResult.java` | Result holder: articulation points + bridges |
-| `StronglyConnectedComponents.java` | Tarjan's SCC algorithm; stateless, iterative |
+| `StronglyConnectedComponents.java` | Tarjan's SCC, as a `DfsVisitor` |
 | `Main.java` | Runnable demo of all three analyses |
+| `DepthFirstSearchTest.java` | Dependency-free test runner (DFS engine) |
 | `GraphConnectivityTest.java` | Dependency-free test runner (undirected) |
 | `StronglyConnectedComponentsTest.java` | Dependency-free test runner (SCC) |
 
@@ -55,6 +71,7 @@ each algorithm, since those genuinely differ.
 ```sh
 javac -d out *.java     # compile
 java -cp out Main       # run the demo
+java -cp out DepthFirstSearchTest             # DFS engine tests (exits non-zero on failure)
 java -cp out GraphConnectivityTest            # undirected tests (exits non-zero on failure)
 java -cp out StronglyConnectedComponentsTest  # SCC tests (exits non-zero on failure)
 java -cp out GraphBuilderTest                 # builder tests (exits non-zero on failure)

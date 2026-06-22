@@ -20,19 +20,19 @@ public final class BubbleSortTest {
     }
 
     public static void main(String[] args) {
-        shouldSortCases();
-        shouldCreateSortedCopyWithoutMutatingSource();
-        shouldRejectNullInput();
+        assertSortCases();
+        assertSortedCopyDoesNotMutateSource();
+        assertRejectsNullInput();
         System.out.println("All BubbleSort tests passed.");
     }
 
-    private static void shouldSortCases() {
+    private static void assertSortCases() {
         for (int index = 0; index < SORT_INPUTS.length; index++) {
             assertSortsInPlace(SORT_INPUTS[index], SORT_EXPECTED[index]);
         }
     }
 
-    private static void shouldCreateSortedCopyWithoutMutatingSource() {
+    private static void assertSortedCopyDoesNotMutateSource() {
         int[] source = SOURCE_INPUT.clone();
         int[] sorted = BubbleSort.sortedCopy(source);
 
@@ -40,7 +40,7 @@ public final class BubbleSortTest {
         assertIntArrayEquals(SORTED_COPY_OUTPUT, sorted);
     }
 
-    private static void shouldRejectNullInput() {
+    private static void assertRejectsNullInput() {
         try {
             BubbleSort.sortInPlace(null);
             throw new AssertionError("Expected IllegalArgumentException for null input");

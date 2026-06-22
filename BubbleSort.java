@@ -8,6 +8,11 @@ public final class BubbleSort {
 
     public static void sortInPlace(int[] values) {
         validate(values);
+
+        if (values.length < 2) {
+            return;
+        }
+
         sortValuesInPlace(values);
     }
 

@@ -19,15 +19,16 @@ final class BracketMatcher {
     }
 
     private boolean accept(char c) {
-        if (!bracketProfile.isBracket(c)) {
+        BracketProfile.BracketInfo bracketInfo = bracketProfile.bracketFor(c);
+        if (bracketInfo == null) {
             return true;
         }
 
-        if (bracketProfile.isOpeningBracket(c)) {
-            closingStack[depth++] = bracketProfile.expectedClosingOf(c);
+        if (bracketInfo.isOpening()) {
+            closingStack[depth++] = bracketInfo.expectedClosing();
             return true;
         }
 
-        return depth > 0 && closingStack[--depth] == c;
+        return depth > 0 && closingStack[--depth] == bracketInfo.character();
     }
 }

@@ -7,15 +7,10 @@ import java.util.Set;
 public final class BracketProfile {
     private static final BracketProfile STANDARD = of(Map.of('(', ')', '{', '}', '[', ']'));
 
-    private final Map<Character, Character> openingToClosing;
-    private final Set<Character> closingBrackets;
+    private final Map<Character, BracketInfo> bracketInfos;
 
-    private BracketProfile(
-        Map<Character, Character> openingToClosing,
-        Set<Character> closingBrackets
-    ) {
-        this.openingToClosing = openingToClosing;
-        this.closingBrackets = closingBrackets;
+    private BracketProfile(Map<Character, BracketInfo> bracketInfos) {
+        this.bracketInfos = bracketInfos;
     }
 
     public static BracketProfile standard() {
@@ -27,45 +22,65 @@ public final class BracketProfile {
         return buildProfile(Map.copyOf(openingToClosing));
     }
 
-    boolean isBracket(char c) {
-        return openingToClosing.containsKey(Character.valueOf(c))
-            || closingBrackets.contains(Character.valueOf(c));
-    }
-
-    boolean isOpeningBracket(char c) {
-        return openingToClosing.containsKey(Character.valueOf(c));
-    }
-
-    char expectedClosingOf(char c) {
-        Character closing = openingToClosing.get(Character.valueOf(c));
-        if (closing == null) {
-            throw new IllegalArgumentException("unknown opening bracket: " + c);
-        }
-        return closing.charValue();
+    BracketInfo bracketFor(char c) {
+        return bracketInfos.get(Character.valueOf(c));
     }
 
     private static BracketProfile buildProfile(Map<Character, Character> openingToClosing) {
-        Map<Character, Character> openings = new HashMap<>();
-        Set<Character> openingBrackets = new HashSet<>();
+        Map<Character, BracketInfo> infos = new HashMap<>();
         Set<Character> closingBrackets = new HashSet<>();
         for (Map.Entry<Character, Character> entry : openingToClosing.entrySet()) {
             char opening = entry.getKey().charValue();
             char closing = entry.getValue().charValue();
 
+            if (!closingBrackets.add(closing)) {
+                throw new IllegalArgumentException("closing brackets must be unique");
+            }
             if (opening == closing
-                || openingBrackets.contains(closing)
+                || infos.containsKey(Character.valueOf(closing))
                 || closingBrackets.contains(opening)) {
                 throw new IllegalArgumentException(
                     "opening and closing brackets must be distinct"
                 );
             }
-            if (!closingBrackets.add(closing)) {
-                throw new IllegalArgumentException("closing brackets must be unique");
-            }
 
-            openingBrackets.add(opening);
-            openings.put(Character.valueOf(opening), Character.valueOf(closing));
+            BracketInfo openingInfo = BracketInfo.opening(opening, closing);
+            BracketInfo closingInfo = BracketInfo.closing(closing);
+            infos.put(Character.valueOf(opening), openingInfo);
+            infos.put(Character.valueOf(closing), closingInfo);
         }
-        return new BracketProfile(Map.copyOf(openings), Set.copyOf(closingBrackets));
+        return new BracketProfile(Map.copyOf(infos));
+    }
+
+    static final class BracketInfo {
+        private final char character;
+        private final char expectedClosing;
+        private final boolean opening;
+
+        private BracketInfo(char character, char expectedClosing, boolean opening) {
+            this.character = character;
+            this.expectedClosing = expectedClosing;
+            this.opening = opening;
+        }
+
+        static BracketInfo opening(char character, char expectedClosing) {
+            return new BracketInfo(character, expectedClosing, true);
+        }
+
+        static BracketInfo closing(char character) {
+            return new BracketInfo(character, character, false);
+        }
+
+        char character() {
+            return character;
+        }
+
+        char expectedClosing() {
+            return expectedClosing;
+        }
+
+        boolean isOpening() {
+            return opening;
+        }
     }
 }

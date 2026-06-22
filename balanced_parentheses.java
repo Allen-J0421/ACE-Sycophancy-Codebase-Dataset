@@ -31,7 +31,7 @@ final class BalancedParentheses {
         Deque<Character> openBrackets = new ArrayDeque<>();
 
         for (char current : input.toCharArray()) {
-            if (isOpeningBracket(current, openingBrackets)) {
+            if (openingBrackets.contains(current)) {
                 openBrackets.push(current);
             } else {
                 Character expectedOpening = openingByClosing.get(current);
@@ -49,10 +49,6 @@ final class BalancedParentheses {
         }
 
         return openBrackets.isEmpty();
-    }
-
-    private static boolean isOpeningBracket(char c, Set<Character> openingBrackets) {
-        return openingBrackets.contains(c);
     }
 
     public static void main(String[] args) {

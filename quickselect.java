@@ -4,27 +4,6 @@ public final class QuickSelect {
         // Utility class.
     }
 
-    private static void swap(int[] values, int i, int j) {
-        int temp = values[i];
-        values[i] = values[j];
-        values[j] = temp;
-    }
-
-    private static int partition(int[] values, int low, int high) {
-        int pivotValue = values[high];
-        int pivotIndex = low;
-
-        for (int i = low; i < high; i++) {
-            if (values[i] < pivotValue) {
-                swap(values, i, pivotIndex);
-                pivotIndex++;
-            }
-        }
-
-        swap(values, pivotIndex, high);
-        return pivotIndex;
-    }
-
     private static void validateSelectionRequest(int[] values, int k) {
         if (values == null) {
             throw new IllegalArgumentException("values must not be null");
@@ -39,7 +18,15 @@ public final class QuickSelect {
 
     public static int selectKthSmallest(int[] values, int k) {
         validateSelectionRequest(values, k);
+        return selectKthSmallestInPlace(values.clone(), k);
+    }
 
+    public static int selectKthSmallestInPlace(int[] values, int k) {
+        validateSelectionRequest(values, k);
+        return selectKthSmallestUnchecked(values, k);
+    }
+
+    private static int selectKthSmallestUnchecked(int[] values, int k) {
         int low = 0;
         int high = values.length - 1;
         int targetIndex = k - 1;
@@ -61,8 +48,24 @@ public final class QuickSelect {
         throw new IllegalStateException("Quickselect failed to find the requested element");
     }
 
-    public static int selectKthSmallestCopy(int[] values, int k) {
-        validateSelectionRequest(values, k);
-        return selectKthSmallest(values.clone(), k);
+    private static int partition(int[] values, int low, int high) {
+        int pivotValue = values[high];
+        int pivotIndex = low;
+
+        for (int i = low; i < high; i++) {
+            if (values[i] < pivotValue) {
+                swap(values, i, pivotIndex);
+                pivotIndex++;
+            }
+        }
+
+        swap(values, pivotIndex, high);
+        return pivotIndex;
+    }
+
+    private static void swap(int[] values, int i, int j) {
+        int temp = values[i];
+        values[i] = values[j];
+        values[j] = temp;
     }
 }

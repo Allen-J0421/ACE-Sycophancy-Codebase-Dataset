@@ -2,11 +2,21 @@ import java.util.List;
 
 public final class RedBlackTree {
     private enum Rotation {
-        NONE,
-        LEFT_LEFT,
-        RIGHT_RIGHT,
-        LEFT_RIGHT,
-        RIGHT_LEFT
+        NONE(null, null, null),
+        LEFT_LEFT(null, Side.RIGHT, Side.LEFT),
+        RIGHT_RIGHT(null, Side.LEFT, Side.RIGHT),
+        LEFT_RIGHT(new ChildRotation(Side.LEFT, Side.RIGHT), Side.LEFT, Side.RIGHT),
+        RIGHT_LEFT(new ChildRotation(Side.RIGHT, Side.LEFT), Side.RIGHT, Side.LEFT);
+
+        private final ChildRotation childRotation;
+        private final Side pivotSide;
+        private final Side recolorChildSide;
+
+        Rotation(ChildRotation childRotation, Side pivotSide, Side recolorChildSide) {
+            this.childRotation = childRotation;
+            this.pivotSide = pivotSide;
+            this.recolorChildSide = recolorChildSide;
+        }
     }
 
     private enum Side {
@@ -16,6 +26,9 @@ public final class RedBlackTree {
         private Side opposite() {
             return this == LEFT ? RIGHT : LEFT;
         }
+    }
+
+    private record ChildRotation(Side childSide, Side pivotSide) {
     }
 
     private static final class Node {
@@ -124,29 +137,16 @@ public final class RedBlackTree {
     }
 
     private Node applyPendingRotation(Node current, Rotation pendingRotation) {
-        switch (pendingRotation) {
-            case LEFT_LEFT:
-                current = rotate(current, Side.RIGHT);
-                recolorAfterSingleRotation(current, Side.LEFT);
-                break;
-            case RIGHT_RIGHT:
-                current = rotate(current, Side.LEFT);
-                recolorAfterSingleRotation(current, Side.RIGHT);
-                break;
-            case RIGHT_LEFT:
-                rotateChild(current, Side.RIGHT, Side.LEFT);
-                current = rotate(current, Side.RIGHT);
-                recolorAfterSingleRotation(current, Side.LEFT);
-                break;
-            case LEFT_RIGHT:
-                rotateChild(current, Side.LEFT, Side.RIGHT);
-                current = rotate(current, Side.LEFT);
-                recolorAfterSingleRotation(current, Side.RIGHT);
-                break;
-            case NONE:
-                break;
+        if (pendingRotation == Rotation.NONE) {
+            return current;
         }
 
+        if (pendingRotation.childRotation != null) {
+            rotateChild(current, pendingRotation.childRotation.childSide(), pendingRotation.childRotation.pivotSide());
+        }
+
+        current = rotate(current, pendingRotation.pivotSide);
+        recolorAfterSingleRotation(current, pendingRotation.recolorChildSide);
         return current;
     }
 

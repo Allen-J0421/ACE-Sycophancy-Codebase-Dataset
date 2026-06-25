@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 class AVLTree {
@@ -25,9 +26,16 @@ class AVLTree {
     }
 
     public void insertAll(int... keys) {
+        Objects.requireNonNull(keys, "keys");
         for (int key : keys) {
             insert(key);
         }
+    }
+
+    public static AVLTree fromKeys(int... keys) {
+        AVLTree tree = new AVLTree();
+        tree.insertAll(keys);
+        return tree;
     }
 
     public String preOrder() {
@@ -148,9 +156,7 @@ class AVLTree {
     }
 
     public static void main(String[] args) {
-        AVLTree tree = new AVLTree();
-        tree.insertAll(10, 20, 30, 40, 50, 25);
-
+        AVLTree tree = AVLTree.fromKeys(10, 20, 30, 40, 50, 25);
         System.out.print(tree.preOrder());
     }
 }

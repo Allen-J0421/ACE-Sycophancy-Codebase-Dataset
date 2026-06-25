@@ -23,6 +23,8 @@ public final class CircularQueueTest {
         assertEquals("[2,3,4]", queue.toString(), "wrap-around order");
         assertEquals(Integer.valueOf(2), queue.peekFront(), "front after wrap-around");
         assertEquals(Integer.valueOf(4), queue.peekRear(), "rear after wrap-around");
+        assertEquals(Integer.valueOf(2), queue.getFront(), "generic getFront alias");
+        assertEquals(Integer.valueOf(4), queue.getRear(), "generic getRear alias");
     }
 
     private static void testFailFastIterator() {
@@ -95,9 +97,9 @@ public final class CircularQueueTest {
         assertTrue(queue.isFull(), "legacy queue should stay full");
         assertEquals(Integer.valueOf(5), queue.peekFront(), "legacy front");
         assertEquals(Integer.valueOf(6), queue.peekRear(), "legacy rear");
+        assertEquals(Integer.valueOf(5), queue.getFront(), "legacy getFront alias");
+        assertEquals(Integer.valueOf(6), queue.getRear(), "legacy getRear alias");
         assertEquals(Integer.valueOf(5), queue.dequeue(), "legacy dequeue first");
-        assertEquals(Integer.valueOf(6), queue.getFront(), "legacy getFront");
-        assertEquals(Integer.valueOf(6), queue.getRear(), "legacy getRear");
     }
 
     private static void assertEquals(Object expected, Object actual, String label) {

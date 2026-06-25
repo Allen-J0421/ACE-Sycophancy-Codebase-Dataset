@@ -43,6 +43,14 @@ public class CircularQueue<T> extends AbstractQueue<T> {
         return elementAt(indexFromHead(size - 1));
     }
 
+    public T getFront() {
+        return peekFront();
+    }
+
+    public T getRear() {
+        return peekRear();
+    }
+
     public boolean isEmpty() {
         return size == 0;
     }

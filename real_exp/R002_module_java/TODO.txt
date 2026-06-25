@@ -1,0 +1,19 @@
+TODO LIST
+----------------------------------------------------------------------------------------
+- FIX NUMBERS - make it last so all of the animals remain over 1000
+
+list VARIABLES
+
+= for long methods, make private methods that are called in the class.
+--------------------------------------------------------------------------------------------
+- Implement easy behaviours
+
+        - WEATHER, timeofday
+
+
+- Plants grow slower/ die in snow. They grow in all weather except snow.
+- includes the behaviour where a predator doesnt have to eat is a behaviour.
+- At specific time of day, the predator will always eat so there 100% chance of eating the food if its found.
+---------------------------------------------------------------------------------------------
+
+- Ideally what we actually want is more grass to be created

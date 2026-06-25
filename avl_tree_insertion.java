@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 final class AVLTree {
     private static final class Node {
         final int key;
@@ -26,14 +23,18 @@ final class AVLTree {
         }
     }
 
+    boolean isEmpty() {
+        return root == null;
+    }
+
     void preOrder() {
         System.out.print(this);
     }
 
     String preOrderString() {
-        List<String> values = new ArrayList<>();
-        collectPreOrder(root, values);
-        return String.join(" ", values);
+        StringBuilder builder = new StringBuilder();
+        appendPreOrder(root, builder);
+        return builder.toString();
     }
 
     @Override
@@ -116,14 +117,21 @@ final class AVLTree {
         return rebalance(node);
     }
 
-    private static void collectPreOrder(Node node, List<String> values) {
+    private static void appendKey(StringBuilder builder, int key) {
+        if (builder.length() > 0) {
+            builder.append(' ');
+        }
+        builder.append(key);
+    }
+
+    private static void appendPreOrder(Node node, StringBuilder builder) {
         if (node == null) {
             return;
         }
 
-        values.add(Integer.toString(node.key));
-        collectPreOrder(node.left, values);
-        collectPreOrder(node.right, values);
+        appendKey(builder, node.key);
+        appendPreOrder(node.left, builder);
+        appendPreOrder(node.right, builder);
     }
 
     public static void main(String[] args) {

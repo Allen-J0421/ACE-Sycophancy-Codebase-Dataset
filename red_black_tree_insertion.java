@@ -259,13 +259,15 @@ class RedBlackTree {
         appendTree(node.right, space, output);
 
         output.append('\n');
+        appendIndent(output, space);
+        output.append(node.data).append('\n');
+        appendTree(node.left, space, output);
+    }
 
+    private void appendIndent(StringBuilder output, int space) {
         for (int i = PRINT_INDENT; i < space; i++) {
             output.append(' ');
         }
-
-        output.append(node.data).append('\n');
-        appendTree(node.left, space, output);
     }
 
     public static void main(String[] args) {

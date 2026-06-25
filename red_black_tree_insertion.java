@@ -2,6 +2,7 @@ class RedBlackTree {
     private static final char RED = 'R';
     private static final char BLACK = 'B';
     private static final int PRINT_INDENT = 10;
+    private static final int[] DEMO_VALUES = {1, 4, 6, 3, 5, 7, 8, 2, 9};
 
     public Node root;
 
@@ -76,6 +77,12 @@ class RedBlackTree {
 
     public void insert(int data) {
         insertHelp(root, data);
+    }
+
+    public void insertAll(int[] values) {
+        for (int value : values) {
+            insert(value);
+        }
     }
 
     private Node insertNode(int data) {
@@ -258,10 +265,13 @@ class RedBlackTree {
     }
 
     public static void main(String[] args) {
-        RedBlackTree tree = new RedBlackTree();
-        int[] values = {1, 4, 6, 3, 5, 7, 8, 2, 9};
+        runDemo();
+    }
 
-        for (int value : values) {
+    private static void runDemo() {
+        RedBlackTree tree = new RedBlackTree();
+
+        for (int value : DEMO_VALUES) {
             tree.insert(value);
             System.out.println();
             tree.inorderTraversal();

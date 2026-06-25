@@ -14,14 +14,14 @@ final class QueueExamples {
         System.out.println(queue.peekFront() + " " + queue.peekRear());
         System.out.println(queue);
     }
-}
 
-interface QueueView<T> {
-    void enqueue(T value);
+    interface QueueView<T> {
+        void enqueue(T value);
 
-    T dequeue();
+        T dequeue();
 
-    T peekFront();
+        T peekFront();
 
-    T peekRear();
+        T peekRear();
+    }
 }

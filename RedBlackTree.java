@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-final class RedBlackTree<T> implements Iterable<T> {
+public final class RedBlackTree<T> implements Iterable<T> {
     private enum Color {
         RED,
         BLACK
@@ -28,11 +28,11 @@ final class RedBlackTree<T> implements Iterable<T> {
     private Node<T> root;
     private int size;
 
-    RedBlackTree() {
+    public RedBlackTree() {
         this(naturalOrderComparator());
     }
 
-    RedBlackTree(Comparator<? super T> comparator) {
+    public RedBlackTree(Comparator<? super T> comparator) {
         this.comparator = Objects.requireNonNull(comparator, "comparator");
         this.root = null;
         this.size = 0;

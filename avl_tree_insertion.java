@@ -1,7 +1,5 @@
-import java.util.*;
-
 class Node {
-    int key;
+    final int key;
     Node left;
     Node right;
     int height;
@@ -16,82 +14,89 @@ class Node {
 
 class AVLTree {
 
-    static int height(Node N) {
-        if (N == null)
+    static int height(Node node) {
+        if (node == null) {
             return 0;
-        return N.height;
+        }
+        return node.height;
+    }
+
+    static void updateHeight(Node node) {
+        node.height = 1 + Math.max(height(node.left), height(node.right));
     }
 
     static Node rightRotate(Node y) {
         Node x = y.left;
-        Node T2 = x.right;
+        Node subtree = x.right;
 
         x.right = y;
-        y.left = T2;
+        y.left = subtree;
 
-        y.height = 1 + Math.max(height(y.left),
-                                height(y.right));
-        x.height = 1 + Math.max(height(x.left),
-                                height(x.right));
+        updateHeight(y);
+        updateHeight(x);
 
         return x;
     }
 
     static Node leftRotate(Node x) {
         Node y = x.right;
-        Node T2 = y.left;
+        Node subtree = y.left;
 
         y.left = x;
-        x.right = T2;
+        x.right = subtree;
 
-        x.height = 1 + Math.max(height(x.left),
-                               height(x.right));
-        y.height = 1 + Math.max(height(y.left),
-                                height(y.right));
+        updateHeight(x);
+        updateHeight(y);
 
         return y;
     }
 
-    static int getBalance(Node N) {
-        if (N == null)
+    static int getBalance(Node node) {
+        if (node == null) {
             return 0;
-        return height(N.left) - height(N.right);
+        }
+        return height(node.left) - height(node.right);
     }
 
-    static Node insert(Node node, int key) {
-
-        if (node == null)
-            return new Node(key);
-
-        if (key < node.key)
-            node.left = insert(node.left, key);
-        else if (key > node.key)
-            node.right = insert(node.right, key);
-        else
-            return node;
-
-        node.height = 1 + Math.max(height(node.left),
-                                   height(node.right));
-
+    static Node rebalance(Node node, int key) {
         int balance = getBalance(node);
 
-        if (balance > 1 && key < node.left.key)
-            return rightRotate(node);
+        if (balance > 1) {
+            if (key < node.left.key) {
+                return rightRotate(node);
+            }
 
-        if (balance < -1 && key > node.right.key)
-            return leftRotate(node);
-
-        if (balance > 1 && key > node.left.key) {
             node.left = leftRotate(node.left);
             return rightRotate(node);
         }
 
-        if (balance < -1 && key < node.right.key) {
+        if (balance < -1) {
+            if (key > node.right.key) {
+                return leftRotate(node);
+            }
+
             node.right = rightRotate(node.right);
             return leftRotate(node);
         }
 
         return node;
+    }
+
+    static Node insert(Node node, int key) {
+        if (node == null) {
+            return new Node(key);
+        }
+
+        if (key < node.key) {
+            node.left = insert(node.left, key);
+        } else if (key > node.key) {
+            node.right = insert(node.right, key);
+        } else {
+            return node;
+        }
+
+        updateHeight(node);
+        return rebalance(node, key);
     }
 
     static void preOrder(Node root) {

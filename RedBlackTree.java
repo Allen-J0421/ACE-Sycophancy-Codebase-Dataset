@@ -1,9 +1,12 @@
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.List;
+import java.util.StringJoiner;
 
 public final class RedBlackTree<T> implements Iterable<T> {
     private enum Color {
@@ -73,6 +76,14 @@ public final class RedBlackTree<T> implements Iterable<T> {
 
     public int size() {
         return size;
+    }
+
+    public List<T> toList() {
+        List<T> values = new ArrayList<>(size);
+        for (T value : this) {
+            values.add(value);
+        }
+        return values;
     }
 
     public boolean isValidRedBlackTree() {
@@ -299,11 +310,11 @@ public final class RedBlackTree<T> implements Iterable<T> {
     }
 
     public String inorderString() {
-        StringBuilder builder = new StringBuilder();
+        StringJoiner joiner = new StringJoiner(" ");
         for (T value : this) {
-            builder.append(value).append(' ');
+            joiner.add(String.valueOf(value));
         }
-        return builder.toString();
+        return joiner.toString();
     }
 
     public String treeString() {
@@ -320,7 +331,9 @@ public final class RedBlackTree<T> implements Iterable<T> {
         int nextIndent = indent + 10;
         treeString(node.right, nextIndent, builder);
 
-        builder.append('\n');
+        if (builder.length() > 0) {
+            builder.append('\n');
+        }
         for (int i = 10; i < nextIndent; i++) {
             builder.append(' ');
         }

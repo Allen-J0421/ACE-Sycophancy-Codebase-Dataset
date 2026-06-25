@@ -15,6 +15,7 @@ public final class RedBlackTreeDemo {
             System.out.print(tree.inorderString());
         }
 
+        System.out.println();
         System.out.print(tree.treeString());
     }
 }

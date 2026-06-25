@@ -1,4 +1,6 @@
 class AVLTree {
+    private static final int MAX_ALLOWED_BALANCE = 1;
+
     private Node root;
 
     private static final class Node {
@@ -15,6 +17,12 @@ class AVLTree {
 
     public void insert(int key) {
         root = insert(root, key);
+    }
+
+    public void insertAll(int... keys) {
+        for (int key : keys) {
+            insert(key);
+        }
     }
 
     public String preOrder() {
@@ -81,28 +89,35 @@ class AVLTree {
         }
 
         updateHeight(node);
+        return rebalance(node, key);
+    }
 
+    private static Node rebalance(Node node, int insertedKey) {
         int nodeBalance = balance(node);
 
-        if (nodeBalance > 1 && key < node.left.key) {
+        if (isLeftHeavy(nodeBalance)) {
+            if (insertedKey > node.left.key) {
+                node.left = rotateLeft(node.left);
+            }
             return rotateRight(node);
         }
 
-        if (nodeBalance < -1 && key > node.right.key) {
-            return rotateLeft(node);
-        }
-
-        if (nodeBalance > 1 && key > node.left.key) {
-            node.left = rotateLeft(node.left);
-            return rotateRight(node);
-        }
-
-        if (nodeBalance < -1 && key < node.right.key) {
-            node.right = rotateRight(node.right);
+        if (isRightHeavy(nodeBalance)) {
+            if (insertedKey < node.right.key) {
+                node.right = rotateRight(node.right);
+            }
             return rotateLeft(node);
         }
 
         return node;
+    }
+
+    private static boolean isLeftHeavy(int balance) {
+        return balance > MAX_ALLOWED_BALANCE;
+    }
+
+    private static boolean isRightHeavy(int balance) {
+        return balance < -MAX_ALLOWED_BALANCE;
     }
 
     private static void appendPreOrder(Node node, StringBuilder result) {
@@ -121,11 +136,7 @@ class AVLTree {
 
     public static void main(String[] args) {
         AVLTree tree = new AVLTree();
-        int[] values = {10, 20, 30, 40, 50, 25};
-
-        for (int value : values) {
-            tree.insert(value);
-        }
+        tree.insertAll(10, 20, 30, 40, 50, 25);
 
         System.out.print(tree.preOrder());
     }

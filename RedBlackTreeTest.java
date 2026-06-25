@@ -43,7 +43,8 @@ class RedBlackTreeTest {
 
         RedBlackTreeSnapshot snapshot = tree.snapshot();
 
-        assertEquals("3 5 8 10 12 15 18", RedBlackTreeFormatter.formatInorder(snapshot));
-        assertTrue(RedBlackTreeValidator.isValid(snapshot));
+        assertEquals(List.of(3, 5, 8, 10, 12, 15, 18), snapshot.inorderValues());
+        assertEquals("3 5 8 10 12 15 18", snapshot.inorderString());
+        assertTrue(snapshot.isValid());
     }
 }

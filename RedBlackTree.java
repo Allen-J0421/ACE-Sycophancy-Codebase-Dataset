@@ -68,7 +68,7 @@ public final class RedBlackTree {
     }
 
     public String inorderString() {
-        return RedBlackTreeFormatter.formatInorder(snapshot());
+        return snapshot().inorderString();
     }
 
     public void inorderTraversal() {
@@ -76,7 +76,7 @@ public final class RedBlackTree {
     }
 
     public String formatTree() {
-        return RedBlackTreeFormatter.formatTree(snapshot());
+        return snapshot().formatTree();
     }
 
     public void printTree() {
@@ -84,7 +84,7 @@ public final class RedBlackTree {
     }
 
     public boolean isValidRedBlackTree() {
-        return RedBlackTreeValidator.isValid(snapshot());
+        return snapshot().isValid();
     }
 
     private Node insert(Node current, int data, InsertionState state) {

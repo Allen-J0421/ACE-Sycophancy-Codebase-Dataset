@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public final class AVLTree<T extends Comparable<? super T>> {
+public final class AVLTree<T> {
     private static final int MAX_ALLOWED_BALANCE = 1;
 
+    private final Comparator<? super T> comparator;
     private Node<T> root;
 
     private static final class Node<T> {
@@ -19,6 +21,10 @@ public final class AVLTree<T extends Comparable<? super T>> {
             this.key = key;
             this.height = 1;
         }
+    }
+
+    public AVLTree(Comparator<? super T> comparator) {
+        this.comparator = Objects.requireNonNull(comparator, "comparator");
     }
 
     public void insert(T key) {
@@ -37,7 +43,17 @@ public final class AVLTree<T extends Comparable<? super T>> {
     @SafeVarargs
     public static <T extends Comparable<? super T>> AVLTree<T> fromKeys(T... keys) {
         Objects.requireNonNull(keys, "keys");
-        AVLTree<T> tree = new AVLTree<>();
+        AVLTree<T> tree = new AVLTree<>(Comparator.naturalOrder());
+        for (T key : keys) {
+            tree.insert(key);
+        }
+        return tree;
+    }
+
+    @SafeVarargs
+    public static <T> AVLTree<T> fromKeys(Comparator<? super T> comparator, T... keys) {
+        Objects.requireNonNull(keys, "keys");
+        AVLTree<T> tree = new AVLTree<>(comparator);
         for (T key : keys) {
             tree.insert(key);
         }
@@ -103,7 +119,7 @@ public final class AVLTree<T extends Comparable<? super T>> {
             return new Node<>(key);
         }
 
-        int comparison = key.compareTo(node.key);
+        int comparison = compare(key, node.key);
 
         if (comparison < 0) {
             node.left = insert(node.left, key);
@@ -121,20 +137,24 @@ public final class AVLTree<T extends Comparable<? super T>> {
         int nodeBalance = balance(node);
 
         if (isLeftHeavy(nodeBalance)) {
-            if (insertedKey.compareTo(node.left.key) > 0) {
+            if (compare(insertedKey, node.left.key) > 0) {
                 node.left = rotateLeft(node.left);
             }
             return rotateRight(node);
         }
 
         if (isRightHeavy(nodeBalance)) {
-            if (insertedKey.compareTo(node.right.key) < 0) {
+            if (compare(insertedKey, node.right.key) < 0) {
                 node.right = rotateRight(node.right);
             }
             return rotateLeft(node);
         }
 
         return node;
+    }
+
+    private int compare(T left, T right) {
+        return comparator.compare(left, right);
     }
 
     private static boolean isLeftHeavy(int balance) {

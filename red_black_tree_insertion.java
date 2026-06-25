@@ -288,18 +288,10 @@ final class RedBlackTree<T> implements Iterable<T> {
 
     public String inorderString() {
         StringBuilder builder = new StringBuilder();
-        inorderString(root, builder);
-        return builder.toString();
-    }
-
-    private void inorderString(Node<T> node, StringBuilder builder) {
-        if (node == null) {
-            return;
+        for (T value : this) {
+            builder.append(value).append(' ');
         }
-
-        inorderString(node.left, builder);
-        builder.append(node.data).append(' ');
-        inorderString(node.right, builder);
+        return builder.toString();
     }
 
     public String treeString() {
@@ -358,29 +350,5 @@ final class RedBlackTree<T> implements Iterable<T> {
                 node = node.left;
             }
         }
-    }
-}
-
-final class RedBlackTreeDemo {
-    private RedBlackTreeDemo() {
-    }
-
-    public static void main(String[] args) {
-        RedBlackTree<Integer> tree = new RedBlackTree<>();
-        int[] values = {1, 4, 6, 3, 5, 7, 8, 2, 9};
-
-        for (int value : values) {
-            tree.insert(value);
-            if (!tree.isValidRedBlackTree()) {
-                throw new IllegalStateException("red-black tree invariant violation");
-            }
-            System.out.println();
-            for (int current : tree) {
-                System.out.print(current);
-                System.out.print(' ');
-            }
-        }
-
-        System.out.print(tree.treeString());
     }
 }

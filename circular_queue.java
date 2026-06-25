@@ -1,4 +1,4 @@
-class myQueue {
+final class myQueue implements QueueView<Integer> {
 
     private final CircularQueue<Integer> delegate;
 
@@ -7,10 +7,16 @@ class myQueue {
     }
 
     public void enqueue(int value) {
+        enqueue(Integer.valueOf(value));
+    }
+
+    @Override
+    public void enqueue(Integer value) {
         delegate.offer(value);
     }
 
-    public int dequeue() {
+    @Override
+    public Integer dequeue() {
         Integer removed = delegate.poll();
         if (removed == null) {
             return -1;
@@ -18,13 +24,28 @@ class myQueue {
         return removed;
     }
 
+    @Override
+    public Integer peekFront() {
+        return delegate.peekFront();
+    }
+
+    @Override
+    public Integer peekRear() {
+        return delegate.peekRear();
+    }
+
+    @Override
+    public String snapshot() {
+        return delegate.toString();
+    }
+
     public int getFront() {
-        Integer front = delegate.peekFront();
+        Integer front = peekFront();
         return front == null ? -1 : front;
     }
 
     public int getRear() {
-        Integer rear = delegate.peekRear();
+        Integer rear = peekRear();
         return rear == null ? -1 : rear;
     }
 
@@ -46,13 +67,6 @@ class myQueue {
 
     public static void main(String[] args) {
         myQueue queue = new myQueue(5);
-        queue.enqueue(10);
-        queue.enqueue(20);
-        queue.enqueue(30);
-        System.out.println(queue.getFront() + " " + queue.getRear());
-        queue.dequeue();
-        System.out.println(queue.getFront() + " " + queue.getRear());
-        queue.enqueue(40);
-        System.out.println(queue.getFront() + " " + queue.getRear());
+        QueueExamples.runBasicScenario(queue);
     }
 }

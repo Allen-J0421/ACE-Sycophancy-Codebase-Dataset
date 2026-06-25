@@ -32,20 +32,8 @@ class RedBlackTree {
 
         Node pivot = node.right;
         node.right = pivot.left;
-
-        if (pivot.left != null) {
-            pivot.left.parent = node;
-        }
-
-        pivot.parent = node.parent;
-
-        if (node.parent == null) {
-            root = pivot;
-        } else if (node == node.parent.left) {
-            node.parent.left = pivot;
-        } else {
-            node.parent.right = pivot;
-        }
+        setParent(pivot.left, node);
+        replaceParentChild(node, pivot);
 
         pivot.left = node;
         node.parent = pivot;
@@ -59,24 +47,25 @@ class RedBlackTree {
 
         Node pivot = node.left;
         node.left = pivot.right;
-
-        if (pivot.right != null) {
-            pivot.right.parent = node;
-        }
-
-        pivot.parent = node.parent;
-
-        if (node.parent == null) {
-            root = pivot;
-        } else if (node == node.parent.right) {
-            node.parent.right = pivot;
-        } else {
-            node.parent.left = pivot;
-        }
+        setParent(pivot.right, node);
+        replaceParentChild(node, pivot);
 
         pivot.right = node;
         node.parent = pivot;
         return pivot;
+    }
+
+    private void replaceParentChild(Node oldChild, Node newChild) {
+        Node parent = oldChild.parent;
+        newChild.parent = parent;
+
+        if (parent == null) {
+            root = newChild;
+        } else if (oldChild == parent.left) {
+            parent.left = newChild;
+        } else {
+            parent.right = newChild;
+        }
     }
 
     Node insertHelp(Node ignoredRoot, int data) {
@@ -90,39 +79,42 @@ class RedBlackTree {
     }
 
     private Node insertNode(int data) {
+        Node parent = findInsertionParent(data);
+        Node insertedNode = new Node(data);
+        insertedNode.parent = parent;
+
+        attachInsertedNode(parent, insertedNode);
+        return insertedNode;
+    }
+
+    private Node findInsertionParent(int data) {
         Node parent = null;
         Node current = root;
 
         while (current != null) {
             parent = current;
-
-            if (data < current.data) {
-                current = current.left;
-            } else {
-                current = current.right;
-            }
+            current = data < current.data ? current.left : current.right;
         }
 
-        Node insertedNode = new Node(data);
-        insertedNode.parent = parent;
+        return parent;
+    }
 
+    private void attachInsertedNode(Node parent, Node insertedNode) {
         if (parent == null) {
             root = insertedNode;
-        } else if (data < parent.data) {
+        } else if (insertedNode.data < parent.data) {
             parent.left = insertedNode;
         } else {
             parent.right = insertedNode;
         }
-
-        return insertedNode;
     }
 
     private void fixAfterInsertion(Node node) {
-        while (node != root && colourOf(parentOf(node)) == RED) {
+        while (node != root && isRed(parentOf(node))) {
             Node parent = parentOf(node);
             Node grandparent = parentOf(parent);
 
-            if (parent == grandparent.left) {
+            if (isLeftChild(parent)) {
                 node = fixLeftSideViolation(node, parent, grandparent);
             } else {
                 node = fixRightSideViolation(node, parent, grandparent);
@@ -133,13 +125,15 @@ class RedBlackTree {
         root.parent = null;
     }
 
+    private boolean isLeftChild(Node node) {
+        return node.parent != null && node == node.parent.left;
+    }
+
     private Node fixLeftSideViolation(Node node, Node parent, Node grandparent) {
         Node uncle = grandparent.right;
 
-        if (colourOf(uncle) == RED) {
-            parent.colour = BLACK;
-            uncle.colour = BLACK;
-            grandparent.colour = RED;
+        if (isRed(uncle)) {
+            flipColours(parent, uncle, grandparent);
             return grandparent;
         }
 
@@ -159,10 +153,8 @@ class RedBlackTree {
     private Node fixRightSideViolation(Node node, Node parent, Node grandparent) {
         Node uncle = grandparent.left;
 
-        if (colourOf(uncle) == RED) {
-            parent.colour = BLACK;
-            uncle.colour = BLACK;
-            grandparent.colour = RED;
+        if (isRed(uncle)) {
+            flipColours(parent, uncle, grandparent);
             return grandparent;
         }
 
@@ -179,12 +171,28 @@ class RedBlackTree {
         return node;
     }
 
+    private void flipColours(Node parent, Node uncle, Node grandparent) {
+        parent.colour = BLACK;
+        uncle.colour = BLACK;
+        grandparent.colour = RED;
+    }
+
+    private boolean isRed(Node node) {
+        return colourOf(node) == RED;
+    }
+
     private char colourOf(Node node) {
         return node == null ? BLACK : node.colour;
     }
 
     private Node parentOf(Node node) {
         return node == null ? null : node.parent;
+    }
+
+    private void setParent(Node node, Node parent) {
+        if (node != null) {
+            node.parent = parent;
+        }
     }
 
     void inorderTraversalHelper(Node node) {

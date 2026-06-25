@@ -9,6 +9,19 @@ public final class RedBlackTree {
         BLACK
     }
 
+    private enum Rotation {
+        NONE,
+        LEFT_LEFT,
+        RIGHT_RIGHT,
+        LEFT_RIGHT,
+        RIGHT_LEFT
+    }
+
+    private enum Side {
+        LEFT,
+        RIGHT
+    }
+
     private static final class Node {
         private final int data;
         private Node left;
@@ -23,10 +36,7 @@ public final class RedBlackTree {
     }
 
     private static final class InsertionState {
-        private boolean rotateLeftLeft;
-        private boolean rotateRightRight;
-        private boolean rotateLeftRight;
-        private boolean rotateRightLeft;
+        private Rotation pendingRotation = Rotation.NONE;
     }
 
     private Node root;
@@ -41,6 +51,12 @@ public final class RedBlackTree {
         root = insert(root, data, state);
         root.color = Color.BLACK;
         root.parent = null;
+    }
+
+    public void insertAll(int... values) {
+        for (int value : values) {
+            insert(value);
+        }
     }
 
     public List<Integer> inorderValues() {
@@ -116,53 +132,44 @@ public final class RedBlackTree {
     }
 
     private Node applyPendingRotation(Node current, InsertionState state) {
-        if (state.rotateLeftLeft) {
-            current = rotateLeft(current);
-            recolorAfterSingleRotation(current, current.left);
-            state.rotateLeftLeft = false;
-        } else if (state.rotateRightRight) {
-            current = rotateRight(current);
-            recolorAfterSingleRotation(current, current.right);
-            state.rotateRightRight = false;
-        } else if (state.rotateRightLeft) {
-            current.right = rotateRight(current.right);
-            current.right.parent = current;
-            current = rotateLeft(current);
-            recolorAfterSingleRotation(current, current.left);
-            state.rotateRightLeft = false;
-        } else if (state.rotateLeftRight) {
-            current.left = rotateLeft(current.left);
-            current.left.parent = current;
-            current = rotateRight(current);
-            recolorAfterSingleRotation(current, current.right);
-            state.rotateLeftRight = false;
+        switch (state.pendingRotation) {
+            case LEFT_LEFT:
+                current = rotateLeft(current);
+                recolorAfterSingleRotation(current, current.left);
+                break;
+            case RIGHT_RIGHT:
+                current = rotateRight(current);
+                recolorAfterSingleRotation(current, current.right);
+                break;
+            case RIGHT_LEFT:
+                current.right = rotateRight(current.right);
+                current.right.parent = current;
+                current = rotateLeft(current);
+                recolorAfterSingleRotation(current, current.left);
+                break;
+            case LEFT_RIGHT:
+                current.left = rotateLeft(current.left);
+                current.left.parent = current;
+                current = rotateRight(current);
+                recolorAfterSingleRotation(current, current.right);
+                break;
+            case NONE:
+                break;
         }
 
+        state.pendingRotation = Rotation.NONE;
         return current;
     }
 
     private void resolveRedRedConflict(Node current, InsertionState state) {
         Node parent = current.parent;
-        if (parent.right == current) {
-            if (isBlack(parent.left)) {
-                if (isRed(current.left)) {
-                    state.rotateRightLeft = true;
-                } else if (isRed(current.right)) {
-                    state.rotateLeftLeft = true;
-                }
-            } else {
-                recolorForRedUncle(current, parent.left);
-            }
+        Side side = sideOf(parent, current);
+        Node uncle = siblingChild(parent, side);
+
+        if (isBlack(uncle)) {
+            state.pendingRotation = chooseRotation(current, side);
         } else {
-            if (isBlack(parent.right)) {
-                if (isRed(current.left)) {
-                    state.rotateRightRight = true;
-                } else if (isRed(current.right)) {
-                    state.rotateLeftRight = true;
-                }
-            } else {
-                recolorForRedUncle(current, parent.right);
-            }
+            recolorForRedUncle(current, uncle);
         }
     }
 
@@ -177,6 +184,26 @@ public final class RedBlackTree {
         if (current.parent != root) {
             current.parent.color = Color.RED;
         }
+    }
+
+    private Rotation chooseRotation(Node current, Side side) {
+        if (side == Side.RIGHT) {
+            if (isRed(current.left)) {
+                return Rotation.RIGHT_LEFT;
+            }
+            if (isRed(current.right)) {
+                return Rotation.LEFT_LEFT;
+            }
+        } else {
+            if (isRed(current.left)) {
+                return Rotation.RIGHT_RIGHT;
+            }
+            if (isRed(current.right)) {
+                return Rotation.LEFT_RIGHT;
+            }
+        }
+
+        return Rotation.NONE;
     }
 
     private Node rotateLeft(Node node) {
@@ -281,5 +308,13 @@ public final class RedBlackTree {
 
     private boolean isBlack(Node node) {
         return node == null || node.color == Color.BLACK;
+    }
+
+    private Side sideOf(Node parent, Node child) {
+        return parent.right == child ? Side.RIGHT : Side.LEFT;
+    }
+
+    private Node siblingChild(Node parent, Side side) {
+        return side == Side.RIGHT ? parent.left : parent.right;
     }
 }

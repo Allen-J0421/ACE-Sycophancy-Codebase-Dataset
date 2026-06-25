@@ -8,11 +8,7 @@ class RedBlackTreeTest {
     @Test
     void insertProducesSortedInorderTraversal() {
         RedBlackTree tree = new RedBlackTree();
-        int[] values = {1, 4, 6, 3, 5, 7, 8, 2, 9};
-
-        for (int value : values) {
-            tree.insert(value);
-        }
+        tree.insertAll(1, 4, 6, 3, 5, 7, 8, 2, 9);
 
         assertEquals(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9), tree.inorderValues());
         assertTrue(tree.isValidRedBlackTree());
@@ -21,11 +17,7 @@ class RedBlackTreeTest {
     @Test
     void descendingInsertionsRemainOrderedAndValid() {
         RedBlackTree tree = new RedBlackTree();
-        int[] values = {9, 8, 7, 6, 5, 4, 3, 2, 1};
-
-        for (int value : values) {
-            tree.insert(value);
-        }
+        tree.insertAll(9, 8, 7, 6, 5, 4, 3, 2, 1);
 
         assertEquals(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9), tree.inorderValues());
         assertTrue(tree.isValidRedBlackTree());

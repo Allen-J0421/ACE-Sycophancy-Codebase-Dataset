@@ -58,9 +58,15 @@ final class AVLTree {
     }
 
     String preOrderString() {
-        StringBuilder builder = new StringBuilder();
-        appendPreOrder(root, builder);
-        return builder.toString();
+        return traversalString(TraversalOrder.PRE_ORDER);
+    }
+
+    String inOrderString() {
+        return traversalString(TraversalOrder.IN_ORDER);
+    }
+
+    String postOrderString() {
+        return traversalString(TraversalOrder.POST_ORDER);
     }
 
     @Override
@@ -171,14 +177,38 @@ final class AVLTree {
         builder.append(key);
     }
 
-    private static void appendPreOrder(Node node, StringBuilder builder) {
+    private static String traversalString(Node root, TraversalOrder order) {
+        StringBuilder builder = new StringBuilder();
+        appendTraversal(root, builder, order);
+        return builder.toString();
+    }
+
+    private String traversalString(TraversalOrder order) {
+        return traversalString(root, order);
+    }
+
+    private static void appendTraversal(Node node, StringBuilder builder, TraversalOrder order) {
         if (node == null) {
             return;
         }
 
-        appendKey(builder, node.key);
-        appendPreOrder(node.left, builder);
-        appendPreOrder(node.right, builder);
+        switch (order) {
+            case PRE_ORDER -> {
+                appendKey(builder, node.key);
+                appendTraversal(node.left, builder, order);
+                appendTraversal(node.right, builder, order);
+            }
+            case IN_ORDER -> {
+                appendTraversal(node.left, builder, order);
+                appendKey(builder, node.key);
+                appendTraversal(node.right, builder, order);
+            }
+            case POST_ORDER -> {
+                appendTraversal(node.left, builder, order);
+                appendTraversal(node.right, builder, order);
+                appendKey(builder, node.key);
+            }
+        }
     }
 
     private static ValidationResult validate(Node node, long min, long max) {
@@ -221,6 +251,12 @@ final class AVLTree {
         static ValidationResult invalid() {
             return new ValidationResult(false, 0, 0);
         }
+    }
+
+    private enum TraversalOrder {
+        PRE_ORDER,
+        IN_ORDER,
+        POST_ORDER
     }
 
     public static void main(String[] args) {

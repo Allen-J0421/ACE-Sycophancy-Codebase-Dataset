@@ -11,6 +11,7 @@ class RedBlackTreeTest {
         tree.insertAll(1, 4, 6, 3, 5, 7, 8, 2, 9);
 
         assertEquals(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9), tree.inorderValues());
+        assertEquals("1 2 3 4 5 6 7 8 9", tree.inorderString());
         assertTrue(tree.isValidRedBlackTree());
     }
 
@@ -33,5 +34,16 @@ class RedBlackTreeTest {
 
         assertEquals(100, tree.inorderValues().size());
         assertTrue(tree.isValidRedBlackTree());
+    }
+
+    @Test
+    void snapshotUtilitiesRemainConsistent() {
+        RedBlackTree tree = new RedBlackTree();
+        tree.insertAll(10, 5, 15, 3, 8, 12, 18);
+
+        RedBlackTreeSnapshot snapshot = tree.snapshot();
+
+        assertEquals("3 5 8 10 12 15 18", RedBlackTreeFormatter.formatInorder(snapshot));
+        assertTrue(RedBlackTreeValidator.isValid(snapshot));
     }
 }

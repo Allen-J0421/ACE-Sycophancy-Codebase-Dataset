@@ -1,8 +1,16 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public final class AVLTree<T extends Comparable<? super T>> {
+public final class AVLTree<T> {
+    public enum TraversalOrder {
+        PRE_ORDER,
+        IN_ORDER,
+        POST_ORDER
+    }
+
+    private final Comparator<? super T> comparator;
     private Node<T> root;
     private int size;
 
@@ -28,6 +36,14 @@ public final class AVLTree<T extends Comparable<? super T>> {
         }
     }
 
+    public AVLTree(Comparator<? super T> comparator) {
+        this.comparator = Objects.requireNonNull(comparator, "comparator");
+    }
+
+    public static <T extends Comparable<? super T>> AVLTree<T> createWithNaturalOrder() {
+        return new AVLTree<>(Comparator.naturalOrder());
+    }
+
     public boolean insert(T value) {
         Objects.requireNonNull(value, "value");
 
@@ -46,7 +62,7 @@ public final class AVLTree<T extends Comparable<? super T>> {
 
         Node<T> current = root;
         while (current != null) {
-            int comparison = value.compareTo(current.value);
+            int comparison = compare(value, current.value);
             if (comparison == 0) {
                 return true;
             }
@@ -65,18 +81,24 @@ public final class AVLTree<T extends Comparable<? super T>> {
         return size == 0;
     }
 
-    public List<T> preOrderTraversal() {
+    public List<T> traverse(TraversalOrder order) {
         List<T> values = new ArrayList<>();
-        buildPreOrderTraversal(root, values);
+        buildTraversal(root, order, values);
         return values;
     }
 
-    public String preOrderString() {
+    public List<T> preOrderTraversal() {
+        return traverse(TraversalOrder.PRE_ORDER);
+    }
+
+    public String joinTraversal(TraversalOrder order, String delimiter) {
+        Objects.requireNonNull(delimiter, "delimiter");
+
         StringBuilder traversal = new StringBuilder();
 
-        for (T value : preOrderTraversal()) {
+        for (T value : traverse(order)) {
             if (traversal.length() > 0) {
-                traversal.append(' ');
+                traversal.append(delimiter);
             }
             traversal.append(value);
         }
@@ -84,12 +106,16 @@ public final class AVLTree<T extends Comparable<? super T>> {
         return traversal.toString();
     }
 
+    public String preOrderString() {
+        return joinTraversal(TraversalOrder.PRE_ORDER, " ");
+    }
+
     private InsertResult<T> insert(Node<T> node, T value) {
         if (node == null) {
             return new InsertResult<>(new Node<>(value), true);
         }
 
-        int comparison = value.compareTo(node.value);
+        int comparison = compare(value, node.value);
         if (comparison < 0) {
             InsertResult<T> result = insert(node.left, value);
             node.left = result.node;
@@ -134,14 +160,26 @@ public final class AVLTree<T extends Comparable<? super T>> {
         return node;
     }
 
-    private void buildPreOrderTraversal(Node<T> node, List<T> values) {
+    private void buildTraversal(Node<T> node, TraversalOrder order, List<T> values) {
         if (node == null) {
             return;
         }
 
-        values.add(node.value);
-        buildPreOrderTraversal(node.left, values);
-        buildPreOrderTraversal(node.right, values);
+        if (order == TraversalOrder.PRE_ORDER) {
+            values.add(node.value);
+        }
+
+        buildTraversal(node.left, order, values);
+
+        if (order == TraversalOrder.IN_ORDER) {
+            values.add(node.value);
+        }
+
+        buildTraversal(node.right, order, values);
+
+        if (order == TraversalOrder.POST_ORDER) {
+            values.add(node.value);
+        }
     }
 
     private Node<T> rotateRight(Node<T> node) {
@@ -180,5 +218,9 @@ public final class AVLTree<T extends Comparable<? super T>> {
 
     private int height(Node<T> node) {
         return node == null ? 0 : node.height;
+    }
+
+    private int compare(T left, T right) {
+        return comparator.compare(left, right);
     }
 }

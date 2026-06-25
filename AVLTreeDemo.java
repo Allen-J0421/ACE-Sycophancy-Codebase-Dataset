@@ -3,7 +3,7 @@ final class AVLTreeDemo {
     }
 
     public static void main(String[] args) {
-        AVLTree<Integer> tree = new AVLTree<>();
+        AVLTree<Integer> tree = AVLTree.createWithNaturalOrder();
         int[] values = {10, 20, 30, 40, 50, 25};
 
         for (int value : values) {

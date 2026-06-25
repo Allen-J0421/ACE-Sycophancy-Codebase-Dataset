@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 final class AVLTree {
     private static final class Node {
         final int key;
@@ -24,13 +27,18 @@ final class AVLTree {
     }
 
     void preOrder() {
-        System.out.print(preOrderString());
+        System.out.print(this);
     }
 
     String preOrderString() {
-        StringBuilder builder = new StringBuilder();
-        appendPreOrder(root, builder);
-        return builder.toString();
+        List<String> values = new ArrayList<>();
+        collectPreOrder(root, values);
+        return String.join(" ", values);
+    }
+
+    @Override
+    public String toString() {
+        return preOrderString();
     }
 
     private static int height(Node node) {
@@ -108,14 +116,14 @@ final class AVLTree {
         return rebalance(node);
     }
 
-    private static void appendPreOrder(Node node, StringBuilder builder) {
+    private static void collectPreOrder(Node node, List<String> values) {
         if (node == null) {
             return;
         }
 
-        builder.append(node.key).append(' ');
-        appendPreOrder(node.left, builder);
-        appendPreOrder(node.right, builder);
+        values.add(Integer.toString(node.key));
+        collectPreOrder(node.left, values);
+        collectPreOrder(node.right, values);
     }
 
     public static void main(String[] args) {
@@ -123,6 +131,6 @@ final class AVLTree {
 
         tree.insertAll(10, 20, 30, 40, 50, 25);
 
-        System.out.print(tree.preOrderString());
+        System.out.print(tree);
     }
 }

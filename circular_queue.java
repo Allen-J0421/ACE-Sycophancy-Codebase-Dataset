@@ -1,4 +1,4 @@
-final class myQueue implements QueueExamples.QueueView<Integer> {
+final class myQueue implements QueueView<Integer> {
 
     private final CircularQueue<Integer> delegate;
 

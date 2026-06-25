@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExamples.QueueView<T> {
+public final class CircularQueue<T> extends AbstractQueue<T> implements QueueView<T> {
     private static final String EMPTY_QUEUE_MESSAGE = "Queue is empty.";
     private static final String FULL_QUEUE_MESSAGE = "Queue is full.";
     private static final String NON_NULL_MESSAGE = "Queue elements must be non-null.";
@@ -30,9 +30,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExa
 
     public T dequeue() {
         requireNotEmpty();
-        T removed = removeHead();
-        modificationCount++;
-        return removed;
+        return removeHeadAndRecordModification();
     }
 
     public T peekFront() {
@@ -68,7 +66,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExa
             return false;
         }
         insertAtTail(element);
-        modificationCount++;
+        recordModification();
         return true;
     }
 
@@ -77,9 +75,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExa
         if (isEmpty()) {
             return null;
         }
-        T removed = removeHead();
-        modificationCount++;
-        return removed;
+        return removeHeadAndRecordModification();
     }
 
     @Override
@@ -105,38 +101,12 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExa
         Arrays.fill(elements, null);
         head = 0;
         size = 0;
-        modificationCount++;
+        recordModification();
     }
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<>() {
-            private int offset;
-            private final int expectedModificationCount = modificationCount;
-
-            @Override
-            public boolean hasNext() {
-                checkForComodification();
-                return offset < size;
-            }
-
-            @Override
-            public T next() {
-                checkForComodification();
-                if (offset >= size) {
-                    throw new NoSuchElementException();
-                }
-                T value = elementAt(indexFromHead(offset));
-                offset++;
-                return value;
-            }
-
-            private void checkForComodification() {
-                if (expectedModificationCount != modificationCount) {
-                    throw new ConcurrentModificationException();
-                }
-            }
-        };
+        return new CircularQueueIterator();
     }
 
     @Override
@@ -174,6 +144,16 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExa
         size++;
     }
 
+    private void recordModification() {
+        modificationCount++;
+    }
+
+    private T removeHeadAndRecordModification() {
+        T removed = removeHead();
+        recordModification();
+        return removed;
+    }
+
     @SuppressWarnings("unchecked")
     private T removeHead() {
         T removed = (T) elements[head];
@@ -186,5 +166,33 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueExa
     @SuppressWarnings("unchecked")
     private T elementAt(int index) {
         return (T) elements[index];
+    }
+
+    private final class CircularQueueIterator implements Iterator<T> {
+        private int offset;
+        private final int expectedModificationCount = modificationCount;
+
+        @Override
+        public boolean hasNext() {
+            checkForComodification();
+            return offset < size;
+        }
+
+        @Override
+        public T next() {
+            checkForComodification();
+            if (offset >= size) {
+                throw new NoSuchElementException();
+            }
+            T value = elementAt(indexFromHead(offset));
+            offset++;
+            return value;
+        }
+
+        private void checkForComodification() {
+            if (expectedModificationCount != modificationCount) {
+                throw new ConcurrentModificationException();
+            }
+        }
     }
 }

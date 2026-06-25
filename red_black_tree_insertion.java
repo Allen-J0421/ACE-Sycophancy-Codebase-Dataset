@@ -75,13 +75,17 @@ class RedBlackTree {
     }
 
     Node insertHelp(Node ignoredRoot, int data) {
+        return insertAndRebalance(data);
+    }
+
+    private Node insertAndRebalance(int data) {
         Node insertedNode = insertNode(data);
         fixAfterInsertion(insertedNode);
         return root;
     }
 
     public void insert(int data) {
-        insertHelp(root, data);
+        insertAndRebalance(data);
     }
 
     public void insertAll(int[] values) {

@@ -1,0 +1,7 @@
+name,avgWinterTemp,winterTempChange,avgSpringTemp,springTempChange,avgSummerTemp,summerTempChange,avgAutumnTemp,autumnTempChange,plantConcentration
+jungle,20,5,25,5,30,5,25,5,0.05
+savanna,15,5,25,5,30,5,20,5,0.04
+mountain,5,10,20,10,25,5,15,10,0.085
+city,12,10,20,10,30,5,20,10,0.009
+arctic,-10,10,5,10,10,5,0,5,0.045
+desert,20,5,30,5,40,5,25,10,0.045

@@ -1,0 +1,26 @@
+name,isPredator,maximumTemperature,minimumTemperature,maximumAge,breedingAge,breedingProbability,maxLitterSize,nutritionalValue,strength,hibernates,isNocturnal
+tiger,true,40,15,20,2,0.85,4,120,50,false,false
+crocodile,true,40,10,20,2,0.85,4,85,35,false,false
+rhino,false,40,10,20,2,0.85,1,140,0,false,false
+elephant,false,40,10,20,2,0.85,1,180,0,false,false
+chimpanzee,false,40,10,15,1,0.85,2,85,0,false,true
+lion,true,40,10,20,2,0.3,4,100,40,false,false
+antelope,false,40,10,20,1,0.85,3,85,0,false,false
+cheetah,true,40,10,10,2,0.85,3,90,45,false,true
+chicken,false,40,0,5,1,0.95,4,60,0,false,false
+zebra,false,40,10,20,1,0.85,3,90,0,false,false
+cow,false,35,-5,10,1,0.95,7,80,0,false,false
+goat,false,35,-10,5,1,0.95,7,55,0,false,false
+fox,true,35,-20,12,3,0.65,1,80,30,true,false
+wolf,true,35,-20,12,2,0.65,2,90,35,true,true
+polar bear,true,20,-10,10,5,0.45,1,90,50,true,false
+seal,false,30,-20,11,1,0.95,4,90,0,true,false
+reindeer,false,20,-25,20,2,0.95,3,110,0,false,false
+penguin,false,20,-25,15,1,0.95,5,80,0,false,false
+mouse,false,40,-10,5,1,0.95,5,55,0,true,true
+T-rex,true,50,0,25,2,0.75,3,550,100,false,false
+camel,false,60,0,20,1,0.95,3,130,0,false,false
+meerkat,false,60,0,12,1,0.95,5,75,0,false,false
+armadillo,false,60,0,12,1,0.95,5,70,0,false,false
+bobcat,true,60,-10,8,2,0.5,1,70,25,false,true
+snake,true,60,0,8,3,0.4,1,75,15,false,true

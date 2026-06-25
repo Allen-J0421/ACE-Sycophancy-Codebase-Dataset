@@ -1,12 +1,6 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public final class RedBlackTree {
-    private enum Color {
-        RED,
-        BLACK
-    }
-
     private enum Rotation {
         NONE,
         LEFT_LEFT,
@@ -25,9 +19,9 @@ public final class RedBlackTree {
         private Node left;
         private Node right;
         private Node parent;
-        private Color color;
+        private RedBlackTreeColor color;
 
-        private Node(int data, Color color) {
+        private Node(int data, RedBlackTreeColor color) {
             this.data = data;
             this.color = color;
         }
@@ -53,13 +47,13 @@ public final class RedBlackTree {
 
     public void insert(int data) {
         if (root == null) {
-            root = new Node(data, Color.BLACK);
+            root = new Node(data, RedBlackTreeColor.BLACK);
             return;
         }
 
         InsertionState state = new InsertionState();
         root = insert(root, data, state);
-        root.color = Color.BLACK;
+        root.color = RedBlackTreeColor.BLACK;
         root.parent = null;
     }
 
@@ -70,9 +64,7 @@ public final class RedBlackTree {
     }
 
     public List<Integer> inorderValues() {
-        List<Integer> values = new ArrayList<>();
-        collectInorder(root, values);
-        return values;
+        return snapshot().inorderValues();
     }
 
     public String inorderString() {
@@ -97,7 +89,7 @@ public final class RedBlackTree {
 
     private Node insert(Node current, int data, InsertionState state) {
         if (current == null) {
-            return new Node(data, Color.RED);
+            return new Node(data, RedBlackTreeColor.RED);
         }
 
         Side insertionSide = insertionSide(current, data);
@@ -156,15 +148,15 @@ public final class RedBlackTree {
     }
 
     private void recolorAfterSingleRotation(Node newRoot, Side childSide) {
-        newRoot.color = Color.BLACK;
-        newRoot.child(childSide).color = Color.RED;
+        newRoot.color = RedBlackTreeColor.BLACK;
+        newRoot.child(childSide).color = RedBlackTreeColor.RED;
     }
 
     private void recolorForRedUncle(Node current, Node uncle) {
-        uncle.color = Color.BLACK;
-        current.color = Color.BLACK;
+        uncle.color = RedBlackTreeColor.BLACK;
+        current.color = RedBlackTreeColor.BLACK;
         if (current.parent != root) {
-            current.parent.color = Color.RED;
+            current.parent.color = RedBlackTreeColor.RED;
         }
     }
 
@@ -221,11 +213,11 @@ public final class RedBlackTree {
     }
 
     private boolean isRed(Node node) {
-        return node != null && node.color == Color.RED;
+        return node != null && node.color == RedBlackTreeColor.RED;
     }
 
     private boolean isBlack(Node node) {
-        return node == null || node.color == Color.BLACK;
+        return node == null || node.color == RedBlackTreeColor.BLACK;
     }
 
     private Side insertionSide(Node current, int data) {
@@ -257,16 +249,6 @@ public final class RedBlackTree {
         return new RedBlackTreeSnapshot(copyOf(root));
     }
 
-    private void collectInorder(Node node, List<Integer> values) {
-        if (node == null) {
-            return;
-        }
-
-        collectInorder(node.left, values);
-        values.add(node.data);
-        collectInorder(node.right, values);
-    }
-
     private RedBlackTreeSnapshot.NodeSnapshot copyOf(Node node) {
         if (node == null) {
             return null;
@@ -274,7 +256,7 @@ public final class RedBlackTree {
 
         return new RedBlackTreeSnapshot.NodeSnapshot(
             node.data,
-            node.color == Color.BLACK,
+            node.color,
             copyOf(node.left),
             copyOf(node.right)
         );

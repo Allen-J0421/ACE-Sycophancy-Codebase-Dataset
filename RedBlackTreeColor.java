@@ -1,0 +1,4 @@
+enum RedBlackTreeColor {
+    RED,
+    BLACK
+}

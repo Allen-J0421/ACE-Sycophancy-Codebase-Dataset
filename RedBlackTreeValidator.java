@@ -8,7 +8,7 @@ final class RedBlackTreeValidator {
             return true;
         }
 
-        if (!root.black()) {
+        if (root.color() != RedBlackTreeColor.BLACK) {
             return false;
         }
 
@@ -39,7 +39,7 @@ final class RedBlackTreeValidator {
             return true;
         }
 
-        if (!node.black() && (isRed(node.left()) || isRed(node.right()))) {
+        if (isRed(node) && (isRed(node.left()) || isRed(node.right()))) {
             return false;
         }
 
@@ -57,10 +57,10 @@ final class RedBlackTreeValidator {
             return -1;
         }
 
-        return leftHeight + (node.black() ? 1 : 0);
+        return leftHeight + (node.color() == RedBlackTreeColor.BLACK ? 1 : 0);
     }
 
     private static boolean isRed(RedBlackTreeSnapshot.NodeSnapshot node) {
-        return node != null && !node.black();
+        return node != null && node.color() == RedBlackTreeColor.RED;
     }
 }

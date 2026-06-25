@@ -5,9 +5,7 @@ final class RedBlackTreeFormatter {
     }
 
     static String formatInorder(RedBlackTreeSnapshot snapshot) {
-        StringBuilder builder = new StringBuilder();
-        appendInorder(snapshot.root(), builder);
-        return builder.toString();
+        return joinValues(snapshot.inorderValues());
     }
 
     static String formatTree(RedBlackTreeSnapshot snapshot) {
@@ -16,17 +14,17 @@ final class RedBlackTreeFormatter {
         return builder.toString();
     }
 
-    private static void appendInorder(RedBlackTreeSnapshot.NodeSnapshot node, StringBuilder builder) {
-        if (node == null) {
-            return;
+    private static String joinValues(Iterable<Integer> values) {
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (int value : values) {
+            if (!first) {
+                builder.append(' ');
+            }
+            builder.append(value);
+            first = false;
         }
-
-        appendInorder(node.left(), builder);
-        if (builder.length() > 0) {
-            builder.append(' ');
-        }
-        builder.append(node.data());
-        appendInorder(node.right(), builder);
+        return builder.toString();
     }
 
     private static void appendTree(RedBlackTreeSnapshot.NodeSnapshot node, int space, StringBuilder builder) {

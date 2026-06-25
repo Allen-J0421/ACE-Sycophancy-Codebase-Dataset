@@ -87,6 +87,8 @@ public final class CircularQueueTest {
     private static void testLegacyWrapperBehavior() {
         myQueue queue = new myQueue(2);
         assertEquals(Integer.valueOf(-1), queue.dequeue(), "legacy empty dequeue");
+        assertEquals(Integer.valueOf(-1), queue.getFront(), "legacy empty getFront");
+        assertEquals(Integer.valueOf(-1), queue.getRear(), "legacy empty getRear");
         queue.enqueue(5);
         queue.enqueue(6);
         queue.enqueue(7);

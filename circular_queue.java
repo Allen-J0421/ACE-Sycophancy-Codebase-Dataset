@@ -33,6 +33,14 @@ final class myQueue extends CircularQueue<Integer> {
         return super.peekRear();
     }
 
+    public Integer getFront() {
+        return peekFront();
+    }
+
+    public Integer getRear() {
+        return peekRear();
+    }
+
     public static void main(String[] args) {
         myQueue queue = new myQueue(5);
         QueueExamples.runBasicScenario(queue);

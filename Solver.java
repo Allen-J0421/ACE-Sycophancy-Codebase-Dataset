@@ -1,3 +1,3 @@
 interface Solver {
-    int solve(PriceTable prices);
+    RodCuttingSolution solve(PriceTable prices);
 }

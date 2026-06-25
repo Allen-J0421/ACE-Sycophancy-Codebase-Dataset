@@ -1,17 +1,17 @@
 class myQueue {
 
-    private final CircularQueue<Integer> queue;
+    private final CircularQueue<Integer> delegate;
 
     public myQueue(int cap) {
-        queue = new CircularQueue<>(cap);
+        delegate = new CircularQueue<>(cap);
     }
 
     public void enqueue(int value) {
-        queue.offer(value);
+        delegate.offer(value);
     }
 
     public int dequeue() {
-        Integer removed = queue.poll();
+        Integer removed = delegate.poll();
         if (removed == null) {
             return -1;
         }
@@ -19,29 +19,29 @@ class myQueue {
     }
 
     public int getFront() {
-        Integer front = queue.peekFront();
+        Integer front = delegate.peekFront();
         return front == null ? -1 : front;
     }
 
     public int getRear() {
-        Integer rear = queue.peekRear();
+        Integer rear = delegate.peekRear();
         return rear == null ? -1 : rear;
     }
 
     public int size() {
-        return queue.size();
+        return delegate.size();
     }
 
     public boolean isEmpty() {
-        return queue.isEmpty();
+        return delegate.isEmpty();
     }
 
     public boolean isFull() {
-        return queue.isFull();
+        return delegate.isFull();
     }
 
     public int capacity() {
-        return queue.capacity();
+        return delegate.capacity();
     }
 
     public static void main(String[] args) {

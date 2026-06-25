@@ -12,7 +12,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
     private final Object[] elements;
     private int head;
-    private int tail;
     private int size;
     private int modificationCount;
 
@@ -105,7 +104,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
     public void clear() {
         Arrays.fill(elements, null);
         head = 0;
-        tail = 0;
         size = 0;
         modificationCount++;
     }
@@ -118,14 +116,14 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
 
             @Override
             public boolean hasNext() {
-                ensureUnmodified();
+                checkForComodification();
                 return offset < size;
             }
 
             @Override
             public T next() {
-                ensureUnmodified();
-                if (!hasNext()) {
+                checkForComodification();
+                if (offset >= size) {
                     throw new NoSuchElementException();
                 }
                 T value = elementAt(indexFromHead(offset));
@@ -133,7 +131,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
                 return value;
             }
 
-            private void ensureUnmodified() {
+            private void checkForComodification() {
                 if (expectedModificationCount != modificationCount) {
                     throw new ConcurrentModificationException();
                 }
@@ -157,6 +155,10 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
         return (index + 1) % elements.length;
     }
 
+    private int tailIndex() {
+        return (head + size) % elements.length;
+    }
+
     private int indexFromHead(int offset) {
         return (head + offset) % elements.length;
     }
@@ -168,8 +170,7 @@ public final class CircularQueue<T> extends AbstractQueue<T> {
     }
 
     private void insertAtTail(T element) {
-        elements[tail] = element;
-        tail = advance(tail);
+        elements[tailIndex()] = element;
         size++;
     }
 

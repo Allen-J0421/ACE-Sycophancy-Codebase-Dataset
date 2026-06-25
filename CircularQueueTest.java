@@ -6,6 +6,7 @@ public final class CircularQueueTest {
         testWrapAround();
         testFailFastIterator();
         testEmptyAndFullBehavior();
+        testNullOfferRejected();
         System.out.println("CircularQueue checks passed.");
     }
 
@@ -39,6 +40,17 @@ public final class CircularQueueTest {
         } catch (java.util.ConcurrentModificationException expected) {
             // expected
         }
+
+        queue = new CircularQueue<>(1);
+        queue.enqueue(7);
+        java.util.Iterator<Integer> singleItemIterator = queue.iterator();
+        assertEquals(Integer.valueOf(7), singleItemIterator.next(), "single item iterator");
+        try {
+            singleItemIterator.next();
+            throw new AssertionError("exhausted iterator should throw");
+        } catch (java.util.NoSuchElementException expected) {
+            // expected
+        }
     }
 
     private static void testEmptyAndFullBehavior() {
@@ -59,6 +71,16 @@ public final class CircularQueueTest {
 
         queue.clear();
         assertTrue(queue.isEmpty(), "queue should be empty after clear");
+    }
+
+    private static void testNullOfferRejected() {
+        CircularQueue<Integer> queue = new CircularQueue<>(2);
+        try {
+            queue.offer(null);
+            throw new AssertionError("null offer should throw");
+        } catch (NullPointerException expected) {
+            // expected
+        }
     }
 
     private static void assertEquals(Object expected, Object actual, String label) {

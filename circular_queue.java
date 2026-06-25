@@ -1,9 +1,7 @@
-final class myQueue implements QueueView<Integer> {
-
-    private final CircularQueue<Integer> delegate;
+final class myQueue extends CircularQueue<Integer> {
 
     public myQueue(int cap) {
-        delegate = new CircularQueue<>(cap);
+        super(cap);
     }
 
     public void enqueue(int value) {
@@ -12,57 +10,27 @@ final class myQueue implements QueueView<Integer> {
 
     @Override
     public void enqueue(Integer value) {
-        delegate.offer(value);
+        offer(value);
     }
 
     @Override
     public Integer dequeue() {
-        Integer removed = delegate.poll();
-        if (removed == null) {
-            return -1;
-        }
-        return removed;
+        Integer removed = poll();
+        return removed == null ? -1 : removed;
     }
 
     @Override
     public Integer peekFront() {
-        return delegate.peekFront();
+        Integer front = peek();
+        return front == null ? -1 : front;
     }
 
     @Override
     public Integer peekRear() {
-        return delegate.peekRear();
-    }
-
-    public int getFront() {
-        Integer front = peekFront();
-        return front == null ? -1 : front;
-    }
-
-    public int getRear() {
-        Integer rear = peekRear();
-        return rear == null ? -1 : rear;
-    }
-
-    public int size() {
-        return delegate.size();
-    }
-
-    public boolean isEmpty() {
-        return delegate.isEmpty();
-    }
-
-    public boolean isFull() {
-        return delegate.isFull();
-    }
-
-    public int capacity() {
-        return delegate.capacity();
-    }
-
-    @Override
-    public String toString() {
-        return delegate.toString();
+        if (isEmpty()) {
+            return -1;
+        }
+        return super.peekRear();
     }
 
     public static void main(String[] args) {

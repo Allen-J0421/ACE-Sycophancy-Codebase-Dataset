@@ -7,6 +7,7 @@ public final class CircularQueueTest {
         testFailFastIterator();
         testEmptyAndFullBehavior();
         testNullOfferRejected();
+        testLegacyWrapperBehavior();
         System.out.println("CircularQueue checks passed.");
     }
 
@@ -81,6 +82,20 @@ public final class CircularQueueTest {
         } catch (NullPointerException expected) {
             // expected
         }
+    }
+
+    private static void testLegacyWrapperBehavior() {
+        myQueue queue = new myQueue(2);
+        assertEquals(Integer.valueOf(-1), queue.dequeue(), "legacy empty dequeue");
+        queue.enqueue(5);
+        queue.enqueue(6);
+        queue.enqueue(7);
+        assertTrue(queue.isFull(), "legacy queue should stay full");
+        assertEquals(Integer.valueOf(5), queue.peekFront(), "legacy front");
+        assertEquals(Integer.valueOf(6), queue.peekRear(), "legacy rear");
+        assertEquals(Integer.valueOf(5), queue.dequeue(), "legacy dequeue first");
+        assertEquals(Integer.valueOf(6), queue.getFront(), "legacy getFront");
+        assertEquals(Integer.valueOf(6), queue.getRear(), "legacy getRear");
     }
 
     private static void assertEquals(Object expected, Object actual, String label) {

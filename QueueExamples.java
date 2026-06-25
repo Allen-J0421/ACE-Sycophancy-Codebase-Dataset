@@ -3,7 +3,7 @@ final class QueueExamples {
     private QueueExamples() {
     }
 
-    static void runBasicScenario(QueueView<Integer> queue) {
+    static void runBasicScenario(CircularQueue<Integer> queue) {
         queue.enqueue(10);
         queue.enqueue(20);
         queue.enqueue(30);

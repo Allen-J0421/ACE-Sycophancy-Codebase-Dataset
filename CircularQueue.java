@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public final class CircularQueue<T> extends AbstractQueue<T> implements QueueView<T> {
+public class CircularQueue<T> extends AbstractQueue<T> {
     private static final String EMPTY_QUEUE_MESSAGE = "Queue is empty.";
     private static final String FULL_QUEUE_MESSAGE = "Queue is full.";
     private static final String NON_NULL_MESSAGE = "Queue elements must be non-null.";

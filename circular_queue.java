@@ -1,61 +1,81 @@
 class myQueue {
 
-    private int[] arr;
-
+    private final int[] elements;
+    private final int capacity;
     private int front;
-
     private int size;
-
-    private int capacity;
 
     public myQueue(int cap) {
         capacity = cap;
-        arr = new int[capacity];
+        elements = new int[capacity];
         front = 0;
         size = 0;
     }
 
-    public void enqueue(int x) {
-        if (size == capacity) {
-            System.out.println("Queue is full!");
+    public void enqueue(int value) {
+        if (isFull()) {
             return;
         }
-        int rear = (front + size) % capacity;
-        arr[rear] = x;
+        elements[tailIndex()] = value;
         size++;
     }
 
     public int dequeue() {
-        if (size == 0) {
-            System.out.println("Queue is empty!");
+        if (isEmpty()) {
             return -1;
         }
-        int res = arr[front];
-        front = (front + 1) % capacity;
+        int removed = elements[front];
+        elements[front] = 0;
+        front = nextIndex(front);
         size--;
-        return res;
+        return removed;
     }
 
     public int getFront() {
-        if (size == 0) return -1;
-        return arr[front];
+        return isEmpty() ? -1 : elements[front];
     }
 
     public int getRear() {
-        if (size == 0) return -1;
-        int rear = (front + size - 1) % capacity;
-        return arr[rear];
+        return isEmpty() ? -1 : elements[rearIndex()];
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean isFull() {
+        return size == capacity;
+    }
+
+    public int capacity() {
+        return capacity;
+    }
+
+    private int tailIndex() {
+        return (front + size) % capacity;
+    }
+
+    private int rearIndex() {
+        return (front + size - 1 + capacity) % capacity;
+    }
+
+    private int nextIndex(int index) {
+        return (index + 1) % capacity;
     }
 
     public static void main(String[] args) {
-        myQueue q = new myQueue(5);
-        q.enqueue(10);
-        q.enqueue(20);
-        q.enqueue(30);
-        System.out.println(q.getFront() + " " + q.getRear());
-        q.dequeue();
-        System.out.println(q.getFront() + " " + q.getRear());
-        q.enqueue(40);
-        System.out.println(q.getFront() + " " + q.getRear());
+        myQueue queue = new myQueue(5);
+        queue.enqueue(10);
+        queue.enqueue(20);
+        queue.enqueue(30);
+        System.out.println(queue.getFront() + " " + queue.getRear());
+        queue.dequeue();
+        System.out.println(queue.getFront() + " " + queue.getRear());
+        queue.enqueue(40);
+        System.out.println(queue.getFront() + " " + queue.getRear());
     }
 }

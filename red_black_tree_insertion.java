@@ -7,7 +7,7 @@ class RedBlackTree {
     public Node root;
 
     public RedBlackTree() {
-        root = null;
+        setRoot(null);
     }
 
     private enum ChildSide {
@@ -66,7 +66,7 @@ class RedBlackTree {
         newChild.parent = parent;
 
         if (parent == null) {
-            root = newChild;
+            setRoot(newChild);
         } else if (oldChild == parent.left) {
             parent.left = newChild;
         } else {
@@ -113,7 +113,7 @@ class RedBlackTree {
 
     private void attachInsertedNode(Node parent, Node insertedNode) {
         if (parent == null) {
-            root = insertedNode;
+            setRoot(insertedNode);
         } else if (insertedNode.data < parent.data) {
             parent.left = insertedNode;
         } else {
@@ -130,7 +130,7 @@ class RedBlackTree {
         }
 
         root.colour = BLACK;
-        root.parent = null;
+        setParent(root, null);
     }
 
     private ChildSide sideOf(Node node) {
@@ -204,6 +204,11 @@ class RedBlackTree {
         if (node != null) {
             node.parent = parent;
         }
+    }
+
+    private void setRoot(Node node) {
+        root = node;
+        setParent(root, null);
     }
 
     void inorderTraversalHelper(Node node) {

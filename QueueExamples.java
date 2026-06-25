@@ -12,7 +12,7 @@ final class QueueExamples {
         System.out.println(queue.peekFront() + " " + queue.peekRear());
         queue.enqueue(40);
         System.out.println(queue.peekFront() + " " + queue.peekRear());
-        System.out.println(queue.snapshot());
+        System.out.println(queue);
     }
 }
 
@@ -24,6 +24,4 @@ interface QueueView<T> {
     T peekFront();
 
     T peekRear();
-
-    String snapshot();
 }

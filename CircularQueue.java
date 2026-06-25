@@ -151,11 +151,6 @@ public final class CircularQueue<T> extends AbstractQueue<T> implements QueueVie
         return builder.append(']').toString();
     }
 
-    @Override
-    public String snapshot() {
-        return toString();
-    }
-
     private int advance(int index) {
         return (index + 1) % elements.length;
     }

@@ -34,11 +34,6 @@ final class myQueue implements QueueView<Integer> {
         return delegate.peekRear();
     }
 
-    @Override
-    public String snapshot() {
-        return delegate.toString();
-    }
-
     public int getFront() {
         Integer front = peekFront();
         return front == null ? -1 : front;
@@ -63,6 +58,11 @@ final class myQueue implements QueueView<Integer> {
 
     public int capacity() {
         return delegate.capacity();
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
     }
 
     public static void main(String[] args) {

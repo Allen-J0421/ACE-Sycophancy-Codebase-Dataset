@@ -129,8 +129,7 @@ class RedBlackTree {
             node = fixViolation(node, parent, grandparent, sideOf(parent));
         }
 
-        root.colour = BLACK;
-        setParent(root, null);
+        enforceRootProperties();
     }
 
     private ChildSide sideOf(Node node) {
@@ -208,6 +207,11 @@ class RedBlackTree {
 
     private void setRoot(Node node) {
         root = node;
+        setParent(root, null);
+    }
+
+    private void enforceRootProperties() {
+        root.colour = BLACK;
         setParent(root, null);
     }
 

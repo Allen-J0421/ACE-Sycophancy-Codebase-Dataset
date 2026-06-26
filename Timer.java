@@ -55,6 +55,7 @@ public class Timer
      * Adds ":" to the current time string + minutes
      * @return the current time string with ':' + minutes.
      */
+    @Override
     public String toString(){
         return currentTime +":" + minutes;
     }
@@ -78,15 +79,11 @@ public class Timer
      * @return Current time in the simualtion.
      */
     public String getTime(int steps){
-        int value = steps % 4;
-        if(value == 0){
-            currentTime =  getMorningTime();
-        } else if(value == 1){
-            currentTime = getAfternoonTime();
-        } else if(value == 2){
-            currentTime = getEveningTime();
-        } else if(value == 3){
-            currentTime = getNightTime();
+        switch(steps % 4) {
+            case 0:  getMorningTime();   break;
+            case 1:  getAfternoonTime(); break;
+            case 2:  getEveningTime();   break;
+            default: getNightTime();     break;
         }
         getMinutes();
         return toString();

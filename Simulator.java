@@ -182,37 +182,27 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
+                Location location = new Location(row, col);
                 if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Animal lion = new Lion(true, field, location);
-                    animals.add(lion);
+                    animals.add(new Lion(true, field, location));
                 }
                 else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Animal cheetah = new Cheetah(true, field, location);
-                    animals.add(cheetah);
+                    animals.add(new Cheetah(true, field, location));
                 }
                 else if(rand.nextDouble() <= GAZELLE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Animal gazelle = new Gazelle(true, field, location);
-                    animals.add(gazelle);
-                }else if(rand.nextDouble() <= JAGUAR_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Animal jaguar = new Jaguar(true, field, location);
-                    animals.add(jaguar);
-                }else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Plants grass = new Grass(true, field, location);
-                    plants.add(grass);
+                    animals.add(new Gazelle(true, field, location));
+                }
+                else if(rand.nextDouble() <= JAGUAR_CREATION_PROBABILITY) {
+                    animals.add(new Jaguar(true, field, location));
+                }
+                else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
+                    plants.add(new Grass(true, field, location));
                 }
                 else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Animal zebra = new Zebra(true, field, location);
-                    animals.add(zebra);
-                }else if(rand.nextDouble() <= HUNTER_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Hunter hunter = new Hunter(field, location);
-                    animals.add(hunter);
+                    animals.add(new Zebra(true, field, location));
+                }
+                else if(rand.nextDouble() <= HUNTER_CREATION_PROBABILITY) {
+                    animals.add(new Hunter(field, location));
                 }
                 // else leave the location empty.
             }

@@ -17,12 +17,7 @@ public class Randomizer
     // Determine whether a shared random generator is to be provided.
     private static final boolean useShared = true;
 
-    /**
-     * Constructor for objects of class Randomizer
-     */
-    public Randomizer()
-    {
-    }
+    private Randomizer() {}
 
     /**
      * Provide a random generator.

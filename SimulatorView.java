@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * A graphical view of the simulation grid.
- * The view displays a colored rectangle for each location 
+ * The view displays a colored rectangle for each location
  * representing its contents. It uses a default background color.
  * Colors for each type of species can be defined using the
  * setColor method.
@@ -21,22 +21,21 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
-    private final String POPULATION_PREFIX = "Population: ";
-    private final String DAY_PREFIX = "Number of Days: ";
-    private final String INFECTION_PREFIX = "Number of animals infected: ";
-    
+    private static final String STEP_PREFIX = "Step: ";
+    private static final String POPULATION_PREFIX = "Population: ";
+    private static final String DAY_PREFIX = "Number of Days: ";
+    private static final String INFECTION_PREFIX = "Number of animals infected: ";
+
     private JLabel stepLabel, population, infoLabel, dayLabel;
-    
+
     private JButton stepButton, resetButton, infectionButton;
-    
+
     private FieldView fieldView;
     // A map for storing colors for participants in the simulation
     private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
-    
-    private int infectedPopulationCount;
+
     private Simulator simulator;
     private Timer timer;
     /**
@@ -56,7 +55,7 @@ public class SimulatorView extends JFrame
         createLabels();
         createButtons();
         JPanel toolBar = new JPanel();
-            
+
         toolBar.add(stepButton);
         toolBar.add(resetButton);
         toolBar.add(infectionButton);
@@ -127,15 +126,9 @@ public class SimulatorView extends JFrame
         stepButton  = new JButton("One Step ");
         resetButton  = new JButton("Reset");
         infectionButton  = new JButton("Introduce Infection");
-        stepButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) { nextButton(); }
-            });
-        infectionButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) { infectionButton(); }
-            });
-        resetButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) { resetButton(); }
-            });
+        stepButton.addActionListener(e -> nextButton());
+        infectionButton.addActionListener(e -> infectionButton());
+        resetButton.addActionListener(e -> resetButton());
     }
 
     /**
@@ -153,14 +146,7 @@ public class SimulatorView extends JFrame
      */
     private Color getColor(Class<?> animalClass)
     {
-        Color col = colors.get(animalClass);
-        if(col == null) {
-            // no color defined for this class
-            return UNKNOWN_COLOR;
-        }
-        else {
-            return col;
-        }
+        return colors.getOrDefault(animalClass, UNKNOWN_COLOR);
     }
 
     /**
@@ -176,7 +162,7 @@ public class SimulatorView extends JFrame
 
         stepLabel.setText(STEP_PREFIX + simulator.getSteps() );
         stats.reset();
-        infectedPopulationCount = 0;
+        int infectedPopulationCount = 0;
 
         fieldView.preparePaint();
 
@@ -199,11 +185,8 @@ public class SimulatorView extends JFrame
             }
         }
         stats.countFinished();
-        if(simulator.isDay()){
-            dayLabel.setText( DAY_PREFIX+ simulator.getNoOfDays() + "      Time: " + timer.getTime(simulator.getSteps()) + "   It is Day Time. ");
-        }else{
-            dayLabel.setText( DAY_PREFIX+ simulator.getNoOfDays() + "      Time: " + timer.getTime(simulator.getSteps()) + "   It is Night Time ");
-        }
+        String period = simulator.isDay() ? "Day Time." : "Night Time";
+        dayLabel.setText(DAY_PREFIX + simulator.getNoOfDays() + "      Time: " + timer.getTime(simulator.getSteps()) + "   It is " + period);
 
         infoLabel.setText(" " + simulator.getWeather() + "        " + INFECTION_PREFIX + infectedPopulationCount );
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field, simulator));
@@ -238,16 +221,16 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Provide a graphical view of a rectangular field. This is 
+     * Provide a graphical view of a rectangular field. This is
      * a nested class (a class defined inside a class) which
      * defines a custom component for the user interface. This
      * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
+     * This is rather advanced GUI stuff - you can ignore this
      * for your project if you like.
      */
     private class FieldView extends JPanel
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
+        private static final int GRID_VIEW_SCALING_FACTOR = 6;
 
         private int gridWidth, gridHeight;
         private int xScale, yScale;
@@ -268,6 +251,7 @@ public class SimulatorView extends JFrame
         /**
          * Tell the GUI manager how big we would like to be.
          */
+        @Override
         public Dimension getPreferredSize()
         {
             return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
@@ -309,6 +293,7 @@ public class SimulatorView extends JFrame
          * The field view component needs to be redisplayed. Copy the
          * internal image to screen.
          */
+        @Override
         public void paintComponent(Graphics g)
         {
             if(fieldImage != null) {
@@ -324,4 +309,3 @@ public class SimulatorView extends JFrame
         }
     }
 }
-

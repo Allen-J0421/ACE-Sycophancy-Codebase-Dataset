@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 import java.util.function.Predicate;
 
 /**
@@ -14,9 +13,6 @@ public abstract class Animal extends Organism implements AbleToEat {
     // define fields
     private final Gender gender; // gender of specific animal
     private boolean infected; // whether an animal has been infected or not
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for an animal in the simulation.
@@ -116,16 +112,7 @@ public abstract class Animal extends Organism implements AbleToEat {
      * @return true if a compatible mate is nearby.
      */
     protected boolean hasCompatibleMateNearby(Class<? extends Animal> species) {
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object organism = getField().getObjectAt(loc);
-            if (species.isInstance(organism)) {
-                Animal mate = (Animal) organism;
-                if (mate.isAlive() && mate.isMale() != isMale()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return findAdjacentObject(species, mate -> mate.isAlive() && mate.isMale() != isMale()) != null;
     }
 
     /**
@@ -163,7 +150,7 @@ public abstract class Animal extends Organism implements AbleToEat {
             if (!animal.isAlive() || animal.isInfected()) {
                 return false;
             }
-            if (rand.nextDouble() <= 0.01) {
+            if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
                 infect(animal);
             }
             return true;

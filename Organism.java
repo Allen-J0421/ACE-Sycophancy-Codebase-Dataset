@@ -22,7 +22,7 @@ public abstract class Organism implements Entity {
     private int age;
 
     // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
+    protected static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for an Organism in the simulation.

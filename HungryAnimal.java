@@ -1,15 +1,10 @@
 import java.util.List;
-import java.util.Random;
-
 /**
  * Shared behavior for animals that track hunger and hunt for food.
  *
  * @version 2022.03.02
  */
 public abstract class HungryAnimal extends Animal {
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     private final AnimalTraits traits;
     private final TimeOfDay restingTime;

@@ -64,26 +64,13 @@ public class Rat extends Animal
                 spreadDisease();
             }
             if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Rat young = new Rat(false, field, loc);
-                    young.setGender();
-                    newRats.add(young);
-                }
+                breedOffspring(newRats, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
             }
             Location newLocation = findFood();
             if(newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie(newLocation);
         }
     }
 
@@ -117,5 +104,12 @@ public class Rat extends Animal
             }
         }
         return null;
+    }
+
+    /**
+     * Create a new rat offspring.
+     */
+    protected Animal createOffspring(Field field, Location location) {
+        return new Rat(false, field, location);
     }
 }

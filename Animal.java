@@ -7,14 +7,8 @@ import java.util.Random;
  *
  * @version 01.03.22
  */
-public abstract class Animal
+public abstract class Animal extends LivingEntity
 {
-    // Whether the animal is alive or not.
-    private boolean alive;
-    // The animal's field.
-    private Field field;
-    // The animal's position in the field.
-    private Location location;
     // Distinguishes between male and female to determine breeding
     private boolean isMale;
     // whether or not the weather is fog
@@ -36,9 +30,7 @@ public abstract class Animal
      * @param location The location within the field.
      */
     public Animal(Field field, Location location) {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
         fog = false;
         disease = false;
     }
@@ -49,58 +41,6 @@ public abstract class Animal
      * @param newAnimals A list to receive newly born animals.
      */
     abstract public void act(List<Animal> newAnimals, int time);
-
-    /**
-     * Check whether the animal is alive or not.
-     * @return true if the animal is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
-
-    /**
-     * Indicate that the animal is no longer alive.
-     * It is removed from the field.
-     */
-    protected void setDead() {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-
-    /**
-     * Return the animal's location.
-     * @return The animal's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-    
-    /**
-     * Place the animal at the new location in the given field.
-     * @param newLocation The animal's new location.
-     */
-    protected void setLocation(Location newLocation) {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-    
-    /**
-     * Return the animal's field.
-     * @return The animal's field.
-     */
-    protected Field getField()
-    {
-        return field;
-    }
 
     /**
      * Return the animal's gender.
@@ -175,6 +115,7 @@ public abstract class Animal
      * in adjacent locations
      */
     protected void spreadDisease() {
+        Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
@@ -185,6 +126,47 @@ public abstract class Animal
                 diseaseAnimal.giveDisease();
                 diseaseAnimal.decrementHealth();
             }
+        }
+    }
+
+    /**
+     * Breed new offspring into free adjacent locations.
+     * @param newAnimals A list to receive newly born animals.
+     * @param BREEDING_AGE The minimum age required to breed.
+     * @param BREEDING_PROBABILITY The likelihood of breeding.
+     * @param MAX_LITTER_SIZE The maximum number of births.
+     */
+    protected void breedOffspring(List<Animal> newAnimals, int BREEDING_AGE,
+            double BREEDING_PROBABILITY, int MAX_LITTER_SIZE) {
+        if(giveBirth(BREEDING_AGE)) {
+            Field field = getField();
+            List<Location> free = field.getFreeAdjacentLocations(getLocation());
+            int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+            for (int b = 0; b < births && free.size() > 0; b++) {
+                Location loc = free.remove(0);
+                newAnimals.add(createOffspring(field, loc));
+            }
+        }
+    }
+
+    /**
+     * Create a new offspring of this animal's species.
+     * @param field The field occupied by the offspring.
+     * @param location The offspring's location.
+     * @return A new animal instance.
+     */
+    protected abstract Animal createOffspring(Field field, Location location);
+
+    /**
+     * Move to a new location if one exists, otherwise die.
+     * @param newLocation The destination location, or null.
+     */
+    protected void moveOrDie(Location newLocation) {
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
         }
     }
 

@@ -67,27 +67,14 @@ public class Ant extends Animal
                 spreadDisease();
             }
             if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Ant young = new Ant(false, field, loc);
-                    young.setGender();
-                    newAnts.add(young);
-                }
+                breedOffspring(newAnts, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
             }
 
             Location newLocation = findFood();
             if(newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie(newLocation);
         }
     }
 
@@ -121,6 +108,13 @@ public class Ant extends Animal
             }
         }
         return null;
+    }
+
+    /**
+     * Create a new ant offspring.
+     */
+    protected Animal createOffspring(Field field, Location location) {
+        return new Ant(false, field, location);
     }
 
 }

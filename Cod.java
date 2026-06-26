@@ -42,17 +42,27 @@ public class Cod extends Animal
      * @return true if two cods have different sex, false otherwise.
      */
     public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(Cod.class, 1);
+        return encounterWithDiffSex(1);
     }
 
     protected Animal createYoung(Field field, Location location){
         return new Cod(false, field, location);
     }
 
-    protected int getFoodValue(Object creature){
-        if(creature instanceof Seaweed)
-            return SEAWEED_FOOD_VALUE;
-        return 0;
+    protected int getFoodValueFor(Animal animal){
+        return animal.getFoodValueFrom(this);
+    }
+
+    protected int getFoodValueFrom(Seaweed seaweed){
+        return SEAWEED_FOOD_VALUE;
+    }
+
+    protected boolean isPotentialMateFor(Animal animal){
+        return animal.canMateWith(this) && hasDifferentSex(animal);
+    }
+
+    protected boolean canMateWith(Cod cod){
+        return true;
     }
 
 }

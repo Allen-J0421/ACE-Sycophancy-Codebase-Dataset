@@ -191,22 +191,19 @@ public abstract class Animal extends Creature
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
         for(Location loc: adjacent) {
-            Object creature = field.getObjectAt(loc);
-            if(creature instanceof Animal) {
-                Animal animal = (Animal) creature;
-                if(animal.getIsInfected()) {
-                    disease.expose(this, step);
-                }
+            Creature creature = field.getCreatureAt(loc);
+            if(creature == null) {
+                continue;
+            }
+            if(creature.canTransmitDisease()) {
+                disease.expose(this, step);
             }
 
-            int foodValue = getFoodValue(creature);
-            if(foodValue > 0 && creature instanceof Creature) {
-                Creature food = (Creature) creature;
-                if(food.isAlive()) {
-                    food.setDead();
-                    foodLevel = foodValue;
-                    return loc;
-                }
+            int foodValue = creature.getFoodValueFor(this);
+            if(foodValue > 0 && creature.isAlive()) {
+                creature.setDead();
+                foodLevel = foodValue;
+                return loc;
             }
         }
         return null;
@@ -232,16 +229,14 @@ public abstract class Animal extends Creature
      * @param adjacentDistance Controls the search range.
      * @return true if a matching nearby animal has a different sex.
      */
-    protected boolean encounterWithDiffSex(Class<? extends Animal> animalClass, int adjacentDistance)
+    protected boolean encounterWithDiffSex(int adjacentDistance)
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), adjacentDistance);
         for(Location where: adjacent) {
-            Object animalAtThisLoc = field.getObjectAt(where);
-            if(animalClass.isInstance(animalAtThisLoc)) {
-                Animal animal = (Animal) animalAtThisLoc;
-                if(this.getSex() != animal.getSex())
-                    return true;
+            Creature creature = field.getCreatureAt(where);
+            if(creature != null && creature.isPotentialMateFor(this)) {
+                return true;
             }
         }
         return false;
@@ -256,11 +251,44 @@ public abstract class Animal extends Creature
     protected abstract Animal createYoung(Field field, Location location);
 
     /**
-     * Return the food value of the provided creature for this animal.
-     * @param creature The adjacent creature to inspect.
-     * @return the food value, or zero if it is not food.
+     * Return the food value of a cod for this animal.
      */
-    protected abstract int getFoodValue(Object creature);
+    protected int getFoodValueFrom(Cod cod)
+    {
+        return 0;
+    }
+
+    /**
+     * Return the food value of a salmon for this animal.
+     */
+    protected int getFoodValueFrom(Salmon salmon)
+    {
+        return 0;
+    }
+
+    /**
+     * Return the food value of seaweed for this animal.
+     */
+    protected int getFoodValueFrom(Seaweed seaweed)
+    {
+        return 0;
+    }
+
+    /**
+     * @return true if this animal could mate with the given cod.
+     */
+    protected boolean canMateWith(Cod cod)
+    {
+        return false;
+    }
+
+    /**
+     * @return true if this animal could mate with the given salmon.
+     */
+    protected boolean canMateWith(Salmon salmon)
+    {
+        return false;
+    }
 
     /**
      * identify whether a creature need to sleep
@@ -280,6 +308,21 @@ public abstract class Animal extends Creature
      */
     public boolean getIsInfected(){
         return isInfected;
+    }
+
+    protected boolean canTransmitDisease()
+    {
+        return isInfected;
+    }
+
+    protected boolean isPotentialMateFor(Animal animal)
+    {
+        return false;
+    }
+
+    protected boolean hasDifferentSex(Animal animal)
+    {
+        return getSex() != animal.getSex();
     }
 
     /**

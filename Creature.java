@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Abstract class Creature - A class representing shared characteristics of creatures(animals and plants.)
@@ -41,6 +40,32 @@ public abstract class Creature
      * @return the oxygen level the species produced or consumed after action.
      */
     abstract public double act(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step);
+
+    /**
+     * @return true if this creature can expose another animal to disease.
+     */
+    protected boolean canTransmitDisease()
+    {
+        return false;
+    }
+
+    /**
+     * Return this creature's food value for the given animal.
+     * @param animal The animal inspecting this creature as food.
+     * @return the food value, or zero if this creature is not food.
+     */
+    protected int getFoodValueFor(Animal animal)
+    {
+        return 0;
+    }
+
+    /**
+     * @return true if this creature is a compatible different-sex mate for the given animal.
+     */
+    protected boolean isPotentialMateFor(Animal animal)
+    {
+        return false;
+    }
 
     /**
      * Check whether the creature is alive or not.

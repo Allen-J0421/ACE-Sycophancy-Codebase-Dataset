@@ -45,6 +45,11 @@ public class Seaweed extends Creature
         }  
     }
 
+    protected int getFoodValueFor(Animal animal)
+    {
+        return animal.getFoodValueFrom(this);
+    }
+
    /**
      * This is what the seawead does most of the time - stay motionlessly under the water
      * @param newSeaweeds A list to return newly born shrimps.

@@ -42,17 +42,27 @@ public class Salmon extends Animal
      * Decide if two salmons countered has different sex;
      */
     public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(Salmon.class, 2);
+        return encounterWithDiffSex(2);
     }
 
     protected Animal createYoung(Field field, Location location){
         return new Salmon(false, field, location);
     }
 
-    protected int getFoodValue(Object creature){
-        if(creature instanceof Seaweed)
-            return SEAWEED_FOOD_VALUE;
-        return 0;
+    protected int getFoodValueFor(Animal animal){
+        return animal.getFoodValueFrom(this);
+    }
+
+    protected int getFoodValueFrom(Seaweed seaweed){
+        return SEAWEED_FOOD_VALUE;
+    }
+
+    protected boolean isPotentialMateFor(Animal animal){
+        return animal.canMateWith(this) && hasDifferentSex(animal);
+    }
+
+    protected boolean canMateWith(Salmon salmon){
+        return true;
     }
 
 }

@@ -86,6 +86,20 @@ public class Field
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
+
+    /**
+     * Return the creature at the given location, if any.
+     * @param location Where in the field.
+     * @return The creature at the given location, or null if there is none.
+     */
+    public Creature getCreatureAt(Location location)
+    {
+        Object object = getObjectAt(location);
+        if(object instanceof Creature) {
+            return (Creature) object;
+        }
+        return null;
+    }
     
     /**
      * Return the creature at the given location, if any.

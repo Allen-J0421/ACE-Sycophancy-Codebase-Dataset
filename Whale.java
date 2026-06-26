@@ -42,19 +42,23 @@ public class Whale extends Animal
      * @return true if two whales have different sex, false otherwise.
      */
     public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(Salmon.class, 2);
+        return encounterWithDiffSex(2);
     }
 
     protected Animal createYoung(Field field, Location location){
         return new Whale(false, field, location);
     }
 
-    protected int getFoodValue(Object creature){
-        if(creature instanceof Cod)
-            return COD_FOOD_VALUE;
-        if(creature instanceof Salmon)
-            return SALMON_FOOD_VALUE;
-        return 0;
+    protected int getFoodValueFrom(Cod cod){
+        return COD_FOOD_VALUE;
+    }
+
+    protected int getFoodValueFrom(Salmon salmon){
+        return SALMON_FOOD_VALUE;
+    }
+
+    protected boolean canMateWith(Salmon salmon){
+        return true;
     }
 
 }

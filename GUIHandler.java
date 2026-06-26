@@ -10,12 +10,12 @@ import javax.swing.JFrame;
  */
 public class GUIHandler
 {
-    private Initializer simulationInitializer;
+    private final Initializer simulationInitializer;
     private Simulator simulatorOnDisplay;
     private JFrame currentFrame;
-    private List<String> animalChoices;
-    private List<String> habitatChoices;
-    private List<String> scenarioChoices;
+    private final List<String> animalChoices;
+    private final List<String> habitatChoices;
+    private final List<String> scenarioChoices;
 
     /**
      * Build a GUIHandler with appropriate lists of choices for animals, habitats, and climate change scenarios.
@@ -81,7 +81,7 @@ public class GUIHandler
      */
     public void launchLongSimulation()
     {
-        new Thread(simulatorOnDisplay::runLongSimulation).start();
+        startSimulationThread(simulatorOnDisplay::runLongSimulation);
     }
 
     /**
@@ -90,7 +90,7 @@ public class GUIHandler
      */
     public void runHundredSteps()
     {
-        new Thread(simulatorOnDisplay::runHundredSteps).start();
+        startSimulationThread(simulatorOnDisplay::runHundredSteps);
     }
 
     /**
@@ -100,5 +100,10 @@ public class GUIHandler
     public void runOneStep()
     {
         simulatorOnDisplay.simulate(1);
+    }
+
+    private void startSimulationThread(Runnable simulationAction)
+    {
+        new Thread(simulationAction).start();
     }
 }

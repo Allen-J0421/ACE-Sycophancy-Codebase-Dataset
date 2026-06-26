@@ -82,11 +82,11 @@ public abstract class CSVReader
      * on the child class it is called from) available to the user.
      * Source: technique to read from .csv files was found on https://stackabuse.com/reading-and-writing-csvs-in-java/
      *
-     * @return (ArrayList<String>) The list of available choices.
+     * @return (List<String>) The list of available choices.
      */
-    public ArrayList<String> getChoicesList()
+    public List<String> getChoicesList()
     {
-        ArrayList<String> choicesList = new ArrayList<>();
+        List<String> choicesList = new ArrayList<>();
         for (String[] row : readDataRows()) {
             choicesList.add(row[0]);
         }

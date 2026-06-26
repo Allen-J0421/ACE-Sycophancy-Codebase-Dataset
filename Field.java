@@ -14,9 +14,10 @@ public class Field
     private static final Random rand = Randomizer.getRandom();
     
     // The depth and width of the field.
-    private int depth, width;
+    private final int depth;
+    private final int width;
     // Storage for the species currently occupying each cell.
-    private Species[][] field;
+    private final Species[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -142,12 +143,7 @@ public class Field
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);
-        if(free.size() > 0) {
-            return free.get(0);
-        }
-        else {
-            return null;
-        }
+        return free.isEmpty() ? null : free.get(0);
     }
 
     /**

@@ -1,27 +1,12 @@
 package savannah.app;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
 
 import javax.swing.JButton;
 
 import savannah.config.SimulationConfig;
-import savannah.model.Animal;
-import savannah.model.Cheetah;
-import savannah.model.Field;
-import savannah.model.Giraffe;
-import savannah.model.Lemur;
-import savannah.model.Lion;
-import savannah.model.LivingOrganism;
-import savannah.model.Location;
-import savannah.model.Plant;
-import savannah.model.Randomizer;
+import savannah.engine.SimulationEngine;
 import savannah.model.Time;
-import savannah.model.Weather;
-import savannah.model.Zebra;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -33,12 +18,8 @@ public class Simulator
 {
     private static final SimulationConfig CONFIG = SimulationConfig.DEFAULT;
 
-    // List of animals in the field.
-    private List<LivingOrganism> animals;
-    // List of plants in the field
-    private List<LivingOrganism> plants;
-    // The current state of the field.
-    private Field field;
+    // Owns the simulation state.
+    private final SimulationEngine engine;
     // A graphical view of the simulation.
     private SimulatorView view;
     // List of buttons that are used to control the simulation.
@@ -66,9 +47,7 @@ public class Simulator
             width = CONFIG.defaultWidth;
         }
         
-        animals = new ArrayList<>();
-        plants = new ArrayList<>();
-        field = new Field(depth, width);
+        engine = new SimulationEngine(depth, width, CONFIG);
         buttons = new JButton[5];
         
         // Creates the buttons for the view
@@ -96,13 +75,13 @@ public class Simulator
         buttonToggle();
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, buttons, CONFIG);
-        view.setColor(Zebra.class, Color.BLACK, Color.WHITE);
-        view.setColor(Giraffe.class, Color.YELLOW, Color.BLACK);
-        view.setColor(Lemur.class, Color.BLUE, Color.WHITE);
-        view.setColor(Lion.class, Color.RED, Color.WHITE);
-        view.setColor(Cheetah.class, Color.ORANGE, Color.BLACK);
-        view.setColor(Plant.class, Color.GREEN, Color.BLACK);
+        view = new SimulatorView(engine.getDepth(), engine.getWidth(), buttons, CONFIG);
+        view.setColor(savannah.model.Zebra.class, Color.BLACK, Color.WHITE);
+        view.setColor(savannah.model.Giraffe.class, Color.YELLOW, Color.BLACK);
+        view.setColor(savannah.model.Lemur.class, Color.BLUE, Color.WHITE);
+        view.setColor(savannah.model.Lion.class, Color.RED, Color.WHITE);
+        view.setColor(savannah.model.Cheetah.class, Color.ORANGE, Color.BLACK);
+        view.setColor(savannah.model.Plant.class, Color.GREEN, Color.BLACK);
         
         // Setup a valid starting point.
         reset();
@@ -161,7 +140,7 @@ public class Simulator
         // Adjust button visibility.
         buttonToggle();
         
-        while (! Time.getIsPaused() && ! Time.getIsFinished() && view.isViable(field)) {
+        while (! Time.getIsPaused() && ! Time.getIsFinished() && view.isViable(engine.getField())) {
             simulateOneStep();
         }
         
@@ -176,49 +155,9 @@ public class Simulator
      */
     private void simulateOneStep()
     {
-        Time.incrementStep();
-        Weather.updateWeather();
-
-        // Provide space for newborn animals and plants;
-        List<LivingOrganism> newAnimals = new ArrayList<>();
-        List<LivingOrganism> newPlants = new ArrayList<>();
-        
-        // Let all animals act.
-        for(Iterator<LivingOrganism> it = animals.iterator(); it.hasNext(); ) 
-        {
-            Animal animal = (Animal) it.next();
-            
-            if(animal != null) 
-            {
-                animal.act(newAnimals);
-                
-                if (! animal.isAlive())
-                {
-                    it.remove();
-                }
-            }
-        }
-        
-        // Let all plants act.
-        for(Iterator<LivingOrganism> it = plants.iterator(); it.hasNext(); ) {
-            Plant plant = (Plant) it.next();
-            if(plant != null) 
-            {
-                plant.act(newPlants);
-                
-                if (! plant.isAlive())
-                {
-                    it.remove();
-                }
-            }
-        }
-        
-        // Add the newly born animals and plants to the main lists.
-        animals.addAll(newAnimals);
-        plants.addAll(newPlants); 
-
+        engine.step();
         // Show the current state in the view.
-        view.showStatus(field);
+        view.showStatus(engine.getField());
     }
         
     /**
@@ -226,68 +165,11 @@ public class Simulator
      */
     private void reset()
     {
-        // Resets the visibility of the buttons and resets the step number
-        Time.resetStep();
+        engine.reset();
         buttonToggle();
-        
-        // Clears all current animals and plants then repopulates the area
-        animals.clear();
-        plants.clear();
-        populate();
-        
+
         // Show the starting state in the view.
-        view.showStatus(field);
-    }
-    
-    /**
-     * Randomly populate the field with predators, prey, and plants.
-     */
-    private void populate()
-    {
-        Random rand = Randomizer.getRandom();
-        field.clear();
-        for(int row = 0; row < field.getDepth(); row++) 
-        {
-            for(int col = 0; col < field.getWidth(); col++) 
-            {
-                Location location = new Location(row, col);
-                plants.add(new Plant(true, field, location, CONFIG));
-
-                Animal animal = createInitialAnimal(location, rand);
-                if(animal != null) {
-                    animals.add(animal);
-                }
-            }
-        }
-    }
-
-    /**
-     * Create the initial animal for one field location.
-     *
-     * @param location The location to seed.
-     * @param rand Shared random source for the initial population.
-     *
-     * @return A new animal or null if no animal should be spawned.
-     */
-    private Animal createInitialAnimal(Location location, Random rand)
-    {
-        if(rand.nextDouble() <= CONFIG.lionCreationProbability) {
-            return new Lion(true, field, location, false, false, CONFIG);
-        }
-        if(rand.nextDouble() <= CONFIG.cheetahCreationProbability) {
-            return new Cheetah(true, field, location, false, false, CONFIG);
-        }
-        if(rand.nextDouble() <= CONFIG.zebraCreationProbability) {
-            return new Zebra(true, field, location, false, false, CONFIG);
-        }
-        if(rand.nextDouble() <= CONFIG.giraffeCreationProbability) {
-            return new Giraffe(true, field, location, false, false, CONFIG);
-        }
-        if(rand.nextDouble() <= CONFIG.lemurCreationProbability) {
-            return new Lemur(true, field, location, false, false, CONFIG);
-        }
-
-        return null;
+        view.showStatus(engine.getField());
     }
     
     /**

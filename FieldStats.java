@@ -105,14 +105,12 @@ public class FieldStats
      */
     private void generateCounts(Field field) {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
-                }
+        field.forEachLocation((row, col) -> {
+            Object animal = field.getObjectAt(row, col);
+            if(animal != null) {
+                incrementCount(animal.getClass());
             }
-        }
+        });
         countsValid = true;
     }
 }

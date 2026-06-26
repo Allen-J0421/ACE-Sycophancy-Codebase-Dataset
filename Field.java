@@ -12,6 +12,12 @@ import java.util.Random;
  */
 public class Field
 {
+    @FunctionalInterface
+    public interface FieldPositionVisitor
+    {
+        void visit(int row, int col);
+    }
+
     // A random number generator for providing random locations.
     private static final Random rand = Randomizer.getRandom();
     
@@ -35,11 +41,7 @@ public class Field
      * Empty the field.
      */
     public void clear() {
-        for(int row = 0; row < depth; row++) {
-            for(int col = 0; col < width; col++) {
-                field[row][col] = null;
-            }
-        }
+        forEachLocation((row, col) -> field[row][col] = null);
     }
     
     /**
@@ -194,5 +196,17 @@ public class Field
     public int getWidth()
     {
         return width;
+    }
+
+    /**
+     * Visit every position in the field.
+     * @param visitor The visitor to apply to each row and column.
+     */
+    public void forEachLocation(FieldPositionVisitor visitor) {
+        for(int row = 0; row < depth; row++) {
+            for(int col = 0; col < width; col++) {
+                visitor.visit(row, col);
+            }
+        }
     }
 }

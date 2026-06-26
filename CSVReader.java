@@ -12,12 +12,14 @@ import java.util.List;
 public abstract class CSVReader
 {
     private static final String CSV_SEPARATOR = ",";
+    protected final ErrorThrower errorThrower;
 
     /**
      * Empty constructor for this class.
      */
     public CSVReader()
     {
+        errorThrower = new ErrorThrower();
     }
 
     /**
@@ -105,5 +107,14 @@ public abstract class CSVReader
             System.out.println("Issue when parsing CSV");
         }
         return rows;
+    }
+
+    protected boolean hasExpectedAttributeCount(String[] extractedData, int expectedAttributeCount, String errorMessage)
+    {
+        if (extractedData.length != expectedAttributeCount) {
+            errorThrower.throwMessage(errorMessage);
+            return false;
+        }
+        return true;
     }
 }

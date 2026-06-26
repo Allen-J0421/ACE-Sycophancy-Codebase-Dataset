@@ -11,17 +11,15 @@ public class HabitatCSVReader extends CSVReader {
     private static final int EXPECTED_ATTRIBUTE_COUNT = 9;
     private static final int TEMPERATURE_VALUES_PER_SEASON = 2;
     // List of minimum, average, and maximum temperatures for the winter.
-    private int[] winterTemperatures;
+    private final int[] winterTemperatures;
     // List of minimum, average, and maximum temperatures for the spring.
-    private int[] springTemperatures;
+    private final int[] springTemperatures;
     // List of minimum, average, and maximum temperatures for the summer.
-    private int[] summerTemperatures;
+    private final int[] summerTemperatures;
     // List of minimum, average, and maximum temperatures for the autumn.
-    private int[] autumnTemperatures;
+    private final int[] autumnTemperatures;
     // The concentration of plants in a given habitat.
     private double plantConcentration;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
 
     // Name of the CSV files containing data on fields.
     private static final String FILE_NAME = "habitats.csv";
@@ -29,13 +27,13 @@ public class HabitatCSVReader extends CSVReader {
     /**
      * Build a HabitatCSVReader and initialize its fields.
      */
-    public HabitatCSVReader() {
-        errorThrower = new ErrorThrower();
-        winterTemperatures = new int[2];
-        autumnTemperatures = new int[2];
-        springTemperatures = new int[2];
-        summerTemperatures = new int[2];
-        plantConcentration = 0;
+    public HabitatCSVReader()
+    {
+        winterTemperatures = new int[TEMPERATURE_VALUES_PER_SEASON];
+        autumnTemperatures = new int[TEMPERATURE_VALUES_PER_SEASON];
+        springTemperatures = new int[TEMPERATURE_VALUES_PER_SEASON];
+        summerTemperatures = new int[TEMPERATURE_VALUES_PER_SEASON];
+        resetParameters();
     }
 
     /**
@@ -49,8 +47,8 @@ public class HabitatCSVReader extends CSVReader {
     protected void populateFields(String[] extractedData)
     {
         extractedData = removeHabitatName(extractedData);
-        if (extractedData.length != EXPECTED_ATTRIBUTE_COUNT) {
-            errorThrower.throwMessage("Habitat issue, please restart.");
+        if (!hasExpectedAttributeCount(extractedData, EXPECTED_ATTRIBUTE_COUNT, "Habitat issue, please restart.")) {
+            return;
         }
 
         populateTemperaturesForSeason(winterTemperatures, extractedData, 0);
@@ -65,12 +63,11 @@ public class HabitatCSVReader extends CSVReader {
      */
     protected void resetParameters()
     {
-        winterTemperatures = new int[2];
-        springTemperatures = new int[2];
-        summerTemperatures = new int[2];
-        autumnTemperatures = new int[2];
+        Arrays.fill(winterTemperatures, 0);
+        Arrays.fill(springTemperatures, 0);
+        Arrays.fill(summerTemperatures, 0);
+        Arrays.fill(autumnTemperatures, 0);
         plantConcentration = 0;
-
     }
 
     /**
@@ -105,28 +102,28 @@ public class HabitatCSVReader extends CSVReader {
      */
     public int[] getWinterTemperatures()
     {
-        return winterTemperatures;
+        return copyTemperatures(winterTemperatures);
     }
 
     /**
      * @return (int[]) Minimum, average, and maximum temperatures for the autumn.
      */
     public int[] getAutumnTemperatures() {
-        return autumnTemperatures;
+        return copyTemperatures(autumnTemperatures);
     }
 
     /**
      * @return (int[]) Minimum, average, and maximum temperatures for the spring.
      */
     public int[] getSpringTemperatures() {
-        return springTemperatures;
+        return copyTemperatures(springTemperatures);
     }
 
     /**
      * @return (int[]) Minimum, average, and maximum temperatures for the summer.
      */
     public int[] getSummerTemperatures() {
-        return summerTemperatures;
+        return copyTemperatures(summerTemperatures);
     }
 
     /**
@@ -134,5 +131,10 @@ public class HabitatCSVReader extends CSVReader {
      */
     public double getPlantConcentration() {
         return plantConcentration;
+    }
+
+    private int[] copyTemperatures(int[] seasonTemperatures)
+    {
+        return Arrays.copyOf(seasonTemperatures, seasonTemperatures.length);
     }
 }

@@ -18,7 +18,7 @@ public class DiseaseHandler
 
     // cooldown before the animal achieves natural immunity
     private static final int DISINFECTION_DURATION = 5;
-    private final Random rand = Randomizer.getRandom();
+    private static final Random rand = Randomizer.getRandom();
     private final Field field;
 
     /*///////////////////////////////////////////////////////////////

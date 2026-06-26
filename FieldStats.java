@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class FieldStats
 {
-    private HashMap<Class<?>, Counter> counters;
+    private final Map<Class<?>, Counter> counters;
     private boolean countsValid;
 
     /**
@@ -116,7 +116,7 @@ public class FieldStats
         countsValid = true;
     }
 
-    public HashMap<Class<?>, Counter> getCounters()
+    public Map<Class<?>, Counter> getCounters()
     {
         return counters;
     }

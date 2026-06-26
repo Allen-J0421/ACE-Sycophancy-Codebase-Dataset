@@ -26,8 +26,8 @@ public class Field
                                ACTOR STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    private Object[][] field;
-    private Plant[][] terrain;
+    private final Object[][] field;
+    private final Plant[][] terrain;
 
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

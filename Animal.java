@@ -165,20 +165,10 @@ public abstract class Animal implements Actor
             if(animal.getGender() == this.getGender()) {
                 continue;
             }
-            int births = breed(maxLitter, breedingProbability, breedingAge);
-            giveBirth(newAnimals, births);
+            if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
+                giveBirth(newAnimals, rand.nextInt(maxLitter) + 1);
+            }
         }
-    }
-
-    /**
-     * Returns the amount of animals to breed.
-     */
-    private int breed(int maxLitter, double breedingProbability, int breedingAge)
-    {
-        if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
-            return rand.nextInt(maxLitter) + 1;
-        }
-        return 0;
     }
 
     /**

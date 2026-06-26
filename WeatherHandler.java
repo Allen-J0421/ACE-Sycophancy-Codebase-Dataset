@@ -1,4 +1,3 @@
-import java.util.Random;
 /**
  * Responsible for mutating the weather of the simulation by randomly selecting a new weather(following a uniform distribution)
  * @version 1.0
@@ -12,7 +11,6 @@ public class WeatherHandler
     
     private Weather currentWeather;
     private int lastRecordedDay;
-    private final Random rand = Randomizer.getRandom();
     private final SimulatorClock clock;
     
     /*///////////////////////////////////////////////////////////////
@@ -24,7 +22,7 @@ public class WeatherHandler
      */
     public WeatherHandler(SimulatorClock clock)
     {
-        currentWeather = getRandomWeather();
+        currentWeather = Utils.getRandomEnumValue(Weather.class);
         lastRecordedDay = 1;
         this.clock = clock;
     }
@@ -44,17 +42,9 @@ public class WeatherHandler
     public void updateWeather()
     {
         if(lastRecordedDay != clock.getDayCount()) {
-            currentWeather = getRandomWeather();
+            currentWeather = Utils.getRandomEnumValue(Weather.class);
             lastRecordedDay = clock.getDayCount();
         }
     }
     
-    /**
-     *  Returns a random weather amongs the list of possible types of weather
-     *  @return the randomly selected weather
-     */
-    private Weather getRandomWeather()
-    {
-        return Utils.getRandomEnumValue(Weather.class);
-    }
 }

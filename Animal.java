@@ -133,7 +133,7 @@ public abstract class Animal extends Organism implements Actor
         Field field = getField();
         for (Location loc : adjacent) {
             Object obj = field.getObjectAt(loc);
-            if (obj != null && !(obj instanceof Hunter)) {
+            if (obj instanceof Organism) {
                 Organism organism = (Organism) obj;
                 if (organism.isDiseased()
                         && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT

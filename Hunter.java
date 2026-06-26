@@ -1,101 +1,70 @@
 import java.util.*;
 
 /**
- * A simple model of a hunter. 
- * Hunters hunt all of the species in the simulation.
+ * A simple model of a hunter.
+ * Hunters hunt all animal species in the simulation.
+ *
  * @version 2022.03.02
  */
-public class Hunter implements Actor
+public class Hunter extends Organism implements Actor
 {
-    private boolean alive;
-    private Field field;
-    private Location location;
+    private static final Random rand = Randomizer.getRandom();
 
-    private Random rand = Randomizer.getRandom();
-    // A hunter hunts every species. 
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class));
+    // Hunters cannot be eaten, so they contribute no food value.
+    @Override
+    protected int FOOD_VALUE() { return 0; }
 
+    // A hunter preys on every animal species.
+    private static final Set<Class> DIET = Set.of(
+        Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class
+    );
 
     /**
-     * Creates a new hunter.
+     * Creates a new hunter at the given location.
      * @param field The field currently occupied.
-     * @param location  The location within the field.
-     * @param environment The environment that the hunter resides in. 
+     * @param location The location within the field.
      */
-    public Hunter(Field field, Location location, Environment environment)
+    public Hunter(Field field, Location location)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
     }
 
     /**
-     * Returns true if the hunter is alive. 
-     */
-    public boolean isAlive() 
-    {
-        return alive;
-    }
-
-    /**
-     * Makes the hunter hunt for nearby animals. 
-     * @param environment The environment that the hunter resides in. 
-     * @param newActors A list to receive new actors. 
+     * Makes the hunter hunt for nearby animals.
+     * @param newActors A list to receive new actors (unused — hunters do not reproduce).
+     * @param environment The environment that the hunter resides in.
      */
     public void act(List<Actor> newActors, Environment environment)
     {
-        if(isAlive()) {
+        if (isAlive()) {
             Location newLocation = findPrey();
-            if(newLocation == null) {
-                // No animals found - try to move to a free location.
-                newLocation = field.freeAdjacentLocation(location);
+            if (newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
             }
-            List<Location> adjacentGrassSpots = field.adjacentLocationsWithSpecies(location, Grass.class);
+            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
 
-            // See if it was possible to move.
-            if(newLocation != null) {
+            if (newLocation != null) {
                 setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                field.clear(location);
+            } else if (adjacentGrassSpots.size() > 0) {
+                getField().clear(getLocation());
                 setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
             }
-
         }
     }
-
-    /**
-     * Place the hunter at the new location in the given field.
-     * @param newLocation The hunter's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-
 
     /**
      * Look for animals adjacent to the current location.
-     * Only the first live animal is killed.
-     * @return Location Where an animal was found, or null if it wasn't.
+     * Only the first live animal found is killed.
+     * @return The location where an animal was found, or null if none.
      */
     private Location findPrey()
     {
-        Field field = this.field;
-        List<Location> adjacent = field.adjacentLocations(location);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal != null && DIET.contains(animal.getClass())) {
-                Animal food = (Animal) animal;
-                if(food.isAlive()) {
-                    food.setDead();
-                    return where;
+        for (Location where : getField().adjacentLocations(getLocation())) {
+            Object obj = getField().getObjectAt(where);
+            if (obj != null && DIET.contains(obj.getClass())) {
+                Animal prey = (Animal) obj;
+                if (prey.isAlive()) {
+                    prey.setDead();
                 }
                 return where;
             }

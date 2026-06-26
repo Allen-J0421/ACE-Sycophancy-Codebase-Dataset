@@ -1,28 +1,27 @@
-import java.util.List;
+import java.util.*;
 
 /**
  * This class models grass.
- * Grass can germinate,grow and get eaten by animals.
+ * Grass can germinate, grow and get eaten by animals.
+ *
  * @version 2022.03.02
  */
 public class Grass extends Plant
 {
-    private int FOOD_VALUE;
+    private static final PlantStats STATS = new PlantStats(3, 2);
+
+    @Override
+    protected PlantStats getStats() { return STATS; }
+
+    private int foodValue;
     private static double GERMINATION_RATE = 0.1;
 
-    /**
-     * Returns the food value of the grass.
-     * @return int The food value of the grass.
-     */
-    protected int FOOD_VALUE()
-    {
-        return FOOD_VALUE;
-    }
+    @Override
+    protected int FOOD_VALUE() { return foodValue; }
 
     /**
      * Creates grass with a random stage of growth.
-     * However, the maximum number of stages is fixed at 3,
-     * and the growth rate is fixed at 2 steps per stage.
+     * Food value starts equal to the initial growth stage.
      *
      * @param field The field currently occupied.
      * @param location The location within the field.
@@ -30,18 +29,12 @@ public class Grass extends Plant
     public Grass(Field field, Location location)
     {
         super(field, location);
-
-        NUMBER_OF_STAGES = 3;
-        STEPS_PER_STAGE = 2;
-        STAGE_OF_GROWTH = rand.nextInt(NUMBER_OF_STAGES);
-        FOOD_VALUE = STAGE_OF_GROWTH;
-
+        this.foodValue = getStageOfGrowth();
     }
-
 
     /**
      * Make the grass act.
-     * The germination rate of grass is affected by weather.
+     * The germination rate is affected by weather; growth advances every stepsPerStage steps.
      * @param newGrass To store the newly germinated grass.
      * @param environment The environment that the grass resides in.
      */
@@ -53,7 +46,7 @@ public class Grass extends Plant
             changeGerminationRate(0.1);
         }
 
-        if (environment.getTime().getStep() % STEPS_PER_STAGE == 0) {
+        if (environment.getTime().getStep() % getStats().getStepsPerStage() == 0) {
             incrementGrowth();
         }
 
@@ -64,20 +57,14 @@ public class Grass extends Plant
     }
 
     /**
-     * Check whether this grass is to germinate at this step.
-     * New grass will be made into free adjacent locations.
-     * @param newGrass A list to return newly made grass.
+     * Spread to all free adjacent locations.
+     * @param newGrass A list to return newly created grass.
      */
     protected void germinate(List<Actor> newGrass)
     {
-        // New grass are made into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        for(int b = 0; b < free.size(); b++) {
-            Location loc = free.remove(0);
-            Grass young = new Grass(field, loc);
-            newGrass.add(young);
+        for (Location loc : field.getFreeAdjacentLocations(getLocation())) {
+            newGrass.add(new Grass(field, loc));
         }
     }
 
@@ -87,26 +74,22 @@ public class Grass extends Plant
      */
     public void changeGerminationRate(double newRate)
     {
-        if(isAlive()) {
+        if (isAlive()) {
             GERMINATION_RATE = newRate;
         }
     }
 
     /**
-     * Increment the stage of growth of grass
-     * Incrementing the growth also increases the food level by 1
-     * @return true If the grass grows.
-     * @return false If the grass doesn't grow.
+     * Advance the growth stage and increase food value accordingly.
+     * @return true if the grass grew; false if already at maximum stage.
      */
+    @Override
     public boolean incrementGrowth()
     {
-        if(super.incrementGrowth()) {
-            FOOD_VALUE++;
+        if (super.incrementGrowth()) {
+            foodValue++;
             return true;
         }
         return false;
     }
-
-
-
 }

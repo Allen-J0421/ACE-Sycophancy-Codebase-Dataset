@@ -223,7 +223,7 @@ public class Simulator implements SimulationControls
         factories.put(Wolf.class,   (loc, sex) -> new Wolf(true, field, loc, sex));
         factories.put(Eagle.class,  (loc, sex) -> new Eagle(true, field, loc, sex));
         factories.put(Mouse.class,  (loc, sex) -> new Mouse(true, field, loc, sex));
-        factories.put(Hunter.class, (loc, sex) -> new Hunter(field, loc, environment));
+        factories.put(Hunter.class, (loc, sex) -> new Hunter(field, loc));
 
         field.clear();
         for (int row = 0; row < field.getDepth(); row++) {

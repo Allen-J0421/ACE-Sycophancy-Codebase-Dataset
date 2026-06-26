@@ -98,14 +98,6 @@ public class Field
     }
 
     /**
-     * Returns the field of the simulation. 
-     */
-    public Object[][] getField()
-    {
-        return field;
-    }
-    
-    /**
      * Generate a random location that is adjacent to the
      * given location, or is the same location.
      * The returned location will be within the valid bounds

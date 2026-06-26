@@ -9,14 +9,14 @@ public enum Gender {
     MALE,
     FEMALE;
 
+    private static final Gender[] VALUES = values();
+
     /**
      * Returns a random Gender from all possible choices.
      *
      * @return A Gender.
      */
     public static Gender getRandom() {
-        Gender[] values = Gender.values();
-        int randomIndex = Randomizer.getRandom().nextInt(values.length);
-        return values[randomIndex];
+        return VALUES[Randomizer.getRandom().nextInt(VALUES.length)];
     }
 }

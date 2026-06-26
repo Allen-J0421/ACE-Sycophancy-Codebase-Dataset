@@ -13,20 +13,6 @@ public interface Growable {
     void grow();
 
     /**
-     * Getter method for rate of growth.
-     *
-     * @return A double representing growth rate.
-     */
-    double getGrowthRate();
-
-    /**
-     * Setter method for rate of growth.
-     *
-     * @param rate A given growth rate.
-     */
-    void setGrowthRate(double rate);
-
-    /**
      * Get maximum size of the object.
      *
      * @return A double representing maximum size.

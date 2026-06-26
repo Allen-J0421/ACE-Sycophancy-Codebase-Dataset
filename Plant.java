@@ -13,7 +13,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     private double size;
     private final int foodValue;
     private final boolean poisonous;
-    private double growthRate;
+    private final double growthRate;
     private double breedingProbability;
 
     /**
@@ -51,8 +51,6 @@ public abstract class Plant extends Organism implements Growable, Consumable {
 
     @Override public double getMaxSize()                   { return traits.maxSize; }
     @Override public double getSize()                      { return size; }
-    @Override public double getGrowthRate()                { return growthRate; }
-    @Override public void   setGrowthRate(double rate)     { growthRate = rate; }
 
     @Override
     public void grow() {

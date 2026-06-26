@@ -10,8 +10,7 @@ import java.util.Random;
  */
 public abstract class Organism implements Entity {
 
-    // define fields
-    //number of steps an organism remains for after dying but not having been eaten
+    // steps a dead body lingers on the field before auto-removal
     private static final int LIFETIME_AFTER_DEATH = 40;
     private boolean alive;
     private boolean removed;
@@ -32,7 +31,6 @@ public abstract class Organism implements Entity {
      * @param location The location in which this organism is spawned into.
      */
     public Organism(boolean randomAge, Field field, Location location) {
-        this.howLongDead = 0;
         alive = true;
         removed = false;
         this.field = field;
@@ -69,11 +67,7 @@ public abstract class Organism implements Entity {
      */
     protected void remove() {
         setDead();
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            setField(null);
-        }
+        removeFromField();
         removed = true;
     }
 
@@ -193,12 +187,10 @@ public abstract class Organism implements Entity {
      * @param newOrganisms A list to return newly born organisms.
      */
     protected void giveBirth(List<Organism> newOrganisms) {
-        // New organisms are born into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
+        for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
             newOrganisms.add(createNewOrganism(field, loc));
         }
@@ -235,17 +227,8 @@ public abstract class Organism implements Entity {
     }
 
     /**
-     * Setter method for the field in which this organism resides.
-     * @param field The field where the organism is located.
-     */
-    protected void setField(Field field) {
-        this.field = field;
-    }
-
-    /**
-     * Prevents overcrowding of dead animals
-     * Remove the organism from the field after being dead for a s
-     * specified number of steps and not being eaten.
+     * Prevents overcrowding of dead animals by removing their corpse after
+     * a fixed number of steps if no scavenger has consumed it.
      */
     protected void decayifDead() {
         this.howLongDead++;

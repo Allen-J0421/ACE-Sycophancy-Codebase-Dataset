@@ -1,3 +1,5 @@
+package naivepatternsearch;
+
 import java.util.List;
 
 public final class NaivePatternSearchDemo {

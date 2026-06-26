@@ -1,3 +1,5 @@
+package simulation;
+
 /**
  * Shared state and lifecycle for objects that occupy a field location.
  */

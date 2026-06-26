@@ -1,8 +1,10 @@
+package simulation;
+
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.swing.*;
 
 /**
  * A graphical view of the simulation grid.

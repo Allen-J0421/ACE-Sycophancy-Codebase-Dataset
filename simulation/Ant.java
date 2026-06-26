@@ -1,3 +1,5 @@
+package simulation;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -5,26 +7,26 @@ import java.util.Random;
 import configuration.Configuration;
 
 /**
- * A simple model of a rat.
- * Rats age, move, eat ants, breed, and die.
+ * A simple model of an ant.
+ * Ants age, move, eat acacia and grass, breed, and die.
  *
  * @version 01.03.22
  */
-public class Rat extends Animal
+public class Ant extends Animal
 {
-    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().rat();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().ant();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
     /**
-     * Create a rat. A rat can be created as a newborn (age zero
+     * Create an ant. An ant can be created as a newborn (age zero
      * and not hungry) or with a random age and food level.
      *
-     * @param randomAge If true, the rat will have random age and hunger level.
+     * @param randomAge If true, the ant will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Rat(boolean randomAge, Field field, Location location) {
+    public Ant(boolean randomAge, Field field, Location location) {
         super(field, location);
         this.setGender();
         if(randomAge) {
@@ -38,25 +40,26 @@ public class Rat extends Animal
     }
 
     /**
-     * This is what the rat does most of the time: it hunts for
-     * ants. In the process, it might breed, die of hunger,
+     * This is what the ant does most of the time: it eats grass
+     * and acacia. In the process, it might breed, die of hunger,
      * or die of old age.
-     * @param newRats A list to return newly born rats.
+     * @param newAnts A list to return newly born ants.
      * @param time the current time in the simulation
      */
-    public void act(List<Animal> newRats, int time) {
+    public void act(List<Animal> newAnts, int time) {
         incrementAge(TUNING.getMaxAge());
         incrementHunger();
 
         if(isAlive() && TUNING.isActive(time))
         {
-            if (getDisease()){
+            if (getDisease()) {
                 spreadDisease();
             }
             if (giveBirth(TUNING.getBreedingAge())) {
-                breedOffspring(newRats, TUNING.getBreedingAge(),
+                breedOffspring(newAnts, TUNING.getBreedingAge(),
                         TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
+
             Location newLocation = findFood();
             if(newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -66,10 +69,9 @@ public class Rat extends Animal
     }
 
     /**
-     * Look for ants adjacent to the current location.
-     * Only the first live ant is eaten.
-     * if there is a plant adjacent, it can be 'trampled'
-     * @return where food was found, or null if it wasn't.
+     * Look for acacia and grass adjacent to the current location.
+     * Only the first grass or acacia is eaten.
+     * @return Where food was found, or null if it wasn't.
      */
     private Location findFood() {
         Field field = getField();
@@ -77,19 +79,20 @@ public class Rat extends Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Ant) {
-                Ant ant = (Ant) animal;
-                if(ant.isAlive()) {
-                    ant.setDead();
-                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.ANT));
+            Object plant = field.getObjectAt(where);
+            if(plant instanceof Acacia) {
+                Acacia acacia = (Acacia) plant;
+                if (acacia.isAlive()) {
+                    acacia.setDead();
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.ACACIA));
                     return where;
                 }
             }
-            else if (animal instanceof Plant) {
-                Plant plant = (Plant) animal;
-                if(plant.isAlive()) {
-                    plant.setDead();
+            else if (plant instanceof Grass) {
+                Grass grass = (Grass) plant;
+                if(grass.isAlive()) {
+                    grass.setDead();
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.GRASS));
                     return where;
                 }
             }
@@ -98,9 +101,10 @@ public class Rat extends Animal
     }
 
     /**
-     * Create a new rat offspring.
+     * Create a new ant offspring.
      */
     protected Animal createOffspring(Field field, Location location) {
-        return new Rat(false, field, location);
+        return new Ant(false, field, location);
     }
+
 }

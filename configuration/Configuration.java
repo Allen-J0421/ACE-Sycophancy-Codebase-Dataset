@@ -8,6 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntPredicate;
 
+import simulation.Acacia;
+import simulation.Ant;
+import simulation.Dingo;
+import simulation.Eagle;
+import simulation.Emu;
+import simulation.Field;
+import simulation.Grass;
+import simulation.Location;
+import simulation.Plant;
+import simulation.Rat;
+import simulation.Snake;
+
 /**
  * Unified configuration for simulation timing, population, and species tuning.
  */

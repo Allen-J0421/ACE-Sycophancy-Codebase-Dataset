@@ -25,7 +25,7 @@ public abstract class Herbivore extends Prey {
      */
     public Herbivore(int foodValue, boolean randomAge, Field field, Location location,
                      HerbivoreTraits traits) {
-        super(foodValue, randomAge, traits.maxAge, field, location);
+        super(foodValue, randomAge, traits.maxAge(), field, location);
         this.traits = traits;
         this.activeness = 1;
     }
@@ -45,18 +45,18 @@ public abstract class Herbivore extends Prey {
         if (isAlive()) {
             giveBirth(newHerbivores);
 
-            if (rand.nextDouble() <= traits.deathByDiseaseProbability) {
+            if (rand.nextDouble() <= traits.deathByDiseaseProbability()) {
                 remove();
                 return;
             }
 
-            if (time == traits.reducedActivenessTime) {
-                setActiveness(traits.reducedActiveness);
+            if (time == traits.reducedActivenessTime()) {
+                setActiveness(traits.reducedActiveness());
             }
 
             if (rand.nextDouble() <= getActiveness()) {
                 Location newLocation;
-                if (rand.nextDouble() <= traits.diseaseSpreadProbability) {
+                if (rand.nextDouble() <= traits.diseaseSpreadProbability()) {
                     newLocation = findAnimalToInfect();
                 } else {
                     newLocation = findFood();
@@ -84,7 +84,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public boolean canBreed() {
-        return getAge() >= traits.breedingAge && hasCompatibleMateNearby(traits.speciesClass);
+        return getAge() >= traits.breedingAge() && hasCompatibleMateNearby(traits.speciesClass());
     }
 
     /**
@@ -92,7 +92,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public double getBreedingProbability() {
-        return traits.breedingProbability;
+        return traits.breedingProbability();
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public int getMaxLitterSize() {
-        return traits.maxLitterSize;
+        return traits.maxLitterSize();
     }
 
     /**
@@ -108,7 +108,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public int getMaxAge() {
-        return traits.maxAge;
+        return traits.maxAge();
     }
 
     /**
@@ -116,7 +116,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public int getBreedingAge() {
-        return traits.breedingAge;
+        return traits.breedingAge();
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     protected double getDiseaseSpreadProbability() {
-        return traits.diseaseSpreadProbability;
+        return traits.diseaseSpreadProbability();
     }
 
     /**
@@ -132,7 +132,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     protected double getDeathByDiseaseProbability() {
-        return traits.deathByDiseaseProbability;
+        return traits.deathByDiseaseProbability();
     }
 
     /**

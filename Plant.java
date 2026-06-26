@@ -29,13 +29,13 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field,
                  Location location, PlantTraits traits) {
-        super(randomAge, traits.maxAge, field, location);
+        super(randomAge, traits.maxAge(), field, location);
 
         this.size = size;
         this.foodValue = foodValue;
         this.poisonous = poisonous;
         this.traits = traits;
-        this.growthRate = traits.growthRate;
+        this.growthRate = traits.growthRate();
     }
 
     /**
@@ -48,8 +48,8 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public void act(List<Entity> newPlants, Weather weather, TimeOfDay time) {
         if (isAlive()) {
-            setBreedingProbabilityForWeather(weather, traits.lowBreedingProbability,
-                    traits.highBreedingProbability, traits.favorableWeather);
+            setBreedingProbabilityForWeather(weather, traits.lowBreedingProbability(),
+                    traits.highBreedingProbability(), traits.favorableWeather());
             grow();
             giveBirth(newPlants);
         }
@@ -61,7 +61,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public void grow() {
         double grownSize = size * getGrowthRate();
-        size = grownSize > traits.maxSize ? 1 : grownSize;
+        size = grownSize > traits.maxSize() ? 1 : grownSize;
         if (size == 0) {
             remove();
         }
@@ -94,7 +94,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public double getMaxSize() {
-        return traits.maxSize;
+        return traits.maxSize();
     }
 
     /**
@@ -104,7 +104,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getMaxLitterSize() {
-        return traits.maxLitterSize;
+        return traits.maxLitterSize();
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     protected boolean canBreed() {
-        return getAge() >= traits.breedingAge;
+        return getAge() >= traits.breedingAge();
     }
 
     /**
@@ -198,7 +198,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getMaxAge() {
-        return traits.maxAge;
+        return traits.maxAge();
     }
 
     /**
@@ -206,6 +206,6 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getBreedingAge() {
-        return traits.breedingAge;
+        return traits.breedingAge();
     }
 }

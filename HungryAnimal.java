@@ -6,7 +6,7 @@ import java.util.List;
  */
 public abstract class HungryAnimal extends Animal {
 
-    private final AnimalTraits traits;
+    private final AnimalTraitConfig traits;
     private final TimeOfDay restingTime;
     private int foodLevel;
 
@@ -20,8 +20,8 @@ public abstract class HungryAnimal extends Animal {
      * @param traits Immutable species configuration.
      */
     public HungryAnimal(int foodLevel, boolean randomAge, Field field, Location location,
-                        AnimalTraits traits, TimeOfDay restingTime) {
-        super(randomAge, traits.maxAge, field, location);
+                        AnimalTraitConfig traits, TimeOfDay restingTime) {
+        super(randomAge, traits.maxAge(), field, location);
         this.traits = traits;
         this.restingTime = restingTime;
         this.foodLevel = foodLevel;
@@ -49,13 +49,13 @@ public abstract class HungryAnimal extends Animal {
             return;
         }
 
-        if (rand.nextDouble() <= traits.deathByDiseaseProbability) {
+        if (rand.nextDouble() <= traits.deathByDiseaseProbability()) {
             remove();
             return;
         }
 
         Location newLocation;
-        if (rand.nextDouble() <= traits.diseaseSpreadProbability) {
+        if (rand.nextDouble() <= traits.diseaseSpreadProbability()) {
             newLocation = findAnimalToInfect();
         } else {
             newLocation = findFood();
@@ -77,7 +77,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public double getBreedingProbability() {
-        return traits.breedingProbability;
+        return traits.breedingProbability();
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public int getMaxLitterSize() {
-        return traits.maxLitterSize;
+        return traits.maxLitterSize();
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public int getMaxAge() {
-        return traits.maxAge;
+        return traits.maxAge();
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public int getBreedingAge() {
-        return traits.breedingAge;
+        return traits.breedingAge();
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     protected double getDiseaseSpreadProbability() {
-        return traits.diseaseSpreadProbability;
+        return traits.diseaseSpreadProbability();
     }
 
     /**
@@ -117,7 +117,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     protected double getDeathByDiseaseProbability() {
-        return traits.deathByDiseaseProbability;
+        return traits.deathByDiseaseProbability();
     }
 
     /**
@@ -127,7 +127,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public boolean canBreed() {
-        return getAge() >= traits.breedingAge && hasCompatibleMateNearby(traits.speciesClass);
+        return getAge() >= traits.breedingAge() && hasCompatibleMateNearby(traits.speciesClass());
     }
 
     /**

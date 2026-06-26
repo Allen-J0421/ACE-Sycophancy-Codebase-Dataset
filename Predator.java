@@ -20,7 +20,7 @@ public abstract class Predator extends HungryAnimal {
      */
     public Predator(int foodLevel, boolean randomAge, Field field, Location location,
                     PredatorTraits traits) {
-        super(foodLevel, randomAge, field, location, traits, traits.restingTime);
+        super(foodLevel, randomAge, field, location, traits, traits.restingTime());
         this.traits = traits;
     }
 
@@ -49,7 +49,7 @@ public abstract class Predator extends HungryAnimal {
      */
     @Override
     public boolean eat(Consumable consumable) {
-        if (Randomizer.getRandom().nextDouble() <= traits.eatingProbability) {
+        if (Randomizer.getRandom().nextDouble() <= traits.eatingProbability()) {
             incrementFoodLevel(consumable.getFoodValue());
             consumable.setEaten();
             return true;

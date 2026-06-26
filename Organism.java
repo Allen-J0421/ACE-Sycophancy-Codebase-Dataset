@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Organism implements Entity {
+public abstract class Organism {
 
     // steps a dead body lingers on the field before auto-removal
     private static final int LIFETIME_AFTER_DEATH = 40;
@@ -35,11 +35,7 @@ public abstract class Organism implements Entity {
         this.field = field;
         setLocation(location);
 
-        if (randomAge) {
-            age = rand.nextInt(getMaxAge());
-        } else {
-            age = 0;
-        }
+        age = randomAge ? rand.nextInt(getMaxAge()) : 0;
     }
 
     /**
@@ -49,7 +45,6 @@ public abstract class Organism implements Entity {
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
-    @Override
     abstract public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time);
 
     /**

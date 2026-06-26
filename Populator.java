@@ -24,6 +24,8 @@ public class Populator {
     private static final double CHEETAH_CREATION_PROBABILITY      = 0.05;
     private static final double POISON_BERRIES_CREATION_PROBABILITY = 0.04;
 
+    private static final Random rand = Randomizer.getRandom();
+
     /**
      * Constructor for the populator. Registers species colours with the view.
      *
@@ -50,7 +52,6 @@ public class Populator {
      */
     public void populate(List<Organism> organisms, Field field)
     {
-        Random rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {

@@ -60,12 +60,12 @@ public abstract class HungryAnimal extends Animal {
     }
 
     /** Increases food level by the given amount. */
-    public void incrementFoodLevel(int amount) {
+    protected void incrementFoodLevel(int amount) {
         foodLevel += amount;
     }
 
     /** Decreases food level by one; removes this animal if it reaches zero. */
-    public void incrementHunger() {
+    protected void incrementHunger() {
         foodLevel--;
         if (foodLevel <= 0) {
             remove();

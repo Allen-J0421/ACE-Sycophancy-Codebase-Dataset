@@ -27,6 +27,8 @@ public class Simulator
     private int step;
     // The GUI.
     private SimulatorView view;
+    // Handles initial placement and colour registration (created once, reused on reset).
+    private Populator populator;
     // Current hour within the day (1-based).
     private int hour;
     // Current time-of-day period.
@@ -59,6 +61,7 @@ public class Simulator
         organisms = new ArrayList<>();
         field     = new Field(depth, width);
         view      = new SimulatorView(depth, width);
+        populator = new Populator(view);
 
         reset();
     }
@@ -119,8 +122,6 @@ public class Simulator
         }
     }
 
-    public int getHour() { return hour; }
-
     /**
      * Reset the simulation to a starting position.
      */
@@ -131,8 +132,6 @@ public class Simulator
         currentWeather = new Weather(WeatherType.SUN);
 
         organisms.clear();
-
-        Populator populator = new Populator(view);
         populator.populate(organisms, field);
 
         view.showStatus(step, field);

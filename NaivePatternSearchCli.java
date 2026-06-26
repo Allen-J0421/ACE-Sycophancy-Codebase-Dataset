@@ -1,17 +1,15 @@
 public final class NaivePatternSearchCli {
 
-    private static final SearchApplication APPLICATION = SearchApplication.createDefault();
-    private static final SearchRequestParser REQUEST_PARSER = SearchRequestParser.createDefault();
+    private static final SearchCliSupport CLI_SUPPORT = SearchCliSupport.createDefault();
 
     private NaivePatternSearchCli() {
     }
 
     public static void main(String[] args) {
-        SearchRequest request = parseArguments(args);
-        System.out.println(APPLICATION.render(request));
+        System.out.println(CLI_SUPPORT.render(args));
     }
 
     static SearchRequest parseArguments(String[] args) {
-        return REQUEST_PARSER.parse(args);
+        return CLI_SUPPORT.parseArguments(args);
     }
 }

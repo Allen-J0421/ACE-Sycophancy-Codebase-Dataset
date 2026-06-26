@@ -16,6 +16,6 @@ public final class NaivePatternSearch {
     }
 
     public static String joinMatchIndexes(List<Integer> matches) {
-        return SearchResult.joinMatchIndexes(matches);
+        return SearchResultFormatter.formatMatchIndexes(matches);
     }
 }

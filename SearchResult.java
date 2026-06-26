@@ -12,12 +12,4 @@ public record SearchResult(SearchRequest request, List<Integer> matchIndexes) {
     public boolean hasMatches() {
         return !matchIndexes.isEmpty();
     }
-
-    public String joinMatchIndexes() {
-        return SearchResultFormatter.format(this);
-    }
-
-    public static String joinMatchIndexes(List<Integer> matchIndexes) {
-        return SearchResultFormatter.formatMatchIndexes(matchIndexes);
-    }
 }

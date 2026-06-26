@@ -14,8 +14,4 @@ public final class SearchApplication {
     public SearchResult search(SearchRequest request) {
         return searchEngine.search(request);
     }
-
-    public String render(SearchRequest request) {
-        return SearchResultFormatter.format(search(request));
-    }
 }

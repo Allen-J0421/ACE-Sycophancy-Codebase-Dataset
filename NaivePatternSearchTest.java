@@ -3,7 +3,7 @@ import java.util.List;
 public final class NaivePatternSearchTest {
 
     private static final SearchApplication APPLICATION = SearchApplication.createDefault();
-    private static final SearchRequestParser REQUEST_PARSER = SearchRequestParser.createDefault();
+    private static final SearchCliSupport CLI_SUPPORT = SearchCliSupport.createDefault();
 
     private NaivePatternSearchTest() {
     }
@@ -35,6 +35,8 @@ public final class NaivePatternSearchTest {
                 new String[] {"banana"}, "banana", "aaba");
         assertSearchInput("allows overriding both text and pattern",
                 new String[] {"banana", "ana"}, "banana", "ana");
+        assertCliOutput("cli support renders output from raw args",
+                new String[] {"banana", "ana"}, "1 3");
     }
 
     private static void assertMatches(
@@ -62,7 +64,8 @@ public final class NaivePatternSearchTest {
 
     private static void assertApplicationOutput(
             String scenario, SearchRequest request, String expectedOutput) {
-        assertEquals(scenario, expectedOutput, APPLICATION.render(request));
+        SearchResult result = APPLICATION.search(request);
+        assertEquals(scenario, expectedOutput, SearchResultFormatter.format(result));
     }
 
     private static void assertApplicationSearch(
@@ -80,9 +83,14 @@ public final class NaivePatternSearchTest {
 
     private static void assertSearchInput(
             String scenario, String[] args, String expectedText, String expectedPattern) {
-        SearchRequest input = REQUEST_PARSER.parse(args);
+        SearchRequest input = CLI_SUPPORT.parseArguments(args);
         assertEquals(scenario + " (text)", expectedText, input.text());
         assertEquals(scenario + " (pattern)", expectedPattern, input.pattern());
+    }
+
+    private static void assertCliOutput(
+            String scenario, String[] args, String expectedOutput) {
+        assertEquals(scenario, expectedOutput, CLI_SUPPORT.render(args));
     }
 
     private static void assertEquals(String scenario, Object expected, Object actual) {

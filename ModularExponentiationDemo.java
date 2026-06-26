@@ -12,18 +12,14 @@ final class ModularExponentiationDemo {
     }
 
     private static ModularExponentiationInput parseInput(String[] args) {
-        if (args.length == 0) {
-            return SAMPLE_INPUT;
-        }
-
-        if (args.length != 3) {
-            throw new IllegalArgumentException(USAGE);
-        }
-
-        return new ModularExponentiationInput(
-                parseInt(args[0], "base"),
-                parseInt(args[1], "exponent"),
-                parseInt(args[2], "modulus"));
+        return switch (args.length) {
+            case 0 -> SAMPLE_INPUT;
+            case 3 -> new ModularExponentiationInput(
+                    parseInt(args[0], "base"),
+                    parseInt(args[1], "exponent"),
+                    parseInt(args[2], "modulus"));
+            default -> throw new IllegalArgumentException(USAGE);
+        };
     }
 
     private static int parseInt(String rawValue, String name) {

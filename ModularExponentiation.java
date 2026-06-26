@@ -3,13 +3,13 @@ public final class ModularExponentiation {
     }
 
     public static int modPow(ModularExponentiationInput input) {
-        return modPow(input.base(), input.exponent(), input.modulus());
+        int modulus = input.modulus();
+        int normalizedBase = normalizeBase(input.base(), modulus);
+        return compute(normalizedBase, input.exponent(), modulus);
     }
 
     public static int modPow(int base, int exponent, int modulus) {
-        ModularExponentiationInput input = new ModularExponentiationInput(base, exponent, modulus);
-        int normalizedBase = normalizeBase(input.base(), input.modulus());
-        return compute(normalizedBase, input.exponent(), input.modulus());
+        return modPow(new ModularExponentiationInput(base, exponent, modulus));
     }
 
     private static int compute(int base, int exponent, int modulus) {
@@ -28,10 +28,12 @@ public final class ModularExponentiation {
         return (int) result;
     }
 
+    @Deprecated
     public static int powMod(int base, int exponent, int modulus) {
         return modPow(base, exponent, modulus);
     }
 
+    @Deprecated
     public static int powMod(ModularExponentiationInput input) {
         return modPow(input);
     }

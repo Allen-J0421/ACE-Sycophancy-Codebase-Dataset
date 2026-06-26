@@ -51,6 +51,27 @@ public abstract class Animal
     abstract public void act(List<Animal> newAnimals, int time);
 
     /**
+     * Determine whether this animal is active at the current time.
+     * @param time The current time in the simulation.
+     * @return true if the animal should act.
+     */
+    abstract protected boolean isActiveAt(int time);
+
+    /**
+     * Look for food adjacent to the current location.
+     * @return Where food was found, or null if it wasn't.
+     */
+    abstract protected Location findFood();
+
+    /**
+     * Create a newborn instance of the current species.
+     * @param field The field in which the offspring will live.
+     * @param location The offspring location.
+     * @return A new animal of the current species.
+     */
+    abstract protected Animal createYoung(Field field, Location location);
+
+    /**
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
      */
@@ -258,11 +279,67 @@ public abstract class Animal
     }
 
     /**
+     * Execute the common animal lifecycle for one simulation step.
+     * @param newAnimals A list to receive newly born animals.
+     * @param time The current time in the simulation.
+     * @param maxAge The maximum age before death.
+     * @param breedingAge The minimum breeding age.
+     * @param breedingProbability The probability of breeding.
+     * @param maxLitterSize The maximum number of offspring.
+     */
+    protected final void performAct(List<Animal> newAnimals, int time, int maxAge,
+            int breedingAge, double breedingProbability, int maxLitterSize) {
+        incrementAge(maxAge);
+        incrementHunger();
+
+        if(!isAlive() || !isActiveAt(time)) {
+            return;
+        }
+
+        if(getDisease()) {
+            spreadDisease();
+        }
+
+        createOffspring(newAnimals, breedingAge, breedingProbability, maxLitterSize);
+        moveToNewLocation();
+    }
+
+    /**
      * Increase the age. This could result in the animal's death.
      */
     protected void incrementAge(int MAX_AGE) {
         age++;
         if(age > MAX_AGE) {
+            setDead();
+        }
+    }
+
+    private void createOffspring(List<Animal> newAnimals, int breedingAge,
+            double breedingProbability, int maxLitterSize) {
+        if(!giveBirth(breedingAge)) {
+            return;
+        }
+
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = breed(breedingAge, breedingProbability, maxLitterSize);
+        for (int b = 0; b < births && free.size() > 0; b++) {
+            Location location = free.remove(0);
+            Animal young = createYoung(field, location);
+            young.setGender();
+            newAnimals.add(young);
+        }
+    }
+
+    private void moveToNewLocation() {
+        Location newLocation = findFood();
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
             setDead();
         }
     }

@@ -59,36 +59,15 @@ public class Eagle extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newEagles, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive() && ((time >= 6)&&(time <= 22))) {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Eagle young = new Eagle(false, field, loc);
-                    young.setGender();
-                    newEagles.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+        performAct(newEagles, time, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+    }
 
-        }
+    protected boolean isActiveAt(int time) {
+        return time >= 6 && time <= 22;
+    }
 
+    protected Animal createYoung(Field field, Location location) {
+        return new Eagle(false, field, location);
     }
 
     /**
@@ -97,7 +76,7 @@ public class Eagle extends Animal
      * If it is a plant, then it is 'trampled'
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    protected Location findFood() {
         if (getFog() && (rand.nextInt(2) == 0)) {
             Field field = getField();
             List<Location> adjacent = field.adjacentLocations(getLocation());

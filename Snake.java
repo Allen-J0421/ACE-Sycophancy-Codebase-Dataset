@@ -55,35 +55,15 @@ public class Snake extends Animal
      * @param newSnakes A list to return newly born snakes.
      */
     public void act(List<Animal> newSnakes, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive() && ((time >= 5)&&(time <= 23)))
-        {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Snake young = new Snake(false, field, loc);
-                    young.setGender();
-                    newSnakes.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+        performAct(newSnakes, time, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+    }
+
+    protected boolean isActiveAt(int time) {
+        return time >= 5 && time <= 23;
+    }
+
+    protected Animal createYoung(Field field, Location location) {
+        return new Snake(false, field, location);
     }
 
     /**
@@ -92,7 +72,7 @@ public class Snake extends Animal
      * If it is a plant, it can be 'trampled'
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood()
+    protected Location findFood()
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());

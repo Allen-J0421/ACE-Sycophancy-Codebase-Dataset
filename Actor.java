@@ -40,7 +40,7 @@ public abstract class Actor
         this.field = field;
         setLocation(location);
         this.time = time;
-        setDiseases = new HashSet();
+        setDiseases = new HashSet<>();
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class Actor
     public void act(List<Actor> newActors, WeatherCond weather)
     {
         incrementAge();
-        if(isAlive() && ((!field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnLand()) || (field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnWater()))) {
+        if(isAlive() && !field.canOccupy(this, location)) {
             setDead();
         }
     }
@@ -167,7 +167,7 @@ public abstract class Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Actor young = birth(loc,setDiseases);
+            Actor young = birth(loc, setDiseases);
             newActors.add(young);
         }
     }
@@ -215,9 +215,16 @@ public abstract class Actor
 
     /**
      * Creates a new actor 
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new actor created
      */
-    abstract protected Actor birth(Location loc, Set<Disease>... parentDiseases);
+    abstract protected Actor birth(Location loc, Set<Disease> parentDiseases);
+
+    /**
+     * Creates a new actor without parent diseases.
+     * @param loc The new location of the actor
+     * @return The new actor created
+     */
+    abstract protected Actor birth(Location loc);
 }

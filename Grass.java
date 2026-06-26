@@ -110,15 +110,22 @@ public class Grass extends Plant
     /**
      * Creates new grass 
      * If the grass are created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new grass created
      */
-    public Plant birth(Location loc, Set<Disease>... parentDiseases)
+    public Plant birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Grass(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Grass(getTime(), getField(), loc, parentDiseases);
+    }
+
+    /**
+     * Creates new grass without parent diseases.
+     * @param loc The new location of the grass
+     * @return The new grass created
+     */
+    public Plant birth(Location loc)
+    {
         return new Grass(getTime(), getField(), loc);
     }
 }

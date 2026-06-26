@@ -65,9 +65,16 @@ public abstract class Plant extends Actor
 
     /**
      * Creates a new plant
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new plant created
      */
-    abstract protected Plant birth(Location loc,Set<Disease>... parentDiseases);
+    abstract protected Plant birth(Location loc, Set<Disease> parentDiseases);
+
+    /**
+     * Creates a new plant without parent diseases.
+     * @param loc The new location of the plant
+     * @return The new plant created
+     */
+    abstract protected Plant birth(Location loc);
 }

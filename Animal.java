@@ -141,26 +141,20 @@ public abstract class Animal extends Actor
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            if ((canMoveOnLand() && canMoveOnWater()) || (field.isUnderWater(where.getRow(), where.getCol()) && canMoveOnWater()) || (!field.isUnderWater(where.getRow(), where.getCol()) && canMoveOnLand())) {
+            if (field.canOccupy(this, where)) {
                 Object actor = field.getObjectAt(where);
                 if (actor instanceof Actor) {
                     Actor prey = (Actor) actor;
-                    for(String actorName : getPreyFoodValuesMap().keySet()) {
-                        if(getPreyFoodValuesMap().containsKey(prey.getActorName()) && prey.isAlive()) {
-                            for (Disease disease: prey.setDiseases){
-                                if (disease.isSpreadByEating() && disease.getActorsAffectedMap().containsKey(getActorName())){
-                                    setDiseases.add(disease);
-                                }
+                    Integer foodValue = getPreyFoodValuesMap().get(prey.getActorName());
+                    if(foodValue != null && prey.isAlive()) {
+                        for (Disease disease: prey.setDiseases){
+                            if (disease.isSpreadByEating() && disease.getActorsAffectedMap().containsKey(getActorName())){
+                                setDiseases.add(disease);
                             }
-                            prey.setDead();
-                            if (foodLevel + getPreyFoodValuesMap().get(prey.getActorName()) < getMaxFood()) {
-                                foodLevel += getPreyFoodValuesMap().get(prey.getActorName());
-                            }
-                            else {
-                                foodLevel = getMaxFood();
-                            }
-                            return where;
                         }
+                        prey.setDead();
+                        foodLevel = Math.min(foodLevel + foodValue, getMaxFood());
+                        return where;
                     }
                 }
             }
@@ -176,11 +170,18 @@ public abstract class Animal extends Actor
 
     /**
      * Creates a new animal 
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new animal created
      */
-    abstract protected Animal birth(Location loc, Set<Disease>... parentDiseases);
+    abstract protected Animal birth(Location loc, Set<Disease> parentDiseases);
+
+    /**
+     * Creates a new animal without parent diseases.
+     * @param loc The new location of the animal
+     * @return The new animal created
+     */
+    abstract protected Animal birth(Location loc);
 
     /**
      * Returns the Map of the prey of the animal and how much food they provide it

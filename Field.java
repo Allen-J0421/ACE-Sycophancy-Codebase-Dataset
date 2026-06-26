@@ -180,14 +180,25 @@ public class Field
         List<Location> adjacent = adjacentLocations(location);
 
         for(Location next : adjacent) {
-
-            if (getObjectAt(next) == null|| (actor instanceof Animal && getObjectAt(next) instanceof Plant)){
-                if ((actor.canMoveOnLand() && actor.canMoveOnWater()) || (isUnderWater(next.getRow(), next.getCol()) && actor.canMoveOnWater()) || (!isUnderWater(next.getRow(), next.getCol()) && actor.canMoveOnLand())){
-                    free.add(next);
-                }
+            Object occupant = getObjectAt(next);
+            boolean canShareLocation = occupant == null || (actor instanceof Animal && occupant instanceof Plant);
+            if (canShareLocation && canOccupy(actor, next)) {
+                free.add(next);
             }
         }
         return free;
+    }
+
+    /**
+     * Check whether an actor can survive on the terrain at the given location.
+     * @param actor The actor to check.
+     * @param location The location to check.
+     * @return true if the actor can occupy the location.
+     */
+    public boolean canOccupy(Actor actor, Location location)
+    {
+        boolean underWater = isUnderWater(location.getRow(), location.getCol());
+        return (underWater && actor.canMoveOnWater()) || (!underWater && actor.canMoveOnLand());
     }
 
     /**

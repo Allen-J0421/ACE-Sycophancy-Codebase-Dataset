@@ -90,7 +90,7 @@ public class Salamander extends Animal
      */
     private static Map<String, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
+        Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put("Grass", 4);
         mapTemp.put("Water_Fern", 5);
         return mapTemp;
@@ -157,16 +157,22 @@ public class Salamander extends Animal
     /**
      * Creates a new salamander 
      * If the salamander is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new salamander created
      */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Salamander(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Salamander(getTime(), getField(), loc, parentDiseases);
+    }
+
+    /**
+     * Creates a new salamander without parent diseases.
+     * @param loc The new location of the salamander
+     * @return The new salamander created
+     */
+    public Animal birth(Location loc)
+    {
         return new Salamander(getTime(), getField(), loc);
     }
 }
-

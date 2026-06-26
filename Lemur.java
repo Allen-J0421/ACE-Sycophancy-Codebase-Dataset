@@ -88,7 +88,7 @@ public class Lemur extends Animal
      */
     private static Map<String, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
+        Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put("Grass", 3);
         mapTemp.put("Salamander",4);
         return mapTemp;
@@ -155,15 +155,22 @@ public class Lemur extends Animal
     /**
      * Creates a new lemur 
      * If the lemur is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new lemur created
      */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Lemur(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Lemur(getTime(), getField(), loc, parentDiseases);
+    }
+
+    /**
+     * Creates a new lemur without parent diseases.
+     * @param loc The new location of the lemur
+     * @return The new lemur created
+     */
+    public Animal birth(Location loc)
+    {
         return new Lemur(getTime(), getField(), loc);
     }
 }

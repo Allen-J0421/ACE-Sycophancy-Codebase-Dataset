@@ -210,7 +210,7 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 for (Actor actor : actorCreationProb.keySet()){
                     Location location = new Location(row, col);
-                    if((rand.nextDouble() <= actorCreationProb.get(actor)) && ((actor.canMoveOnLand() && actor.canMoveOnWater()) || (field.isUnderWater(location.getRow(), location.getCol()) && actor.canMoveOnWater()) || (!field.isUnderWater(location.getRow(), location.getCol()) && actor.canMoveOnLand()))) {
+                    if((rand.nextDouble() <= actorCreationProb.get(actor)) && field.canOccupy(actor, location)) {
                         Actor newActor = actor.birth(new Location(row, col));
                         actors.add(newActor);
                         break;

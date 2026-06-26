@@ -110,15 +110,22 @@ public class Water_Fern extends Plant
     /**
      * Creates new Water fern 
      * If the Water fern are created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new Water fern created
      */
-    public Plant birth(Location loc, Set<Disease>... parentDiseases)
+    public Plant birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Water_Fern(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Water_Fern(getTime(), getField(), loc, parentDiseases);
+    }
+
+    /**
+     * Creates new Water fern without parent diseases.
+     * @param loc The new location of the Water fern
+     * @return The new Water fern created
+     */
+    public Plant birth(Location loc)
+    {
         return new Water_Fern(getTime(), getField(), loc);
     }
 }

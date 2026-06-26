@@ -88,7 +88,7 @@ public class Panther extends Animal
      */
     private static Map<String, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
+        Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put("Lemurs", 10);
         return mapTemp;
     }
@@ -154,15 +154,22 @@ public class Panther extends Animal
     /**
      * Creates a new panther 
      * If the panther is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
+     * @param loc The new location of the child
+     * @param parentDiseases The diseases that the parent had is passed down
      * @return The new panther created
      */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Panther(getTime(), getField(), loc, parentDiseases[0]);
-        }
+        return new Panther(getTime(), getField(), loc, parentDiseases);
+    }
+
+    /**
+     * Creates a new panther without parent diseases.
+     * @param loc The new location of the panther
+     * @return The new panther created
+     */
+    public Animal birth(Location loc)
+    {
         return new Panther(getTime(), getField(), loc);
     }
 }

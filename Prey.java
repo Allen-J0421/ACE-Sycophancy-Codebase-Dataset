@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -10,9 +11,7 @@ import java.util.List;
 public abstract class Prey extends Animal implements Consumable {
 
     // define fields
-    private static final double DEFAULT_ACTIVENESS = 1;
     private int foodValue;
-    private double activeness;  // denotes how likely it is for the act method to be called
 
     /**
      * Constructor for a Prey in the simulation.
@@ -26,7 +25,6 @@ public abstract class Prey extends Animal implements Consumable {
         super(randomAge, field, location);
 
         this.foodValue = foodValue;
-        this.activeness = DEFAULT_ACTIVENESS;
     }
 
     /**
@@ -54,6 +52,31 @@ public abstract class Prey extends Animal implements Consumable {
     @Override
     public void setEaten() {
         clearFromField();
+    }
+
+    /**
+     * Find a nearby plant and consume it if possible.
+     *
+     * @return The location of the plant that was eaten, or null.
+     */
+    @Override
+    public Location findFood() {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            Object organism = field.getObjectAt(where);
+            if (organism instanceof Plant) {
+                Plant plant = (Plant) organism;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    boolean eaten = eat(plant);
+                    return eaten ? where : null;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -98,20 +121,4 @@ public abstract class Prey extends Animal implements Consumable {
         return false;
     }
 
-    /**
-     * The activeness of this prey.
-     * @return A double value for the activeness of this prey
-     */
-    public double getActiveness() {
-        return activeness;
-    }
-
-    /**
-     * Setter method for the activeness of this prey.
-     *
-     * @param activeness A given value for activeness.
-     */
-    public void setActiveness(double activeness) {
-        this.activeness = activeness;
-    }
 }

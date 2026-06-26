@@ -1,4 +1,3 @@
-import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
 import javafx.application.Platform;
@@ -33,7 +32,7 @@ public class Dashboard
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    private final HashMap<Class<?>, Counter> counters;
+    private final Map<Class<?>, Counter> counters;
     private final Map<Integer, Integer> diseaseStats;
     
     private final XYChart.Series<Number, Number> diseaseSeries = new XYChart.Series<>();
@@ -58,7 +57,7 @@ public class Dashboard
      * @param counter Tracker for the population distribution of different animals
      * @param diseaseStats Tracker for the evolution of the disease
      */
-    public Dashboard(HashMap<Class<?>, Counter> counters, Map<Integer, Integer> diseaseStats)
+    public Dashboard(Map<Class<?>, Counter> counters, Map<Integer, Integer> diseaseStats)
     {
         this.counters = counters;
         this.diseaseStats = diseaseStats;

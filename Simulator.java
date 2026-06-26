@@ -122,7 +122,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int remainingSteps = numSteps; remainingSteps > 0 && view.isViable(field); remainingSteps--) {
             simulateOneStep();
             //delay(1000);   // uncomment this to run more slowly
         }
@@ -137,10 +137,10 @@ public class Simulator
     {
         step++;
         advanceSimulationState();
-        List<Actor> newAnimals = new ArrayList<>();
-        List<Actor> newPlants = new ArrayList<>();
-        actorsAct(plants, newPlants, weatherHandler.getWeather(), clock.getDayState());
-        actorsAct(animals, newAnimals, weatherHandler.getWeather(), clock.getDayState());
+        Weather weather = weatherHandler.getWeather();
+        DayState dayState = clock.getDayState();
+        advanceActorGroup(plants, weather, dayState);
+        advanceActorGroup(animals, weather, dayState);
         refreshViews();
     }
         
@@ -159,12 +159,15 @@ public class Simulator
     }
     
     /**
-     * Iterates through a set of actors and makes them act, die if they are dead and subsequently adds the newborns.
-     * 
+     * Iterates through a set of actors and makes them act, then removes the dead and appends newborns.
+     *
      * @param actors List of all actors in the field.
-     * @param newActors List of newborns after actors act.
+     * @param weather current weather state.
+     * @param dayState current day state.
      */
-    private void actorsAct(List<Actor> actors, List<Actor> newActors, Weather weather, DayState dayState) {
+    private void advanceActorGroup(List<Actor> actors, Weather weather, DayState dayState)
+    {
+        List<Actor> newActors = new ArrayList<>();
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
             actor.act(newActors, weather, dayState);

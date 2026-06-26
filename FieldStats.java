@@ -1,4 +1,5 @@
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private final HashMap<Class<?>, Counter> counters;
+    private final Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -21,7 +22,7 @@ public class FieldStats
     {
         // Set up a collection for counters for each type of animal that
         // we might find
-        counters = new HashMap<>();
+        counters = new LinkedHashMap<>();
         countsValid = true;
     }
 
@@ -127,7 +128,7 @@ public class FieldStats
         }
         countsValid = true;
     }
-    public HashMap<Class<?>, Counter> getCounters()
+    public Map<Class<?>, Counter> getCounters()
     {
         return counters;
     }

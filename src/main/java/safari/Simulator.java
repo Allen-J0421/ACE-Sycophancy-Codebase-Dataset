@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
+import java.util.Properties;
 
 /**
  * A simple predator-prey simulator of a safari, based on a rectangular field
@@ -15,10 +15,11 @@ import java.awt.Color;
 public class Simulator
 {
     // Constants representing configuration information for the simulation.
+    private static final Properties SIMULATOR_PROPERTIES = ConfigLoader.loadProperties("config/simulator.properties");
     // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 175;
+    private static final int DEFAULT_WIDTH = loadDefaultWidth();
     // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 150;
+    private static final int DEFAULT_DEPTH = loadDefaultDepth();
 
     // List of animals and plants which can not be stood on in the field.
     private List<Actor> animals;
@@ -64,13 +65,6 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width, this);
-        view.setColor(ActorKind.GAZELLE, Color.ORANGE);
-        view.setColor(ActorKind.JAGUAR, Color.BLUE);
-        view.setColor(ActorKind.CHEETAH, Color.RED);
-        view.setColor(ActorKind.LION, Color.PINK);
-        view.setColor(ActorKind.GRASS, Color.GREEN);
-        view.setColor(ActorKind.ZEBRA, Color.BLACK);
-        view.setColor(ActorKind.HUNTER, Color.MAGENTA);
         // Setup a valid starting point.
         reset();
     }
@@ -262,5 +256,15 @@ public class Simulator
      */
     public Weather getWeather(){
         return weather;
+    }
+
+    private static int loadDefaultWidth()
+    {
+        return ConfigLoader.requiredInt(SIMULATOR_PROPERTIES, "simulator.defaultWidth");
+    }
+
+    private static int loadDefaultDepth()
+    {
+        return ConfigLoader.requiredInt(SIMULATOR_PROPERTIES, "simulator.defaultDepth");
     }
 }

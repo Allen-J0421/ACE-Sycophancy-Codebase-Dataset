@@ -3,8 +3,9 @@ package safari;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A graphical view of the simulation grid.
@@ -51,7 +52,7 @@ public class SimulatorView extends JFrame
         this.simulator =simulator;
         timer = new Timer();
         stats = new FieldStats();
-        colors = new LinkedHashMap<>();
+        colors = loadDefaultColors();
 
         setTitle("Safari Predator-Prey Simulation");
 
@@ -220,6 +221,17 @@ public class SimulatorView extends JFrame
     public boolean isViable(Field field)
     {
         return stats.isViable(field);
+    }
+
+    private Map<ActorKind, Color> loadDefaultColors()
+    {
+        Properties properties = ConfigLoader.loadProperties("config/ui.properties");
+        Map<ActorKind, Color> loadedColors = new EnumMap<>(ActorKind.class);
+        for(ActorKind kind : ActorKind.values()) {
+            String key = "ui.color." + kind.name();
+            loadedColors.put(kind, ConfigLoader.requiredColor(properties, key));
+        }
+        return loadedColors;
     }
 
     /**

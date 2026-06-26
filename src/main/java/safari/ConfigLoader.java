@@ -1,5 +1,6 @@
 package safari;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -59,6 +60,16 @@ final class ConfigLoader
     static double requiredDouble(Properties properties, String key)
     {
         return Double.parseDouble(requiredString(properties, key));
+    }
+
+    static Color requiredColor(Properties properties, String key)
+    {
+        try {
+            return Color.decode(requiredString(properties, key));
+        }
+        catch(NumberFormatException nfe) {
+            throw new IllegalStateException("Invalid color value for key: " + key, nfe);
+        }
     }
 
     static Map<Weather, Double> requiredWeatherMap(Properties properties, String prefix)

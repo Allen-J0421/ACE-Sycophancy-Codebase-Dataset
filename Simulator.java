@@ -107,9 +107,7 @@ public class Simulator
         for (Species specie : species) {
             if (specie instanceof Plant) {
                 Plant plant = (Plant) specie;
-                if (plant.getIsSpring() != isSpring) {
-                    plant.toggleIsSpring();
-                }
+                plant.syncSeason(isSpring);
             }
         }
     }

@@ -31,6 +31,7 @@ public class Field
         this.depth = depth;
         this.width = width;
         field = new GridSpace[depth][width];
+        clear();
     }
     
     /**
@@ -102,6 +103,7 @@ public class Field
         
         if (gridSpace == null) {
             gridSpace = new GridSpace();
+            field[location.getRow()][location.getCol()] = gridSpace;
         }
         
         gridSpace.setObject(object);

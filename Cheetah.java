@@ -52,4 +52,11 @@ public class Cheetah extends Predator
             foodLevel = (int) (percentageOfMaxFoodLevel * MAX_FOOD_LEVEL);
         }
     }
+
+    @Override
+    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
+    {
+        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
+        return new Cheetah(false, field, location, healthState.isInfected(), healthState.isImmune());
+    }
 }

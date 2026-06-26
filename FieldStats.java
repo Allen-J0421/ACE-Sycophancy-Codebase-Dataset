@@ -1,5 +1,5 @@
-import java.awt.Color;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (lion, zebra, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -22,7 +22,7 @@ public class FieldStats
     {
         // Set up a collection for counters for each type of animal that
         // we might find
-        counters = new HashMap<>();
+        counters = new LinkedHashMap<>();
         countsValid = true;
     }
 
@@ -35,11 +35,11 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -56,7 +56,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -67,7 +67,7 @@ public class FieldStats
      * 
      * @param objectType The class of animal to increment.
      */
-    public void incrementCount(Class objectType)
+    public void incrementCount(Class<?> objectType)
     {
         Counter count = counters.get(objectType);
         if(count == null) {

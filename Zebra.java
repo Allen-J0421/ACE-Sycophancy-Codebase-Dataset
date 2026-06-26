@@ -45,4 +45,11 @@ public class Zebra extends Prey
             foodLevel = (int) (0.25 * MAX_FOOD_LEVEL);
         }
     }
+
+    @Override
+    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
+    {
+        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
+        return new Zebra(false, field, location, healthState.isInfected(), healthState.isImmune());
+    }
 }

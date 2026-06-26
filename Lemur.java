@@ -45,4 +45,11 @@ public class Lemur extends Prey
             foodLevel = (int) (0.5 * MAX_FOOD_LEVEL);
         }
     }
+
+    @Override
+    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
+    {
+        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
+        return new Lemur(false, field, location, healthState.isInfected(), healthState.isImmune());
+    }
 }

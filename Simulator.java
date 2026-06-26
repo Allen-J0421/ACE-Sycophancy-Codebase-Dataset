@@ -251,54 +251,44 @@ public class Simulator
         {
             for(int col = 0; col < field.getWidth(); col++) 
             {
-                //plants will fill the entire field initially.
                 Location location = new Location(row, col);
-                Plant plant = new Plant(true, field, location);
-                plants.add(plant);
-                
-                Animal animal = null;
-                
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) 
-                {
-                     animal = (Lion) new Lion(true, field, location, false, false);
-                }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY)
-                {
-                     animal = (Cheetah) new Cheetah(true, field, location, false, false);
-                }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) 
-                {
-                     animal = (Zebra) new Zebra(true, field, location, false, false);
-                }
-                else if(rand.nextDouble() <= GIRAFFE_CREATION_PROBABILITY)
-                {
-                     animal = (Giraffe) new Giraffe(true, field, location, false, false);
-                }
-                else if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY) 
-                {
-                     animal = (Lemur) new Lemur(true, field, location, false, false);
-                }
-                
-                if(animal != null) 
-                {
+                plants.add(new Plant(true, field, location));
+
+                Animal animal = createInitialAnimal(location, rand);
+                if(animal != null) {
                     animals.add(animal);
                 }
             }
         }
     }
-    
+
     /**
-     * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
+     * Create the initial animal for one field location.
+     *
+     * @param location The location to seed.
+     * @param rand Shared random source for the initial population.
+     *
+     * @return A new animal or null if no animal should be spawned.
      */
-    private void delay(int millisec)
+    private Animal createInitialAnimal(Location location, Random rand)
     {
-        try {
-            Thread.sleep(millisec);
+        if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
+            return new Lion(true, field, location, false, false);
         }
-        catch (InterruptedException ie) {
-            // wake up
+        if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
+            return new Cheetah(true, field, location, false, false);
         }
+        if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
+            return new Zebra(true, field, location, false, false);
+        }
+        if(rand.nextDouble() <= GIRAFFE_CREATION_PROBABILITY) {
+            return new Giraffe(true, field, location, false, false);
+        }
+        if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY) {
+            return new Lemur(true, field, location, false, false);
+        }
+
+        return null;
     }
     
     /**
@@ -325,10 +315,10 @@ public class Simulator
         // Set the label on the play/pause button.
         if (isStopped) 
         {
-            buttons[0].setLabel("Play");   
+            buttons[0].setText("Play");   
         }
         else {
-            buttons[0].setLabel("Pause");
+            buttons[0].setText("Pause");
         }
     }
     

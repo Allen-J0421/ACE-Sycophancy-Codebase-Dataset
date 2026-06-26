@@ -15,10 +15,6 @@ public class Time
     // run of the simulation should pause at if viable.
     private static int stepsToRunUntil;
     
-    // Stores the starting point of the current run of the
-    // simulation.
-    private static int stepOffset;
-    
     // Stores whether the simulation is paused or not
     private static boolean isPaused = true;
     
@@ -45,7 +41,6 @@ public class Time
     {
         step = 0;
         stepsToRunUntil = 0;
-        stepOffset = 0;
         isPaused = true;
     }
     
@@ -61,12 +56,8 @@ public class Time
      * @return Returns if it is currently night.
      */
     public static boolean isNight() {
-        boolean isNight = false;
         int time = getTime();
-        if (time < 6 || time > 18) {
-            isNight = true;
-        }
-        return isNight;
+        return time < 6 || time > 18;
     }
     
     /**
@@ -74,7 +65,6 @@ public class Time
      * @param The number of steps to run the simulation for.
      */
     public static void setStepsToRunFor(int stepsToRunFor) {
-        stepOffset = step;
         stepsToRunUntil = stepsToRunFor + Time.getStep();
     }
     

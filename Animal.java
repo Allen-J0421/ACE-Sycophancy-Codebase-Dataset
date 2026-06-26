@@ -182,10 +182,6 @@ public abstract class Animal extends LivingOrganism
             field.clear(location, Animal.class);
             location = null;
         }
-        
-        if (this.getClass().equals(Lion.class) || this.getClass().equals(Cheetah.class)){
-            location = null;
-        }
     }
     
     /**
@@ -277,63 +273,73 @@ public abstract class Animal extends LivingOrganism
         
         for(int b = 0; b < births && free.size() > 0; b++) 
         {
-            Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
+            Animal newAnimal = createOffspring(free.remove(0), infected, immune);
             newAnimals.add(newAnimal);
         }
     }
-    
+
     /**
-     * Creates a new offspring and places it into the field at the first free location
-     * 
-     * @param classOfAnimal The class type of the new animal
-     * @param free A list of the free adjacent location
-     * @param motherIsInfected If the mother has currently the disease, so will the child
-     * 
-     * @return Returns the new animal
+     * Create an offspring of the current species.
+     *
+     * @param location The location the offspring should occupy.
+     * @param inheritedInfection Whether the offspring inherits infection.
+     * @param inheritedImmunity Whether the offspring inherits immunity.
+     *
+     * @return A new animal of the same species.
      */
-    protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
+    protected abstract Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity);
+
+    /**
+     * Determine how infection and immunity are inherited by an offspring.
+     *
+     * @param motherIsInfected Whether the parent is infected.
+     * @param motherIsImmune Whether the parent is immune.
+     *
+     * @return The inherited infection and immunity state.
+     */
+    protected OffspringHealthState inheritHealthState(boolean motherIsInfected, boolean motherIsImmune)
     {
-        Location loc = free.remove(0);
-        Animal offspring = null;
-        
         boolean offspringIsInfected = motherIsInfected;
         boolean offspringIsImmune = motherIsImmune;
         
-        // If the mother is immune and the mother is infected, then there is
-        // a small of the child getting immunity
+        // If the mother is immune and infected, there is a chance the child gets immunity.
         if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15) 
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
         }
-        // If the mother is immune then there is a chance child isn't immune
+        // If the mother is immune, there is a chance the child is not immune.
         else if (motherIsImmune && rand.nextDouble() < 0.9)
         {
             offspringIsImmune = false;
         }
         
-        if (classOfAnimal.equals(Lemur.class))
+        return new OffspringHealthState(offspringIsInfected, offspringIsImmune);
+    }
+
+    /**
+     * Compact state holder for offspring health inheritance.
+     */
+    protected static final class OffspringHealthState
+    {
+        private final boolean infected;
+        private final boolean immune;
+
+        private OffspringHealthState(boolean infected, boolean immune)
         {
-            offspring = new Lemur(false, field, loc, offspringIsInfected, offspringIsImmune);
+            this.infected = infected;
+            this.immune = immune;
         }
-        else if (classOfAnimal.equals(Giraffe.class)) 
+
+        boolean isInfected()
         {
-            offspring = new Giraffe(false, field, loc, offspringIsInfected, offspringIsImmune);
+            return infected;
         }
-        else if (classOfAnimal.equals(Zebra.class)) 
+
+        boolean isImmune()
         {
-            offspring = new Zebra(false, field, loc, offspringIsInfected, offspringIsImmune);
+            return immune;
         }
-        else if (classOfAnimal.equals(Cheetah.class)) 
-        {
-            offspring = new Cheetah(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Lion.class)) 
-        {
-            offspring = new Lion(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        
-        return offspring;
     }
     
     /**

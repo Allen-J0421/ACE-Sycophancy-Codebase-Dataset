@@ -5,7 +5,11 @@ class RodCuttingProblem {
         this.prices = prices;
     }
 
-    PriceTable prices() {
-        return prices;
+    int rodLength() {
+        return prices.rodLength();
+    }
+
+    int priceAt(int length) {
+        return prices.priceAt(length);
     }
 }

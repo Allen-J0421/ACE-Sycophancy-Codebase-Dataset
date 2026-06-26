@@ -3,12 +3,6 @@ import java.io.PrintStream;
 import java.math.BigInteger;
 
 public final class EuclideanAlgorithmsTest {
-    private static final String USAGE = """
-        Usage: java EuclideanAlgorithms [first second]
-        Prints the greatest common divisor of two integers.
-        When no arguments are provided, defaults to 35 and 15.
-        """.stripTrailing();
-
     private EuclideanAlgorithmsTest() {
     }
 
@@ -19,8 +13,8 @@ public final class EuclideanAlgorithmsTest {
 
     private static void verifyAlgorithmCases() {
         AlgorithmCase[] cases = {
-            new AlgorithmCase(BigInteger.valueOf(35), BigInteger.valueOf(15), BigInteger.valueOf(5), "gcd uses the default sample values"),
-            new AlgorithmCase(BigInteger.valueOf(-24), BigInteger.valueOf(18), BigInteger.valueOf(6), "gcd normalizes negative inputs"),
+            algorithmCase(35, 15, 5, "gcd uses the default sample values"),
+            algorithmCase(-24, 18, 6, "gcd normalizes negative inputs"),
             new AlgorithmCase(BigInteger.ZERO, BigInteger.valueOf(12), BigInteger.valueOf(12), "gcd handles a zero operand"),
             new AlgorithmCase(
                 BigInteger.valueOf(Long.MIN_VALUE),
@@ -50,24 +44,25 @@ public final class EuclideanAlgorithmsTest {
     }
 
     private static void verifyRunCases() {
+        String usage = EuclideanAlgorithms.usageText();
         RunCase[] cases = {
-            new RunCase(new String[0], 0, "5\n", "", "run uses default operands"),
-            new RunCase(new String[] {"--help"}, 0, USAGE + "\n", "", "run prints usage for help"),
-            new RunCase(
+            runCase(new String[0], 0, "5\n", "", "run uses default operands"),
+            runCase(new String[] {"--help"}, 0, usage + "\n", "", "run prints usage for help"),
+            runCase(
                 new String[] {"abc", "10"},
                 1,
                 "",
-                "Invalid integer: abc\n" + USAGE + "\n",
+                "Invalid integer: abc\n" + usage + "\n",
                 "run reports invalid input"
             ),
-            new RunCase(
+            runCase(
                 new String[] {"1"},
                 1,
                 "",
-                "Expected either zero arguments or exactly two integers.\n" + USAGE + "\n",
+                "Expected either zero arguments or exactly two integers.\n" + usage + "\n",
                 "run rejects partial input"
             ),
-            new RunCase(
+            runCase(
                 new String[] {"9223372036854775808", "2"},
                 0,
                 "2\n",
@@ -79,6 +74,25 @@ public final class EuclideanAlgorithmsTest {
         for (RunCase testCase : cases) {
             assertRun(testCase);
         }
+    }
+
+    private static AlgorithmCase algorithmCase(long first, long second, long expected, String scenario) {
+        return new AlgorithmCase(
+            BigInteger.valueOf(first),
+            BigInteger.valueOf(second),
+            BigInteger.valueOf(expected),
+            scenario
+        );
+    }
+
+    private static RunCase runCase(
+        String[] args,
+        int expectedExitCode,
+        String expectedStdout,
+        String expectedStderr,
+        String scenario
+    ) {
+        return new RunCase(args, expectedExitCode, expectedStdout, expectedStderr, scenario);
     }
 
     private static void assertRun(RunCase testCase) {

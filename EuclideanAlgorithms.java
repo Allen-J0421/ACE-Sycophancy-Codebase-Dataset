@@ -1,10 +1,9 @@
 import java.io.PrintStream;
 import java.math.BigInteger;
+
 public final class EuclideanAlgorithms {
-    private static final CommandLine COMMAND_LINE = new CommandLine(
-        BigInteger.valueOf(35),
-        BigInteger.valueOf(15)
-    );
+    private static final BigInteger DEFAULT_FIRST_OPERAND = BigInteger.valueOf(35);
+    private static final BigInteger DEFAULT_SECOND_OPERAND = BigInteger.valueOf(15);
 
     private EuclideanAlgorithms() {
         // Utility class.
@@ -26,10 +25,71 @@ public final class EuclideanAlgorithms {
     }
 
     static int run(String[] args, PrintStream out, PrintStream err) {
-        return COMMAND_LINE.run(args, out, err);
+        try {
+            CliRequest request = parseRequest(args);
+            if (request.helpRequested()) {
+                out.println(usageText());
+                return 0;
+            }
+
+            out.println(request.operands().gcd());
+            return 0;
+        } catch (IllegalArgumentException exception) {
+            err.println(exception.getMessage());
+            err.println(usageText());
+            return 1;
+        }
+    }
+
+    static String usageText() {
+        return "Usage: java EuclideanAlgorithms [first second]\n"
+            + "Prints the greatest common divisor of two integers.\n"
+            + "When no arguments are provided, defaults to "
+            + DEFAULT_FIRST_OPERAND
+            + " and "
+            + DEFAULT_SECOND_OPERAND
+            + ".";
+    }
+
+    private static CliRequest parseRequest(String[] args) {
+        if (args.length == 0) {
+            return CliRequest.compute(Operands.defaults());
+        }
+
+        if (args.length == 1 && ("--help".equals(args[0]) || "-h".equals(args[0]))) {
+            return CliRequest.help();
+        }
+
+        if (args.length != 2) {
+            throw new IllegalArgumentException("Expected either zero arguments or exactly two integers.");
+        }
+
+        return CliRequest.compute(Operands.of(parseInteger(args[0]), parseInteger(args[1])));
+    }
+
+    private static BigInteger parseInteger(String value) {
+        try {
+            return new BigInteger(value);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Invalid integer: " + value, exception);
+        }
+    }
+
+    private record CliRequest(Operands operands, boolean helpRequested) {
+        private static CliRequest compute(Operands operands) {
+            return new CliRequest(operands, false);
+        }
+
+        private static CliRequest help() {
+            return new CliRequest(null, true);
+        }
     }
 
     private record Operands(BigInteger first, BigInteger second) {
+        private static Operands defaults() {
+            return new Operands(DEFAULT_FIRST_OPERAND, DEFAULT_SECOND_OPERAND);
+        }
+
         private static Operands of(BigInteger first, BigInteger second) {
             return new Operands(
                 requireOperand(first, "first"),
@@ -60,79 +120,6 @@ public final class EuclideanAlgorithms {
             }
 
             return left;
-        }
-    }
-
-    private static final class CommandLine {
-        private final Operands defaultOperands;
-
-        private CommandLine(BigInteger defaultFirstOperand, BigInteger defaultSecondOperand) {
-            defaultOperands = Operands.of(defaultFirstOperand, defaultSecondOperand);
-        }
-
-        private int run(String[] args, PrintStream out, PrintStream err) {
-            try {
-                Command command = parse(args);
-                return command.execute(out);
-            } catch (IllegalArgumentException exception) {
-                err.println(exception.getMessage());
-                err.println(usage());
-                return 1;
-            }
-        }
-
-        private Command parse(String[] args) {
-            if (args.length == 0) {
-                return new ComputeCommand(defaultOperands);
-            }
-
-            if (args.length == 1 && ("--help".equals(args[0]) || "-h".equals(args[0]))) {
-                return new HelpCommand(usage());
-            }
-
-            if (args.length != 2) {
-                throw new IllegalArgumentException("Expected either zero arguments or exactly two integers.");
-            }
-
-            return new ComputeCommand(Operands.of(parseInteger(args[0]), parseInteger(args[1])));
-        }
-
-        private BigInteger parseInteger(String value) {
-            try {
-                return new BigInteger(value);
-            } catch (NumberFormatException exception) {
-                throw new IllegalArgumentException("Invalid integer: " + value, exception);
-            }
-        }
-
-        private String usage() {
-            return "Usage: java EuclideanAlgorithms [first second]\n"
-                + "Prints the greatest common divisor of two integers.\n"
-                + "When no arguments are provided, defaults to "
-                + defaultOperands.first()
-                + " and "
-                + defaultOperands.second()
-                + ".";
-        }
-    }
-
-    private sealed interface Command permits ComputeCommand, HelpCommand {
-        int execute(PrintStream out);
-    }
-
-    private record ComputeCommand(Operands operands) implements Command {
-        @Override
-        public int execute(PrintStream out) {
-            out.println(operands.gcd());
-            return 0;
-        }
-    }
-
-    private record HelpCommand(String usage) implements Command {
-        @Override
-        public int execute(PrintStream out) {
-            out.println(usage);
-            return 0;
         }
     }
 }

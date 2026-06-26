@@ -4,7 +4,7 @@ public final class ModularExponentiationApp {
     }
 
     public static void main(String[] args) {
-        ModularExponentiationRequest request = ModularExponentiationRequest.fromArgs(args);
+        ModularExponentiationRequest request = ModularExponentiationRequestParser.parse(args);
 
         System.out.println(ModularExponentiation.powMod(
             request.base(),

@@ -1,34 +1,35 @@
+package safari;
+
 import java.util.List;
 import java.util.Random;
 import java.util.Iterator;
 import java.util.HashMap;
 
 /**
- * A simple model of a Gazelle.
- * Gazelles age, move,eat grass, breed, and die.
+ * A simple model of a Zebra.
+ * Zebras age, move, eat grass, breed, and die.
  *
  * @version 2022.03.01
  */
-public class Gazelle extends Animal
+public class Zebra extends Animal
 {
-    // Characteristics shared by all Gazelles (class variables).
+    // Characteristics shared by all Zebra (class variables).
 
-    // The age at which a Gazelle can start to breed.
+    // The age at which a Zebra can start to breed.
     private static final int BREEDING_AGE = 2;
-    // The age to which a Gazelle can live.
-    private static final  int MAX_AGE  = 80;
-    // The likelihood of a Gazelle breeding.
-    private static final double BREEDING_PROBABILITY = 0.8900995; 
+    // The age to which a Zebra can live.
+    private static final  int MAX_AGE = 160;
+    // The likelihood of a Zebra breeding.
+    private static final double BREEDING_PROBABILITY =0.27587999058995; //0.2587998058995
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 7;
-    private static final int MAX_TIME_UNTIL_BREEDING_AGAIN = 2;
+    private static final int MAX_LITTER_SIZE = 4;
+    private static final int MAX_TIME_UNTIL_BREEDING_AGAIN =15;
     //The minimum food value of the grass. In effect, this is the
-    // number of steps a Gazelle can go before it has to eat again.
-    private static final int GRASS_FOOD_VALUE = 14; //8 //15
-    //maximum food a gazelle can eat.
-    private static final double MAX_FOOD_LEVEL = 28; //60 //160
+    // number of steps a Zebra can go before it has to eat again.
+    private static final int GRASS_FOOD_VALUE = 19; 
+    private static final double MAX_FOOD_LEVEL = 28; 
     
-    // The likelihood of a Gazelle finding food depending on the weather.
+    // The likelihood of a Zebra finding food depending on the weather.
     private static final double SUNNY_FINDING_FOOD_PROBABILITY = 1;
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 1;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
@@ -36,14 +37,14 @@ public class Gazelle extends Animal
     // Individual characteristics (instance fields).
     private HashMap<Actor, Integer> food;
     /**
-     * Create a new Gazelle. A Gazelle may be created with age
+     * Create a new Zebra. A Zebra may be created with age
      * zero (a new born) or with a random age.
      * 
-     * @param randomAge If true, the Gazelle will have a random age.
+     * @param randomAge If true, the Zebra will have a random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Gazelle(boolean randomAge, Field field, Location location)
+    public Zebra(boolean randomAge, Field field, Location location)
     {
         super(field, location);
         setAge(0);
@@ -53,27 +54,27 @@ public class Gazelle extends Animal
             setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
         }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/75.0);
-        addFood(field);
+        setGrowthLevel(getAge()/67.0);
+        addFood( field);
     }
 
     /**
-     * This is what the Gazelle does most of the time: it finds
+     * This is what the Zebra does most of the time: it finds
      * grass to eat. In the process, it might breed, die of hunger,
      * die of disease or die of old age.
      * 
-     * @param newGazelles A list to return newly born Gazelles.
+     * @param newZebras A list to return newly born Zebras.
      * @param simulator The simulator.
      */
-    public void act(List<Actor> newGazelles, Simulator simulator)
+    public void act(List<Actor> newZebra, Simulator simulator)
     {
-        setGrowthLevel(0.012);
+        setGrowthLevel(0.015);
         if(simulator.isDay()){
             incrementAge(simulator.getSteps());
             incrementHunger();
             if(isActive()) {
-                giveBirth(newGazelles);  
-                super.act(newGazelles,simulator);
+                giveBirth(newZebra); 
+                super.act(newZebra,simulator);
             }
         }else{
             //space for potential night activities
@@ -81,48 +82,48 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Returns the maximum number of babies the gazelle can give birth to at once.
-     * @return max litter size of the gazelle.
+     * Returns the maximum number of babies the zebra can give birth to at once.
+     * @return The max litter size of the zebra.
      */
     protected int getMaxLitterSize(){
         return MAX_LITTER_SIZE;
     }
 
     /**
-     * Returns the breeding probability of the gazelle
-     * @return breeding probability of the gazelle.
+     * Returns the breeding probability of the zebra
+     * @return The breeding probability of the zebra.
      */
     protected double getBreedingProbability(){
         return BREEDING_PROBABILITY;
     }
 
     /**
-     * Get breeding age of a gazelle.
-     * @return Breeding age of the gazelle;
+     * Get breeding age of a zebra.
+     * @return The breeding age of the zebra.
      */
     protected int getBreedingAge(){
         return BREEDING_AGE;
     }
 
     /**
-     * Gets the max age of a gazelle.
-     * @return Max age of the gazelle.
+     * Gets the max age of a zebra.
+     * @return The max age of the zebra.
      */
     protected int getMaxAge(){
         return MAX_AGE;
     }
 
     /**
-     * Returns the current gazelle occupying the location.
-     * @return the current gazelle.
+     * Returns the current zebra occupying the location.
+     * @return The current zebra.
      */
     protected Animal getAnimal(){
         return this;
     }
 
     /**
-     * Adds the food the gazelle eats & the corresponding food value to a hashMap.
-     * @param field The field the gazelle is in.
+     * Adds the food the zebra eats & the corresponding food value to a hashMap.
+     * @param field The field the zebra is in.
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
@@ -132,7 +133,7 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Returns the HashMap which contains what food the gazelle eats and the amount of food each plant gives.
+     * Returns the HashMap which contains what food the zebra eats and the amount of food each plant gives.
      * @return The HashMap which contains the Actor and an Integer.
      */
     protected HashMap<Actor, Integer> getFood(){
@@ -140,40 +141,41 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Gets the maximum food level a gazelle can have.
-     * @return Max food level of the gazelle.
+     * Gets the maximum food level a zebra can have.
+     * @return Max food level of the zebra.
      */
     protected double getMaxFoodLevel(){
         return MAX_FOOD_LEVEL;
     }
     
     /**
-     * Gets the maximum time a gazelle needs to wait until it can breed again
-     * @return Max time before the gazelle can breed again.
+     * Gets the maximum time a zebra needs to wait until it can breed again
+     * @return Max time before the zebra can breed again.
      */
     protected int getMaxTimeUntilBreedingAgain(){
         return MAX_TIME_UNTIL_BREEDING_AGAIN;
     }
     
     /**
-     * Gets the probability the gazelle will find food when it is sunny
-     * @return The probability the gazelle will find food when it is sunny
+
+     * Gets the probability the zebra will find food when it is sunny
+     * @return The probability the zebra will find food when it is sunny
      */
     protected double getSunnyFindingFoodProbability(){
         return SUNNY_FINDING_FOOD_PROBABILITY;
     }
     
     /**
-     * Gets the probability the gazelle will find food when it is rainy
-     * @return The probability the gazelle will find food when it is rainy
+     * Gets the probability the zebra will find food when it is rainy
+     * @return The probability the zebra will find food when it is rainy
      */
     protected double getRainyFindingFoodProbability(){
         return RAINY_FINDING_FOOD_PROBABILITY;
     }
     
     /**
-     * Gets the probability the gazelle will find food when it is foggy
-     * @return The probability the gazelle will find food when it is foggy
+     * Gets the probability the zebra will find food when it is foggy
+     * @return The probability the zebra will find food when it is foggy
      */
     protected double getFoggyFindingFoodProbability(){
         return FOGGY_FINDING_FOOD_PROBABILITY;

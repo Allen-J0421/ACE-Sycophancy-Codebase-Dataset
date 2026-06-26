@@ -1,3 +1,5 @@
+package safari;
+
 import java.util.Random;
 
 /**

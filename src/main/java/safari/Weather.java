@@ -1,3 +1,5 @@
+package safari;
+
 /**
  * Enumeration class Weather - The different possible types of weather simulated in the safari simulation.
  *

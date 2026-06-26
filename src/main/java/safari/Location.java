@@ -1,3 +1,5 @@
+package safari;
+
 /**
  * Represent a location in a rectangular grid.
  *

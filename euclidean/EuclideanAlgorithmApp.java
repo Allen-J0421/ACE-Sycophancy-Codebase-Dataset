@@ -10,13 +10,13 @@ public final class EuclideanAlgorithmApp {
     }
 
     public static void main(String[] args) {
-        Operands operands = parseOperands(args);
-        System.out.println(EuclideanAlgorithm.gcd(operands.left(), operands.right()));
+        int[] operands = parseOperands(args);
+        System.out.println(EuclideanAlgorithm.gcd(operands[0], operands[1]));
     }
 
-    static Operands parseOperands(String[] args) {
+    static int[] parseOperands(String[] args) {
         if (args.length == 0) {
-            return new Operands(DEFAULT_A, DEFAULT_B);
+            return new int[] { DEFAULT_A, DEFAULT_B };
         }
         if (args.length != 2) {
             throw new IllegalArgumentException(
@@ -24,10 +24,10 @@ public final class EuclideanAlgorithmApp {
             );
         }
 
-        return new Operands(
+        return new int[] {
             parseIntArg(args[0], "first"),
             parseIntArg(args[1], "second")
-        );
+        };
     }
 
     private static int parseIntArg(String value, String label) {
@@ -37,6 +37,4 @@ public final class EuclideanAlgorithmApp {
             throw new IllegalArgumentException("Invalid " + label + " integer: " + value, ex);
         }
     }
-
-    record Operands(int left, int right) {}
 }

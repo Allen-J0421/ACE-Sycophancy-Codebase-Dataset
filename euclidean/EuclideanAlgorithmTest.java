@@ -47,15 +47,11 @@ public final class EuclideanAlgorithmTest {
         );
     }
 
-    private static void assertOperands(
-        int expectedLeft,
-        int expectedRight,
-        EuclideanAlgorithmApp.Operands actual
-    ) {
-        if (actual.left() != expectedLeft || actual.right() != expectedRight) {
+    private static void assertOperands(int expectedLeft, int expectedRight, int[] actual) {
+        if (actual.length != 2 || actual[0] != expectedLeft || actual[1] != expectedRight) {
             throw new AssertionError(
                 "Expected operands (" + expectedLeft + ", " + expectedRight + ") but was ("
-                    + actual.left() + ", " + actual.right() + ")"
+                    + actual[0] + ", " + actual[1] + ")"
             );
         }
     }

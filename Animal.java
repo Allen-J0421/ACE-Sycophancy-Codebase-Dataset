@@ -89,7 +89,7 @@ public abstract class Animal implements Actor
         if(!isAlive()) {
             return;
         }
-        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
+        meet(newAnimals, weather);
         Location newLocation = doFindFood();
         if(newLocation == null) {
             newLocation = field.freeAdjacentLocation(getLocation());
@@ -146,14 +146,10 @@ public abstract class Animal implements Actor
     }
 
     /**
-     * Imitates the meeting of the animal by breeding new born animals.
-     *
-     * @param newAnimals list of the animals to be born.
-     * @param maxLitter the maximum amount animals that the animal can breed.
-     * @param breedingProbability the likelyhood of giving birth.
-     * @param breedingAge the minimum age to be able to breed.
+     * Checks adjacent locations for a same-species mate of the opposite gender and
+     * attempts to produce offspring.
      */
-    private void meet(List<Actor> newAnimals, int maxLitter, double breedingProbability, int breedingAge)
+    private void meet(List<Actor> newAnimals, Weather weather)
     {
         List<Location> adjacent = field.adjacentLocations(getLocation());
         for (Location where : adjacent) {
@@ -165,8 +161,8 @@ public abstract class Animal implements Actor
             if(animal.getGender() == this.getGender()) {
                 continue;
             }
-            if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
-                giveBirth(newAnimals, rand.nextInt(maxLitter) + 1);
+            if(age >= getBreedingAge() && rand.nextDouble() <= getBreedingProbability(weather)) {
+                giveBirth(newAnimals, rand.nextInt(getMaxLitterSize()) + 1);
             }
         }
     }

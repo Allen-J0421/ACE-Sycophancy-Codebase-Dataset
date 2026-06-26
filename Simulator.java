@@ -22,17 +22,17 @@ public class Simulator
                                    STATE
     //////////////////////////////////////////////////////////////*/
 
-    private List<Actor> animals;
-    private List<Actor> plants;
-    private Field field;
+    private final List<Actor> animals;
+    private final List<Actor> plants;
+    private final Field field;
 
-    private SimulatorClock clock;
-    private WeatherHandler weatherHandler;
+    private final SimulatorClock clock;
+    private final WeatherHandler weatherHandler;
     private int step;
-    private SimulatorView view;
-    private DiseaseHandler diseaseHandler;
+    private final SimulatorView view;
+    private final DiseaseHandler diseaseHandler;
     private Dashboard dashboard;
-    private PopulationGenerator populationGenerator;
+    private final PopulationGenerator populationGenerator;
 
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTORS

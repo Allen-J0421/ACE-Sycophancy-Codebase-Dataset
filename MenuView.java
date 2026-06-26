@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Builds and handles the view of the GUI in which user can choose the habitat, animals,
@@ -15,15 +17,13 @@ public class MenuView
     // The GUIHandler object governing the GUI.
     private GUIHandler handler;
     // The list of habitats to choose from.
-    private ArrayList<String> habitatList;
+    private List<String> habitatList;
     // The list of animals to choose from.
-    private ArrayList<String> animalList;
+    private List<String> animalList;
     // The list of climate change scenario to choose from.
-    private ArrayList<String> climateChangeScenarioList;
+    private List<String> climateChangeScenarioList;
     // The list of JTextField receiving the number of animals inputted by the user.
     private ArrayList<JTextField> animalNumberReceivers;
-    // The HashMap storing animals chosen by the user.
-    private HashMap<String, Integer> selectedAnimals;
     // Tool to alert user about any potential error.
     private ErrorThrower errorThrower;
 
@@ -33,18 +33,17 @@ public class MenuView
      * currently governing the GUI.
      *
      * @param handler (GUIHandler) the GUIHandler currenly handling the GUI.
-     * @param animalChoices (ArrayList<String>) The list of animal choices.
-     * @param habitatChoices (ArrayList<String>) The list of habitat choices.
-     * @param scenarioChoices (ArrayList<String>) The list of climate change scenario choices.
+     * @param animalChoices (List<String>) The list of animal choices.
+     * @param habitatChoices (List<String>) The list of habitat choices.
+     * @param scenarioChoices (List<String>) The list of climate change scenario choices.
      */
-    public MenuView (GUIHandler handler, ArrayList<String> animalChoices, ArrayList<String> habitatChoices, ArrayList<String> scenarioChoices)
+    public MenuView (GUIHandler handler, List<String> animalChoices, List<String> habitatChoices, List<String> scenarioChoices)
     {
         habitatList = habitatChoices;
         animalList = animalChoices;
         climateChangeScenarioList = scenarioChoices;
         this.handler = handler;
         animalNumberReceivers = new ArrayList<>();
-        selectedAnimals = new HashMap<>();
         errorThrower = new ErrorThrower();
     }
 
@@ -64,10 +63,10 @@ public class MenuView
 
         JLabel welcomeLabel = createWelcomeLabel("Welcome to the Ultimate Simulator 3000");
         // HABITAT CHOICE SECTION
-        JComboBox habitatListDisplay = createListDisplayFromList(habitatList);
+        JComboBox<String> habitatListDisplay = createListDisplayFromList(habitatList);
         Box habitatChoiceComponent = createHabitatChoiceComponent(habitatListDisplay);
         // CLIMATE CHANGE SCENARIO CHANGE SECTION
-        JComboBox scenarioListDisplay = createListDisplayFromList(climateChangeScenarioList);
+        JComboBox<String> scenarioListDisplay = createListDisplayFromList(climateChangeScenarioList);
         Box scenarioChoiceComponent = createScenarioChoiceComponent(scenarioListDisplay);
         // ANIMAL CHOICE SECTION
         JPanel animalChoiceComponent = createAnimalChoiceComponent();
@@ -112,25 +111,21 @@ public class MenuView
      * Create a JComboBox out of a list. This allows other classes to display
      * the JComboBox and let users make their choices that way.
      *
-     * @param list (ArrayList<String>) The list to be displayed.
+     * @param list (List<String>) The list to be displayed.
      * @return (JComboBox) The created JComboBox.
      */
-    private JComboBox createListDisplayFromList (ArrayList<String> list)
+    private JComboBox<String> createListDisplayFromList(List<String> list)
     {
-        JComboBox listDisplay = new JComboBox();
-        for (String element : list) {
-            listDisplay.addItem(element);
-        }
-        return listDisplay;
+        return new JComboBox<>(list.toArray(new String[0]));
     }
 
 
     /**
      * Create the part of the GUI that allows users to choose a habitat for their simulation.
-     * @param habitatListDisplay (JComboBox) The JComboBox allowing user to make his/her choice.
+     * @param habitatListDisplay (JComboBox<String>) The JComboBox allowing user to make his/her choice.
      * @return (Box) The part of the GUI that was created.
      */
-    private Box createHabitatChoiceComponent(JComboBox habitatListDisplay)
+    private Box createHabitatChoiceComponent(JComboBox<String> habitatListDisplay)
     {
         Box habitatChoiceComponent = Box.createHorizontalBox();
         JLabel habitatChoicePrompt = new JLabel("Choose a habitat for your simulation:");
@@ -144,10 +139,10 @@ public class MenuView
      * Create the part of the GUI that allows users to choose a
      * climate change scenario for their simulation.
      *
-     * @param scenarioListDisplay (JComboBox) The JComboBox allowing user to make his/her choice.
+     * @param scenarioListDisplay (JComboBox<String>) The JComboBox allowing user to make his/her choice.
      * @return (Box) The part of the GUI that was created.
      */
-    private Box createScenarioChoiceComponent(JComboBox scenarioListDisplay)
+    private Box createScenarioChoiceComponent(JComboBox<String> scenarioListDisplay)
     {
         Box scenarioChoiceComponent = Box.createHorizontalBox();
         JLabel scenarioChoicePrompt = new JLabel("Choose a climate change scenario:");
@@ -224,21 +219,27 @@ public class MenuView
      * Retrieves all inputs in the correct form using helper methods
      * defined in this class and launches the simulation.
      *
-     * @param habitatChoiceDisplay (JComboBox) The ComboBox used by the user to select a habitat.
+     * @param habitatChoiceDisplay (JComboBox<String>) The ComboBox used by the user to select a habitat.
      * @param animalNumberReceivers (ArrayList<JTextField>) The list of TextFields used by the user to input numbers of each animal to create.
-     * @param climateChangeScenarioChoiceDisplay (ComboBox) The ComboBox used by the user to select a climate change scenario.
+     * @param climateChangeScenarioChoiceDisplay (JComboBox<String>) The ComboBox used by the user to select a climate change scenario.
      */
-    private void getInputsAndLaunchSimulation(JComboBox habitatChoiceDisplay, ArrayList<JTextField> animalNumberReceivers, JComboBox climateChangeScenarioChoiceDisplay)
+    private void getInputsAndLaunchSimulation(
+        JComboBox<String> habitatChoiceDisplay,
+        ArrayList<JTextField> animalNumberReceivers,
+        JComboBox<String> climateChangeScenarioChoiceDisplay
+    )
     {
         String chosenHabitat = getHabitatInput(habitatChoiceDisplay);
         if (chosenHabitat != null)
         {
             ArrayList<Integer> numbersInputted = getNumericValuesOfUserInputs(animalNumberReceivers);
             if (numbersInputted != null) {
-                boolean generationSuccessful = generateAnimalDictionary(numbersInputted);
-                if (generationSuccessful) {
+                Map<String, Integer> selectedAnimals = generateAnimalDictionary(numbersInputted);
+                if (selectedAnimals != null) {
                     String chosenSimulation = getScenarioInput(climateChangeScenarioChoiceDisplay);
-                    launchSimulation(chosenHabitat, chosenSimulation);
+                    if (chosenSimulation != null) {
+                        launchSimulation(chosenHabitat, selectedAnimals, chosenSimulation);
+                    }
                 }
             }
         }
@@ -262,6 +263,7 @@ public class MenuView
                 inputtedNumbers.add(numericValue);
             } catch (NumberFormatException e) {
                 throwErrorMessage("One of the values inputted is not a number or one cell was left blank, please try again.");
+                return null;
             }
         }
         return inputtedNumbers;
@@ -281,29 +283,28 @@ public class MenuView
      * of this animal that must be created. This method heavily relies on the fact
      * that animal names are stored in the animalList in the same order that they were on screen.
      *
-     * @param numberOfEachAnimals (ArrayList<Integer>) The String object to test.
+     * @param numberOfEachAnimals (ArrayList<Integer>) The list of animal counts aligned with the displayed animal list.
      */
-    private boolean generateAnimalDictionary(ArrayList<Integer> numberOfEachAnimals)
+    private Map<String, Integer> generateAnimalDictionary(ArrayList<Integer> numberOfEachAnimals)
     {
-        if (numberOfEachAnimals.size() == animalList.size())
-        {
-            for (int i=0; i<numberOfEachAnimals.size(); i++) {
-                selectedAnimals.put(animalList.get(i), numberOfEachAnimals.get(i));
-            }
+        if (numberOfEachAnimals.size() != animalList.size()) {
+            return null;
         }
-        else {
-            return false;
+
+        HashMap<String, Integer> selectedAnimals = new HashMap<>();
+        for (int i=0; i<numberOfEachAnimals.size(); i++) {
+            selectedAnimals.put(animalList.get(i), numberOfEachAnimals.get(i));
         }
-        return true;
+        return selectedAnimals;
     }
 
     /**
      * Reads the name of the chosen Habitat.
      *
-     * @param habitatChoiceDisplay (JComboBox) The ComboBox used by the user to select a habitat.
+     * @param habitatChoiceDisplay (JComboBox<String>) The ComboBox used by the user to select a habitat.
      */
 
-    private String getHabitatInput(JComboBox habitatChoiceDisplay)
+    private String getHabitatInput(JComboBox<String> habitatChoiceDisplay)
     {
         String chosenHabitat = (String) habitatChoiceDisplay.getSelectedItem();
         if (chosenHabitat == null) {
@@ -316,17 +317,17 @@ public class MenuView
     /**
      * Reads the name of the chosen climate change scenario.
      *
-     * @param scenarioChoiceDisplay (JComboBox) The ComboBox used by the user to select a climate change scenario.
+     * @param scenarioChoiceDisplay (JComboBox<String>) The ComboBox used by the user to select a climate change scenario.
      */
 
-    private String getScenarioInput(JComboBox scenarioChoiceDisplay)
+    private String getScenarioInput(JComboBox<String> scenarioChoiceDisplay)
     {
-        String chosenHabitat = (String) scenarioChoiceDisplay.getSelectedItem();
-        if (chosenHabitat == null) {
+        String chosenScenario = (String) scenarioChoiceDisplay.getSelectedItem();
+        if (chosenScenario == null) {
             throwErrorMessage("You must choose a climate change scenario.");
             return null;
         }
-        return chosenHabitat;
+        return chosenScenario;
     }
 
     /**
@@ -336,8 +337,8 @@ public class MenuView
      * @param chosenScenario (String) The name of the climate change scenario chosen by the user.
      */
 
-    private void launchSimulation(String chosenHabitat, String chosenScenario)
+    private void launchSimulation(String chosenHabitat, Map<String, Integer> selectedAnimals, String chosenScenario)
     {
-        handler.switchToSimulatorView(chosenHabitat,selectedAnimals,chosenScenario);
+        handler.switchToSimulatorView(chosenHabitat, selectedAnimals, chosenScenario);
     }
 }

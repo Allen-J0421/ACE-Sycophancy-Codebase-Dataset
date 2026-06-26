@@ -1,5 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JFrame;
 
 /**
@@ -13,18 +13,18 @@ public class GUIHandler
     private Initializer simulationInitializer;
     private Simulator simulatorOnDisplay;
     private JFrame currentFrame;
-    private ArrayList<String> animalChoices;
-    private ArrayList<String> habitatChoices;
-    private ArrayList<String> scenarioChoices;
+    private List<String> animalChoices;
+    private List<String> habitatChoices;
+    private List<String> scenarioChoices;
 
     /**
      * Build a GUIHandler with appropriate lists of choices for animals, habitats, and climate change scenarios.
      *
-     * @param animalChoices (ArrayList<String>) List of animal choices.
-     * @param habitatChoices (ArrayList<String>) List of habitat choices.
-     * @param scenarioChoices (ArrayList<String>) List of climate change scenario choices.
+     * @param animalChoices (List<String>) List of animal choices.
+     * @param habitatChoices (List<String>) List of habitat choices.
+     * @param scenarioChoices (List<String>) List of climate change scenario choices.
      */
-    public GUIHandler (Initializer initializer, ArrayList<String> animalChoices, ArrayList<String> habitatChoices, ArrayList<String> scenarioChoices)
+    public GUIHandler (Initializer initializer, List<String> animalChoices, List<String> habitatChoices, List<String> scenarioChoices)
     {
         simulationInitializer = initializer;
         this.animalChoices = animalChoices;
@@ -53,10 +53,10 @@ public class GUIHandler
      * to create the simulation the user asked for and hides the MenuView currently on display.
      *
      * @param chosenHabitat (String) The name of the chosen habitat.
-     * @param selectedAnimals (HashMap<String, Integer>) Key-pair associations of animal names and number of those animals to be created.
+     * @param selectedAnimals (Map<String, Integer>) Key-pair associations of animal names and number of those animals to be created.
      * @param chosenScenario (String) The name of the chosen climate change scenario.
      */
-    public void switchToSimulatorView(String chosenHabitat,HashMap<String, Integer> selectedAnimals,String chosenScenario)
+    public void switchToSimulatorView(String chosenHabitat, Map<String, Integer> selectedAnimals, String chosenScenario)
     {
         simulatorOnDisplay = simulationInitializer.initializeSimulation(chosenHabitat, selectedAnimals, chosenScenario);
         if (simulatorOnDisplay != null) {

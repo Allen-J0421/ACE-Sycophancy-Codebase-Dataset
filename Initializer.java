@@ -1,8 +1,8 @@
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -88,11 +88,11 @@ public class Initializer
      * for the simulation to run. The created Simulator is returned.
      *
      * @param chosenHabitat (String) The name of the habitat chosen by the user.
-     * @param animalsToCreate (HashMap<String, Integer>) Keys are the animals' names and values are the number of each animal we need to create.
+     * @param animalsToCreate (Map<String, Integer>) Keys are the animals' names and values are the number of each animal we need to create.
      * @param scenarioName (String) The name of the climate change scenario to implement in the simulation.
      * @return (Simulator) The created simulator.
      */
-    public Simulator initializeSimulation(String chosenHabitat, HashMap<String, Integer> animalsToCreate, String scenarioName)
+    public Simulator initializeSimulation(String chosenHabitat, Map<String, Integer> animalsToCreate, String scenarioName)
     {
         speciesToEvolveInSimulation = new ArrayList<>();
         SimulationStep simulatorStepCounter = new SimulationStep();
@@ -137,10 +137,10 @@ public class Initializer
      * First reading the data relating to each animal,
      * then creating and adding to the list of species the right number of each animal.
      *
-     * @param animalsToCreate (HashMap<String, Integer>) The names and number of chosen animals.
+     * @param animalsToCreate (Map<String, Integer>) The names and number of chosen animals.
      * @param field (Field) The field in which the animals will evolve.
      */
-    private void populateWithAnimals(HashMap<String, Integer> animalsToCreate, Field field)
+    private void populateWithAnimals(Map<String, Integer> animalsToCreate, Field field)
     {
         idxOfColorToUseNext = 0;
 
@@ -310,7 +310,7 @@ public class Initializer
      *
      * @return (int) the number of animals.
      */
-    private int getNumberOfAnimals(HashMap<String, Integer> animalsToCreate)
+    private int getNumberOfAnimals(Map<String, Integer> animalsToCreate)
     {
         int totalNumber = 0;
         for (String animalName : animalsToCreate.keySet()) {

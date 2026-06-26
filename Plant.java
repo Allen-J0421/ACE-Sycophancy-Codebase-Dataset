@@ -9,17 +9,10 @@ import java.util.List;
  */
 public abstract class Plant extends Organism implements Growable, Consumable {
 
-    // define fields
     private double size;
     private final int foodValue;
     private final boolean poisonous;
-    private final double maxSize;
-    private final int maxAge;
-    private final int breedingAge;
-    private final int maxLitterSize;
-    private final double lowBreedingProbability;
-    private final double highBreedingProbability;
-    private final WeatherType[] favorableWeather;
+    private final PlantTraits traits;
     private double growthRate;
     private double breedingProbability;
 
@@ -32,23 +25,17 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @param randomAge Whether the animal should have a random age or not.
      * @param field The field in which the plant resides.
      * @param location The location in which the plant spawns into.
+     * @param traits Immutable species configuration.
      */
     public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field,
-                 Location location, double maxSize, int maxAge, int breedingAge, int maxLitterSize,
-                 double lowBreedingProbability, double highBreedingProbability,
-                 WeatherType... favorableWeather) {
-        super(randomAge, field, location);
+                 Location location, PlantTraits traits) {
+        super(randomAge, traits.maxAge, field, location);
 
         this.size = size;
         this.foodValue = foodValue;
         this.poisonous = poisonous;
-        this.maxSize = maxSize;
-        this.maxAge = maxAge;
-        this.breedingAge = breedingAge;
-        this.maxLitterSize = maxLitterSize;
-        this.lowBreedingProbability = lowBreedingProbability;
-        this.highBreedingProbability = highBreedingProbability;
-        this.favorableWeather = favorableWeather;
+        this.traits = traits;
+        this.growthRate = traits.growthRate;
     }
 
     /**
@@ -61,8 +48,8 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public void act(List<Entity> newPlants, Weather weather, TimeOfDay time) {
         if (isAlive()) {
-            setBreedingProbabilityForWeather(weather, lowBreedingProbability,
-                    highBreedingProbability, favorableWeather);
+            setBreedingProbabilityForWeather(weather, traits.lowBreedingProbability,
+                    traits.highBreedingProbability, traits.favorableWeather);
             grow();
             giveBirth(newPlants);
         }
@@ -74,7 +61,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public void grow() {
         double grownSize = size * getGrowthRate();
-        size = grownSize > maxSize ? 1 : grownSize;
+        size = grownSize > traits.maxSize ? 1 : grownSize;
         if (size == 0) {
             remove();
         }
@@ -107,7 +94,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public double getMaxSize() {
-        return maxSize;
+        return traits.maxSize;
     }
 
     /**
@@ -117,7 +104,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getMaxLitterSize() {
-        return maxLitterSize;
+        return traits.maxLitterSize;
     }
 
     /**
@@ -127,7 +114,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     protected boolean canBreed() {
-        return getAge() >= breedingAge;
+        return getAge() >= traits.breedingAge;
     }
 
     /**
@@ -169,7 +156,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     }
 
     /**
-     * Setter  method for the probability to breed of the organism.
+     * Setter method for the probability to breed of the organism.
      *
      * @param probability A given double value representing the breeding probability.
      */
@@ -211,7 +198,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getMaxAge() {
-        return maxAge;
+        return traits.maxAge;
     }
 
     /**
@@ -219,6 +206,6 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getBreedingAge() {
-        return breedingAge;
+        return traits.breedingAge;
     }
 }

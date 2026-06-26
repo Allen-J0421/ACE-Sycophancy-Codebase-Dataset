@@ -7,13 +7,8 @@
  */
 public class Cheetah extends Predator {
     private static final int DEFAULT_FOOD_LEVEL = 19;
-    private static final double BREEDING_PROBABILITY = 0.115;
-    private static final double EATING_PROBABILITY = 0.6;
-    private static final int MAX_LITTER_SIZE = 2;
-    private static final int BREEDING_AGE = 26;
-    private static final int MAX_AGE = 140;
-    private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
-    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
+    private static final PredatorTraits TRAITS = new PredatorTraits(
+            Cheetah.class, 0.115, 2, 26, 140, 0.01, 0.01, 0.6, TimeOfDay.EARLY_AFTERNOON);
 
     /**
      * Constructor for a Cheetah in the simulation.
@@ -24,9 +19,7 @@ public class Cheetah extends Predator {
      * @param location The location in which this cheetah is spawned into.
      */
     public Cheetah(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(foodLevel, randomAge, field, location, Cheetah.class, BREEDING_PROBABILITY,
-                MAX_LITTER_SIZE, BREEDING_AGE, MAX_AGE, SPREAD_DISEASE_PROBABILITY,
-                DEATH_BY_DISEASE_PROBABILITY, TimeOfDay.EARLY_AFTERNOON, EATING_PROBABILITY);
+        super(foodLevel, randomAge, field, location, TRAITS);
     }
 
     /**

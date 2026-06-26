@@ -11,15 +11,7 @@ public abstract class Herbivore extends Prey {
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
-    private final Class<? extends Animal> speciesClass;
-    private final double breedingProbability;
-    private final int maxLitterSize;
-    private final int breedingAge;
-    private final int maxAge;
-    private final double diseaseSpreadProbability;
-    private final double deathByDiseaseProbability;
-    private final TimeOfDay reducedActivenessTime;
-    private final double reducedActiveness;
+    private final HerbivoreTraits traits;
     private double activeness;
 
     /**
@@ -29,22 +21,12 @@ public abstract class Herbivore extends Prey {
      * @param randomAge Whether we assign this herbivore a random age or not.
      * @param field The field in which this herbivore resides.
      * @param location The location in which this herbivore is spawned into.
+     * @param traits Immutable species configuration.
      */
     public Herbivore(int foodValue, boolean randomAge, Field field, Location location,
-                     Class<? extends Animal> speciesClass,
-                     double breedingProbability, int maxLitterSize, int breedingAge, int maxAge,
-                     double diseaseSpreadProbability, double deathByDiseaseProbability,
-                     TimeOfDay reducedActivenessTime, double reducedActiveness) {
-        super(foodValue, randomAge, field, location);
-        this.speciesClass = speciesClass;
-        this.breedingProbability = breedingProbability;
-        this.maxLitterSize = maxLitterSize;
-        this.breedingAge = breedingAge;
-        this.maxAge = maxAge;
-        this.diseaseSpreadProbability = diseaseSpreadProbability;
-        this.deathByDiseaseProbability = deathByDiseaseProbability;
-        this.reducedActivenessTime = reducedActivenessTime;
-        this.reducedActiveness = reducedActiveness;
+                     HerbivoreTraits traits) {
+        super(foodValue, randomAge, traits.maxAge, field, location);
+        this.traits = traits;
         this.activeness = 1;
     }
 
@@ -63,18 +45,18 @@ public abstract class Herbivore extends Prey {
         if (isAlive()) {
             giveBirth(newHerbivores);
 
-            if (rand.nextDouble() <= deathByDiseaseProbability) {
+            if (rand.nextDouble() <= traits.deathByDiseaseProbability) {
                 remove();
                 return;
             }
 
-            if (time == reducedActivenessTime) {
-                setActiveness(reducedActiveness);
+            if (time == traits.reducedActivenessTime) {
+                setActiveness(traits.reducedActiveness);
             }
 
             if (rand.nextDouble() <= getActiveness()) {
                 Location newLocation;
-                if (rand.nextDouble() <= diseaseSpreadProbability) {
+                if (rand.nextDouble() <= traits.diseaseSpreadProbability) {
                     newLocation = findAnimalToInfect();
                 } else {
                     newLocation = findFood();
@@ -96,11 +78,21 @@ public abstract class Herbivore extends Prey {
     }
 
     /**
+     * Checks all adjacent locations for compatible herbivore mates.
+     *
+     * @return Whether this herbivore can breed or not.
+     */
+    @Override
+    public boolean canBreed() {
+        return getAge() >= traits.breedingAge && hasCompatibleMateNearby(traits.speciesClass);
+    }
+
+    /**
      * @return The breeding probability for this herbivore species.
      */
     @Override
     public double getBreedingProbability() {
-        return breedingProbability;
+        return traits.breedingProbability;
     }
 
     /**
@@ -108,7 +100,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public int getMaxLitterSize() {
-        return maxLitterSize;
+        return traits.maxLitterSize;
     }
 
     /**
@@ -116,7 +108,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public int getMaxAge() {
-        return maxAge;
+        return traits.maxAge;
     }
 
     /**
@@ -124,7 +116,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     public int getBreedingAge() {
-        return breedingAge;
+        return traits.breedingAge;
     }
 
     /**
@@ -132,7 +124,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     protected double getDiseaseSpreadProbability() {
-        return diseaseSpreadProbability;
+        return traits.diseaseSpreadProbability;
     }
 
     /**
@@ -140,17 +132,7 @@ public abstract class Herbivore extends Prey {
      */
     @Override
     protected double getDeathByDiseaseProbability() {
-        return deathByDiseaseProbability;
-    }
-
-    /**
-     * Checks all adjacent location for herbivores that meet breeding conditions.
-     *
-     * @return Whether this herbivore can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        return getAge() >= breedingAge && hasCompatibleMateNearby(speciesClass);
+        return traits.deathByDiseaseProbability;
     }
 
     /**

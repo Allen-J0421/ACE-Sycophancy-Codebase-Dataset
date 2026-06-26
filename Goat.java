@@ -7,12 +7,8 @@
  */
 public class Goat extends Herbivore {
     private static final int DEFAULT_FOOD_VALUE = 5;
-    private static final double BREEDING_PROBABILITY = 0.3065;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int BREEDING_AGE = 10;
-    private static final int MAX_AGE = 150;
-    private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
-    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
+    private static final HerbivoreTraits TRAITS = new HerbivoreTraits(
+            Goat.class, 0.3065, 3, 10, 150, 0.1, 0.001, TimeOfDay.LATE_MORNING, 0.8);
 
     /**
      * Constructor for a Goat in the simulation.
@@ -22,9 +18,7 @@ public class Goat extends Herbivore {
      * @param location The location in which this goat is spawned into.
      */
     public Goat(int foodValue, boolean randomAge, Field field, Location location) {
-        super(foodValue, randomAge, field, location, Goat.class, BREEDING_PROBABILITY,
-                MAX_LITTER_SIZE, BREEDING_AGE, MAX_AGE, SPREAD_DISEASE_PROBABILITY,
-                DEATH_BY_DISEASE_PROBABILITY, TimeOfDay.LATE_MORNING, 0.8);
+        super(foodValue, randomAge, field, location, TRAITS);
     }
 
     /**

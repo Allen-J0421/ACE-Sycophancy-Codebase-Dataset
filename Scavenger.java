@@ -14,15 +14,11 @@ public abstract class Scavenger extends HungryAnimal {
      * @param randomAge Whether the scavenger should have a random age or not.
      * @param field The field in which the scavenger resides.
      * @param location The location in which the scavenger spawns into.
+     * @param traits Immutable species configuration.
      */
     public Scavenger(int foodLevel, boolean randomAge, Field field, Location location,
-                     Class<? extends Animal> speciesClass, double breedingProbability,
-                     int maxLitterSize, int breedingAge, int maxAge,
-                     double diseaseSpreadProbability, double deathByDiseaseProbability,
-                     TimeOfDay restingTime) {
-        super(foodLevel, randomAge, field, location, speciesClass, breedingProbability,
-                maxLitterSize, breedingAge, maxAge, diseaseSpreadProbability,
-                deathByDiseaseProbability, restingTime);
+                     AnimalTraits traits) {
+        super(foodLevel, randomAge, field, location, traits, TimeOfDay.SUNSET);
     }
 
     /**
@@ -47,7 +43,6 @@ public abstract class Scavenger extends HungryAnimal {
      */
     @Override
     public boolean eat(Consumable consumable) {
-        // the scavenger does not leave its prey
         consumable.setEaten();
         incrementFoodLevel(consumable.getFoodValue());
         return true;

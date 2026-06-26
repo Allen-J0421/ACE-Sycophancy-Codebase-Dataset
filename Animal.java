@@ -25,8 +25,8 @@ public abstract class Animal extends Organism implements AbleToEat {
      * @param field The field in which the animal resides.
      * @param location The location in which the animal spawns into.
      */
-    public Animal(boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
+    public Animal(boolean randomAge, int maxAge, Field field, Location location) {
+        super(randomAge, maxAge, field, location);
 
         // randomly assign male or female
         this.gender = Gender.getRandom();

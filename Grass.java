@@ -8,13 +8,8 @@
 public class Grass extends Plant {
     private static final double DEFAULT_SIZE = 1.00;
     private static final int DEFAULT_FOOD_VALUE = 5;
-    private static final double DEFAULT_GROWTH_RATE = 1.2;
-    private static final double MAX_SIZE = 10.0;
-    private static final int MAX_AGE = 25;
-    private static final int BREEDING_AGE = 16;
-    private static final int MAX_LITTER_SIZE = 2;
-    private static final double LOW_BREEDING_PROBABILITY = 0.15;
-    private static final double HIGH_BREEDING_PROBABILITY = 0.25;
+    private static final PlantTraits TRAITS = new PlantTraits(
+            10.0, 25, 16, 2, 0.15, 0.25, 1.2, WeatherType.RAIN, WeatherType.SUN);
 
     /**
      * Constructor for a Grass in the simulation.
@@ -24,10 +19,7 @@ public class Grass extends Plant {
      * @param location The location in which this grass is spawned into.
      */
     public Grass(int foodValue, double size, boolean randomAge, Field field, Location location) {
-        super(false, foodValue, size, randomAge, field, location, MAX_SIZE, MAX_AGE, BREEDING_AGE,
-                MAX_LITTER_SIZE, LOW_BREEDING_PROBABILITY, HIGH_BREEDING_PROBABILITY,
-                WeatherType.RAIN, WeatherType.SUN);
-        setGrowthRate(DEFAULT_GROWTH_RATE);
+        super(false, foodValue, size, randomAge, field, location, TRAITS);
     }
 
     /**

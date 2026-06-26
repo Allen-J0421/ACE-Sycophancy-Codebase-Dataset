@@ -7,8 +7,7 @@
  */
 public abstract class Predator extends HungryAnimal {
 
-    // define fields
-    private final double eatingProbability;
+    private final PredatorTraits traits;
 
     /**
      * Constructor for a predator in the simulation.
@@ -17,16 +16,12 @@ public abstract class Predator extends HungryAnimal {
      * @param randomAge Whether the predator should have a random age or not.
      * @param field The field in which the predator resides.
      * @param location The location in which the predator spawns into.
+     * @param traits Immutable species configuration.
      */
     public Predator(int foodLevel, boolean randomAge, Field field, Location location,
-                    Class<? extends Animal> speciesClass, double breedingProbability,
-                    int maxLitterSize, int breedingAge, int maxAge,
-                    double diseaseSpreadProbability, double deathByDiseaseProbability,
-                    TimeOfDay restingTime, double eatingProbability) {
-        super(foodLevel, randomAge, field, location, speciesClass, breedingProbability,
-                maxLitterSize, breedingAge, maxAge, diseaseSpreadProbability,
-                deathByDiseaseProbability, restingTime);
-        this.eatingProbability = eatingProbability;
+                    PredatorTraits traits) {
+        super(foodLevel, randomAge, field, location, traits, traits.restingTime);
+        this.traits = traits;
     }
 
     /**
@@ -54,7 +49,7 @@ public abstract class Predator extends HungryAnimal {
      */
     @Override
     public boolean eat(Consumable consumable) {
-        if (Randomizer.getRandom().nextDouble() <= eatingProbability) {
+        if (Randomizer.getRandom().nextDouble() <= traits.eatingProbability) {
             incrementFoodLevel(consumable.getFoodValue());
             consumable.setEaten();
             return true;

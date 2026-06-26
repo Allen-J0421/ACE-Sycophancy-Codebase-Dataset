@@ -11,13 +11,7 @@ public abstract class HungryAnimal extends Animal {
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
-    private final Class<? extends Animal> speciesClass;
-    private final double breedingProbability;
-    private final int maxLitterSize;
-    private final int breedingAge;
-    private final int maxAge;
-    private final double diseaseSpreadProbability;
-    private final double deathByDiseaseProbability;
+    private final AnimalTraits traits;
     private final TimeOfDay restingTime;
     private int foodLevel;
 
@@ -28,20 +22,12 @@ public abstract class HungryAnimal extends Animal {
      * @param randomAge Whether the animal should have a random age or not.
      * @param field The field in which this animal resides.
      * @param location The location in which this animal spawns into.
+     * @param traits Immutable species configuration.
      */
     public HungryAnimal(int foodLevel, boolean randomAge, Field field, Location location,
-                        Class<? extends Animal> speciesClass,
-                        double breedingProbability, int maxLitterSize, int breedingAge, int maxAge,
-                        double diseaseSpreadProbability, double deathByDiseaseProbability,
-                        TimeOfDay restingTime) {
-        super(randomAge, field, location);
-        this.speciesClass = speciesClass;
-        this.breedingProbability = breedingProbability;
-        this.maxLitterSize = maxLitterSize;
-        this.breedingAge = breedingAge;
-        this.maxAge = maxAge;
-        this.diseaseSpreadProbability = diseaseSpreadProbability;
-        this.deathByDiseaseProbability = deathByDiseaseProbability;
+                        AnimalTraits traits, TimeOfDay restingTime) {
+        super(randomAge, traits.maxAge, field, location);
+        this.traits = traits;
         this.restingTime = restingTime;
         this.foodLevel = foodLevel;
     }
@@ -50,8 +36,8 @@ public abstract class HungryAnimal extends Animal {
      * Shared hunting turn for predator and scavenger animals.
      *
      * @param newAnimals Newly born organisms from this turn.
+     * @param weather The current simulation weather.
      * @param time The current simulation time.
-     * @param restingTime The time of day when this animal stops acting.
      */
     @Override
     public void act(List<Entity> newAnimals, Weather weather, TimeOfDay time) {
@@ -68,13 +54,13 @@ public abstract class HungryAnimal extends Animal {
             return;
         }
 
-        if (rand.nextDouble() <= deathByDiseaseProbability) {
+        if (rand.nextDouble() <= traits.deathByDiseaseProbability) {
             remove();
             return;
         }
 
         Location newLocation;
-        if (rand.nextDouble() <= diseaseSpreadProbability) {
+        if (rand.nextDouble() <= traits.diseaseSpreadProbability) {
             newLocation = findAnimalToInfect();
         } else {
             newLocation = findFood();
@@ -96,7 +82,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public double getBreedingProbability() {
-        return breedingProbability;
+        return traits.breedingProbability;
     }
 
     /**
@@ -104,7 +90,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public int getMaxLitterSize() {
-        return maxLitterSize;
+        return traits.maxLitterSize;
     }
 
     /**
@@ -112,7 +98,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public int getMaxAge() {
-        return maxAge;
+        return traits.maxAge;
     }
 
     /**
@@ -120,7 +106,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public int getBreedingAge() {
-        return breedingAge;
+        return traits.breedingAge;
     }
 
     /**
@@ -128,7 +114,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     protected double getDiseaseSpreadProbability() {
-        return diseaseSpreadProbability;
+        return traits.diseaseSpreadProbability;
     }
 
     /**
@@ -136,7 +122,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     protected double getDeathByDiseaseProbability() {
-        return deathByDiseaseProbability;
+        return traits.deathByDiseaseProbability;
     }
 
     /**
@@ -146,7 +132,7 @@ public abstract class HungryAnimal extends Animal {
      */
     @Override
     public boolean canBreed() {
-        return getAge() >= breedingAge && hasCompatibleMateNearby(speciesClass);
+        return getAge() >= traits.breedingAge && hasCompatibleMateNearby(traits.speciesClass);
     }
 
     /**

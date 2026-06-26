@@ -31,7 +31,7 @@ public abstract class Organism implements Entity {
      * @param field The field in which this organism resides.
      * @param location The location in which this organism is spawned into.
      */
-    public Organism(boolean randomAge, Field field, Location location) {
+    public Organism(boolean randomAge, int maxAge, Field field, Location location) {
         this.howLongDead = 0;
         alive = true;
         removed = false;
@@ -39,7 +39,7 @@ public abstract class Organism implements Entity {
         setLocation(location);
 
         if (randomAge) {
-            age = rand.nextInt(getMaxAge());
+            age = rand.nextInt(maxAge);
         } else {
             age = 0;
         }

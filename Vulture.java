@@ -7,12 +7,8 @@
  */
 public class Vulture extends Scavenger {
     private static final int DEFAULT_FOOD_LEVEL = 40;
-    private static final double BREEDING_PROBABILITY = 0.08;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int BREEDING_AGE = 12;
-    private static final int MAX_AGE = 80;
-    private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
-    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
+    private static final AnimalTraits TRAITS = new AnimalTraits(
+            Vulture.class, 0.08, 3, 12, 80, 0.01, 0.001);
 
     /**
      * Constructor for a vulture in the simulation.
@@ -23,9 +19,7 @@ public class Vulture extends Scavenger {
      * @param location The location in which the vulture spawns into.
      */
     public Vulture(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(foodLevel, randomAge, field, location, Vulture.class, BREEDING_PROBABILITY,
-                MAX_LITTER_SIZE, BREEDING_AGE, MAX_AGE, SPREAD_DISEASE_PROBABILITY,
-                DEATH_BY_DISEASE_PROBABILITY, TimeOfDay.SUNSET);
+        super(foodLevel, randomAge, field, location, TRAITS);
     }
 
     /**

@@ -59,7 +59,7 @@ public class Grass extends Plant {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newGrass, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newGrass, Weather weather, TimeOfDay time) {
         actAsPlant(newGrass, weather);
     }
 

@@ -23,7 +23,7 @@ public class Simulator
     private static final int HOURS_PER_TIME_OF_DAY = 4;
 
     // List of organisms in the field.
-    private List<Entity> organisms;
+    private List<Organism> organisms;
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -102,11 +102,10 @@ public class Simulator
         step++;
 
         // Provide space for newborn organisms.
-        List<Entity> newOrganisms = new ArrayList<>();
+        List<Organism> newOrganisms = new ArrayList<>();
         // Let all organisms act.
-        for(Iterator<Entity> it = organisms.iterator(); it.hasNext(); ) {
-            Entity entity = it.next();
-            Organism organism = (Organism) entity;
+        for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
+            Organism organism = it.next();
 
             organism.act(newOrganisms, currentWeather, currentTime);
 

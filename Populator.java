@@ -47,7 +47,7 @@ public class Populator {
     /**
      * Randomly populate the field with organisms.
      */
-    public void populate(List<Entity> organisms, Field field)
+    public void populate(List<Organism> organisms, Field field)
     {
         Random rand = Randomizer.getRandom();
         field.clear();
@@ -66,7 +66,7 @@ public class Populator {
      * @param rand The random source.
      * @param location The location being populated.
      */
-    private void populateLocation(List<Entity> organisms, Field field, Random rand, Location location) {
+    private void populateLocation(List<Organism> organisms, Field field, Random rand, Location location) {
         for (PopulationRule rule : POPULATION_RULES) {
             if (rand.nextDouble() <= rule.getCreationProbability()) {
                 organisms.add(rule.create(field, location));
@@ -79,7 +79,7 @@ public class Populator {
      * Factory for creating organisms at a specific location.
      */
     private interface OrganismFactory {
-        Entity create(Field field, Location location);
+        Organism create(Field field, Location location);
     }
 
     /**
@@ -111,7 +111,7 @@ public class Populator {
             return creationProbability;
         }
 
-        Entity create(Field field, Location location) {
+        Organism create(Field field, Location location) {
             return factory.create(field, location);
         }
     }

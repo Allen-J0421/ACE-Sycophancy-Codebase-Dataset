@@ -33,7 +33,7 @@ public abstract class Scavenger extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newScavengers, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newScavengers, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -72,10 +72,10 @@ public abstract class Scavenger extends Animal {
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal instanceof Prey) {
-                Prey prey = (Prey) animal;
-                // eats animal if dead only
+            Organism organism = field.getOrganismAt(where);
+            if (organism instanceof Prey) {
+                Prey prey = (Prey) organism;
+                // eats prey if dead only
                 if (!prey.isAlive()) {
                     eat(prey);
                     return where;

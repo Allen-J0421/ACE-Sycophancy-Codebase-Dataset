@@ -38,7 +38,7 @@ public abstract class Predator extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPredators, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newPredators, Weather weather, TimeOfDay time);
 
     /**
      * Run the common predator lifecycle for one simulation step.
@@ -47,7 +47,7 @@ public abstract class Predator extends Animal {
      * @param time The current state of time in the simulation.
      * @param inactiveTime The time of day when this predator does not move or eat.
      */
-    protected void actAsPredator(List<Entity> newPredators, TimeOfDay time, TimeOfDay inactiveTime) {
+    protected void actAsPredator(List<Organism> newPredators, TimeOfDay time, TimeOfDay inactiveTime) {
         incrementAge();
         incrementHunger();
         if (isAlive()) {
@@ -84,11 +84,11 @@ public abstract class Predator extends Animal {
         while(it.hasNext()) {
             Location where = it.next();
 
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Prey) {
-                Prey prey = (Prey) animal;
+            Organism organism = field.getOrganismAt(where);
+            if(organism instanceof Prey) {
+                Prey prey = (Prey) organism;
                 if (prey.isAlive()) {
-                    // kills animal
+                    // kills prey
                     prey.setDead();
                     // random chance to eat
                     boolean eaten = eat(prey);

@@ -39,7 +39,7 @@ public abstract class Animal extends Organism implements AbleToEat {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newAnimals, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newAnimals, Weather weather, TimeOfDay time);
 
     /**
      * Called when a consumable food item may be eaten.
@@ -165,7 +165,7 @@ public abstract class Animal extends Organism implements AbleToEat {
         }
 
         for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object organism = getField().getObjectAt(loc);
+            Organism organism = getField().getOrganismAt(loc);
             if (species.isInstance(organism)) {
                 Animal animal = species.cast(organism);
                 if (animal.isMale() != isMale()) {
@@ -223,7 +223,7 @@ public abstract class Animal extends Organism implements AbleToEat {
         }
 
         for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object organism = getField().getObjectAt(loc);
+            Organism organism = getField().getOrganismAt(loc);
             if (organism instanceof Animal) {
                 Animal animal = (Animal) organism;
                 if (animal.isAlive() && (!animal.isInfected())) {

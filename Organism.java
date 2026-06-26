@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Organism implements Entity {
+public abstract class Organism {
 
     //number of steps an organism remains for after dying but not having been eaten
     private static final int LIFETIME_AFTER_DEATH = 40;
@@ -51,8 +51,7 @@ public abstract class Organism implements Entity {
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
-    @Override
-    abstract public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time);
 
     /**
      * Check whether the organism is alive or not.
@@ -190,7 +189,7 @@ public abstract class Organism implements Entity {
      * New births will be made into free adjacent locations.
      * @param newOrganisms A list to return newly born organisms.
      */
-    protected void giveBirth(List<Entity> newOrganisms) {
+    protected void giveBirth(List<Organism> newOrganisms) {
         // New organisms are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
@@ -243,10 +242,10 @@ public abstract class Organism implements Entity {
 
     /**
      * Prevents overcrowding of dead animals
-     * Remove the organism from the field after being dead for a s
-     * specified number of steps and not being eaten.
+     * Remove the organism from the field after being dead for a
+     * specified number of steps without being eaten.
      */
-    protected void decayifDead() {
+    protected void decayIfDead() {
         this.howLongDead++;
         if (this.howLongDead > LIFETIME_AFTER_DEATH){
             remove();

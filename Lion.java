@@ -61,7 +61,7 @@ public class Lion extends Predator {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newLions, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newLions, Weather weather, TimeOfDay time) {
         actAsPredator(newLions, time, TimeOfDay.NIGHT);
     }
 

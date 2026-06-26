@@ -5,7 +5,7 @@ import java.util.Random;
 
 /**
  * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal.
+ * Each position is able to store a single organism.
  *
  * @version 2016.02.29
  */
@@ -16,8 +16,8 @@ public class Field
     
     // The depth and width of the field.
     private int depth, width;
-    // Storage for the animals.
-    private Object[][] field;
+    // Storage for the organisms.
+    private Organism[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -28,7 +28,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new Organism[depth][width];
     }
     
     /**
@@ -53,47 +53,47 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an organism at the given location.
+     * If there is already an organism at the location it will
      * be lost.
-     * @param animal The animal to be placed.
+     * @param organism The organism to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void place(Organism organism, int row, int col)
     {
-        place(animal, new Location(row, col));
+        place(organism, new Location(row, col));
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an organism at the given location.
+     * If there is already an organism at the location it will
      * be lost.
-     * @param animal The animal to be placed.
-     * @param location Where to place the animal.
+     * @param organism The organism to be placed.
+     * @param location Where to place the organism.
      */
-    public void place(Object animal, Location location)
+    public void place(Organism organism, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        field[location.getRow()][location.getCol()] = organism;
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the organism at the given location, if any.
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The organism at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Organism getOrganismAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getOrganismAt(location.getRow(), location.getCol());
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the organism at the given location, if any.
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The organism at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Organism getOrganismAt(int row, int col)
     {
         return field[row][col];
     }
@@ -122,7 +122,7 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(getOrganismAt(next) == null) {
                 free.add(next);
             }
         }

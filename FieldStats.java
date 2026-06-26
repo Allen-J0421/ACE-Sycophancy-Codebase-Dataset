@@ -20,8 +20,8 @@ public class FieldStats
      */
     public FieldStats()
     {
-        // Set up a collection for counters for each type of animal that
-        // we might find
+        // Set up a collection for counters for each type of entity that
+        // we might find.
         counters = new HashMap<>();
         countsValid = true;
     }
@@ -76,7 +76,7 @@ public class FieldStats
     }
 
     /**
-     * Indicate that an animal count has been completed.
+     * Indicate that an entity count has been completed.
      */
     public void countFinished()
     {
@@ -114,9 +114,9 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
+                Organism organism = field.getOrganismAt(row, col);
+                if(organism != null) {
+                    incrementCount(organism.getClass());
                 }
             }
         }

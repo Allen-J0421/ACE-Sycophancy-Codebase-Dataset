@@ -40,7 +40,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPlants, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newPlants, Weather weather, TimeOfDay time);
 
     /**
      * Getter method for immutable species configuration.
@@ -55,7 +55,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @param newPlants A list of all newborn plants in this simulation step.
      * @param weather The current state of weather in the simulation.
      */
-    protected void actAsPlant(List<Entity> newPlants, Weather weather) {
+    protected void actAsPlant(List<Organism> newPlants, Weather weather) {
         if (isAlive()) {
             PlantProfile profile = getProfile();
             setBreedingProbability(profile.getLowBreedingProbability());

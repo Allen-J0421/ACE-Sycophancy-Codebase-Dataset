@@ -26,7 +26,7 @@ public class Simulator
     private static final double ZEBRA_CREATION_PROBABILITY = 0.08; //0.08
     // The probability that a giraffe will be created in any given grid position.
     private static final double GIRAFFE_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a giraffe will be created in any given grid position.
+    // The probability that a lemur will be created in any given grid position.
     private static final double LEMUR_CREATION_PROBABILITY = 0.081; //0.08
 
     // List of animals in the field.
@@ -180,32 +180,24 @@ public class Simulator
         List<LivingOrganism> newPlants = new ArrayList<>();
         
         // Let all animals act.
-        for(Iterator<LivingOrganism> it = animals.iterator(); it.hasNext(); ) 
+        for(Iterator<LivingOrganism> it = animals.iterator(); it.hasNext(); )
         {
             Animal animal = (Animal) it.next();
-            
-            if(animal != null) 
+            animal.act(newAnimals);
+            if(!animal.isAlive())
             {
-                animal.act(newAnimals);
-                
-                if (! animal.isAlive())
-                {
-                    it.remove();
-                }
+                it.remove();
             }
         }
-        
+
         // Let all plants act.
-        for(Iterator<LivingOrganism> it = plants.iterator(); it.hasNext(); ) {
+        for(Iterator<LivingOrganism> it = plants.iterator(); it.hasNext(); )
+        {
             Plant plant = (Plant) it.next();
-            if(plant != null) 
+            plant.act(newPlants);
+            if(!plant.isAlive())
             {
-                plant.act(newPlants);
-                
-                if (! plant.isAlive())
-                {
-                    it.remove();
-                }
+                it.remove();
             }
         }
         
@@ -252,26 +244,26 @@ public class Simulator
                 plants.add(plant);
                 
                 Animal animal = null;
-                
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) 
+
+                if(rand.nextDouble() <= LION_CREATION_PROBABILITY)
                 {
-                     animal = (Lion) new Lion(true, field, location, false, false);
+                    animal = new Lion(true, field, location, false, false);
                 }
                 else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY)
                 {
-                     animal = (Cheetah) new Cheetah(true, field, location, false, false);
+                    animal = new Cheetah(true, field, location, false, false);
                 }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) 
+                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY)
                 {
-                     animal = (Zebra) new Zebra(true, field, location, false, false);
+                    animal = new Zebra(true, field, location, false, false);
                 }
                 else if(rand.nextDouble() <= GIRAFFE_CREATION_PROBABILITY)
                 {
-                     animal = (Giraffe) new Giraffe(true, field, location, false, false);
+                    animal = new Giraffe(true, field, location, false, false);
                 }
-                else if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY) 
+                else if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY)
                 {
-                     animal = (Lemur) new Lemur(true, field, location, false, false);
+                    animal = new Lemur(true, field, location, false, false);
                 }
                 
                 if(animal != null) 

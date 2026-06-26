@@ -39,7 +39,7 @@ public abstract class Animal extends LivingOrganism
     protected int maxAge;
     // The likelihood of an animal breeding.
     protected double breedingProbability;
-    // whther the animal is infected or not
+    // Whether the animal is infected or not
     protected boolean infected;
     // The likelihood of an animal having a disease.
     protected double diseaseProbability;
@@ -47,7 +47,7 @@ public abstract class Animal extends LivingOrganism
     protected double diseaseSpreadProbability;
     // The likelihood of an animal dying from catching the disease
     protected double deathFromInfectionProbability;
-    // The likelihood of an animal becomming immune to the disease
+    // The likelihood of an animal becoming immune to the disease
     protected double immuneProbability;
     // whether the animal is immune or not
     protected boolean immune;
@@ -68,8 +68,8 @@ public abstract class Animal extends LivingOrganism
      * 
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param infected Intial state if the animal is infected or not
-     * @param immmune Intial state if the animal is immune or not
+     * @param infected Initial state if the animal is infected or not
+     * @param immune   Initial state if the animal is immune or not
      */
     public Animal(Field field, Location location, boolean infected, boolean immune)
     {
@@ -88,98 +88,102 @@ public abstract class Animal extends LivingOrganism
     
     /**
      * @Override
-     * 
+     *
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
-     * 
+     *
      * @param newAnimals A list to receive newly born animals.
      */
     public void act(List<LivingOrganism> newAnimals)
     {
         incrementAge();
         incrementHunger();
-        
-        // checks to see if the animal is going to die from it infection 
-        // or become immune
-        // if the animal becomes immune then it no longer is infected
-        if (!getIsImmune() && getIsInfected()) 
+        updateDiseaseState();
+
+        if(isAlive())
         {
-            if(rand.nextDouble() <= deathFromInfectionProbability) 
+            tryContractDisease();
+
+            if(isFemale && canBreed() && rand.nextDouble() <= breedingProbability)
             {
-                setDead();            
+                populate(newAnimals);
             }
-            else if(rand.nextDouble() <= immuneProbability) {
+
+            tryMove();
+        }
+    }
+
+    /**
+     * Progress the animal's disease/immunity status by one step:
+     * an infected animal may die or recover; an immune animal may lose immunity.
+     */
+    private void updateDiseaseState()
+    {
+        if(!immune && infected)
+        {
+            if(rand.nextDouble() <= deathFromInfectionProbability)
+            {
+                setDead();
+            }
+            else if(rand.nextDouble() <= immuneProbability)
+            {
                 immune = true;
                 infected = false;
             }
         }
-        // If the animal is immune and not infected, there is a chance
-        // of losing immunity.
-        else
+        else if(rand.nextDouble() <= immuneProbability / 15)
         {
-            if(rand.nextDouble() <= (immuneProbability / 15)) {
-                immune = false;
+            // Non-infected animals slowly lose immunity over time
+            immune = false;
+        }
+    }
+
+    /**
+     * Attempt to infect a susceptible (non-immune, non-infected) animal,
+     * either via a neighbouring infected animal or spontaneously.
+     */
+    private void tryContractDisease()
+    {
+        if(immune || infected)
+        {
+            return;
+        }
+        if(surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
+        {
+            infected = true;
+        }
+        else if(rand.nextDouble() <= diseaseProbability)
+        {
+            infected = true;
+        }
+    }
+
+    /**
+     * Attempt to move: first towards food, then to any free adjacent cell.
+     * Dies from overcrowding if no adjacent cell is free.
+     */
+    private void tryMove()
+    {
+        Location newLocation = findFood();
+
+        if(newLocation == null)
+        {
+            Location freeLocation = getField().freeAdjacentLocation(getLocation(), Animal.class);
+
+            if(freeLocation == null && rand.nextDouble() < 0.3)
+            {
+                setDead();
+            }
+
+            if(rand.nextDouble() <= movementProbability)
+            {
+                newLocation = freeLocation;
             }
         }
-        
-        if(isAlive()) 
+
+        if(newLocation != null)
         {
-            if(!getIsImmune() && !getIsInfected())
-            {
-                // checks to see if the animal is going to catch a disease from
-                // its surroundings.
-
-                if (surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
-                {
-                    infected = true;
-                }
-                
-                // checks to see if the animal is going to get a disease out 
-                // of nowhere.
-                else if (rand.nextDouble() <= diseaseProbability) 
-                {
-                    infected = true;           
-                }
-            }
-            
-            // checks to see if the animal is able to give birth
-            if(this.getIsFemale()) 
-            {
-                if(canBreed() && rand.nextDouble() <= breedingProbability)
-                {
-                    populate(newAnimals);
-                }
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            
-            if(newLocation == null) 
-            { 
-                Location possibleNewLocation = getField().freeAdjacentLocation(getLocation(), Animal.class);
-                
-                if (possibleNewLocation == null) 
-                {
-                    // no free adjacent locations therefore it is 
-                    // overcrowded
-                    if (rand.nextDouble() < 0.3) 
-                    {
-                        setDead();
-                    }
-                }
-                
-                // No food found and there is a free location - move there.
-                if (rand.nextDouble() <= movementProbability) 
-                {
-                    newLocation = possibleNewLocation;
-                }
-            }
-            
-            // Move to new location
-            if(newLocation != null)
-            { 
-                setLocation(newLocation);
-            }
+            setLocation(newLocation);
         }
     }
     
@@ -258,14 +262,10 @@ public abstract class Animal extends LivingOrganism
      */
     protected void setLocation(Location newLocation)
     {
-        if(location != null) 
+        if(location != null)
         {
-            if(field.getObjectAt(location, Animal.class) != null)
-            {
-                field.clear(location, Animal.class);
-            }
+            field.clear(location, Animal.class);
         }
-        
         location = newLocation;
         field.place(this, newLocation);
     }

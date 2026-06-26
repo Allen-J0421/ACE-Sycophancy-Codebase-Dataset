@@ -21,15 +21,12 @@ import savannah.model.Weather;
  */
 public class SimulationEngine
 {
-    private final SimulationConfig config;
+    private final SimulationContext context;
     private final List<LivingOrganism> animals;
     private final List<LivingOrganism> plants;
-    private final Field field;
 
     public SimulationEngine(int depth, int width, SimulationConfig config)
     {
-        this.config = config;
-
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
@@ -39,23 +36,24 @@ public class SimulationEngine
 
         animals = new ArrayList<>();
         plants = new ArrayList<>();
-        field = new Field(depth, width);
+        context = new SimulationContext(new Field(depth, width), config);
+        context.setEngine(this);
         reset();
     }
 
     public Field getField()
     {
-        return field;
+        return context.getField();
     }
 
     public int getDepth()
     {
-        return field.getDepth();
+        return context.getField().getDepth();
     }
 
     public int getWidth()
     {
-        return field.getWidth();
+        return context.getField().getWidth();
     }
 
     public void reset()
@@ -99,12 +97,13 @@ public class SimulationEngine
     private void populate()
     {
         Random rand = Randomizer.getRandom();
+        Field field = context.getField();
         field.clear();
 
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                plants.add(SpeciesType.PLANT.createPlant(true, field, location, config));
+                plants.add(SpeciesType.PLANT.createPlant(context, true, location));
 
                 Animal animal = createInitialAnimal(location, rand);
                 if (animal != null) {
@@ -116,20 +115,21 @@ public class SimulationEngine
 
     private Animal createInitialAnimal(Location location, Random rand)
     {
+        savannah.config.SimulationConfig config = context.getConfig();
         if (rand.nextDouble() <= config.lionCreationProbability) {
-            return SpeciesType.LION.createAnimal(field, location, true, false, false, config);
+            return SpeciesType.LION.createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.cheetahCreationProbability) {
-            return SpeciesType.CHEETAH.createAnimal(field, location, true, false, false, config);
+            return SpeciesType.CHEETAH.createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.zebraCreationProbability) {
-            return SpeciesType.ZEBRA.createAnimal(field, location, true, false, false, config);
+            return SpeciesType.ZEBRA.createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.giraffeCreationProbability) {
-            return SpeciesType.GIRAFFE.createAnimal(field, location, true, false, false, config);
+            return SpeciesType.GIRAFFE.createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.lemurCreationProbability) {
-            return SpeciesType.LEMUR.createAnimal(field, location, true, false, false, config);
+            return SpeciesType.LEMUR.createAnimal(context, location, true, false, false);
         }
 
         return null;

@@ -1,6 +1,7 @@
 package savannah.model;
 
 import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 
 /**
  * A simple model of a Giraffe.
@@ -20,9 +21,9 @@ public class Giraffe extends Prey
      * @param isInfected Whether or not the animal will be infected.
      * @param isImmune Whether or not the animal will be immune.
      */
-    public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
+    public Giraffe(SimulationContext context, boolean randomAge, Location location, boolean isInfected, boolean isImmune)
     {
-        this(randomAge, field, location, isInfected, isImmune, SimulationConfig.DEFAULT);
+        super(context, location, randomAge, isInfected, isImmune, SpeciesType.GIRAFFE);
     }
 
     /**
@@ -36,8 +37,13 @@ public class Giraffe extends Prey
      * @param isImmune Whether or not the animal will be immune.
      * @param config Shared simulation configuration.
      */
+    public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
+    {
+        this(new SimulationContext(field, SimulationConfig.DEFAULT), randomAge, location, isInfected, isImmune);
+    }
+
     public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
     {
-        super(field, location, randomAge, isInfected, isImmune, SpeciesType.GIRAFFE, config);
+        this(new SimulationContext(field, config), randomAge, location, isInfected, isImmune);
     }
 }

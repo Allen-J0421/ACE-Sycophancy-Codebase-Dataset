@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Random;
 
 import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 
 /**
  * Enumerates the supported species and their behavior/attribute mappings.
@@ -13,49 +14,49 @@ public enum SpeciesType
     LION("Lion", Color.RED, Color.WHITE)
     {
         @Override
-        public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+        public Animal createAnimal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune)
         {
-            return new Lion(randomAge, field, location, infected, immune, config);
+            return new Lion(context, randomAge, location, infected, immune);
         }
     },
     CHEETAH("Cheetah", Color.ORANGE, Color.BLACK)
     {
         @Override
-        public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+        public Animal createAnimal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune)
         {
-            return new Cheetah(randomAge, field, location, infected, immune, config);
+            return new Cheetah(context, randomAge, location, infected, immune);
         }
     },
     ZEBRA("Zebra", Color.BLACK, Color.WHITE)
     {
         @Override
-        public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+        public Animal createAnimal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune)
         {
-            return new Zebra(randomAge, field, location, infected, immune, config);
+            return new Zebra(context, randomAge, location, infected, immune);
         }
     },
     GIRAFFE("Giraffe", Color.YELLOW, Color.BLACK)
     {
         @Override
-        public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+        public Animal createAnimal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune)
         {
-            return new Giraffe(randomAge, field, location, infected, immune, config);
+            return new Giraffe(context, randomAge, location, infected, immune);
         }
     },
     LEMUR("Lemur", Color.BLUE, Color.WHITE)
     {
         @Override
-        public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+        public Animal createAnimal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune)
         {
-            return new Lemur(randomAge, field, location, infected, immune, config);
+            return new Lemur(context, randomAge, location, infected, immune);
         }
     },
     PLANT("Plant", Color.GREEN, Color.BLACK)
     {
         @Override
-        public Plant createPlant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config)
+        public Plant createPlant(SimulationContext context, boolean randomHealthPercentage, Location location)
         {
-            return new Plant(randomHealthPercentage, field, location, config);
+            return new Plant(context, randomHealthPercentage, location);
         }
     };
 
@@ -181,13 +182,23 @@ public enum SpeciesType
         };
     }
 
-    public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+    public Animal createAnimal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune)
     {
         throw new UnsupportedOperationException(displayName + " is not an animal factory");
     }
 
-    public Plant createPlant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config)
+    public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
+    {
+        return createAnimal(new SimulationContext(field, config), location, randomAge, infected, immune);
+    }
+
+    public Plant createPlant(SimulationContext context, boolean randomHealthPercentage, Location location)
     {
         throw new UnsupportedOperationException(displayName + " is not a plant factory");
+    }
+
+    public Plant createPlant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config)
+    {
+        return createPlant(new SimulationContext(field, config), randomHealthPercentage, location);
     }
 }

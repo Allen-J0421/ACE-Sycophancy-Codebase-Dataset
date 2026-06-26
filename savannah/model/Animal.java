@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 /**
  * A class representing shared characteristics of animals.
  *
@@ -51,26 +52,13 @@ public abstract class Animal extends LivingOrganism
      * @param infected Intial state if the animal is infected or not
      * @param immmune Intial state if the animal is immune or not
      */
-    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
+    public Animal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
     {
-        this(field, location, randomAge, infected, immune, speciesType, SimulationConfig.DEFAULT);
-    }
-
-    /**
-     * Create a new animal at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected Intial state if the animal is infected or not
-     * @param immmune Intial state if the animal is immune or not
-     * @param config Shared simulation configuration.
-     */
-    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
-    {
-        super(field, location, speciesType, config);
+        super(context, location, speciesType);
         this.infected = infected;
         this.immune = immune;
 
+        SimulationConfig config = getConfig();
         SimulationConfig.SpeciesConfig speciesConfig = speciesType.animalConfig(config);
         breedingAge = speciesConfig.breedingAge;
         maxAge = speciesConfig.maxAge;
@@ -87,6 +75,34 @@ public abstract class Animal extends LivingOrganism
         isFemale = rand.nextBoolean();
         age = speciesType.initialAge(randomAge, rand, config);
         foodLevel = speciesType.initialFoodLevel(randomAge, rand, config);
+    }
+
+    /**
+     * Create a new animal at location in field.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param infected Intial state if the animal is infected or not
+     * @param immmune Intial state if the animal is immune or not
+     * @param config Shared simulation configuration.
+     */
+    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
+    {
+        this(new SimulationContext(field, SimulationConfig.DEFAULT), location, randomAge, infected, immune, speciesType);
+    }
+
+    /**
+     * Create a new animal at location in field.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param infected Intial state if the animal is infected or not
+     * @param immmune Intial state if the animal is immune or not
+     * @param config Shared simulation configuration.
+     */
+    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
+    {
+        this(new SimulationContext(field, config), location, randomAge, infected, immune, speciesType);
     }
     
     /**
@@ -120,7 +136,7 @@ public abstract class Animal extends LivingOrganism
         // of losing immunity.
         else
         {
-            if(rand.nextDouble() <= config.immuneLossProbability) {
+            if(rand.nextDouble() <= getConfig().immuneLossProbability) {
                 immune = false;
             }
         }
@@ -165,7 +181,7 @@ public abstract class Animal extends LivingOrganism
                 {
                     // no free adjacent locations therefore it is 
                     // overcrowded
-                    if (rand.nextDouble() < config.overcrowdingDeathProbability) 
+                    if (rand.nextDouble() < getConfig().overcrowdingDeathProbability) 
                     {
                         setDead();
                     }
@@ -206,7 +222,7 @@ public abstract class Animal extends LivingOrganism
         
         if(location != null) 
         {
-            field.clear(location, Animal.class);
+            getField().clear(location, Animal.class);
             location = null;
         }
     }
@@ -237,14 +253,14 @@ public abstract class Animal extends LivingOrganism
     {
         if(location != null) 
         {
-            if(field.getObjectAt(location, Animal.class) != null)
+            if(getField().getObjectAt(location, Animal.class) != null)
             {
-                field.clear(location, Animal.class);
+                getField().clear(location, Animal.class);
             }
         }
         
         location = newLocation;
-        field.place(this, newLocation);
+        getField().place(this, newLocation);
     }
     
     /**
@@ -317,7 +333,7 @@ public abstract class Animal extends LivingOrganism
     protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
     {
         OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return speciesType.createAnimal(field, location, false, healthState.isInfected(), healthState.isImmune(), config);
+        return speciesType.createAnimal(getContext(), location, false, healthState.isInfected(), healthState.isImmune());
     }
 
     /**
@@ -334,13 +350,13 @@ public abstract class Animal extends LivingOrganism
         boolean offspringIsImmune = motherIsImmune;
         
         // If the mother is immune and infected, there is a chance the child gets immunity.
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < config.offspringImmuneInheritanceProbability) 
+        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < getConfig().offspringImmuneInheritanceProbability) 
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
         }
         // If the mother is immune, there is a chance the child is not immune.
-        else if (motherIsImmune && rand.nextDouble() < config.offspringLoseImmunityProbability)
+        else if (motherIsImmune && rand.nextDouble() < getConfig().offspringLoseImmunityProbability)
         {
             offspringIsImmune = false;
         }

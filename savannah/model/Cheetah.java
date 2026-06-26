@@ -1,6 +1,7 @@
 package savannah.model;
 
 import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 
 /**
  * A simple model of a cheetah.
@@ -20,9 +21,9 @@ public class Cheetah extends Predator
      * @param isInfected Whether or not the animal will be infected.
      * @param isImmune Whether or not the animal will be immune.
      */
-    public Cheetah(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
+    public Cheetah(SimulationContext context, boolean randomAge, Location location, boolean isInfected, boolean isImmune)
     {
-        this(randomAge, field, location, isInfected, isImmune, SimulationConfig.DEFAULT);
+        super(context, location, randomAge, isInfected, isImmune, SpeciesType.CHEETAH);
     }
 
     /**
@@ -36,8 +37,13 @@ public class Cheetah extends Predator
      * @param isImmune Whether or not the animal will be immune.
      * @param config Shared simulation configuration.
      */
+    public Cheetah(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
+    {
+        this(new SimulationContext(field, SimulationConfig.DEFAULT), randomAge, location, isInfected, isImmune);
+    }
+
     public Cheetah(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
     {
-        super(field, location, randomAge, isInfected, isImmune, SpeciesType.CHEETAH, config);
+        this(new SimulationContext(field, config), randomAge, location, isInfected, isImmune);
     }
 }

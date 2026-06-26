@@ -3,7 +3,7 @@ package savannah.model;
 import java.util.List;
 import java.util.Random;
 
-import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 
 /**
  * A class representing the shared characteristics between Living Organisms.
@@ -16,14 +16,12 @@ public abstract class LivingOrganism
     protected final SpeciesType speciesType;
     // Whether the organism is alive or not.
     protected boolean alive;
-    // The field the organism is stored in.
-    protected Field field;
     // The organism's position in the field.
     protected Location location;
     // The food value of itself - how much the hunter's food level increases when eating it.
     protected int foodValue;
-    // Shared configuration for the organism.
-    protected final SimulationConfig config;
+    // Shared simulation state.
+    protected final SimulationContext context;
     
     // A shared random number generator to control breeding.
     protected static final Random rand = Randomizer.getRandom();
@@ -34,23 +32,10 @@ public abstract class LivingOrganism
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    protected LivingOrganism(Field field, Location location, SpeciesType speciesType) 
+    protected LivingOrganism(SimulationContext context, Location location, SpeciesType speciesType) 
     {
-        this(field, location, speciesType, SimulationConfig.DEFAULT);
-    }
-
-    /**
-     * Creates a new Organism at the location.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param config Shared simulation configuration.
-     */
-    protected LivingOrganism(Field field, Location location, SpeciesType speciesType, SimulationConfig config) 
-    {
+        this.context = context;
         alive = true;
-        this.field = field;
-        this.config = config;
         this.speciesType = speciesType;
         setLocation(location);
     }
@@ -132,8 +117,27 @@ public abstract class LivingOrganism
      */
     protected Field getField()
     {
-        return field;
+        return context.getField();
+    }
+
+    /**
+     * Return the shared simulation configuration.
+     *
+     * @return The simulation configuration.
+     */
+    protected savannah.config.SimulationConfig getConfig()
+    {
+        return context.getConfig();
+    }
+
+    /**
+     * Return the shared simulation context.
+     *
+     * @return The simulation context.
+     */
+    protected SimulationContext getContext()
+    {
+        return context;
     }
 }
-
 

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 /**
  * A class representing the shared characteristics between predators
  *
@@ -22,9 +23,24 @@ public abstract class Predator extends Animal
      * @param infected : intial state if the prey is infected or not
      * @param immmune : intial state if the prey is immune or not
      */
+    protected Predator(SimulationContext context, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType)
+    {
+        super(context, location, randomAge, isInfected, isImmune, speciesType);
+        preyCatchingProbability = speciesType.animalConfig(getConfig()).preyCatchingProbability;
+    }
+
+    /**
+     * Create a new predator at location in field.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param infected : intial state if the prey is infected or not
+     * @param immmune : intial state if the prey is immune or not
+     * @param config Shared simulation configuration.
+     */
     protected Predator(Field field, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType)
     {
-        this(field, location, randomAge, isInfected, isImmune, speciesType, SimulationConfig.DEFAULT);
+        this(new SimulationContext(field, SimulationConfig.DEFAULT), location, randomAge, isInfected, isImmune, speciesType);
     }
 
     /**
@@ -38,8 +54,7 @@ public abstract class Predator extends Animal
      */
     protected Predator(Field field, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType, SimulationConfig config)
     {
-        super(field, location, randomAge, isInfected, isImmune, speciesType, config);
-        preyCatchingProbability = speciesType.animalConfig(config).preyCatchingProbability;
+        this(new SimulationContext(field, config), location, randomAge, isInfected, isImmune, speciesType);
     }
     
     /**

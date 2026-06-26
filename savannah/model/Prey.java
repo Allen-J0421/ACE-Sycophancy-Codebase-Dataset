@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import savannah.config.SimulationConfig;
+import savannah.engine.SimulationContext;
 
 /**
  * A class representing the shared characteristics between Prey
@@ -20,9 +21,23 @@ public abstract class Prey extends Animal
      * @param infected Intial state if the prey is infected or not
      * @param immmune Intial state if the prey is immune or not
      */
+    protected Prey(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
+    {
+        super(context, location, randomAge, infected, immune, speciesType);
+    }
+
+    /**
+     * Create a new prey at location in field.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param infected Intial state if the prey is infected or not
+     * @param immmune Intial state if the prey is immune or not
+     * @param config Shared simulation configuration.
+     */
     protected Prey(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
     {
-        this(field, location, randomAge, infected, immune, speciesType, SimulationConfig.DEFAULT);
+        this(new SimulationContext(field, SimulationConfig.DEFAULT), location, randomAge, infected, immune, speciesType);
     }
 
     /**
@@ -36,7 +51,7 @@ public abstract class Prey extends Animal
      */
     protected Prey(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
     {
-        super(field, location, randomAge, infected, immune, speciesType, config);
+        this(new SimulationContext(field, config), location, randomAge, infected, immune, speciesType);
     }
 
     /**

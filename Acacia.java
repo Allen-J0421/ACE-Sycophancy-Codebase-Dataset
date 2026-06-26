@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of an acacia plant.
  * Acacia plants reproduce and grow into other locations
@@ -24,27 +22,10 @@ public class Acacia extends Plant
      */
     public Acacia(Field field, Location location)
     {
-        super(field, location);
-    }
-
-    /**
-     * This is what the acacia does most of the time:
-     * it grows and reproduces offspring into adjacent locations
-     * @param newAcacias A list to return newly produced acacia.
-     */
-    public void act(List<Plant> newAcacias) {
-        performAct(newAcacias);
+        super(field, location, REPRODUCING_PROBABILITY, MAX_OFFSPRING_SIZE);
     }
 
     protected Plant createYoung(Field field, Location location) {
         return new Acacia(field, location);
-    }
-
-    protected double getReproducingProbability() {
-        return REPRODUCING_PROBABILITY;
-    }
-
-    protected int getMaxOffspringSize() {
-        return MAX_OFFSPRING_SIZE;
     }
 }

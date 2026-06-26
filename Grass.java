@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of a grass plant.
  * Grass plants reproduce and grow into other locations
@@ -23,27 +21,10 @@ public class Grass extends Plant
      * @param location The location within the field.
      */
     public Grass(Field field, Location location) {
-        super(field, location);
-    }
-
-    /**
-     * This is what the grass does most of the time:
-     * it grows and reproduces offspring into adjacent locations
-     * @param newGrass A list to return newly produced grasses.
-     */
-    public void act(List<Plant> newGrass) {
-        performAct(newGrass);
+        super(field, location, REPRODUCING_PROBABILITY, MAX_OFFSPRING_SIZE);
     }
 
     protected Plant createYoung(Field field, Location location) {
         return new Grass(field, location);
-    }
-
-    protected double getReproducingProbability() {
-        return REPRODUCING_PROBABILITY;
-    }
-
-    protected int getMaxOffspringSize() {
-        return MAX_OFFSPRING_SIZE;
     }
 }

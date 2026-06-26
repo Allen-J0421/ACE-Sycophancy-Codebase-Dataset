@@ -9,6 +9,10 @@ import java.util.Random;
 
 public abstract class Plant extends Organism
 {
+    // The probability that the plant reproduces in one step.
+    private final double reproducingProbability;
+    // The maximum number of offspring the plant can produce.
+    private final int maxOffspringSize;
     // whether it is raining or not
     private boolean rain;
 
@@ -21,8 +25,10 @@ public abstract class Plant extends Organism
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Plant(Field field, Location location) {
+    public Plant(Field field, Location location, double reproducingProbability, int maxOffspringSize) {
         super(field, location);
+        this.reproducingProbability = reproducingProbability;
+        this.maxOffspringSize = maxOffspringSize;
         rain = false;
     }
 
@@ -31,7 +37,9 @@ public abstract class Plant extends Organism
      * whatever it wants/needs to do.
      * @param newPlants A list to receive newly created plants.
      */
-    abstract public void act(List<Plant> newPlants);
+    public final void act(List<Plant> newPlants) {
+        performAct(newPlants);
+    }
 
     /**
      * Create a new plant of the current species.
@@ -40,16 +48,6 @@ public abstract class Plant extends Organism
      * @return A new plant of the current species.
      */
     abstract protected Plant createYoung(Field field, Location location);
-
-    /**
-     * @return The probability that this plant reproduces in one step.
-     */
-    abstract protected double getReproducingProbability();
-
-    /**
-     * @return The maximum number of offspring this plant can produce.
-     */
-    abstract protected int getMaxOffspringSize();
 
     /**
      * assign true to rain
@@ -94,7 +92,7 @@ public abstract class Plant extends Organism
     private void grow(List<Plant> newPlants) {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int offspring = breed(getReproducingProbability(), getMaxOffspringSize());
+        int offspring = breed(reproducingProbability, maxOffspringSize);
         for(int b = 0; b < offspring && free.size() > 0; b++) {
             Location location = free.remove(0);
             Plant young = createYoung(field, location);

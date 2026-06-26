@@ -7,19 +7,24 @@ class RodCuttingSolver implements Solver {
         CutChoiceTable cutChoice = new CutChoiceTable(n);
 
         for (int i = 1; i <= n; i++) {
-            computeBestCut(i, prices, revenue, cutChoice);
+            BestCut best = computeBestCut(i, prices, revenue);
+            revenue.set(i, best.revenue());
+            cutChoice.set(i, best.cutLength());
         }
 
         return new RodCuttingSolution(revenue.get(n), cutChoice.reconstructCuts(n));
     }
 
-    private void computeBestCut(int rodLength, PriceTable prices, RevenueTable revenue, CutChoiceTable cutChoice) {
+    private BestCut computeBestCut(int rodLength, PriceTable prices, RevenueTable revenue) {
+        int bestRevenue = 0;
+        int bestCut = 0;
         for (int cut = 1; cut <= rodLength; cut++) {
             int candidate = prices.priceAt(cut) + revenue.get(rodLength - cut);
-            if (candidate > revenue.get(rodLength)) {
-                revenue.set(rodLength, candidate);
-                cutChoice.set(rodLength, cut);
+            if (candidate > bestRevenue) {
+                bestRevenue = candidate;
+                bestCut = cut;
             }
         }
+        return new BestCut(bestCut, bestRevenue);
     }
 }

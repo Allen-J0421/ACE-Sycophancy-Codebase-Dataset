@@ -50,16 +50,16 @@ public class Weather {
 
         this.hours = rand.nextInt(MAX_HOURS);
 
-        // Switch statements can't be used here due to double accuracy rules.
-        if (rand.nextDouble() <= SUN_PROBABILITY) {
+        double r = rand.nextDouble();
+        if (r < SUN_PROBABILITY) {
             type = WeatherType.SUN;
-        } else if (rand.nextDouble() <= RAIN_PROBABILITY) {
+        } else if (r < SUN_PROBABILITY + RAIN_PROBABILITY) {
             type = WeatherType.RAIN;
-        } else if (rand.nextDouble() <= FOG_PROBABILITY) {
+        } else if (r < SUN_PROBABILITY + RAIN_PROBABILITY + FOG_PROBABILITY) {
             type = WeatherType.FOG;
-        } else if (rand.nextDouble() <= SNOW_PROBABILITY) {
+        } else if (r < SUN_PROBABILITY + RAIN_PROBABILITY + FOG_PROBABILITY + SNOW_PROBABILITY) {
             type = WeatherType.SNOW;
-        } else if (rand.nextDouble() <= STORM_PROBABILITY) {
+        } else if (r < SUN_PROBABILITY + RAIN_PROBABILITY + FOG_PROBABILITY + SNOW_PROBABILITY + STORM_PROBABILITY) {
             type = WeatherType.STORM;
         }
 

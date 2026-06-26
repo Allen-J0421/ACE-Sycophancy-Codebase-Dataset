@@ -33,14 +33,42 @@ public abstract class Predator extends Animal {
     }
 
     /**
-     * Abstract method for what the predator does, i.e. what is always run at every step.
+     * Returns the time of day when this predator rests and skips its turn.
      *
-     * @param newPredators A list of all newborn predators in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @return The TimeOfDay at which this predator is inactive.
+     */
+    abstract public TimeOfDay getRestTime();
+
+    /**
+     * Performs one simulation step: ages, hungers, breeds, spreads disease, hunts, and moves.
+     *
+     * @param newOrganisms A list to receive newborn organisms this step.
+     * @param weather The current weather state.
+     * @param time The current time of day.
      */
     @Override
-    abstract public void act(List<Entity> newPredators, Weather weather, TimeOfDay time);
+    public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
+        incrementAge();
+        incrementHunger();
+        if (isAlive()) {
+            giveBirth(newOrganisms);
+            if (time == getRestTime()) return;
+            if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
+                remove();
+                return;
+            }
+            Location newLocation = rand.nextDouble() <= getDiseaseSpreadProbability()
+                ? findAnimalToInfect() : findFood();
+            if (newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            if (newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                remove();
+            }
+        }
+    }
 
     /**
      * Finds the nearest food source and returns its location.
@@ -97,15 +125,6 @@ public abstract class Predator extends Animal {
             return false;
         }
     }
-
-    /**
-     * Checks all adjacent location for predators that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this lion can breed or not.
-     */
-    @Override
-    abstract protected boolean canBreed();
 
     /**
      * Increase the predator's food level by a given integer amount.

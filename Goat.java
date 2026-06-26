@@ -1,7 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -22,12 +18,10 @@ public class Goat extends Prey {
     private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
 
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
-
     /**
      * Constructor for a Goat in the simulation.
      *
+     * @param foodValue The initial food value of this goat.
      * @param randomAge Whether we assign this goat a random age or not.
      * @param field The field in which this goat resides.
      * @param location The location in which this goat is spawned into.
@@ -36,184 +30,48 @@ public class Goat extends Prey {
         super(foodValue, randomAge, field, location);
     }
 
-    /**
-     * Getter method for the probability to breed of the goat.
-     *
-     * @return A double value representing the breeding probability.
-     */
     @Override
     public double getBreedingProbability() {
         return BREEDING_PROBABILITY;
     }
 
-    /**
-     * Getter method for the maximum litter size of the goat's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
     @Override
     public int getMaxLitterSize() {
         return MAX_LITTER_SIZE;
     }
 
-    /**
-     * Getter method for the maximum age of the goat.
-     *
-     * @return An integer value representing the maximum age.
-     */
     @Override
     public int getMaxAge() {
         return MAX_AGE;
     }
 
-    /**
-     * Getter method for the age of breeding of the goat.
-     *
-     * @return A double value representing the breeding age.
-     */
     @Override
     public int getBreedingAge() {
         return BREEDING_AGE;
     }
 
-    /**
-     * Getter method to return this goat's disease spreading probability.
-     *
-     * @return The goat's disease spreading probability.
-     */
     @Override
     protected double getDiseaseSpreadProbability() {
         return SPREAD_DISEASE_PROBABILITY;
     }
 
-    /**
-     * Getter method to return the probability this goat dies from disease.
-     *
-     * @return The goat's disease death probability.
-     */
     @Override
     protected double getDeathByDiseaseProbability() {
         return DEATH_BY_DISEASE_PROBABILITY;
     }
 
-    /**
-     * Create a new instance of goat.
-     * @param field The field in which the spawn will reside in.
-     * @param location The location in which the spawn will occupy.
-     * @return A new goat instance.
-     */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Goat(DEFAULT_FOOD_VALUE, true, field, location);
     }
 
-    /**
-     * Method for what the goat does, i.e. what is always run at every step.
-     *
-     * @param newGoats A list of all newborn goats in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
     @Override
-    public void act(List<Entity> newGoats, Weather weather, TimeOfDay time) {
-        incrementAge();
-        setActiveness(1);
-
-        if(isAlive()) {
-            giveBirth(newGoats);
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            if (time == TimeOfDay.LATE_MORNING){
-                this.setActiveness(0.8);
-            }
-
-            if (rand.nextDouble() <= getActiveness()){
-                // Try to move into a free location.
-                Location newLocation;
-
-                if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                    newLocation = findAnimalToInfect();
-                } else {
-                    newLocation = findFood();
-                }
-
-                // Random chance to do either?
-
-                if ((newLocation == null) || (getFoodValue() > 10)) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    // Overcrowding.
-                    //setDead();
-                    remove();
-                }
-            }
-        } else {
-            decayifDead();
-        }
+    protected TimeOfDay getRestTime() {
+        return TimeOfDay.LATE_MORNING;
     }
 
-    /**
-     * Checks all adjacent location for goats that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this goat can breed or not.
-     */
     @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Goat) {
-                Goat goat = (Goat) animal;
-                if (!(((goat.isMale() && isMale())) || ((!goat.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find a food source the goat would want to eat.
-     * @return The location of the food source.
-     */
-    @Override
-    public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Object organism = field.getObjectAt(where);
-            if(organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-                // kills animal
-                //prey.setDead();
-                //eatOrLeave(prey);
-                if (plant.isAlive()) {
-                    //System.out.println("ALIVE");
-                    plant.setDead();
-                    // NOTE: ONLY RETURN WHERE IF EATEN
-                    boolean eaten = eat(plant);
-
-                    //return where;
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+    protected double getRestActiveness() {
+        return 0.8;
     }
 }

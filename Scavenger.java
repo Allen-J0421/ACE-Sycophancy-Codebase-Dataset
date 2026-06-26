@@ -31,11 +31,18 @@ public abstract class Scavenger extends Animal {
     }
 
     /**
-     * Method for what the scavenger does, i.e. what is always run at every step.
+     * Returns the time of day when this scavenger rests and skips its turn.
      *
-     * @param newScavengers A list of all newborn scavengers in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @return The TimeOfDay at which this scavenger is inactive.
+     */
+    abstract public TimeOfDay getRestTime();
+
+    /**
+     * Performs one simulation step: ages, hungers, breeds, spreads disease, scavenges, and moves.
+     *
+     * @param newScavengers A list to receive newborn organisms this step.
+     * @param weather The current weather state.
+     * @param time The current time of day.
      */
     @Override
     public void act(List<Entity> newScavengers, Weather weather, TimeOfDay time) {
@@ -44,7 +51,7 @@ public abstract class Scavenger extends Animal {
         if(isAlive()) {
             giveBirth(newScavengers);
 
-            if (time == TimeOfDay.SUNSET){
+            if (time == getRestTime()) {
                 return;
             }
 
@@ -117,15 +124,6 @@ public abstract class Scavenger extends Animal {
         incrementFoodLevel(consumable.getFoodValue());
         return true;
     }
-
-    /**
-     * Checks all adjacent location for scavengers that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this scavenger can breed or not.
-     */
-    @Override
-    abstract public boolean canBreed();
 
     /**
      * Increment the food level of this scavenger by a given amount.

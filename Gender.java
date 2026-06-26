@@ -1,5 +1,3 @@
-import java.util.Random;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -18,7 +16,7 @@ public enum Gender {
      */
     public static Gender getRandom() {
         Gender[] values = Gender.values();
-        int randomIndex = new Random().nextInt(values.length);
+        int randomIndex = Randomizer.getRandom().nextInt(values.length);
         return values[randomIndex];
     }
 }

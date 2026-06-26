@@ -30,98 +30,43 @@ public class Vulture extends Scavenger {
         super(foodLevel, randomAge, field, location);
     }
 
-    /**
-     * Getter method for the probability to breed of the vulture.
-     *
-     * @return A double value representing the breeding probability.
-     */
     @Override
     public double getBreedingProbability() {
         return BREEDING_PROBABILITY;
     }
 
-    /**
-     * Getter method for the maximum litter size of the vulture's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
     @Override
     public int getMaxLitterSize() {
         return MAX_LITTER_SIZE;
     }
 
-    /**
-     * Getter method for the maximum age of the vulture.
-     *
-     * @return An integer value representing the maximum age.
-     */
     @Override
     public int getMaxAge() {
         return MAX_AGE;
     }
 
-    /**
-     * Getter method for the age of breeding of the vulture.
-     *
-     * @return A double value representing the breeding age.
-     */
     @Override
     public int getBreedingAge() {
         return BREEDING_AGE;
     }
 
-    /**
-     * Getter method to return this vulture's disease spreading probability.
-     *
-     * @return The vulture's disease spreading probability.
-     */
     @Override
     protected double getDiseaseSpreadProbability() {
         return SPREAD_DISEASE_PROBABILITY;
     }
 
-    /**
-     * Getter method to return the probability this vulture dies from disease.
-     *
-     * @return The vulture's disease death probability.
-     */
     @Override
     protected double getDeathByDiseaseProbability() {
         return DEATH_BY_DISEASE_PROBABILITY;
     }
 
-    /**
-     * Create a new instance of Vulture.
-     * @param field The field in which the spawn will reside in.
-     * @param location The location in which the spawn will occupy.
-     * @return A new Vulture instance.
-     */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
     }
 
-    /**
-     * Checks all adjacent location for vultures that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this vulture can breed or not.
-     */
     @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Vulture) {
-                Vulture vulture = (Vulture) animal;
-                if (!(((vulture.isMale() && isMale())) || ((!vulture.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public TimeOfDay getRestTime() {
+        return TimeOfDay.SUNSET;
     }
 }

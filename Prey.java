@@ -1,4 +1,6 @@
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -11,8 +13,13 @@ public abstract class Prey extends Animal implements Consumable {
 
     // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
+    private static final int SATIATION_THRESHOLD = 10;
+
     private int foodValue;
-    private double activeness;  // denotes how likely it is for the act method to be called
+    private double activeness;
+
+    // shared random generator to generate consistent results
+    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a Prey in the simulation.
@@ -30,23 +37,85 @@ public abstract class Prey extends Animal implements Consumable {
     }
 
     /**
-     * Method for what the prey does, i.e. what is always run at every step.
+     * Returns the time of day at which this prey is less active.
      *
-     * @param newPrey A list of all newborn prey in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @return The TimeOfDay that reduces this prey's activeness.
      */
-    @Override
-    abstract public void act(List<Entity> newPrey, Weather weather, TimeOfDay time);
+    abstract protected TimeOfDay getRestTime();
 
     /**
-     * Checks all adjacent location for prey that meet specific
-     * breeding conditions, and returns true if it is even possible.
+     * Returns the activeness multiplier applied during the prey's rest period.
      *
-     * @return Whether this prey can breed or not.
+     * @return A double between 0 and 1 representing reduced activeness.
+     */
+    abstract protected double getRestActiveness();
+
+    /**
+     * Performs one simulation step: ages, breeds, spreads disease, forages, and moves.
+     * Dead prey linger on the field to allow scavengers to eat them.
+     *
+     * @param newOrganisms A list to receive newborn organisms this step.
+     * @param weather The current weather state.
+     * @param time The current time of day.
      */
     @Override
-    abstract public boolean canBreed();
+    public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
+        incrementAge();
+        setActiveness(DEFAULT_ACTIVENESS);
+
+        if (isAlive()) {
+            giveBirth(newOrganisms);
+
+            if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
+                remove();
+                return;
+            }
+
+            if (time == getRestTime()) {
+                setActiveness(getRestActiveness());
+            }
+
+            if (rand.nextDouble() <= getActiveness()) {
+                Location newLocation = rand.nextDouble() <= getDiseaseSpreadProbability()
+                    ? findAnimalToInfect() : findFood();
+
+                if (newLocation == null || getFoodValue() > SATIATION_THRESHOLD) {
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+
+                if (newLocation != null) {
+                    setLocation(newLocation);
+                } else {
+                    remove();
+                }
+            }
+        } else {
+            decayifDead();
+        }
+    }
+
+    /**
+     * Searches adjacent locations for a plant to eat.
+     *
+     * @return The location of the consumed plant, or null if none found.
+     */
+    @Override
+    public Location findFood() {
+        Field field = getField();
+        Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            Object organism = field.getObjectAt(where);
+            if (organism instanceof Plant) {
+                Plant plant = (Plant) organism;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    return eat(plant) ? where : null;
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Clear the prey from the simulation as it has been eaten.
@@ -85,7 +154,7 @@ public abstract class Prey extends Animal implements Consumable {
      */
     @Override
     public boolean eat(Consumable consumable) {
-        if ((consumable.isPoisonous()) && (!isInfected())) {
+        if (consumable.isPoisonous() && !isInfected()) {
             infect(this);
         }
         incrementFoodValue(consumable.getFoodValue());

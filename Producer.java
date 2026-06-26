@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class Producer extends Actor
 {
     // The % of the normal breeding probability when there is no rain:
-    private double noRainBreedingProbabilityPercentage = 0.2;
+    private static final double NO_RAIN_BREEDING_PROBABILITY_MULTIPLIER = 0.2;
     /**
      * Create a new producer at a location in the field.
      * 
@@ -47,33 +47,25 @@ public abstract class Producer extends Actor
      */
     protected void giveBirth(List<Actor> newProducers)
     {
-        // Get a list of free adjacent locations:
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        
-        // Work out the number of births this producer will have this step:
         int births = breed();
-        
-        // Add each birth into an adjacent location:
+
         for (int b = 0; b < births && free.size() > 0; b++)
         {
             Location location = free.remove(0);
-            
-            try
-            {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(Field.class,
-                                                      Location.class)
-                              .newInstance(field, location);
-                
-                newProducers.add(child);
-            }
-            catch (java.lang.Exception e)
-            {
-                continue;
-            }
+            newProducers.add(createChild(field, location));
         }
     }
+
+    /**
+     * Create a newborn producer of this species.
+     *
+     * @param field The field the child will be placed in.
+     * @param location The child's starting location.
+     * @return A new producer instance.
+     */
+    protected abstract Actor createChild(Field field, Location location);
         
     /**
      * Generate a number representing the number of births,
@@ -88,7 +80,9 @@ public abstract class Producer extends Actor
         // Decrease breeding probability if there is no rain:
         double actualBreedingProbability = getBreedingProbability();
         
-        if (!WeatherSystem.getIsRaining()) actualBreedingProbability *= noRainBreedingProbabilityPercentage;
+        if (!WeatherSystem.getIsRaining()) {
+            actualBreedingProbability *= NO_RAIN_BREEDING_PROBABILITY_MULTIPLIER;
+        }
         
         // Calculate number of births:
         if (rand.nextDouble() <= actualBreedingProbability)

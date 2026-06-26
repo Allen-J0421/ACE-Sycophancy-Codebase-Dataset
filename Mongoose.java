@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A simple model of a mongoose.
@@ -22,8 +21,7 @@ public class Mongoose extends Consumer
     //   Max sustenance level of the mongoose:
     private static final int MAX_SUSTENANCE_LEVEL = 40;
     //   The prey this mongoose hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(Grasshopper.class,HarvesterAnt.class));
+    private static final List<Class<? extends Actor>> PREY = List.of(Grasshopper.class, HarvesterAnt.class);
 
     /**
      * Create a new mongoose. A mongoose may be created with age
@@ -36,8 +34,13 @@ public class Mongoose extends Consumer
     public Mongoose(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,true,false);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, true);
         
         setStartingAge(randomAge);
+    }
+
+    protected Actor createChild(Field field, Location location)
+    {
+        return new Mongoose(false, field, location);
     }
 }

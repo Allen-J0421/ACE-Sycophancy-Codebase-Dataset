@@ -1,6 +1,4 @@
 import java.util.List;
-import java.util.Random;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -11,21 +9,17 @@ import java.util.Iterator;
 public abstract class Consumer extends Actor
 {
     // Properties shared between all consumers:
-    private static final int STARTING_SUSTENANCE_LEVEL = 20;
-    private static final double NEW_DISEASE = 0.0005;
+    private static final int STARTING_SUSTENANCE_LEVEL = 30;
     private static final double NIGHT_PREY_MISS_PROBABILITY = 0.5;
-    private static Random rand = Randomizer.getRandom();
 
     // Properties unique to this consumer:
-    private int breedingAge;
+    private final int breedingAge;
     private int sustenanceLevel;
-    private int maxSustenanceLevel;
-    private ArrayList<Class> prey;
+    private final List<Class<? extends Actor>> prey;
     private Disease disease;
-    private boolean ifCarcass;
-    private Carcass newCarcass;
-    private boolean canEatCarcass;
-    private boolean primaryConsumer;
+    private boolean shouldDropCarcass;
+    private Carcass pendingCarcass;
+    private final boolean canEatCarcass;
     
     /**
      * Create a new consumer at a location in the field.
@@ -38,16 +32,17 @@ public abstract class Consumer extends Actor
      * @param maxAge              The age to which this consumer can live.
      * @param breedingAge         The age at which this consumer can start to breed.
      */
-    public Consumer(Field field, Location location, ArrayList<Class> prey, int consumptionWorth,
-                    double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,int maxSustenanceLevel,boolean canEatCarcass,boolean primaryConsumer)
+    public Consumer(Field field, Location location, List<Class<? extends Actor>> prey, int consumptionWorth,
+                    double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,
+                    int maxSustenanceLevel, boolean canEatCarcass)
     {
-        super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,maxSustenanceLevel,maxAge);
+        super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,
+              maxSustenanceLevel, maxAge);
         this.canEatCarcass = canEatCarcass;
         this.prey = prey;
         this.maxAge = maxAge;
         this.breedingAge = breedingAge;
-        this.primaryConsumer = primaryConsumer;
-        sustenanceLevel = 30;
+        sustenanceLevel = STARTING_SUSTENANCE_LEVEL;
     }
     
     /**
@@ -64,13 +59,13 @@ public abstract class Consumer extends Actor
         {
             giveBirth(newConsumers);
             boolean wasPossibleToMove = huntForFood();
-            if(ifCarcass)
+            if (shouldDropCarcass)
             {
-                newConsumers.add(newCarcass);
-                ifCarcass = false;
-                newCarcass = null;
+                newConsumers.add(pendingCarcass);
+                shouldDropCarcass = false;
+                pendingCarcass = null;
             }
-            if(hasDisease())
+            if (hasDisease())
             {                                                                                   
                 diseaseEffect();
             }
@@ -101,7 +96,7 @@ public abstract class Consumer extends Actor
      */
     private void diseaseEffect()
     {
-        if(hasDisease())
+        if (hasDisease())
         {
             disease.decrementStepsBeforeDeath();
             spreadDisease();
@@ -114,9 +109,9 @@ public abstract class Consumer extends Actor
      */
     private void checkForFatalDisease()
     {
-        if(hasDisease() && disease.diseaseFinished())
+        if (hasDisease() && disease.diseaseFinished())
         {   
-            if(disease.isFatal())
+            if (disease.isFatal())
             {
                 setDead();
             }
@@ -128,20 +123,18 @@ public abstract class Consumer extends Actor
      */
     private void spreadDisease()
     {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while(it.hasNext())
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
 
+        for (Location loc : adjacent)
+        {
+            Object neighbor = field.getObjectAt(loc);
+
+            if (neighbor != null && neighbor.getClass() == getClass() && hasDisease())
             {
-                Location loc = it.next();
-                Object animal = field.getObjectAt(loc);
-                Actor consumer = (Actor) animal;
-                if(consumer != null && consumer.getClass() == this.getClass() && this.hasDisease())
-                {
-                    ((Consumer) consumer).disease = giveDisease();
-                }
+                ((Consumer) neighbor).disease = giveDisease();
             }
+        }
     }
     /**
      * Hunt for food by moving toward it.
@@ -171,7 +164,7 @@ public abstract class Consumer extends Actor
      */
     protected void setStartingAge(boolean randomAge)
     {
-        if (randomAge) currentAge = rand.nextInt(maxAge) ;
+        if (randomAge) currentAge = rand.nextInt(maxAge);
         else           currentAge = 0;
     }
     
@@ -184,38 +177,27 @@ public abstract class Consumer extends Actor
      */
     private void giveBirth(List<Actor> newConsumers)
     {
-        // Ensure this consumer has a valid mate in a neighboring location before continuing.
         if (!checkForValidMate()) return;
-        
-        // Get a list of free adjacent locations:
+
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        
-        // Work out the number of births this producer will have this step:
         int births = breed();
-        // Add each birth into an adjacent location:
+
         for (int b = 0; b < births && free.size() > 0; b++)
         {
             Location location = free.remove(0);
-            
-            try
-            {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(boolean.class,
-                                                      Field.class,
-                                                      Location.class)
-                              .newInstance(true, field, location);
-                
-                newConsumers.add(child);
-            }
-            catch (java.lang.Exception e)
-            {
-                System.out.println("Error!");
-                
-                continue;
-            }
+            newConsumers.add(createChild(field, location));
         }
     }
+
+    /**
+     * Create a newborn consumer of this species.
+     *
+     * @param field The field the child will be placed in.
+     * @param location The child's starting location.
+     * @return A new consumer instance.
+     */
+    protected abstract Actor createChild(Field field, Location location);
     
     /**
      * @return True if there is a valid mate in an adjacent location for the consumer.
@@ -295,7 +277,7 @@ public abstract class Consumer extends Actor
             Location where = it.next();
             Object object = field.getObjectAt(where);
             
-            for (Class preyClass : prey)
+            for (Class<? extends Actor> preyClass : prey)
             {   
                 if (preyClass.isInstance(object))
                 {   
@@ -320,12 +302,12 @@ public abstract class Consumer extends Actor
                     }
                 }
             }
-            if(Carcass.class.isInstance(object))
+            if (Carcass.class.isInstance(object))
             {   
-                if(canEatCarcass)
+                if (canEatCarcass)
                 {
                     Carcass carcass = (Carcass) object;
-                    if(carcass.isDiseased())
+                    if (carcass.isDiseased())
                     {
                         this.disease = giveDisease();
                     }
@@ -350,20 +332,20 @@ public abstract class Consumer extends Actor
     {   
         Location location = actor.getLocation();
         int actorConsumptionWorth = actor.getConsumptionWorth();
-        if(actor.becomeCarcass())
+        if (actor.becomeCarcass())
         {   
             actor.setDead();
-            if((sustenanceLevel + actorConsumptionWorth) > maxSustenanceLevel)
+            if ((sustenanceLevel + actorConsumptionWorth) > maxSustenanceLevel)
             {   
-                int foodLeft = (sustenanceLevel + consumptionWorth) - maxSustenanceLevel;
-                sustenanceLevel = this.maxSustenanceLevel;
+                int foodLeft = (sustenanceLevel + actorConsumptionWorth) - maxSustenanceLevel;
+                sustenanceLevel = maxSustenanceLevel;
                 Carcass carcass = new Carcass(getField(),location,foodLeft);
-                newCarcass = carcass;
-                ifCarcass = true;
+                pendingCarcass = carcass;
+                shouldDropCarcass = true;
                 return getLocation();
             }  
         }
-        if(sustenanceLevel + actorConsumptionWorth <= maxSustenanceLevel)
+        if (sustenanceLevel + actorConsumptionWorth <= maxSustenanceLevel)
         {
             sustenanceLevel += actorConsumptionWorth;
             return location;

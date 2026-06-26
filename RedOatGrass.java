@@ -26,4 +26,9 @@ public class RedOatGrass extends Producer
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
               MAX_BIRTHS_AT_ONCE,MAX_AGE);
     }
+
+    protected Actor createChild(Field field, Location location)
+    {
+        return new RedOatGrass(field, location);
+    }
 }

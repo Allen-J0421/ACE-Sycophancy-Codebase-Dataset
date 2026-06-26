@@ -11,7 +11,7 @@ import java.util.Map;
 public class FieldStats
 {
     // Counters for each type of entity in the simulation.
-    private Map<Class<?>, Counter> counters;
+    private final Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 

@@ -1,5 +1,12 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,10 +22,10 @@ import java.util.Map;
 public class SimulatorView extends JFrame
 {
     // Colors used for empty locations.
-    private static final Color EMPTY_COLOR = Color.white;
+    private static final Color EMPTY_COLOR = Color.WHITE;
 
     // Color used for objects that have no defined color.
-    private static final Color UNKNOWN_COLOR = Color.gray;
+    private static final Color UNKNOWN_COLOR = Color.GRAY;
 
     private static final String STEP_PREFIX = "Step: ";
     private static final String TIME_DAY_PREFIX = "Day: ";
@@ -27,13 +34,16 @@ public class SimulatorView extends JFrame
     private static final String POPULATION_PREFIX = "Population: ";
     private static final String WEATHER_PREFIX = "Weather: ";
 
-    private JLabel stepLabel, population, infoLabel, timeLabel, environmentLabel;
-    private FieldView fieldView;
+    private final JLabel stepLabel;
+    private final JLabel population;
+    private final JLabel timeLabel;
+    private final JLabel environmentLabel;
+    private final FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class<?>, Color> colors;
+    private final Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    private final FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -49,7 +59,6 @@ public class SimulatorView extends JFrame
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         timeLabel = new JLabel(" ", JLabel.CENTER);
         environmentLabel = new JLabel(" ", JLabel.CENTER);
-        infoLabel = new JLabel(" ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
         setLocation(100, 50);
@@ -59,10 +68,9 @@ public class SimulatorView extends JFrame
         Container contents = getContentPane();
         
         JPanel infoPane = new JPanel(new BorderLayout());
-            infoPane.add(stepLabel, BorderLayout.WEST);
-            //infoPane.add(infoLabel, BorderLayout.CENTER);
-            infoPane.add(timeLabel, BorderLayout.EAST);
-            infoPane.add(environmentLabel, BorderLayout.CENTER);
+        infoPane.add(stepLabel, BorderLayout.WEST);
+        infoPane.add(timeLabel, BorderLayout.EAST);
+        infoPane.add(environmentLabel, BorderLayout.CENTER);
 
 
         contents.add(infoPane, BorderLayout.NORTH);
@@ -80,14 +88,6 @@ public class SimulatorView extends JFrame
     public void setColor(Class<?> entityClass, Color color)
     {
         colors.put(entityClass, color);
-    }
-
-    /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
     }
 
     /**

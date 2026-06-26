@@ -19,13 +19,13 @@ public class Simulator
     private static final int SIMULATION_DELAY_MS = 5;
 
     // List of organisms in the field.
-    private List<Organism> organisms;
+    private final List<Organism> organisms;
     // The current state of the field.
-    private Field field;
+    private final Field field;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private final SimulatorView view;
     // The current simulation clock.
-    private SimulationClock clock;
+    private final SimulationClock clock;
 
     // The current weather in the simulation.
     private Weather currentWeather;
@@ -154,7 +154,7 @@ public class Simulator
             Thread.sleep(millisec);
         }
         catch (InterruptedException ie) {
-            // wake up
+            Thread.currentThread().interrupt();
         }
     }
 }

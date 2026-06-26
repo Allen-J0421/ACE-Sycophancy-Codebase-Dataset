@@ -15,9 +15,10 @@ public class Field
     private static final Random rand = Randomizer.getRandom();
     
     // The depth and width of the field.
-    private int depth, width;
+    private final int depth;
+    private final int width;
     // Storage for the organisms.
-    private Organism[][] field;
+    private final Organism[][] field;
 
     /**
      * Represent a field of the given dimensions.

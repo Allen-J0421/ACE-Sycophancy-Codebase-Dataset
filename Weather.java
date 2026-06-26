@@ -23,7 +23,7 @@ public class Weather {
     private static final int RECENT_WEATHER_HISTORY_LIMIT = 3;
     private static final int MAX_HOURS = 3;
 
-    private List<WeatherType> recentWeather;
+    private final List<WeatherType> recentWeather;
     private WeatherType type;
     private int hours;
     private int count;

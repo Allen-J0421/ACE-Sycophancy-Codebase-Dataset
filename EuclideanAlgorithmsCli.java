@@ -43,8 +43,8 @@ final class EuclideanAlgorithmsCli {
 
     private static Operands parseOperands(String[] args) {
         return switch (args.length) {
-            case 0 -> Operands.of(DEFAULT_FIRST_OPERAND, DEFAULT_SECOND_OPERAND);
-            case 2 -> Operands.of(parseInteger(args[0]), parseInteger(args[1]));
+            case 0 -> new Operands(DEFAULT_FIRST_OPERAND, DEFAULT_SECOND_OPERAND);
+            case 2 -> new Operands(parseInteger(args[0]), parseInteger(args[1]));
             default -> throw new IllegalArgumentException(INVALID_ARGUMENT_COUNT_MESSAGE);
         };
     }

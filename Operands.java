@@ -1,11 +1,9 @@
 import java.math.BigInteger;
 
 record Operands(BigInteger first, BigInteger second) {
-    static Operands of(BigInteger first, BigInteger second) {
-        return new Operands(
-            requireOperand(first, "first"),
-            requireOperand(second, "second")
-        );
+    Operands {
+        first = requireOperand(first, "first");
+        second = requireOperand(second, "second");
     }
 
     private static BigInteger requireOperand(BigInteger operand, String name) {

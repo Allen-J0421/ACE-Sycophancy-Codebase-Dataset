@@ -1,4 +1,3 @@
-import java.io.PrintStream;
 import java.math.BigInteger;
 
 public final class EuclideanAlgorithms {
@@ -11,21 +10,13 @@ public final class EuclideanAlgorithms {
     }
 
     public static BigInteger gcd(BigInteger first, BigInteger second) {
-        return Operands.of(first, second).gcd();
+        return new Operands(first, second).gcd();
     }
 
     public static void main(String[] args) {
-        int exitCode = run(args, System.out, System.err);
+        int exitCode = EuclideanAlgorithmsCli.run(args, System.out, System.err);
         if (exitCode != 0) {
             System.exit(exitCode);
         }
-    }
-
-    static int run(String[] args, PrintStream out, PrintStream err) {
-        return EuclideanAlgorithmsCli.run(args, out, err);
-    }
-
-    static String usageText() {
-        return EuclideanAlgorithmsCli.usageText();
     }
 }

@@ -33,18 +33,18 @@ public final class EuclideanAlgorithmsTest {
         for (AlgorithmCase testCase : cases) {
             assertEquals(
                 testCase.expected(),
-                EuclideanAlgorithms.gcd(testCase.first(), testCase.second()),
+                new Operands(testCase.first(), testCase.second()).gcd(),
                 testCase.scenario()
             );
         }
 
         assertThrows(() -> EuclideanAlgorithms.gcd(0, 0), "gcd rejects two zero operands");
-        assertThrows(() -> EuclideanAlgorithms.gcd((BigInteger) null, BigInteger.ONE), "gcd rejects a null first operand");
-        assertThrows(() -> EuclideanAlgorithms.gcd(BigInteger.ONE, (BigInteger) null), "gcd rejects a null second operand");
+        assertThrows(() -> new Operands(null, BigInteger.ONE), "operands reject a null first operand");
+        assertThrows(() -> new Operands(BigInteger.ONE, null), "operands reject a null second operand");
     }
 
     private static void verifyRunCases() {
-        String usage = EuclideanAlgorithms.usageText();
+        String usage = EuclideanAlgorithmsCli.usageText();
         String usageOutput = usage + "\n";
         RunCase[] cases = {
             runCase(new String[0], 0, "5\n", "", "run uses default operands"),
@@ -112,7 +112,7 @@ public final class EuclideanAlgorithmsTest {
     private static RunResult captureRun(String[] args) {
         ByteArrayOutputStream stdoutBuffer = new ByteArrayOutputStream();
         ByteArrayOutputStream stderrBuffer = new ByteArrayOutputStream();
-        int exitCode = EuclideanAlgorithms.run(
+        int exitCode = EuclideanAlgorithmsCli.run(
             args,
             new PrintStream(stdoutBuffer),
             new PrintStream(stderrBuffer)

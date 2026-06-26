@@ -64,7 +64,7 @@ public class OrganismFactory
     public List<Actor> createGrassPatches(Field field, Environment environment)
     {
         Random rand = randomProvider.getRandom();
-        if(environment.getWeather().getCurrentWeather() != WeatherType.RAINING) {
+        if(!environment.getWeatherService().canCreateGrassPatches()) {
             return List.of();
         }
 

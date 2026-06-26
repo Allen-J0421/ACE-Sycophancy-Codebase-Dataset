@@ -10,8 +10,6 @@ public class Grass extends Plant
 {
     private static final int MAX_GROWTH_STAGES = 3;
     private static final int DEFAULT_STEPS_PER_STAGE = 2;
-    private static final double BASE_GERMINATION_RATE = 0.1;
-    private static final double SUNNY_GERMINATION_RATE = 0.15;
 
     private int foodValue;
 
@@ -53,10 +51,11 @@ public class Grass extends Plant
     public void act(List<Actor> newGrass, Environment environment)
     {
         Random rand = getRandomProvider().getRandom();
+        WeatherService weatherService = environment.getWeatherService();
         if(isAlive()
                 && environment.getTime().isDay()
-                && rand.nextDouble() <= getGerminationRate(environment)
-                && environment.getWeather().getCurrentWeather() != WeatherType.CLOUDY) {
+                && weatherService.allowsGrassGermination()
+                && rand.nextDouble() <= weatherService.getGrassGerminationRate()) {
             germinate(newGrass);
         }
     }
@@ -92,14 +91,6 @@ public class Grass extends Plant
             return true;
         }
         return false;
-    }
-
-    private double getGerminationRate(Environment environment)
-    {
-        if(environment.getWeather().getCurrentWeather() == WeatherType.SUNNY) {
-            return SUNNY_GERMINATION_RATE;
-        }
-        return BASE_GERMINATION_RATE;
     }
 
 }

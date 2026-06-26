@@ -56,7 +56,7 @@ public class Eagle extends Animal
     @Override
     protected Location findFood(Environment environment)
     {
-        if(environment.getWeather().getCurrentWeather() != WeatherType.RAINING) {
+        if(environment.getWeatherService().allowsEagleForaging()) {
             return super.findFood(environment);
         }
         return null;

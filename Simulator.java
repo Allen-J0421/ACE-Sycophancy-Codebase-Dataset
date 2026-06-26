@@ -26,6 +26,7 @@ public class Simulator
     private final SimulationConfig config;
     private final RandomProvider randomProvider;
     private final DiseaseService diseaseService;
+    private final WeatherService weatherService;
     private final OrganismFactory organismFactory;
     // Published state for observers.
     private final List<SimulationObserver> observers;
@@ -125,9 +126,10 @@ public class Simulator
         this.config = config;
         this.actors = new ArrayList<>();
         this.diseaseService = new DiseaseService(randomProvider);
+        this.weatherService = new WeatherService(randomProvider);
         this.organismFactory = new OrganismFactory(randomProvider, config, diseaseService);
         this.field = new Field(randomProvider, organismFactory, diseaseService, depth, width);
-        this.environment = new Environment(new Time(), new Weather(randomProvider));
+        this.environment = new Environment(new Time(), weatherService);
         this.observers = new ArrayList<>();
 
         reset();
@@ -242,7 +244,8 @@ public class Simulator
         }
 
         step++;
-        environment.advance(step);
+        environment.advanceTime();
+        weatherService.advance();
 
         List<Actor> newActors = new ArrayList<>();
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
@@ -272,6 +275,7 @@ public class Simulator
         remainingSteps = 0;
         step = 0;
         environment.reset();
+        weatherService.reset();
         diseaseService.reset();
 
         actors.clear();

@@ -7,15 +7,15 @@
 
 public class Environment {
     private final Time time;
-    private final Weather weather;
+    private final WeatherService weatherService;
 
     /**
      * Create a new instance of class Environment.
      */
-    public Environment(Time time, Weather weather)
+    public Environment(Time time, WeatherService weatherService)
     {
         this.time = time;
-        this.weather = weather;
+        this.weatherService = weatherService;
     }
 
     /**
@@ -27,23 +27,26 @@ public class Environment {
     }
 
     /**
-     * Returns an instance of class Weather.
+     * Returns the current weather snapshot.
      */
     public Weather getWeather()
     {
-        return weather;
+        return weatherService.getCurrentWeather();
     }
 
-    public void advance(int step)
+    public WeatherService getWeatherService()
+    {
+        return weatherService;
+    }
+
+    public void advanceTime()
     {
         time.incrementTime();
-        weather.checkWeatherChange(step);
     }
 
     public void reset()
     {
         time.reset();
-        weather.reset();
     }
 
 }

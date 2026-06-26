@@ -2,6 +2,10 @@ public final class ModularExponentiation {
     private ModularExponentiation() {
     }
 
+    public static int modPow(ModularExponentiationInput input) {
+        return modPow(input.base(), input.exponent(), input.modulus());
+    }
+
     public static int modPow(int base, int exponent, int modulus) {
         validateInputs(exponent, modulus);
 
@@ -23,6 +27,10 @@ public final class ModularExponentiation {
 
     public static int powMod(int base, int exponent, int modulus) {
         return modPow(base, exponent, modulus);
+    }
+
+    public static int powMod(ModularExponentiationInput input) {
+        return modPow(input);
     }
 
     private static void validateInputs(int exponent, int modulus) {

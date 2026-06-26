@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -14,8 +12,6 @@ public class Simulator
     private boolean playingSimulation;
     private int remainingSteps;
 
-    // List of actors in the field.
-    private final List<Actor> actors;
     // The current state of the field.
     private final Field field;
     // The current step of the simulation.
@@ -24,11 +20,9 @@ public class Simulator
     private final Environment environment;
     // Configuration and actor creation rules for the simulation.
     private final SimulationConfig config;
-    private final RandomProvider randomProvider;
     private final DiseaseService diseaseService;
     private final WeatherService weatherService;
-    private final MovementService movementService;
-    private final OrganismFactory organismFactory;
+    private final ActorService actorService;
     // Published state for observers.
     private final List<SimulationObserver> observers;
     private SimulationState currentState;
@@ -123,14 +117,13 @@ public class Simulator
             width = SimulationConfig.DEFAULT_WIDTH;
         }
 
-        this.randomProvider = randomProvider;
         this.config = config;
-        this.actors = new ArrayList<>();
         this.diseaseService = new DiseaseService(randomProvider);
         this.weatherService = new WeatherService(randomProvider);
-        this.movementService = new MovementService(randomProvider);
-        this.organismFactory = new OrganismFactory(randomProvider, config, diseaseService);
+        MovementService movementService = new MovementService(randomProvider);
+        OrganismFactory organismFactory = new OrganismFactory(randomProvider, config, diseaseService);
         this.field = new Field(randomProvider, organismFactory, diseaseService, movementService, depth, width);
+        this.actorService = new ActorService(field, organismFactory, diseaseService);
         this.environment = new Environment(new Time(), weatherService);
         this.observers = new ArrayList<>();
 
@@ -237,7 +230,6 @@ public class Simulator
 
     /**
      * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each organism.
      */
     public void simulateOneStep()
     {
@@ -248,23 +240,7 @@ public class Simulator
         step++;
         environment.advanceTime();
         weatherService.advance();
-
-        List<Actor> newActors = new ArrayList<>();
-        for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
-            Actor actor = it.next();
-            processActor(actor, newActors);
-            maybeGrowPlant(actor);
-
-            if(!actor.isAlive()) {
-                if(actor instanceof Organism organism) {
-                    diseaseService.unregister(organism);
-                }
-                it.remove();
-            }
-        }
-
-        actors.addAll(newActors);
-        actors.addAll(organismFactory.createGrassPatches(field, environment));
+        actorService.updateActors(environment, step);
         publishState();
     }
 
@@ -280,8 +256,7 @@ public class Simulator
         weatherService.reset();
         diseaseService.reset();
 
-        actors.clear();
-        actors.addAll(organismFactory.populate(field));
+        actorService.reset();
 
         publishState();
     }
@@ -297,32 +272,6 @@ public class Simulator
         }
         catch (InterruptedException ie) {
             // wake up
-        }
-    }
-
-    private void processActor(Actor actor, List<Actor> newActors)
-    {
-        if(actor instanceof Animal animal) {
-            if(!animal.isAwake(environment)) {
-                return;
-            }
-            if(!diseaseService.processPreAct(animal)) {
-                return;
-            }
-        }
-
-        if(actor.isAlive()) {
-            actor.act(newActors, environment);
-            if(actor instanceof Animal animal) {
-                diseaseService.processPostAct(animal);
-            }
-        }
-    }
-
-    private void maybeGrowPlant(Actor actor)
-    {
-        if(actor instanceof Plant plant && step % plant.getStepsPerStage() == 0) {
-            plant.incrementGrowth();
         }
     }
 

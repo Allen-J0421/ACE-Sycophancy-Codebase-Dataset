@@ -57,12 +57,12 @@ public abstract class Plant implements Actor
      * Make this plant act - that is: make it do
      * whatever it wants/needs to do.
      * 
-     * @param newPlants A list to receive newly generated plants.
+     * @param newPlants Receives newly generated plants.
      * @param weather The current weather
      * @param dayState The different state of the day
      */
     
-    public final void act(List<Actor> newPlants, Weather weather, DayState dayState)
+    public final void act(ActorSink newPlants, Weather weather, DayState dayState)
     {
         if(!canAct(dayState)) {
             return;
@@ -125,9 +125,9 @@ public abstract class Plant implements Actor
      * Imitates the spread/growth of a plant.
      * 
      * @param spreadProbability likelihood a spreading to the next cell.
-     * @param newPlants the newly generated plants.
+     * @param newPlants receives the newly generated plants.
      */
-    protected void multiply(double spreadProbability, List<Actor> newPlants)
+    protected void multiply(double spreadProbability, ActorSink newPlants)
     {
         List<Location> freeLocs = field.getFreeAdjacentTerrain(location);
         for ( Location loc : freeLocs) {

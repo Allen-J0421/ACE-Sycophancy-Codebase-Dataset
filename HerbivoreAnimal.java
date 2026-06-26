@@ -1,5 +1,4 @@
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 /**
  * An extension of the Animal Class that can only eat a specified type of plants
@@ -40,7 +39,7 @@ public abstract class HerbivoreAnimal extends Animal
     protected abstract Set<PlantSpecies> getTargetPlants();
 
     @Override
-    public final void act(List<Actor> newAnimals, Weather weather, DayState dayState)
+    public final void act(ActorSink newAnimals, Weather weather, DayState dayState)
     {
         incrementAge(getMaxAge());
         incrementHunger();

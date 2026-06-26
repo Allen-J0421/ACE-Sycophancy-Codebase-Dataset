@@ -85,11 +85,11 @@ public abstract class Animal implements Actor
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * 
-     * @param newAnimals A list to receive newly born animals.
+     * @param newAnimals Receives newly born animals.
      * @param weather The current weather
      * @param dayState The different state of the day
      */
-    abstract public void act(List<Actor> newAnimals, Weather weather, DayState dayState);
+    abstract public void act(ActorSink newAnimals, Weather weather, DayState dayState);
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.
@@ -108,12 +108,12 @@ public abstract class Animal implements Actor
     /**
      * Imitates the meeting of the animal by breeding new born animals.
      * 
-     * @param newAnimals list of the animals to be born.
+     * @param newAnimals receives the animals to be born.
      * @param maxLitter the maximum amount animals that the animal can breed.
      * @param breedingProbability the likelyhood of giving birth.
      * @param breedingAge the minimum age to be able to breed.
      */
-    protected void meet(List<Actor> newAnimals,int maxLitter, double breedingProbability, int breedingAge)
+    protected void meet(ActorSink newAnimals,int maxLitter, double breedingProbability, int breedingAge)
     {
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
@@ -154,10 +154,10 @@ public abstract class Animal implements Actor
     /**
      * Gives birth to animal by appending the animals to the input list.
      * 
-     * @param newAnimals list of the new born animals.
+     * @param newAnimals receives the new born animals.
      * @param births number of animals to give birth.
      */
-    private void giveBirth(List<Actor> newAnimals, int births)
+    private void giveBirth(ActorSink newAnimals, int births)
     {
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         for (int i = 0; i < births && free.size() > 0; i++) {

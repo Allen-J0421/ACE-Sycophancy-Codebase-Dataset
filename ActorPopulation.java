@@ -38,27 +38,26 @@ public class ActorPopulation<T extends Actor>
 
     public void simulateStep(Weather weather, DayState dayState)
     {
-        List<Actor> newborns = new ArrayList<>();
+        List<T> newborns = new ArrayList<>();
+        ActorSink sink = actor -> appendNewActor(newborns, actor);
         for(Iterator<T> it = actors.iterator(); it.hasNext(); ) {
             T actor = it.next();
-            actor.act(newborns, weather, dayState);
+            actor.act(sink, weather, dayState);
             if(!actor.isAlive()) {
                 it.remove();
             }
         }
-        appendNewActors(newborns);
+        actors.addAll(newborns);
     }
 
-    private void appendNewActors(List<Actor> newborns)
+    private void appendNewActor(List<T> newborns, Actor actor)
     {
-        for (Actor actor : newborns) {
-            if(!actorType.isInstance(actor)) {
-                throw new IllegalStateException(
-                    "Expected newborn actor of type " + actorType.getSimpleName()
-                        + " but got " + actor.getClass().getSimpleName()
-                );
-            }
-            actors.add(actorType.cast(actor));
+        if(!actorType.isInstance(actor)) {
+            throw new IllegalStateException(
+                "Expected newborn actor of type " + actorType.getSimpleName()
+                    + " but got " + actor.getClass().getSimpleName()
+            );
         }
+        newborns.add(actorType.cast(actor));
     }
 }

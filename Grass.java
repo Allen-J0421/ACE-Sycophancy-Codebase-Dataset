@@ -1,3 +1,5 @@
+import java.util.EnumSet;
+
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -8,7 +10,8 @@
 public class Grass extends Plant {
 
     private static final PlantAttributes ATTRIBUTES =
-            new PlantAttributes(25, 16, 2, 10.0, 0.15, 0.25, 1.0, 1.2, 5, false);
+            new PlantAttributes(25, 16, 2, 10.0, 0.15, 0.25,
+                    1.0, 1.2, 5, false, EnumSet.of(WeatherType.RAIN, WeatherType.SUN));
 
     /**
      * Constructor for a Grass in the simulation.
@@ -20,11 +23,4 @@ public class Grass extends Plant {
     public Grass(boolean randomAge, Field field, Location location) {
         super(ATTRIBUTES, randomAge, field, location, Grass::new);
     }
-
-    @Override
-    protected boolean hasFavorableWeather(Weather weather) {
-        return weather.getRecentWeather().contains(WeatherType.RAIN)
-                || weather.getRecentWeather().contains(WeatherType.SUN);
-    }
-
 }

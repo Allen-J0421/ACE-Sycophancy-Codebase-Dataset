@@ -8,7 +8,8 @@
 public class Zebra extends Herbivore {
 
     private static final HerbivoreAttributes ATTRIBUTES =
-            new HerbivoreAttributes(150, 10, 3, 0.305, 0.1, 0.001, 5);
+            new HerbivoreAttributes(150, 10, 3, 0.305, 0.1, 0.001,
+                    5, TimeOfDay.AROUND_MIDNIGHT, 0.9);
 
     /**
      * Constructor for a Zebra in the simulation.
@@ -19,13 +20,5 @@ public class Zebra extends Herbivore {
      */
     public Zebra(boolean randomAge, Field field, Location location) {
         super(ATTRIBUTES, randomAge, field, location, Zebra::new);
-    }
-
-    @Override
-    protected double getActivenessFor(TimeOfDay time) {
-        if (time == TimeOfDay.AROUND_MIDNIGHT) {
-            return 0.9;
-        }
-        return super.getActivenessFor(time);
     }
 }

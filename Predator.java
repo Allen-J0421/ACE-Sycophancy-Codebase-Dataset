@@ -54,8 +54,6 @@ public abstract class Predator extends Hunter {
         return null;
     }
 
-    abstract public double getEatingProbability();
-
     /**
      * Called when a predator either eats or leaves a prey it
      * has killed.

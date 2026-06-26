@@ -7,6 +7,8 @@
  */
 public abstract class Herbivore extends Prey {
 
+    private final HerbivoreAttributes attributes;
+
     /**
      * Constructor for a herbivore in the simulation.
      *
@@ -18,10 +20,19 @@ public abstract class Herbivore extends Prey {
     public Herbivore(HerbivoreAttributes attributes, boolean randomAge, Field field,
                      Location location, OrganismFactory offspringFactory) {
         super(attributes.getInitialFoodValue(), attributes, randomAge, field, location, offspringFactory);
+        this.attributes = attributes;
     }
 
     @Override
     public Location findFood() {
         return findPlantFood();
+    }
+
+    @Override
+    protected double getActivenessFor(TimeOfDay time) {
+        if (attributes.getReducedActivenessTime() == time) {
+            return attributes.getReducedActiveness();
+        }
+        return super.getActivenessFor(time);
     }
 }

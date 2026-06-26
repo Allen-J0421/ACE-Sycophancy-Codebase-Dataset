@@ -8,7 +8,8 @@
 public class Elephant extends Herbivore {
 
     private static final HerbivoreAttributes ATTRIBUTES =
-            new HerbivoreAttributes(150, 10, 3, 0.3, 0.1, 0.001, 5);
+            new HerbivoreAttributes(150, 10, 3, 0.3, 0.1, 0.001,
+                    5, TimeOfDay.SUNSET, 0.85);
 
     /**
      * Constructor for an Elephant in the simulation.
@@ -19,13 +20,5 @@ public class Elephant extends Herbivore {
      */
     public Elephant(boolean randomAge, Field field, Location location) {
         super(ATTRIBUTES, randomAge, field, location, Elephant::new);
-    }
-
-    @Override
-    protected double getActivenessFor(TimeOfDay time) {
-        if (time == TimeOfDay.SUNSET) {
-            return 0.85;
-        }
-        return super.getActivenessFor(time);
     }
 }

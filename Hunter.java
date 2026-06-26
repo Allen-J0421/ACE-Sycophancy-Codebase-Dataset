@@ -12,6 +12,7 @@ public abstract class Hunter extends Animal {
 
     private static final Random rand = Randomizer.getRandom();
 
+    private final HunterAttributes attributes;
     private int foodLevel;
 
     /**
@@ -25,6 +26,7 @@ public abstract class Hunter extends Animal {
     public Hunter(HunterAttributes attributes, boolean randomAge, Field field,
                   Location location, OrganismFactory offspringFactory) {
         super(attributes, randomAge, field, location, offspringFactory);
+        this.attributes = attributes;
         this.foodLevel = attributes.getInitialFoodLevel();
     }
 
@@ -84,5 +86,11 @@ public abstract class Hunter extends Animal {
         return findFood();
     }
 
-    protected abstract boolean isRestingTime(TimeOfDay time);
+    protected boolean isRestingTime(TimeOfDay time) {
+        return attributes.getRestingTime() == time;
+    }
+
+    protected double getEatingProbability() {
+        return attributes.getEatingProbability();
+    }
 }

@@ -168,7 +168,14 @@ public abstract class Plant extends Organism implements Growable, Consumable {
         return this.breedingProbability;
     }
 
-    protected abstract boolean hasFavorableWeather(Weather weather);
+    protected boolean hasFavorableWeather(Weather weather) {
+        for (WeatherType weatherType : weather.getRecentWeather()) {
+            if (attributes.getFavorableWeather().contains(weatherType)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     protected double getLowBreedingProbability() {
         return attributes.getLowBreedingProbability();

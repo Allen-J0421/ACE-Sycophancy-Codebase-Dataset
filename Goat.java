@@ -8,7 +8,8 @@
 public class Goat extends Herbivore {
 
     private static final HerbivoreAttributes ATTRIBUTES =
-            new HerbivoreAttributes(150, 10, 3, 0.3065, 0.1, 0.001, 5);
+            new HerbivoreAttributes(150, 10, 3, 0.3065, 0.1, 0.001,
+                    5, TimeOfDay.LATE_MORNING, 0.8);
 
     /**
      * Constructor for a Goat in the simulation.
@@ -19,13 +20,5 @@ public class Goat extends Herbivore {
      */
     public Goat(boolean randomAge, Field field, Location location) {
         super(ATTRIBUTES, randomAge, field, location, Goat::new);
-    }
-
-    @Override
-    protected double getActivenessFor(TimeOfDay time) {
-        if (time == TimeOfDay.LATE_MORNING) {
-            return 0.8;
-        }
-        return super.getActivenessFor(time);
     }
 }

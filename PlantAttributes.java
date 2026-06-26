@@ -1,3 +1,6 @@
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Shared attributes for a plant species.
  */
@@ -10,6 +13,7 @@ public class PlantAttributes extends OrganismAttributes {
     private final double growthRate;
     private final int foodValue;
     private final boolean poisonous;
+    private final Set<WeatherType> favorableWeather;
 
     public PlantAttributes(int maxAge, int breedingAge, int maxLitterSize,
                            double maxSize,
@@ -18,7 +22,8 @@ public class PlantAttributes extends OrganismAttributes {
                            double initialSize,
                            double growthRate,
                            int foodValue,
-                           boolean poisonous) {
+                           boolean poisonous,
+                           Set<WeatherType> favorableWeather) {
         super(maxAge, breedingAge, maxLitterSize);
         this.maxSize = maxSize;
         this.lowBreedingProbability = lowBreedingProbability;
@@ -27,6 +32,7 @@ public class PlantAttributes extends OrganismAttributes {
         this.growthRate = growthRate;
         this.foodValue = foodValue;
         this.poisonous = poisonous;
+        this.favorableWeather = EnumSet.copyOf(favorableWeather);
     }
 
     public double getMaxSize() {
@@ -55,5 +61,9 @@ public class PlantAttributes extends OrganismAttributes {
 
     public boolean isPoisonous() {
         return poisonous;
+    }
+
+    public Set<WeatherType> getFavorableWeather() {
+        return favorableWeather;
     }
 }

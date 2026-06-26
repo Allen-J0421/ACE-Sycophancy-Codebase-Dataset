@@ -60,24 +60,9 @@ public class Deer extends Animal
         return true;
     }
 
-    /**
-     * Check whether this deer is ready to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newDeers A list to return newly born deers.
-     * @param environment The environment that the deer resides in. 
-     */
-    protected void giveBirth(List<Actor> newDeers, Environment environment)
+    @Override
+    protected Animal createOffspring(Field field, Location location, Gender sex)
     {
-        // New deers are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = super.breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            Deer young = new Deer(false, field, loc, sex);
-            newDeers.add(young);
-        }
+        return new Deer(false, field, location, sex);
     }
 }

@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class Hunter implements Actor
 {
-    private static boolean alive;
+    private boolean alive;
     private Field field;
     private Location location;
 

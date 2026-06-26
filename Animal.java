@@ -165,12 +165,31 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
+     * Creates a newborn instance of this animal species.
+     * Subclasses implement this to return their own type.
+     * @param field The field the offspring will inhabit.
+     * @param location The location of the offspring.
+     * @param sex The offspring's gender.
+     */
+    protected abstract Animal createOffspring(Field field, Location location, Gender sex);
+
+    /**
      * Check whether this animal is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newAnimals A list to return newly born animals.
-     * @param environment The environment that the animal resides in. 
+     * @param environment The environment that the animal resides in.
      */
-    protected abstract void giveBirth(List<Actor> newAnimals, Environment environment);
+    protected void giveBirth(List<Actor> newAnimals, Environment environment)
+    {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = breed();
+        for (int b = 0; b < births && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            Gender offspringSex = Randomizer.getRandomSex();
+            newAnimals.add(createOffspring(field, loc, offspringSex));
+        }
+    }
 
     /**
      * Returns true if the animal is awake or not.

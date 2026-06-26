@@ -11,9 +11,9 @@ public class Disease
 {
     private Random rand = Randomizer.getRandom();
     // The propagation rate of the disease
-    private static double PROPAGATION_RATE = 0.0;
+    private double PROPAGATION_RATE = 0.0;
     // the lethality rate of the disease
-    private static double LETHALITY_RATE = 0.0;
+    private double LETHALITY_RATE = 0.0;
     // the transmission route of the disease 
     private DiseaseType PROPAGATION_MODE;
 

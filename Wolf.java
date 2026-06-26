@@ -1,5 +1,3 @@
-import java.util.Random;
-import java.util.List;
 import java.util.*;
 
 /**
@@ -10,9 +8,6 @@ import java.util.*;
  */
 public class Wolf extends Animal
 {
-    private Time time;
-    private Weather weather;
-
     // Characteristics shared by all wolves (class variables).
 
     // The age at which a wolf can start to breed.
@@ -25,8 +20,6 @@ public class Wolf extends Animal
     private static final int MAX_LITTER_SIZE = 2;
     // The wolf's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 15;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single wolf.
     private static final int FOOD_VALUE = 6;
     // A set of organisms that a wolf consumes
@@ -55,25 +48,10 @@ public class Wolf extends Animal
         this.isNocturnal = true;
     }
 
-    /**
-     * Check whether this wolf is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newWolves A list to return newly born wolves.
-     * @param environment The environment that the wolf resides in. 
-     */
-    protected void giveBirth(List<Actor> newWolves, Environment environment)
+    @Override
+    protected Animal createOffspring(Field field, Location location, Gender sex)
     {
-        // New wolves are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            Wolf young = new Wolf(false, field, loc, sex);
-            newWolves.add(young);
-        }
+        return new Wolf(false, field, location, sex);
     }
 
 

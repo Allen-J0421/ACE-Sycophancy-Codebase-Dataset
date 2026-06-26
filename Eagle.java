@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 import java.util.*;
 
@@ -22,8 +21,6 @@ public class Eagle extends Animal
     private static final int MAX_LITTER_SIZE = 2;
     // The eagles's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 14;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single eagle.
     private static final int FOOD_VALUE = 5;
     // A set of organisms that a eagle consumes
@@ -53,25 +50,10 @@ public class Eagle extends Animal
     }
 
     
-    /**
-     * Check whether this eagle is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newEagles A list to return newly born Eagles.
-     * @param environment The environment that the eagle resides in. 
-     */
-    protected void giveBirth(List<Actor> newEagles, Environment environment)
+    @Override
+    protected Animal createOffspring(Field field, Location location, Gender sex)
     {
-        // New Eagles are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            Eagle young = new Eagle(false, field, loc, sex);
-            newEagles.add(young);
-        }
+        return new Eagle(false, field, location, sex);
     }
 
     /**
@@ -121,8 +103,8 @@ public class Eagle extends Animal
      */
     protected Location findFood(Environment environment)
     {
-        while(environment.getWeather().getCurrentWeather() != WeatherType.RAINING) {
-            return(super.findFood());
+        if (environment.getWeather().getCurrentWeather() != WeatherType.RAINING) {
+            return super.findFood();
         }
         return null;
     }

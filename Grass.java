@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Grass extends Plant
 {
-    private static int FOOD_VALUE;
+    private int FOOD_VALUE;
     private static double GERMINATION_RATE = 0.1;
 
     /**

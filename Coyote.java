@@ -48,27 +48,10 @@ public class Coyote extends Animal
         this.isNocturnal = true;
     }
 
-    /**
-     * Check whether this coyote is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newCoyotes A list to return newly born coyotes.
-     * @param environment The environment that the coyote resides in. 
-     */
-    protected void giveBirth(List<Actor> newCoyotes, Environment environment)
+    @Override
+    protected Animal createOffspring(Field field, Location location, Gender sex)
     {
-        // New coyotes are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-
-            Gender sex = Randomizer.getRandomSex();
-
-            Coyote young = new Coyote(false, field, loc, sex);
-            newCoyotes.add(young);
-        }
+        return new Coyote(false, field, location, sex);
     }
 
 }

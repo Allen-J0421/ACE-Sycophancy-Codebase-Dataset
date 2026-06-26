@@ -92,9 +92,9 @@ public abstract class Predator extends Animal
         while(it.hasNext()) 
         {
             Location where = it.next();
-            Object animal = field.getObjectAt(where, Animal.class);
+            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
             
-            if(animal instanceof Prey) 
+            if(animal != null && animal.getSpeciesType().isPrey()) 
             {
                 Prey prey = (Prey) animal;
                 if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability) 

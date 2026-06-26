@@ -1,5 +1,6 @@
 package savannah.model;
 
+import java.awt.Color;
 import java.util.Random;
 
 import savannah.config.SimulationConfig;
@@ -9,7 +10,7 @@ import savannah.config.SimulationConfig;
  */
 public enum SpeciesType
 {
-    LION("Lion")
+    LION("Lion", Color.RED, Color.WHITE)
     {
         @Override
         public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
@@ -17,7 +18,7 @@ public enum SpeciesType
             return new Lion(randomAge, field, location, infected, immune, config);
         }
     },
-    CHEETAH("Cheetah")
+    CHEETAH("Cheetah", Color.ORANGE, Color.BLACK)
     {
         @Override
         public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
@@ -25,7 +26,7 @@ public enum SpeciesType
             return new Cheetah(randomAge, field, location, infected, immune, config);
         }
     },
-    ZEBRA("Zebra")
+    ZEBRA("Zebra", Color.BLACK, Color.WHITE)
     {
         @Override
         public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
@@ -33,7 +34,7 @@ public enum SpeciesType
             return new Zebra(randomAge, field, location, infected, immune, config);
         }
     },
-    GIRAFFE("Giraffe")
+    GIRAFFE("Giraffe", Color.YELLOW, Color.BLACK)
     {
         @Override
         public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
@@ -41,7 +42,7 @@ public enum SpeciesType
             return new Giraffe(randomAge, field, location, infected, immune, config);
         }
     },
-    LEMUR("Lemur")
+    LEMUR("Lemur", Color.BLUE, Color.WHITE)
     {
         @Override
         public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
@@ -49,7 +50,7 @@ public enum SpeciesType
             return new Lemur(randomAge, field, location, infected, immune, config);
         }
     },
-    PLANT("Plant")
+    PLANT("Plant", Color.GREEN, Color.BLACK)
     {
         @Override
         public Plant createPlant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config)
@@ -59,10 +60,14 @@ public enum SpeciesType
     };
 
     private final String displayName;
+    private final Color fillColor;
+    private final Color textColor;
 
-    SpeciesType(String displayName)
+    SpeciesType(String displayName, Color fillColor, Color textColor)
     {
         this.displayName = displayName;
+        this.fillColor = fillColor;
+        this.textColor = textColor;
     }
 
     public String getDisplayName()
@@ -83,6 +88,21 @@ public enum SpeciesType
     public boolean isPredator()
     {
         return this == LION || this == CHEETAH;
+    }
+
+    public boolean isPrey()
+    {
+        return isAnimal() && !isPredator();
+    }
+
+    public Color getFillColor()
+    {
+        return fillColor;
+    }
+
+    public Color getTextColor()
+    {
+        return textColor;
     }
 
     public SimulationConfig.SpeciesConfig animalConfig(SimulationConfig config)

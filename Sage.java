@@ -10,8 +10,8 @@ public class Sage extends Plant
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
 
-    public static final int MAX_AGE = 20;
-    public static final double MULTIPLY_PROBABILITY = 0.15;
+    private static final int MAX_AGE = 20;
+    private static final double MULTIPLY_PROBABILITY = 0.15;
 
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

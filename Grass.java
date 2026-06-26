@@ -10,8 +10,8 @@ public class Grass extends Plant
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
 
-    public static final int MAX_AGE = 25;
-    public static final double MULTIPLY_PROBABILITY = 0.2;
+    private static final int MAX_AGE = 25;
+    private static final double MULTIPLY_PROBABILITY = 0.2;
 
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

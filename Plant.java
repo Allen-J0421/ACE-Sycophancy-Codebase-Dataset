@@ -17,7 +17,6 @@ public abstract class Plant implements Actor
     private boolean alive;
     private Location location;
     private int age;
-    private int feedingValue;
     private Field field;
 
     private static final Random rand = Randomizer.getRandom();
@@ -38,10 +37,8 @@ public abstract class Plant implements Actor
     {
         if(randomAge) {
             this.age = rand.nextInt(maxAge);
-            this.feedingValue = age * FEEDING_FACTOR;
         } else {
             this.age = 0;
-            this.feedingValue = 0;
         }
         this.alive = true;
         this.field = field;
@@ -76,7 +73,7 @@ public abstract class Plant implements Actor
         if(dayState == DayState.NIGHT) {
             return;
         }
-        grow(getMaxAge());
+        incrementAge(getMaxAge());
         if(!isAlive()) {
             return;
         }
@@ -93,17 +90,6 @@ public abstract class Plant implements Actor
         if(age > maxAge) {
             setDead();
         }
-    }
-
-    private void updateFeedingValue()
-    {
-        this.feedingValue = age * FEEDING_FACTOR;
-    }
-
-    private void grow(int maxAge)
-    {
-        incrementAge(maxAge);
-        updateFeedingValue();
     }
 
     private void multiply(double spreadProbability, List<Actor> newPlants)
@@ -127,7 +113,7 @@ public abstract class Plant implements Actor
 
     public int getFeedingValue()
     {
-        return feedingValue;
+        return age * FEEDING_FACTOR;
     }
 
     private void setLocation(Location newLocation)

@@ -5,8 +5,9 @@ import java.util.*;
  * It is deliberately decoupled from the GUI — the only way it communicates
  * with the view layer is through the {@link SimulationObserver} passed at
  * construction time.
- * Actor lifecycle is delegated to {@link ActorManager}; world-building is
- * delegated to {@link FieldPopulator}.
+ * Temporal concerns (step counting, time-of-day, weather) are owned by
+ * {@link SimulationClock}; actor lifecycle is delegated to {@link ActorManager};
+ * world-building is delegated to {@link FieldPopulator}.
  *
  * @version 2022.03.02
  */
@@ -27,14 +28,13 @@ public class SimulationEngine implements SimulationControls
 
     private boolean playingSimulation = false;
     private int remainingSteps;
-    private int step;
 
     private final Map<Class<?>, Double> creationProbabilities;
     private final SimulationObserver observer;
+    private final SimulationClock clock;
     private final ActorManager actorManager;
     private final FieldPopulator populator;
     private final Field field;
-    private final Environment environment;
 
     /**
      * Create an engine with default creation probabilities.
@@ -60,7 +60,7 @@ public class SimulationEngine implements SimulationControls
         this.creationProbabilities = creationProbabilities;
         this.observer = observer;
         field = new Field(depth, width);
-        environment = new Environment(new Time(), new Weather());
+        clock = new SimulationClock();
         actorManager = new ActorManager();
         populator = new FieldPopulator(field, actorManager, creationProbabilities);
     }
@@ -93,12 +93,11 @@ public class SimulationEngine implements SimulationControls
     @Override
     public void reset()
     {
-        step = 0;
+        clock.reset();
         actorManager.clear();
         populator.reset();
         populator.populate();
-        environment.getTime().reset();
-        observer.onStep(step, environment, field);
+        observer.onStep(clock.getStep(), clock.getEnvironment(), field);
     }
 
     @Override
@@ -137,19 +136,15 @@ public class SimulationEngine implements SimulationControls
     }
 
     /**
-     * Advance the simulation by one step: update environment, tick all actors,
+     * Advance the simulation by one step: tick the clock, update all actors,
      * spread rain-driven grass, then notify the observer.
      */
     public void simulateOneStep()
     {
         if (!playingSimulation) { return; }
-        step++;
-        environment.getTime().incrementTime();
-        environment.getWeather().checkWeatherChange(step);
-
-        actorManager.tick(environment);
-        populator.plantGrassInPatches(environment);
-
-        observer.onStep(step, environment, field);
+        clock.advance();
+        actorManager.tick(clock.getEnvironment());
+        populator.plantGrassInPatches(clock.getEnvironment());
+        observer.onStep(clock.getStep(), clock.getEnvironment(), field);
     }
 }

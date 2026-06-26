@@ -23,6 +23,7 @@ public class Location
     /**
      * Implement content equality.
      */
+    @Override
     public boolean equals(Object obj)
     {
         if(obj instanceof Location) 
@@ -41,6 +42,7 @@ public class Location
      * Return a string of the form row,column
      * @return A string representation of the location.
      */
+    @Override
     public String toString()
     {
         return row + "," + col;
@@ -52,6 +54,7 @@ public class Location
      * unique hash code for each (row, col) pair.
      * @return A hashcode for the location.
      */
+    @Override
     public int hashCode()
     {
         return (row << 16) + col;

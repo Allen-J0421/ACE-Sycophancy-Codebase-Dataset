@@ -105,7 +105,7 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Creates a menu bar at the top of the screen which different 
+     * Creates a menu bar at the top of the screen with different
      * options.
      * @return Returns the new menu bar.
      */
@@ -234,37 +234,29 @@ public class SimulatorView extends JFrame
                 Animal animal = (Animal) field.getObjectAt(row, col, Animal.class);
                 Plant plant = (Plant) field.getObjectAt(row, col, Plant.class);
                 
-                if(animal != null) 
+                if(animal != null)
                 {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
-                    
-                    // Update the infected and immune counts
-                    if (animal.getIsInfected())
+
+                    if(animal.getIsInfected())
                     {
                         numberOfInfected++;
                     }
-                    
-                    if (animal.getIsImmune())
+                    if(animal.getIsImmune())
                     {
                         numberOfImmune++;
                     }
                 }
-                // Only show the plant if an animal is not present
-                else if(plant != null) 
+                else if(plant != null)
                 {
+                    stats.incrementCount(plant.getClass());
                     fieldView.drawMark(col, row, getColor(plant.getClass()));
                 }
-                else 
+                else
                 {
-                    Color emptyColor = EMPTY_COLOR;
-                    fieldView.drawMark(col, row, emptyColor);
-                    fieldView.setBackground(emptyColor);
-                }
-                
-                if (plant != null) 
-                {
-                   stats.incrementCount(plant.getClass()); 
+                    fieldView.drawMark(col, row, EMPTY_COLOR);
+                    fieldView.setBackground(EMPTY_COLOR);
                 }
             }
         }

@@ -369,6 +369,7 @@ public abstract class Animal extends LivingOrganism
             if(neighbor != null && getClass().equals(neighbor.getClass()) && !neighbor.getIsFemale())
             {
                 births = rand.nextInt(maxLitterSize) + 1;
+                break;
             }
         }
         return births;

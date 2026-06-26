@@ -46,11 +46,11 @@ public class Plant extends LivingOrganism
     
     /**
      * @Override
-     * 
-     * This is what the plants does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * 
-     * @param newPlants A list to return new Plants.
+     *
+     * Grow in health, then attempt to spread to adjacent empty cells
+     * during daytime. Spread probability depends on current weather.
+     *
+     * @param newPlants A list to receive newly spawned plants.
      */
     public void act(List<LivingOrganism> newPlants)
     {

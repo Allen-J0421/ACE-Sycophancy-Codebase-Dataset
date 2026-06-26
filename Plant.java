@@ -14,12 +14,11 @@ public abstract class Plant implements Actor
     //////////////////////////////////////////////////////////////*/
 
     private static final int FEEDING_FACTOR = 2;
-    protected boolean alive;
-    protected Location location;
-    protected int age;
-    protected int health;
-    protected int feedingValue;
-    protected Field field;
+    private boolean alive;
+    private Location location;
+    private int age;
+    private int feedingValue;
+    private Field field;
 
     private static final Random rand = Randomizer.getRandom();
 
@@ -88,43 +87,25 @@ public abstract class Plant implements Actor
         multiply(getMultiplyProbability(), newPlants);
     }
 
-    /**
-     * Increments the age of the plant.
-     *
-     * @param maxAge The maximum age a plant can take.
-     */
-    private void incrementAge(int maxAge) {
+    private void incrementAge(int maxAge)
+    {
         age++;
         if(age > maxAge) {
             setDead();
         }
     }
 
-    /**
-     * Updates how much the plant will feed if it is to be eaten.
-     */
     private void updateFeedingValue()
     {
         this.feedingValue = age * FEEDING_FACTOR;
     }
 
-    /**
-     * Updates the age and how much the plant will feed.
-     *
-     * @param maxAge The maximum age a plant can take.
-     */
     protected void grow(int maxAge)
     {
         incrementAge(maxAge);
         updateFeedingValue();
     }
 
-    /**
-     * Imitates the spread/growth of a plant.
-     *
-     * @param spreadProbability likelihood a spreading to the next cell.
-     * @param newPlants the newly generated plants.
-     */
     protected void multiply(double spreadProbability, List<Actor> newPlants)
     {
         List<Location> freeLocs = field.getFreeAdjacentTerrain(location);
@@ -139,32 +120,17 @@ public abstract class Plant implements Actor
                           ACCESSOR AND MUTATORS
     //////////////////////////////////////////////////////////////*/
 
-    /**
-     * Accessor method to denote whether or not the plant is alive.
-     *
-     * @return flag conveying if the plant is alive.
-     */
     public boolean isAlive()
     {
         return alive;
     }
 
-    /**
-     * Accessor method for the feeding value of the plant.
-     *
-     * @return the feeding value of the plant.
-     */
     public int getFeedingValue()
     {
         return feedingValue;
     }
 
-    /**
-     * Mutator method for the location of the plant.
-     *
-     * @param newLocation the new location to be set.
-     */
-    protected void setLocation(Location newLocation)
+    private void setLocation(Location newLocation)
     {
         if(location != null) {
             field.clear(location);
@@ -173,9 +139,6 @@ public abstract class Plant implements Actor
         field.placePlant(this, newLocation);
     }
 
-    /**
-     * Sets the plant dead and removes all references to it, as well as its storage.
-     */
     protected void setDead()
     {
         alive = false;

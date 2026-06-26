@@ -15,10 +15,10 @@ public abstract class Animal implements Actor
     private boolean alive;
     private Field field;
     private Location location;
-    protected int age;
-    protected final Gender gender;
-    protected int foodLevel;
-    protected Integer infectionTimestamp;
+    private int age;
+    private final Gender gender;
+    private int foodLevel;
+    private Integer infectionTimestamp;
 
     private static final Random rand = Randomizer.getRandom();
 
@@ -36,7 +36,7 @@ public abstract class Animal implements Actor
      * @param baseLevel base food level of an animal
      * @param maxAge maximum age the animal can take
      */
-    public Animal(boolean randomAge, Field field, Location location, Gender gender,int baseLevel, int maxAge)
+    public Animal(boolean randomAge, Field field, Location location, Gender gender, int baseLevel, int maxAge)
     {
         if (randomAge) {
             this.age = rand.nextInt(maxAge);
@@ -106,7 +106,7 @@ public abstract class Animal implements Actor
      *
      * @param maxAge The maximum age of the animal before he dies.
      */
-    protected void incrementAge(int maxAge)
+    private void incrementAge(int maxAge)
     {
         age++;
         if(age > maxAge) {
@@ -117,12 +117,32 @@ public abstract class Animal implements Actor
     /**
      * Increment the hunger of the animal.
      */
-    protected void incrementHunger()
+    private void incrementHunger()
     {
         foodLevel--;
         if(foodLevel <= 0) {
             setDead();
         }
+    }
+
+    /**
+     * Add to the animal's food level (used by herbivores when eating plants).
+     *
+     * @param amount the amount to add.
+     */
+    protected void addFoodLevel(int amount)
+    {
+        foodLevel += amount;
+    }
+
+    /**
+     * Replace the animal's food level (used by carnivores after making a kill).
+     *
+     * @param level the new food level.
+     */
+    protected void setFoodLevel(int level)
+    {
+        foodLevel = level;
     }
 
     /**
@@ -133,7 +153,7 @@ public abstract class Animal implements Actor
      * @param breedingProbability the likelyhood of giving birth.
      * @param breedingAge the minimum age to be able to breed.
      */
-    protected void meet(List<Actor> newAnimals, int maxLitter, double breedingProbability, int breedingAge)
+    private void meet(List<Actor> newAnimals, int maxLitter, double breedingProbability, int breedingAge)
     {
         List<Location> adjacent = field.adjacentLocations(getLocation());
         for (Location where : adjacent) {
@@ -152,18 +172,12 @@ public abstract class Animal implements Actor
 
     /**
      * Returns the amount of animals to breed.
-     *
-     * @param maxLitter the maximum amount of animals that the animal can breed.
-     * @param breedingProbability indicates the likelyhood of breeding.
-     * @param breedingAge The minimum age to be able to breed.
-     * @return an integer representing the amount of animals to give birth.
      */
     private int breed(int maxLitter, double breedingProbability, int breedingAge)
     {
         int births = 0;
-        if(age >= breedingAge){
-            double randomValue = rand.nextDouble();
-            if(randomValue <= breedingProbability) {
+        if(age >= breedingAge) {
+            if(rand.nextDouble() <= breedingProbability) {
                 births = rand.nextInt(maxLitter) + 1;
             }
         }
@@ -172,9 +186,6 @@ public abstract class Animal implements Actor
 
     /**
      * Gives birth to animal by appending the animals to the input list.
-     *
-     * @param newAnimals list of the new born animals.
-     * @param births number of animals to give birth.
      */
     private void giveBirth(List<Actor> newAnimals, int births)
     {
@@ -191,50 +202,26 @@ public abstract class Animal implements Actor
                           ACCESSOR AND MUTATORS
     //////////////////////////////////////////////////////////////*/
 
-    /**
-     * Accessor method for the gender of the animal.
-     *
-     * @return the gender of the animal.
-     */
-    protected Gender getGender()
+    private Gender getGender()
     {
         return this.gender;
     }
 
-    /**
-     * Accessor method for the timestamp of the infection.
-     *
-     * @return the step at which the animal got infected.
-     */
     public Integer getInfectionTimestamp()
     {
         return infectionTimestamp;
     }
 
-    /**
-     * Mutator method for the timestamp of the infection.
-     *
-     * @param step The step at which the animal got infected.
-     */
     public void setInfectionTimestamp(int step)
     {
         infectionTimestamp = step;
     }
 
-    /**
-     * Check whether the animal is alive or not.
-     *
-     * @return true if the animal is still alive.
-     */
     public boolean isAlive()
     {
         return alive;
     }
 
-    /**
-     * Indicate that the animal is no longer alive.
-     * It is removed from the field.
-     */
     protected void setDead()
     {
         alive = false;
@@ -245,21 +232,11 @@ public abstract class Animal implements Actor
         }
     }
 
-    /**
-     * Return the animal's location.
-     *
-     * @return The animal's location.
-     */
     protected Location getLocation()
     {
         return location;
     }
 
-    /**
-     * Place the animal at the new location in the given field.
-     *
-     * @param newLocation The animal's new location.
-     */
     protected void setLocation(Location newLocation)
     {
         if(location != null) {
@@ -269,11 +246,6 @@ public abstract class Animal implements Actor
         field.place(this, newLocation);
     }
 
-    /**
-     * Return the animal's field.
-     *
-     * @return The animal's field.
-     */
     protected Field getField()
     {
         return field;

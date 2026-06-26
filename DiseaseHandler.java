@@ -9,42 +9,39 @@ import java.util.Random;
  */
 public class DiseaseHandler
 {
-    
+
     /*///////////////////////////////////////////////////////////////
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
-    
+
     // cooldown before the animal achieves natural immunity
     private static final int DISINFECTION_DURATION = 5;
     private final Random rand = Randomizer.getRandom();
     private final Field field;
-    
+
     /*///////////////////////////////////////////////////////////////
                                    STATE
     //////////////////////////////////////////////////////////////*/
-    
-    private TreeMap<Integer, Integer> count;
-    private int currentStep;
-    
+
+    private final TreeMap<Integer, Integer> count = new TreeMap<>();
+
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
-    
+
     /**
      * Creates a new disease handler
      * @param field The field to later get the animals per block and compute the density
      */
     public DiseaseHandler(Field field)
     {
-        count = new TreeMap<>();
         this.field = field;
-        currentStep = 0;
     }
-    
+
     /*///////////////////////////////////////////////////////////////
                           DISEASE SIMULATION LOGIC
     //////////////////////////////////////////////////////////////*/
-    
+
     /**
      * Returns the map of simulation step → infection count.
      */
@@ -54,21 +51,21 @@ public class DiseaseHandler
     }
 
     /**
-     * Simulates the disease by iterating through every block in the field, and computing the density of the number of ppl infected 
-     * in the given block to determine the likelyhood of being infected in the block
+     * Simulates the disease for the given simulation step. Iterates through every
+     * 20x20 block in the field and uses the local infection density to determine
+     * the likelihood of each uninfected animal becoming infected.
+     *
+     * @param step The current simulation step number.
      */
-    public void simulateDiseaseStep()
+    public void simulateDiseaseStep(int step)
     {
-        // fetch the animal per blocks eg : [block1 : [animal1,animal2, animal3]. block 2: [animal1, animal 2, animal3]...]
         List<List<Animal>> blocks = field.getAnimalsPerBlock();
         int infectionCount = 0;
-        currentStep++;
         for (List<Animal> block : blocks) {
             int densityIndex = 0;
             List<Animal> uninfectedAnimals = new ArrayList<>();
             for(Animal animal : block) {
-                if(animal.getInfectionTimestamp() != null && currentStep - animal.getInfectionTimestamp() < DISINFECTION_DURATION) {
-                    // increase the counter of number of animals infected within this block.
+                if(animal.getInfectionTimestamp() != null && step - animal.getInfectionTimestamp() < DISINFECTION_DURATION) {
                     densityIndex++;
                     continue;
                 }
@@ -76,16 +73,14 @@ public class DiseaseHandler
                     uninfectedAnimals.add(animal);
                 }
             }
-            // compute probability of being infected.
-            double pValue = (double)((double)densityIndex/(double)block.size());
+            double pValue = (double) densityIndex / block.size();
             for(Animal animal : uninfectedAnimals) {
-                double randNumber = rand.nextDouble();
-                if(randNumber < pValue ) {
-                    animal.setInfectionTimestamp(currentStep);
+                if(rand.nextDouble() < pValue) {
+                    animal.setInfectionTimestamp(step);
                 }
             }
             infectionCount += densityIndex;
         }
-        count.put(currentStep, infectionCount);
+        count.put(step, infectionCount);
     }
 }

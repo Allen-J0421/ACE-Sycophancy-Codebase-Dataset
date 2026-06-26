@@ -58,7 +58,7 @@ public abstract class HerbivoreAnimal extends Animal
             Plant plant = field.getPlantAt(where);
             if(plant != null && targetPlants.contains(plant.getClass())) {
                 if(plant.isAlive()) {
-                    this.foodLevel += plant.getFeedingValue();
+                    addFoodLevel(plant.getFeedingValue());
                     plant.setDead();
                     return where;
                 }

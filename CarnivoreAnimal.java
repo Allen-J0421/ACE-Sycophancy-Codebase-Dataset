@@ -62,7 +62,7 @@ public abstract class CarnivoreAnimal extends Animal
                 if(preys.contains(animal.getClass())) {
                     if(animal.isAlive()) {
                         animal.setDead();
-                        this.foodLevel = animal.getFeedingValue();
+                        setFoodLevel(animal.getFeedingValue());
                         return where;
                     }
                 }

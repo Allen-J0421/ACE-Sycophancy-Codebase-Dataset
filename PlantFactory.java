@@ -1,49 +1,31 @@
 /**
- * Plant factory for creating objects that extend the Plant class.
+ * Factory for creating any plant species given a PlantType.
  *
- * @version 1.0
+ * @version 2.0
  */
 public class PlantFactory
 {
-    
-    /*///////////////////////////////////////////////////////////////
-                                STATE
-    //////////////////////////////////////////////////////////////*/
-    
-    private Field field;
-    
-    /*///////////////////////////////////////////////////////////////
-                                CONSTRUCTOR
-    //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * Creates a Plant Factory.
-     * 
-     * @param field reference to field to later pass in to plants.
-     */
+    private final Field field;
+
     public PlantFactory(Field field)
     {
         this.field = field;
     }
-    
+
     /**
-     * Creates a Plant given an input plant type.
-     * 
-     * @param plantType the type of the plant.
-     * @param location The base location of the newly created plant.
-     * @return the created plant.
+     * Creates and returns a plant of the given type at the given location.
+     *
+     * @param type The species to create.
+     * @param location The initial location of the plant.
+     * @return the newly created plant.
      */
-    public Plant getPlant(String plantType, Location location) {
-        if(plantType == null) {
-            return null;
+    public Plant getPlant(PlantType type, Location location)
+    {
+        switch(type) {
+            case GRASS: return new Grass(true, field, location);
+            case SAGE:  return new Sage(true, field, location);
+            case SEDGE: return new Sedge(true, field, location);
+            default: throw new IllegalArgumentException("Unknown plant type: " + type);
         }
-        if(plantType.equalsIgnoreCase("GRASS")) {
-            return new Grass(true, field, location);
-        } else if (plantType.equalsIgnoreCase("SAGE")) {
-            return new Sage(true, field, location);
-        } else if(plantType.equalsIgnoreCase("SEDGE")) {
-            return new Sedge(true, field , location);
-        } 
-        return null;
     }
 }

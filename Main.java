@@ -12,7 +12,7 @@ public class Main {
                 initialState.getField().getWidth()
         );
         bindViewControls(sim, view);
-        sim.addObserver(view);
+        sim.getSimulationContext().getEventService().subscribe(view);
         //runSim(sim);
         // Uncomment above line to have the simulation run as soon as the window is rendered
     }

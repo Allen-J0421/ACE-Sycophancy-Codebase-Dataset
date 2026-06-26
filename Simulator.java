@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A simple predator-prey simulator, based on a rectangular field
  * containing different organisms.
@@ -22,8 +19,6 @@ public class Simulator
     private final SimulationConfig config;
     private final SimulationContext context;
     private final ActorService actorService;
-    // Published state for observers.
-    private final List<SimulationObserver> observers;
     private SimulationState currentState;
 
     /**
@@ -125,28 +120,18 @@ public class Simulator
         this.actorService = new ActorService(context, field);
         context.setActorService(actorService);
         this.environment = new Environment(new Time(), context);
-        this.observers = new ArrayList<>();
 
         reset();
-    }
-
-    /**
-     * Register an observer and immediately publish the current state to it.
-     */
-    public void addObserver(SimulationObserver observer)
-    {
-        observers.add(observer);
-        observer.onStateChanged(currentState);
-    }
-
-    public void removeObserver(SimulationObserver observer)
-    {
-        observers.remove(observer);
     }
 
     public SimulationState getCurrentState()
     {
         return currentState;
+    }
+
+    public SimulationContext getSimulationContext()
+    {
+        return context;
     }
 
     public boolean isPlayingSimulation()
@@ -187,9 +172,9 @@ public class Simulator
             return;
         }
 
-        playingSimulation = true;
+        startSimulation();
         simulateOneStep();
-        playingSimulation = false;
+        finishSimulation();
     }
 
     /**
@@ -197,7 +182,10 @@ public class Simulator
      */
     public void stop()
     {
-        playingSimulation = false;
+        if(playingSimulation) {
+            playingSimulation = false;
+            publishEvent(new SimulationStopped(currentState));
+        }
     }
 
     /**
@@ -207,25 +195,23 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        playingSimulation = true;
+        startSimulation();
         remainingSteps = numSteps;
 
         int completedSteps = 0;
-        while(playingSimulation) {
-            for(int currentStep = 0;
-                    currentStep < numSteps && playingSimulation && currentState.isViable();
-                    currentStep++) {
-                simulateOneStep();
-                completedSteps++;
+        for(int currentStep = 0;
+                currentStep < numSteps && playingSimulation && currentState.isViable();
+                currentStep++) {
+            simulateOneStep();
+            completedSteps++;
 //                delay(60);   // uncomment this to run more slowly
-            }
-            if(!currentState.isViable()) {
-                updateBestSimulationResult(completedSteps);
-                playingSimulation = false;
-            }
         }
 
         remainingSteps = Math.max(0, numSteps - completedSteps);
+        if(!currentState.isViable()) {
+            updateBestSimulationResult(completedSteps);
+        }
+        finishSimulation();
     }
 
     /**
@@ -241,7 +227,7 @@ public class Simulator
         environment.advanceTime();
         context.getWeatherService().advance();
         actorService.updateActors(environment, step);
-        publishState();
+        publishState(new StepAdvanced(captureState()));
     }
 
     /**
@@ -258,7 +244,7 @@ public class Simulator
 
         actorService.reset();
 
-        publishState();
+        publishState(new SimulationReset(captureState()));
     }
 
     /**
@@ -275,11 +261,33 @@ public class Simulator
         }
     }
 
-    private void publishState()
+    private SimulationState captureState()
     {
         currentState = SimulationState.capture(step, environment, field);
-        for(SimulationObserver observer : observers) {
-            observer.onStateChanged(currentState);
+        return currentState;
+    }
+
+    private void publishState(SimulationEvent event)
+    {
+        publishEvent(event);
+    }
+
+    private void publishEvent(SimulationEvent event)
+    {
+        context.getEventService().publish(event);
+    }
+
+    private void startSimulation()
+    {
+        playingSimulation = true;
+        publishEvent(new SimulationStarted(currentState));
+    }
+
+    private void finishSimulation()
+    {
+        if(playingSimulation) {
+            playingSimulation = false;
+            publishEvent(new SimulationStopped(currentState));
         }
     }
 

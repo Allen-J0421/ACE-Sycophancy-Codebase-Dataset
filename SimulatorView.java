@@ -14,7 +14,7 @@ import java.util.*;
  * @version 2022.03.3
  */
 public class SimulatorView extends JFrame
-        implements SimulationObserver
+        implements SimulationEventListener
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -241,11 +241,28 @@ public class SimulatorView extends JFrame
      * Show the current status of the field.
      */
     @Override
-    public void onStateChanged(SimulationState state)
+    public void onEvent(SimulationEvent event)
+    {
+        SwingUtilities.invokeLater(() -> render(event));
+    }
+
+    private void render(SimulationEvent event)
     {
         if(!isVisible()) {
             setVisible(true);
         }
+
+        if(event instanceof SimulationStarted) {
+            setInfoText("Running");
+        }
+        else if(event instanceof SimulationStopped) {
+            setInfoText("Stopped");
+        }
+        else if(event instanceof SimulationReset) {
+            setInfoText("Reset");
+        }
+
+        SimulationState state = event.state();
 
         stepLabel.setText(STEP_PREFIX + state.getStep());
         weatherLabel.setText(WEATHER_PREFIX + state.getWeather());

@@ -8,6 +8,7 @@ public class SimulationContext
     private final DiseaseService diseaseService;
     private final WeatherService weatherService;
     private final MovementService movementService;
+    private final EventService eventService;
 
     private Field field;
     private OrganismFactory organismFactory;
@@ -20,6 +21,7 @@ public class SimulationContext
         this.diseaseService = new DiseaseService(randomProvider);
         this.weatherService = new WeatherService(randomProvider);
         this.movementService = new MovementService(randomProvider);
+        this.eventService = new EventService();
     }
 
     public RandomProvider getRandomProvider()
@@ -45,6 +47,11 @@ public class SimulationContext
     public MovementService getMovementService()
     {
         return movementService;
+    }
+
+    public EventService getEventService()
+    {
+        return eventService;
     }
 
     public Field getField()

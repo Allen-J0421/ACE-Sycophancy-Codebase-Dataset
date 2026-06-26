@@ -10,12 +10,12 @@ public abstract class Animal extends Creature
 {
     private static final Random RAND = Randomizer.getRandom();
 
-    // sex of an animal, 0 = female and 1 = male
-    private int sex;
-
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
 
+    private AnimalProfile profile;
+    // sex of an animal, 0 = female and 1 = male
+    private int sex;
     // If the animal is infected by disease.
     private boolean isInfected;
     // If the animal is immuned from the diease.
@@ -31,13 +31,15 @@ public abstract class Animal extends Creature
     // total population that is die of disease.
     public static int populationDieOfDisease = 0;
 
-    public Animal(Field field, Location location)
+    public Animal(boolean randomAge, Field field, Location location, AnimalProfile profile)
     {
         super(field, location);
+        this.profile = profile;
         sex = RAND.nextBoolean() ? 1 : 0;
         isInfected = false;
         isImmuned = false;
         infectionStartStep = 0;
+        initializeState(randomAge);
     }
 
     /**
@@ -48,23 +50,6 @@ public abstract class Animal extends Creature
     {
         return sex;
     }
-
-    /**
-     * Every animal have different gender. and the implementation of this method is at its subclass.
-     */
-    public abstract boolean encounterWithDiffSex();
-
-    public abstract Location search(Disease disease, int step);
-
-    protected abstract int getMaxAge();
-
-    protected abstract double getBreedingProbability();
-
-    protected abstract int getMaxLitterSize();
-
-    protected abstract boolean canBreed();
-
-    protected abstract Animal createYoung(Field field, Location location);
 
     /**
      * identify whether a creature need to sleep
@@ -115,29 +100,9 @@ public abstract class Animal extends Creature
         this.isImmuned = isImmuned;
     }
 
-    /**
-     * Set the animal's age and food state.
-     */
-    protected void initializeState(boolean randomAge, int maxAge, int foodValue)
-    {
-        if(randomAge) {
-            age = RAND.nextInt(maxAge);
-            foodLevel = RAND.nextInt(foodValue);
-        }
-        else {
-            age = 0;
-            foodLevel = foodValue;
-        }
-    }
-
     protected int getAge()
     {
         return age;
-    }
-
-    protected void setFoodLevel(int foodLevel)
-    {
-        this.foodLevel = foodLevel;
     }
 
     /**
@@ -170,47 +135,37 @@ public abstract class Animal extends Creature
     }
 
     /**
-     *  Make an animal infected while the disease exists.
-     *
-     *  @param disease disease
-     *  @param step current step.
+     * Make an animal infected while the disease exists.
      */
     protected void makeInfected(Disease disease, int step)
     {
-        if((!this.getIsImmuned()) && RAND.nextDouble() <= disease.INFECTION_RATE) {
+        if(!getIsImmuned() && RAND.nextDouble() <= disease.INFECTION_RATE) {
             infect(step);
         }
     }
 
     /**
      * give the animal immunity while condition is met.
-     * @param disease disease.
-     * @param step int step.
      */
     protected void ifCanGrantImmunity(Disease disease, int step)
     {
-        if(getIsInfected() && !getIsImmuned()) {
-            if(step - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
-                setIsImmuned(true);
-                setIsInfected(false);
-            }
+        if(getIsInfected() && !getIsImmuned()
+           && step - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
+            setIsImmuned(true);
+            setIsInfected(false);
         }
     }
 
     /**
      * set an animal to death if it is die of infection.
      * Return true if an animal dies of infection
-     *
-     * @return true if an animal dies of infection.
      */
     protected boolean dieOfInfection(Disease disease)
     {
-        if(getIsInfected() && !getIsImmuned()) {
-            if(RAND.nextDouble() <= disease.MORTALITY_RATE) {
-                setDead();
-                populationDieOfDisease++;
-                return true;
-            }
+        if(getIsInfected() && !getIsImmuned() && RAND.nextDouble() <= disease.MORTALITY_RATE) {
+            setDead();
+            populationDieOfDisease++;
+            return true;
         }
         return false;
     }
@@ -227,20 +182,19 @@ public abstract class Animal extends Creature
     }
 
     /**
-     * Find whether there is an adjacent animal of the same species but opposite sex.
+     * Decide whether a suitable mate is nearby.
      */
-    protected boolean hasDifferentSexNearby(Class<? extends Animal> species, int searchDistance)
+    public boolean encounterWithDiffSex()
     {
-        for(Location location : getField().adjacentLocations(getLocation(), searchDistance)) {
-            Creature nearbyCreature = getField().getCreatureAt(location);
-            if(species.isInstance(nearbyCreature)) {
-                Animal nearbyAnimal = species.cast(nearbyCreature);
-                if(this.getSex() != nearbyAnimal.getSex()) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return hasDifferentSexNearby(profile.getSpeciesClass(), profile.getMateSearchDistance());
+    }
+
+    /**
+     * Search for configured prey around the animal.
+     */
+    public Location search(Disease disease, int step)
+    {
+        return findFood(disease, step, profile.getFoodValue(), profile.getPreyTypes());
     }
 
     /**
@@ -249,7 +203,7 @@ public abstract class Animal extends Creature
     protected void incrementAge()
     {
         age++;
-        if(age > getMaxAge()) {
+        if(age > profile.getMaxAge()) {
             setDead();
         }
     }
@@ -271,31 +225,62 @@ public abstract class Animal extends Creature
     protected void giveBirth(List<Creature> newAnimals)
     {
         int births = breed();
-        createAdjacentCreatures(newAnimals, births, this::createYoung);
+        createAdjacentCreatures(newAnimals, births, profile::createYoung);
+    }
+
+    protected boolean canBreed()
+    {
+        boolean reachedBreedingAge = getAge() >= profile.getBreedingAge();
+        return reachedBreedingAge && (!profile.requiresMate() || encounterWithDiffSex());
+    }
+
+    /**
+     * Find whether there is an adjacent animal of the same species but opposite sex.
+     */
+    protected boolean hasDifferentSexNearby(Class<? extends Animal> species, int searchDistance)
+    {
+        for(Location location : getField().adjacentLocations(getLocation(), searchDistance)) {
+            Creature nearbyCreature = getField().getCreatureAt(location);
+            if(species.isInstance(nearbyCreature)) {
+                Animal nearbyAnimal = species.cast(nearbyCreature);
+                if(getSex() != nearbyAnimal.getSex()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
      * Search for prey around the animal and handle infection spread during the search.
      */
-    @SafeVarargs
     protected final Location findFood(Disease disease, int step, int foodValue,
-                                      Class<? extends Creature>... preyTypes)
+                                      List<Class<? extends Creature>> preyTypes)
     {
         for(Location location : getField().adjacentLocations(getLocation(), 1)) {
             Creature nearbyCreature = getField().getCreatureAt(location);
             exposeToInfection(nearbyCreature, disease, step);
             if(isMatchingPrey(nearbyCreature, preyTypes) && nearbyCreature.isAlive()) {
                 nearbyCreature.setDead();
-                setFoodLevel(foodValue);
+                foodLevel = foodValue;
                 return location;
             }
         }
         return null;
     }
 
-    /**
-     * Move to a new location if possible, otherwise die from overcrowding.
-     */
+    private void initializeState(boolean randomAge)
+    {
+        if(randomAge) {
+            age = RAND.nextInt(profile.getMaxAge());
+            foodLevel = RAND.nextInt(profile.getFoodValue());
+        }
+        else {
+            age = 0;
+            foodLevel = profile.getFoodValue();
+        }
+    }
+
     private void moveTo(Location preferredLocation)
     {
         Location newLocation = preferredLocation;
@@ -321,8 +306,7 @@ public abstract class Animal extends Creature
         }
     }
 
-    @SafeVarargs
-    private final boolean isMatchingPrey(Creature creature, Class<? extends Creature>... preyTypes)
+    private boolean isMatchingPrey(Creature creature, List<Class<? extends Creature>> preyTypes)
     {
         if(creature == null) {
             return false;
@@ -337,8 +321,8 @@ public abstract class Animal extends Creature
 
     private int breed()
     {
-        if(canBreed() && RAND.nextDouble() <= getBreedingProbability()) {
-            return RAND.nextInt(getMaxLitterSize()) + 1;
+        if(canBreed() && RAND.nextDouble() <= profile.getBreedingProbability()) {
+            return RAND.nextInt(profile.getMaxLitterSize()) + 1;
         }
         return 0;
     }

@@ -36,7 +36,7 @@ public class Simulator
     // List of plants in the field.
     private List<Plant> plants;
     //the current weather of the simulation
-    private String weather;
+    private Weather weather;
     // The current state of the field.
     private Field  field;
     // The current step of the simulation.
@@ -70,7 +70,7 @@ public class Simulator
         animals = new ArrayList<>();
         plants = new ArrayList<>();
 
-        weather = "none";
+        weather = Weather.NONE;
 
         field = new Field(depth, width);
 
@@ -177,6 +177,7 @@ public class Simulator
      */
     public void reset() {
         step = 0;
+        weather = Weather.NONE;
         animals.clear();
         populate();
         
@@ -255,25 +256,7 @@ public class Simulator
     * assign a weather condition to the current step of the simulation
      */
     private void simulateWeather() {
-        Random rand = Randomizer.getRandom();
-        int roll = rand.nextInt(5);
-        switch (roll) {
-            case 0:
-                weather = "rain";
-                break;
-            case 1:
-                weather = "flood";
-                break;
-            case 2:
-                weather = "drought";
-                break;
-            case 3:
-                weather = "fog";
-                break;
-            default:
-                weather = "none";
-                break;
-        }
+        weather = Weather.randomWeather(Randomizer.getRandom());
     }
 
     /**
@@ -282,23 +265,27 @@ public class Simulator
      * are cleared before the active weather is applied.
      */
     private void applyWeatherEffects() {
-        if ("none".equals(weather)) {
+        if (weather == Weather.NONE) {
             return;
         }
 
         resetWeather();
 
-        if ("rain".equals(weather)) {
-            applyRain();
-        }
-        else if ("flood".equals(weather)) {
-            applyFlood();
-        }
-        else if ("drought".equals(weather)) {
-            applyDrought();
-        }
-        else if ("fog".equals(weather)) {
-            applyFog();
+        switch (weather) {
+            case RAIN:
+                applyRain();
+                break;
+            case FLOOD:
+                applyFlood();
+                break;
+            case DROUGHT:
+                applyDrought();
+                break;
+            case FOG:
+                applyFog();
+                break;
+            default:
+                break;
         }
     }
 

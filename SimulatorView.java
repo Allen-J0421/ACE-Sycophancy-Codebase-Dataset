@@ -104,7 +104,7 @@ public class SimulatorView extends JFrame
      * @param step Which iteration step it is.
      * @param field The field whose status is to be displayed.
      */
-    public void showStatus(int step, Field field, int time, String weather) {
+    public void showStatus(int step, Field field, int time, Weather weather) {
         if(!isVisible()) {
             setVisible(true);
         }

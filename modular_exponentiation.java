@@ -15,7 +15,7 @@ final class ModularExponentiation {
                 result = multiplyMod(result, basePower, modulus);
             }
 
-            basePower = multiplyMod(basePower, basePower, modulus);
+            basePower = squareMod(basePower, modulus);
             exponent /= 2;
         }
 
@@ -24,6 +24,10 @@ final class ModularExponentiation {
 
     private static boolean isOdd(int value) {
         return (value & 1) == 1;
+    }
+
+    private static int squareMod(int value, int modulus) {
+        return multiplyMod(value, value, modulus);
     }
 
     private static int multiplyMod(int left, int right, int modulus) {

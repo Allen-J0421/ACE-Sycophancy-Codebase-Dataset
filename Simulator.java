@@ -1,4 +1,3 @@
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -23,14 +22,16 @@ public class Simulator
     private final Field field;
     // The current step of the simulation.
     private int step;
-    // A graphical view of the simulation.
-    private final SimulatorView view;
     // Controls time progression and weather updates.
     private final EnvironmentController environmentController;
     // Environment in the simulation.
     private final Environment environment;
     // Factories used to create initial actors in population order.
     private final Map<Class<?>, ActorFactory> actorFactories;
+    // Observers interested in simulation state changes.
+    private final List<SimulationListener> listeners;
+    // Statistics used to determine whether the simulation remains viable.
+    private final FieldStats viabilityStats;
     // Number of hunters created in the current population.
     private int hunterCount;
 
@@ -100,20 +101,10 @@ public class Simulator
         environmentController = new EnvironmentController();
         environment = environmentController.getEnvironment();
 
-        // Create a view of the state of each location in the field.
-        view = new SimulatorView(config.getDepth(), config.getWidth());
-        for(Class cls : SimulationInfo.DEFAULT_COLOR_MAP.keySet()) {
-            view.setColor(cls, SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
-        }
-
-        // adding additional buttons to the GUI
-        view.addLongButtonListener(longButtonListener);
-        view.addOneStepButtonListener(startButtonListener);
-        view.addStopButtonListener(stopButtonListener);
-        view.addResetButtonListener(resetButtonListener);
-
         actorFactories = new LinkedHashMap<>();
         registerActorFactories();
+        listeners = new ArrayList<>();
+        viabilityStats = new FieldStats();
 
         // Setup a valid starting point.
         reset();
@@ -129,12 +120,9 @@ public class Simulator
         simulate(remainingSteps);
     }
 
-    /**
-     * Whenever the startButton is pressed,the simulateOneStep()
-     * method is called.
-     */
-    private ActionListener startButtonListener = e -> {
-        if(playingSimulation){
+    public void runOneStep()
+    {
+        if(playingSimulation) {
             System.out.println("Stop the simulation first");
         }
         else {
@@ -142,39 +130,34 @@ public class Simulator
             simulateOneStep();
             playingSimulation = false;
         }
-    };
+    }
 
-    /**
-     * Whenever the stopButton is pressed, the simulation is stopped.
-     */
-    private ActionListener stopButtonListener = e -> {
+    public void stopSimulation()
+    {
         playingSimulation = false;
         Thread.currentThread().interrupt();
-    };
+    }
 
-    /**
-     * Whenever the resetButton is pressed, the simulation is reset.
-     */
-    private ActionListener resetButtonListener = e -> {
-        playingSimulation = false;
-        reset();
-    };
+    public boolean isPlayingSimulation()
+    {
+        return playingSimulation;
+    }
 
-    /**
-     * Whenever the longButton is pressed,runLongSimulation() is called.
-     */
-    private ActionListener longButtonListener = e -> {
-        Thread runLongSimThread = new Thread("SimulationRunThread"){
-            public void run() { runLongSimulation(); }
-        };
+    public SimulationConfig getConfig()
+    {
+        return config;
+    }
 
-        if (!playingSimulation){
-            runLongSimThread.start();
-        }
-        else{
-            System.out.println("Stop the simulation first");
-        }
-    };
+    public void addSimulationListener(SimulationListener listener)
+    {
+        listeners.add(Objects.requireNonNull(listener, "listener"));
+        listener.simulationReset(createEvent());
+    }
+
+    public void removeSimulationListener(SimulationListener listener)
+    {
+        listeners.remove(listener);
+    }
 
 
     /**
@@ -189,12 +172,12 @@ public class Simulator
 
         int backupCounter = 1;
         while(playingSimulation){
-            for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+            for(int step = 1; step <= numSteps && isViable(); step++) {
                 simulateOneStep();
                 backupCounter++;
 //            delay(60);   // uncomment this to run more slowly
             }
-            if(!view.isViable(field)){
+            if(!isViable()){
                 // System.out.println("STEPS COMPLETED: "+backupCounter);
                 // uncomment this while optimizing for population stability
                 Thread.currentThread().interrupt();
@@ -256,7 +239,8 @@ public class Simulator
         actors.addAll(newActors);
         plantGrassInPatches();
 
-        view.showStatus(step, environmentController.getCurrentWeather().toString(), environmentController.getCurrentTimeString(), field);
+        notifyPopulationChanged();
+        notifyStepCompleted();
     }
 
     /**
@@ -283,8 +267,8 @@ public class Simulator
         populate();
         environmentController.reset();
 
-        // Show the starting state in the view.
-        view.showStatus(step, environmentController.getCurrentWeather().toString(), environmentController.getCurrentTimeString(), field);
+        notifySimulationReset();
+        notifyPopulationChanged();
     }
 
     /**
@@ -363,6 +347,45 @@ public class Simulator
             return SimulationConfig.defaultConfig();
         }
         return SimulationConfig.withDimensions(depth, width);
+    }
+
+    private boolean isViable()
+    {
+        return viabilityStats.isViable(field);
+    }
+
+    private void notifyStepCompleted()
+    {
+        SimulationEvent event = createEvent();
+        for(SimulationListener listener : listeners) {
+            listener.stepCompleted(event);
+        }
+    }
+
+    private void notifySimulationReset()
+    {
+        SimulationEvent event = createEvent();
+        for(SimulationListener listener : listeners) {
+            listener.simulationReset(event);
+        }
+    }
+
+    private void notifyPopulationChanged()
+    {
+        SimulationEvent event = createEvent();
+        for(SimulationListener listener : listeners) {
+            listener.populationChanged(event);
+        }
+    }
+
+    private SimulationEvent createEvent()
+    {
+        return new SimulationEvent(
+                this,
+                step,
+                field,
+                environmentController.getCurrentWeather(),
+                environmentController.getCurrentTimeString());
     }
 
     /**

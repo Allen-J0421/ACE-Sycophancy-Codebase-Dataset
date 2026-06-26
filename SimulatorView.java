@@ -14,7 +14,7 @@ import javax.swing.JFrame;
  *
  * @version 2022.03.3
  */
-public class SimulatorView extends JFrame
+public class SimulatorView extends JFrame implements SimulationListener
 {
     private static final Color EMPTY_COLOR = Color.white;
     private static final Color UNKNOWN_COLOR = Color.gray;
@@ -139,6 +139,18 @@ public class SimulatorView extends JFrame
     public boolean isViable(Field field)
     {
         return stats.isViable(field);
+    }
+
+    @Override
+    public void stepCompleted(SimulationEvent event)
+    {
+        showStatus(event.getStep(), event.getWeather().toString(), event.getTimeText(), event.getField());
+    }
+
+    @Override
+    public void simulationReset(SimulationEvent event)
+    {
+        showStatus(event.getStep(), event.getWeather().toString(), event.getTimeText(), event.getField());
     }
 
     private Color getColor(Class<?> animalClass)

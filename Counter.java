@@ -1,4 +1,4 @@
-import java.awt.Color;
+package savannah.model;
 
 /**
  * Provide a counter for a participant in the simulation.

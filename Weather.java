@@ -1,4 +1,8 @@
+package savannah.model;
+
 import java.util.Random;
+
+import savannah.config.SimulationConfig;
 
 /**
  * A class which is used to access the weather and handle changing
@@ -10,10 +14,11 @@ public class Weather {
     // Stores all of the possible weather types.
     public static enum WeatherType { Sunny, Rainy, Foggy, Clear, Cloudy }
     
+    private static final SimulationConfig CONFIG = SimulationConfig.DEFAULT;
     private static WeatherType currentWeather;
     
     private static int weatherLastsForSteps;
-    private static final int MINIMUM_STEPS_WEATHER_LASTS_FOR = 27;
+    private static final int MINIMUM_STEPS_WEATHER_LASTS_FOR = CONFIG.minimumWeatherDuration;
     
     // Stores a randomiser used for generating random weather.
     private static final Random rand = Randomizer.getRandom();
@@ -64,7 +69,7 @@ public class Weather {
     {
         int randomInt = rand.nextInt(WeatherType.values().length);
         
-        weatherLastsForSteps = rand.nextInt(20) + MINIMUM_STEPS_WEATHER_LASTS_FOR;
+        weatherLastsForSteps = rand.nextInt(CONFIG.weatherDurationVariance) + MINIMUM_STEPS_WEATHER_LASTS_FOR;
         
         return WeatherType.values()[randomInt];
     }

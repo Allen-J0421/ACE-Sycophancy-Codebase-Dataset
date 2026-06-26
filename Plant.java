@@ -1,5 +1,9 @@
-import java.util.List;
+package savannah.model;
+
 import java.util.Iterator;
+import java.util.List;
+
+import savannah.config.SimulationConfig;
 
 /**
  * Plants can grow, be can be partially eaten, they can be completely eaten and die, plants
@@ -13,12 +17,6 @@ public class Plant extends LivingOrganism
     private double healthPercentage;
     // The likelihood a plants being able to spread into areas with no plants
     private double spreadProbability;
-    // The rate at which plants grow back and increase their health percentage
-    private static final double GROWTH_RATE = 0.05;
-    // The amount of health percentage which is taken away every time an animal eats a plant
-    private static final double PERCENTAGE_EATEN = 0.52;
-    // The food value of itself - how much the hunter's food level increases when eating it.
-    private static final int FOOD_VALUE = 3;
     
     /**
      * Create a new PLANT at location in field.
@@ -29,18 +27,31 @@ public class Plant extends LivingOrganism
      */
     public Plant(boolean randomHealthPercentage, Field field, Location location) 
     {
-        super(field, location);
+        this(randomHealthPercentage, field, location, SimulationConfig.DEFAULT);
+    }
+
+    /**
+     * Create a new PLANT at location in field.
+     * 
+     * @param randomHealthPercentage If true, the plant will have a random age.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config Shared simulation configuration.
+     */
+    public Plant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config) 
+    {
+        super(field, location, config);
         
-        foodValue = FOOD_VALUE;
+        foodValue = config.plant.foodValue;
         
-        healthPercentage = 1;
+        healthPercentage = config.plant.newbornHealthFraction;
         if (randomHealthPercentage) 
         {
             healthPercentage = rand.nextDouble();
             
-            if (healthPercentage < 0.1)
+            if (healthPercentage < config.plant.minimumRandomHealthFraction)
             {
-                healthPercentage = 0.1;
+                healthPercentage = config.plant.minimumRandomHealthFraction;
             }
         }
     }
@@ -63,21 +74,21 @@ public class Plant extends LivingOrganism
                 switch (Weather.getWeather())
                 {
                     case Sunny:
-                        spreadProbability = 0.2;
+                        spreadProbability = config.sunnyPlantSpreadProbability;
                         break;
                     case Rainy:
-                        spreadProbability = 0.14;
+                        spreadProbability = config.rainyPlantSpreadProbability;
                         break;
                     case Foggy:
-                        spreadProbability = 0.05;
+                        spreadProbability = config.foggyPlantSpreadProbability;
                         break;
                     case Cloudy:
-                        spreadProbability = 0.1;
+                        spreadProbability = config.cloudyPlantSpreadProbability;
                         break;
                     case Clear:
-                        spreadProbability = 0.08;
+                        spreadProbability = config.clearPlantSpreadProbability;
                         break;
-                }    
+                }
                 
                 if (rand.nextDouble() < spreadProbability) 
                 {
@@ -93,7 +104,7 @@ public class Plant extends LivingOrganism
      */
     protected int beEaten() 
     {
-        healthPercentage -= PERCENTAGE_EATEN;
+        healthPercentage -= config.plant.percentageEaten;
         if (healthPercentage <= 0)
         {
             setDead();
@@ -109,7 +120,7 @@ public class Plant extends LivingOrganism
      */
     protected void incrementAge() 
     {
-        healthPercentage += GROWTH_RATE;
+        healthPercentage += config.plant.growthRate;
         if (healthPercentage > 1.0) 
         {
             healthPercentage = 1.0;

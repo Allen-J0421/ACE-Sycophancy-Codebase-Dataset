@@ -1,5 +1,9 @@
-import java.util.List;
+package savannah.model;
+
 import java.util.Iterator;
+import java.util.List;
+
+import savannah.config.SimulationConfig;
 /**
  * A class representing shared characteristics of animals.
  *
@@ -49,15 +53,29 @@ public abstract class Animal extends LivingOrganism
      */
     public Animal(Field field, Location location, boolean infected, boolean immune)
     {
-        super(field, location);
+        this(field, location, infected, immune, SimulationConfig.DEFAULT);
+    }
+
+    /**
+     * Create a new animal at location in field.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param infected Intial state if the animal is infected or not
+     * @param immmune Intial state if the animal is immune or not
+     * @param config Shared simulation configuration.
+     */
+    public Animal(Field field, Location location, boolean infected, boolean immune, SimulationConfig config)
+    {
+        super(field, location, config);
         alive = true;
         this.infected = infected;
         this.immune = immune;
         
-        diseaseProbability = 0.00000015;
-        diseaseSpreadProbability = 0.80;
-        deathFromInfectionProbability = 0.13;
-        immuneProbability = 0.05;
+        diseaseProbability = config.diseaseProbability;
+        diseaseSpreadProbability = config.diseaseSpreadProbability;
+        deathFromInfectionProbability = config.deathFromInfectionProbability;
+        immuneProbability = config.immuneProbability;
         
         isFemale = rand.nextBoolean();
     }
@@ -93,7 +111,7 @@ public abstract class Animal extends LivingOrganism
         // of losing immunity.
         else
         {
-            if(rand.nextDouble() <= (immuneProbability / 15)) {
+        if(rand.nextDouble() <= config.immuneLossProbability) {
                 immune = false;
             }
         }
@@ -138,7 +156,7 @@ public abstract class Animal extends LivingOrganism
                 {
                     // no free adjacent locations therefore it is 
                     // overcrowded
-                    if (rand.nextDouble() < 0.3) 
+                    if (rand.nextDouble() < config.overcrowdingDeathProbability) 
                     {
                         setDead();
                     }
@@ -303,13 +321,13 @@ public abstract class Animal extends LivingOrganism
         boolean offspringIsImmune = motherIsImmune;
         
         // If the mother is immune and infected, there is a chance the child gets immunity.
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15) 
+        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < config.offspringImmuneInheritanceProbability) 
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
         }
         // If the mother is immune, there is a chance the child is not immune.
-        else if (motherIsImmune && rand.nextDouble() < 0.9)
+        else if (motherIsImmune && rand.nextDouble() < config.offspringLoseImmunityProbability)
         {
             offspringIsImmune = false;
         }

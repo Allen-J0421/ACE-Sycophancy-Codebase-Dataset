@@ -1,8 +1,33 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+package savannah.app;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import savannah.config.SimulationConfig;
+import savannah.model.Animal;
+import savannah.model.Field;
+import savannah.model.FieldStats;
+import savannah.model.Plant;
+import savannah.model.Time;
+import savannah.model.Weather;
 
 /**
  * A graphical view of the simulation grid.
@@ -38,10 +63,12 @@ public class SimulatorView extends JFrame
     private JPanel classKey;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     
     // A statistics object computing and storing simulation information
     private FieldStats stats;
+    // Shared configuration.
+    private final SimulationConfig config;
 
     /**
      * Create a view of the given width and height.
@@ -49,10 +76,11 @@ public class SimulatorView extends JFrame
      * @param width The simulation's width.
      * @param buttons The buttons used to control the simulation.
      */
-    public SimulatorView(int height, int width, JButton[] buttons)
+    public SimulatorView(int height, int width, JButton[] buttons, SimulationConfig config)
     {
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
+        this.config = config;
 
         setTitle("Savannah Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -317,7 +345,7 @@ public class SimulatorView extends JFrame
      */
     private class FieldView extends JPanel
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
+        private final int GRID_VIEW_SCALING_FACTOR = config.viewScalingFactor;
 
         private int gridWidth, gridHeight;
         private double xScale, yScale;

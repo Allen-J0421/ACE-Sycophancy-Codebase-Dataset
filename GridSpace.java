@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+package savannah.model;
 
 /**
  * The grid is made up of GridSpaces which stores the current

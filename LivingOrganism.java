@@ -1,5 +1,9 @@
-import java.util.Random;
+package savannah.model;
+
 import java.util.List;
+import java.util.Random;
+
+import savannah.config.SimulationConfig;
 
 /**
  * A class representing the shared characteristics between Living Organisms.
@@ -16,6 +20,8 @@ public abstract class LivingOrganism
     protected Location location;
     // The food value of itself - how much the hunter's food level increases when eating it.
     protected int foodValue;
+    // Shared configuration for the organism.
+    protected final SimulationConfig config;
     
     // A shared random number generator to control breeding.
     protected static final Random rand = Randomizer.getRandom();
@@ -28,8 +34,21 @@ public abstract class LivingOrganism
      */
     protected LivingOrganism(Field field, Location location) 
     {
+        this(field, location, SimulationConfig.DEFAULT);
+    }
+
+    /**
+     * Creates a new Organism at the location.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config Shared simulation configuration.
+     */
+    protected LivingOrganism(Field field, Location location, SimulationConfig config) 
+    {
         alive = true;
         this.field = field;
+        this.config = config;
         setLocation(location);
     }
     
@@ -50,7 +69,7 @@ public abstract class LivingOrganism
      * Check whether the organism is alive or not.
      * @return true if the organism is still alive.
      */
-    protected boolean isAlive()
+    public boolean isAlive()
     {
         return alive;
     }
@@ -103,7 +122,6 @@ public abstract class LivingOrganism
         return field;
     }
 }
-
 
 
 

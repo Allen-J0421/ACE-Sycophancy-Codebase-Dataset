@@ -1,3 +1,7 @@
+package savannah.model;
+
+import savannah.config.SimulationConfig;
+
 /**
  * A class which is used to access the step number, time, and
  * whether the simulation has finished or paused.
@@ -6,10 +10,11 @@
  */
 public class Time
 {
+    private static final SimulationConfig CONFIG = SimulationConfig.DEFAULT;
     private static int step = 0;
     
     // The offset of the time to start the simulation at.
-    private static final int TIME_OFFSET = 12;
+    private static final int TIME_OFFSET = CONFIG.timeOffset;
     
     // Stores the actual number of steps that the current
     // run of the simulation should pause at if viable.
@@ -48,7 +53,7 @@ public class Time
      * @return Returns the time in hours (between 0 and 24).
      */
     public static int getTime() {
-        int time = (step + TIME_OFFSET)%24;
+        int time = (step + TIME_OFFSET)%CONFIG.hoursPerDay;
         return time;
     }
     
@@ -57,7 +62,7 @@ public class Time
      */
     public static boolean isNight() {
         int time = getTime();
-        return time < 6 || time > 18;
+        return time < CONFIG.dayStartHour || time > CONFIG.nightStartHour;
     }
     
     /**

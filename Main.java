@@ -1,3 +1,5 @@
+package savannah.app;
+
 /**
  * A simple Main class which is used to quickly initialise the 
  * simulation.

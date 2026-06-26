@@ -1,5 +1,9 @@
-import java.util.List;
+package savannah.model;
+
 import java.util.Iterator;
+import java.util.List;
+
+import savannah.config.SimulationConfig;
 
 /**
  * A class representing the shared characteristics between Prey
@@ -18,8 +22,21 @@ public abstract class Prey extends Animal
      */
     protected Prey(Field field, Location location, boolean infected, boolean immune)
     {
-        super(field, location, infected, immune);
-        movementProbability = 0.75;
+        this(field, location, infected, immune, SimulationConfig.DEFAULT);
+    }
+
+    /**
+     * Create a new prey at location in field.
+     * 
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param infected Intial state if the prey is infected or not
+     * @param immmune Intial state if the prey is immune or not
+     * @param config Shared simulation configuration.
+     */
+    protected Prey(Field field, Location location, boolean infected, boolean immune, SimulationConfig config)
+    {
+        super(field, location, infected, immune, config);
     }
 
     /**

@@ -1,14 +1,27 @@
-import java.util.Random;
-import java.util.List;
-import java.util.ArrayList;
-//import java.util.Arrays;
-import java.util.Iterator;
+package savannah.app;
+
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
 import javax.swing.JButton;
-//import java.awt.event.ActionListener;
-//import java.awt.event.ActionEvent;
-//import javax.swing.SwingUtilities;
-//import javafx.scene.paint.Color;
+
+import savannah.config.SimulationConfig;
+import savannah.model.Animal;
+import savannah.model.Cheetah;
+import savannah.model.Field;
+import savannah.model.Giraffe;
+import savannah.model.Lemur;
+import savannah.model.Lion;
+import savannah.model.LivingOrganism;
+import savannah.model.Location;
+import savannah.model.Plant;
+import savannah.model.Randomizer;
+import savannah.model.Time;
+import savannah.model.Weather;
+import savannah.model.Zebra;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -18,21 +31,7 @@ import javax.swing.JButton;
  */
 public class Simulator
 {
-    // Constants representing configuration information for the simulation.
-    // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 270;
-    // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 180;
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.0125; //0.015
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.0125; //0.015
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a giraffe will be created in any given grid position.
-    private static final double GIRAFFE_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a giraffe will be created in any given grid position.
-    private static final double LEMUR_CREATION_PROBABILITY = 0.081; //0.08
+    private static final SimulationConfig CONFIG = SimulationConfig.DEFAULT;
 
     // List of animals in the field.
     private List<LivingOrganism> animals;
@@ -50,7 +49,7 @@ public class Simulator
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(CONFIG.defaultDepth, CONFIG.defaultWidth);
     }
     
     /**
@@ -63,8 +62,8 @@ public class Simulator
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
+            depth = CONFIG.defaultDepth;
+            width = CONFIG.defaultWidth;
         }
         
         animals = new ArrayList<>();
@@ -97,7 +96,7 @@ public class Simulator
         buttonToggle();
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, buttons);
+        view = new SimulatorView(depth, width, buttons, CONFIG);
         view.setColor(Zebra.class, Color.BLACK, Color.WHITE);
         view.setColor(Giraffe.class, Color.YELLOW, Color.BLACK);
         view.setColor(Lemur.class, Color.BLUE, Color.WHITE);
@@ -252,7 +251,7 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) 
             {
                 Location location = new Location(row, col);
-                plants.add(new Plant(true, field, location));
+                plants.add(new Plant(true, field, location, CONFIG));
 
                 Animal animal = createInitialAnimal(location, rand);
                 if(animal != null) {
@@ -272,20 +271,20 @@ public class Simulator
      */
     private Animal createInitialAnimal(Location location, Random rand)
     {
-        if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-            return new Lion(true, field, location, false, false);
+        if(rand.nextDouble() <= CONFIG.lionCreationProbability) {
+            return new Lion(true, field, location, false, false, CONFIG);
         }
-        if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-            return new Cheetah(true, field, location, false, false);
+        if(rand.nextDouble() <= CONFIG.cheetahCreationProbability) {
+            return new Cheetah(true, field, location, false, false, CONFIG);
         }
-        if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-            return new Zebra(true, field, location, false, false);
+        if(rand.nextDouble() <= CONFIG.zebraCreationProbability) {
+            return new Zebra(true, field, location, false, false, CONFIG);
         }
-        if(rand.nextDouble() <= GIRAFFE_CREATION_PROBABILITY) {
-            return new Giraffe(true, field, location, false, false);
+        if(rand.nextDouble() <= CONFIG.giraffeCreationProbability) {
+            return new Giraffe(true, field, location, false, false, CONFIG);
         }
-        if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY) {
-            return new Lemur(true, field, location, false, false);
+        if(rand.nextDouble() <= CONFIG.lemurCreationProbability) {
+            return new Lemur(true, field, location, false, false, CONFIG);
         }
 
         return null;

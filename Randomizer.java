@@ -1,3 +1,5 @@
+package savannah.model;
+
 import java.util.Random;
 
 /**

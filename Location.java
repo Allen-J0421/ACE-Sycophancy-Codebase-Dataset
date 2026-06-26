@@ -6,7 +6,7 @@
 public class Location
 {
     // Row and column positions.
-    private int row; 
+    private int row;
     private int col;
 
     /**
@@ -23,13 +23,9 @@ public class Location
     @Override
     public boolean equals(Object obj)
     {
-        if(obj instanceof Location) {
-            Location other = (Location) obj;
-            return row == other.getRow() && col == other.getCol();
-        }
-        else {
-            return false;
-        }
+        if(!(obj instanceof Location)) return false;
+        Location other = (Location) obj;
+        return row == other.row && col == other.col;
     }
     
     @Override

@@ -12,14 +12,6 @@ public class Timer
     private static final Random random = Randomizer.getRandom();
     
     /**
-     * Constructor for objects of class Timer
-     */
-    public Timer()
-    {
-        
-    }
-    
-    /**
      * Generates a random time between 6 and 11am.
      */
     public String getMorningTime(){
@@ -47,7 +39,7 @@ public class Timer
      * Generates a random time between 12 and 5am.
      */
     public String getNightTime(){
-        currentTime =Integer.toString(random.nextInt(6));
+        currentTime = Integer.toString(random.nextInt(6));
         return currentTime;
     }
 

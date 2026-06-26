@@ -13,7 +13,6 @@ import java.util.Set;
  * @version 2022.03.01
  */
 public class Hunter extends Actor
-
 {
     // Characteristics shared by all Hunters.
     private static final int MAX_AGE = 1000;
@@ -23,7 +22,7 @@ public class Hunter extends Actor
     private static final Set<Class<? extends Actor>> HUNTABLE_SPECIES = new HashSet<>(Arrays.asList(Lion.class, Cheetah.class));
     /**
      * Create a Hunter. A hunter is created as an adult (age 50).
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -36,26 +35,24 @@ public class Hunter extends Actor
     /**
      * This is what the Hunter does most of the time: it hunts
      * lions during the night. In the process, it might die of old age.
-     * 
+     *
      * @param newHunters A list to return new Hunters.
      * @param simulator The simulator.
      */
-    public void act(List<Actor> newHunters,Simulator simulator){
+    public void act(List<Actor> newHunters, Simulator simulator){
         incrementAge(simulator.getSteps());
         if(!simulator.isDay()){
-            if(isActive() ) {
+            if(isActive()) {
                 hunt(getHuntProbability(simulator.getWeather()));
                 Field field = getField();
                 Location newLocation = field.freeAdjacentLocation(getLocation());
                 if(newLocation != null) {
                     setLocation(newLocation);
-                } 
+                }
                 if(simulator.getSteps() % SPAWN_INTERVAL == 0) {
                     List<Location> free = field.getFreeAdjacentLocations(getLocation());
                     if(!free.isEmpty()) {
-                        Location loc = free.remove(0);
-                        Hunter hunter = new Hunter(field, loc);
-                        newHunters.add(hunter);
+                        newHunters.add(new Hunter(field, free.remove(0)));
                     }
                 }
             }

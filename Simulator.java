@@ -19,12 +19,12 @@ public class Simulator
     private static final int DEFAULT_DEPTH = 150;
 
     // The probability that each actor will be created in any given grid position.
-    private static final double JAGUAR_CREATION_PROBABILITY = 0.011; 
+    private static final double JAGUAR_CREATION_PROBABILITY = 0.011;
     private static final double GAZELLE_CREATION_PROBABILITY = 0.2;
-    private static final double LION_CREATION_PROBABILITY = 0.017 ; 
-    private static final double PLANT_CREATION_PROBABILITY = 0.55; 
-    private static final double CHEETAH_CREATION_PROBABILITY =0.032;
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.4998; 
+    private static final double LION_CREATION_PROBABILITY = 0.017;
+    private static final double PLANT_CREATION_PROBABILITY = 0.55;
+    private static final double CHEETAH_CREATION_PROBABILITY = 0.032;
+    private static final double ZEBRA_CREATION_PROBABILITY = 0.4998;
     private static final double HUNTER_CREATION_PROBABILITY = 0.01;
     // How often (in steps) a random infection is introduced automatically.
     private static final int INFECTION_INTERVAL = 500;
@@ -44,7 +44,7 @@ public class Simulator
     private Weather weather;
     private int numberOfDays;
     private static final Random rand = Randomizer.getRandom();
-    private int noOfGrass; // keeps count of the no.of grass species in the field.
+    private int noOfGrass;
     /**
      * Construct a simulation field with default size.
      */
@@ -116,15 +116,15 @@ public class Simulator
         view.disableButton();
         step++;
         if(step % 2 == 0){
-            isDay  = !isDay;
+            isDay = !isDay;
             if(isDay){
                 numberOfDays++;
             }
         }
 
         // Provide space for newborn actors.
-        List<Actor> newAnimals = new ArrayList<>();  
-        List<Actor> newGrass = new ArrayList<>();  
+        List<Actor> newAnimals = new ArrayList<>();
+        List<Actor> newGrass = new ArrayList<>();
 
         updateWeather();
         while(!isDay && weather == Weather.SUNNY){
@@ -247,7 +247,7 @@ public class Simulator
      * Returns the number of days.
      * @return  number of days.
      */
-    public int  getNoOfDays(){
+    public int getNoOfDays(){
         return numberOfDays;
     }
     
@@ -255,7 +255,7 @@ public class Simulator
      * Returns if it is currently day or night.
      * @return true if it is day.
      */
-    public boolean  isDay(){
+    public boolean isDay(){
         return isDay;
     }
     

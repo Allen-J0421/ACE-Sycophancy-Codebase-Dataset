@@ -100,7 +100,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int i = 1; i <= numSteps && view.isViable(field); i++) {
             simulateOneStep();
         }
     }
@@ -228,8 +228,8 @@ public class Simulator
     }
 
     private void updateWeather(){
-        int value = rand.nextInt(weather.values().length);
-        weather = weather.values()[value];
+        Weather[] values = Weather.values();
+        weather = values[rand.nextInt(values.length)];
     }
 
     /**

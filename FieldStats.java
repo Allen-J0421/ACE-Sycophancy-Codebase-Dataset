@@ -35,12 +35,11 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field, Simulator simulator)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field, simulator);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             buffer.append(info.getName());
             buffer.append(": ");
             buffer.append(info.getCount());
@@ -56,8 +55,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -77,11 +75,10 @@ public class FieldStats
             count = new Counter(animalClass.getName());
             counters.put(animalClass, count);
         }
-        count.increment();
-        if (simulator.getSteps() != 0){
-            if(actor instanceof Grass){
-                count.setCount(simulator.getNoOfGrass());
-            }
+        if(actor instanceof Grass && simulator.getSteps() != 0) {
+            count.setCount(simulator.getNoOfGrass());
+        } else {
+            count.increment();
         }
     }
 
@@ -107,8 +104,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field, simulator);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             if(info.getCount() > 0) {
                 nonZero++;
             }

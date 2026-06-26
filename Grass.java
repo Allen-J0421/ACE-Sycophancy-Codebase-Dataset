@@ -26,7 +26,6 @@ public class Grass extends Plants
     public Grass(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        setAge(0);
         if(randomAge) {
             setAge(getRandom().nextInt(MAX_AGE));
         } 
@@ -74,14 +73,12 @@ public class Grass extends Plants
                 }
                 List<Location> free = field.getFreeAdjacentLocations(getLocation());
                 int births = growth(simulator.getSteps());
-                for(int b = 0; b < births && free.size() > 0; b++) {
+                for(int b = 0; b < births && !free.isEmpty(); b++) {
                     Location loc = free.remove(0);
                     Grass young = new Grass(false, field, loc);
                     newGrass.add(young);
                 }
-            }  
-        }else{
-            //space for potential night activities
+            }
         }
     }
 

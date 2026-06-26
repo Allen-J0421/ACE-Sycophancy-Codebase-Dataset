@@ -197,7 +197,7 @@ public class Field
      */
     public List<Object> getAllObjectAt(Location location, int adjacentDistance)
     {
-        List<Object> adjacentObjectList = new ArrayList();
+        List<Object> adjacentObjectList = new ArrayList<>();
         List<Location> adjacent = adjacentLocationsIncludingSelf(location, adjacentDistance);
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.lang.Math;
 
 /**
  * A class representing shared characteristics of animals.
@@ -31,7 +30,7 @@ public abstract class Animal extends Creature
 
     public Animal(Field field, Location location) {
         super(field, location);
-        sex = (int)(Math.round(Math.random()));
+        sex = Randomizer.getRandom().nextInt(2);
         isInfected = false;
         isImmuned = false;
         infectionStartStep = 0;

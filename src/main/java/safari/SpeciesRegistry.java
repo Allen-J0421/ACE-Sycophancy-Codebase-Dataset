@@ -1,6 +1,7 @@
 package safari;
 
 import java.util.EnumMap;
+import java.util.Properties;
 import java.util.Map;
 
 /**
@@ -8,126 +9,7 @@ import java.util.Map;
  */
 final class SpeciesRegistry
 {
-    private static final Map<SpeciesType, SpeciesConfig> CONFIGS = new EnumMap<>(SpeciesType.class);
-
-    static {
-        CONFIGS.put(
-            SpeciesType.GAZELLE,
-            new SpeciesConfig(
-                SpeciesType.GAZELLE,
-                2,
-                80,
-                0.8900995,
-                7,
-                2,
-                14,
-                14,
-                28,
-                75.0,
-                0.012,
-                Map.of(
-                    Weather.SUNNY, 1.0,
-                    Weather.RAINY, 1.0,
-                    Weather.FOGGY, 1.0
-                ),
-                Map.of(ActorKind.GRASS, 14)
-            )
-        );
-        CONFIGS.put(
-            SpeciesType.ZEBRA,
-            new SpeciesConfig(
-                SpeciesType.ZEBRA,
-                2,
-                160,
-                0.27587999058995,
-                4,
-                15,
-                19,
-                19,
-                28,
-                67.0,
-                0.015,
-                Map.of(
-                    Weather.SUNNY, 1.0,
-                    Weather.RAINY, 1.0,
-                    Weather.FOGGY, 1.0
-                ),
-                Map.of(ActorKind.GRASS, 19)
-            )
-        );
-        CONFIGS.put(
-            SpeciesType.CHEETAH,
-            new SpeciesConfig(
-                SpeciesType.CHEETAH,
-                2,
-                1200,
-                0.4196975694969952,
-                4,
-                11,
-                34,
-                34,
-                40,
-                102.0,
-                0.012,
-                Map.of(
-                    Weather.SUNNY, 0.9,
-                    Weather.RAINY, 0.8,
-                    Weather.FOGGY, 0.7
-                ),
-                Map.of(
-                    ActorKind.ZEBRA, 34,
-                    ActorKind.GAZELLE, 33
-                )
-            )
-        );
-        CONFIGS.put(
-            SpeciesType.LION,
-            new SpeciesConfig(
-                SpeciesType.LION,
-                15,
-                1500,
-                0.40752995,
-                2,
-                20,
-                25,
-                25,
-                50,
-                100.0,
-                0.01,
-                Map.of(
-                    Weather.SUNNY, 1.0,
-                    Weather.RAINY, 0.9,
-                    Weather.FOGGY, 0.8
-                ),
-                Map.of(
-                    ActorKind.GAZELLE, 24,
-                    ActorKind.CHEETAH, 25
-                )
-            )
-        );
-        CONFIGS.put(
-            SpeciesType.JAGUAR,
-            new SpeciesConfig(
-                SpeciesType.JAGUAR,
-                10,
-                1000,
-                0.2,
-                5,
-                6,
-                35,
-                35,
-                39,
-                89.0,
-                0.013,
-                Map.of(
-                    Weather.SUNNY, 1.0,
-                    Weather.RAINY, 0.7,
-                    Weather.FOGGY, 0.4
-                ),
-                Map.of(ActorKind.GAZELLE, 35)
-            )
-        );
-    }
+    private static final Map<SpeciesType, SpeciesConfig> CONFIGS = loadConfigs();
 
     private SpeciesRegistry()
     {
@@ -145,5 +27,33 @@ final class SpeciesRegistry
     static Animal create(SpeciesType type, boolean randomAge, Field field, Location location)
     {
         return new Animal(type, randomAge, field, location);
+    }
+
+    private static Map<SpeciesType, SpeciesConfig> loadConfigs()
+    {
+        Properties properties = ConfigLoader.loadProperties("config/species.properties");
+        Map<SpeciesType, SpeciesConfig> configs = new EnumMap<>(SpeciesType.class);
+        for(SpeciesType type : SpeciesType.values()) {
+            String prefix = "species." + type.name() + ".";
+            configs.put(
+                type,
+                new SpeciesConfig(
+                    type,
+                    ConfigLoader.requiredInt(properties, prefix + "breedingAge"),
+                    ConfigLoader.requiredInt(properties, prefix + "maxAge"),
+                    ConfigLoader.requiredDouble(properties, prefix + "breedingProbability"),
+                    ConfigLoader.requiredInt(properties, prefix + "maxLitterSize"),
+                    ConfigLoader.requiredInt(properties, prefix + "maxTimeUntilBreedingAgain"),
+                    ConfigLoader.requiredInt(properties, prefix + "initialFoodLevel"),
+                    ConfigLoader.requiredInt(properties, prefix + "randomFoodUpperBound"),
+                    ConfigLoader.requiredDouble(properties, prefix + "maxFoodLevel"),
+                    ConfigLoader.requiredDouble(properties, prefix + "initialGrowthScale"),
+                    ConfigLoader.requiredDouble(properties, prefix + "actGrowthIncrement"),
+                    ConfigLoader.requiredWeatherMap(properties, prefix + "foodFinding."),
+                    ConfigLoader.requiredActorKindMap(properties, prefix + "food.")
+                )
+            );
+        }
+        return configs;
     }
 }

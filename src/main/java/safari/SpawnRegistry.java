@@ -1,6 +1,8 @@
 package safari;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 /**
@@ -8,15 +10,7 @@ import java.util.Random;
  */
 final class SpawnRegistry
 {
-    private static final List<SpawnRule> RULES = List.of(
-        new SpawnRule(0.017, (field, location) -> SpeciesRegistry.create(SpeciesType.LION, true, field, location)),
-        new SpawnRule(0.032, (field, location) -> SpeciesRegistry.create(SpeciesType.CHEETAH, true, field, location)),
-        new SpawnRule(0.2, (field, location) -> SpeciesRegistry.create(SpeciesType.GAZELLE, true, field, location)),
-        new SpawnRule(0.011, (field, location) -> SpeciesRegistry.create(SpeciesType.JAGUAR, true, field, location)),
-        new SpawnRule(0.55, (field, location) -> new Grass(true, field, location)),
-        new SpawnRule(0.4998, (field, location) -> SpeciesRegistry.create(SpeciesType.ZEBRA, true, field, location)),
-        new SpawnRule(0.01, (field, location) -> new Hunter(field, location))
-    );
+    private static final List<SpawnRule> RULES = loadRules();
 
     private SpawnRegistry()
     {
@@ -27,9 +21,36 @@ final class SpawnRegistry
         Location location = new Location(row, col);
         for(SpawnRule rule : RULES) {
             if(random.nextDouble() <= rule.probability()) {
-                return rule.create(field, location);
+                return createActor(rule.kind(), field, location);
             }
         }
         return null;
+    }
+
+    private static List<SpawnRule> loadRules()
+    {
+        Properties properties = ConfigLoader.loadProperties("config/spawn.properties");
+        String orderValue = ConfigLoader.requiredString(properties, "spawn.order");
+        return Arrays.stream(orderValue.split(","))
+            .map(String::trim)
+            .filter(value -> !value.isEmpty())
+            .map(value -> new SpawnRule(
+                ActorKind.valueOf(value),
+                ConfigLoader.requiredDouble(properties, "spawn." + value)
+            ))
+            .toList();
+    }
+
+    private static Actor createActor(ActorKind kind, Field field, Location location)
+    {
+        return switch(kind) {
+            case GAZELLE -> SpeciesRegistry.create(SpeciesType.GAZELLE, true, field, location);
+            case ZEBRA -> SpeciesRegistry.create(SpeciesType.ZEBRA, true, field, location);
+            case CHEETAH -> SpeciesRegistry.create(SpeciesType.CHEETAH, true, field, location);
+            case LION -> SpeciesRegistry.create(SpeciesType.LION, true, field, location);
+            case JAGUAR -> SpeciesRegistry.create(SpeciesType.JAGUAR, true, field, location);
+            case GRASS -> new Grass(true, field, location);
+            case HUNTER -> new Hunter(field, location);
+        };
     }
 }

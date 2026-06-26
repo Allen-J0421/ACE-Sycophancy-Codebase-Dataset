@@ -1,14 +1,9 @@
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.Iterator;
 import java.awt.Color;
 import javax.swing.JButton;
-//import java.awt.event.ActionListener;
-//import java.awt.event.ActionEvent;
-//import javax.swing.SwingUtilities;
-//import javafx.scene.paint.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field

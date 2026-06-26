@@ -165,7 +165,7 @@ public class Plant extends LivingOrganism
         List<Location> free = field.getFreeAdjacentLocations(getLocation(), Plant.class);
         
         // New plants are spread into adjacent locations.
-        for(int b = 0; free.size() > 0; b++) 
+        while (!free.isEmpty())
         {
             newPlants.add(createOffspring(free));
         }

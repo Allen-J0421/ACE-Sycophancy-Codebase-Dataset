@@ -7,8 +7,32 @@ import java.util.Iterator;
  */
 public abstract class Animal extends LivingOrganism
 {
+    /**
+     * Immutable value object holding the species-specific parameters that
+     * every animal subclass must supply. Stored as a static constant per
+     * species and applied via {@link #applyConfig(SpeciesConfig)}.
+     */
+    protected static class SpeciesConfig {
+        final int breedingAge;
+        final int maxAge;
+        final double breedingProbability;
+        final int maxLitterSize;
+        final int maxFoodLevel;
+        final int foodValue;
+
+        SpeciesConfig(int breedingAge, int maxAge, double breedingProbability,
+                      int maxLitterSize, int maxFoodLevel, int foodValue) {
+            this.breedingAge = breedingAge;
+            this.maxAge = maxAge;
+            this.breedingProbability = breedingProbability;
+            this.maxLitterSize = maxLitterSize;
+            this.maxFoodLevel = maxFoodLevel;
+            this.foodValue = foodValue;
+        }
+    }
+
     // Indicates whether an animal is a female or not;
-    protected boolean isFemale;    
+    protected boolean isFemale;
     // The age at which an animal can start to breed.
     protected int breedingAge;
     // The age to which an animal can live.
@@ -160,12 +184,38 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
+     * Copy the species-specific parameters from a {@link SpeciesConfig} into
+     * this animal's instance fields. Call this once in each concrete
+     * subclass constructor after calling super().
+     */
+    protected void applyConfig(SpeciesConfig config) {
+        breedingAge = config.breedingAge;
+        maxAge = config.maxAge;
+        breedingProbability = config.breedingProbability;
+        maxLitterSize = config.maxLitterSize;
+        maxFoodLevel = config.maxFoodLevel;
+        foodValue = config.foodValue;
+    }
+
+    /**
      * Look for food adjacent to the current location.
      * Only the first live prey or plant is eaten.
-     * 
+     *
      * @return Where food was found, or null if it wasn't.
      */
     abstract protected Location findFood();
+
+    /**
+     * Instantiate a new offspring of this species at the given location.
+     * Each concrete species class overrides this instead of requiring
+     * {@link #createNewOffspring} to maintain a per-species if-chain.
+     *
+     * @param loc      The location for the new animal.
+     * @param infected Whether the offspring starts infected.
+     * @param immune   Whether the offspring starts immune.
+     * @return A new animal of the same species as this one.
+     */
+    protected abstract Animal createOffspringAt(Location loc, boolean infected, boolean immune);
 
     /**
      * @Override
@@ -176,14 +226,10 @@ public abstract class Animal extends LivingOrganism
     protected void setDead()
     {
         alive = false;
-        
-        if(location != null) 
+
+        if(location != null)
         {
             field.clear(location, Animal.class);
-            location = null;
-        }
-        
-        if (this.getClass().equals(Lion.class) || this.getClass().equals(Cheetah.class)){
             location = null;
         }
     }
@@ -267,73 +313,39 @@ public abstract class Animal extends LivingOrganism
      */
     protected void populate(List<LivingOrganism> newAnimals)
     {
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation(), Animal.class);
-        //determines the number of offspring the animal will produce
-        
         int births = breed();
-        // New animals are born into adjacent locations.
-        
-        for(int b = 0; b < births && free.size() > 0; b++) 
+        for(int b = 0; b < births && free.size() > 0; b++)
         {
-            Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
-            newAnimals.add(newAnimal);
+            newAnimals.add(createNewOffspring(free, infected, immune));
         }
     }
-    
+
     /**
-     * Creates a new offspring and places it into the field at the first free location
-     * 
-     * @param classOfAnimal The class type of the new animal
-     * @param free A list of the free adjacent location
-     * @param motherIsInfected If the mother has currently the disease, so will the child
-     * 
-     * @return Returns the new animal
+     * Remove a free location from the list, apply disease-inheritance logic,
+     * and delegate actual instantiation to {@link #createOffspringAt}.
      */
-    protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
+    protected Animal createNewOffspring(List<Location> free, boolean motherIsInfected, boolean motherIsImmune)
     {
         Location loc = free.remove(0);
-        Animal offspring = null;
-        
+
         boolean offspringIsInfected = motherIsInfected;
         boolean offspringIsImmune = motherIsImmune;
-        
-        // If the mother is immune and the mother is infected, then there is
-        // a small of the child getting immunity
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15) 
+
+        // Infected-but-not-immune mother: small chance offspring gains immunity instead
+        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15)
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
         }
-        // If the mother is immune then there is a chance child isn't immune
+        // Immune mother: most offspring do not inherit immunity
         else if (motherIsImmune && rand.nextDouble() < 0.9)
         {
             offspringIsImmune = false;
         }
-        
-        if (classOfAnimal.equals(Lemur.class))
-        {
-            offspring = new Lemur(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Giraffe.class)) 
-        {
-            offspring = new Giraffe(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Zebra.class)) 
-        {
-            offspring = new Zebra(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Cheetah.class)) 
-        {
-            offspring = new Cheetah(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Lion.class)) 
-        {
-            offspring = new Lion(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        
-        return offspring;
+
+        return createOffspringAt(loc, offspringIsInfected, offspringIsImmune);
     }
     
     /**

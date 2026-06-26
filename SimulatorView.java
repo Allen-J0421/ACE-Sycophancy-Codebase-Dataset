@@ -295,18 +295,8 @@ public class SimulatorView extends JFrame
      */
     private String getTimeString()
     {
-        int time = Time.getTime();
-        if (time >= 12){
-            return time + ":00 ";
-        }
-        else {
-            if(time<10){
-                return "0" + time + ":00 ";
-            }
-            else {
-                return time + ":00 ";
-            }
-        }
+        // Zero-pad single-digit hours, e.g. 5 -> "05:00 ", 14 -> "14:00 ".
+        return String.format("%02d:00 ", Time.getTime());
     }
     
     /**

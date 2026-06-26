@@ -78,21 +78,7 @@ public class Field
      * Place an animal at the given location.
      * If there is already an animal at the location it will
      * be lost.
-     * 
-     * @param animal The animal to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Object object, int row, int col)
-    {
-        place(object, new Location(row, col));
-    }
-    
-    /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
-     * be lost.
-     * 
+     *
      * @param object The object to be placed.
      * @param location Where to place the animal.
      */
@@ -136,23 +122,6 @@ public class Field
         }
         
         return field[row][col].getObject(objectType);
-    }
-    
-    /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * 
-     * @param location The location from which to generate an adjacency.
-     * 
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location);
-        
-        return adjacent.get(0);
     }
     
     /**

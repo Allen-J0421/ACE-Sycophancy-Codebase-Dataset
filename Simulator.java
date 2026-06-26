@@ -295,20 +295,6 @@ public class Simulator
     }
     
     /**
-     * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
-     */
-    private void delay(int millisec)
-    {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
-            // wake up
-        }
-    }
-    
-    /**
      * Sets the visibility of the buttons in accordance with the current
      * state of the simulation.
      */

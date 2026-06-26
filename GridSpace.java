@@ -21,22 +21,6 @@ public class GridSpace
     }
     
     /**
-     * @return Returns the animal in this grid space.
-     */
-    public Animal getAnimal() 
-    {
-        return animal;
-    }
-    
-    /**
-     * @return Returns the plant in this grid space.
-     */
-    public Plant getPlant() 
-    {
-        return plant;
-    }
-    
-    /**
      * @return Returns the Object of the class type passed in.
      * 
      * @param The class type of the object that is wanted.

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 /**
  * A class representing shared characteristics of animals.
  *
@@ -7,6 +6,12 @@ import java.util.Iterator;
  */
 public abstract class Animal extends LivingOrganism
 {
+    // Default disease probabilities shared by all species.
+    private static final double DISEASE_PROBABILITY         = 0.00000015;
+    private static final double DISEASE_SPREAD_PROBABILITY  = 0.80;
+    private static final double INFECTION_DEATH_PROBABILITY = 0.13;
+    private static final double IMMUNE_PROBABILITY          = 0.05;
+
     /**
      * Immutable value object holding the species-specific parameters that
      * every animal subclass must supply. Stored as a static constant per
@@ -78,10 +83,10 @@ public abstract class Animal extends LivingOrganism
         this.infected = infected;
         this.immune = immune;
         
-        diseaseProbability = 0.00000015;
-        diseaseSpreadProbability = 0.80;
-        deathFromInfectionProbability = 0.13;
-        immuneProbability = 0.05;
+        diseaseProbability = DISEASE_PROBABILITY;
+        diseaseSpreadProbability = DISEASE_SPREAD_PROBABILITY;
+        deathFromInfectionProbability = INFECTION_DEATH_PROBABILITY;
+        immuneProbability = IMMUNE_PROBABILITY;
         
         isFemale = rand.nextBoolean();
     }
@@ -316,7 +321,7 @@ public abstract class Animal extends LivingOrganism
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation(), Animal.class);
         int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++)
+        for(int b = 0; b < births && !free.isEmpty(); b++)
         {
             newAnimals.add(createNewOffspring(free, infected, immune));
         }
@@ -357,22 +362,15 @@ public abstract class Animal extends LivingOrganism
     protected int breed()
     {
         int births = 0;
-
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-
-        while(it.hasNext())
+        for(Location where : field.adjacentLocations(getLocation()))
         {
-            Location where = it.next();
             Animal neighbor = (Animal) field.getObjectAt(where, Animal.class);
-
-            if(neighbor != null && this.getClass().equals(neighbor.getClass()) && !neighbor.getIsFemale())
+            if(neighbor != null && getClass().equals(neighbor.getClass()) && !neighbor.getIsFemale())
             {
                 births = rand.nextInt(maxLitterSize) + 1;
             }
         }
-
         return births;
     }
 
@@ -410,18 +408,14 @@ public abstract class Animal extends LivingOrganism
     protected boolean surroundingsInfected()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-
-        while(it.hasNext())
+        for(Location where : field.adjacentLocations(getLocation()))
         {
-            Animal neighbor = (Animal) field.getObjectAt(it.next(), Animal.class);
+            Animal neighbor = (Animal) field.getObjectAt(where, Animal.class);
             if(neighbor != null && neighbor.getIsInfected())
             {
                 return true;
             }
         }
-
         return false;
     }
 }

@@ -7,114 +7,99 @@
 public class Time
 {
     private static int step = 0;
-    
+
     // The offset of the time to start the simulation at.
     private static final int TIME_OFFSET = 12;
-    
-    // Stores the actual number of steps that the current
-    // run of the simulation should pause at if viable.
+
+    // The step at which the current bounded run should stop (0 = no limit set).
     private static int stepsToRunUntil;
-    
-    // Stores the starting point of the current run of the
-    // simulation.
-    private static int stepOffset;
-    
+
     // Stores whether the simulation is paused or not
     private static boolean isPaused = true;
-    
+
     /**
      * Increments the step number.
      */
-    public static void incrementStep() 
+    public static void incrementStep()
     {
         step++;
     }
-    
+
     /**
-     * @return Returns the current step number.
+     * @return The current step number.
      */
-    public static int getStep() 
+    public static int getStep()
     {
         return step;
     }
-    
+
     /**
-     * Resets the step number and pauses the simulation.
+     * Resets the step counter and pauses the simulation.
      */
-    public static void resetStep() 
+    public static void resetStep()
     {
         step = 0;
         stepsToRunUntil = 0;
-        stepOffset = 0;
         isPaused = true;
     }
-    
+
     /**
-     * @return Returns the time in hours (between 0 and 24).
+     * @return The simulation time in hours (0–23).
      */
-    public static int getTime() {
-        int time = (step + TIME_OFFSET)%24;
-        return time;
+    public static int getTime()
+    {
+        return (step + TIME_OFFSET) % 24;
     }
-    
+
     /**
-     * @return Returns if it is currently night.
+     * @return True if the current simulation time falls in the night window (before 06:00 or after 18:00).
      */
-    public static boolean isNight() {
-        boolean isNight = false;
+    public static boolean isNight()
+    {
         int time = getTime();
-        if (time < 6 || time > 18) {
-            isNight = true;
-        }
-        return isNight;
+        return time < 6 || time > 18;
     }
-    
+
     /**
-     * Sets the number of steps to run the simulation for.
-     * @param The number of steps to run the simulation for.
+     * Schedules a stop after the given number of additional steps.
+     *
+     * @param stepsToRunFor The number of steps to run before stopping.
      */
-    public static void setStepsToRunFor(int stepsToRunFor) {
-        stepOffset = step;
-        stepsToRunUntil = stepsToRunFor + Time.getStep();
+    public static void setStepsToRunFor(int stepsToRunFor)
+    {
+        stepsToRunUntil = step + stepsToRunFor;
     }
-    
+
     /**
-     * @return Returns the step number to pause the current run
-     * of the simualtion at.
+     * @param newIsPaused Whether the simulation should be paused.
      */
-    public static int getStepsToRunUntil() {
-        return stepsToRunUntil;
-    }
-    
-    /**
-     * Set whether the simulation is paused or not.
-     * @param The value of whether the simulation is paused or not.
-     */
-    public static void setIsPaused(boolean newIsPaused) {
+    public static void setIsPaused(boolean newIsPaused)
+    {
         isPaused = newIsPaused;
     }
-    
+
     /**
-     * Toggles whether the simulation is paused.
+     * Toggles the paused state.
      */
-    public static void toggleIsPaused() {
-        isPaused = ! isPaused;
+    public static void toggleIsPaused()
+    {
+        isPaused = !isPaused;
     }
-    
+
     /**
-     * @return Returns if the simulation in paused.
+     * @return True if the simulation is currently paused.
      */
-    public static boolean getIsPaused() {
+    public static boolean getIsPaused()
+    {
         return isPaused;
     }
-    
+
     /**
-     * @return Returns if the simulation has finished or not.
+     * @return True if a step limit was set and the current step has reached it.
+     *         Returns false when no limit is active (stepsToRunUntil == 0).
      */
-    public static boolean getIsFinished() {
-        if (getStep() == getStepsToRunUntil()) {
-            isPaused = true;
-        }
-        return isPaused;
+    public static boolean getIsFinished()
+    {
+        return stepsToRunUntil > 0 && step >= stepsToRunUntil;
     }
 }

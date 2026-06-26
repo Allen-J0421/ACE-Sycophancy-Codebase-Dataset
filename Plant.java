@@ -1,9 +1,8 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
- * Plants can grow, be can be partially eaten, they can be completely eaten and die, plants
- * can spread (the weather effects their ability to spread).
+ * Plants grow over time, can be partially eaten, spread to adjacent empty cells
+ * (at a rate that varies by weather), and die if eaten below zero health.
  *
  * @version 26/02/2022
  */
@@ -171,19 +170,8 @@ public class Plant extends LivingOrganism
         }
     }
     
-    /**
-     * Used to instantiate baby plantlets
-     * 
-     * @param free List of free locations to spawn
-     * @return Returns a new plant object.
-     */
-    private Plant createOffspring(List<Location> free) 
+    private Plant createOffspring(List<Location> free)
     {
-        Location loc = free.remove(0);
-        Plant offspring = null;
-        
-        offspring = new Plant(false, field, loc);
-        
-        return offspring;
+        return new Plant(false, field, free.remove(0));
     }
 }

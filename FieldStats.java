@@ -38,8 +38,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             buffer.append(info.getName());
             buffer.append(": ");
             buffer.append(info.getCount());
@@ -55,8 +54,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -99,10 +97,9 @@ public class FieldStats
             generateCounts(field);
         }
         
-        for(Class<?> key : counters.keySet()) 
+        for(Counter info : counters.values())
         {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) 
+            if(info.getCount() > 0)
             {
                 nonZero++;
             }

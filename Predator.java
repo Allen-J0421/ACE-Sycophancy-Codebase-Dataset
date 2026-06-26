@@ -1,5 +1,5 @@
 import java.util.List;
-import java.util.Iterator;
+
 /**
  * A class representing the shared characteristics between predators
  *
@@ -12,92 +12,72 @@ public abstract class Predator extends Animal
 
     /**
      * Create a new predator at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected : intial state if the prey is infected or not
-     * @param immmune : intial state if the prey is immune or not
+     *
+     * @param field      The field currently occupied.
+     * @param location   The location within the field.
+     * @param isInfected Initial state if the predator is infected or not.
+     * @param isImmune   Initial state if the predator is immune or not.
      */
     protected Predator(Field field, Location location, boolean isInfected, boolean isImmune)
     {
         super(field, location, isInfected, isImmune);
         movementProbability = 0.8;
     }
-    
+
     /**
      * @Override
-     * 
-     * This is what the predators does most of the time - it may move around, it eats prey, 
-     * it may breed, it may get infected with a disease, it may become immune to that disease, 
-     * it may die of the disease, it may die of hunger, and it may die of old age.
-     * 
-     * @param newPredators A list to return newly born prey.
+     *
+     * Predators are less active at night and in fog; otherwise delegates to Animal.act().
+     *
+     * @param newPredators A list to receive newly born predators.
      */
     public void act(List<LivingOrganism> newPredators)
     {
-        // Predators have a lower chance of acting when its night
-        if(Time.isNight()) 
+        if(Time.isNight() && rand.nextDouble() > 0.25)
         {
-            if (rand.nextDouble() > 0.25)
-            {
-                return;
-            }
+            return;
         }
-        
-        // Predators have a lower chance of acting when its foggy
-        if (Weather.getWeather() == Weather.WeatherType.Foggy) 
+
+        if(Weather.getWeather() == Weather.WeatherType.Foggy && rand.nextDouble() > 0.50)
         {
-            if (rand.nextDouble() > 0.50)
-            {
-                return;
-            }
+            return;
         }
 
         super.act(newPredators);
     }
-    
+
     /**
      * @Override
-     * 
+     *
      * Look for prey adjacent to the current location.
-     * Eats prey till full.
-     * Predators may catch the prey's disease if eaten.
-     * 
+     * Eats prey until full. May contract the prey's disease when eating.
+     *
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()) 
+        for(Location where : field.adjacentLocations(getLocation()))
         {
-            Location where = it.next();
             Object animal = field.getObjectAt(where, Animal.class);
-            
-            if(animal instanceof Prey) 
+
+            if(animal instanceof Prey)
             {
                 Prey prey = (Prey) animal;
-                if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability) 
-                { 
-                    // Predator is hungry and prey is availiable so eat
-                    // the prey.
-                    int preyFoodValue = prey.beEaten();
-                    foodLevel += preyFoodValue;
-                    
-                    // if the prey being eaten is infected then the predator most likely
-                    // gets infected
-                    if (prey.getIsInfected() && !getIsImmune() && rand.nextDouble() <= diseaseSpreadProbability)
+                if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability)
+                {
+                    foodLevel += prey.beEaten();
+
+                    if(prey.getIsInfected() && !immune && rand.nextDouble() <= diseaseSpreadProbability)
                     {
-                        this.infected = true; 
+                        infected = true;
                     }
-                    
+
                     return where;
                 }
             }
         }
-        
+
         return null;
     }
 }

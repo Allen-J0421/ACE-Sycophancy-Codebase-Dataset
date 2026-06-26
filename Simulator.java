@@ -13,21 +13,23 @@ import javax.swing.JButton;
  */
 public class Simulator
 {
-    // Constants representing configuration information for the simulation.
-    // The default width for the grid.
+    // Field dimensions.
     private static final int DEFAULT_WIDTH = 270;
-    // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 180;
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.0125; //0.015
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.0125; //0.015
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a giraffe will be created in any given grid position.
-    private static final double GIRAFFE_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a lemur will be created in any given grid position.
-    private static final double LEMUR_CREATION_PROBABILITY = 0.081; //0.08
+
+    // Initial population probabilities per grid cell.
+    private static final double LION_CREATION_PROBABILITY    = 0.0125;
+    private static final double CHEETAH_CREATION_PROBABILITY = 0.0125;
+    private static final double ZEBRA_CREATION_PROBABILITY   = 0.08;
+    private static final double GIRAFFE_CREATION_PROBABILITY = 0.08;
+    private static final double LEMUR_CREATION_PROBABILITY   = 0.081;
+
+    // Named indices into the buttons array.
+    private static final int BTN_PLAY_PAUSE = 0;
+    private static final int BTN_RUN_LONG   = 1;
+    private static final int BTN_STEP       = 2;
+    private static final int BTN_RESET      = 3;
+    private static final int BTN_QUIT       = 4;
 
     // List of animals in the field.
     private List<LivingOrganism> animals;
@@ -66,27 +68,26 @@ public class Simulator
         plants = new ArrayList<>();
         field = new Field(depth, width);
         buttons = new JButton[5];
-        
-        // Creates the buttons for the view
+
         JButton playPause = new JButton("Play");
-            playPause.addActionListener(e -> new Thread(() -> playPauseButton()).start());
-            buttons[0] = playPause;
-            
+        playPause.addActionListener(e -> new Thread(() -> playPauseButton()).start());
+        buttons[BTN_PLAY_PAUSE] = playPause;
+
         JButton runLongSim = new JButton("Run Long Sim");
-            runLongSim.addActionListener(e -> new Thread(() -> runLongSimulation()).start());
-            buttons[1] = runLongSim;
-        
+        runLongSim.addActionListener(e -> new Thread(() -> runLongSimulation()).start());
+        buttons[BTN_RUN_LONG] = runLongSim;
+
         JButton simOneStep = new JButton("Sim One Step");
-            simOneStep.addActionListener(e -> simulateOneStep());
-            buttons[2] = simOneStep;
-            
+        simOneStep.addActionListener(e -> simulateOneStep());
+        buttons[BTN_STEP] = simOneStep;
+
         JButton reset = new JButton("Reset");
-            reset.addActionListener(e -> reset());
-            buttons[3] = reset;
-            
+        reset.addActionListener(e -> reset());
+        buttons[BTN_RESET] = reset;
+
         JButton quit = new JButton("Quit");
-            quit.addActionListener(e -> quit());
-            buttons[4] = quit;
+        quit.addActionListener(e -> quit());
+        buttons[BTN_QUIT] = quit;
         
         // Sets the visibility of the buttons in accordance to the current state of the simulation.
         buttonToggle();
@@ -283,12 +284,12 @@ public class Simulator
         boolean isFinished = Time.getIsFinished();
         boolean isStopped = Time.getIsPaused() || isFinished;
 
-        buttons[0].setEnabled(!isFinished);
-        buttons[1].setEnabled(isStopped);
-        buttons[2].setEnabled(isStopped);
-        buttons[3].setEnabled(isStopped);
+        buttons[BTN_PLAY_PAUSE].setEnabled(!isFinished);
+        buttons[BTN_RUN_LONG].setEnabled(isStopped);
+        buttons[BTN_STEP].setEnabled(isStopped);
+        buttons[BTN_RESET].setEnabled(isStopped);
 
-        buttons[0].setText(isStopped ? "Play" : "Pause");
+        buttons[BTN_PLAY_PAUSE].setText(isStopped ? "Play" : "Pause");
     }
     
     /**

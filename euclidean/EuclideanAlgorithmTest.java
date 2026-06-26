@@ -19,9 +19,10 @@ public final class EuclideanAlgorithmTest {
             assertGcd(testCase.left, testCase.right, testCase.expected);
         }
 
-        assertOperands(35, 15, ArgumentParser.parseOperands(new String[0]));
-        assertOperands(-42, 56, ArgumentParser.parseOperands(new String[] { "-42", "56" }));
-        assertIllegalArgument(() -> ArgumentParser.parseOperands(new String[] { "7" }));
+        assertOperands(35, 15, EuclideanAlgorithmApp.parseOperands(new String[0]));
+        assertOperands(-42, 56, ArgumentParser.parseOperands("-42", "56"));
+        assertIllegalArgument(() -> ArgumentParser.parseOperands("7", "8x"));
+        assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[] { "7" }));
         assertOverflow(Integer.MIN_VALUE, 0);
     }
 

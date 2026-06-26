@@ -109,14 +109,12 @@ public class Animal extends Species
      *          b) if it is day, then all animals move and increment hunger.
      *
      * @param newSpecies (List<Species>) A list to receive newly born animals.
-     * @param isNight (boolean) true if it is night in the simulation
-     * @param temperature (int) the current temperature of the simulation
-     * @param yearPassed true if a year has passed in the simulation
+     * @param conditions (SimulationConditions) environmental conditions for this step
      */
-    public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed)
+    public void act(List<Species> newSpecies, SimulationConditions conditions)
     {
         // 1)
-        if (yearPassed) {
+        if (conditions.hasYearPassed()) {
             incrementAge();
         }
 
@@ -124,7 +122,7 @@ public class Animal extends Species
         if(isAlive())
         {
             // i)
-            checkHibernation(temperature);
+            checkHibernation(conditions.getTemperature());
             
             // ii)
             if (inHibernation)
@@ -138,7 +136,7 @@ public class Animal extends Species
                 incrementHiberSteps();
             }
             // iii)
-            else if (! survivesTemperature(temperature))
+            else if (! survivesTemperature(conditions.getTemperature()))
             {
                 setDead();
             }
@@ -146,14 +144,14 @@ public class Animal extends Species
             else
             {
                 // a)
-                if (isNight && isNocturnal) {
+                if (conditions.isNight() && isNocturnal) {
                     makeMove(newSpecies);
                 }
                 // b)
-                else if (! isNight) {
+                else if (! conditions.isNight()) {
                     makeMove(newSpecies);
                 }
-                if  (! isNight) {
+                if  (! conditions.isNight()) {
                     incrementHunger();
                 }
             }

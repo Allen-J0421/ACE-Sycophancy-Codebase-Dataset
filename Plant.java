@@ -69,28 +69,26 @@ public class Plant extends Species
      *          b) reproduce and grow
      *
      * @param newPlants (List<Species>) A list to return the new plants created.
-     * @param isNight (boolean) true if it is night in the simulation
-     * @param temperature (int) The current temperature of the simulation
-     * @param yearPassed (boolean) True if a year has passed in the simulation
+     * @param conditions (SimulationConditions) environmental conditions for this step
      */
-    public void act(List<Species> newPlants, boolean isNight, int temperature, boolean yearPassed)
+    public void act(List<Species> newPlants, SimulationConditions conditions)
     {
         // 1)
-        if (! deadDueTemperature && ! survivesTemperature(temperature))
+        if (! deadDueTemperature && ! survivesTemperature(conditions.getTemperature()))
         {
             setDead();
         }
         // 2)
-        else if (! isNight)
+        else if (! conditions.isNight())
         {
             // i)
-            if (deadDueTemperature && survivesTemperature(temperature) && isSpring) {
+            if (deadDueTemperature && survivesTemperature(conditions.getTemperature()) && isSpring) {
                 regrow();
             }
             // ii)
             else if (! deadDueTemperature) {
                 // a)
-                if (yearPassed) {
+                if (conditions.hasYearPassed()) {
                     maxHealth++;
                 }
                 // b)

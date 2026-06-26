@@ -89,6 +89,7 @@ public class Simulator
             boolean isNight = time.getIsNight();
             int currentTemperature = simulationHabitat.getCurrentTemperature();
             boolean yearPassed = simulationHabitat.yearPassed();
+            SimulationConditions conditions = new SimulationConditions(isNight, currentTemperature, yearPassed);
 
             // Provide space for newborn species.
             List<Species> newSpecies = new ArrayList<>();
@@ -105,7 +106,7 @@ public class Simulator
                     }
                 }
 
-                specie.act(newSpecies, isNight, currentTemperature, yearPassed);
+                specie.act(newSpecies, conditions);
                 if(! specie.isAlive()) {
                     it.remove();
                 }

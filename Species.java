@@ -67,13 +67,25 @@ public abstract class Species
     }
 
     /**
-     * Make this animal act - that is: make it do whatever it wants/needs to do.
+     * Make this species act using primitive step values.
      *
-     * @param newSpecies (List<Species>) A list to receive newly born animals.
+     * @param newSpecies (List<Species>) A list to receive newly born species.
      * @param isNight (boolean) If it is currently night.
-     * @param yearPassed (boolean) If a year is passing on this step (next step is the first of a nw year).
+     * @param temperature (int) The current temperature.
+     * @param yearPassed (boolean) If a year is passing on this step.
      */
-    abstract public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed);
+    public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed)
+    {
+        act(newSpecies, new SimulationConditions(isNight, temperature, yearPassed));
+    }
+
+    /**
+     * Make this species act for the given simulation conditions.
+     *
+     * @param newSpecies (List<Species>) A list to receive newly born species.
+     * @param conditions (SimulationConditions) The environmental conditions for this step.
+     */
+    abstract public void act(List<Species> newSpecies, SimulationConditions conditions);
 
     /**
      * An abstract class to enforce all subclasses to make their elements reproduce

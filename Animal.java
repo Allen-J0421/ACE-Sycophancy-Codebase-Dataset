@@ -151,13 +151,19 @@ public abstract class Animal extends Organism
     protected void resetDisease() { disease = false; }
 
     /**
+     * @return A shuffled list of adjacent locations.
+     */
+    protected final List<Location> adjacentLocations() {
+        return getField().adjacentLocations(getLocation());
+    }
+
+    /**
      * if an animal has a disease, this method spreads it to animals
      * in adjacent locations
      */
     protected void spreadDisease() {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
+        Iterator<Location> it = adjacentLocations().iterator();
         while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
@@ -274,6 +280,47 @@ public abstract class Animal extends Organism
         }
     }
 
+    /**
+     * Find and eat the first adjacent animal of the given type.
+     * @param adjacent The adjacent locations to search.
+     * @param preyType The target animal type.
+     * @param foodValue The food gained from eating the prey.
+     * @return Where prey was found, or null if it wasn't.
+     */
+    protected final Location eatAdjacentAnimal(List<Location> adjacent,
+            Class<? extends Animal> preyType, int foodValue) {
+        return consumeAdjacentOrganism(adjacent, preyType, foodValue);
+    }
+
+    /**
+     * Find and eat the first adjacent plant of the given type.
+     * @param adjacent The adjacent locations to search.
+     * @param plantType The target plant type.
+     * @param foodValue The food gained from eating the plant.
+     * @return Where food was found, or null if it wasn't.
+     */
+    protected final Location eatAdjacentPlant(List<Location> adjacent,
+            Class<? extends Plant> plantType, int foodValue) {
+        return consumeAdjacentOrganism(adjacent, plantType, foodValue);
+    }
+
+    /**
+     * Remove the first adjacent plant without gaining food.
+     * @param adjacent The adjacent locations to search.
+     * @return Where a plant was found, or null if it wasn't.
+     */
+    protected final Location trampleAdjacentPlant(List<Location> adjacent) {
+        return consumeAdjacentOrganism(adjacent, Plant.class, 0);
+    }
+
+    /**
+     * @param random The random source to use.
+     * @return true if fog does not prevent the food search this step.
+     */
+    protected final boolean canSearchInFog(Random random) {
+        return !getFog() || random.nextInt(2) == 0;
+    }
+
     private void createOffspring(List<Animal> newAnimals, int breedingAge,
             double breedingProbability, int maxLitterSize) {
         if(!giveBirth(breedingAge)) {
@@ -302,6 +349,27 @@ public abstract class Animal extends Organism
         else {
             setDead();
         }
+    }
+
+    private Location consumeAdjacentOrganism(List<Location> adjacent,
+            Class<?> targetType, int foodValue) {
+        Field field = getField();
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object organism = field.getObjectAt(where);
+            if(targetType.isInstance(organism)) {
+                Organism target = (Organism) organism;
+                if(target.isAlive()) {
+                    target.setDead();
+                    if(foodValue > 0) {
+                        setFoodLevel(foodValue);
+                    }
+                    return where;
+                }
+            }
+        }
+        return null;
     }
 
 }

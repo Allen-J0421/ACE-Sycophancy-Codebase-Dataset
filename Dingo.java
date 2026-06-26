@@ -65,56 +65,15 @@ public class Dingo extends Animal
      * @return where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        if (getFog()){
-            if (rand.nextInt(2) == 0) {
-                Field field = getField();
-                List<Location> adjacent = field.adjacentLocations(getLocation());
-                Iterator<Location> it = adjacent.iterator();
-                while (it.hasNext()) {
-                    Location where = it.next();
-                    Object animal = field.getObjectAt(where);
-                    if (animal instanceof Snake) {
-                        Snake snake = (Snake) animal;
-                        if (snake.isAlive()) {
-                            snake.setDead();
-                            setFoodLevel(SNAKE_FOOD_VALUE);
-                            return where;
-                        }
-                    } else if (animal instanceof Plant) {
-                        Plant plant = (Plant) animal;
-                        if (plant.isAlive()) {
-                            plant.setDead();
-                            return where;
-                        }
-                    }
-                }
-            }
+        if (!canSearchInFog(rand)) {
             return null;
         }
-        else {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while (it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if (animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if (snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant){
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
-                }
-            }
-            return null;
+
+        List<Location> adjacent = adjacentLocations();
+        Location food = eatAdjacentAnimal(adjacent, Snake.class, SNAKE_FOOD_VALUE);
+        if(food == null) {
+            food = trampleAdjacentPlant(adjacent);
         }
+        return food;
     }
 }

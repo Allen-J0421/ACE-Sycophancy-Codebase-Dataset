@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -66,29 +65,12 @@ public class Snake extends Animal
      */
     protected Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Rat) {
-                Rat rat = (Rat) animal;
-                if(rat.isAlive()) {
-                    rat.setDead();
-                    setFoodLevel(RAT_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (animal instanceof Plant){
-                Plant plant = (Plant) animal;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
+        List<Location> adjacent = adjacentLocations();
+        Location food = eatAdjacentAnimal(adjacent, Rat.class, RAT_FOOD_VALUE);
+        if(food == null) {
+            food = trampleAdjacentPlant(adjacent);
         }
-        return null;
+        return food;
     }
 
 }

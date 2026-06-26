@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -66,28 +65,11 @@ public class Emu extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object searchPlant = field.getObjectAt(where);
-            if(searchPlant instanceof Grass) {
-                Grass grass = (Grass) searchPlant;
-                if (grass.isAlive()) {
-                    grass.setDead();
-                    setFoodLevel(GRASS_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (searchPlant instanceof Plant) {
-                Plant plant = (Plant) searchPlant;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
+        List<Location> adjacent = adjacentLocations();
+        Location food = eatAdjacentPlant(adjacent, Grass.class, GRASS_FOOD_VALUE);
+        if(food == null) {
+            food = trampleAdjacentPlant(adjacent);
         }
-        return null;
+        return food;
     }
 }

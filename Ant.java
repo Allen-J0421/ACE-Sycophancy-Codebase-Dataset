@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -67,29 +66,11 @@ public class Ant extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object plant = field.getObjectAt(where);
-            if(plant instanceof Acacia) {
-                Acacia acacia = (Acacia) plant;
-                if (acacia.isAlive()) {
-                    acacia.setDead();
-                    setFoodLevel(ACACIA_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (plant instanceof Grass) {
-                Grass grass = (Grass) plant;
-                if(grass.isAlive()) {
-                    grass.setDead();
-                    setFoodLevel(GRASS_FOOD_VALUE);
-                    return where;
-                }
-            }
+        List<Location> adjacent = adjacentLocations();
+        Location food = eatAdjacentPlant(adjacent, Acacia.class, ACACIA_FOOD_VALUE);
+        if(food == null) {
+            food = eatAdjacentPlant(adjacent, Grass.class, GRASS_FOOD_VALUE);
         }
-        return null;
+        return food;
     }
 }

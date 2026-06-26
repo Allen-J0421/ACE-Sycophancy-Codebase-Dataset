@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -65,28 +64,11 @@ public class Rat extends Animal
      * @return where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Ant) {
-                Ant ant = (Ant) animal;
-                if(ant.isAlive()) {
-                    ant.setDead();
-                    setFoodLevel(ANT_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (animal instanceof Plant) {
-                Plant plant = (Plant) animal;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
+        List<Location> adjacent = adjacentLocations();
+        Location food = eatAdjacentAnimal(adjacent, Ant.class, ANT_FOOD_VALUE);
+        if(food == null) {
+            food = trampleAdjacentPlant(adjacent);
         }
-        return null;
+        return food;
     }
 }

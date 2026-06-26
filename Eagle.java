@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -69,71 +68,14 @@ public class Eagle extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        if (getFog() && (rand.nextInt(2) == 0)) {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while(it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if(animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if(snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if(animal instanceof Rat) {
-                    Rat rat = (Rat) animal;
-                    if(rat.isAlive()) {
-                        rat.setDead();
-                        setFoodLevel(RAT_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant) {
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
-                }
-            }
-            return null;
+        List<Location> adjacent = adjacentLocations();
+        Location food = eatAdjacentAnimal(adjacent, Snake.class, SNAKE_FOOD_VALUE);
+        if(food == null) {
+            food = eatAdjacentAnimal(adjacent, Rat.class, RAT_FOOD_VALUE);
         }
-        else {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while (it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if (animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if (snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if(animal instanceof Rat) {
-                    Rat rat = (Rat) animal;
-                    if(rat.isAlive()) {
-                        rat.setDead();
-                        setFoodLevel(RAT_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant){
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
-                }
-            }
-            return null;
+        if(food == null) {
+            food = trampleAdjacentPlant(adjacent);
         }
+        return food;
     }
 }

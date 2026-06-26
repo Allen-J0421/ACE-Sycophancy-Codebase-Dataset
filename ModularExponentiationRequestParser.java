@@ -18,7 +18,7 @@ public final class ModularExponentiationRequestParser {
             );
         }
 
-        return ModularExponentiationRequest.of(
+        return new ModularExponentiationRequest(
             Integer.parseInt(args[0]),
             Integer.parseInt(args[1]),
             Integer.parseInt(args[2])
@@ -26,6 +26,6 @@ public final class ModularExponentiationRequestParser {
     }
 
     private static ModularExponentiationRequest defaultRequest() {
-        return ModularExponentiationRequest.of(DEFAULT_BASE, DEFAULT_EXPONENT, DEFAULT_MODULUS);
+        return new ModularExponentiationRequest(DEFAULT_BASE, DEFAULT_EXPONENT, DEFAULT_MODULUS);
     }
 }

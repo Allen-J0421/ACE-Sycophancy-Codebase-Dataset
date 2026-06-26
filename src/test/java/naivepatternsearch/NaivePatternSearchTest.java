@@ -1,7 +1,6 @@
 package naivepatternsearch;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public final class NaivePatternSearchTest {
@@ -14,7 +13,7 @@ public final class NaivePatternSearchTest {
         assertMatches("aaba", "aabaacaadaabaaba", Arrays.asList(0, 9, 12));
         assertMatches("aa", "aaaa", Arrays.asList(0, 1, 2));
         assertMatches("", "abc", Arrays.asList(0, 1, 2, 3));
-        assertMatches("abcd", "ab", Collections.emptyList());
+        assertMatches("abcd", "ab", List.of());
         assertMatches(new StringBuilder("aba"), new StringBuilder("ababa"), Arrays.asList(0, 2));
         assertUnmodifiable(NaivePatternSearch.search("aba", "ababa"));
         assertThrowsNullPointer(() -> NaivePatternSearch.search(null, "text"));

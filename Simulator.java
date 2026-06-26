@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.NavigableMap;
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -23,24 +20,22 @@ public class Simulator
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    // List of animals in the field.
-    private List<Actor> animals;
-    private List<Actor> plants;
+    private final SimulationPopulation population;
     // The current state of the field.
-    private Field field;
+    private final Field field;
     
-    private SimulatorClock clock;
-    private WeatherHandler weatherHandler;
+    private final SimulatorClock clock;
+    private final WeatherHandler weatherHandler;
     // The current step of the simulation.
     private int step;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private final SimulatorView view;
     // handles the simulation of the disease
-    private DiseaseHandler diseaseHandler;
+    private final DiseaseHandler diseaseHandler;
     // swing component dashboard
     private Dashboard dashboard;
     // generator for the initial terrain and population
-    private PopulationGenerator populationGenerator;
+    private final PopulationGenerator populationGenerator;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTORS
@@ -71,8 +66,7 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
-        animals = new ArrayList<>();
-        plants = new ArrayList<>();
+        population = new SimulationPopulation();
         field = new Field(depth, width);
         clock = new SimulatorClock();
         weatherHandler = new WeatherHandler(clock);
@@ -116,7 +110,6 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            //delay(1000);   // uncomment this to run more slowly
         }
     }
     
@@ -131,12 +124,7 @@ public class Simulator
         clock.incrementStep();
         weatherHandler.updateWeather();
         diseaseHandler.simulateDiseaseStep();
-        
-        List<Actor> newAnimals = new ArrayList<>();
-        List<Actor> newPlants = new ArrayList<>();
-        
-        actorsAct(plants, newPlants);
-        actorsAct(animals, newAnimals);        
+        population.simulateStep(weatherHandler.getWeather(), clock.getDayState());
         
         view.showStatus(step, field, clock, weatherHandler.getWeather());
 
@@ -154,9 +142,8 @@ public class Simulator
         clock.reset();
         weatherHandler.reset();
         diseaseHandler.reset();
-        animals.clear();
-        plants.clear();
-        populationGenerator.populate(animals, plants);
+        population.clear();
+        populationGenerator.populate(population);
         
         // Show the starting state in the view.
         view.showStatus(step, field, clock, weatherHandler.getWeather());
@@ -168,36 +155,5 @@ public class Simulator
     public NavigableMap<Integer, Integer> getDiseaseHistory()
     {
         return diseaseHandler.getInfectionCounts();
-    }
-    
-    /**
-     * Iterates through a set of actors and makes them act, die if they are dead and subsequently adds the newborns.
-     * 
-     * @param actors List of all actors in the field.
-     * @param newActors List of newborns after actors act.
-     */
-    private void actorsAct(List<Actor> actors, List<Actor> newActors) {
-        for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
-            Actor actor = it.next();
-            actor.act(newActors, weatherHandler.getWeather(), clock.getDayState());
-            if(! actor.isAlive()) {
-                it.remove();
-            }
-        }
-        actors.addAll(newActors);
-    }
-    
-    /**
-     * Pause for a given time.
-     * 
-     * @param millisec The time to pause for, in milliseconds.
-     */
-    private void delay(int millisec)
-    {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
-        }
     }
 }

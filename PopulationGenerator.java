@@ -1,5 +1,4 @@
 import java.util.Random;
-import java.util.List;
 /**
  * A class responsible for generating the population,
  * as well as setting up the colours associated with each animal and plant class.
@@ -70,18 +69,17 @@ public class PopulationGenerator
     /**
      * Populate the grid with animals and plants, infect the animals.
      * 
-     * @param animals The list of Actor objects representing animals in the simulation
-     * @param plants The list of Plant objects representing plants in the simulation
+     * @param population The population to populate.
      */
-    public void populate(List<Actor> animals , List<Actor> plants)
+    public void populate(SimulationPopulation population)
     {
         field.clear();
-        populateAnimals(animals);
-        infectInitialAnimals(animals);
-        populatePlants(plants);
+        populateAnimals(population);
+        population.infectInitialAnimals(INITIAL_INFECTION_COUNT);
+        populatePlants(population);
     }
 
-    private void populateAnimals(List<Actor> animals)
+    private void populateAnimals(SimulationPopulation population)
     {
         Random rand = Randomizer.getRandom();
         for(int row = 0; row < field.getDepth(); row++) {
@@ -89,21 +87,13 @@ public class PopulationGenerator
                 Location location = new Location(row, col);
                 Animal animal = createAnimalAt(rand, location);
                 if(animal != null) {
-                    animals.add(animal);
+                    population.addAnimal(animal);
                 }
             }
         }
     }
 
-    private void infectInitialAnimals(List<Actor> animals)
-    {
-        int infectedCount = Math.min(INITIAL_INFECTION_COUNT, animals.size());
-        for (int i = 0; i < infectedCount; i++) {
-            ((Animal) animals.get(i)).setInfectionTimestamp(0);
-        }
-    }
-
-    private void populatePlants(List<Actor> plants)
+    private void populatePlants(SimulationPopulation population)
     {
         Random rand = Randomizer.getRandom();
         for(int row = 0; row < field.getDepth(); row++) {
@@ -111,7 +101,7 @@ public class PopulationGenerator
                 Location location = new Location(row, col);
                 Plant plant = createPlantAt(rand, location);
                 if(plant != null) {
-                    plants.add(plant);
+                    population.addPlant(plant);
                 }
             }
         }

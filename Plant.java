@@ -7,14 +7,8 @@ import java.util.Random;
  * @version 01.03.22
  */
 
-public abstract class Plant
+public abstract class Plant extends Organism
 {
-    //whether the plant is alive or not
-    private boolean alive;
-    // The plant's field.
-    private Field field;
-    // The plant's position in the field.
-    private Location location;
     // whether it is raining or not
     private boolean rain;
 
@@ -28,9 +22,7 @@ public abstract class Plant
      * @param location The location within the field.
      */
     public Plant(Field field, Location location) {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
         rain = false;
     }
 
@@ -58,58 +50,6 @@ public abstract class Plant
      * @return The maximum number of offspring this plant can produce.
      */
     abstract protected int getMaxOffspringSize();
-
-    /**
-     * Check whether the plant is alive or not.
-     * @return true if the plant is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
-
-    /**
-     * Indicate that the plant is no longer alive.
-     * It is removed from the field.
-     */
-    protected void setDead() {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-
-    /**
-     * Return the plant's location.
-     * @return The plant's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-
-    /**
-     * Place the plant at the new location in the given field.
-     * @param newLocation The plant's new location.
-     */
-    protected void setLocation(Location newLocation) {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-
-    /**
-     * Return the animal's field.
-     * @return The animal's field.
-     */
-    protected Field getField()
-    {
-        return field;
-    }
 
     /**
      * assign true to rain

@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -9,21 +11,24 @@ import java.util.*;
  */
 public class Weather {
 
-    // define fields
-    private static final double SUN_PROBABILITY = 0.2;
-    private static final double RAIN_PROBABILITY = 0.1;
-    private static final double FOG_PROBABILITY = 0.3;
-    private static final double SNOW_PROBABILITY = 0.05;
-    private static final double STORM_PROBABILITY = 0.02;
+    private static final int MAX_EVENT_DURATION_HOURS = 3;
+    private static final int MAX_RECENT_WEATHER = 4;
+    private static final Random RAND = Randomizer.getRandom();
+    private static final WeatherSelector SELECTOR = new WeatherSelector(
+            Arrays.asList(
+                    new WeatherRule(WeatherType.SUN, 0.2),
+                    new WeatherRule(WeatherType.RAIN, 0.1),
+                    new WeatherRule(WeatherType.FOG, 0.3),
+                    new WeatherRule(WeatherType.SNOW, 0.05),
+                    new WeatherRule(WeatherType.STORM, 0.02)
+            ),
+            RAND
+    );
 
-    private static final int MAX_HOURS = 3;
-
-    private ArrayList<WeatherType> recentWeather;
+    private final WeatherHistory recentWeather;
     private WeatherType type;
-    private int hours;
-    private int count;
-
-    private static final Random rand = Randomizer.getRandom();
+    private int activeDurationHours;
+    private int elapsedHours;
 
     /**
      * Constructor for Weather class.
@@ -32,55 +37,28 @@ public class Weather {
      */
     public Weather(WeatherType initialType) {
         this.type = initialType;
-        recentWeather = new ArrayList<>();
+        this.recentWeather = new WeatherHistory(MAX_RECENT_WEATHER);
     }
 
     /**
-     * Generates the next weather event to produce, on the
-     * condition one is not already in progress.
+     * Advances the current weather state by one hour tick.
      */
-    public void generate() {
-        if (count != 0) {
-            count++;
-            if (count > hours) {
-                count = 0; // reset
-            }
+    public void advance() {
+        if (hasActiveEvent()) {
+            advanceActiveEvent();
             return;
         }
 
-        this.hours = rand.nextInt(MAX_HOURS);
-
-        // Switch statements can't be used here due to double accuracy rules.
-        if (rand.nextDouble() <= SUN_PROBABILITY) {
-            type = WeatherType.SUN;
-        } else if (rand.nextDouble() <= RAIN_PROBABILITY) {
-            type = WeatherType.RAIN;
-        } else if (rand.nextDouble() <= FOG_PROBABILITY) {
-            type = WeatherType.FOG;
-        } else if (rand.nextDouble() <= SNOW_PROBABILITY) {
-            type = WeatherType.SNOW;
-        } else if (rand.nextDouble() <= STORM_PROBABILITY) {
-            type = WeatherType.STORM;
-        }
-
-        //If in the last 4 weathers we had, there was rain or sun, grow at a higher rate.
-
-        //Adds to the end of the list,
-        recentWeather.add(type);
-
-        if (recentWeather.size() == 4){
-            //remove from the start of the list
-            recentWeather.remove(0);
-        }
-        count++;
+        startNextEvent();
     }
 
     /**
-     * Returns an ArrayList of the most recent weathers.
-     * @return ArrayList of most recent weathers.
+     * Returns recent weather events.
+     *
+     * @return Unmodifiable list of recent weathers.
      */
-    public ArrayList<WeatherType> getRecentWeather() {
-        return recentWeather;
+    public List<WeatherType> getRecentWeather() {
+        return recentWeather.asList();
     }
 
     /**
@@ -89,5 +67,23 @@ public class Weather {
      */
     public WeatherType getType() {
         return this.type;
+    }
+
+    private boolean hasActiveEvent() {
+        return elapsedHours != 0;
+    }
+
+    private void advanceActiveEvent() {
+        elapsedHours++;
+        if (elapsedHours > activeDurationHours) {
+            elapsedHours = 0;
+        }
+    }
+
+    private void startNextEvent() {
+        activeDurationHours = RAND.nextInt(MAX_EVENT_DURATION_HOURS);
+        type = SELECTOR.selectNext(type);
+        recentWeather.record(type);
+        elapsedHours = 1;
     }
 }

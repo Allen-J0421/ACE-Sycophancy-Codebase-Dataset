@@ -22,7 +22,7 @@ public class SimulationState implements SimulationContext {
 
     public void advanceEnvironment() {
         if (clock.isWeatherUpdateDue()) {
-            weather.generate();
+            weather.advance();
         }
         clock.advanceTimeOfDayIfDue();
     }

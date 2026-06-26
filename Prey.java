@@ -16,7 +16,6 @@ public abstract class Prey extends Animal implements Consumable {
     private int foodValue;
     private double activeness;
 
-    // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
     /**
@@ -40,7 +39,7 @@ public abstract class Prey extends Animal implements Consumable {
      *
      * @return A double in (0, 1] representing reduced activity.
      */
-    abstract protected double getRestActiveness();
+    protected abstract double getRestActiveness();
 
     /**
      * Performs one simulation step: ages, breeds, spreads disease, forages, and moves.

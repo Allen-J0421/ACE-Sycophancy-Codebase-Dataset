@@ -15,7 +15,6 @@ public abstract class Animal extends Organism implements AbleToEat {
     private final Gender gender;
     private boolean infected;
 
-    // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
     /**
@@ -30,7 +29,6 @@ public abstract class Animal extends Organism implements AbleToEat {
         super(randomAge, field, location);
         this.traits = traits;
         this.gender = Gender.getRandom();
-        this.infected = false;
     }
 
     // ── Organism stat getters (satisfied here so subclasses need not override) ──

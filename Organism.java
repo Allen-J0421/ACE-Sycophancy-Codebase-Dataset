@@ -20,7 +20,6 @@ public abstract class Organism {
 
     private int age;
 
-    // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
     /**
@@ -45,7 +44,7 @@ public abstract class Organism {
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
-    abstract public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time);
+    public abstract void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time);
 
     /**
      * Check whether the organism is alive or not.
@@ -89,7 +88,7 @@ public abstract class Organism {
      */
     protected Location getLocation()
     {
-        return this.location;
+        return location;
     }
 
     /**
@@ -123,7 +122,7 @@ public abstract class Organism {
      */
     protected Field getField()
     {
-        return this.field;
+        return field;
     }
 
     /**
@@ -131,28 +130,28 @@ public abstract class Organism {
      *
      * @return A double value representing the breeding probability.
      */
-    abstract public double getBreedingProbability();
+    public abstract double getBreedingProbability();
 
     /**
      * Getter method for the maximum litter size of the organism's newborns.
      *
      * @return An integer value representing the maximum allowed litter size.
      */
-    abstract public int getMaxLitterSize();
+    public abstract int getMaxLitterSize();
 
     /**
      * Getter method for the maximum age of the organism.
      *
      * @return An integer value representing the maximum age.
      */
-    abstract public int getMaxAge();
+    public abstract int getMaxAge();
 
     /**
      * Getter method for the age of breeding of the organism.
      *
      * @return A double value representing the breeding age.
      */
-    abstract public int getBreedingAge();
+    public abstract int getBreedingAge();
 
     /**
      * Called when breeding occurs for this organism.
@@ -170,7 +169,7 @@ public abstract class Organism {
      * @param location The location in which the spawn will occupy.
      * @return A new Organism instance.
      */
-    abstract protected Organism createNewOrganism(Field field, Location location);
+    protected abstract Organism createNewOrganism(Field field, Location location);
 
     /**
      * Check whether or not this organism is to give birth at this step.
@@ -193,7 +192,7 @@ public abstract class Organism {
      *
      * @return Whether this organism can breed or not.
      */
-    abstract protected boolean canBreed();
+    protected abstract boolean canBreed();
 
     /**
      * Increase the age.
@@ -214,7 +213,7 @@ public abstract class Organism {
      * @return An integer value representing age.
      */
     protected int getAge() {
-        return this.age;
+        return age;
     }
 
     /**
@@ -222,8 +221,8 @@ public abstract class Organism {
      * a fixed number of steps if no scavenger has consumed it.
      */
     protected void decayifDead() {
-        this.howLongDead++;
-        if (this.howLongDead > LIFETIME_AFTER_DEATH){
+        howLongDead++;
+        if (howLongDead > LIFETIME_AFTER_DEATH) {
             remove();
         }
     }

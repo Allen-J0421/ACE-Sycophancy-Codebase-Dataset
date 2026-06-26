@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public abstract class HungryAnimal extends Animal {
 
-    private static final Random rand = Randomizer.getRandom();
+    protected static final Random rand = Randomizer.getRandom();
 
     private int foodLevel;
 

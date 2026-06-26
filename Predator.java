@@ -1,5 +1,3 @@
-import java.util.Random;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -8,8 +6,6 @@ import java.util.Random;
  * @version 2022.03.02
  */
 public abstract class Predator extends HungryAnimal {
-
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a predator in the simulation.
@@ -48,7 +44,7 @@ public abstract class Predator extends HungryAnimal {
     /**
      * Returns the probability this predator eats a kill rather than leaving it.
      */
-    abstract public double getEatingProbability();
+    public abstract double getEatingProbability();
 
     /**
      * Eats a killed prey with probability given by {@link #getEatingProbability()}.

@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,11 +54,11 @@ public class SimulatorView extends JFrame
 
         Container contents = getContentPane();
         
-        JPanel infoPane = new JPanel(new BorderLayout());
-            infoPane.add(stepLabel, BorderLayout.WEST);
-            infoPane.add(infoLabel, BorderLayout.CENTER);
-            infoPane.add(timeLabel, BorderLayout.EAST);
-            infoPane.add(weatherLabel, BorderLayout.CENTER);
+        JPanel infoPane = new JPanel(new GridLayout(1, 4));
+            infoPane.add(stepLabel);
+            infoPane.add(infoLabel);
+            infoPane.add(timeLabel);
+            infoPane.add(weatherLabel);
         contents.add(infoPane, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);

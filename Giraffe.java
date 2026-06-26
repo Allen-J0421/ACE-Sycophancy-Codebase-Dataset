@@ -26,23 +26,14 @@ public class Giraffe extends Prey
     public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
         super(field, location, isInfected, isImmune);
-        
-        breedingAge = BREEDING_AGE; 
-        maxAge = MAX_AGE;
-        breedingProbability = BREEDING_PROBABILITY;
-        maxLitterSize = MAX_LITTER_SIZE;
-        maxFoodLevel = MAX_FOOD_LEVEL;
-        foodValue = FOOD_VALUE;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else
-        {
-            age = 0;
-            foodLevel = (int) (0.25 * MAX_FOOD_LEVEL);
-        }
+
+        configureAnimal(BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
+                        MAX_FOOD_LEVEL, FOOD_VALUE);
+        initializeAgeAndFood(randomAge, (int) (0.25 * MAX_FOOD_LEVEL));
+    }
+
+    protected Animal createOffspring(Location location, boolean isInfected, boolean isImmune)
+    {
+        return new Giraffe(false, field, location, isInfected, isImmune);
     }
 }

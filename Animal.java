@@ -168,6 +168,16 @@ public abstract class Animal extends LivingOrganism
     abstract protected Location findFood();
 
     /**
+     * Create a new instance of the current species.
+     *
+     * @param location Where the offspring should be placed.
+     * @param isInfected Whether the offspring starts infected.
+     * @param isImmune Whether the offspring starts immune.
+     * @return A new offspring of the current species.
+     */
+    protected abstract Animal createOffspring(Location location, boolean isInfected, boolean isImmune);
+
+    /**
      * @Override
      * 
      * Indicate that the animal is no longer alive.
@@ -277,63 +287,25 @@ public abstract class Animal extends LivingOrganism
         
         for(int b = 0; b < births && free.size() > 0; b++) 
         {
-            Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
+            Location loc = free.remove(0);
+            boolean offspringIsInfected = infected;
+            boolean offspringIsImmune = immune;
+            
+            // If the mother is infected, the child has a small chance of starting immune instead.
+            if (!immune && infected && rand.nextDouble() < 0.15) 
+            {
+                offspringIsImmune = true;
+                offspringIsInfected = false;
+            }
+            // Immune mothers usually have children that are not immune.
+            else if (immune && rand.nextDouble() < 0.9)
+            {
+                offspringIsImmune = false;
+            }
+            
+            Animal newAnimal = createOffspring(loc, offspringIsInfected, offspringIsImmune);
             newAnimals.add(newAnimal);
         }
-    }
-    
-    /**
-     * Creates a new offspring and places it into the field at the first free location
-     * 
-     * @param classOfAnimal The class type of the new animal
-     * @param free A list of the free adjacent location
-     * @param motherIsInfected If the mother has currently the disease, so will the child
-     * 
-     * @return Returns the new animal
-     */
-    protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
-    {
-        Location loc = free.remove(0);
-        Animal offspring = null;
-        
-        boolean offspringIsInfected = motherIsInfected;
-        boolean offspringIsImmune = motherIsImmune;
-        
-        // If the mother is immune and the mother is infected, then there is
-        // a small of the child getting immunity
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15) 
-        {
-            offspringIsImmune = true;
-            offspringIsInfected = false;
-        }
-        // If the mother is immune then there is a chance child isn't immune
-        else if (motherIsImmune && rand.nextDouble() < 0.9)
-        {
-            offspringIsImmune = false;
-        }
-        
-        if (classOfAnimal.equals(Lemur.class))
-        {
-            offspring = new Lemur(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Giraffe.class)) 
-        {
-            offspring = new Giraffe(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Zebra.class)) 
-        {
-            offspring = new Zebra(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Cheetah.class)) 
-        {
-            offspring = new Cheetah(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Lion.class)) 
-        {
-            offspring = new Lion(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        
-        return offspring;
     }
     
     /**
@@ -383,6 +355,37 @@ public abstract class Animal extends LivingOrganism
     protected boolean canBreed()
     {
         return age >= breedingAge;
+    }
+
+    /**
+     * Set the shared species-level characteristics for an animal.
+     */
+    protected final void configureAnimal(int breedingAge, int maxAge, double breedingProbability,
+                                         int maxLitterSize, int maxFoodLevel, int foodValue)
+    {
+        this.breedingAge = breedingAge;
+        this.maxAge = maxAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.maxFoodLevel = maxFoodLevel;
+        this.foodValue = foodValue;
+    }
+
+    /**
+     * Initialise age and hunger state for either a newborn or a random starting animal.
+     */
+    protected final void initializeAgeAndFood(boolean randomAge, int newbornFoodLevel)
+    {
+        if (randomAge) 
+        {
+            age = rand.nextInt(maxAge);
+            foodLevel = rand.nextInt(maxFoodLevel);
+        }
+        else
+        {
+            age = 0;
+            foodLevel = newbornFoodLevel;
+        }
     }
     
     /**

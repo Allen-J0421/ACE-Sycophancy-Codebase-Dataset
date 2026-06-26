@@ -23,6 +23,26 @@ public abstract class Predator extends Animal
         super(field, location, isInfected, isImmune);
         movementProbability = 0.8;
     }
+
+    /**
+     * Set the shared species-level characteristics for a predator.
+     */
+    protected final void configurePredator(int breedingAge, int maxAge, double breedingProbability,
+                                           int maxLitterSize, int maxFoodLevel, int foodValue,
+                                           double preyCatchingProbability)
+    {
+        configureAnimal(breedingAge, maxAge, breedingProbability, maxLitterSize, maxFoodLevel, foodValue);
+        this.preyCatchingProbability = preyCatchingProbability;
+    }
+
+    /**
+     * Predators start newborn life at a low random hunger level.
+     */
+    protected final int getNewbornFoodLevel()
+    {
+        double percentageOfMaxFoodLevel = rand.nextDouble() / 5.5;
+        return (int) (percentageOfMaxFoodLevel * maxFoodLevel);
+    }
     
     /**
      * @Override

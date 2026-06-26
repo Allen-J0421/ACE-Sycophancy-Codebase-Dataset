@@ -11,6 +11,6 @@ public final class Main
 
     public static void main(String[] args)
     {
-        javax.swing.SwingUtilities.invokeLater(Simulator::new);
+        javax.swing.SwingUtilities.invokeLater(SimulatorController::new);
     }
 }

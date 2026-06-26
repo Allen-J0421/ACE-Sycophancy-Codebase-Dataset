@@ -40,16 +40,16 @@ public class SimulatorView extends JFrame
     private FieldStats stats;
     
     private int infectedPopulationCount;
-    private Simulator simulator;
+    private final SimulationActions actions;
     private Timer timer;
     /**
      * Create a view of the given width and height.
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width,  Simulator simulator)
+    public SimulatorView(int height, int width, SimulationActions actions)
     {
-        this.simulator =simulator;
+        this.actions = actions;
         timer = new Timer();
         stats = new FieldStats();
         colors = loadDefaultColors();
@@ -87,21 +87,21 @@ public class SimulatorView extends JFrame
      * Called when the 'One Step Button' button is clicked.
      */
     private void nextButton(){
-        simulator.simulateOneStep();
+        actions.stepRequested();
     }
 
     /**
      * Called when the 'Introduce Infection Button' button is clicked.
      */
     private void infectionButton(){
-        simulator.introduceInfection();
+        actions.infectionRequested();
     }
 
     /**
      * Called when the 'Reset Button' button is clicked.
      */
     private void resetButton(){
-        simulator.reset();
+        actions.resetRequested();
     }
 
     /**
@@ -168,16 +168,16 @@ public class SimulatorView extends JFrame
 
     /**
      * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
+     * @param snapshot The current simulation state.
      */
-    public void showStatus(Field field)
+    public void showStatus(SimulationSnapshot snapshot)
     {
         if(!isVisible()) {
             setVisible(true);
         }
 
-        stepLabel.setText(STEP_PREFIX + simulator.getSteps() );
+        Field field = snapshot.getField();
+        stepLabel.setText(STEP_PREFIX + snapshot.getSteps() );
         stats.reset();
         infectedPopulationCount = 0;
 
@@ -203,24 +203,15 @@ public class SimulatorView extends JFrame
             }
         }
         stats.countFinished();
-        if(simulator.isDay()){
-            dayLabel.setText( DAY_PREFIX+ simulator.getNoOfDays() + "      Time: " + timer.getTime(simulator.getSteps()) + "   It is Day Time. ");
+        if(snapshot.isDay()){
+            dayLabel.setText( DAY_PREFIX+ snapshot.getNumberOfDays() + "      Time: " + timer.getTime(snapshot.getSteps()) + "   It is Day Time. ");
         }else{
-            dayLabel.setText( DAY_PREFIX+ simulator.getNoOfDays() + "      Time: " + timer.getTime(simulator.getSteps()) + "   It is Night Time ");
+            dayLabel.setText( DAY_PREFIX+ snapshot.getNumberOfDays() + "      Time: " + timer.getTime(snapshot.getSteps()) + "   It is Night Time ");
         }
 
-        infoLabel.setText(" " + simulator.getWeather() + "        " + INFECTION_PREFIX + infectedPopulationCount );
+        infoLabel.setText(" " + snapshot.getWeather() + "        " + INFECTION_PREFIX + infectedPopulationCount );
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
         fieldView.repaint();
-    }
-
-    /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
     }
 
     private Map<ActorKind, Color> loadDefaultColors()

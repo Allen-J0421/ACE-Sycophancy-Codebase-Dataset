@@ -29,14 +29,14 @@ public class Simulator
     private Field field;
     // The current step of the simulation.
     private int step;
-    // A graphical view of the simulation.
-    private SimulatorView view;
 
     private boolean isDay;
     //check the random weather method and the use of the random weather method in one step method
     private Weather weather;
     private int numberOfDays;
     private static final Random rand = Randomizer.getRandom();
+    // Cached viability checker used to avoid coupling the model to the view.
+    private final FieldStats viabilityStats;
     /**
      * Construct a simulation field with default size.
      */
@@ -62,9 +62,8 @@ public class Simulator
         animals = new ArrayList<>();
         plants = new ArrayList<>();
         field = new Field(depth, width);
+        viabilityStats = new FieldStats();
 
-        // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, this);
         // Setup a valid starting point.
         reset();
     }
@@ -85,7 +84,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && isViable(); step++) {
             simulateOneStep();
             //delay(120);   // uncomment this to run more slowly
         }
@@ -99,7 +98,6 @@ public class Simulator
      */
     public void simulateOneStep()
     {
-        view.disableButton();
         step++;
         if(step % 2 == 0){
             isDay  = !isDay;
@@ -140,8 +138,7 @@ public class Simulator
             introduceInfection();
         }
 
-        view.showStatus(field);
-        view.enableButton();
+        viabilityStats.reset();
     }
 
     /**
@@ -156,8 +153,7 @@ public class Simulator
         isDay = true;
         numberOfDays = 0;
         getRandomWeather();
-        // Show the starting state in the view.
-        view.showStatus(field);
+        viabilityStats.reset();
     }
 
     /**
@@ -256,6 +252,24 @@ public class Simulator
      */
     public Weather getWeather(){
         return weather;
+    }
+
+    /**
+     * Determine whether the simulation should continue running.
+     * @return true if there is more than one species alive.
+     */
+    public boolean isViable()
+    {
+        return viabilityStats.isViable(field);
+    }
+
+    /**
+     * Create an immutable snapshot of the current simulation state for the UI.
+     * @return the current simulation snapshot.
+     */
+    public SimulationSnapshot createSnapshot()
+    {
+        return new SimulationSnapshot(field, step, numberOfDays, isDay, weather);
     }
 
     private static int loadDefaultWidth()

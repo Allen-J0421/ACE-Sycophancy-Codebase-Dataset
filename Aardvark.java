@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A simple model of an aardvark.
@@ -22,8 +21,7 @@ public class Aardvark extends Consumer
     //    Max sustenance level of the aadvark:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this aardvark hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(Grasshopper.class,HarvesterAnt.class));
+    private static final List<Class<? extends Actor>> PREY = List.of(Grasshopper.class, HarvesterAnt.class);
 
     /**
      * Create a new aardvark. A aardvark may be created with age
@@ -39,16 +37,5 @@ public class Aardvark extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,true,false);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this aardvark act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newAardvarks A list to return newly born aardvarks.
-     */
-    public void act(List<Actor> newAardvarks)
-    {
-        super.act(newAardvarks);
     }
 }

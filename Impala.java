@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A simple model of an impala.
@@ -22,8 +21,7 @@ public class Impala extends Consumer
     //   Max sustenance level of the impala:
     private static final int MAX_SUSTENANCE_LEVEL = 55;
     //   The prey this impala hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(Acacia.class));
+    private static final List<Class<? extends Actor>> PREY = List.of(Acacia.class);
 
     /**
      * Create a new impala. A impala may be created with age
@@ -39,16 +37,5 @@ public class Impala extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,false,true);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this impala act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newImpala A list to return newly born impala.
-     */
-    public void act(List<Actor> newImpala)
-    {
-        super.act(newImpala);
     }
 }

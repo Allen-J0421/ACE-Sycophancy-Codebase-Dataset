@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A simple model of a termite.
@@ -22,8 +21,7 @@ public class Termite extends Consumer
     //   Max sustenance level of the termite:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this termite hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(RedOatGrass.class,StarGrass.class));
+    private static final List<Class<? extends Actor>> PREY = List.of(RedOatGrass.class, StarGrass.class);
 
     /**
      * Create a new termite. A termite may be created with age
@@ -39,16 +37,5 @@ public class Termite extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,false,true);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this termite act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newTermites A list to return newly born termites.
-     */
-    public void act(List<Actor> newTermites)
-    {
-        super.act(newTermites);
     }
 }

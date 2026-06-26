@@ -2,6 +2,7 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Collections;
 import java.awt.Color;
 
 /**
@@ -131,7 +132,7 @@ public class Simulator
         rules.add(new ActorCreationRule(0.45, true, false, Lemur::new));
         rules.add(new ActorCreationRule(0.3, true, false, Panther::new));
         rules.add(new ActorCreationRule(0.25, true, true, Alligator::new));
-        return rules;
+        return Collections.unmodifiableList(rules);
     }
 
     /**
@@ -158,7 +159,7 @@ public class Simulator
             .addStartingActor(Water_Fern.name, 0.4);
         list.add(river_fever);
         
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     /**

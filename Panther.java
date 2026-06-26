@@ -1,6 +1,7 @@
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -82,7 +83,7 @@ public final class Panther extends Animal
     {
         Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put("Lemurs", 10);
-        return mapTemp;
+        return Collections.unmodifiableMap(mapTemp);
     }
 
     /**

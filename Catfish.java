@@ -1,6 +1,7 @@
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -83,7 +84,7 @@ public final class Catfish extends Animal
     {
         Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put(Water_Fern.name, 3);
-        return mapTemp;
+        return Collections.unmodifiableMap(mapTemp);
     }
 
     /**

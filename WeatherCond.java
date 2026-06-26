@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 /**
@@ -34,10 +35,11 @@ public enum WeatherCond
      */
     WeatherCond(double visibilty,double brightness,double dampness)
     {
-        weatherAttributes = new HashMap<>();
-        weatherAttributes.put(VISIBILITY, visibilty);
-        weatherAttributes.put(BRIGHTNESS, brightness);
-        weatherAttributes.put(DAMPNESS, dampness);
+        Map<String, Double> attributes = new HashMap<>();
+        attributes.put(VISIBILITY, visibilty);
+        attributes.put(BRIGHTNESS, brightness);
+        attributes.put(DAMPNESS, dampness);
+        weatherAttributes = Collections.unmodifiableMap(attributes);
     }
 
     /**

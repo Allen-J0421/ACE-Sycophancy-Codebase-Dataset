@@ -1,6 +1,7 @@
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -85,7 +86,7 @@ public final class Salamander extends Animal
         Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put(Grass.name, 4);
         mapTemp.put(Water_Fern.name, 5);
-        return mapTemp;
+        return Collections.unmodifiableMap(mapTemp);
     }
 
     /**

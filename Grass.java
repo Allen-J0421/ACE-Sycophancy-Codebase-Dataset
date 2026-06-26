@@ -65,28 +65,6 @@ public class Grass extends Plant {
     }
 
     /**
-     * Method for what the grass does, i.e. what is always run at every step.
-     *
-     * @param newGrass A list of all newborn grass in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    public void act(List<Organism> newGrass, Weather weather, TimeOfDay time) {
-        if (isAlive()) {
-            setBreedingProbability(LOW_BREEDING_PROBABILITY);
-
-            //If it has recently rained or is sunny, grow at a higher growth rate
-            if (weather.getRecentWeather().contains(WeatherType.RAIN) ||
-                    weather.getRecentWeather().contains(WeatherType.SUN)){
-                setBreedingProbability(HIGH_BREEDING_PROBABILITY);
-            }
-            grow();
-            giveBirth(newGrass);
-        }
-    }
-
-    /**
      * Get maximum size of the grass.
      *
      * @return A double representing maximum size.
@@ -104,6 +82,22 @@ public class Grass extends Plant {
     @Override
     public int getMaxLitterSize() {
         return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected double getLowBreedingProbability() {
+        return LOW_BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected double getHighBreedingProbability() {
+        return HIGH_BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected boolean hasFavorableWeather(Weather weather) {
+        return weather.getRecentWeather().contains(WeatherType.RAIN)
+                || weather.getRecentWeather().contains(WeatherType.SUN);
     }
 
 }

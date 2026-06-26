@@ -67,28 +67,6 @@ public class PoisonBerry extends Plant {
     }
 
     /**
-     * Abstract method for what the PoisonBerry does, i.e. what is always run at every step.
-     *
-     * @param newBerries A list of all newborn berries in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    public void act(List<Organism> newBerries, Weather weather, TimeOfDay time) {
-        if (isAlive()) {
-            setBreedingProbability(LOW_BREEDING_PROBABILITY);
-
-            //If it has recently rained or is snowy, grow at a higher growth rate
-            if (weather.getRecentWeather().contains(WeatherType.RAIN) ||
-                    weather.getRecentWeather().contains(WeatherType.SNOW)){
-                setBreedingProbability(HIGH_BREEDING_PROBABILITY);
-            }
-            grow();
-            giveBirth(newBerries);
-        }
-    }
-
-    /**
      * Get maximum size of the berry.
      *
      * @return A double representing maximum size.
@@ -106,6 +84,22 @@ public class PoisonBerry extends Plant {
     @Override
     public int getMaxLitterSize() {
         return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected double getLowBreedingProbability() {
+        return LOW_BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected double getHighBreedingProbability() {
+        return HIGH_BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected boolean hasFavorableWeather(Weather weather) {
+        return weather.getRecentWeather().contains(WeatherType.RAIN)
+                || weather.getRecentWeather().contains(WeatherType.SNOW);
     }
 
 }

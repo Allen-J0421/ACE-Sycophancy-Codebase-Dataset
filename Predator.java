@@ -40,7 +40,34 @@ public abstract class Predator extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Organism> newPredators, Weather weather, TimeOfDay time);
+    public void act(List<Organism> newPredators, Weather weather, TimeOfDay time) {
+        incrementAge();
+        incrementHunger();
+        if(isAlive()) {
+            giveBirth(newPredators);
+
+            if (isRestingTime(time)) {
+                return;
+            }
+
+            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
+                remove();
+                return;
+            }
+
+            Location newLocation = chooseTargetLocation();
+            if(newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+
+            if(newLocation != null) {
+                setLocation(newLocation);
+            }
+            else {
+                remove();
+            }
+        }
+    }
 
     /**
      * Finds the nearest food source and returns its location.
@@ -116,4 +143,13 @@ public abstract class Predator extends Animal {
             remove();
         }
     }
+
+    private Location chooseTargetLocation() {
+        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+            return findAnimalToInfect();
+        }
+        return findFood();
+    }
+
+    protected abstract boolean isRestingTime(TimeOfDay time);
 }

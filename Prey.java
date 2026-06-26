@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.List;
 
 /**
@@ -11,6 +12,7 @@ public abstract class Prey extends Animal implements Consumable {
 
     // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
+    private static final Random rand = Randomizer.getRandom();
     private int foodValue;
     private double activeness;  // denotes how likely it is for the act method to be called
 
@@ -37,7 +39,35 @@ public abstract class Prey extends Animal implements Consumable {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Organism> newPrey, Weather weather, TimeOfDay time);
+    public void act(List<Organism> newPrey, Weather weather, TimeOfDay time) {
+        incrementAge();
+        setActiveness(getActivenessFor(time));
+
+        if(isAlive()) {
+            giveBirth(newPrey);
+
+            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
+                remove();
+                return;
+            }
+
+            if (rand.nextDouble() <= getActiveness()){
+                Location newLocation = chooseTargetLocation();
+                if ((newLocation == null) || (getFoodValue() > 10)) {
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+
+                if(newLocation != null) {
+                    setLocation(newLocation);
+                }
+                else {
+                    remove();
+                }
+            }
+        } else {
+            decayifDead();
+        }
+    }
 
     /**
      * Clear the prey from the simulation as it has been eaten.
@@ -124,5 +154,16 @@ public abstract class Prey extends Animal implements Consumable {
             }
         }
         return null;
+    }
+
+    private Location chooseTargetLocation() {
+        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+            return findAnimalToInfect();
+        }
+        return findFood();
+    }
+
+    protected double getActivenessFor(TimeOfDay time) {
+        return DEFAULT_ACTIVENESS;
     }
 }

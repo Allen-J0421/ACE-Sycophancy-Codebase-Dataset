@@ -42,7 +42,16 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Organism> newPlants, Weather weather, TimeOfDay time);
+    public void act(List<Organism> newPlants, Weather weather, TimeOfDay time) {
+        if (isAlive()) {
+            setBreedingProbability(getLowBreedingProbability());
+            if (hasFavorableWeather(weather)) {
+                setBreedingProbability(getHighBreedingProbability());
+            }
+            grow();
+            giveBirth(newPlants);
+        }
+    }
 
     /**
      * Grow in size in accordance with the current growth rate.
@@ -157,4 +166,10 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     public double getBreedingProbability() {
         return this.breedingProbability;
     }
+
+    protected abstract double getLowBreedingProbability();
+
+    protected abstract double getHighBreedingProbability();
+
+    protected abstract boolean hasFavorableWeather(Weather weather);
 }

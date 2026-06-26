@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -20,9 +19,6 @@ public class Goat extends Prey {
 
     private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a Goat in the simulation.
@@ -106,62 +102,16 @@ public class Goat extends Prey {
         return new Goat(DEFAULT_FOOD_VALUE, true, field, location);
     }
 
-    /**
-     * Method for what the goat does, i.e. what is always run at every step.
-     *
-     * @param newGoats A list of all newborn goats in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    public void act(List<Organism> newGoats, Weather weather, TimeOfDay time) {
-        incrementAge();
-        setActiveness(1);
-
-        if(isAlive()) {
-            giveBirth(newGoats);
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            if (time == TimeOfDay.LATE_MORNING){
-                this.setActiveness(0.8);
-            }
-
-            if (rand.nextDouble() <= getActiveness()){
-                // Try to move into a free location.
-                Location newLocation;
-
-                if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                    newLocation = findAnimalToInfect();
-                } else {
-                    newLocation = findFood();
-                }
-
-                // Random chance to do either?
-
-                if ((newLocation == null) || (getFoodValue() > 10)) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    // Overcrowding.
-                    //setDead();
-                    remove();
-                }
-            }
-        } else {
-            decayifDead();
-        }
-    }
-
     @Override
     public Location findFood() {
         return findPlantFood();
+    }
+
+    @Override
+    protected double getActivenessFor(TimeOfDay time) {
+        if (time == TimeOfDay.LATE_MORNING) {
+            return 0.8;
+        }
+        return super.getActivenessFor(time);
     }
 }

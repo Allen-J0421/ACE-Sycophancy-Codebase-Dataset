@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -21,8 +20,6 @@ public class Lion extends Predator {
 
     private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
-
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a lion in the simulation.
@@ -108,56 +105,6 @@ public class Lion extends Predator {
     }
 
     /**
-     * Method for what the lion does, i.e. what is always run at every step.
-     *
-     * @param newLions A list of all newborn lions in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    public void act(List<Organism> newLions, Weather weather, TimeOfDay time) {
-        incrementAge();
-        incrementHunger();
-        if(isAlive()) {
-
-            giveBirth(newLions);
-
-            if (time == TimeOfDay.NIGHT){
-                return;
-            }
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
-
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                //setDead();
-                remove();
-            }
-        }
-    }
-
-    /**
      * Getter method to return this lion's probability of eating if food is found.
      *
      * @return The lion's eating probability.
@@ -165,6 +112,11 @@ public class Lion extends Predator {
     @Override
     public double getEatingProbability() {
         return EATING_PROBABILITY;
+    }
+
+    @Override
+    protected boolean isRestingTime(TimeOfDay time) {
+        return time == TimeOfDay.NIGHT;
     }
 
 }

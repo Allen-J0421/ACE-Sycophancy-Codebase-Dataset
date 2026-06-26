@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Represent a location in a rectangular grid.
  *
@@ -66,5 +69,39 @@ public class Location
     public int getCol()
     {
         return col;
+    }
+
+    /**
+     * Return all valid adjacent locations in a bounded grid.
+     * The returned list does not include this location.
+     * @param depth The maximum number of rows in the grid.
+     * @param width The maximum number of columns in the grid.
+     * @return The valid adjacent locations.
+     */
+    public List<Location> adjacentLocations(int depth, int width) {
+        List<Location> locations = new LinkedList<>();
+        for(int rowOffset = -1; rowOffset <= 1; rowOffset++) {
+            for(int colOffset = -1; colOffset <= 1; colOffset++) {
+                Location next = translate(rowOffset, colOffset);
+                if(!next.equals(this) && next.isWithin(depth, width)) {
+                    locations.add(next);
+                }
+            }
+        }
+        return locations;
+    }
+
+    /**
+     * Return a location translated by the given offsets.
+     */
+    private Location translate(int rowOffset, int colOffset) {
+        return new Location(row + rowOffset, col + colOffset);
+    }
+
+    /**
+     * Check whether this location is inside a bounded grid.
+     */
+    private boolean isWithin(int depth, int width) {
+        return row >= 0 && row < depth && col >= 0 && col < width;
     }
 }

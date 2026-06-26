@@ -13,16 +13,16 @@ public class AnimalProfile
         Animal create(Field field, Location location);
     }
 
-    private Class<? extends Animal> speciesClass;
-    private int maxAge;
-    private int breedingAge;
-    private double breedingProbability;
-    private int maxLitterSize;
-    private int foodValue;
-    private int mateSearchDistance;
-    private boolean requiresMate;
-    private List<Class<? extends Creature>> preyTypes;
-    private AnimalFactory animalFactory;
+    private final Class<? extends Animal> speciesClass;
+    private final int maxAge;
+    private final int breedingAge;
+    private final double breedingProbability;
+    private final int maxLitterSize;
+    private final int foodValue;
+    private final int mateSearchDistance;
+    private final boolean requiresMate;
+    private final List<Class<? extends Creature>> preyTypes;
+    private final AnimalFactory animalFactory;
 
     @SafeVarargs
     public AnimalProfile(Class<? extends Animal> speciesClass, int maxAge, int breedingAge,

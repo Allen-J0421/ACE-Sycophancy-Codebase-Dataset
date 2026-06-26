@@ -1,8 +1,8 @@
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -12,50 +12,14 @@ import java.awt.Color;
  */
 public class Simulator
 {
-    private interface CreatureSpawner
-    {
-        Creature create(Location location);
-    }
-
-    private static class PopulationSeed
-    {
-        private double creationProbability;
-        private CreatureSpawner spawner;
-
-        PopulationSeed(double creationProbability, CreatureSpawner spawner)
-        {
-            this.creationProbability = creationProbability;
-            this.spawner = spawner;
-        }
-
-        boolean shouldCreate(Random random)
-        {
-            return random.nextDouble() <= creationProbability;
-        }
-
-        Creature create(Location location)
-        {
-            return spawner.create(location);
-        }
-    }
-
-    // Constants representing configuration information for the simulation.
     private static final int DEFAULT_WIDTH = 120;
     private static final int DEFAULT_DEPTH = 80;
     private static final int LONG_SIMULATION_STEPS = 1000;
     private static final int DAY_LENGTH = 5;
     private static final int FULL_DAY_LENGTH = DAY_LENGTH * 2;
     private static final int STORM_SCOPE = 3;
-
-    // The probability that a species will be created in any given grid position.
-    private static final double SALMON_CREATION_PROBABILITY = 0.08;
-    private static final double COD_CREATION_PROBABILITY = 0.08;
-    private static final double SEAWEED_CREATION_PROBABILITY = 0.03;
-    private static final double SHARK_CREATION_PROBABILITY = 0.04;
-    private static final double WHALE_CREATION_PROBABILITY = 0.03;
-
-    // The probability that a storm may occur.
     private static final double STORM_HAPPEN_PROBABILITY = 0.14;
+    private static final Color WEATHER_COLOR = Color.BLUE;
 
     // List of creatures in the field.
     private List<Creature> creatures;
@@ -67,9 +31,9 @@ public class Simulator
     private SimulatorView view;
     private Disease disease;
     private Weather weather;
-    private PopulationSeed[] populationSeeds;
+    private SpeciesDefinition[] speciesDefinitions;
 
-    // The inital level of dissolved oxygen in the water.
+    // The initial level of dissolved oxygen in the water.
     private double oxygenLevel;
 
     /**
@@ -93,8 +57,8 @@ public class Simulator
         weather = new Weather(field);
         disease = new Disease();
         oxygenLevel = 1;
+        speciesDefinitions = new SpeciesCatalog().getDefinitions();
 
-        initializePopulationSeeds();
         initializeView(dimensions[0], dimensions[1]);
         reset();
     }
@@ -131,7 +95,7 @@ public class Simulator
         List<Creature> newCreatures = new ArrayList<>();
         double oxygenChange = actForAllCreatures(newCreatures);
 
-        updateStormState();
+        weather.updateStorm(STORM_HAPPEN_PROBABILITY, STORM_SCOPE);
         oxygenLevel += oxygenChange;
         disease.refreshSpreadState(creatures);
         creatures.addAll(newCreatures);
@@ -171,26 +135,13 @@ public class Simulator
         return new int[]{depth, width};
     }
 
-    private void initializePopulationSeeds()
-    {
-        populationSeeds = new PopulationSeed[]{
-            new PopulationSeed(SALMON_CREATION_PROBABILITY, location -> new Salmon(true, field, location)),
-            new PopulationSeed(COD_CREATION_PROBABILITY, location -> new Cod(true, field, location)),
-            new PopulationSeed(SEAWEED_CREATION_PROBABILITY, location -> new Seaweed(true, field, location)),
-            new PopulationSeed(SHARK_CREATION_PROBABILITY, location -> new Shark(true, field, location)),
-            new PopulationSeed(WHALE_CREATION_PROBABILITY, location -> new Whale(true, field, location))
-        };
-    }
-
     private void initializeView(int depth, int width)
     {
         view = new SimulatorView(depth, width);
-        view.setColor(Cod.class, Color.ORANGE);
-        view.setColor(Salmon.class, Color.YELLOW);
-        view.setColor(Seaweed.class, Color.RED);
-        view.setColor(Shark.class, Color.BLACK);
-        view.setColor(Whale.class, Color.PINK);
-        view.setColor(Weather.class, Color.BLUE);
+        for(SpeciesDefinition speciesDefinition : speciesDefinitions) {
+            view.setColor(speciesDefinition.getCreatureClass(), speciesDefinition.getDisplayColor());
+        }
+        view.setColor(Weather.class, WEATHER_COLOR);
     }
 
     private double actForAllCreatures(List<Creature> newCreatures)
@@ -207,19 +158,13 @@ public class Simulator
         return oxygenChange;
     }
 
-    private void updateStormState()
-    {
-        weather.updateStorm(STORM_HAPPEN_PROBABILITY, STORM_SCOPE);
-    }
-
     private void showStatus()
     {
         view.showStatus(step, field, timeOfDay(), weather, oxygenLevel);
     }
 
     /**
-     * Randomly populate the field with Salmon, Seaweed, Shark and Whale.
-     * notice if and else if is based on the creation probability of a creature in an ascending order
+     * Randomly populate the field with species from the catalog.
      */
     private void populate()
     {
@@ -252,9 +197,9 @@ public class Simulator
 
     private Creature createRandomCreature(Random random, Location location)
     {
-        for(PopulationSeed populationSeed : populationSeeds) {
-            if(populationSeed.shouldCreate(random)) {
-                return populationSeed.create(location);
+        for(SpeciesDefinition speciesDefinition : speciesDefinitions) {
+            if(random.nextDouble() <= speciesDefinition.getCreationProbability()) {
+                return speciesDefinition.create(field, location);
             }
         }
         return null;

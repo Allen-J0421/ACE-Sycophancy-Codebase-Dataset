@@ -44,7 +44,7 @@ public class Dashboard
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    private HashMap<Class, Counter> counters;
+    private final HashMap<Class<?>, Counter> counters;
     private TreeMap<Integer, Integer> diseaseStats;
     
     private XYChart.Series series = new XYChart.Series();
@@ -69,7 +69,7 @@ public class Dashboard
      * @param counter Tracker for the population distribution of different animals
      * @param diseaseStats Tracker for the evolution of the disease
      */
-    public Dashboard(HashMap<Class, Counter> counters,TreeMap<Integer, Integer> diseaseStats)
+    public Dashboard(HashMap<Class<?>, Counter> counters,TreeMap<Integer, Integer> diseaseStats)
     {
         // initialise instance variables
         //renderFrame();
@@ -164,7 +164,7 @@ public class Dashboard
         data = new XYChart.Series();
         data.setName("Population");
         
-        for (Class key : counters.keySet()) {
+        for (Class<?> key : counters.keySet()) {
             if(Plant.class.isAssignableFrom(key)) {
                 continue;
             }
@@ -192,7 +192,7 @@ public class Dashboard
         plantData = new XYChart.Series();
         plantData.setName("Vegetation");
         
-        for (Class key : counters.keySet()) {
+        for (Class<?> key : counters.keySet()) {
             if(Animal.class.isAssignableFrom(key)) {
                 continue;
             }
@@ -241,7 +241,7 @@ public class Dashboard
     {
         Platform.runLater(() -> {
             data.getData().clear();
-            for (Class key : counters.keySet()) {
+            for (Class<?> key : counters.keySet()) {
                 if(Plant.class.isAssignableFrom(key)) {
                     continue;
                 }
@@ -258,7 +258,7 @@ public class Dashboard
     {
         Platform.runLater(() -> {
             plantData.getData().clear();
-            for (Class key : counters.keySet()) {
+            for (Class<?> key : counters.keySet()) {
                 if(Animal.class.isAssignableFrom(key)) {
                     continue;
                 }

@@ -1,12 +1,12 @@
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
+
 /**
  * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal.
+ * Each position is able to store one animal and one plant.
  *
  * @version 2016.02.29
  */
@@ -26,8 +26,8 @@ public class Field
                                ACTOR STORAGE
     //////////////////////////////////////////////////////////////*/
     
-    private Object[][] field;
-    private Plant [][] terrain;
+    private final Animal[][] animals;
+    private final Plant[][] terrain;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -42,7 +42,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        animals = new Animal[depth][width];
         terrain = new Plant[depth][width];
     }
     
@@ -57,7 +57,7 @@ public class Field
     {
         for(int row = 0; row < depth; row++) {
             for(int col = 0; col < width; col++) {
-                field[row][col] = null;
+                animals[row][col] = null;
                 terrain[row][col] = null;
             }
         }
@@ -68,9 +68,9 @@ public class Field
      * 
      * @param location The location to clear.
      */
-    public void clear(Location location)
+    public void clearAnimal(Location location)
     {
-        field[location.getRow()][location.getCol()] = null;
+        animals[location.getRow()][location.getCol()] = null;
     }
     
     /**
@@ -81,9 +81,9 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void placeAnimal(Animal animal, int row, int col)
     {
-        place(animal, new Location(row, col));
+        placeAnimal(animal, new Location(row, col));
     }
     
     /**
@@ -93,9 +93,9 @@ public class Field
      * @param animal The animal to be placed.
      * @param location Where to place the animal.
      */
-    public void place(Object animal, Location location)
+    public void placeAnimal(Animal animal, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        animals[location.getRow()][location.getCol()] = animal;
     }
     
     /**
@@ -104,9 +104,9 @@ public class Field
      * @param location Where in the field.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Animal getAnimalAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getAnimalAt(location.getRow(), location.getCol());
     }
     
     /**
@@ -116,9 +116,9 @@ public class Field
      * @param col The desired column.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Animal getAnimalAt(int row, int col)
     {
-        return field[row][col];
+        return animals[row][col];
     }
     
     /**
@@ -129,7 +129,7 @@ public class Field
      */
     public List<Location> getFreeAdjacentLocations(Location location)
     {
-        return getFreeAdjacent(field, location);
+        return getFreeAdjacent(animals, location);
     }
     
     /**
@@ -140,18 +140,18 @@ public class Field
     public List<List<Animal>> getAnimalsPerBlock()
     {
         List<List<Animal>> blocks = new ArrayList<>();
-        for(int i = 0 ; i < width; i+= 20){
-            for (int j = 0; j < depth; j+= 20) {
-                List<Animal> animals = new ArrayList<>();
-                for (int k = i; k < i + 20; k++) {
-                    for(int l = j; l < j + 20; l++) {
-                        Object obj = getObjectAt(l, k);
-                        if(obj instanceof Animal) {
-                            animals.add((Animal) obj);
+        for(int rowStart = 0 ; rowStart < depth; rowStart += 20){
+            for (int colStart = 0; colStart < width; colStart += 20) {
+                List<Animal> blockAnimals = new ArrayList<>();
+                for (int row = rowStart; row < Math.min(rowStart + 20, depth); row++) {
+                    for(int col = colStart; col < Math.min(colStart + 20, width); col++) {
+                        Animal animal = getAnimalAt(row, col);
+                        if(animal != null) {
+                            blockAnimals.add(animal);
                         }
                     }
                 }
-                blocks.add(animals);
+                blocks.add(blockAnimals);
             }
         }
         return blocks;
@@ -209,11 +209,11 @@ public class Field
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the plant at the given location, if any.
      * 
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The plant at the given location, or null if there is none.
      */
     public Plant getPlantAt(int row, int col)
     {
@@ -256,7 +256,7 @@ public class Field
      * @param grid A 2 dimensional storage space to store actors.
      * @params location the location to seek the adjacents for.
      */
-    private List<Location> getFreeAdjacent(Object[][] grid, Location location) 
+    private <T> List<Location> getFreeAdjacent(T[][] grid, Location location) 
     {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);

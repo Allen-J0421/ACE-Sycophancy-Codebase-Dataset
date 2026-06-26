@@ -51,16 +51,13 @@ public abstract class CarnivoreAnimal extends Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object obj = field.getObjectAt(where);
-            if(obj instanceof Animal) {
-                Animal animal = (Animal) obj;
-                if(preys.contains(animal.getClass())) {
-                    if(animal.isAlive()) {
-                        animal.setDead();
-                        
-                        this.foodLevel = animal.getFeedingValue();
-                        return where;
-                    }
+            Animal animal = field.getAnimalAt(where);
+            if(animal != null && preys.contains(animal.getClass())) {
+                if(animal.isAlive()) {
+                    animal.setDead();
+
+                    this.foodLevel = animal.getFeedingValue();
+                    return where;
                 }
             }
         }

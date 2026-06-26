@@ -184,7 +184,7 @@ public abstract class Plant implements Actor
     protected void setLocation(Location newLocation)
     {
         if(location != null) {
-            field.clear(location);
+            field.clearPlant(location);
         }
         location = newLocation;
         field.placePlant(this, newLocation);
@@ -197,7 +197,6 @@ public abstract class Plant implements Actor
     {
         alive = false;
         if(location != null) {
-            //errain.clear(location);
             field.clearPlant(location);
             location = null;
             field = null;

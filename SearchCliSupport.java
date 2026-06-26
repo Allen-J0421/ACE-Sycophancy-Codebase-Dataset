@@ -11,12 +11,6 @@ public final class SearchCliSupport {
         this.requestParser = Objects.requireNonNull(requestParser, "requestParser must not be null");
     }
 
-    public static SearchCliSupport createDefault() {
-        return new SearchCliSupport(
-                SearchApplication.createDefault(),
-                SearchRequestParser.createDefault());
-    }
-
     public SearchRequest parseArguments(String[] args) {
         return requestParser.parse(args);
     }

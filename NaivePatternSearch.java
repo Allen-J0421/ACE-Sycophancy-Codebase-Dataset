@@ -2,7 +2,7 @@ import java.util.List;
 
 public final class NaivePatternSearch {
 
-    private static final SearchEngine SEARCH_ENGINE = SearchEngines.naive();
+    private static final SearchApplication APPLICATION = SearchRuntime.application();
 
     private NaivePatternSearch() {
     }
@@ -12,7 +12,7 @@ public final class NaivePatternSearch {
     }
 
     public static SearchResult search(SearchRequest request) {
-        return SEARCH_ENGINE.search(request);
+        return APPLICATION.search(request);
     }
 
     public static String joinMatchIndexes(List<Integer> matches) {

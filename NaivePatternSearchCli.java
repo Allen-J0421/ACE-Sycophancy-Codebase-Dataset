@@ -1,6 +1,6 @@
 public final class NaivePatternSearchCli {
 
-    private static final SearchCliSupport CLI_SUPPORT = SearchCliSupport.createDefault();
+    private static final SearchCliSupport CLI_SUPPORT = SearchRuntime.cliSupport();
 
     private NaivePatternSearchCli() {
     }

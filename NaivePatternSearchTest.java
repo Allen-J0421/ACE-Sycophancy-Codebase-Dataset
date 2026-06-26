@@ -2,8 +2,8 @@ import java.util.List;
 
 public final class NaivePatternSearchTest {
 
-    private static final SearchApplication APPLICATION = SearchApplication.createDefault();
-    private static final SearchCliSupport CLI_SUPPORT = SearchCliSupport.createDefault();
+    private static final SearchApplication APPLICATION = SearchRuntime.application();
+    private static final SearchCliSupport CLI_SUPPORT = SearchRuntime.cliSupport();
 
     private NaivePatternSearchTest() {
     }
@@ -30,7 +30,7 @@ public final class NaivePatternSearchTest {
         assertFormatterOutput("formatter renders a search result",
                 new SearchRequest("banana", "ana"), "1 3");
         assertSearchInput("uses CLI defaults when no arguments are provided",
-                new String[0], "aabaacaadaabaaba", "aaba");
+                new String[0], SearchRuntime.defaultRequest().text(), SearchRuntime.defaultRequest().pattern());
         assertSearchInput("allows overriding the text only",
                 new String[] {"banana"}, "banana", "aaba");
         assertSearchInput("allows overriding both text and pattern",

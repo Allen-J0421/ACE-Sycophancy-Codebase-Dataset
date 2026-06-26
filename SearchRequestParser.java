@@ -8,10 +8,6 @@ public final class SearchRequestParser {
         this.defaultRequest = Objects.requireNonNull(defaultRequest, "defaultRequest must not be null");
     }
 
-    public static SearchRequestParser createDefault() {
-        return new SearchRequestParser(new SearchRequest("aabaacaadaabaaba", "aaba"));
-    }
-
     public SearchRequest parse(String[] args) {
         Objects.requireNonNull(args, "args must not be null");
 

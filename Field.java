@@ -5,7 +5,7 @@ import java.util.Random;
 
 /**
  * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal.
+ * Each position is able to store a single field occupant.
  *
  * @version 2016.02.29
  */
@@ -16,8 +16,8 @@ public class Field
     
     // The depth and width of the field.
     private int depth, width;
-    // Storage for the animals.
-    private Object[][] field;
+    // Storage for the occupants.
+    private FieldOccupant[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -27,7 +27,7 @@ public class Field
     public Field(int depth, int width) {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new FieldOccupant[depth][width];
     }
     
     /**
@@ -50,49 +50,103 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an occupant at the given location.
+     * If there is already an occupant at the location it will
      * be lost.
-     * @param animal The animal to be placed.
+     * @param occupant The occupant to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void place(FieldOccupant occupant, int row, int col)
     {
-        place(animal, new Location(row, col));
+        place(occupant, new Location(row, col));
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an occupant at the given location.
+     * If there is already an occupant at the location it will
      * be lost.
-     * @param animal The animal to be placed.
-     * @param location Where to place the animal.
+     * @param occupant The occupant to be placed.
+     * @param location Where to place the occupant.
      */
-    public void place(Object animal, Location location)
+    public void place(FieldOccupant occupant, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        field[location.getRow()][location.getCol()] = occupant;
     }
     
+    /**
+     * Return the occupant at the given location, if any.
+     * @param location Where in the field.
+     * @return The occupant at the given location, or null if there is none.
+     */
+    public FieldOccupant getOccupantAt(Location location)
+    {
+        return getOccupantAt(location.getRow(), location.getCol());
+    }
+    
+    /**
+     * Return the occupant at the given location, if any.
+     * @param row The desired row.
+     * @param col The desired column.
+     * @return The occupant at the given location, or null if there is none.
+     */
+    public FieldOccupant getOccupantAt(int row, int col)
+    {
+        return field[row][col];
+    }
+
+    /**
+     * Return the occupant at the given location, if any.
+     * @param location Where in the field.
+     * @return The occupant at the given location, or null if there is none.
+     */
+    public FieldOccupant getObjectAt(Location location)
+    {
+        return getOccupantAt(location);
+    }
+
+    /**
+     * Return the occupant at the given location, if any.
+     * @param row The desired row.
+     * @param col The desired column.
+     * @return The occupant at the given location, or null if there is none.
+     */
+    public FieldOccupant getObjectAt(int row, int col)
+    {
+        return getOccupantAt(row, col);
+    }
+
     /**
      * Return the animal at the given location, if any.
      * @param location Where in the field.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
-    {
-        return getObjectAt(location.getRow(), location.getCol());
+    public Animal getAnimalAt(Location location) {
+        FieldOccupant occupant = getOccupantAt(location);
+        if(occupant instanceof Animal) {
+            return (Animal) occupant;
+        }
+        return null;
     }
-    
+
     /**
-     * Return the animal at the given location, if any.
-     * @param row The desired row.
-     * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * Return the plant at the given location, if any.
+     * @param location Where in the field.
+     * @return The plant at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
-    {
-        return field[row][col];
+    public Plant getPlantAt(Location location) {
+        FieldOccupant occupant = getOccupantAt(location);
+        if(occupant instanceof Plant) {
+            return (Plant) occupant;
+        }
+        return null;
+    }
+
+    /**
+     * Check whether a location has no occupant.
+     */
+    public boolean isEmpty(Location location) {
+        return getOccupantAt(location) == null;
     }
     
     /**
@@ -117,7 +171,7 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(isEmpty(next)) {
                 free.add(next);
             }
         }

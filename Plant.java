@@ -7,7 +7,7 @@ import java.util.Random;
  * @version 01.03.22
  */
 
-public abstract class Plant
+public abstract class Plant implements FieldOccupant
 {
     //whether the plant is alive or not
     private boolean alive;
@@ -85,7 +85,7 @@ public abstract class Plant
      * Check whether the plant is alive or not.
      * @return true if the plant is still alive.
      */
-    protected boolean isAlive()
+    public boolean isAlive()
     {
         return alive;
     }
@@ -94,7 +94,7 @@ public abstract class Plant
      * Indicate that the plant is no longer alive.
      * It is removed from the field.
      */
-    protected void setDead() {
+    public void setDead() {
         alive = false;
         if(location != null) {
             field.clear(location);

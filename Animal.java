@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @version 01.03.22
  */
-public abstract class Animal
+public abstract class Animal implements FieldOccupant
 {
     /**
      * A food type this animal can eat, and the food level it restores.
@@ -22,8 +22,8 @@ public abstract class Animal
             this.foodValue = foodValue;
         }
 
-        private boolean matches(Object object) {
-            return foodClass.isInstance(object);
+        private boolean matches(FieldOccupant occupant) {
+            return foodClass.isInstance(occupant);
         }
 
         private int getFoodValue() {
@@ -143,7 +143,7 @@ public abstract class Animal
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
      */
-    protected boolean isAlive()
+    public boolean isAlive()
     {
         return alive;
     }
@@ -152,7 +152,7 @@ public abstract class Animal
      * Indicate that the animal is no longer alive.
      * It is removed from the field.
      */
-    protected void setDead() {
+    public void setDead() {
         alive = false;
         if(location != null) {
             field.clear(location);
@@ -268,9 +268,8 @@ public abstract class Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Animal) {
-                Animal diseaseAnimal = (Animal) animal;
+            Animal diseaseAnimal = field.getAnimalAt(where);
+            if(diseaseAnimal != null) {
                 diseaseAnimal.giveDisease();
                 diseaseAnimal.decrementHealth();
             }
@@ -309,11 +308,10 @@ public abstract class Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Animal animal = field.getAnimalAt(where);
             if (animal != null) {
                 if (animal.getClass() == this.getClass()) {
-                    Animal adjAnimal = (Animal) animal;
-                    if (this.getGender() != adjAnimal.getGender()) {
+                    if (this.getGender() != animal.getGender()) {
                         if (age >= breedingAge) {
                             return true;
                         }
@@ -436,16 +434,16 @@ public abstract class Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object object = field.getObjectAt(where);
-            FoodSource foodSource = foodSourceFor(object);
+            FieldOccupant occupant = field.getOccupantAt(where);
+            FoodSource foodSource = foodSourceFor(occupant);
 
-            if(foodSource != null && isAliveFood(object)) {
-                setDeadFood(object);
+            if(foodSource != null && isAliveFood(occupant)) {
+                setDeadFood(occupant);
                 setFoodLevel(foodSource.getFoodValue());
                 return where;
             }
-            else if(canTramplePlants() && object instanceof Plant) {
-                Plant plant = (Plant) object;
+            else if(canTramplePlants() && occupant instanceof Plant) {
+                Plant plant = (Plant) occupant;
                 if(plant.isAlive()) {
                     plant.setDead();
                     return where;
@@ -458,9 +456,9 @@ public abstract class Animal
     /**
      * Return the food source matched by the object, if any.
      */
-    private FoodSource foodSourceFor(Object object) {
+    private FoodSource foodSourceFor(FieldOccupant occupant) {
         for(FoodSource foodSource : getFoodSources()) {
-            if(foodSource.matches(object)) {
+            if(foodSource.matches(occupant)) {
                 return foodSource;
             }
         }
@@ -470,26 +468,15 @@ public abstract class Animal
     /**
      * Check whether a matched food object is alive.
      */
-    private boolean isAliveFood(Object object) {
-        if(object instanceof Animal) {
-            return ((Animal) object).isAlive();
-        }
-        else if(object instanceof Plant) {
-            return ((Plant) object).isAlive();
-        }
-        return false;
+    private boolean isAliveFood(FieldOccupant occupant) {
+        return occupant != null && occupant.isAlive();
     }
 
     /**
      * Remove a matched food object from the field.
      */
-    private void setDeadFood(Object object) {
-        if(object instanceof Animal) {
-            ((Animal) object).setDead();
-        }
-        else if(object instanceof Plant) {
-            ((Plant) object).setDead();
-        }
+    private void setDeadFood(FieldOccupant occupant) {
+        occupant.setDead();
     }
 
 }

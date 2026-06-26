@@ -110,9 +110,9 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
+                FieldOccupant occupant = field.getOccupantAt(row, col);
+                if(occupant != null) {
+                    incrementCount(occupant.getClass());
                 }
             }
         }

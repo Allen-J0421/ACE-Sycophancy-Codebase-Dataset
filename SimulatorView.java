@@ -113,7 +113,7 @@ public class SimulatorView extends JFrame
         fieldView.preparePaint();
         
         int[] diseaseCount = new int[diseases.size()];
-        String diseaseDisplay = "";
+        StringBuilder diseaseDisplay = new StringBuilder();
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
@@ -143,7 +143,10 @@ public class SimulatorView extends JFrame
         stats.countFinished();
         
         for (int x = 0; x < diseases.size(); x++) {
-            diseaseDisplay = diseaseDisplay + diseases.get(x).getName() + ": " + diseaseCount[x] + " ";
+            diseaseDisplay.append(diseases.get(x).getName())
+                .append(": ")
+                .append(diseaseCount[x])
+                .append(" ");
         }
 
         population.setText(DISEASE_PREFIX + diseaseDisplay + POPULATION_PREFIX + stats.getPopulationDetails(field));

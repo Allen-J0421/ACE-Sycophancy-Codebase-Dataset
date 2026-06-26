@@ -44,7 +44,7 @@ public abstract class Animal extends Actor
             giveBirth(newAnimals);            
             // Move towards a source of food if found.
             Location newLocation = null;
-            if (getField().getWeatherAttributeValueAt("visibility", getLocation()) > 0.4){
+            if (getField().getWeatherAttributeValueAt(WeatherCond.VISIBILITY, getLocation()) > 0.4){
                 newLocation = findFood();
             }
             if(newLocation == null) { 

@@ -33,12 +33,8 @@ public class Time
      * Used to check if it is day which is true or if its night
      * @return true if day, false if it is night
      */
-    public boolean isDay(){
-        if (time < 18 && time > 6){
-            return true;
-        }
-        else {
-            return false;
-        }
+    public boolean isDay()
+    {
+        return time < 18 && time > 6;
     }
 }

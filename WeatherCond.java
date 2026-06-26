@@ -18,6 +18,10 @@ public enum WeatherCond
     Windy (0.7,0.5,0.3),
     Storm (0.4,0.5,1);
 
+    public static final String VISIBILITY = "visibility";
+    public static final String BRIGHTNESS = "brightness";
+    public static final String DAMPNESS = "dampness";
+
     private static final Random rand = Randomizer.getRandom();
     private Map<String, Double> weatherAttributes; 
     private static Time timeOfDay;
@@ -31,9 +35,9 @@ public enum WeatherCond
     WeatherCond(double visibilty,double brightness,double dampness)
     {
         weatherAttributes = new HashMap<>();
-        weatherAttributes.put("visibility", visibilty);
-        weatherAttributes.put("brightness", brightness);
-        weatherAttributes.put("dampness", dampness);
+        weatherAttributes.put(VISIBILITY, visibilty);
+        weatherAttributes.put(BRIGHTNESS, brightness);
+        weatherAttributes.put(DAMPNESS, dampness);
     }
 
     /**
@@ -44,38 +48,22 @@ public enum WeatherCond
     public WeatherCond nextCondition()
     {
         List<WeatherCond> tempList = new ArrayList<>();
-        if (!timeOfDay.isDay()) {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
-        }
-        else {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
+        switch(this) {
+            case Sunny:
+                tempList.add(Cloudy);
+                tempList.add(Windy);
+                break;
+            case Rain:
+                tempList.add(Storm);
+                tempList.add(Cloudy);
+                break;
+            default:
+                if(timeOfDay.isDay()) {
                     tempList.add(Sunny);
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
+                }
+                tempList.add(Fog);
+                tempList.add(Rain);
+                break;
         }
         return tempList.get(rand.nextInt((tempList.size())));
     }
@@ -86,7 +74,7 @@ public enum WeatherCond
      */
     public double getVisibilty()
     {
-        return weatherAttributes.get("visibility");
+        return weatherAttributes.get(VISIBILITY);
     }
 
     /**
@@ -95,7 +83,7 @@ public enum WeatherCond
      */
     public double getBrightness()
     {
-        return weatherAttributes.get("brightness");
+        return weatherAttributes.get(BRIGHTNESS);
     }
     
     /**
@@ -104,7 +92,7 @@ public enum WeatherCond
      */
     public double getDampness()
     {
-        return weatherAttributes.get("dampness");
+        return weatherAttributes.get(DAMPNESS);
     }
     
     /**
@@ -126,4 +114,3 @@ public enum WeatherCond
         timeOfDay = time;
     }
 }
-

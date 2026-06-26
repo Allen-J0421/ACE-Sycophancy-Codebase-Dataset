@@ -31,6 +31,15 @@ public class Coyote extends Animal
     }
 
     /**
+     * Create a coyote with a custom movement strategy.
+     */
+    public Coyote(boolean randomAge, Field field, Location location, Gender sex, MovementStrategy movementStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, movementStrategy);
+        this.isNocturnal = true;
+    }
+
+    /**
      * Create a newborn coyote.
      */
     @Override

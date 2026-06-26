@@ -33,6 +33,15 @@ public class Wolf extends Animal
     }
 
     /**
+     * Create a wolf with a custom movement strategy.
+     */
+    public Wolf(boolean randomAge, Field field, Location location, Gender sex, MovementStrategy movementStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, movementStrategy);
+        this.isNocturnal = true;
+    }
+
+    /**
      * Create a newborn wolf.
      */
     @Override

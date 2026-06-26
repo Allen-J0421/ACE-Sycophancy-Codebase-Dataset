@@ -32,6 +32,15 @@ public class Eagle extends Animal
         this.isNocturnal = false;
     }
 
+    /**
+     * Create an eagle with a custom movement strategy.
+     */
+    public Eagle(boolean randomAge, Field field, Location location, Gender sex, MovementStrategy movementStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, movementStrategy);
+        this.isNocturnal = false;
+    }
+
     
     /**
      * Create a newborn eagle.

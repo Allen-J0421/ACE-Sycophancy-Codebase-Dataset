@@ -14,8 +14,10 @@ public abstract class Animal extends Organism implements Actor
     protected int foodLevel;
     protected Gender sex;
     private final AnimalTraits traits;
+    private MovementStrategy movementStrategy;
 
     protected static final Random rand = Randomizer.getRandom();
+    private static final MovementStrategy DEFAULT_MOVEMENT_STRATEGY = new PredatorTrackingMovementStrategy();
 
     // An animal is either male or female 
     protected enum Gender {
@@ -37,9 +39,25 @@ public abstract class Animal extends Organism implements Actor
      */
     public Animal(Field field, Location location, boolean randomAge, Gender sex, AnimalTraits traits)
     {
+        this(field, location, randomAge, sex, traits, DEFAULT_MOVEMENT_STRATEGY);
+    }
+
+    /**
+     * Create a new animal at location in field.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param randomAge The animal's random starting age.
+     * @param sex The animal's gender.
+     * @param traits Species-specific animal configuration.
+     * @param movementStrategy Movement behavior for this animal.
+     */
+    public Animal(Field field, Location location, boolean randomAge, Gender sex, AnimalTraits traits, MovementStrategy movementStrategy)
+    {
         super(field, location);
         this.sex = sex;
         this.traits = traits;
+        setMovementStrategy(movementStrategy);
         if(randomAge) {
             this.age = rand.nextInt(traits.getMaxAge());
             foodLevel = rand.nextInt(traits.getMaxFoodLevel());
@@ -58,6 +76,14 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
+     * Replace this animal's movement behavior.
+     */
+    public void setMovementStrategy(MovementStrategy movementStrategy)
+    {
+        this.movementStrategy = Objects.requireNonNull(movementStrategy, "movementStrategy");
+    }
+
+    /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
@@ -70,30 +96,7 @@ public abstract class Animal extends Organism implements Actor
         incrementHunger();
         if(isAlive()) {
             giveBirth(newAnimals, environment);
-            // Move towards a source of food if found.
-            Location newLocation = findFood(environment);
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // list of adjacent locations that contain an instance of Grass
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            if(newLocation != null) {
-                // See if it was possible to move.
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                // if there is grass adjacent to the animal, clear the current location
-                // and move to a random location that contained grass
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-            else if (diesFromOvercrowding()) {
-                // Overcrowding
-                setDead();
-            }
+            movementStrategy.move(this, environment);
 
             if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
                 // every step, check if the Animal is diseased

@@ -30,6 +30,15 @@ public class Deer extends Animal
         this.isNocturnal = false;
     }
 
+    /**
+     * Create a deer with a custom movement strategy.
+     */
+    public Deer(boolean randomAge, Field field, Location location, Gender sex, MovementStrategy movementStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, movementStrategy);
+        this.isNocturnal = false;
+    }
+
 
     /**
      * Makes the deer stay awake regardless of the time of the day

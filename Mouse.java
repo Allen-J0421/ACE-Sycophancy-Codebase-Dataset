@@ -31,6 +31,15 @@ public class Mouse extends Animal
         this.isNocturnal = false;
     }
 
+    /**
+     * Create a mouse with a custom movement strategy.
+     */
+    public Mouse(boolean randomAge, Field field, Location location, Gender sex, MovementStrategy movementStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, movementStrategy);
+        this.isNocturnal = false;
+    }
+
 
     /**
      * Create a newborn mouse.

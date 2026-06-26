@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.ArrayList;
 //import java.util.Arrays;
 import java.util.Iterator;
-import java.util.function.BiFunction;
 import java.awt.Color;
 import javax.swing.JButton;
 //import java.awt.event.ActionListener;
@@ -24,32 +23,6 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 270;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 180;
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.0125; //0.015
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.0125; //0.015
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a giraffe will be created in any given grid position.
-    private static final double GIRAFFE_CREATION_PROBABILITY = 0.08; //0.08
-    // The probability that a giraffe will be created in any given grid position.
-    private static final double LEMUR_CREATION_PROBABILITY = 0.081; //0.08
-
-    /**
-     * Pairs a per-cell creation probability with a factory for the species.
-     */
-    private record SpeciesSpawn(double creationProbability, BiFunction<Field, Location, Animal> spawner) {}
-
-    // The species that may be spawned while populating, in priority order. Each
-    // cell rolls against these in turn until one is created (or none are),
-    // matching the original cascading if/else behaviour.
-    private static final List<SpeciesSpawn> SPECIES_SPAWNS = List.of(
-        new SpeciesSpawn(LION_CREATION_PROBABILITY,    (field, location) -> new Lion(true, field, location, false, false)),
-        new SpeciesSpawn(CHEETAH_CREATION_PROBABILITY, (field, location) -> new Cheetah(true, field, location, false, false)),
-        new SpeciesSpawn(ZEBRA_CREATION_PROBABILITY,   (field, location) -> new Zebra(true, field, location, false, false)),
-        new SpeciesSpawn(GIRAFFE_CREATION_PROBABILITY, (field, location) -> new Giraffe(true, field, location, false, false)),
-        new SpeciesSpawn(LEMUR_CREATION_PROBABILITY,   (field, location) -> new Lemur(true, field, location, false, false))
-    );
 
     // List of animals in the field.
     private List<LivingOrganism> animals;
@@ -115,11 +88,10 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width, buttons);
-        view.setColor(Zebra.class, Color.BLACK, Color.WHITE);
-        view.setColor(Giraffe.class, Color.YELLOW, Color.BLACK);
-        view.setColor(Lemur.class, Color.BLUE, Color.WHITE);
-        view.setColor(Lion.class, Color.RED, Color.WHITE);
-        view.setColor(Cheetah.class, Color.ORANGE, Color.BLACK);
+        for(Species species : Species.values())
+        {
+            view.setColor(species.speciesClass(), species.fillColor(), species.textColor());
+        }
         view.setColor(Plant.class, Color.GREEN, Color.BLACK);
         
         // Setup a valid starting point.
@@ -277,11 +249,11 @@ public class Simulator
                 // here: one roll per species until one succeeds (or none do),
                 // exactly as the previous cascading if/else chain did.
                 Animal animal = null;
-                for(SpeciesSpawn species : SPECIES_SPAWNS)
+                for(Species species : Species.values())
                 {
                     if(rand.nextDouble() <= species.creationProbability())
                     {
-                        animal = species.spawner().apply(field, location);
+                        animal = species.spawn(field, location);
                         break;
                     }
                 }

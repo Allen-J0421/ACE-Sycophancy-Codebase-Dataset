@@ -3,5 +3,5 @@
  */
 public interface TargetAcquisitionPolicy
 {
-    Location acquireTarget(MobileForager forager);
+    Location acquireTarget(MobileForager forager, Environment environment);
 }

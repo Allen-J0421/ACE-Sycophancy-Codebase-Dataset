@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class Eagle extends Animal
 {
+    private static final TargetAcquisitionPolicy TARGET_POLICY = new EagleTargetAcquisitionPolicy();
      // Characteristics shared by all eagles (class variables).
 
     // The age at which a eagle can start to breed.
@@ -37,6 +38,12 @@ public class Eagle extends Animal
     protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
     public int getFoodValue() { return FOOD_VALUE; }
     protected Set<Class<?>> DIET() { return DIET; }
+
+    @Override
+    protected Location locateTargetLocation(Environment environment)
+    {
+        return TARGET_POLICY.acquireTarget(this, environment);
+    }
 
     /**
      * Create a eagle. A eagle can be created as a new born (age zero
@@ -74,75 +81,9 @@ public class Eagle extends Animal
         }
     }
 
-    /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
-     * @param environment The environment that the eagle resides in. 
-     */
-    public void act(List<Actor> newAnimals, Environment environment)
+    @Override
+    protected void onMovementBlocked()
     {
-        randomlyContractDisease();
-        incrementAge();
-        incrementHunger();
-        if(isAlive()) {
-            giveBirth(newAnimals, environment);
-            // Move towards a source of food if found.
-            Location newLocation = findFood(environment);
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-            // removing overcrowding for eagles since they're above everyone
-
-            if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
-                // every step, check if the Animal is diseased
-                // if it is Diseased, and a random double is less than the lethality rate, the Animal dies
-                setDead();
-            }
-
-        }
+        // Eagles stay alive if no movement is possible.
     }
-
-
-    /**
-     * Additional functionality that doesn't allow eagles to find food while it's raining
-     * @param environment The environment that the eagle resides in. 
-     * @return Location Where food was found, or null if it wasn't.
-     */
-    protected Location findFood(Environment environment)
-    {
-        if(environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
-            return null;
-        }
-
-        Location preyLocation = AdjacentTargetSearch.findMatchingLocation(getField(), getLocation(), animal ->
-                animal != null && DIET.contains(animal.getClass()));
-        if(preyLocation == null) {
-            return null;
-        }
-
-        Organism food = (Organism) getField().getObjectAt(preyLocation);
-        if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble())
-        {
-            setDisease(food.getDisease());
-        }
-        if(food.isAlive())
-        {
-            food.setDead();
-            int newFoodLevel = foodLevel + ((Edible) food).getFoodValue();
-            foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
-        }
-        return preyLocation;
-    }
-
 }

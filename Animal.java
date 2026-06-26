@@ -70,7 +70,7 @@ public abstract class Animal extends MobileForager implements Edible
         incrementHunger();
         if(isAlive()) {
             giveBirth(newAnimals, environment);
-            forageAndMove();
+            forageAndMove(environment);
 
             if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
                 // every step, check if the Animal is diseased
@@ -101,9 +101,9 @@ public abstract class Animal extends MobileForager implements Edible
     protected abstract void giveBirth(List<Actor> newAnimals, Environment environment);
 
     @Override
-    protected Location locateTargetLocation()
+    protected Location locateTargetLocation(Environment environment)
     {
-        return TARGET_POLICY.acquireTarget(this);
+        return TARGET_POLICY.acquireTarget(this, environment);
     }
 
     /**

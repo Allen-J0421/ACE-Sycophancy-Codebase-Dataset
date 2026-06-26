@@ -8,7 +8,7 @@ public final class HunterTargetAcquisitionPolicy implements TargetAcquisitionPol
     );
 
     @Override
-    public Location acquireTarget(MobileForager forager)
+    public Location acquireTarget(MobileForager forager, Environment environment)
     {
         Hunter hunter = (Hunter) forager;
         Location preyLocation = AdjacentTargetSearch.findMatchingLocation(

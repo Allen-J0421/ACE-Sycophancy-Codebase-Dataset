@@ -18,9 +18,9 @@ public abstract class MobileForager extends Organism
     /**
      * Template method for target acquisition and movement.
      */
-    protected final void forageAndMove()
+    protected final void forageAndMove(Environment environment)
     {
-        Location targetLocation = locateTargetLocation();
+        Location targetLocation = locateTargetLocation(environment);
         if(targetLocation == null) {
             targetLocation = getField().freeAdjacentLocation(getLocation());
         }
@@ -43,7 +43,7 @@ public abstract class MobileForager extends Organism
     /**
      * Find the resource or prey the organism is seeking.
      */
-    protected abstract Location locateTargetLocation();
+    protected abstract Location locateTargetLocation(Environment environment);
 
     /**
      * Hook for species-specific fallback movement targets.

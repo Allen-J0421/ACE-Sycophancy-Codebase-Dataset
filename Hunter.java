@@ -28,14 +28,14 @@ public class Hunter extends MobileForager
     public void act(List<Actor> newActors, Environment environment)
     {
         if(isAlive()) {
-            forageAndMove();
+            forageAndMove(environment);
         }
     }
 
     @Override
-    protected Location locateTargetLocation()
+    protected Location locateTargetLocation(Environment environment)
     {
-        return TARGET_POLICY.acquireTarget(this);
+        return TARGET_POLICY.acquireTarget(this, environment);
     }
 
     @Override

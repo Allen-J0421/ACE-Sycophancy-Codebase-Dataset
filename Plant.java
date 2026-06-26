@@ -67,11 +67,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
 
     @Override
     public void setEaten() {
-        if (getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        removeFromField();
     }
 
     // ── Breeding ───────────────────────────────────────────────────────────────
@@ -110,8 +106,4 @@ public abstract class Plant extends Organism implements Growable, Consumable {
         }
     }
 
-    /** Allows subclasses to update the breeding probability (kept for compatibility). */
-    protected void setBreedingProbability(double probability) {
-        this.breedingProbability = probability;
-    }
 }

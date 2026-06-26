@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state
@@ -9,9 +10,9 @@ import java.util.HashMap;
  */
 public class FieldStats
 {
-    // Counters for each species in the simulation.
-    private HashMap<Class<?>, Counter> counters;
-    // Whether the counters are currently up to date.
+    // Counts per species class; populated on demand.
+    private HashMap<Class<?>, Integer> counts;
+    // Whether the counts are currently up to date.
     private boolean countsValid;
 
     /**
@@ -19,7 +20,7 @@ public class FieldStats
      */
     public FieldStats()
     {
-        counters    = new HashMap<>();
+        counts      = new HashMap<>();
         countsValid = true;
     }
 
@@ -29,15 +30,14 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
-        if(!countsValid) {
+        StringBuilder buffer = new StringBuilder();
+        if (!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
-            buffer.append(info.getName());
+        for (Map.Entry<Class<?>, Integer> entry : counts.entrySet()) {
+            buffer.append(entry.getKey().getSimpleName());
             buffer.append(": ");
-            buffer.append(info.getCount());
+            buffer.append(entry.getValue());
             buffer.append(' ');
         }
         return buffer.toString();
@@ -49,9 +49,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
-            counters.get(key).reset();
-        }
+        counts.replaceAll((k, v) -> 0);
     }
 
     /**
@@ -60,12 +58,7 @@ public class FieldStats
      */
     public void incrementCount(Class<?> speciesClass)
     {
-        Counter count = counters.get(speciesClass);
-        if(count == null) {
-            count = new Counter(speciesClass.getName());
-            counters.put(speciesClass, count);
-        }
-        count.increment();
+        counts.merge(speciesClass, 1, Integer::sum);
     }
 
     /**
@@ -82,14 +75,12 @@ public class FieldStats
      */
     public boolean isViable(Field field)
     {
-        int nonZero = 0;
-        if(!countsValid) {
+        if (!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            if(counters.get(key).getCount() > 0) {
-                nonZero++;
-            }
+        int nonZero = 0;
+        for (int count : counts.values()) {
+            if (count > 0) nonZero++;
         }
         return nonZero > 1;
     }
@@ -101,10 +92,10 @@ public class FieldStats
     private void generateCounts(Field field)
     {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
                 Organism organism = field.getObjectAt(row, col);
-                if(organism != null) {
+                if (organism != null) {
                     incrementCount(organism.getClass());
                 }
             }

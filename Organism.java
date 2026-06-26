@@ -118,10 +118,15 @@ public abstract class Organism implements Entity {
     }
 
     /**
-     * Set the organism's location to a null value directly.
+     * Clears this organism from the field without marking it as removed.
+     * Used by Consumable implementations (Plant, Prey) when eaten by another organism.
      */
-    protected void setLocationToNull() {
-        location = null;
+    protected void removeFromField() {
+        if (location != null) {
+            field.clear(location);
+            location = null;
+            field = null;
+        }
     }
 
     /**

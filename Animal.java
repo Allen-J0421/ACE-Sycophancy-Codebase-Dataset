@@ -9,6 +9,8 @@ import java.util.Random;
  */
 public abstract class Animal extends Organism implements AbleToEat {
 
+    private static final double INFECTION_TRANSMISSION_PROBABILITY = 0.01;
+
     private final AnimalTraits traits;
     private final Gender gender;
     private boolean infected;
@@ -95,7 +97,7 @@ public abstract class Animal extends Organism implements AbleToEat {
             if (organism instanceof Animal) {
                 Animal animal = (Animal) organism;
                 if (animal.isAlive() && !animal.isInfected()) {
-                    if (rand.nextDouble() <= 0.01) {
+                    if (rand.nextDouble() <= INFECTION_TRANSMISSION_PROBABILITY) {
                         infect(animal);
                     }
                     return loc;

@@ -52,7 +52,7 @@ public class Field
      * 
      * @param objectType Object type to clear
      */
-    public void clear(Class objectType)
+    public void clear(Class<?> objectType)
     {
         for(int row = 0; row < depth; row++) 
         {
@@ -69,7 +69,7 @@ public class Field
      * @param location Location The location to clear.
      * @param objectType Type of object to clear
      */
-    public void clear(Location location, Class objectType)
+    public void clear(Location location, Class<?> objectType)
     {
         field[location.getRow()][location.getCol()].clear(objectType);
     }
@@ -115,7 +115,7 @@ public class Field
      * 
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location, Class objectType)
+    public Object getObjectAt(Location location, Class<?> objectType)
     {
         return getObjectAt(location.getRow(), location.getCol(), objectType);
     }
@@ -128,7 +128,7 @@ public class Field
      * 
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col, Class objectType)
+    public Object getObjectAt(int row, int col, Class<?> objectType)
     {
         if (field[row][col] == null)
         {
@@ -163,7 +163,7 @@ public class Field
      * 
      * @return A list of free adjacent locations.
      */
-    public List<Location> getFreeAdjacentLocations(Location location, Class objectType)
+    public List<Location> getFreeAdjacentLocations(Location location, Class<?> objectType)
     {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
@@ -190,7 +190,7 @@ public class Field
      * 
      * @return A valid location within the grid area.
      */
-    public Location freeAdjacentLocation(Location location, Class objectType)
+    public Location freeAdjacentLocation(Location location, Class<?> objectType)
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location, objectType);

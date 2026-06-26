@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 /**
  * The grid is made up of GridSpaces which stores the current
  * Animal and Plant which is stored at this location.
@@ -41,7 +39,7 @@ public class GridSpace
      * 
      * @param The class type of the object that is wanted.
      */
-    public Object getObject(Class objectType) 
+    public Object getObject(Class<?> objectType) 
     {
         Object object = null;
 
@@ -103,7 +101,7 @@ public class GridSpace
      * 
      * @param Class type of the object to clear.
      */
-    public void clear(Class objectType) 
+    public void clear(Class<?> objectType) 
     {
         if (objectType.equals(Animal.class)) {
             animal = null;

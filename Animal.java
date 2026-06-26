@@ -357,33 +357,22 @@ public abstract class Animal extends LivingOrganism
     protected int breed()
     {
         int births = 0;
-        
+
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()) 
+
+        while(it.hasNext())
         {
             Location where = it.next();
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            Class typeOfOtherAnimal = null;
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
+            Animal neighbor = (Animal) field.getObjectAt(where, Animal.class);
+
+            if(neighbor != null && this.getClass().equals(neighbor.getClass()) && !neighbor.getIsFemale())
             {
-                typeOfOtherAnimal  = field.getObjectAt(where, Animal.class).getClass();
-            }
-            
-            //checks to make sure they are of the same species
-            if(this.getClass().equals(typeOfOtherAnimal)) 
-            {
-                //checks to make the other animal is also a male
-                if(animal.getIsFemale() == false) 
-                {
-                    births = rand.nextInt(maxLitterSize) + 1;
-                }
+                births = rand.nextInt(maxLitterSize) + 1;
             }
         }
-        
+
         return births;
     }
 
@@ -420,26 +409,19 @@ public abstract class Animal extends LivingOrganism
      */
     protected boolean surroundingsInfected()
     {
-        boolean surroundingsAreInfected = false;
-        
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext() && ! surroundingsAreInfected) 
+
+        while(it.hasNext())
         {
-            Location where = it.next();
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
+            Animal neighbor = (Animal) field.getObjectAt(it.next(), Animal.class);
+            if(neighbor != null && neighbor.getIsInfected())
             {
-                if (animal.getIsInfected())
-                {
-                    surroundingsAreInfected = true;
-                }
+                return true;
             }
         }
-        
-        return surroundingsAreInfected;
+
+        return false;
     }
 }

@@ -38,7 +38,7 @@ public class SimulatorView extends JFrame
     private JPanel classKey;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     
     // A statistics object computing and storing simulation information
     private FieldStats stats;
@@ -171,7 +171,7 @@ public class SimulatorView extends JFrame
      * @param classColor The color to be used for the given class.
      * @param textColor The color to be used for the text in the class key.
      */
-    public void setColor(Class newClass, Color classColor, Color textColor)
+    public void setColor(Class<?> newClass, Color classColor, Color textColor)
     {
         colors.put(newClass, classColor);
         
@@ -193,7 +193,7 @@ public class SimulatorView extends JFrame
      * 
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -291,22 +291,11 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * @return Returns the properly formated time in 24 hr format.
+     * @return The current simulation time formatted as HH:00 in 24-hour format.
      */
     private String getTimeString()
     {
-        int time = Time.getTime();
-        if (time >= 12){
-            return time + ":00 ";
-        }
-        else {
-            if(time<10){
-                return "0" + time + ":00 ";
-            }
-            else {
-                return time + ":00 ";
-            }
-        }
+        return String.format("%02d:00 ", Time.getTime());
     }
     
     /**

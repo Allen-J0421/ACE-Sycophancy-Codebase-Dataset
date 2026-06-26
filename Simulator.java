@@ -283,48 +283,20 @@ public class Simulator
     }
     
     /**
-     * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
-     */
-    private void delay(int millisec)
-    {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
-            // wake up
-        }
-    }
-    
-    /**
      * Sets the visibility of the buttons in accordance with the current
      * state of the simulation.
      */
-    private void buttonToggle() 
+    private void buttonToggle()
     {
-        boolean isPaused = Time.getIsPaused();
         boolean isFinished = Time.getIsFinished();
-        
-        boolean isStopped = false;
-        if (isPaused || isFinished) 
-        {
-            isStopped = true;
-        }
-        
-        // Adjust button usability.
+        boolean isStopped = Time.getIsPaused() || isFinished;
+
         buttons[0].setEnabled(!isFinished);
         buttons[1].setEnabled(isStopped);
         buttons[2].setEnabled(isStopped);
         buttons[3].setEnabled(isStopped);
-        
-        // Set the label on the play/pause button.
-        if (isStopped) 
-        {
-            buttons[0].setLabel("Play");   
-        }
-        else {
-            buttons[0].setLabel("Pause");
-        }
+
+        buttons[0].setText(isStopped ? "Play" : "Pause");
     }
     
     /**

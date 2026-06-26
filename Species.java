@@ -46,7 +46,7 @@ public abstract class Species
     {
         alive = true;
         this.field = field;
-        setLocation(location);
+        occupyLocation(location);
         this.name = name;
         this.maximumTemperature = maximumTemperature;
         this.minimumTemperature = minimumTemperature;
@@ -86,11 +86,9 @@ public abstract class Species
     protected void setDead()
     {
         alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
+        clearOccupiedLocation();
+        location = null;
+        field = null;
     }
 
     /**
@@ -110,11 +108,8 @@ public abstract class Species
      */
     protected void setLocation(Location newLocation)
     {
-        if(location  != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
+        clearOccupiedLocation();
+        occupyLocation(newLocation);
     }
 
     /**
@@ -123,6 +118,19 @@ public abstract class Species
     protected Field getField()
     {
         return field;
+    }
+
+    protected void clearOccupiedLocation()
+    {
+        if (location != null && field != null) {
+            field.clear(location);
+        }
+    }
+
+    protected void occupyLocation(Location newLocation)
+    {
+        location = newLocation;
+        field.place(this, newLocation);
     }
 
     /**

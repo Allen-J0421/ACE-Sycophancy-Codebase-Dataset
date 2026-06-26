@@ -61,24 +61,18 @@ public class Plant extends Species
     public void act(List<Species> newPlants, boolean isNight, int temperature, boolean yearPassed)
     {
         // 1)
-        if (! deadDueTemperature && ! survivesTemperature(temperature))
-        {
-            setDead();
+        if (shouldDieFromTemperature(temperature)) {
+            dieFromTemperature();
         }
         // 2)
-        else if (! isNight)
-        {
-            // i)
-            if (deadDueTemperature && survivesTemperature(temperature) && isSpring) {
+        else if (! isNight) {
+            if (canRegrow(temperature)) {
                 regrow();
             }
-            // ii)
             else if (! deadDueTemperature) {
-                // a)
                 if (yearPassed) {
-                    maxHealth++;
+                    increaseMaxHealth();
                 }
-                // b)
                 reproduce(newPlants);
                 grow();
             }
@@ -95,16 +89,14 @@ public class Plant extends Species
      */
     protected void reproduce(List<Species> newPlants)
     {
-        if (rand.nextDouble() <= getReproductionProbability())
-        {
+        if (rand.nextDouble() <= getReproductionProbability()) {
             Field field = getField();
-            if (field != null)
-            {
+            if (field != null) {
                 List<Location> free = field.getFreeAdjacentLocations(getLocation());
 
                 if (free.size() > 0) {
                     Location loc = free.remove(0);
-                    Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
+                    Plant newPlant = createOffspring(field, loc);
                     newPlant.setIsSpring(isSpring);
                     newPlants.add(newPlant);
                 }
@@ -119,9 +111,7 @@ public class Plant extends Species
     protected void setDead()
     {
         if(getLocation() != null) {
-            deadDueTemperature = true;
-            canRegrow = false; // set to false because if left as true, it could regrow the next step
-            getField().clear(getLocation());
+            dieFromTemperature();
         }
     }
 
@@ -133,7 +123,7 @@ public class Plant extends Species
     {
         if(getField().getObjectAt(getLocation()) == null && canRegrow) {
             deadDueTemperature = false;
-            getField().place(this, getLocation());
+            occupyLocation(getLocation());
             currentHealth = maxHealth;
         }
     }
@@ -187,5 +177,41 @@ public class Plant extends Species
     private void setIsSpring(boolean spring)
     {
         isSpring = spring;
+    }
+
+    private boolean shouldDieFromTemperature(int temperature)
+    {
+        return !deadDueTemperature && !survivesTemperature(temperature);
+    }
+
+    private boolean canRegrow(int temperature)
+    {
+        return deadDueTemperature && survivesTemperature(temperature) && isSpring;
+    }
+
+    private void dieFromTemperature()
+    {
+        deadDueTemperature = true;
+        canRegrow = false;
+        clearOccupiedLocation();
+    }
+
+    private void increaseMaxHealth()
+    {
+        maxHealth++;
+    }
+
+    private Plant createOffspring(Field field, Location location)
+    {
+        return new Plant(
+            field,
+            location,
+            getName(),
+            getMaximumTemperature(),
+            getMinimumTemperature(),
+            getNutritionalValue(),
+            getReproductionProbability(),
+            maxHealth
+        );
     }
 }

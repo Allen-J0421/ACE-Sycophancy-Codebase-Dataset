@@ -16,8 +16,6 @@ public class Field
     // Storage for the animals.
     private Object[][] field;
 
-    private Set<Location> emptyLocs = new HashSet<>();
-
     /**
      * Represent a field of the given dimensions.
      * @param depth The depth of the field.
@@ -49,19 +47,6 @@ public class Field
     public void clear(Location location)
     {
         field[location.getRow()][location.getCol()] = null;
-    }
-    
-    /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
-     * be lost.
-     * @param animal The animal to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Object animal, int row, int col)
-    {
-        place(animal, new Location(row, col));
     }
     
     /**
@@ -105,20 +90,6 @@ public class Field
         return field;
     }
     
-    /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location);
-        return adjacent.get(0);
-    }
-
     /**
      * Returns a random set of patches from getFreePatches() based on a given rate
      * getFreePatches() returns a list of size n, only (n*rate) random locations are returned

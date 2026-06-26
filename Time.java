@@ -99,14 +99,6 @@ public class Time
     }
 
     /**
-     * Returns the day count number. 
-     */
-    private int getDayCount()
-    { 
-        return dayCount; 
-    }
-
-    /**
      * Reset the time object
      */
     public void reset(){

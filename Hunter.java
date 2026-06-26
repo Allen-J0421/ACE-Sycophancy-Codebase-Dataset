@@ -7,8 +7,7 @@ import java.util.*;
  */
 public class Hunter extends MobileForager
 {
-    // A hunter hunts every species. 
-    private static final Set<Class<?>> DIET = Set.of(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class);
+    private static final TargetAcquisitionPolicy TARGET_POLICY = new HunterTargetAcquisitionPolicy();
 
 
     /**
@@ -36,17 +35,7 @@ public class Hunter extends MobileForager
     @Override
     protected Location locateTargetLocation()
     {
-        Location preyLocation = findAdjacentLocationMatching(animal ->
-                animal != null && DIET.contains(animal.getClass()));
-        if(preyLocation == null) {
-            return null;
-        }
-
-        Animal food = (Animal) getField().getObjectAt(preyLocation);
-        if(food.isAlive()) {
-            food.setDead();
-        }
-        return preyLocation;
+        return TARGET_POLICY.acquireTarget(this);
     }
 
     @Override

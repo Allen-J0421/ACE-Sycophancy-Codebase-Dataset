@@ -125,7 +125,7 @@ public class Eagle extends Animal
             return null;
         }
 
-        Location preyLocation = findAdjacentLocationMatching(animal ->
+        Location preyLocation = AdjacentTargetSearch.findMatchingLocation(getField(), getLocation(), animal ->
                 animal != null && DIET.contains(animal.getClass()));
         if(preyLocation == null) {
             return null;
@@ -139,7 +139,7 @@ public class Eagle extends Animal
         if(food.isAlive())
         {
             food.setDead();
-            int newFoodLevel = foodLevel + food.getFoodValue();
+            int newFoodLevel = foodLevel + ((Edible) food).getFoodValue();
             foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
         }
         return preyLocation;

@@ -30,7 +30,7 @@ public abstract class LivingOrganism
     {
         alive = true;
         this.field = field;
-        setLocation(location);
+        this.location = null;
     }
     
     /**
@@ -103,7 +103,6 @@ public abstract class LivingOrganism
         return field;
     }
 }
-
 
 
 

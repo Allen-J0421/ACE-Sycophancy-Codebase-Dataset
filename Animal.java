@@ -47,7 +47,7 @@ public abstract class Animal extends LivingOrganism
      * @param infected Intial state if the animal is infected or not
      * @param immmune Intial state if the animal is immune or not
      */
-    public Animal(Field field, Location location, boolean infected, boolean immune)
+    private Animal(Field field, Location location, boolean infected, boolean immune)
     {
         super(field, location);
         alive = true;
@@ -65,6 +65,7 @@ public abstract class Animal extends LivingOrganism
     /**
      * Create an animal with species-specific behavior values.
      */
+    @SuppressWarnings("this-escape")
     protected Animal(Field field, Location location, boolean infected, boolean immune,
                      int breedingAge, int maxAge, double breedingProbability, int maxLitterSize,
                      int maxFoodLevel, int foodValue, boolean randomAge, double newbornFoodPercentage,
@@ -74,6 +75,7 @@ public abstract class Animal extends LivingOrganism
 
         configureSpecies(breedingAge, maxAge, breedingProbability, maxLitterSize, maxFoodLevel, foodValue);
         initialiseAgeAndFoodLevel(randomAge, newbornFoodPercentage, randomNewbornFoodPercentage);
+        setLocation(location);
     }
 
     /**
@@ -263,7 +265,8 @@ public abstract class Animal extends LivingOrganism
      *
      * @param newLocation The animal's new location.
      */
-    protected void setLocation(Location newLocation)
+    @SuppressWarnings("this-escape")
+    protected final void setLocation(Location newLocation)
     {
         if(location != null)
         {

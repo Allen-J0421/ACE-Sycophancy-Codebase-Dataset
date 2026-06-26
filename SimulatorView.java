@@ -12,6 +12,7 @@ import java.util.Map;
  *
  * @version 26/02/2022
  */
+@SuppressWarnings({"serial", "this-escape"})
 public class SimulatorView extends JFrame
 {
     // Colors used for empty locations.
@@ -314,6 +315,7 @@ public class SimulatorView extends JFrame
      * defines a custom component for the user interface. This
      * component displays the field.
      */
+    @SuppressWarnings("serial")
     private class FieldView extends JPanel
     {
         private final int GRID_VIEW_SCALING_FACTOR = 6;

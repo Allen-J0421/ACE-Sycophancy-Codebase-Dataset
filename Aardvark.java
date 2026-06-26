@@ -34,13 +34,9 @@ public class Aardvark extends Consumer
     public Aardvark(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, true);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL,
+              true, (newField, newLocation) -> new Aardvark(false, newField, newLocation));
         
         setStartingAge(randomAge);
-    }
-
-    protected Actor createChild(Field field, Location location)
-    {
-        return new Aardvark(false, field, location);
     }
 }

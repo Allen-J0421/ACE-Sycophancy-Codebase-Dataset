@@ -24,11 +24,6 @@ public class Acacia extends Producer
     public Acacia(Field field, Location location)
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-
-    protected Actor createChild(Field field, Location location)
-    {
-        return new Acacia(field, location);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, Acacia::new);
     }
 }

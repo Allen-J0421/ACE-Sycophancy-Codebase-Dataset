@@ -34,13 +34,9 @@ public class Termite extends Consumer
     public Termite(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, false);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL,
+              false, (newField, newLocation) -> new Termite(false, newField, newLocation));
         
         setStartingAge(randomAge);
-    }
-
-    protected Actor createChild(Field field, Location location)
-    {
-        return new Termite(false, field, location);
     }
 }

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * A class representing shared characteristics of producers.
@@ -9,6 +10,7 @@ public abstract class Producer extends Actor
 {
     // The % of the normal breeding probability when there is no rain:
     private static final double NO_RAIN_BREEDING_PROBABILITY_MULTIPLIER = 0.2;
+    private final BiFunction<Field, Location, Actor> childFactory;
     /**
      * Create a new producer at a location in the field.
      * 
@@ -17,10 +19,12 @@ public abstract class Producer extends Actor
      * @param consumptionWorth The worth of the producer if consumed.
      */
     public Producer(Field field, Location location, int consumptionWorth,
-                    double breedingProbability, int maxBirthsAtOnce,int maxAge)
+                    double breedingProbability, int maxBirthsAtOnce, int maxAge,
+                    BiFunction<Field, Location, Actor> childFactory)
     {
         super(field, location, consumptionWorth, breedingProbability,
               maxBirthsAtOnce,0,maxAge);
+        this.childFactory = childFactory;
         currentAge = 0;
     }
     
@@ -54,18 +58,9 @@ public abstract class Producer extends Actor
         for (int b = 0; b < births && free.size() > 0; b++)
         {
             Location location = free.remove(0);
-            newProducers.add(createChild(field, location));
+            newProducers.add(childFactory.apply(field, location));
         }
     }
-
-    /**
-     * Create a newborn producer of this species.
-     *
-     * @param field The field the child will be placed in.
-     * @param location The child's starting location.
-     * @return A new producer instance.
-     */
-    protected abstract Actor createChild(Field field, Location location);
         
     /**
      * Generate a number representing the number of births,

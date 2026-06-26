@@ -34,13 +34,9 @@ public class Mongoose extends Consumer
     public Mongoose(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, true);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL,
+              true, (newField, newLocation) -> new Mongoose(false, newField, newLocation));
         
         setStartingAge(randomAge);
-    }
-
-    protected Actor createChild(Field field, Location location)
-    {
-        return new Mongoose(false, field, location);
     }
 }

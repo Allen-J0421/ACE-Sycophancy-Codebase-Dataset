@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Iterator;
+import java.util.function.BiFunction;
 
 /**
  * A class representing shared characteristics of consumers.
@@ -20,6 +21,7 @@ public abstract class Consumer extends Actor
     private boolean shouldDropCarcass;
     private Carcass pendingCarcass;
     private final boolean canEatCarcass;
+    private final BiFunction<Field, Location, Actor> childFactory;
     
     /**
      * Create a new consumer at a location in the field.
@@ -34,11 +36,13 @@ public abstract class Consumer extends Actor
      */
     public Consumer(Field field, Location location, List<Class<? extends Actor>> prey, int consumptionWorth,
                     double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,
-                    int maxSustenanceLevel, boolean canEatCarcass)
+                    int maxSustenanceLevel, boolean canEatCarcass,
+                    BiFunction<Field, Location, Actor> childFactory)
     {
         super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,
               maxSustenanceLevel, maxAge);
         this.canEatCarcass = canEatCarcass;
+        this.childFactory = childFactory;
         this.prey = prey;
         this.maxAge = maxAge;
         this.breedingAge = breedingAge;
@@ -186,18 +190,9 @@ public abstract class Consumer extends Actor
         for (int b = 0; b < births && free.size() > 0; b++)
         {
             Location location = free.remove(0);
-            newConsumers.add(createChild(field, location));
+            newConsumers.add(childFactory.apply(field, location));
         }
     }
-
-    /**
-     * Create a newborn consumer of this species.
-     *
-     * @param field The field the child will be placed in.
-     * @param location The child's starting location.
-     * @return A new consumer instance.
-     */
-    protected abstract Actor createChild(Field field, Location location);
     
     /**
      * @return True if there is a valid mate in an adjacent location for the consumer.

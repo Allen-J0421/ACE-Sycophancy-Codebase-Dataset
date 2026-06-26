@@ -119,11 +119,10 @@ public abstract class Animal implements Actor
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object obj = field.getObjectAt(where);
-            if(obj == null || !this.getClass().equals(obj.getClass())) {
+            Animal animal = field.getAnimalAt(where);
+            if(animal == null || animal.getSpecies() != getSpecies()) {
                 continue;
             }
-            Animal animal = (Animal) obj;
             if(animal.getGender() == this.getGender()) {
                 continue;
             }
@@ -249,7 +248,7 @@ public abstract class Animal implements Actor
             field.clear(location);
         }
         location = newLocation;
-        field.place(this, newLocation);
+        field.placeAnimal(this, newLocation);
     }
     
     /**

@@ -1,4 +1,5 @@
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 /**
  * A minimalist implementation of a Bear, a bear can only eat other animals and not plants,
  * only the act method is unique to the bear.
@@ -18,7 +19,13 @@ public class Bear extends CarnivoreAnimal
     private static final double HIBERNATION_BREEDING_FACTOR = 0.5;
     private static final int BASE_HUNGER_LEVEL = 18;
     private static final int FEEDING_VALUE = 30;
-    private static final List<Class<? extends Animal>> PREY_DIET = List.of(CarnivoreFox.class, Wolverine.class, Sheep.class, Reindeer.class);
+    private static final Set<AnimalSpecies> PREY_DIET =
+        EnumSet.of(
+            AnimalSpecies.FOX,
+            AnimalSpecies.WOLVERINE,
+            AnimalSpecies.SHEEP,
+            AnimalSpecies.REINDEER
+        );
     private static final int MAX_LITTER_SIZE = 3;
     
     /*///////////////////////////////////////////////////////////////
@@ -82,7 +89,7 @@ public class Bear extends CarnivoreAnimal
     }
 
     @Override
-    protected List<Class<? extends Animal>> getPreyDiet()
+    protected Set<AnimalSpecies> getPreyDiet()
     {
         return PREY_DIET;
     }

@@ -204,7 +204,7 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
+                Animal animal = field.getAnimalAt(row, col);
                 //animal takes precendence over plants
                 if(animal != null) {
                     stats.incrementCount(animal.getClass());

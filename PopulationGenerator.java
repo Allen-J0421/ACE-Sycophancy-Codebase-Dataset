@@ -99,10 +99,7 @@ public class PopulationGenerator
     {
         int infectedCount = Math.min(INITIAL_INFECTION_COUNT, animals.size());
         for (int i = 0; i < infectedCount; i++) {
-            if (animals.get(i) instanceof Animal){
-                Animal animal = (Animal) animals.get(i);
-                animal.setInfectionTimestamp(0);
-            }
+            ((Animal) animals.get(i)).setInfectionTimestamp(0);
         }
     }
 

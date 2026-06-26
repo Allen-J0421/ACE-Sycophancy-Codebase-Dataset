@@ -1,4 +1,5 @@
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 /**
  * A minimalist implementation of a Reindeer, a reindeer can only eat plants and not animals,
  * only the act method is unique to the reindeer.
@@ -18,7 +19,8 @@ public class Reindeer extends HerbivoreAnimal
     private static final int MAX_LITTER_SIZE = 5;
     private static final int BASE_HUNGER_LEVEL = 15;
     private static final int FEEDING_VALUE = 18;
-    private static final List<Class<? extends Plant>> TARGET_PLANTS = List.of(Grass.class, Sage.class, Sedge.class);
+    private static final Set<PlantSpecies> TARGET_PLANTS =
+        EnumSet.of(PlantSpecies.GRASS, PlantSpecies.SAGE, PlantSpecies.SEDGE);
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -71,7 +73,7 @@ public class Reindeer extends HerbivoreAnimal
     }
 
     @Override
-    protected List<Class<? extends Plant>> getTargetPlants()
+    protected Set<PlantSpecies> getTargetPlants()
     {
         return TARGET_PLANTS;
     }

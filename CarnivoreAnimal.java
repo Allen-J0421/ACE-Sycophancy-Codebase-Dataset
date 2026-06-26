@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 /**
  * An extension of the Animal Class that can only eat a specified type of animals
  *
@@ -42,7 +43,7 @@ public abstract class CarnivoreAnimal extends Animal
 
     protected abstract int getMaxLitterSize();
 
-    protected abstract List<Class<? extends Animal>> getPreyDiet();
+    protected abstract Set<AnimalSpecies> getPreyDiet();
 
     protected boolean canAct(Weather weather, DayState dayState)
     {
@@ -86,23 +87,19 @@ public abstract class CarnivoreAnimal extends Animal
      * @param preys The preys of the animal.
      * @return the location traveled to in order to access the food.
      */
-    public Location findFood(List<Class<? extends Animal>> preys)
+    public Location findFood(Set<AnimalSpecies> preys)
     {   
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
+        Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object obj = field.getObjectAt(where);
-            if(obj instanceof Animal) {
-                Animal animal = (Animal) obj;
-                if(preys.contains(animal.getClass())) {
-                    if(animal.isAlive()) {
-                        animal.setDead();
-                        
-                        this.foodLevel = animal.getFeedingValue();
-                        return where;
-                    }
+            Animal animal = field.getAnimalAt(where);
+            if(animal != null && preys.contains(animal.getSpecies())) {
+                if(animal.isAlive()) {
+                    animal.setDead();
+                    
+                    this.foodLevel = animal.getFeedingValue();
+                    return where;
                 }
             }
         }

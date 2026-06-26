@@ -1,5 +1,6 @@
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 /**
  * An extension of the Animal Class that can only eat a specified type of plants
  *
@@ -36,7 +37,7 @@ public abstract class HerbivoreAnimal extends Animal
 
     protected abstract int getMaxLitterSize();
 
-    protected abstract List<Class<? extends Plant>> getTargetPlants();
+    protected abstract Set<PlantSpecies> getTargetPlants();
 
     @Override
     public final void act(List<Actor> newAnimals, Weather weather, DayState dayState)
@@ -64,15 +65,14 @@ public abstract class HerbivoreAnimal extends Animal
      * @param targetPlants the preferred diet of the animal (e.g eats only grass)
      * @return the location traveled to in order to access the food
      */
-    public Location findFood(List<Class<? extends Plant>> targetPlants) 
+    public Location findFood(Set<PlantSpecies> targetPlants) 
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
+        Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();
         while(it.hasNext()) {
             Location where = it.next();
             Plant plant = field.getPlantAt(where);
-            if(plant != null && targetPlants.contains(plant.getClass())) {
+            if(plant != null && targetPlants.contains(plant.getSpecies())) {
                 if(plant.isAlive()) {
                     this.foodLevel += plant.getFeedingValue();
                     plant.setDead();

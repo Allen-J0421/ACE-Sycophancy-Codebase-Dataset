@@ -1,4 +1,5 @@
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 /**
  * A minimalist implementation of a Fox, a fox can only eat other animals and not plants,
  * only the act method is unique to the bear.
@@ -18,7 +19,8 @@ public class CarnivoreFox extends CarnivoreAnimal
     private static final double BREEDING_PROBABILITY = 0.076;
     private static final int BASE_HUNGER_LEVEL = 25;
     private static final int FEEDING_VALUE = 18;
-    private static final List<Class<? extends Animal>> PREY_DIET = List.of(Sheep.class, Reindeer.class);
+    private static final Set<AnimalSpecies> PREY_DIET =
+        EnumSet.of(AnimalSpecies.SHEEP, AnimalSpecies.REINDEER);
     private static final int MAX_LITTER_SIZE = 3;
 
     /*///////////////////////////////////////////////////////////////
@@ -79,7 +81,7 @@ public class CarnivoreFox extends CarnivoreAnimal
     }
 
     @Override
-    protected List<Class<? extends Animal>> getPreyDiet()
+    protected Set<AnimalSpecies> getPreyDiet()
     {
         return PREY_DIET;
     }

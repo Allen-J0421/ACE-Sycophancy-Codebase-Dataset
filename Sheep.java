@@ -1,4 +1,5 @@
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 /**
  * A minimalist implementation of a Sheep, a sheep can only eat plants and not animals,
  * only the act method is unique to the sheep.
@@ -18,7 +19,8 @@ public class Sheep extends HerbivoreAnimal
     private static final int MAX_LITTER_SIZE = 5;
     private static final int BASE_HUNGER_LEVEL = 6;
     private static final int FEEDING_VALUE = 18;
-    private static final List<Class<? extends Plant>> TARGET_PLANTS = List.of(Grass.class, Sedge.class, Sage.class);
+    private static final Set<PlantSpecies> TARGET_PLANTS =
+        EnumSet.of(PlantSpecies.GRASS, PlantSpecies.SEDGE, PlantSpecies.SAGE);
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -71,7 +73,7 @@ public class Sheep extends HerbivoreAnimal
     }
 
     @Override
-    protected List<Class<? extends Plant>> getTargetPlants()
+    protected Set<PlantSpecies> getTargetPlants()
     {
         return TARGET_PLANTS;
     }

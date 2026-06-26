@@ -113,7 +113,7 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
+                Animal animal = field.getAnimalAt(row, col);
                 Plant plant = field.getPlantAt(row, col);
                 if(animal != null) {
                     incrementCount(animal.getClass());
@@ -125,6 +125,7 @@ public class FieldStats
         }
         countsValid = true;
     }
+
     public Map<Class<?>, Counter> getCounters()
     {
         return counters;

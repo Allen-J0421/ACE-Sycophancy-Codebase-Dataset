@@ -30,6 +30,7 @@ public class Simulator
     private TimeOfDay currentTime;
 
     private Weather currentWeather;
+    private final SpeciesCatalog speciesCatalog;
 
     /**
      * Construct a simulation field with default size.
@@ -58,6 +59,8 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
+        speciesCatalog = new SpeciesCatalog();
+        view.registerSpecies(speciesCatalog);
 
         // Setup a valid starting point
         reset();
@@ -144,7 +147,7 @@ public class Simulator
 
         organisms.clear();
 
-        Populator populator = new Populator(view);
+        Populator populator = new Populator(speciesCatalog);
         populator.populate(organisms, field);
         
         // Show the starting state in the view.

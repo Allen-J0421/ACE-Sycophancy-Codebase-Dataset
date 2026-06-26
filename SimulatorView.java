@@ -82,6 +82,12 @@ public class SimulatorView extends JFrame
         colors.put(animalClass, color);
     }
 
+    public void registerSpecies(SpeciesCatalog speciesCatalog) {
+        for (SpeciesDefinition speciesDefinition : speciesCatalog.getDefinitions()) {
+            setColor(speciesDefinition.getOrganismType(), speciesDefinition.getColor());
+        }
+    }
+
     /**
      * Display a short information label at the top of the window.
      */

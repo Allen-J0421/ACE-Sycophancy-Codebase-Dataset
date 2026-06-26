@@ -1,5 +1,4 @@
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -32,26 +31,10 @@ public abstract class Predator extends Hunter {
      */
     @Override
     public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Organism animal = field.getOrganismAt(where);
-            if(animal instanceof Prey) {
-                Prey prey = (Prey) animal;
-                if (prey.isAlive()) {
-                    // kills animal
-                    prey.setDead();
-                    // random chance to eat
-                    boolean eaten = eat(prey);
-
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+        return findMatchingPrey(Prey::isAlive, prey -> {
+            prey.setDead();
+            return eat(prey);
+        });
     }
 
     /**

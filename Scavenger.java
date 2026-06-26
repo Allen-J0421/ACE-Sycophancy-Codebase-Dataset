@@ -1,6 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -29,23 +26,7 @@ public abstract class Scavenger extends Hunter {
      */
     @Override
     public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Organism animal = field.getOrganismAt(where);
-            if (animal instanceof Prey) {
-                Prey prey = (Prey) animal;
-                // eats animal if dead only
-                if (!prey.isAlive()) {
-                    //System.out.println("EATEN DEAD");
-                    eat(prey);
-                    return where;
-                }
-            }
-        }
-        return null;
+        return findMatchingPrey(prey -> !prey.isAlive(), this::eat);
     }
 
     /**

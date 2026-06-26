@@ -1,5 +1,7 @@
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -92,5 +94,18 @@ public abstract class Hunter extends Animal {
 
     protected double getEatingProbability() {
         return attributes.getEatingProbability();
+    }
+
+    protected Location findMatchingPrey(Predicate<Prey> matches, Function<Prey, Boolean> onMatch) {
+        for (Location location : getField().adjacentLocations(getLocation())) {
+            Organism organism = getField().getOrganismAt(location);
+            if (organism instanceof Prey) {
+                Prey prey = (Prey) organism;
+                if (matches.test(prey) && Boolean.TRUE.equals(onMatch.apply(prey))) {
+                    return location;
+                }
+            }
+        }
+        return null;
     }
 }

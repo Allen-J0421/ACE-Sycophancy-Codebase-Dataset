@@ -15,15 +15,19 @@ public class PopulationGenerator
     //////////////////////////////////////////////////////////////*/
     
     // The probability that an animal will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.09;  
-    private static final double REINDEER_CREATION_PROBABILITY = 0.11;
-    private static final double SHEEP_CREATION_PROBABILITY = 0.11;
-    private static final double BEAR_CREATION_PROBABILITY = 0.04;
-    private static final double WOLVERINE_CREATION_PROBABILITY = 0.09;
+    private static final AnimalType[] ANIMAL_SPAWN_ORDER = new AnimalType[] {
+            AnimalType.FOX,
+            AnimalType.REINDEER,
+            AnimalType.SHEEP,
+            AnimalType.BEAR,
+            AnimalType.WOLVERINE
+    };
     // The probability that a plant will be created in any given grid position.
-    private static final double GRASS_SPAWN_PROBABILITY = 0.09;
-    private static final double SAGE_SPAWN_PROBABILITY = 0.075;
-    private static final double SEDGE_SPAWN_PROBABILITY = 0.07;
+    private static final PlantType[] PLANT_SPAWN_ORDER = new PlantType[] {
+            PlantType.GRASS,
+            PlantType.SAGE,
+            PlantType.SEDGE
+    };
     // A constant for initial number of infections in the generated population.
     private static final int INITIAL_INFECTION_COUNT = 11;
     
@@ -77,8 +81,6 @@ public class PopulationGenerator
       // Set up a randomizer, animal and plant factories
       Random rand = Randomizer.getRandom();
       field.clear();
-      AnimalFactory herbivoreFactory = producer.getFactory(false);
-      AnimalFactory carnivoreFactory = producer.getFactory(true);
       PlantFactory plantFactory = new PlantFactory(field);
       
       // Nested loop to go through every location on the grid and generate an animal of a certain class 
@@ -86,31 +88,17 @@ public class PopulationGenerator
       for(int row = 0; row < field.getDepth(); row++) {
           for(int col = 0; col < field.getWidth(); col++) {
               Location location = new Location(row, col);
-              if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {                  
-                  animals.add(carnivoreFactory.getAnimal("FOX", location));
+              Animal spawnedAnimal = spawnAnimal(rand, location);
+              if(spawnedAnimal != null) {
+                  animals.add(spawnedAnimal);
               }
-              else if(rand.nextDouble() <= REINDEER_CREATION_PROBABILITY) {
-                  animals.add(herbivoreFactory.getAnimal("SHEEP", location));
-              }
-              else if (rand.nextDouble() <= SHEEP_CREATION_PROBABILITY) {
-                  animals.add(herbivoreFactory.getAnimal("REINDEER", location));
-              }
-              else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-                  animals.add(carnivoreFactory.getAnimal("BEAR", location));
-              }
-              else if (rand.nextDouble() <= WOLVERINE_CREATION_PROBABILITY) {
-                  animals.add(carnivoreFactory.getAnimal("WOLVERINE", location));
-              }
-                // else leave the location empty.
           }
       }
         
       // A loop to go through the list of generated animals and infect 11 animals
-      for (int i = 0; i < INITIAL_INFECTION_COUNT; i++) {
-          if (animals.get(i) instanceof Animal){
-              Animal animal = (Animal) (animals.get(i));
-              animal.setInfectionTimestamp(0);
-          }    
+      for (int i = 0; i < INITIAL_INFECTION_COUNT && i < animals.size(); i++) {
+          Animal animal = (Animal) (animals.get(i));
+          animal.setInfectionTimestamp(0);
       }
       
       // Nested loop to go through every location on the grid and generate a plant of a certain class 
@@ -118,17 +106,49 @@ public class PopulationGenerator
       for(int row = 0; row < field.getDepth(); row++) {
           for(int col = 0; col < field.getWidth(); col++) {
               Location location = new Location(row, col);
-              if(rand.nextDouble() <= GRASS_SPAWN_PROBABILITY) {                    
-                  plants.add(plantFactory.getPlant("GRASS", location));
+              Plant spawnedPlant = spawnPlant(rand, plantFactory, location);
+              if(spawnedPlant != null) {
+                  plants.add(spawnedPlant);
               }
-              else if(rand.nextDouble() <= SAGE_SPAWN_PROBABILITY) {
-                  plants.add(plantFactory.getPlant("SAGE", location));
-              }
-              else if(rand.nextDouble() <= SEDGE_SPAWN_PROBABILITY) {
-                    plants.add(plantFactory.getPlant("SEDGE", location));
-              }
-                // else leave the location empty.
             }
         }
     } 
-}
+
+    /**
+     * Try to create an animal at the current location.
+     *
+     * @param rand random source used to decide whether spawning occurs.
+     * @param herbivoreFactory factory for herbivores.
+     * @param carnivoreFactory factory for carnivores.
+     * @param location location to populate.
+     * @return the spawned animal, or null if no spawn occurs.
+     */
+    private Animal spawnAnimal(Random rand, Location location)
+    {
+        for(AnimalType type : ANIMAL_SPAWN_ORDER) {
+            if(rand.nextDouble() <= type.getSpawnProbability()) {
+                AnimalFactory factory = producer.getFactory(type);
+                return factory.getAnimal(type, location);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Try to create a plant at the current location.
+     *
+     * @param rand random source used to decide whether spawning occurs.
+     * @param plantFactory factory for plants.
+     * @param location location to populate.
+     * @return the spawned plant, or null if no spawn occurs.
+     */
+    private Plant spawnPlant(Random rand, PlantFactory plantFactory, Location location)
+    {
+        for(PlantType type : PLANT_SPAWN_ORDER) {
+            if(rand.nextDouble() <= type.getSpawnProbability()) {
+                return plantFactory.getPlant(type, location);
+            }
+        }
+        return null;
+    }
+} 

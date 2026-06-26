@@ -27,15 +27,25 @@ public class AnimalFactoryProducer
     }
     
     /**
+     * Returns a Factory for the family that owns the given species.
+     *
+     * @param animalType species to create.
+     * @return a factory for the species family.
+     */
+    public AnimalFactory getFactory(AnimalType animalType)
+    {
+        if(animalType == null) {
+            return null;
+        }
+        return animalType.isCarnivore() ? new CarnivoreAnimalFactory(field) : new HerbivoreAnimalFactory(field);
+    }
+    
+    /**
      * Returns a Factory for either herbivore or carnivore animals.
      * 
      * @param isCarnivore Boolean flag to dictate whether to return herbivore or carnivore animal factory.
      */
     public AnimalFactory getFactory(boolean isCarnivore) {
-        if(isCarnivore) {
-            return new CarnivoreAnimalFactory(field);
-        } else {
-            return new HerbivoreAnimalFactory(field);
-        }
+        return isCarnivore ? new CarnivoreAnimalFactory(field) : new HerbivoreAnimalFactory(field);
     }
 }

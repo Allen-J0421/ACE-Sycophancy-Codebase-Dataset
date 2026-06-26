@@ -34,16 +34,20 @@ public class PlantFactory
      * @return the created plant.
      */
     public Plant getPlant(String plantType, Location location) {
+        return getPlant(PlantType.fromString(plantType), location);
+    }
+
+    /**
+     * Creates a Plant given an input plant type.
+     *
+     * @param plantType the type of the plant.
+     * @param location The base location of the newly created plant.
+     * @return the created plant.
+     */
+    public Plant getPlant(PlantType plantType, Location location) {
         if(plantType == null) {
             return null;
         }
-        if(plantType.equalsIgnoreCase("GRASS")) {
-            return new Grass(true, field, location);
-        } else if (plantType.equalsIgnoreCase("SAGE")) {
-            return new Sage(true, field, location);
-        } else if(plantType.equalsIgnoreCase("SEDGE")) {
-            return new Sedge(true, field , location);
-        } 
-        return null;
+        return plantType.createForPopulation(field, location);
     }
 }

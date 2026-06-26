@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Plants can grow, be can be partially eaten, they can be completely eaten and die, plants
@@ -11,8 +10,6 @@ public class Plant extends LivingOrganism
 {
     // its current health percentage
     private double healthPercentage;
-    // The likelihood a plants being able to spread into areas with no plants
-    private double spreadProbability;
     // The rate at which plants grow back and increase their health percentage
     private static final double GROWTH_RATE = 0.05;
     // The amount of health percentage which is taken away every time an animal eats a plant
@@ -59,34 +56,34 @@ public class Plant extends LivingOrganism
     public void act(List<LivingOrganism> newPlants)
     {
         incrementAge();
-        if(!Time.isNight())
+        if(!Time.isNight() && isAlive())
         {
-            if(isAlive())
+            if (rand.nextDouble() < getSpreadProbability())
             {
-                switch (Weather.getWeather())
-                {
-                    case Sunny:
-                        spreadProbability = 0.2;
-                        break;
-                    case Rainy:
-                        spreadProbability = 0.14;
-                        break;
-                    case Foggy:
-                        spreadProbability = 0.05;
-                        break;
-                    case Cloudy:
-                        spreadProbability = 0.1;
-                        break;
-                    case Clear:
-                        spreadProbability = 0.08;
-                        break;
-                }
-
-                if (rand.nextDouble() < spreadProbability)
-                {
-                    populate(newPlants);
-                }
+                populate(newPlants);
             }
+        }
+    }
+
+    /**
+     * Return the current weather's effect on plant spread.
+     */
+    private double getSpreadProbability()
+    {
+        switch (Weather.getWeather())
+        {
+            case Sunny:
+                return 0.2;
+            case Rainy:
+                return 0.14;
+            case Foggy:
+                return 0.05;
+            case Cloudy:
+                return 0.1;
+            case Clear:
+                return 0.08;
+            default:
+                return 0;
         }
     }
 
@@ -169,7 +166,7 @@ public class Plant extends LivingOrganism
         List<Location> free = field.getFreeAdjacentLocations(getLocation(), Plant.class);
 
         // New plants are spread into adjacent locations.
-        for(int b = 0; free.size() > 0; b++)
+        while(free.size() > 0)
         {
             newPlants.add(createOffspring(free));
         }
@@ -184,10 +181,7 @@ public class Plant extends LivingOrganism
     private Plant createOffspring(List<Location> free)
     {
         Location loc = free.remove(0);
-        Plant offspring = null;
 
-        offspring = new Plant(false, field, loc);
-
-        return offspring;
+        return new Plant(false, field, loc);
     }
 }

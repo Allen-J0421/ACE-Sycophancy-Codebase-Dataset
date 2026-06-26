@@ -127,6 +127,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
+        boolean dayTime = timeOfDay();
 
         double totalOxygenInvolved = 0;
 
@@ -135,7 +136,7 @@ public class Simulator
         List<Creature> newCreatures = new ArrayList<>();
         for(Iterator<Creature> it = creatures.iterator(); it.hasNext(); ) {
             Creature creature = it.next();
-            totalOxygenInvolved += creature.act(newCreatures, timeOfDay(), oxygenLevel, disease, step);
+            totalOxygenInvolved += creature.act(newCreatures, dayTime, oxygenLevel, disease, step);
             if(!creature.isAlive()) {
                 it.remove();
             }
@@ -149,13 +150,9 @@ public class Simulator
         }
 
         oxygenLevel += totalOxygenInvolved;
-
-        if(disease.getIsSpread()) {
-            disease.setIsSpread(identifyIfDiseaseStops());
-        }
-
+        disease.updateSpreadState(creatures);
         creatures.addAll(newCreatures);
-        view.showStatus(step, field, timeOfDay(), weather, oxygenLevel);
+        view.showStatus(step, field, dayTime, weather, oxygenLevel);
     }
 
     /**
@@ -167,7 +164,8 @@ public class Simulator
         creatures.clear();
         populate();
         oxygenLevel = 1;
-        Animal.populationDieOfDisease = 0;
+        disease.reset();
+        Animal.resetDiseaseDeathCount();
         view.showStatus(step, field, timeOfDay(), weather, oxygenLevel);
     }
 
@@ -213,20 +211,4 @@ public class Simulator
         return (step % 10) < 5;
     }
 
-    /**
-     * Return true if at least one infected, non-immune animal still exists in the field.
-     * When no such animal remains the disease has run its course.
-     */
-    public boolean identifyIfDiseaseStops()
-    {
-        for(Creature creature : creatures) {
-            if(creature instanceof Animal) {
-                Animal ani = (Animal) creature;
-                if(ani.getIsInfected() && !ani.getIsImmuned()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

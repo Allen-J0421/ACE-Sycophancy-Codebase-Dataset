@@ -1,9 +1,9 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Models a disease outbreak: randomly infects a fraction of the animal population,
  * then spreads animal-to-animal via proximity during normal movement.
+ * Manages its own spread lifecycle — Simulator does not need to inspect or set state directly.
  *
  * @version 2022/03/02
  */
@@ -27,8 +27,11 @@ public class Disease
         isSpread = false;
     }
 
-    public boolean getIsSpread()           { return isSpread; }
-    public void    setIsSpread(boolean bl) { isSpread = bl;   }
+    /** Reset disease state; call when the simulation resets between runs. */
+    public void reset()
+    {
+        isSpread = false;
+    }
 
     /**
      * Potentially trigger a new outbreak. If no disease is currently spreading and the
@@ -36,9 +39,9 @@ public class Disease
      * @param creatures All creatures currently in the simulation.
      * @param step      The current simulation step (recorded as each animal's infection start).
      */
-    protected void creationSourceOfInfection(List<Creature> creatures, int step)
+    public void creationSourceOfInfection(List<Creature> creatures, int step)
     {
-        if(getIsSpread() || Randomizer.getRandom().nextDouble() > DISEASE_OCCURENCE_PROBABILITY) {
+        if(isSpread || Randomizer.getRandom().nextDouble() > DISEASE_OCCURENCE_PROBABILITY) {
             return;
         }
         for(Creature creature : creatures) {
@@ -46,9 +49,29 @@ public class Disease
                 Animal animal = (Animal) creature;
                 if(Randomizer.getRandom().nextDouble() <= INFECTION_RATE) {
                     animal.infect(step);
-                    setIsSpread(true);
+                    isSpread = true;
                 }
             }
         }
+    }
+
+    /**
+     * Check whether the current outbreak has run its course.
+     * The disease is considered over when no infected, non-immune animal remains.
+     * Should be called once per step after all creatures have acted.
+     * @param creatures All creatures currently in the simulation.
+     */
+    public void updateSpreadState(List<Creature> creatures)
+    {
+        if(!isSpread) return;
+        for(Creature creature : creatures) {
+            if(creature instanceof Animal) {
+                Animal ani = (Animal) creature;
+                if(ani.getIsInfected() && !ani.getIsImmuned()) {
+                    return; // at least one infected, non-immune animal remains
+                }
+            }
+        }
+        isSpread = false;
     }
 }

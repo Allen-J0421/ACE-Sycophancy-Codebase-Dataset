@@ -70,14 +70,6 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
-    }
-
-    /**
      * Show the current status of the field.
      */
     public void showStatus(int step, Field field, boolean timeOfDay, Weather weather, double oxygenLevel)
@@ -90,7 +82,7 @@ public class SimulatorView extends JFrame
         infoLabel.setText("It is: " + (timeOfDay ? "daytime" : "night ")
                 + "        Oxygen Level: " + (int)(oxygenLevel * 100) + "%"
                 + "        Storm: " + (weather.isStormActive() ? "exists" : "subsides"));
-        diseaseLabel.setText(POPULATION_DIE_OF_DISEASE_PREFIX + Animal.populationDieOfDisease);
+        diseaseLabel.setText(POPULATION_DIE_OF_DISEASE_PREFIX + Animal.getDiseaseDeathCount());
 
         stats.reset();
         fieldView.preparePaint();

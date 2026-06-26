@@ -19,10 +19,10 @@ public abstract class Animal extends Creature
     private boolean isImmuned;
 
     // Track the first step at which the animal is infected.
-    protected int infectionStartStep;
+    private int infectionStartStep;
 
     // Total population that has died of disease.
-    public static int populationDieOfDisease = 0;
+    private static int diseaseDeathCount = 0;
 
     // Age and food level shared by all animal subclasses.
     protected int age;
@@ -195,12 +195,18 @@ public abstract class Animal extends Creature
         if(getIsInfected() && !getIsImmuned()) {
             if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE) {
                 setDead();
-                populationDieOfDisease++;
+                diseaseDeathCount++;
                 return true;
             }
         }
         return false;
     }
+
+    /** Return the total number of animals that have died of disease in this run. */
+    public static int getDiseaseDeathCount() { return diseaseDeathCount; }
+
+    /** Reset the disease-death counter (call when the simulation resets). */
+    public static void resetDiseaseDeathCount() { diseaseDeathCount = 0; }
 
     // -----------------------------------------------------------------------
     // Accessors.

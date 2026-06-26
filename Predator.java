@@ -25,12 +25,11 @@ public abstract class Predator extends Animal
     }
 
     /**
-     * @Override
-     *
      * Predators are less active at night and in fog; otherwise delegates to Animal.act().
      *
      * @param newPredators A list to receive newly born predators.
      */
+    @Override
     public void act(List<LivingOrganism> newPredators)
     {
         if(Time.isNight() && rand.nextDouble() > 0.25)
@@ -47,13 +46,12 @@ public abstract class Predator extends Animal
     }
 
     /**
-     * @Override
-     *
      * Look for prey adjacent to the current location.
      * Eats prey until full. May contract the prey's disease when eating.
      *
      * @return Where food was found, or null if it wasn't.
      */
+    @Override
     protected Location findFood()
     {
         Field field = getField();

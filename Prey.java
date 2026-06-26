@@ -22,12 +22,11 @@ public abstract class Prey extends Animal
     }
 
     /**
-     * @Override
-     *
      * Prey sleep at night and otherwise delegate to Animal.act().
      *
      * @param newPrey A list to receive newly born prey.
      */
+    @Override
     public void act(List<LivingOrganism> newPrey)
     {
         if(Time.isNight())
@@ -38,13 +37,12 @@ public abstract class Prey extends Animal
     }
 
     /**
-     * @Override
-     *
      * Look for an adjacent plant with no animal present.
      * Eats until full.
      *
      * @return Where food was found, or null if it wasn't.
      */
+    @Override
     protected Location findFood()
     {
         Field field = getField();

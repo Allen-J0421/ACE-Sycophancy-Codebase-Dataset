@@ -103,7 +103,3 @@ public abstract class LivingOrganism
         return field;
     }
 }
-
-
-
-

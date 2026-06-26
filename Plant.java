@@ -45,13 +45,12 @@ public class Plant extends LivingOrganism
     }
     
     /**
-     * @Override
-     *
      * Grow in health, then attempt to spread to adjacent empty cells
      * during daytime. Spread probability depends on current weather.
      *
      * @param newPlants A list to receive newly spawned plants.
      */
+    @Override
     public void act(List<LivingOrganism> newPlants)
     {
         incrementAge();
@@ -102,10 +101,9 @@ public class Plant extends LivingOrganism
     }
     
     /**
-     * @Override
-     *
      * Makes the plant grow to full health.
      */
+    @Override
     protected void incrementAge() 
     {
         healthPercentage += GROWTH_RATE;
@@ -116,11 +114,10 @@ public class Plant extends LivingOrganism
     }
 
     /**
-     * @Override
-     * 
-     * Indicate that the animal is no longer alive.
+     * Indicate that the plant is no longer alive.
      * It is removed from the field.
      */
+    @Override
     protected void setDead()
     {
         alive = false;
@@ -132,12 +129,11 @@ public class Plant extends LivingOrganism
     }
     
     /**
-     * @Override
-     * 
      * Place the plant at the new location in the given field.
-     * 
+     *
      * @param newLocation The plant's new location.
      */
+    @Override
     protected void setLocation(Location newLocation)
     {
         if(location != null) 
@@ -150,13 +146,12 @@ public class Plant extends LivingOrganism
     }
     
     /**
-     * @Override
-     * 
      * Check whether or not this Plant is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * 
+     *
      * @param newPlants A list to return newly born Plants.
      */
+    @Override
     protected void populate(List<LivingOrganism> newPlants)
     {
         // Get a list of adjacent free locations.

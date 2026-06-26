@@ -92,13 +92,12 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * @Override
-     *
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      *
      * @param newAnimals A list to receive newly born animals.
      */
+    @Override
     public void act(List<LivingOrganism> newAnimals)
     {
         incrementAge();
@@ -227,11 +226,10 @@ public abstract class Animal extends LivingOrganism
     protected abstract Animal createOffspringAt(Location loc, boolean infected, boolean immune);
 
     /**
-     * @Override
-     * 
      * Indicate that the animal is no longer alive.
      * It is removed from the field.
      */
+    @Override
     protected void setDead()
     {
         alive = false;
@@ -244,13 +242,12 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * @Override
-     * 
      * When called, the animal is killed and returns
      * its food value.
-     * 
+     *
      * @return The food value of the animal eaten.
      */
+    @Override
     protected int beEaten() 
     {
         setDead();
@@ -259,12 +256,11 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * @Override
-     * 
      * Place the animal at the new location in the given field.
-     * 
+     *
      * @param newLocation The animal's new location.
      */
+    @Override
     protected void setLocation(Location newLocation)
     {
         if(location != null)
@@ -286,11 +282,10 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * @Override
-     * 
      * Increase the age.
      * This could result in the Animal's death.
      */
+    @Override
     protected void incrementAge()
     {
         age++;
@@ -311,11 +306,11 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * @Override
-     * 
      * New births will be made into free adjacent locations.
+     *
      * @param newAnimals A list to return newly born Animals.
      */
+    @Override
     protected void populate(List<LivingOrganism> newAnimals)
     {
         Field field = getField();

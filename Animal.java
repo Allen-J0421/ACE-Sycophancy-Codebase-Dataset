@@ -102,19 +102,7 @@ public abstract class Animal extends Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = getAnimal();
-            Animal baby = null;
-            if(young instanceof Gazelle){
-                baby = new Gazelle(false, field, loc);
-            }else if(young instanceof Jaguar){
-                baby = new Jaguar(false, field, loc);
-            }else if(young instanceof Cheetah){
-                baby = new Cheetah(false, field, loc);
-            }else if(young instanceof Lion){
-                baby = new Lion(false, field, loc);
-            }else if(young instanceof Zebra){
-                baby = new Zebra(false, field, loc);
-            }
+            Animal baby = createOffspring(field, loc);
             if(!getHealth()){
                 baby.setUnhealthy(); //setting the baby to be unhealthy if the parent is unhealthy.
             }
@@ -147,15 +135,14 @@ public abstract class Animal extends Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        Animal currentAnimal = getAnimal();
         while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if (animal != null && animal.getClass() == currentAnimal.getClass()){
+            if (animal != null && animal.getClass() == getClass()){
                 Animal mate = (Animal) animal;
-                if(isActive() && currentAnimal.getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
-                    if(!currentAnimal.getHealth() || !mate.getHealth()){
-                        currentAnimal.setUnhealthy();
+                if(isActive() && getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
+                    if(!getHealth() || !mate.getHealth()){
+                        setUnhealthy();
                         mate.setUnhealthy();
                     }
                     return true;
@@ -178,10 +165,12 @@ public abstract class Animal extends Actor
     abstract protected int getMaxLitterSize();
 
     /**
-     * Returns the current animal occupying the location.
-     * @return the current animal.
+     * Create a new offspring of this animal's species.
+     * @param field The field the offspring is born into.
+     * @param location The location within the field.
+     * @return A new offspring.
      */
-    abstract protected Animal getAnimal();
+    abstract protected Animal createOffspring(Field field, Location location);
 
     /**
      * Returns the animal's current food level.

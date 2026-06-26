@@ -112,11 +112,13 @@ public class Zebra extends Animal
     }
 
     /**
-     * Returns the current zebra occupying the location.
-     * @return The current zebra.
+     * Create a newborn zebra.
+     * @param field The field the offspring is born into.
+     * @param location The location within the field.
+     * @return A newborn zebra.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createOffspring(Field field, Location location){
+        return new Zebra(false, field, location);
     }
 
     /**

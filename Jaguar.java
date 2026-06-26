@@ -98,11 +98,13 @@ public class Jaguar extends Predator
     }
 
     /**
-     * Returns the current jaguar occupying the location.
-     * @return the current jaguar.
+     * Create a newborn jaguar.
+     * @param field The field the offspring is born into.
+     * @param location The location within the field.
+     * @return A newborn jaguar.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createOffspring(Field field, Location location){
+        return new Jaguar(false, field, location);
     }
 
     /**

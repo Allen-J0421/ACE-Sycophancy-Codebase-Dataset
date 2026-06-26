@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
  *
  * @version 2022.03.02
  */
-public abstract class Animal extends MobileForager implements Edible
+public abstract class Animal extends Organism implements Edible
 {
     private static final TargetAcquisitionPolicy TARGET_POLICY = new AnimalTargetAcquisitionPolicy();
 

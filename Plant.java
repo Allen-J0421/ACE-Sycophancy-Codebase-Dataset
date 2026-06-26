@@ -1,5 +1,3 @@
-import java.util.Random;
-
 /**
  * A class representing shared characteristics of plants.
  *
@@ -13,7 +11,6 @@ public abstract class Plant extends Organism implements Edible
     protected int STAGE_OF_GROWTH;
 
     public int STEPS_PER_STAGE(){ return STEPS_PER_STAGE; }
-    protected static final Random rand = Randomizer.getRandom();
     
     
     /**

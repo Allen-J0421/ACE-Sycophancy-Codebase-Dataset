@@ -9,7 +9,7 @@ public abstract class AbstractTargetAcquisitionPolicy implements TargetAcquisiti
 {
     protected static final Random rand = Randomizer.getRandom();
 
-    protected final Location findAdjacentTarget(MobileForager forager, Predicate<Object> matcher)
+    protected final Location findAdjacentTarget(Organism forager, Predicate<Object> matcher)
     {
         return AdjacentTargetSearch.findMatchingLocation(forager.getField(), forager.getLocation(), matcher);
     }

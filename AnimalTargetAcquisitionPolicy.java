@@ -6,7 +6,7 @@ import java.util.List;
 public final class AnimalTargetAcquisitionPolicy extends AbstractTargetAcquisitionPolicy
 {
     @Override
-    public Location acquireTarget(MobileForager forager, Environment environment)
+    public Location acquireTarget(Organism forager, Environment environment)
     {
         Animal animal = (Animal) forager;
         contractDiseaseFromAdjacentOrganisms(animal, occupant ->

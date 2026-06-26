@@ -6,7 +6,7 @@ public final class EagleTargetAcquisitionPolicy extends AbstractTargetAcquisitio
     private static final java.util.Set<Class<?>> DIET = java.util.Set.of(Deer.class, Coyote.class, Mouse.class);
 
     @Override
-    public Location acquireTarget(MobileForager forager, Environment environment)
+    public Location acquireTarget(Organism forager, Environment environment)
     {
         Eagle eagle = (Eagle) forager;
         if(environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {

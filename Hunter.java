@@ -5,7 +5,7 @@ import java.util.*;
  * Hunters hunt all of the species in the simulation.
  * @version 2022.03.02
  */
-public class Hunter extends MobileForager
+public class Hunter extends Organism
 {
     private static final TargetAcquisitionPolicy TARGET_POLICY = new HunterTargetAcquisitionPolicy();
 

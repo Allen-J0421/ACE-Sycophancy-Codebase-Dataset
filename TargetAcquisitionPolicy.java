@@ -1,7 +1,7 @@
 /**
- * Strategy for selecting a target location for a mobile forager.
+ * Strategy for selecting a target location for an organism.
  */
 public interface TargetAcquisitionPolicy
 {
-    Location acquireTarget(MobileForager forager, Environment environment);
+    Location acquireTarget(Organism forager, Environment environment);
 }

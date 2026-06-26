@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * This class represents shared characteristics of organisms
@@ -7,6 +8,7 @@ import java.util.List;
  * @version 2022.03.2
  */
 public abstract class Organism implements Actor {
+    protected static final Random rand = Randomizer.getRandom();
     
 
     // Whether the organism is alive or not.
@@ -111,6 +113,55 @@ public abstract class Organism implements Actor {
     {
         this.disease = disease;
         hasDisease = true;
+    }
+
+    /**
+     * Template method for target acquisition and movement.
+     */
+    protected final void forageAndMove(Environment environment)
+    {
+        Location targetLocation = locateTargetLocation(environment);
+        if(targetLocation == null) {
+            targetLocation = getField().freeAdjacentLocation(getLocation());
+        }
+
+        if(targetLocation != null) {
+            setLocation(targetLocation);
+            return;
+        }
+
+        List<Location> fallbackLocations = getFallbackLocations();
+        if(!fallbackLocations.isEmpty()) {
+            getField().clear(getLocation());
+            setLocation(fallbackLocations.get(rand.nextInt(fallbackLocations.size())));
+            return;
+        }
+
+        onMovementBlocked();
+    }
+
+    /**
+     * Find the resource or prey the organism is seeking.
+     */
+    protected Location locateTargetLocation(Environment environment)
+    {
+        return null;
+    }
+
+    /**
+     * Hook for species-specific fallback movement targets.
+     */
+    protected List<Location> getFallbackLocations()
+    {
+        return getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
+    }
+
+    /**
+     * Hook for what to do when movement is impossible.
+     */
+    protected void onMovementBlocked()
+    {
+        setDead();
     }
 
     /**

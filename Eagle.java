@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 import java.util.*;
 
@@ -23,8 +22,6 @@ public class Eagle extends Animal
     private static final int MAX_LITTER_SIZE = 2;
     // The eagles's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 14;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single eagle.
     private static final int FOOD_VALUE = 5;
     // A set of organisms that a eagle consumes

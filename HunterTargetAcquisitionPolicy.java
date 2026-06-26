@@ -8,7 +8,7 @@ public final class HunterTargetAcquisitionPolicy extends AbstractTargetAcquisiti
     );
 
     @Override
-    public Location acquireTarget(MobileForager forager, Environment environment)
+    public Location acquireTarget(Organism forager, Environment environment)
     {
         Hunter hunter = (Hunter) forager;
         Location preyLocation = findAdjacentTarget(

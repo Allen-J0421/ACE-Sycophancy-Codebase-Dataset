@@ -19,10 +19,9 @@ public class SimulatorView extends JFrame
     private static final Color STORM_COLOR    = Color.blue;
     private static final Color INFECTED_COLOR = Color.green;
 
-    private final String STEP_PREFIX                    = "Step: ";
-    private final String POPULATION_PREFIX              = "Population: ";
-    private final String DAYOFTIME_PREFIX               = "Time: It's ";
-    private final String POPULATION_DIE_OF_DISEASE_PREFIX = "Population died of disease: ";
+    private static final String STEP_PREFIX                       = "Step: ";
+    private static final String POPULATION_PREFIX                 = "Population: ";
+    private static final String POPULATION_DIE_OF_DISEASE_PREFIX = "Population died of disease: ";
 
     private JLabel stepLabel, population, infoLabel, diseaseLabel;
     private FieldView fieldView;
@@ -42,7 +41,7 @@ public class SimulatorView extends JFrame
 
         setTitle("Underwater Environment Simulation");
         stepLabel    = new JLabel(STEP_PREFIX, JLabel.CENTER);
-        infoLabel    = new JLabel(DAYOFTIME_PREFIX + " ", JLabel.CENTER);
+        infoLabel    = new JLabel("", JLabel.CENTER);
         diseaseLabel = new JLabel(POPULATION_DIE_OF_DISEASE_PREFIX, JLabel.CENTER);
         population   = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
 

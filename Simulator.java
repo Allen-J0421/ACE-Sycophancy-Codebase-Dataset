@@ -26,6 +26,9 @@ public class Simulator
     // Environmental event probabilities.
     private static final double STORM_HAPPEN_PROBABILITY = 0.14;
 
+    // Milliseconds to pause between steps when running the GUI simulation.
+    private static final int STEP_DELAY_MS = 60;
+
     // Parallel arrays that drive populate(): probabilities and matching constructors.
     private static final double[] SPAWN_PROBABILITIES = {
         SALMON_CREATION_PROBABILITY,
@@ -114,9 +117,9 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int i = 1; i <= numSteps && view.isViable(field); i++) {
             simulateOneStep();
-            delay(60);
+            delay(STEP_DELAY_MS);
         }
     }
 

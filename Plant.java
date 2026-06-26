@@ -1,6 +1,5 @@
 import java.util.Random;
 import java.util.List;
-import java.lang.reflect.*;
 /**
  * A blueprint for how a typical plant behaves. A plant grows according to the weather 
  * conditions and daylight, and feeds more as it grows.
@@ -64,6 +63,13 @@ public abstract class Plant implements Actor
      */
     
     public abstract void act(List<Actor> newPlants, Weather weather, DayState dayState);
+
+    /**
+     * Returns the species definition for this plant.
+     *
+     * @return the current plant species.
+     */
+    protected abstract PlantSpecies getSpecies();
     
     /**
      * Increments the age of the plant.
@@ -107,19 +113,8 @@ public abstract class Plant implements Actor
         List<Location> freeLocs = field.getFreeAdjacentTerrain(location);
         for ( Location loc : freeLocs) {
             if(rand.nextDouble() < spreadProbability) {
-                try {
-                    Constructor cons = getConstructor();
-                    Plant plant = (Plant)cons.newInstance(false, field, loc);
-                    newPlants.add(plant);
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                Plant plant = getSpecies().createYoung(field, loc);
+                newPlants.add(plant);
             }
         }
     }
@@ -127,23 +122,6 @@ public abstract class Plant implements Actor
     /*///////////////////////////////////////////////////////////////
                           ACCESSOR AND MUTATORS
     //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * Accesor method for the constructor of the plant.
-     * 
-     * @return the constructor of the plant.
-     */
-    protected Constructor getConstructor() {
-        try {
-                Class[] cls = new Class[] {boolean.class, Field.class, Location.class};
-                Constructor cons = this.getClass().getConstructor(cls);
-                return cons;
-        }
-        catch (NoSuchMethodException nsme) {
-                nsme.printStackTrace();
-        }
-        return null;
-    }
     
     /**
      * Accessor method to denote whether or not the plant is alive.
@@ -173,7 +151,7 @@ public abstract class Plant implements Actor
     protected void setLocation(Location newLocation)
     {
         if(location != null) {
-            field.clear(location);
+            field.clearPlant(location);
         }
         location = newLocation;
         field.placePlant(this, newLocation);

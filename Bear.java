@@ -95,4 +95,10 @@ public class Bear extends CarnivoreAnimal
     {
         return FEEDING_VALUE;
     }
+
+    @Override
+    protected AnimalSpecies getSpecies()
+    {
+        return AnimalSpecies.BEAR;
+    }
  }

@@ -58,4 +58,10 @@ public class Grass extends Plant
         }
         multiply(MULTIPLY_PROBABILITY, newPlants);
     }
+
+    @Override
+    protected PlantSpecies getSpecies()
+    {
+        return PlantSpecies.GRASS;
+    }
 }

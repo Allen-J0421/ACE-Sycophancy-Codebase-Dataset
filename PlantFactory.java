@@ -33,17 +33,10 @@ public class PlantFactory
      * @param location The base location of the newly created plant.
      * @return the created plant.
      */
-    public Plant getPlant(String plantType, Location location) {
+    public Plant create(PlantSpecies plantType, Location location) {
         if(plantType == null) {
             return null;
         }
-        if(plantType.equalsIgnoreCase("GRASS")) {
-            return new Grass(true, field, location);
-        } else if (plantType.equalsIgnoreCase("SAGE")) {
-            return new Sage(true, field, location);
-        } else if(plantType.equalsIgnoreCase("SEDGE")) {
-            return new Sedge(true, field , location);
-        } 
-        return null;
+        return plantType.createRandom(field, location);
     }
 }

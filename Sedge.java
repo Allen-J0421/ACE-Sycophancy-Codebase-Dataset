@@ -57,4 +57,10 @@ public class Sedge extends Plant
         }
         multiply(MULTIPLY_PROBABILITY, newPlants);
     }
+
+    @Override
+    protected PlantSpecies getSpecies()
+    {
+        return PlantSpecies.SEDGE;
+    }
 }

@@ -1,6 +1,5 @@
 import java.util.Random;
 import java.util.List;
-import java.awt.Color;
 /**
  * A class responsible for generating the population,
  * as well as setting up the colours associated with each animal and plant class.
@@ -14,26 +13,29 @@ public class PopulationGenerator
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
     
-    // The probability that an animal will be created in any given grid position.
-    private static final double FOX_CREATION_PROBABILITY = 0.09;  
-    private static final double REINDEER_CREATION_PROBABILITY = 0.11;
-    private static final double SHEEP_CREATION_PROBABILITY = 0.11;
-    private static final double BEAR_CREATION_PROBABILITY = 0.04;
-    private static final double WOLVERINE_CREATION_PROBABILITY = 0.09;
-    // The probability that a plant will be created in any given grid position.
-    private static final double GRASS_SPAWN_PROBABILITY = 0.09;
-    private static final double SAGE_SPAWN_PROBABILITY = 0.075;
-    private static final double SEDGE_SPAWN_PROBABILITY = 0.07;
     // A constant for initial number of infections in the generated population.
     private static final int INITIAL_INFECTION_COUNT = 11;
+    private static final AnimalSpecies[] ANIMAL_SPAWN_ORDER = {
+        AnimalSpecies.FOX,
+        AnimalSpecies.REINDEER,
+        AnimalSpecies.SHEEP,
+        AnimalSpecies.BEAR,
+        AnimalSpecies.WOLVERINE
+    };
+    private static final PlantSpecies[] PLANT_SPAWN_ORDER = {
+        PlantSpecies.GRASS,
+        PlantSpecies.SAGE,
+        PlantSpecies.SEDGE
+    };
     
     /*///////////////////////////////////////////////////////////////
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    private SimulatorView view;
-    private AnimalFactoryProducer producer;
-    private Field field;
+    private final SimulatorView view;
+    private final AnimalFactory animalFactory;
+    private final PlantFactory plantFactory;
+    private final Field field;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -46,7 +48,8 @@ public class PopulationGenerator
     {
         this.view = view;
         this.field = field;
-        producer = new AnimalFactoryProducer(field);
+        animalFactory = new AnimalFactory(field);
+        plantFactory = new PlantFactory(field);
         setUpColors();
     }
     
@@ -55,14 +58,12 @@ public class PopulationGenerator
      */
     private void setUpColors()
     {
-        view.setColor(CarnivoreFox.class, new Color(227, 93, 57));
-        view.setColor(Grass.class, new Color(50, 184, 121));
-        view.setColor(Sage.class, new Color(27, 117, 19));
-        view.setColor(Reindeer.class, new Color(217, 162, 147));
-        view.setColor(Sheep.class, Color.LIGHT_GRAY);
-        view.setColor(Bear.class, new Color(112, 62, 49));
-        view.setColor(Wolverine.class, Color.BLACK);
-        view.setColor(Sedge.class, new Color(78, 117, 19));
+        for (AnimalSpecies species : AnimalSpecies.values()) {
+            view.setColor(species.getActorClass(), species.getColor());
+        }
+        for (PlantSpecies species : PlantSpecies.values()) {
+            view.setColor(species.getActorClass(), species.getColor());
+        }
         view.showColors();
     }
     
@@ -74,61 +75,68 @@ public class PopulationGenerator
      */
     public void populate(List<Actor> animals , List<Actor> plants)
     {
-      // Set up a randomizer, animal and plant factories
-      Random rand = Randomizer.getRandom();
-      field.clear();
-      AnimalFactory herbivoreFactory = producer.getFactory(false);
-      AnimalFactory carnivoreFactory = producer.getFactory(true);
-      PlantFactory plantFactory = new PlantFactory(field);
-      
-      // Nested loop to go through every location on the grid and generate an animal of a certain class 
-      // based on a comparison of randomised double with the creation probability of every animal
-      for(int row = 0; row < field.getDepth(); row++) {
-          for(int col = 0; col < field.getWidth(); col++) {
-              Location location = new Location(row, col);
-              if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {                  
-                  animals.add(carnivoreFactory.getAnimal("FOX", location));
-              }
-              else if(rand.nextDouble() <= REINDEER_CREATION_PROBABILITY) {
-                  animals.add(herbivoreFactory.getAnimal("SHEEP", location));
-              }
-              else if (rand.nextDouble() <= SHEEP_CREATION_PROBABILITY) {
-                  animals.add(herbivoreFactory.getAnimal("REINDEER", location));
-              }
-              else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-                  animals.add(carnivoreFactory.getAnimal("BEAR", location));
-              }
-              else if (rand.nextDouble() <= WOLVERINE_CREATION_PROBABILITY) {
-                  animals.add(carnivoreFactory.getAnimal("WOLVERINE", location));
-              }
-                // else leave the location empty.
-          }
-      }
-        
-      // A loop to go through the list of generated animals and infect 11 animals
-      for (int i = 0; i < INITIAL_INFECTION_COUNT; i++) {
-          if (animals.get(i) instanceof Animal){
-              Animal animal = (Animal) (animals.get(i));
-              animal.setInfectionTimestamp(0);
-          }    
-      }
-      
-      // Nested loop to go through every location on the grid and generate a plant of a certain class 
-      // based on a comparison of randomised double with the creation probability of every plant
-      for(int row = 0; row < field.getDepth(); row++) {
-          for(int col = 0; col < field.getWidth(); col++) {
-              Location location = new Location(row, col);
-              if(rand.nextDouble() <= GRASS_SPAWN_PROBABILITY) {                    
-                  plants.add(plantFactory.getPlant("GRASS", location));
-              }
-              else if(rand.nextDouble() <= SAGE_SPAWN_PROBABILITY) {
-                  plants.add(plantFactory.getPlant("SAGE", location));
-              }
-              else if(rand.nextDouble() <= SEDGE_SPAWN_PROBABILITY) {
-                    plants.add(plantFactory.getPlant("SEDGE", location));
-              }
-                // else leave the location empty.
+        field.clear();
+        populateAnimals(animals);
+        infectInitialAnimals(animals);
+        populatePlants(plants);
+    }
+
+    private void populateAnimals(List<Actor> animals)
+    {
+        Random rand = Randomizer.getRandom();
+        for(int row = 0; row < field.getDepth(); row++) {
+            for(int col = 0; col < field.getWidth(); col++) {
+                Location location = new Location(row, col);
+                Animal animal = createAnimalAt(rand, location);
+                if(animal != null) {
+                    animals.add(animal);
+                }
             }
         }
-    } 
+    }
+
+    private void infectInitialAnimals(List<Actor> animals)
+    {
+        int infectedCount = Math.min(INITIAL_INFECTION_COUNT, animals.size());
+        for (int i = 0; i < infectedCount; i++) {
+            if (animals.get(i) instanceof Animal){
+                Animal animal = (Animal) animals.get(i);
+                animal.setInfectionTimestamp(0);
+            }
+        }
+    }
+
+    private void populatePlants(List<Actor> plants)
+    {
+        Random rand = Randomizer.getRandom();
+        for(int row = 0; row < field.getDepth(); row++) {
+            for(int col = 0; col < field.getWidth(); col++) {
+                Location location = new Location(row, col);
+                Plant plant = createPlantAt(rand, location);
+                if(plant != null) {
+                    plants.add(plant);
+                }
+            }
+        }
+    }
+
+    private Animal createAnimalAt(Random rand, Location location)
+    {
+        for (AnimalSpecies species : ANIMAL_SPAWN_ORDER) {
+            if(rand.nextDouble() <= species.getSpawnProbability()) {
+                return animalFactory.create(species, location);
+            }
+        }
+        return null;
+    }
+
+    private Plant createPlantAt(Random rand, Location location)
+    {
+        for (PlantSpecies species : PLANT_SPAWN_ORDER) {
+            if(rand.nextDouble() <= species.getSpawnProbability()) {
+                return plantFactory.create(species, location);
+            }
+        }
+        return null;
+    }
 }

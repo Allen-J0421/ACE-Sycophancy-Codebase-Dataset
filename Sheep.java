@@ -79,4 +79,10 @@ public class Sheep extends HerbivoreAnimal
     {
         return FEEDING_VALUE;
     }
+
+    @Override
+    protected AnimalSpecies getSpecies()
+    {
+        return AnimalSpecies.SHEEP;
+    }
 }

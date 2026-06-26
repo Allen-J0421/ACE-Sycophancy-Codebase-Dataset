@@ -86,4 +86,10 @@ public class Wolverine extends CarnivoreAnimal
     {
         return FEEDING_VALUE;
     }
+
+    @Override
+    protected AnimalSpecies getSpecies()
+    {
+        return AnimalSpecies.WOLVERINE;
+    }
 }

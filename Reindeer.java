@@ -78,4 +78,10 @@ public class Reindeer extends HerbivoreAnimal
     {
         return FEEDING_VALUE;
     }
+
+    @Override
+    protected AnimalSpecies getSpecies()
+    {
+        return AnimalSpecies.REINDEER;
+    }
 }

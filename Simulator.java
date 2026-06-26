@@ -45,19 +45,15 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
-        if(width <= 0 || depth <= 0) {
-            System.out.println("The dimensions must be greater than zero.");
-            System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
-        }
+        int simulationDepth = depth > 0 ? depth : DEFAULT_DEPTH;
+        int simulationWidth = width > 0 ? width : DEFAULT_WIDTH;
         
         organisms = new ArrayList<>();
-        field = new Field(depth, width);
+        field = new Field(simulationDepth, simulationWidth);
         clock = new SimulationClock();
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(simulationDepth, simulationWidth);
 
         // Setup a valid starting point
         reset();

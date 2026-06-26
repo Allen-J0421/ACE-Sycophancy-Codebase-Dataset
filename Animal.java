@@ -10,12 +10,13 @@ import java.util.List;
  */
 public abstract class Animal extends Actor
 {
+    // Steps an infected animal survives before dying.
+    private static final int INFECTION_DEATH_STEPS = 5;
+
     private double foodLevel;
     private boolean isGirl;
     private boolean isHealthy;
-    //the number of steps an animal takes when infected.
     private int infectedStepCounter;
-    //how many steps animal needs to wait before it can breed again.
     private int timeLeftUntilBreedingAgain = 0;
     /**
      * Create a new animal at location in field.
@@ -29,9 +30,9 @@ public abstract class Animal extends Actor
         setRandomGender();
         isHealthy = true;
         infectedStepCounter = 0;
-        timeLeftUntilBreedingAgain= getRandom().nextInt(getMaxTimeUntilBreedingAgain());
-        if(!isGirl){
-        timeLeftUntilBreedingAgain = 0;
+        timeLeftUntilBreedingAgain = getRandom().nextInt(getMaxTimeUntilBreedingAgain());
+        if(!isGirl) {
+            timeLeftUntilBreedingAgain = 0;
         }
     }
 
@@ -271,10 +272,10 @@ public abstract class Animal extends Actor
     protected void incrementAge(int step)
     {
         super.incrementAge(step);
-        if(!getHealth()){
-            infectedStepCounter++;}
-
-        if(infectedStepCounter == 5) {
+        if(!getHealth()) {
+            infectedStepCounter++;
+        }
+        if(infectedStepCounter == INFECTION_DEATH_STEPS) {
             setDead();
         }
     }

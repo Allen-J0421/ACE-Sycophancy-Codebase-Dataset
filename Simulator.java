@@ -25,7 +25,9 @@ public class Simulator
     private static final double PLANT_CREATION_PROBABILITY = 0.55; 
     private static final double CHEETAH_CREATION_PROBABILITY =0.032;
     private static final double ZEBRA_CREATION_PROBABILITY = 0.4998; 
-    private static final double HUNTER_CREATION_PROBABILITY = 0.01; 
+    private static final double HUNTER_CREATION_PROBABILITY = 0.01;
+    // How often (in steps) a random infection is introduced automatically.
+    private static final int INFECTION_INTERVAL = 500;
 
     // List of animals and plants which can not be stood on in the field.
     private List<Actor> animals;
@@ -39,7 +41,6 @@ public class Simulator
     private SimulatorView view;
 
     private boolean isDay;
-    //check the random weather method and the use of the random weather method in one step method
     private Weather weather;
     private int numberOfDays;
     private static final Random rand = Randomizer.getRandom();
@@ -125,34 +126,31 @@ public class Simulator
         List<Actor> newAnimals = new ArrayList<>();  
         List<Actor> newGrass = new ArrayList<>();  
 
-        getRandomWeather();
+        updateWeather();
         while(!isDay && weather == Weather.SUNNY){
-            getRandomWeather();
+            updateWeather();
         }
-        // Let all actors act.
-        //iterates through all the animals and hunters
-
         for(Iterator<Actor> it = animals.iterator(); it.hasNext(); ) {
             Actor animal = it.next();
-            animal.act(newAnimals,this);
-            if(! animal.isActive()) {
+            animal.act(newAnimals, this);
+            if(!animal.isActive()) {
                 it.remove();
             }
         }
         animals.addAll(newAnimals);
         noOfGrass = 0;
         for(Iterator<Actor> it = plants.iterator(); it.hasNext(); ) {
-            Actor plants = it.next();
-            plants.act(newGrass,this);
-            if(! plants.isActive()) {
+            Actor plant = it.next();
+            plant.act(newGrass, this);
+            if(!plant.isActive()) {
                 it.remove();
-            }else if(plants instanceof Plants){
+            } else {
                 noOfGrass++;
             }
         }
         plants.addAll(newGrass);
 
-        if(step % 500 == 0){
+        if(step % INFECTION_INTERVAL == 0) {
             introduceInfection();
         }
 
@@ -171,7 +169,7 @@ public class Simulator
         populate();
         isDay = true;
         numberOfDays = 0;
-        getRandomWeather();
+        updateWeather();
         // Show the starting state in the view.
         view.showStatus(field);
     }
@@ -229,29 +227,17 @@ public class Simulator
         return step;
     }
 
-    /**
-     * Randomly generates a weather from the enum class.
-     * @return A random weather.
-     */
-    private void getRandomWeather(){
+    private void updateWeather(){
         int value = rand.nextInt(weather.values().length);
         weather = weather.values()[value];
     }
-
-    /**
-     * Returns the List which contains all the plants in the simualtion.
-     * @return A list of all the alive plants in the simulation.
-     */
-    public List<Actor> getGrass(){
-        return plants;
-    }  
 
     /**
      * Chooses a random animal to infect. This method is automatically called after 100 steps,
      * or it can be called by pressing the introduce infection button.
      */
     public void introduceInfection(){
-        if(animals.size() != 0){
+        if(!animals.isEmpty()){
             int value = rand.nextInt(animals.size());
             if(animals.get(value) instanceof Animal){
                 Animal animal = (Animal)animals.get(value);

@@ -7,8 +7,8 @@ import java.util.Set;
 
 /**
  * A simple model of a Hunter.
- * Hunters age, move, hunt lions, and die.
- * Hunters can bring other hunters after 898 steps to increse the hunter population.
+ * Hunters age, move, hunt lions and cheetahs at night, and die.
+ * A new hunter spawns nearby every SPAWN_INTERVAL steps.
  *
  * @version 2022.03.01
  */
@@ -18,6 +18,8 @@ public class Hunter extends Actor
     // Characteristics shared by all Hunters.
     private static final int MAX_AGE = 1000;
     private static final int SHOTS = 2;
+    // A new hunter spawns every this many simulation steps.
+    private static final int SPAWN_INTERVAL = 898;
     private static final Set<Class<? extends Actor>> HUNTABLE_SPECIES = new HashSet<>(Arrays.asList(Lion.class, Cheetah.class));
     /**
      * Create a Hunter. A hunter is created as an adult (age 50).
@@ -48,8 +50,7 @@ public class Hunter extends Actor
                 if(newLocation != null) {
                     setLocation(newLocation);
                 } 
-                //hunter number increases as there are more hunters in the area who want to hunt.
-                if (simulator.getSteps() % 898 ==  0){
+                if(simulator.getSteps() % SPAWN_INTERVAL == 0) {
                     List<Location> free = field.getFreeAdjacentLocations(getLocation());
                     if(free.size() > 0) {
                         Location loc = free.remove(0);

@@ -58,6 +58,14 @@ public class Wolverine extends CarnivoreAnimal
     {
         actAsCarnivore(newWolverines, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, PREY_DIET);
     }
+
+    /**
+     * Create a newborn wolverine.
+     */
+    protected Animal createChild(Location location, Gender gender)
+    {
+        return new Wolverine(false, getField(), location, gender);
+    }
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten

@@ -51,6 +51,14 @@ public class Sheep extends HerbivoreAnimal
     {
         actAsHerbivore(newSheeps, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, TARGET_PLANTS);
     }
+
+    /**
+     * Create a newborn sheep.
+     */
+    protected Animal createChild(Location location, Gender gender)
+    {
+        return new Sheep(false, getField(), location, gender);
+    }
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten

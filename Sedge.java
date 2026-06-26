@@ -45,4 +45,12 @@ public class Sedge extends Plant
     public void act(List<Actor> newPlants, Weather weather, DayState dayState) {
         growAndMultiply(newPlants, weather, dayState, MAX_AGE, MULTIPLY_PROBABILITY, OPTIMAL_BREEDING_FACTOR);
     }
+
+    /**
+     * Create new sedge.
+     */
+    protected Plant createOffspring(Location location)
+    {
+        return new Sedge(false, field, location);
+    }
 }

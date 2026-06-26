@@ -68,6 +68,14 @@ public class Bear extends CarnivoreAnimal
         }
         actAsCarnivore(newBears, MAX_AGE, MAX_LITTER_SIZE, breedingProbability, BREEDING_AGE, PREY_DIET);
     }
+
+    /**
+     * Create a newborn bear.
+     */
+    protected Animal createChild(Location location, Gender gender)
+    {
+        return new Bear(false, getField(), location, gender);
+    }
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.

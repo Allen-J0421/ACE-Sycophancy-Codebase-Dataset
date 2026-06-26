@@ -45,4 +45,12 @@ public class Sage extends Plant
     public void act(List<Actor> newPlants, Weather weather, DayState dayState) {
         growAndMultiply(newPlants, weather, dayState, MAX_AGE, MULTIPLY_PROBABILITY, OPTIMAL_BREEDING_FACTOR);
     }
+
+    /**
+     * Create new sage.
+     */
+    protected Plant createOffspring(Location location)
+    {
+        return new Sage(false, field, location);
+    }
 }

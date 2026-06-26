@@ -51,6 +51,14 @@ public class Reindeer extends HerbivoreAnimal
     {
         actAsHerbivore(newReindeers, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, TARGET_PLANTS);
     }
+
+    /**
+     * Create a newborn reindeer.
+     */
+    protected Animal createChild(Location location, Gender gender)
+    {
+        return new Reindeer(false, getField(), location, gender);
+    }
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten

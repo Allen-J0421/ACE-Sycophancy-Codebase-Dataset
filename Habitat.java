@@ -19,7 +19,9 @@ public class Habitat
     // keep track of the simulation steps.
     private SimulationStep simStep;
     // hold a climate change scenario
-    private ClimateScenarios changeScenario;
+    private final ClimateScenarios changeScenario;
+    // hold the current concrete climate change effect for this habitat
+    private double concreteClimateChange;
     // true if the current season is Spring
     private boolean isSpring;
     // A random number generator
@@ -40,6 +42,7 @@ public class Habitat
     {
         this.simStep = simStep;
         this.changeScenario = changeScenario;
+        concreteClimateChange = changeScenario.getInitialConcreteChange();
 
         // Season initialisations
         initialiseSeasons(spring, summer, autumn, winter);
@@ -97,7 +100,7 @@ public class Habitat
         // 1)
         if(yearPassed())
         {
-            changeScenario.doClimateChange();
+            concreteClimateChange = changeScenario.increaseClimateChange(concreteClimateChange);
         }
 
         // 2) & 3)
@@ -183,6 +186,6 @@ public class Habitat
      */
     private void climateChangeEffect()
     {
-        currentSeason.incAveTemperature(changeScenario.getClimateChangeEffect());
+        currentSeason.incAveTemperature(changeScenario.roundClimateChange(concreteClimateChange));
     }
 }

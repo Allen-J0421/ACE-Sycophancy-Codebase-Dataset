@@ -14,8 +14,7 @@ public enum ClimateScenarios
     SCENARIO4("high", 3, 0.3);
     
     private final String displayName;
-    private final int initialConcreteChange;
-    private double concreteChange;
+    private final double initialConcreteChange;
     private final double changePercentage;
 
     /**
@@ -28,7 +27,6 @@ public enum ClimateScenarios
     {
         this.displayName = displayName;
         this.initialConcreteChange = concreteChange;
-        this.concreteChange = concreteChange;
         this.changePercentage = changePercentage;
     }
 
@@ -45,7 +43,7 @@ public enum ClimateScenarios
     }
 
     /**
-     * Return the scenario matching a UI name, resetting its mutable state for a fresh simulation.
+     * Return the scenario matching a UI name.
      *
      * @param scenarioName (String) the scenario display name.
      * @return (ClimateScenarios) the matching scenario, or the default scenario if no name matches.
@@ -54,35 +52,37 @@ public enum ClimateScenarios
     {
         for (ClimateScenarios scenario : values()) {
             if (scenario.displayName.equals(scenarioName)) {
-                scenario.reset();
                 return scenario;
             }
         }
-        SCENARIO1.reset();
         return SCENARIO1;
     }
     
     /**
-     * @return (int) the concreteChange as a rounded int
+     * @return (double) the initial concrete temperature change.
      */
-    public int getClimateChangeEffect()
+    public double getInitialConcreteChange()
+    {
+        return initialConcreteChange;
+    }
+
+    /**
+     * Increase a concrete temperature change by this scenario's percentage.
+     *
+     * @param concreteChange (double) the current concrete temperature change.
+     * @return (double) the increased concrete temperature change.
+     */
+    public double increaseClimateChange(double concreteChange)
+    {
+        return concreteChange + (changePercentage * concreteChange);
+    }
+
+    /**
+     * @param concreteChange (double) the current concrete temperature change.
+     * @return (int) the concreteChange as a rounded int.
+     */
+    public int roundClimateChange(double concreteChange)
     {
         return (int) Math.round(concreteChange);
-    }
-
-    /**
-     * Increases the concreteChange by the changePercentage.
-     */
-    public void doClimateChange()
-    {
-        concreteChange = concreteChange + (changePercentage * concreteChange);
-    }
-
-    /**
-     * Reset this scenario to its initial temperature change.
-     */
-    private void reset()
-    {
-        concreteChange = initialConcreteChange;
     }
 }

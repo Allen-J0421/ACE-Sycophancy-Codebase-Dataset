@@ -38,14 +38,11 @@ public abstract class Creature
      * Make this creature act - that is: make it do
      * whatever it wants/needs to do.
      * @param newCreatures A list to receive newly born creatures.
-     * @param atDayTime true if current step is daytime false otherwise.
-     * @param oxygenLevel The inital level of dissolved oxygen in the water.
-     * @param disease The disease may happened during simulation.  
-     * @param step current step.
+     * @param context snapshot of the current simulation state.
      * 
      * @return the oxygen level the species produced or consumed after action.
      */
-    abstract public double act(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step);
+    abstract public double act(List<Creature> newCreatures, SimulationContext context);
 
     /**
      * Check whether the creature is alive or not.

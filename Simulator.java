@@ -147,10 +147,11 @@ public class Simulator
     private double actForAllCreatures(List<Creature> newCreatures)
     {
         double oxygenChange = 0;
-        boolean atDayTime = timeOfDay();
+        SimulationContext context =
+            new SimulationContext(timeOfDay(), oxygenLevel, disease, step);
         for(Iterator<Creature> iterator = creatures.iterator(); iterator.hasNext(); ) {
             Creature creature = iterator.next();
-            oxygenChange += creature.act(newCreatures, atDayTime, oxygenLevel, disease, step);
+            oxygenChange += creature.act(newCreatures, context);
             if(!creature.isAlive()) {
                 iterator.remove();
             }

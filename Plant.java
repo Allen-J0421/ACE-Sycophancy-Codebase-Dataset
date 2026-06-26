@@ -18,11 +18,10 @@ public abstract class Plant extends Creature
         age = randomAge ? RAND.nextInt(profile.getMaxAge()) : 0;
     }
 
-    public final double act(List<Creature> newPlants, boolean atDayTime, double oxygenLevel,
-                            Disease disease, int step)
+    public final double act(List<Creature> newPlants, SimulationContext context)
     {
         incrementAge();
-        if(oxygenLevel < profile.getOxygenRequiredAtNight()) {
+        if(context.getOxygenLevel() < profile.getOxygenRequiredAtNight()) {
             setDead();
             return 0;
         }
@@ -31,7 +30,7 @@ public abstract class Plant extends Creature
             propagate(newPlants);
         }
 
-        if(atDayTime) {
+        if(context.isAtDayTime()) {
             return profile.getOxygenGeneratedAtDay();
         }
         return -profile.getOxygenRequiredAtNight();

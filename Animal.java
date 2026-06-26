@@ -110,10 +110,12 @@ public abstract class Animal extends Creature
      *
      * @return the oxygen level the species consumed after action.
      */
-    public final double act(List<Creature> newAnimals, boolean atDayTime, double oxygenLevel,
-                            Disease disease, int step)
+    public final double act(List<Creature> newAnimals, SimulationContext context)
     {
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED) {
+        Disease disease = context.getDisease();
+        int step = context.getStep();
+
+        if(context.getOxygenLevel() < ANIMAL_OXYGEN_REQUIRED) {
             setDead();
             return 0;
         }
@@ -126,7 +128,7 @@ public abstract class Animal extends Creature
         incrementAge();
         incrementHunger();
 
-        if(isAlive() && !needSleep(atDayTime)) {
+        if(isAlive() && !needSleep(context.isAtDayTime())) {
             giveBirth(newAnimals);
             moveTo(search(disease, step));
         }

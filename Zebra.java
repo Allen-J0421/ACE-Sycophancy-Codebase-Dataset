@@ -12,6 +12,8 @@ public class Zebra extends Prey
     public static final int MAX_LITTER_SIZE = 3;
     public static final int MAX_FOOD_LEVEL = 25;
     public static final int FOOD_VALUE = 13;
+    // Fraction of MAX_FOOD_LEVEL a new-born starts with.
+    public static final double NEWBORN_FOOD_FRACTION = 0.25;
     
     /**
      * Create a new Zebra. A Zebra may be created with age

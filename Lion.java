@@ -26,31 +26,9 @@ public class Lion extends Predator
      */
     public Lion(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
-        super(field, location, isInfected, isImmune);
-        
-        preyCatchingProbability = PREY_CATCHING_PROBABILITY;
-        breedingAge = BREEDING_AGE; 
-        maxAge = MAX_AGE;
-        breedingProbability = BREEDING_PROBABILITY;
-        maxLitterSize = MAX_LITTER_SIZE;
-        maxFoodLevel = MAX_FOOD_LEVEL;
-        foodValue = FOOD_VALUE;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else
-        {
-            age = 0;
-            
-            // Chooses a random percentage between 0-18% of the max
-            // food level to start at - prevents a self-sustaining
-            // loop and add variability.
-            double percentageOfMaxFoodLevel = rand.nextDouble() / 5.5;
-            foodLevel = (int) (percentageOfMaxFoodLevel * MAX_FOOD_LEVEL);
-        }
+        super(randomAge, field, location, isInfected, isImmune,
+              PREY_CATCHING_PROBABILITY, BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY,
+              MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);
     }
 
     /**

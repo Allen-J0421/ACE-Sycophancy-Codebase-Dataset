@@ -11,17 +11,50 @@ public abstract class Predator extends Animal
     protected double preyCatchingProbability;
 
     /**
-     * Create a new predator at location in field.
-     * 
+     * Create a new predator at location in field, initialising its species-specific
+     * statistics. Shared by every predator species so the per-species constructors
+     * carry only their constants, not duplicated initialisation logic.
+     *
+     * @param randomAge If true, the predator starts with a random age and food level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param infected : intial state if the prey is infected or not
-     * @param immmune : intial state if the prey is immune or not
+     * @param isInfected Intial state if the predator is infected or not.
+     * @param isImmune Intial state if the predator is immune or not.
+     * @param preyCatchingProbability The likelihood of the predator catching its prey.
+     * @param breedingAge The age at which the predator can start to breed.
+     * @param maxAge The age to which the predator can live.
+     * @param breedingProbability The likelihood of the predator breeding.
+     * @param maxLitterSize The maximum number of births.
+     * @param maxFoodLevel The food level the predator stops being hungry at.
+     * @param foodValue How much another predator's food level increases when eating it.
      */
-    protected Predator(Field field, Location location, boolean isInfected, boolean isImmune)
+    protected Predator(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune,
+                       double preyCatchingProbability, int breedingAge, int maxAge, double breedingProbability,
+                       int maxLitterSize, int maxFoodLevel, int foodValue)
     {
         super(field, location, isInfected, isImmune);
         movementProbability = 0.8;
+
+        this.preyCatchingProbability = preyCatchingProbability;
+        this.breedingAge = breedingAge;
+        this.maxAge = maxAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.maxFoodLevel = maxFoodLevel;
+        this.foodValue = foodValue;
+
+        if (randomAge)
+        {
+            age = rand.nextInt(maxAge);
+            foodLevel = rand.nextInt(maxFoodLevel);
+        }
+        else
+        {
+            // Chooses a random percentage between 0-18% of the max food level
+            // to start at - prevents a self-sustaining loop and adds variability.
+            double percentageOfMaxFoodLevel = rand.nextDouble() / 5.5;
+            foodLevel = (int) (percentageOfMaxFoodLevel * maxFoodLevel);
+        }
     }
     
     /**

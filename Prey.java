@@ -9,17 +9,47 @@ import java.util.Iterator;
 public abstract class Prey extends Animal
 {
     /**
-     * Create a new prey at location in field.
-     * 
+     * Create a new prey at location in field, initialising its species-specific
+     * statistics. Shared by every prey species so the per-species constructors
+     * carry only their constants, not duplicated initialisation logic.
+     *
+     * @param randomAge If true, the prey starts with a random age and food level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      * @param infected Intial state if the prey is infected or not
-     * @param immmune Intial state if the prey is immune or not
+     * @param immune Intial state if the prey is immune or not
+     * @param breedingAge The age at which the prey can start to breed.
+     * @param maxAge The age to which the prey can live.
+     * @param breedingProbability The likelihood of the prey breeding.
+     * @param maxLitterSize The maximum number of births.
+     * @param maxFoodLevel The food level the prey stops being hungry at.
+     * @param foodValue How much a predator's food level increases when eating it.
+     * @param newbornFoodFraction Fraction of maxFoodLevel a new-born starts with.
      */
-    protected Prey(Field field, Location location, boolean infected, boolean immune)
+    protected Prey(boolean randomAge, Field field, Location location, boolean infected, boolean immune,
+                   int breedingAge, int maxAge, double breedingProbability, int maxLitterSize,
+                   int maxFoodLevel, int foodValue, double newbornFoodFraction)
     {
         super(field, location, infected, immune);
         movementProbability = 0.75;
+
+        this.breedingAge = breedingAge;
+        this.maxAge = maxAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.maxFoodLevel = maxFoodLevel;
+        this.foodValue = foodValue;
+
+        if (randomAge)
+        {
+            age = rand.nextInt(maxAge);
+            foodLevel = rand.nextInt(maxFoodLevel);
+        }
+        else
+        {
+            age = 0;
+            foodLevel = (int) (newbornFoodFraction * maxFoodLevel);
+        }
     }
 
     /**

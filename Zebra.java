@@ -24,6 +24,17 @@ public class Zebra extends Prey {
         super(foodValue, randomAge, field, location);
     }
 
+    /**
+     * Create a zebra with default starting values.
+     *
+     * @param field The field in which the zebra will reside.
+     * @param location The location in which the zebra will occupy.
+     * @return A new zebra instance.
+     */
+    static Zebra createDefault(Field field, Location location) {
+        return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);
+    }
+
     @Override
     protected AnimalProfile getProfile() {
         return PROFILE;
@@ -37,7 +48,7 @@ public class Zebra extends Prey {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);
+        return createDefault(field, location);
     }
 
     /**

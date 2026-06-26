@@ -24,6 +24,17 @@ public class Goat extends Prey {
         super(foodValue, randomAge, field, location);
     }
 
+    /**
+     * Create a goat with default starting values.
+     *
+     * @param field The field in which the goat will reside.
+     * @param location The location in which the goat will occupy.
+     * @return A new goat instance.
+     */
+    static Goat createDefault(Field field, Location location) {
+        return new Goat(DEFAULT_FOOD_VALUE, true, field, location);
+    }
+
     @Override
     protected AnimalProfile getProfile() {
         return PROFILE;
@@ -37,7 +48,7 @@ public class Goat extends Prey {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Goat(DEFAULT_FOOD_VALUE, true, field, location);
+        return createDefault(field, location);
     }
 
     /**

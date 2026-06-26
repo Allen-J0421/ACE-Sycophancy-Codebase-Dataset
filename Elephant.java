@@ -24,6 +24,17 @@ public class Elephant extends Prey {
         super(foodValue, randomAge, field, location);
     }
 
+    /**
+     * Create an elephant with default starting values.
+     *
+     * @param field The field in which the elephant will reside.
+     * @param location The location in which the elephant will occupy.
+     * @return A new Elephant instance.
+     */
+    static Elephant createDefault(Field field, Location location) {
+        return new Elephant(DEFAULT_FOOD_VALUE, true, field, location);
+    }
+
     @Override
     protected AnimalProfile getProfile() {
         return PROFILE;
@@ -37,7 +48,7 @@ public class Elephant extends Prey {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Elephant(DEFAULT_FOOD_VALUE, true, field, location);
+        return createDefault(field, location);
     }
 
     /**

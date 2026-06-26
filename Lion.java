@@ -26,6 +26,17 @@ public class Lion extends Predator {
         super(foodLevel, randomAge, field, location);
     }
 
+    /**
+     * Create a lion with default starting values.
+     *
+     * @param field The field in which the lion will reside.
+     * @param location The location in which the lion will occupy.
+     * @return A new lion instance.
+     */
+    static Lion createDefault(Field field, Location location) {
+        return new Lion(DEFAULT_FOOD_LEVEL, true, field, location);
+    }
+
     @Override
     protected AnimalProfile getProfile() {
         return PROFILE;
@@ -39,7 +50,7 @@ public class Lion extends Predator {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Lion(DEFAULT_FOOD_LEVEL, true, field, location);
+        return createDefault(field, location);
     }
 
     /**

@@ -9,15 +9,9 @@ import java.util.List;
  */
 public class Grass extends Plant {
 
-    private static final double MAX_SIZE = 10.0;
-    private static final int MAX_AGE = 25;
-    private static final int BREEDING_AGE = 16;
-    private static final double LOW_BREEDING_PROBABILITY = 0.15;
-    private static final double HIGH_BREEDING_PROBABILITY = 0.25;
-    private static final int MAX_LITTER_SIZE = 2;
-    private static final double DEFAULT_SIZE = 1.00;
-    private static final int DEFAULT_FOOD_VALUE = 5;
-    private static final double DEFAULT_GROWTH_RATE = 1.2;
+    private static final PlantProfile PROFILE = new PlantProfile(
+            false, 10.0, 25, 16, 0.15, 0.25, 2, 5, 1.00, 1.2,
+            WeatherType.RAIN, WeatherType.SUN);
 
     /**
      * Constructor for a Grass in the simulation.
@@ -27,29 +21,23 @@ public class Grass extends Plant {
      * @param location The location in which this grass is spawned into.
      */
     public Grass(int foodValue, double size, boolean randomAge, Field field, Location location) {
-        super(false, foodValue, size, randomAge, field, location);
-        setGrowthRate(DEFAULT_GROWTH_RATE);
-        setBreedingProbability(LOW_BREEDING_PROBABILITY);
+        super(foodValue, size, randomAge, field, location);
     }
 
     /**
-     * Getter method for the maximum age of the grass.
+     * Create grass with default starting values.
      *
-     * @return An integer value representing the maximum age.
+     * @param field The field in which the grass will reside.
+     * @param location The location in which the grass will occupy.
+     * @return A new Grass instance.
      */
-    @Override
-    public int getMaxAge() {
-        return MAX_AGE;
+    static Grass createDefault(Field field, Location location) {
+        return new Grass(PROFILE.getDefaultFoodValue(), PROFILE.getDefaultSize(), true, field, location);
     }
 
-    /**
-     * Getter method for the age of breeding of the grass.
-     *
-     * @return A double value representing the breeding age.
-     */
     @Override
-    public int getBreedingAge() {
-        return BREEDING_AGE;
+    protected PlantProfile getProfile() {
+        return PROFILE;
     }
 
     /**
@@ -60,7 +48,7 @@ public class Grass extends Plant {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Grass(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);
+        return createDefault(field, location);
     }
 
     /**
@@ -72,37 +60,7 @@ public class Grass extends Plant {
      */
     @Override
     public void act(List<Entity> newGrass, Weather weather, TimeOfDay time) {
-        if (isAlive()) {
-            setBreedingProbability(LOW_BREEDING_PROBABILITY);
-
-            //If it has recently rained or is sunny, grow at a higher growth rate
-            if (weather.getRecentWeather().contains(WeatherType.RAIN) ||
-                    weather.getRecentWeather().contains(WeatherType.SUN)){
-                setBreedingProbability(HIGH_BREEDING_PROBABILITY);
-            }
-            grow();
-            giveBirth(newGrass);
-        }
-    }
-
-    /**
-     * Get maximum size of the grass.
-     *
-     * @return A double representing maximum size.
-     */
-    @Override
-    public double getMaxSize() {
-        return MAX_SIZE;
-    }
-
-    /**
-     * Getter method for the maximum litter size of the newborn grass.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    @Override
-    public int getMaxLitterSize() {
-        return MAX_LITTER_SIZE;
+        actAsPlant(newGrass, weather);
     }
 
 }

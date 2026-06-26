@@ -26,6 +26,17 @@ public class Cheetah extends Predator {
         super(foodLevel, randomAge, field, location);
     }
 
+    /**
+     * Create a cheetah with default starting values.
+     *
+     * @param field The field in which the cheetah will reside.
+     * @param location The location in which the cheetah will occupy.
+     * @return A new Cheetah instance.
+     */
+    static Cheetah createDefault(Field field, Location location) {
+        return new Cheetah(DEFAULT_FOOD_LEVEL, true, field, location);
+    }
+
     @Override
     protected AnimalProfile getProfile() {
         return PROFILE;
@@ -39,7 +50,7 @@ public class Cheetah extends Predator {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Cheetah(DEFAULT_FOOD_LEVEL, true, field, location);
+        return createDefault(field, location);
     }
 
     /**

@@ -23,6 +23,17 @@ public class Vulture extends Scavenger {
         super(foodLevel, randomAge, field, location);
     }
 
+    /**
+     * Create a vulture with default starting values.
+     *
+     * @param field The field in which the vulture will reside.
+     * @param location The location in which the vulture will occupy.
+     * @return A new Vulture instance.
+     */
+    static Vulture createDefault(Field field, Location location) {
+        return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
+    }
+
     @Override
     protected AnimalProfile getProfile() {
         return PROFILE;
@@ -36,7 +47,7 @@ public class Vulture extends Scavenger {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
+        return createDefault(field, location);
     }
 
 }

@@ -11,26 +11,25 @@ public abstract class Plant extends Organism implements Growable, Consumable {
 
     private double size;
     private final int foodValue;
-    private final boolean poisonous;
     private double growthRate;
     private double breedingProbability;
 
     /**
      * Constructor for a plant in the simulation.
      *
-     * @param poisonous Whether the plant is poisonous or not.
      * @param foodValue The food value of this plant.
      * @param size The initial size of this plant.
-     * @param randomAge Whether the animal should have a random age or not.
+     * @param randomAge Whether the plant should have a random age or not.
      * @param field The field in which the plant resides.
      * @param location The location in which the plant spawns into.
      */
-    public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field, Location location) {
+    public Plant(int foodValue, double size, boolean randomAge, Field field, Location location) {
         super(randomAge, field, location);
 
         this.size = size;
         this.foodValue = foodValue;
-        this.poisonous = poisonous;
+        setGrowthRate(getProfile().getDefaultGrowthRate());
+        setBreedingProbability(getProfile().getLowBreedingProbability());
     }
 
     /**
@@ -42,6 +41,33 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     abstract public void act(List<Entity> newPlants, Weather weather, TimeOfDay time);
+
+    /**
+     * Getter method for immutable species configuration.
+     *
+     * @return The plant's species profile.
+     */
+    abstract protected PlantProfile getProfile();
+
+    /**
+     * Run the common plant lifecycle for one simulation step.
+     *
+     * @param newPlants A list of all newborn plants in this simulation step.
+     * @param weather The current state of weather in the simulation.
+     */
+    protected void actAsPlant(List<Entity> newPlants, Weather weather) {
+        if (isAlive()) {
+            PlantProfile profile = getProfile();
+            setBreedingProbability(profile.getLowBreedingProbability());
+
+            if (profile.isFavorableWeather(weather.getRecentWeather())) {
+                setBreedingProbability(profile.getHighBreedingProbability());
+            }
+
+            grow();
+            giveBirth(newPlants);
+        }
+    }
 
     /**
      * Grow in size in accordance with the current growth rate.
@@ -80,7 +106,9 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return A double representing maximum size.
      */
     @Override
-    abstract public double getMaxSize();
+    public double getMaxSize() {
+        return getProfile().getMaxSize();
+    }
 
     /**
      * Getter method for the maximum litter size of the plant's newborns.
@@ -88,7 +116,29 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return An integer value representing the maximum allowed litter size.
      */
     @Override
-    abstract public int getMaxLitterSize();
+    public int getMaxLitterSize() {
+        return getProfile().getMaxLitterSize();
+    }
+
+    /**
+     * Getter method for the maximum age of the plant.
+     *
+     * @return An integer value representing the maximum age.
+     */
+    @Override
+    public int getMaxAge() {
+        return getProfile().getMaxAge();
+    }
+
+    /**
+     * Getter method for the age of breeding of the plant.
+     *
+     * @return An integer value representing the breeding age.
+     */
+    @Override
+    public int getBreedingAge() {
+        return getProfile().getBreedingAge();
+    }
 
     /**
      * Checks if the plant meets specified conditions in order to breed.
@@ -135,7 +185,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public boolean isPoisonous() {
-        return this.poisonous;
+        return getProfile().isPoisonous();
     }
 
     /**

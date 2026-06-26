@@ -26,10 +26,17 @@ public final class ModularExponentiation {
     }
 
     private static void validateInputs(int exponent, int modulus) {
+        validateExponent(exponent);
+        validateModulus(modulus);
+    }
+
+    private static void validateExponent(int exponent) {
         if (exponent < 0) {
             throw new IllegalArgumentException("Exponent must be non-negative.");
         }
+    }
 
+    private static void validateModulus(int modulus) {
         if (modulus <= 0) {
             throw new IllegalArgumentException("Modulus must be positive.");
         }
@@ -45,13 +52,5 @@ public final class ModularExponentiation {
 
     private static int multiplyMod(long left, long right, int modulus) {
         return (int) ((left * right) % modulus);
-    }
-
-    public static void main(String[] args) {
-        int base = 3;
-        int exponent = 2;
-        int modulus = 4;
-
-        System.out.println(modPow(base, exponent, modulus));
     }
 }

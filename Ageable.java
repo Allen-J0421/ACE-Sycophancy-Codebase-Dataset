@@ -1,18 +1,21 @@
 /**
- * Mixin for organisms whose lifetime is age-limited.
+ * Mixin for organisms whose lifecycle advances over time.
  *
  * @version 26/02/2022
  */
 public interface Ageable extends OrganismContext
 {
-    AgeState getAgeState();
+    void applyAgeProgression();
+
+    default boolean shouldDieFromAge()
+    {
+        return false;
+    }
 
     default void ageOneStep()
     {
-        AgeState ageState = getAgeState();
-        ageState.setAge(ageState.getAge() + 1);
-
-        if(ageState.getAge() > ageState.getMaxAge()) {
+        applyAgeProgression();
+        if(shouldDieFromAge()) {
             markDead();
         }
     }

@@ -1,3 +1,4 @@
+import java.util.Iterator;
 import java.util.List;
 /**
  * A class representing shared characteristics of animals.
@@ -204,7 +205,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected boolean canBreed()
     {
-        return canBreedNow();
+        return ageState.getAge() >= breedingState.getBreedingAge();
     }
 
     /**
@@ -274,6 +275,16 @@ public abstract class Animal extends LivingOrganism
         return ageState;
     }
 
+    public void applyAgeProgression()
+    {
+        ageState.setAge(ageState.getAge() + 1);
+    }
+
+    public boolean shouldDieFromAge()
+    {
+        return ageState.getAge() > ageState.getMaxAge();
+    }
+
     public HungerState getHungerState()
     {
         return hungerState;
@@ -309,9 +320,32 @@ public abstract class Animal extends LivingOrganism
         setDead();
     }
 
-    public Animal spawnOffspring(Location location, boolean isInfected, boolean isImmune)
+    public Class<?> getBreedingSpaceType()
     {
-        return createOffspring(location, isInfected, isImmune);
+        return Animal.class;
+    }
+
+    public int determineOffspringCount(int availableLocations)
+    {
+        return breed();
+    }
+
+    public LivingOrganism spawnOffspringAt(Location location)
+    {
+        boolean offspringIsInfected = diseaseState.isInfected();
+        boolean offspringIsImmune = diseaseState.isImmune();
+
+        if (!diseaseState.isImmune() && diseaseState.isInfected() && rand.nextDouble() < 0.15) 
+        {
+            offspringIsImmune = true;
+            offspringIsInfected = false;
+        }
+        else if (diseaseState.isImmune() && rand.nextDouble() < 0.9)
+        {
+            offspringIsImmune = false;
+        }
+
+        return createOffspring(location, offspringIsInfected, offspringIsImmune);
     }
 
     public Location locateFoodSource()
@@ -322,5 +356,30 @@ public abstract class Animal extends LivingOrganism
     public void relocate(Location newLocation)
     {
         setLocation(newLocation);
+    }
+
+    private int calculateBirths()
+    {
+        int births = 0;
+        
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        
+        while(it.hasNext()) 
+        {
+            Location where = it.next();
+            Animal animal = field.getObjectAt(where, Animal.class);
+            
+            if (animal != null && this.getClass().equals(animal.getClass())) 
+            {
+                if(!animal.getBreedingState().isFemale()) 
+                {
+                    births = rand.nextInt(breedingState.getMaxLitterSize()) + 1;
+                }
+            }
+        }
+        
+        return births;
     }
 }

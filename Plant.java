@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Plants can grow, be can be partially eaten, they can be completely eaten and die, plants
@@ -7,7 +6,7 @@ import java.util.Iterator;
  *
  * @version 26/02/2022
  */
-public class Plant extends LivingOrganism
+public class Plant extends LivingOrganism implements Ageable, Breedable
 {
     // its current health percentage
     private double healthPercentage;
@@ -55,7 +54,7 @@ public class Plant extends LivingOrganism
      */
     public void act(List<LivingOrganism> newPlants)
     {
-        incrementAge();
+        ageOneStep();
         if(!getTime().isNight()) 
         {
             if(isAlive()) 
@@ -109,11 +108,7 @@ public class Plant extends LivingOrganism
      */
     protected void incrementAge() 
     {
-        healthPercentage += GROWTH_RATE;
-        if (healthPercentage > 1.0) 
-        {
-            healthPercentage = 1.0;
-        }
+        ageOneStep();
     }
 
     /**
@@ -160,15 +155,7 @@ public class Plant extends LivingOrganism
      */
     protected void populate(List<LivingOrganism> newPlants)
     {
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation(), Plant.class);
-        
-        // New plants are spread into adjacent locations.
-        for(int b = 0; free.size() > 0; b++) 
-        {
-            newPlants.add(createOffspring(free));
-        }
+        populateOffspring(newPlants);
     }
     
     /**
@@ -177,13 +164,52 @@ public class Plant extends LivingOrganism
      * @param free List of free locations to spawn
      * @return Returns a new plant object.
      */
-    private Plant createOffspring(List<Location> free) 
+    private Plant createOffspring(Location location) 
     {
-        Location loc = free.remove(0);
-        Plant offspring = null;
-        
-        offspring = new Plant(false, getField(), loc);
-        
-        return offspring;
+        return new Plant(false, getField(), location);
+    }
+
+    public void applyAgeProgression()
+    {
+        healthPercentage += GROWTH_RATE;
+        if (healthPercentage > 1.0) 
+        {
+            healthPercentage = 1.0;
+        }
+    }
+
+    public Field currentField()
+    {
+        return getField();
+    }
+
+    public Location currentLocation()
+    {
+        return getLocation();
+    }
+
+    public boolean organismIsAlive()
+    {
+        return isAlive();
+    }
+
+    public void markDead()
+    {
+        setDead();
+    }
+
+    public Class<?> getBreedingSpaceType()
+    {
+        return Plant.class;
+    }
+
+    public int determineOffspringCount(int availableLocations)
+    {
+        return availableLocations;
+    }
+
+    public LivingOrganism spawnOffspringAt(Location location)
+    {
+        return createOffspring(location);
     }
 }

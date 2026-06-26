@@ -11,7 +11,7 @@ final class ModularExponentiation {
         int currentBase = base;
 
         while (exponent > 0) {
-            if ((exponent & 1) == 1) {
+            if (isOdd(exponent)) {
                 result = multiplyMod(result, currentBase, modulus);
             }
 
@@ -20,6 +20,10 @@ final class ModularExponentiation {
         }
 
         return result;
+    }
+
+    private static boolean isOdd(int value) {
+        return (value & 1) == 1;
     }
 
     private static int multiplyMod(int left, int right, int modulus) {

@@ -1,4 +1,3 @@
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -8,35 +7,32 @@ import java.util.function.BiFunction;
  *
  * @version 2022.03.02
  */
-public class Simulator
+public class Simulator implements SimulationControls
 {
     private boolean playingSimulation = false;
     private int remainingSteps;
 
     private static final Random rand = Randomizer.getRandom();
 
-    // Constants representing configuration information for the simulation.
     // The default width for the grid.
     private static final int DEFAULT_WIDTH = 240;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 160;
 
-    // A map of the creation probabilities for the organisms in the simulation
-    private static Map<Class<?>, Double> CREATION_PROBABILITIES = Map.ofEntries(
-            Map.entry(Coyote.class, 0.010),
-            Map.entry(Deer.class, 0.080),
-            Map.entry(Wolf.class, 0.010),
-            Map.entry(Eagle.class, 0.01),
-            Map.entry(Mouse.class, 0.080),
-            Map.entry(Grass.class, 0.030),
-            Map.entry(Hunter.class, 0.03)
-
-    );
-
-    // Maximum number of hunters in the simulation
+    // Maximum number of hunters allowed in the simulation
     private static final int HUNTER_LIMIT = 5;
-    private int HUNTER_COUNT = 0;
+    private int hunterCount = 0;
 
+    // Creation probability for each actor class (instance field — not shared across instances)
+    private Map<Class<?>, Double> CREATION_PROBABILITIES = Map.ofEntries(
+            Map.entry(Coyote.class, 0.010),
+            Map.entry(Deer.class,   0.080),
+            Map.entry(Wolf.class,   0.010),
+            Map.entry(Eagle.class,  0.010),
+            Map.entry(Mouse.class,  0.080),
+            Map.entry(Grass.class,  0.030),
+            Map.entry(Hunter.class, 0.030)
+    );
 
     // List of actors in the field.
     private List<Actor> actors;
@@ -51,40 +47,27 @@ public class Simulator
 
 
     /**
-     * A simulator constructor to set the CREATION_PROBABILITY of each actor.
-     * This constructor can be used to test different combinations of probabilities to find an optimal combination
-     *
-     * @param GrassProbability Probability of Grass being generated
-     * @param DeerProbability Probability of Deer being generated
-     * @param CoyoteProbability Probability of Coyote being generated
-     * @param WolfProbability Probability of Wolf being generated
-     * @param EagleProbability Probability of Eagle being generated
-     * @param HunterProbability Probability of Hunter being generated
-     * @param MouseProbability Probability of Mouse being generated
+     * A simulator constructor that sets a custom creation probability for each actor class.
+     * Useful for testing different probability combinations to find an optimal configuration.
      */
-    public Simulator(double GrassProbability, double DeerProbability, double CoyoteProbability, double WolfProbability, double EagleProbability, double HunterProbability, double MouseProbability){
-        this(DEFAULT_WIDTH, DEFAULT_DEPTH);
-
+    public Simulator(double GrassProbability, double DeerProbability, double CoyoteProbability,
+                     double WolfProbability, double EagleProbability, double HunterProbability,
+                     double MouseProbability)
+    {
+        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
         CREATION_PROBABILITIES = Map.ofEntries(
                 Map.entry(Coyote.class, CoyoteProbability),
-                Map.entry(Deer.class, DeerProbability),
-                Map.entry(Wolf.class, WolfProbability),
-                Map.entry(Eagle.class, EagleProbability),
-                Map.entry(Mouse.class, MouseProbability),
-                Map.entry(Grass.class, GrassProbability),
+                Map.entry(Deer.class,   DeerProbability),
+                Map.entry(Wolf.class,   WolfProbability),
+                Map.entry(Eagle.class,  EagleProbability),
+                Map.entry(Mouse.class,  MouseProbability),
+                Map.entry(Grass.class,  GrassProbability),
                 Map.entry(Hunter.class, HunterProbability)
         );
-
-        actors = new ArrayList<>();
-        field = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
-        environment = new Environment(new Time(), new Weather());
-
         reset();
     }
 
-    /**
-     * Construct a simulation field with default size.
-     */
+    /** Construct a simulation field with default size. */
     public Simulator()
     {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
@@ -97,7 +80,7 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
-        if(width <= 0 || depth <= 0) {
+        if (width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
             depth = DEFAULT_DEPTH;
@@ -108,134 +91,102 @@ public class Simulator
         field = new Field(depth, width);
         environment = new Environment(new Time(), new Weather());
 
-        // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        for(Class cls : SimulationInfo.DEFAULT_COLOR_MAP.keySet()) {
+        for (Class cls : SimulationInfo.DEFAULT_COLOR_MAP.keySet()) {
             view.setColor(cls, SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
         }
+        view.wireButtons(this);
 
-        // adding additional buttons to the GUI
-        view.addLongButtonListener(longButtonListener);
-        view.addOneStepButtonListener(startButtonListener);
-        view.addStopButtonListener(stopButtonListener);
-        view.addResetButtonListener(resetButtonListener);
-
-        // Setup a valid starting point.
         reset();
     }
 
-    /**
-     * Run the simulation from its current state for a reasonably long period,
-     * (4000 steps).
-     */
+    // --- SimulationControls implementation ---
+
+    @Override
+    public void stepOnce()
+    {
+        if (!playingSimulation) {
+            playingSimulation = true;
+            simulateOneStep();
+            playingSimulation = false;
+        }
+    }
+
+    @Override
     public void runLongSimulation()
     {
         remainingSteps += 4000;
         simulate(remainingSteps);
     }
 
-    /**
-     * Whenever the startButton is pressed,the simulateOneStep()
-     * method is called.
-     */
-    private ActionListener startButtonListener = e -> {
-        if(playingSimulation){
-            System.out.println("Stop the simulation first");
-        }
-        else {
-            playingSimulation = true;
-            simulateOneStep();
-            playingSimulation = false;
-        }
-    };
-
-    /**
-     * Whenever the stopButton is pressed, the simulation is stopped.
-     */
-    private ActionListener stopButtonListener = e -> {
+    @Override
+    public void stop()
+    {
         playingSimulation = false;
-        Thread.currentThread().interrupt();
-    };
+    }
 
-    /**
-     * Whenever the resetButton is pressed, the simulation is reset.
-     */
-    private ActionListener resetButtonListener = e -> {
-        playingSimulation = false;
-        reset();
-    };
+    @Override
+    public void reset()
+    {
+        step = 0;
+        hunterCount = 0;
+        actors.clear();
+        populate();
+        environment.getTime().reset();
+        view.showStatus(step, environment, field);
+    }
 
-    /**
-     * Whenever the longButton is pressed,runLongSimulation() is called.
-     */
-    private ActionListener longButtonListener = e -> {
-        Thread runLongSimThread = new Thread("SimulationRunThread"){
-            public void run() { runLongSimulation(); }
-        };
+    @Override
+    public boolean isPlaying()
+    {
+        return playingSimulation;
+    }
 
-        if (!playingSimulation){
-            runLongSimThread.start();
-        }
-        else{
-            System.out.println("Stop the simulation first");
-        }
-    };
-
+    // --- Simulation engine ---
 
     /**
      * Run the simulation from its current state for the given number of steps.
-     * Stop before the given number of steps if it ceases to be viable.
-     * @param numSteps The number of steps to run for.
+     * Stops early if the population ceases to be viable.
      */
     public void simulate(int numSteps)
     {
         playingSimulation = true;
         remainingSteps = numSteps;
 
-        int backupCounter = 1;
-        while(playingSimulation){
-            for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        int stepsDone = 1;
+        while (playingSimulation) {
+            for (int s = 1; s <= numSteps && view.isViable(field); s++) {
                 simulateOneStep();
-                backupCounter++;
-//            delay(60);   // uncomment this to run more slowly
+                stepsDone++;
             }
-            if(!view.isViable(field)){
-                // System.out.println("STEPS COMPLETED: "+backupCounter);
-                // uncomment this while optimizing for population stability
-                Thread.currentThread().interrupt();
-                if(backupCounter > SimulationInfo.HIGHEST_STEPS){
-                    // If multiple instances of the simulation are created in the same session (for testing),
-                    // the fields in SimulationInfo can be used for optimizing the default probabilities
-                    SimulationInfo.HIGHEST_STEPS = backupCounter;
+            if (!view.isViable(field)) {
+                if (stepsDone > SimulationInfo.HIGHEST_STEPS) {
+                    SimulationInfo.HIGHEST_STEPS = stepsDone;
                     SimulationInfo.HIGHEST_STEP_PROBS = this.CREATION_PROBABILITIES;
                 }
                 playingSimulation = false;
                 break;
             }
         }
-        remainingSteps = numSteps - backupCounter;
+        remainingSteps = numSteps - stepsDone;
     }
 
     /**
      * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each
-     * organism.
+     * Iterates over the whole field, letting each actor act.
      */
     public void simulateOneStep()
     {
-        if(!playingSimulation){ return; }
+        if (!playingSimulation) { return; }
         step++;
         environment.getTime().incrementTime();
         environment.getWeather().checkWeatherChange(step);
 
-
-        // Provide space for newborn animals.
         List<Actor> newActors = new ArrayList<>();
-        // Let all actors act.
-        for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
+        for (Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
             actor.act(newActors, environment);
-            if(!actor.isAlive()) {
+            if (!actor.isAlive()) {
                 it.remove();
             }
         }
@@ -246,31 +197,16 @@ public class Simulator
     }
 
     /**
-     * Randomly generate grass in free patches on the field, only if it is raining
+     * Randomly generate grass in free patches on the field, only if it is raining.
      */
-    private void plantGrassInPatches(){
-        // new grass is randomly added in patches
-        for(Location location:field.getRandomFreePatches(CREATION_PROBABILITIES.get(Grass.class))){
-            if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Grass.class) && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
-                Grass grass = new Grass(field, location);
-                actors.add(grass);
+    private void plantGrassInPatches()
+    {
+        for (Location location : field.getRandomFreePatches(CREATION_PROBABILITIES.get(Grass.class))) {
+            if (rand.nextDouble() <= CREATION_PROBABILITIES.get(Grass.class)
+                    && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
+                actors.add(new Grass(field, location));
             }
         }
-    }
-
-    /**
-     * Reset the simulation to a starting position.
-     */
-    public void reset()
-    {
-        step = 0;
-        HUNTER_COUNT = 0;
-        actors.clear();
-        populate();
-        environment.getTime().reset();
-
-        // Show the starting state in the view.
-        view.showStatus(step, environment, field);
     }
 
     /**
@@ -290,16 +226,16 @@ public class Simulator
         factories.put(Hunter.class, (loc, sex) -> new Hunter(field, loc, environment));
 
         field.clear();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
                 Animal.Gender sex = Randomizer.getRandomSex();
-                for(Map.Entry<Class<?>, BiFunction<Location, Animal.Gender, Actor>> entry : factories.entrySet()) {
+                for (Map.Entry<Class<?>, BiFunction<Location, Animal.Gender, Actor>> entry : factories.entrySet()) {
                     Class<?> cls = entry.getKey();
-                    if(cls == Hunter.class && HUNTER_COUNT >= HUNTER_LIMIT) continue;
-                    if(rand.nextDouble() <= CREATION_PROBABILITIES.get(cls)) {
+                    if (cls == Hunter.class && hunterCount >= HUNTER_LIMIT) continue;
+                    if (rand.nextDouble() <= CREATION_PROBABILITIES.get(cls)) {
                         actors.add(entry.getValue().apply(location, sex));
-                        if(cls == Hunter.class) HUNTER_COUNT++;
+                        if (cls == Hunter.class) hunterCount++;
                         break;
                     }
                 }
@@ -308,19 +244,13 @@ public class Simulator
         }
     }
 
-    /**
-     * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
-     */
+    /** Pause for a given time. */
     private void delay(int millisec)
     {
         try {
             Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
+        } catch (InterruptedException ie) {
             // wake up
         }
     }
-
-
 }

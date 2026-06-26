@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
  */
 public abstract class Animal extends Organism implements Actor
 {
-
     protected int age;
     protected boolean isNocturnal;
     protected int foodLevel;
@@ -16,51 +15,48 @@ public abstract class Animal extends Organism implements Actor
 
     protected static final Random rand = Randomizer.getRandom();
 
-    // An animal is either male or female 
+    // An animal is either male or female
     protected enum Gender {
         MALE,
         FEMALE
     }
+
     // An animal's chance of contracting a disease at birth
-    private double RANDOM_CONTRACTION_RATE = 0.002;
+    private static final double RANDOM_CONTRACTION_RATE = 0.002;
 
+    /**
+     * Returns this species' immutable configuration constants.
+     * Each concrete subclass provides a static AnimalStats instance.
+     */
+    protected abstract AnimalStats getStats();
 
-    // Declaring abstract methods to obtain fields used by subclasses
-    // These methods have been declared in order to use common methods in the Animal class, reducing repeatability
-    protected abstract double BREEDING_AGE();
-    protected abstract int MAX_LITTER_SIZE();
-    protected abstract double BREEDING_PROBABILITY();
-    protected abstract int MAX_AGE();
-    protected abstract int MAX_FOOD_LEVEL();
-    protected abstract Set<Class> DIET();
-
+    @Override
+    protected int FOOD_VALUE() { return getStats().getFoodValue(); }
 
     /**
      * Create a new animal at location in field.
      *
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param randomAge The animal's random starting age.
-     * @param sex The animal's gender. 
+     * @param randomAge If true, start with a random age and food level.
+     * @param sex The animal's gender.
      */
     public Animal(Field field, Location location, boolean randomAge, Gender sex)
     {
         super(field, location);
         this.sex = sex;
-        if(randomAge) {
-            this.age = rand.nextInt(MAX_AGE());
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL());
-        }
-        else {
+        if (randomAge) {
+            this.age = rand.nextInt(getStats().getMaxAge());
+            foodLevel = rand.nextInt(getStats().getMaxFoodLevel());
+        } else {
             this.age = 0;
-            foodLevel = MAX_FOOD_LEVEL();
+            foodLevel = getStats().getMaxFoodLevel();
         }
         randomlyContractDisease();
     }
 
     /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
+     * Make this animal act - that is: make it do whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
      * @param environment The environment that the animal resides in.
      */
@@ -76,82 +72,51 @@ public abstract class Animal extends Organism implements Actor
         randomlyContractDisease();
         incrementAge();
         incrementHunger();
-        if(isAlive()) {
+        if (isAlive()) {
             giveBirth(newAnimals, environment);
-            // Move towards a source of food if found.
             Location newLocation = findFood();
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
+            if (newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
 
-            // list of adjacent locations that contain an instance of Grass
             List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
 
-            if(newLocation != null) {
-                // See if it was possible to move.
+            if (newLocation != null) {
                 setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                // if there is grass adjacent to the animal, clear the current location
-                // and move to a random location that contained grass
+            } else if (adjacentGrassSpots.size() > 0) {
                 getField().clear(getLocation());
                 setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-            else {
+            } else {
                 // Overcrowding
                 setDead();
             }
 
-            if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
-                // every step, check if the Animal is diseased
-                // if it is Diseased, and a random double is less than the lethality rate, the Animal dies
+            if (isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()) {
                 setDead();
             }
-
         }
     }
 
     /**
      * Look for food adjacent to the current location.
-     * Only the first food is eaten.
+     * Only the first food item is eaten.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        for(Location loc : adjacent){
-            if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
-                Organism organism = (Organism) field.getObjectAt(loc);
-                if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
-                    // contracts the first contact disease it encounters amongst the adjacent animals
-                    this.setDisease(organism.getDisease());
-                    break;
-                }
-            }
-        }
-        Iterator<Location> it = adjacent.iterator();
-        // only eats if it's not full (food level less than max)
-        while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal != null && DIET().contains(animal.getClass())) 
-            {
-                Organism food = (Organism) animal;
-                if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
-                {
-                    // contracts disease from food if it has a disease and that disease is foodborne
-                    setDisease(food.getDisease());
-                }
-                if(food.isAlive()) 
-                {
+
+        scanForContactDisease(adjacent);
+
+        for (Location where : adjacent) {
+            Object obj = field.getObjectAt(where);
+            if (obj != null && getStats().getDiet().contains(obj.getClass())) {
+                Organism food = (Organism) obj;
+                tryContractFoodbornDisease(food);
+                if (food.isAlive()) {
                     food.setDead();
-                    int newFoodLevel = foodLevel + food.FOOD_VALUE();
-
-                    // caps the food level at the maximum
-                    foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
-
+                    foodLevel = Math.min(foodLevel + food.FOOD_VALUE(), getStats().getMaxFoodLevel());
                     return where;
                 }
                 return where;
@@ -160,31 +125,55 @@ public abstract class Animal extends Organism implements Actor
         return null;
     }
 
-    /**
-     * Returns true if an animal contracts a disease at birth.
-     * Returns false if otherwise. 
-     */
-    protected void randomlyContractDisease()
+    // --- Disease transmission helpers ---
+
+    /** Scans adjacent locations for non-contact diseases and contracts the first one found. */
+    private void scanForContactDisease(List<Location> adjacent)
     {
-        if(rand.nextDouble() <= RANDOM_CONTRACTION_RATE) {
-            setDisease(new Disease());
+        Field field = getField();
+        for (Location loc : adjacent) {
+            Object obj = field.getObjectAt(loc);
+            if (obj != null && !(obj instanceof Hunter)) {
+                Organism organism = (Organism) obj;
+                if (organism.isDiseased()
+                        && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT
+                        && organism.getDisease().getPropagationRate() <= rand.nextDouble()) {
+                    setDisease(organism.getDisease());
+                    break;
+                }
+            }
         }
     }
 
+    /** Attempts to contract a foodborne disease from prey being eaten. */
+    private void tryContractFoodbornDisease(Organism food)
+    {
+        if (food.isDiseased()
+                && food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE
+                && food.getDisease().getPropagationRate() <= rand.nextDouble()) {
+            setDisease(food.getDisease());
+        }
+    }
+
+    /** Attempts to contract a sexually transmitted disease from a breeding mate. */
+    private void tryContractSexualDisease(Animal mate)
+    {
+        if (mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL) {
+            setDisease(mate.getDisease());
+        }
+    }
+
+    // --- Reproduction ---
+
     /**
      * Creates a newborn instance of this animal species.
-     * Subclasses implement this to return their own type.
-     * @param field The field the offspring will inhabit.
-     * @param location The location of the offspring.
-     * @param sex The offspring's gender.
+     * Each concrete subclass returns its own type.
      */
     protected abstract Animal createOffspring(Field field, Location location, Gender sex);
 
     /**
      * Check whether this animal is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * @param newAnimals A list to return newly born animals.
-     * @param environment The environment that the animal resides in.
      */
     protected void giveBirth(List<Actor> newAnimals, Environment environment)
     {
@@ -199,52 +188,32 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
-     * Returns true if the animal is awake or not.
-     */
-    public boolean isAwake(Environment environment)
-    {
-        if(isNocturnal){
-            return !environment.getTime().isDay();
-        }
-        return environment.getTime().isDay();
-    }
-
-    /**
-     * Generates a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero)
+     * Returns the number of births this step, accounting for mate availability
+     * and disease transmission during mating.
      */
     protected int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY()) {
-            births = rand.nextInt(MAX_LITTER_SIZE()) + 1;
-            Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
-            if(mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL){
-                this.setDisease(mate.getDisease());
-            }
+        if (canBreed() && rand.nextDouble() <= getStats().getBreedingProbability()) {
+            births = rand.nextInt(getStats().getMaxLitterSize()) + 1;
+            List<Organism> mates = getPotentialMates();
+            Animal mate = (Animal) mates.get(rand.nextInt(mates.size()));
+            tryContractSexualDisease(mate);
         }
         return births;
     }
 
-    /**
-     * Returns true if the animal is able to breed.
-     * Returns false if otherwise. 
-     */
+    /** Returns true if this animal meets the age and mate requirements for breeding. */
     protected boolean canBreed()
     {
-        return (age >= BREEDING_AGE() && getPotentialMates().size() > 0);
+        return age >= getStats().getBreedingAge() && getPotentialMates().size() > 0;
     }
 
-    /**
-     * Returns a list of potential mates. Mates have to be
-     * of a opposite gender. 
-     * @return List<Organism> A list of potential mates.
-     */
+    /** Returns adjacent organisms of the same species and opposite sex. */
     protected List<Organism> getPotentialMates()
     {
         List<Organism> potentialMates = new ArrayList<>();
-        if(getField() != null){
+        if (getField() != null) {
             potentialMates = getField().adjacentLocations(getLocation()).stream()
                     .map(s -> getField().getObjectAt(s))
                     .filter(s -> s != null)
@@ -252,32 +221,45 @@ public abstract class Animal extends Organism implements Actor
                     .filter(s -> this.sex != ((Animal) s).sex)
                     .map(s -> (Organism) s)
                     .collect(Collectors.toList());
-            // stream counts the number of Animals of the same species, as well as opposite gender
         }
         return potentialMates;
     }
 
+    // --- Schedule ---
 
-    /**
-     * Increase the age. This could result in the animal's death.
-     */
+    /** Returns true if the animal is currently awake (respects nocturnal/diurnal schedule). */
+    public boolean isAwake(Environment environment)
+    {
+        if (isNocturnal) {
+            return !environment.getTime().isDay();
+        }
+        return environment.getTime().isDay();
+    }
+
+    // --- Lifecycle ---
+
+    protected void randomlyContractDisease()
+    {
+        if (rand.nextDouble() <= RANDOM_CONTRACTION_RATE) {
+            setDisease(new Disease());
+        }
+    }
+
+    /** Increases age; kills the animal if it exceeds its maximum. */
     protected void incrementAge()
     {
-        this.age++;
-        if(this.age > MAX_AGE()) {
+        age++;
+        if (age > getStats().getMaxAge()) {
             setDead();
         }
     }
 
-    /**
-     * Make this animal more hungry. This could result in the animal's death.
-     */
+    /** Decreases food level; kills the animal if it reaches zero. */
     protected void incrementHunger()
     {
         foodLevel--;
-        if(foodLevel <= 0) {
+        if (foodLevel <= 0) {
             setDead();
         }
     }
-
 }

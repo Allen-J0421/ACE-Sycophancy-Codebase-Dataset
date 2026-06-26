@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 
@@ -157,31 +156,36 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Adding an actionListener for the oneStepButton
+     * Wire all toolbar buttons to the given simulation controls.
+     * Called once after the view is constructed so the view manages its own event handling.
+     * @param controls The SimulationControls implementation (typically a Simulator).
      */
-    public void addOneStepButtonListener(ActionListener listener) {
-        oneStepButton.addActionListener(listener);
-    }
+    public void wireButtons(SimulationControls controls)
+    {
+        oneStepButton.addActionListener(e -> {
+            if (controls.isPlaying()) {
+                System.out.println("Stop the simulation first");
+            } else {
+                controls.stepOnce();
+            }
+        });
 
-    /**
-     * Adding an actionListener for the oneStepButton
-     */
-    public void addResetButtonListener(ActionListener listener) {
-        resetButton.addActionListener(listener);
-    }
+        longButton.addActionListener(e -> {
+            if (!controls.isPlaying()) {
+                new Thread("SimulationRunThread") {
+                    public void run() { controls.runLongSimulation(); }
+                }.start();
+            } else {
+                System.out.println("Stop the simulation first");
+            }
+        });
 
-    /**
-     * Adding an actionListener for the stopButton
-     */
-    public void addStopButtonListener(ActionListener listener) {
-        stopButton.addActionListener(listener);
-    }
+        stopButton.addActionListener(e -> controls.stop());
 
-    /**
-     * Adding an actionListener for the longButton
-     */
-    public void addLongButtonListener(ActionListener listener) {
-        longButton.addActionListener(listener);
+        resetButton.addActionListener(e -> {
+            controls.stop();
+            controls.reset();
+        });
     }
 
 

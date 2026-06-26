@@ -68,7 +68,8 @@ public abstract class Animal extends Creature
         ifCanGrantImmunity(disease, step);
         incrementAge();
         incrementHunger();
-        if(isAlive() && isAwake(atDayTime)) {
+        if(!isAlive()) return 0;
+        if(isAwake(atDayTime)) {
             giveBirth(newAnimals);
             Location newLocation = search(disease, step);
             if(newLocation == null) {

@@ -147,14 +147,6 @@ public class SimulatorView extends JFrame
         }
     }
 
-    /**
-     * Return the registered color for the given class, or UNKNOWN_COLOR if none.
-     */
-    private Color getColor(Class<?> animalClass)
-    {
-        return colors.getOrDefault(animalClass, UNKNOWN_COLOR);
-    }
-
     // -----------------------------------------------------------------------
     // Nested FieldView component
     // -----------------------------------------------------------------------

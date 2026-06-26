@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 class RodCuttingSolver implements Solver {
 
     @Override
@@ -20,42 +17,5 @@ class RodCuttingSolver implements Solver {
         }
 
         return new RodCuttingSolution(revenue.get(n), cutChoice.reconstructCuts(n));
-    }
-
-    private static class RevenueTable {
-        private final int[] values;
-
-        RevenueTable(int size) {
-            values = new int[size + 1];
-        }
-
-        int get(int length) {
-            return values[length];
-        }
-
-        void set(int length, int value) {
-            values[length] = value;
-        }
-    }
-
-    private static class CutChoiceTable {
-        private final int[] values;
-
-        CutChoiceTable(int size) {
-            values = new int[size + 1];
-        }
-
-        void set(int length, int cut) {
-            values[length] = cut;
-        }
-
-        List<Integer> reconstructCuts(int remaining) {
-            List<Integer> cuts = new ArrayList<>();
-            while (remaining > 0) {
-                cuts.add(values[remaining]);
-                remaining -= values[remaining];
-            }
-            return cuts;
-        }
     }
 }

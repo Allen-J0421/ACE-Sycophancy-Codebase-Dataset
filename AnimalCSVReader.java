@@ -11,30 +11,8 @@ public class AnimalCSVReader extends CSVReader
     private static final String FILE_NAME = "animals.csv";
     // String to be recognized as a boolean value of true.
     private static final String TRUE_SYMBOL = "true";
-    // tru if the animal is a predator.
-    private boolean isPredator;
-    // Animal's name.
-    private String name;
-    // Maximum temperature the animal can survive to.
-    private int maximumTemperature;
-    // Minimum temperature the animal can survive to.
-    private int minimumTemperature;
-    // Maximum Age animal can live for.
-    private int maximumAge;
-    // Minimum age at which animal can breed.
-    private int breedingAge;
-    // Probability to see animal breed at each step.
-    private double breedingProbability;
-    // Maximum litter size brought by animal in one reproduction.
-    private int maxLitterSize;
-    // Nutritional value brought when animal is eaten.
-    private int nutritionalValue;
-    // Animal's strength (0 if not a predator).
-    private int strength;
-    // Whether an animal can hibernate.
-    private boolean hibernates;
-    // Whether an animal is nocturnal.
-    private boolean isNocturnal;
+    // Parsed animal profile from the latest CSV extraction.
+    private AnimalProfile animalProfile;
     // Tool to alert user about any potential error.
     private ErrorThrower errorThrower;
 
@@ -43,19 +21,7 @@ public class AnimalCSVReader extends CSVReader
      */
     public AnimalCSVReader() {
         errorThrower = new ErrorThrower();
-        isPredator = false;
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        maximumAge = 0;
-        breedingAge = 0;
-        breedingProbability = 0;
-        maxLitterSize = 0;
-        nutritionalValue = 0;
-        strength = 0;
-        hibernates = false;
-        isNocturnal = false;
-
+        resetParameters();
     }
 
     /**
@@ -69,26 +35,20 @@ public class AnimalCSVReader extends CSVReader
         if (extractedData.length != 12) {
             errorThrower.throwMessage("Animal .csv issue, please restart.");
         }
-        name = extractedData[0];
-        if (extractedData[1].equals(TRUE_SYMBOL)) {
-            isPredator = true;
-        }
-        maximumTemperature = Integer.valueOf(extractedData[2]);
-        minimumTemperature = Integer.valueOf(extractedData[3]);
-        maximumAge = Integer.valueOf(extractedData[4]);
-        breedingAge = Integer.valueOf(extractedData[5]);
-        breedingProbability = Double.valueOf(extractedData[6]);
-        maxLitterSize = Integer.valueOf(extractedData[7]);
-        nutritionalValue = Integer.valueOf(extractedData[8]);
-        strength = Integer.valueOf(extractedData[9]);
-        if (extractedData[10].equals(TRUE_SYMBOL)) {
-            hibernates = true;
-            // By default, value is false
-        }
-        if (extractedData[11].equals(TRUE_SYMBOL)) {
-            isNocturnal = true;
-            // By default, value is false
-        }
+        animalProfile = new AnimalProfile(
+            extractedData[0],
+            extractedData[1].equals(TRUE_SYMBOL),
+            Integer.valueOf(extractedData[2]),
+            Integer.valueOf(extractedData[3]),
+            Integer.valueOf(extractedData[4]),
+            Integer.valueOf(extractedData[5]),
+            Double.valueOf(extractedData[6]),
+            Integer.valueOf(extractedData[7]),
+            Integer.valueOf(extractedData[8]),
+            Integer.valueOf(extractedData[9]),
+            extractedData[10].equals(TRUE_SYMBOL),
+            extractedData[11].equals(TRUE_SYMBOL)
+        );
     }
 
     /**
@@ -96,19 +56,7 @@ public class AnimalCSVReader extends CSVReader
      */
     protected void resetParameters()
     {
-        isPredator = false;
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        maximumAge = 0;
-        breedingAge = 0;
-        breedingProbability = 0;
-        maxLitterSize = 0;
-        nutritionalValue = 0;
-        strength = 0;
-        hibernates = false;
-        isNocturnal = false;
-
+        animalProfile = new AnimalProfile(null, false, 0, 0, 0, 0, 0, 0, 0, 0, false, false);
     }
 
     /**
@@ -122,77 +70,77 @@ public class AnimalCSVReader extends CSVReader
      * @return (String) The animal's name.
      */
     public String getName() {
-        return name;
+        return animalProfile.getName();
     }
 
     /**
      * @return (double) Probability that the animal breeds at a given step.
      */
     public double getBreedingProbability() {
-        return breedingProbability;
+        return animalProfile.getReproductionProbability();
     }
 
     /**
      * @return (int) Maximum age animal can live for.
      */
     public int getMaximumAge() {
-        return maximumAge;
+        return animalProfile.getMaximumAge();
     }
 
     /**
      * @return (int) Maximum temperature animal can survive to.
      */
     public int getMaximumTemperature() {
-        return maximumTemperature;
+        return animalProfile.getMaximumTemperature();
     }
 
     /**
      * @return (int) Minimum age for animal to start breeding.
      */
     public int getBreedingAge() {
-        return breedingAge;
+        return animalProfile.getBreedingAge();
     }
 
     /**
      * @return (int) Minimum temperature animal can survive to.
      */
     public int getMinimumTemperature() {
-        return minimumTemperature;
+        return animalProfile.getMinimumTemperature();
     }
 
     /**
      * @return (int) Maximum litter size brought by animal in one reproduction.
      */
     public int getMaxLitterSize() {
-        return maxLitterSize;
+        return animalProfile.getMaxLitterSize();
     }
 
     /**
      * @return (int) Nutritional value brought when animal is eaten.
      */
     public int getNutritionalValue() {
-        return nutritionalValue;
+        return animalProfile.getNutritionalValue();
     }
 
     /**
      * @return (int) Animal's strength (0 if not a predator).
      */
     public int getStrength() {
-        return strength;
+        return animalProfile.getStrength();
     }
 
     /**
      * @return (boolean) If animal is a predator.
      */
     public boolean isPredator() {
-        return isPredator;
+        return animalProfile.isPredator();
     }
 
     /**
      * @return (boolean) Whether or not animal can hibernate.
      */
     public boolean canHibernate() {
-        return hibernates;
+        return animalProfile.canHibernate();
     }
 
     /**
@@ -200,7 +148,7 @@ public class AnimalCSVReader extends CSVReader
      */
     public boolean isNocturnal()
     {
-        return isNocturnal;
+        return animalProfile.isNocturnal();
     }
 
     /**
@@ -208,6 +156,6 @@ public class AnimalCSVReader extends CSVReader
      */
     public AnimalProfile getAnimalProfile()
     {
-        return new AnimalProfile(name, isPredator, maximumTemperature, minimumTemperature, maximumAge, breedingAge, breedingProbability, maxLitterSize, nutritionalValue, strength, hibernates, isNocturnal);
+        return animalProfile;
     }
 }

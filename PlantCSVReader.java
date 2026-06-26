@@ -9,18 +9,8 @@ public class PlantCSVReader extends CSVReader
 {
     // Name of the file containing plant data.
     private static final String FILE_NAME = "plants.csv";
-    // The plant's name.
-    private String name;
-    // The maximum temperature plant can survive to.
-    private int maximumTemperature;
-    // The minimum temperature plant can survive to.
-    private int minimumTemperature;
-    // The nutritional value brought when plant is eaten.
-    private int nutritionalValue;
-    // Probability to see plant reproduce.
-    private double reproductionProbability;
-    // The plant's maximum health.
-    private int maxHealth;
+    // Parsed plant profile from the latest CSV extraction.
+    private PlantProfile plantProfile;
     // Tool to alert user about any potential error.
     private ErrorThrower errorThrower;
     
@@ -30,12 +20,7 @@ public class PlantCSVReader extends CSVReader
     public PlantCSVReader ()
     {
         errorThrower = new ErrorThrower();
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        nutritionalValue = 0;
-        reproductionProbability = 0;
-        maxHealth = 0;
+        resetParameters();
     }
 
     /**
@@ -49,12 +34,14 @@ public class PlantCSVReader extends CSVReader
         if (extractedData.length != 6) {
             errorThrower.throwMessage("Plant .csv issue, please restart.");
         }
-        name = extractedData[0];
-        maximumTemperature = Integer.valueOf(extractedData[1]);
-        minimumTemperature = Integer.valueOf(extractedData[2]);
-        nutritionalValue = Integer.valueOf(extractedData[3]);
-        reproductionProbability = Double.valueOf(extractedData[4]);
-        maxHealth = Integer.valueOf(extractedData[5]);
+        plantProfile = new PlantProfile(
+            extractedData[0],
+            Integer.valueOf(extractedData[1]),
+            Integer.valueOf(extractedData[2]),
+            Integer.valueOf(extractedData[3]),
+            Double.valueOf(extractedData[4]),
+            Integer.valueOf(extractedData[5])
+        );
     }
 
     /**
@@ -62,12 +49,7 @@ public class PlantCSVReader extends CSVReader
      */
     protected void resetParameters()
     {
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        nutritionalValue = 0;
-        reproductionProbability = 0;
-        maxHealth =0;
+        plantProfile = new PlantProfile(null, 0, 0, 0, 0, 0);
     }
 
     /**
@@ -81,42 +63,42 @@ public class PlantCSVReader extends CSVReader
      * @return (int) The plant's nutritional value.
      */
     public int getNutritionalValue() {
-        return nutritionalValue;
+        return plantProfile.getNutritionalValue();
     }
 
     /**
      * @return (int) The minimum temperature a plant can survive to.
      */
     public int getMinimumTemperature() {
-        return minimumTemperature;
+        return plantProfile.getMinimumTemperature();
     }
 
     /**
      * @return (int) The maximum temperature a plant can survive to.
      */
     public int getMaximumTemperature() {
-        return maximumTemperature;
+        return plantProfile.getMaximumTemperature();
     }
 
     /**
      * @return (String) The plant's name.
      */
     public String getName() {
-        return name;
+        return plantProfile.getName();
     }
 
     /**
      * @return (double) Probability that the plant reproduces.
      */
     public double getReproductionProbability() {
-        return reproductionProbability;
+        return plantProfile.getReproductionProbability();
     }
 
     /**
      * @return (int) The plant's maximum health.
      */
     public int getMaxHealth() {
-        return maxHealth;
+        return plantProfile.getMaxHealth();
     }
 
     /**
@@ -124,6 +106,6 @@ public class PlantCSVReader extends CSVReader
      */
     public PlantProfile getPlantProfile()
     {
-        return new PlantProfile(name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxHealth);
+        return plantProfile;
     }
 }

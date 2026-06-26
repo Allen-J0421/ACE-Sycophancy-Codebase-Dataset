@@ -24,6 +24,19 @@ public final class EuclideanAlgorithmApp {
             );
         }
 
-        return ArgumentParser.parseOperands(args[0], args[1]);
+        return new Operands(
+            parseIntArg(args[0], "first"),
+            parseIntArg(args[1], "second")
+        );
     }
+
+    private static int parseIntArg(String value, String label) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Invalid " + label + " integer: " + value, ex);
+        }
+    }
+
+    record Operands(int left, int right) {}
 }

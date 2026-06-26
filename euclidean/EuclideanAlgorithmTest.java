@@ -20,9 +20,9 @@ public final class EuclideanAlgorithmTest {
         }
 
         assertOperands(35, 15, EuclideanAlgorithmApp.parseOperands(new String[0]));
-        assertOperands(-42, 56, ArgumentParser.parseOperands("-42", "56"));
-        assertIllegalArgument(() -> ArgumentParser.parseOperands("7", "8x"));
+        assertOperands(-42, 56, EuclideanAlgorithmApp.parseOperands(new String[] { "-42", "56" }));
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[] { "7" }));
+        assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[] { "7", "8x" }));
         assertOverflow(Integer.MIN_VALUE, 0);
     }
 
@@ -47,7 +47,11 @@ public final class EuclideanAlgorithmTest {
         );
     }
 
-    private static void assertOperands(int expectedLeft, int expectedRight, Operands actual) {
+    private static void assertOperands(
+        int expectedLeft,
+        int expectedRight,
+        EuclideanAlgorithmApp.Operands actual
+    ) {
         if (actual.left() != expectedLeft || actual.right() != expectedRight) {
             throw new AssertionError(
                 "Expected operands (" + expectedLeft + ", " + expectedRight + ") but was ("

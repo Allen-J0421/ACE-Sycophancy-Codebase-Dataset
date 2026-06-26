@@ -1,11 +1,16 @@
+import java.util.List;
+import java.util.Random;
+
 /**
  * This class represents shared characteristics of organisms
- * in the simulation. 
+ * in the simulation.
  *
  * @version 2022.03.2
  */
 public abstract class Organism {
-    
+
+    // A shared random number generator for movement and other behaviour.
+    protected static final Random rand = Randomizer.getRandom();
 
     // Whether the organism is alive or not.
     private boolean alive;
@@ -13,8 +18,8 @@ public abstract class Organism {
     private Field field;
     // The organism's position in the field.
     private Location location;
-    
-    // Whether the organism has a disease 
+
+    // Whether the organism has a disease
     private Disease disease = null;
     private boolean hasDisease = false;
 
@@ -111,5 +116,48 @@ public abstract class Organism {
     {
         this.disease = disease;
         hasDisease = true;
+    }
+
+    /**
+     * Whether this organism dies when it cannot find anywhere to move (i.e. it
+     * is overcrowded). Mobile organisms that should survive overcrowding (apex
+     * species, hunters) override this.
+     * @return true if overcrowding is fatal.
+     */
+    protected boolean diesFromOvercrowding()
+    {
+        return true;
+    }
+
+    /**
+     * Move to the given target location; if there is none, wander to a free
+     * adjacent cell, or onto adjacent grass, or (if nothing is available and the
+     * organism dies from overcrowding) die in place.
+     * @param target The preferred destination, or null if none was found.
+     */
+    protected void moveToTargetOrWander(Location target)
+    {
+        if(target == null) {
+            // No target found - try to move to a free location.
+            target = getField().freeAdjacentLocation(getLocation());
+        }
+
+        // adjacent locations that contain an instance of Grass
+        List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
+
+        if(target != null) {
+            // See if it was possible to move.
+            setLocation(target);
+        }
+        else if(adjacentGrassSpots.size() > 0) {
+            // if there is grass adjacent, clear the current location and move
+            // onto a random location that contained grass
+            getField().clear(getLocation());
+            setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
+        }
+        else if(diesFromOvercrowding()) {
+            // Overcrowding
+            setDead();
+        }
     }
 }

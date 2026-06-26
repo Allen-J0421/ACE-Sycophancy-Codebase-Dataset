@@ -1,82 +1,59 @@
 import java.util.*;
 
 /**
- * A simple model of a hunter. 
+ * A simple model of a hunter.
  * Hunters hunt all of the species in the simulation.
+ *
+ * A hunter occupies the field like an organism (position, movement) but is never
+ * eaten, never breeds and never dies of natural causes - it simply roams,
+ * killing adjacent prey.
+ *
  * @version 2022.03.02
  */
-public class Hunter implements Actor
+public class Hunter extends Organism implements Actor
 {
-    private static boolean alive;
-    private Field field;
-    private Location location;
-
-    private Random rand = Randomizer.getRandom();
-    // A hunter hunts every species. 
+    // A hunter hunts every species.
     private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class));
-
 
     /**
      * Creates a new hunter.
      * @param field The field currently occupied.
      * @param location  The location within the field.
-     * @param environment The environment that the hunter resides in. 
+     * @param environment The environment that the hunter resides in.
      */
     public Hunter(Field field, Location location, Environment environment)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
     }
 
     /**
-     * Returns true if the hunter is alive. 
+     * A hunter is never eaten, so its food value is unused.
      */
-    public boolean isAlive() 
+    protected int getFoodValue()
     {
-        return alive;
+        return 0;
     }
 
     /**
-     * Makes the hunter hunt for nearby animals. 
-     * @param environment The environment that the hunter resides in. 
-     * @param newActors A list to receive new actors. 
+     * Hunters are not killed by overcrowding.
+     */
+    @Override
+    protected boolean diesFromOvercrowding()
+    {
+        return false;
+    }
+
+    /**
+     * Makes the hunter hunt for nearby animals, then move.
+     * @param newActors A list to receive new actors.
+     * @param environment The environment that the hunter resides in.
      */
     public void act(List<Actor> newActors, Environment environment)
     {
         if(isAlive()) {
-            Location newLocation = findPrey();
-            if(newLocation == null) {
-                // No animals found - try to move to a free location.
-                newLocation = field.freeAdjacentLocation(location);
-            }
-            List<Location> adjacentGrassSpots = field.adjacentLocationsWithSpecies(location, Grass.class);
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                field.clear(location);
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-
+            moveToTargetOrWander(findPrey());
         }
     }
-
-    /**
-     * Place the hunter at the new location in the given field.
-     * @param newLocation The hunter's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-
 
     /**
      * Look for animals adjacent to the current location.
@@ -85,8 +62,8 @@ public class Hunter implements Actor
      */
     private Location findPrey()
     {
-        Field field = this.field;
-        List<Location> adjacent = field.adjacentLocations(location);
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();

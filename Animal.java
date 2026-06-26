@@ -20,8 +20,6 @@ public abstract class Animal extends Organism implements Actor
     protected int foodLevel;
     protected Gender sex;
 
-    protected static final Random rand = Randomizer.getRandom();
-
     // An animal is either male or female
     protected enum Gender {
         MALE,
@@ -77,37 +75,14 @@ public abstract class Animal extends Organism implements Actor
         incrementHunger();
         if(isAlive()) {
             giveBirth(newAnimals, environment);
-            // Move towards a source of food if found.
-            Location newLocation = findFood(environment);
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // list of adjacent locations that contain an instance of Grass
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            if(newLocation != null) {
-                // See if it was possible to move.
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                // if there is grass adjacent to the animal, clear the current location
-                // and move to a random location that contained grass
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-            else if (diesFromOvercrowding()) {
-                // Overcrowding
-                setDead();
-            }
+            // Move towards a source of food if found, otherwise wander.
+            moveToTargetOrWander(findFood(environment));
 
             if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
                 // every step, check if the Animal is diseased
                 // if it is Diseased, and a random double is less than the lethality rate, the Animal dies
                 setDead();
             }
-
         }
     }
 
@@ -205,16 +180,6 @@ public abstract class Animal extends Organism implements Actor
         if(rand.nextDouble() <= RANDOM_CONTRACTION_RATE) {
             setDisease(new Disease());
         }
-    }
-
-    /**
-     * Whether this animal dies when it cannot find anywhere to move (i.e. it is
-     * overcrowded). Most animals do; apex species may override this to survive.
-     * @return true if overcrowding is fatal for this species.
-     */
-    protected boolean diesFromOvercrowding()
-    {
-        return true;
     }
 
     /**

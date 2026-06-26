@@ -33,7 +33,7 @@ public class Jaguar extends Predator
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.4;
 
     // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private HashMap<Class<? extends Actor>, Integer> food;
     /**
      * Create a Jaguar. A Jaguar can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -55,7 +55,7 @@ public class Jaguar extends Predator
         }
         food = new HashMap<>();
         setGrowthLevel(getAge()/89.0);
-        addFood(field);
+        addFood();
     }
 
     /**
@@ -97,12 +97,8 @@ public class Jaguar extends Predator
         return BREEDING_PROBABILITY;
     }
 
-    /**
-     * Returns the current jaguar occupying the location.
-     * @return the current jaguar.
-     */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createOffspring(Field field, Location location){
+        return new Jaguar(false, field, location);
     }
 
     /**
@@ -121,22 +117,15 @@ public class Jaguar extends Predator
         return MAX_AGE;
     }
 
-    /**
-     * Adds the food the jaguar eats & the corresponding food value to a hashMap.
-     * @param field The field the jaguar is in.
-     */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
+    private void addFood(){
+        food.put(Gazelle.class, GAZELLE_FOOD_VALUE);
     }
 
     /**
-     * Returns the HashMap which contains what food the jaguar eats and the amount of food each gazelle gives.
-     * @return The HashMap which contains the Actor and an Integer.
+     * Returns the HashMap which maps prey class types to their food values.
+     * @return The HashMap which maps Class to food value Integer.
      */
-    protected HashMap<Actor, Integer> getFood(){
+    protected HashMap<Class<? extends Actor>, Integer> getFood(){
         return food;
     }
 

@@ -1,7 +1,9 @@
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
+import java.util.Set;
 
 /**
  * A simple model of a Hunter.
@@ -15,7 +17,8 @@ public class Hunter extends Actor
 {
     // Characteristics shared by all Hunters.
     private static final int MAX_AGE = 1000;
-    private static final int SHOTS = 2; 
+    private static final int SHOTS = 2;
+    private static final Set<Class<? extends Actor>> HUNTABLE_SPECIES = new HashSet<>(Arrays.asList(Lion.class, Cheetah.class));
     /**
      * Create a Hunter. A hunter is created as an adult (age 50).
      * 
@@ -82,7 +85,7 @@ public class Hunter extends Actor
             for(int i = 0; i< SHOTS; i++){
                 Location where = it.next();
                 Object animal = field.getObjectAt(where);
-                if( animal != null && (animal instanceof Lion  || animal instanceof Cheetah)){
+                if(animal != null && HUNTABLE_SPECIES.contains(animal.getClass())){
                     Animal currentAnimal = (Animal) animal;
                     if(currentAnimal.isActive()) { 
                         currentAnimal.setDead();

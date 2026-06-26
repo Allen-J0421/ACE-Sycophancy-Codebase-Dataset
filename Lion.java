@@ -37,7 +37,7 @@ public class Lion extends Predator
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.8;
 
     // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private HashMap<Class<? extends Actor>, Integer> food;
     /**
      * Create a Lion. A Lion can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -59,7 +59,7 @@ public class Lion extends Predator
         }
         food = new HashMap<>();
         setGrowthLevel(getAge()/100.0);
-        addFood(field);
+        addFood();
     }
 
     /**
@@ -101,12 +101,8 @@ public class Lion extends Predator
         return BREEDING_PROBABILITY;
     }
 
-    /**
-     * Returns the current lion occupying the location.
-     * @return the current lion.
-     */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createOffspring(Field field, Location location){
+        return new Lion(false, field, location);
     }
 
     /**
@@ -125,25 +121,16 @@ public class Lion extends Predator
         return MAX_AGE;
     }
 
-    /**
-     * Adds the food the lion eats & the corresponding food value to a hashMap
-     * @param field The field the lion is in
-     */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, PREY_GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
-        Cheetah cheetah = new Cheetah(true,field,tempLocation );
-        food.put(cheetah, PREY_CHEETAH_FOOD_VALUE);
-        cheetah.setDead();
+    private void addFood(){
+        food.put(Gazelle.class, PREY_GAZELLE_FOOD_VALUE);
+        food.put(Cheetah.class, PREY_CHEETAH_FOOD_VALUE);
     }
 
     /**
-     * Returns the HashMap which contains what food the lion eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */   
-    protected HashMap<Actor, Integer> getFood(){
+     * Returns the HashMap which maps prey class types to their food values.
+     * @return The HashMap which maps Class to food value Integer.
+     */
+    protected HashMap<Class<? extends Actor>, Integer> getFood(){
         return food;
     }
 

@@ -1,8 +1,7 @@
 
-import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A class representing shared characteristics of animals.
@@ -103,25 +102,15 @@ public abstract class Animal extends Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = getAnimal();
-            Animal baby = null;
-            if(young instanceof Gazelle){
-                baby = new Gazelle(false, field, loc);
-            }else if(young instanceof Jaguar){
-                baby = new Jaguar(false, field, loc);
-            }else if(young instanceof Cheetah){
-                baby = new Cheetah(false, field, loc);
-            }else if(young instanceof Lion){
-                baby = new Lion(false, field, loc);
-            }else if(young instanceof Zebra){
-                baby = new Zebra(false, field, loc);
-            }
+            Animal baby = createOffspring(field, loc);
             if(!getHealth()){
-                baby.setUnhealthy(); //setting the baby to be unhealthy if the parent is unhealthy.
+                baby.setUnhealthy();
             }
             newAnimals.add(baby);
         }
     }
+
+    abstract protected Animal createOffspring(Field field, Location location);
 
     /**
      * Generate a number representing the number of births,
@@ -148,15 +137,14 @@ public abstract class Animal extends Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        Animal currentAnimal = getAnimal();
         while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if (animal != null && animal.getClass() == currentAnimal.getClass()){
+            if (animal != null && animal.getClass() == this.getClass()){
                 Animal mate = (Animal) animal;
-                if(isActive() && currentAnimal.getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
-                    if(!currentAnimal.getHealth() || !mate.getHealth()){
-                        currentAnimal.setUnhealthy();
+                if(isActive() && getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
+                    if(!getHealth() || !mate.getHealth()){
+                        setUnhealthy();
                         mate.setUnhealthy();
                     }
                     return true;
@@ -177,12 +165,6 @@ public abstract class Animal extends Actor
      * @return max litter size of the animal.
      */
     abstract protected int getMaxLitterSize();
-
-    /**
-     * Returns the current animal occupying the location.
-     * @return the current animal.
-     */
-    abstract protected Animal getAnimal();
 
     /**
      * Returns the animal's current food level.
@@ -223,29 +205,27 @@ public abstract class Animal extends Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-       
+
         if(getRandom().nextDouble() < probability && getFoodLevel() < getMaxFoodLevel()){
             while(it.hasNext()) {
                 Location where = it.next();
                 Object animal = field.getObjectAt(where);
-                if(animal != null && animal  instanceof Actor){
+                if(animal instanceof Actor){
                     Actor currentAnimal = (Actor) animal;
-                    for(Actor prey: getFood().keySet())
-                    {
-                        if(prey.getClass() == currentAnimal.getClass()){
-                            if (currentAnimal instanceof Animal){
-                                Animal current = (Animal)currentAnimal;
-                                if(!current.getHealth()){
-                                    setUnhealthy();
-                                }
+                    Integer foodValue = getFood().get(currentAnimal.getClass());
+                    if(foodValue != null){
+                        if (currentAnimal instanceof Animal){
+                            Animal current = (Animal)currentAnimal;
+                            if(!current.getHealth()){
+                                setUnhealthy();
                             }
-                            currentAnimal.setDead();
-                            setFoodLevel(getFood().get(prey)  + currentAnimal.getGrowthLevel());
-                            if(getFoodLevel() > getMaxFoodLevel()){
-                                setFoodLevel(getMaxFoodLevel() - getFoodLevel());
-                            }
-                            return where;
                         }
+                        currentAnimal.setDead();
+                        setFoodLevel(foodValue + currentAnimal.getGrowthLevel());
+                        if(getFoodLevel() > getMaxFoodLevel()){
+                            setFoodLevel(getMaxFoodLevel() - getFoodLevel());
+                        }
+                        return where;
                     }
                 }
             }
@@ -254,10 +234,10 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Returns the HashMap which contains what prey the animal eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
+     * Returns the HashMap which maps prey class types to their food values.
+     * @return The HashMap which maps Class to food value Integer.
      */
-    abstract protected HashMap<Actor, Integer> getFood();
+    abstract protected HashMap<Class<? extends Actor>, Integer> getFood();
 
     /**
      * Uses a random generator to assign if the animal is female or not.

@@ -202,25 +202,11 @@ public class SimulatorView extends JFrame
         
         fieldView.preparePaint();
 
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Animal animal = field.getAnimalAt(row, col);
-                //animal takes precendence over plants
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
-                }
-                else if(field.getPlantAt(row, col) != null) {
-                    // if the cell is not occupied by an animal, attempt to occupy with plant. 
-                    Plant plant = field.getPlantAt(row, col);
-                    stats.incrementCount(plant.getClass());
-                    fieldView.drawMark(col, row, getColor(plant.getClass()));
-                }
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                }
-            }
-        }
+        field.forEachLocation((row, col) -> fieldView.drawMark(col, row, EMPTY_COLOR));
+        field.forEachOccupiedLocation((row, col, actor) -> {
+            stats.incrementCount(actor.getClass());
+            fieldView.drawMark(col, row, getColor(actor.getClass()));
+        });
         stats.countFinished();
 
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));

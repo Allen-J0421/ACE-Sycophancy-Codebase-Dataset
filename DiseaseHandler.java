@@ -52,11 +52,10 @@ public class DiseaseHandler
      */
     public void simulateDiseaseStep()
     {
-        // fetch the animal per blocks eg : [block1 : [animal1,animal2, animal3]. block 2: [animal1, animal 2, animal3]...]
-        List<List<Animal>> blocks = field.getAnimalsPerBlock();
         int infectionCount = 0;
+        int[] totalInfections = {0};
         currentStep++;
-        for (List<Animal> block : blocks) {
+        field.forEachAnimalBlock(block -> {
             int densityIndex = 0;
             List<Animal> uninfectedAnimals = new ArrayList<>();
             for(Animal animal : block) {
@@ -77,8 +76,9 @@ public class DiseaseHandler
                     animal.setInfectionTimestamp(currentStep);
                 }
             }
-            infectionCount += densityIndex;
-        }
+            totalInfections[0] += densityIndex;
+        });
+        infectionCount = totalInfections[0];
         infectionCounts.put(currentStep, infectionCount);
     }
 

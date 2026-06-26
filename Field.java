@@ -12,6 +12,24 @@ import java.util.ArrayList;
 public class Field
 {
     private static final int DISEASE_BLOCK_SIZE = 20;
+
+    @FunctionalInterface
+    public interface LocationVisitor
+    {
+        void visit(int row, int col);
+    }
+
+    @FunctionalInterface
+    public interface OccupantVisitor
+    {
+        void visit(int row, int col, Actor actor);
+    }
+
+    @FunctionalInterface
+    public interface AnimalBlockVisitor
+    {
+        void visit(List<Animal> animals);
+    }
     
     /*///////////////////////////////////////////////////////////////
                                    STATE
@@ -55,12 +73,10 @@ public class Field
      */
     public void clear()
     {
-        for(int row = 0; row < depth; row++) {
-            for(int col = 0; col < width; col++) {
-                animals[row][col] = null;
-                plants[row][col] = null;
-            }
-        }
+        forEachLocation((row, col) -> {
+            animals[row][col] = null;
+            plants[row][col] = null;
+        });
     }
     
     /**
@@ -137,9 +153,8 @@ public class Field
      * 
      * @return List of animals contained within the same block.
      */
-    public List<List<Animal>> getAnimalsPerBlock()
+    public void forEachAnimalBlock(AnimalBlockVisitor visitor)
     {
-        List<List<Animal>> blocks = new ArrayList<>();
         for(int colStart = 0 ; colStart < width; colStart += DISEASE_BLOCK_SIZE){
             for (int rowStart = 0; rowStart < depth; rowStart += DISEASE_BLOCK_SIZE) {
                 List<Animal> blockAnimals = new ArrayList<>();
@@ -153,10 +168,9 @@ public class Field
                         }
                     }
                 }
-                blocks.add(blockAnimals);
+                visitor.visit(blockAnimals);
             }
         }
-        return blocks;
     }
     
     /*///////////////////////////////////////////////////////////////
@@ -324,6 +338,53 @@ public class Field
             Collections.shuffle(locations, rand);
         }
         return locations;
+    }
+
+    /**
+     * Visit every location in the field.
+     */
+    public void forEachLocation(LocationVisitor visitor)
+    {
+        for(int row = 0; row < depth; row++) {
+            for(int col = 0; col < width; col++) {
+                visitor.visit(row, col);
+            }
+        }
+    }
+
+    /**
+     * Visit visible occupants, giving animals precedence over plants.
+     */
+    public void forEachOccupiedLocation(OccupantVisitor visitor)
+    {
+        forEachLocation((row, col) -> {
+            Animal animal = getAnimalAt(row, col);
+            if(animal != null) {
+                visitor.visit(row, col, animal);
+                return;
+            }
+            Plant plant = getPlantAt(row, col);
+            if(plant != null) {
+                visitor.visit(row, col, plant);
+            }
+        });
+    }
+
+    /**
+     * Visit every stored actor, including plants underneath animals.
+     */
+    public void forEachStoredActor(OccupantVisitor visitor)
+    {
+        forEachLocation((row, col) -> {
+            Animal animal = getAnimalAt(row, col);
+            if(animal != null) {
+                visitor.visit(row, col, animal);
+            }
+            Plant plant = getPlantAt(row, col);
+            if(plant != null) {
+                visitor.visit(row, col, plant);
+            }
+        });
     }
 
     /**

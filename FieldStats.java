@@ -111,18 +111,7 @@ public class FieldStats
     private void generateCounts(Field field)
     {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Animal animal = field.getAnimalAt(row, col);
-                Plant plant = field.getPlantAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
-                }
-                if(plant != null) {
-                    incrementCount(plant.getClass());
-                }
-            }
-        }
+        field.forEachStoredActor((row, col, actor) -> incrementCount(actor.getClass()));
         countsValid = true;
     }
 

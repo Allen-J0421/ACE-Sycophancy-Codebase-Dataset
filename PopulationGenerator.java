@@ -82,29 +82,25 @@ public class PopulationGenerator
     private void populateAnimals(SimulationPopulation population)
     {
         Random rand = Randomizer.getRandom();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Location location = new Location(row, col);
-                Animal animal = createAnimalAt(rand, location);
-                if(animal != null) {
-                    population.addAnimal(animal);
-                }
+        field.forEachLocation((row, col) -> {
+            Location location = new Location(row, col);
+            Animal animal = createAnimalAt(rand, location);
+            if(animal != null) {
+                population.addAnimal(animal);
             }
-        }
+        });
     }
 
     private void populatePlants(SimulationPopulation population)
     {
         Random rand = Randomizer.getRandom();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Location location = new Location(row, col);
-                Plant plant = createPlantAt(rand, location);
-                if(plant != null) {
-                    population.addPlant(plant);
-                }
+        field.forEachLocation((row, col) -> {
+            Location location = new Location(row, col);
+            Plant plant = createPlantAt(rand, location);
+            if(plant != null) {
+                population.addPlant(plant);
             }
-        }
+        });
     }
 
     private Animal createAnimalAt(Random rand, Location location)

@@ -49,7 +49,8 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public void grow() {
-        size = size*getGrowthRate() > getMaxSize() ? 1 : size*getGrowthRate();
+        double grownSize = size * getGrowthRate();
+        size = grownSize > getMaxSize() ? 1 : grownSize;
         if (size == 0) {
             remove();
         }
@@ -127,11 +128,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public void setEaten() {
-        if (getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearFromField();
     }
 
     /**
@@ -150,6 +147,25 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     protected void setBreedingProbability(double probability) {
         this.breedingProbability = probability;
+    }
+
+    /**
+     * Set the breeding probability to the high value when the weather matches.
+     *
+     * @param weather The current weather state.
+     * @param lowProbability The default breeding probability.
+     * @param highProbability The breeding probability used for favorable weather.
+     * @param favorableWeather The weather types that should trigger the higher probability.
+     */
+    protected void setBreedingProbabilityForWeather(Weather weather, double lowProbability,
+                                                    double highProbability, WeatherType... favorableWeather) {
+        setBreedingProbability(lowProbability);
+        for (WeatherType weatherType : favorableWeather) {
+            if (weather.getRecentWeather().contains(weatherType)) {
+                setBreedingProbability(highProbability);
+                break;
+            }
+        }
     }
 
     /**

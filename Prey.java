@@ -53,11 +53,7 @@ public abstract class Prey extends Animal implements Consumable {
      */
     @Override
     public void setEaten() {
-        if(getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearFromField();
     }
 
     /**

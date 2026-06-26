@@ -74,13 +74,8 @@ public class Grass extends Plant {
     @Override
     public void act(List<Entity> newGrass, Weather weather, TimeOfDay time) {
         if (isAlive()) {
-            setBreedingProbability(LOW_BREEDING_PROBABILITY);
-
-            //If it has recently rained or is sunny, grow at a higher growth rate
-            if (weather.getRecentWeather().contains(WeatherType.RAIN) ||
-                    weather.getRecentWeather().contains(WeatherType.SUN)){
-                setBreedingProbability(HIGH_BREEDING_PROBABILITY);
-            }
+            setBreedingProbabilityForWeather(weather, LOW_BREEDING_PROBABILITY,
+                    HIGH_BREEDING_PROBABILITY, WeatherType.RAIN, WeatherType.SUN);
             grow();
             giveBirth(newGrass);
         }

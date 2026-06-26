@@ -3,6 +3,9 @@ final class ModularExponentiation {
     private static final int DEMO_EXPONENT = 2;
     private static final int DEMO_MODULUS = 4;
 
+    private ModularExponentiation() {
+    }
+
     public static int powMod(int base, int exponent, int modulus) {
         int result = 1;
         int currentBase = base;

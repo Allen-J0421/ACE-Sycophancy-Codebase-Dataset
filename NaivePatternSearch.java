@@ -8,25 +8,28 @@ public final class NaivePatternSearch {
     }
 
     public static List<Integer> search(String pattern, String text) {
-        Objects.requireNonNull(pattern, "pattern must not be null");
-        Objects.requireNonNull(text, "text must not be null");
+        return search(new SearchRequest(text, pattern)).matchIndexes();
+    }
 
-        int patternLength = pattern.length();
-        int textLength = text.length();
+    public static SearchResult search(SearchRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
 
-        if (patternLength > textLength) {
-            return List.of();
+        if (request.patternIsLongerThanText()) {
+            return new SearchResult(request, List.of());
         }
 
         List<Integer> matchIndexes = new ArrayList<>();
+        int patternLength = request.patternLength();
 
-        for (int startIndex = 0; startIndex <= textLength - patternLength; startIndex++) {
-            if (matchesAt(pattern, text, startIndex, patternLength)) {
+        for (int startIndex = 0;
+                startIndex <= request.textLength() - patternLength;
+                startIndex++) {
+            if (matchesAt(request, startIndex, patternLength)) {
                 matchIndexes.add(startIndex);
             }
         }
 
-        return matchIndexes;
+        return new SearchResult(request, matchIndexes);
     }
 
     public static String joinMatchIndexes(List<Integer> matches) {
@@ -47,10 +50,10 @@ public final class NaivePatternSearch {
         return formattedMatches.toString();
     }
 
-    private static boolean matchesAt(
-            String pattern, String text, int startIndex, int patternLength) {
+    private static boolean matchesAt(SearchRequest request, int startIndex, int patternLength) {
         for (int offset = 0; offset < patternLength; offset++) {
-            if (text.charAt(startIndex + offset) != pattern.charAt(offset)) {
+            if (request.text().charAt(startIndex + offset)
+                    != request.pattern().charAt(offset)) {
                 return false;
             }
         }

@@ -16,6 +16,10 @@ public final class NaivePatternSearchTest {
                 "", "abc", List.of(0, 1, 2, 3));
         assertEquals("joins match indexes for CLI output",
                 "0 9 12", NaivePatternSearch.joinMatchIndexes(List.of(0, 9, 12)));
+        assertSearchResult("search result keeps the originating request",
+                new SearchRequest("banana", "ana"), List.of(1, 3));
+        assertImmutability("search results expose an immutable match list",
+                new SearchRequest("aaaa", "aa"));
         assertSearchInput("uses CLI defaults when no arguments are provided",
                 new String[0], "aabaacaadaabaaba", "aaba");
         assertSearchInput("allows overriding the text only",
@@ -29,9 +33,27 @@ public final class NaivePatternSearchTest {
         assertEquals(scenario, expectedMatches, NaivePatternSearch.search(pattern, text));
     }
 
+    private static void assertSearchResult(
+            String scenario, SearchRequest request, List<Integer> expectedMatches) {
+        SearchResult result = NaivePatternSearch.search(request);
+        assertEquals(scenario + " (request)", request, result.request());
+        assertEquals(scenario + " (matches)", expectedMatches, result.matchIndexes());
+        assertEquals(scenario + " (hasMatches)", !expectedMatches.isEmpty(), result.hasMatches());
+    }
+
+    private static void assertImmutability(String scenario, SearchRequest request) {
+        SearchResult result = NaivePatternSearch.search(request);
+
+        try {
+            result.matchIndexes().add(99);
+            throw new AssertionError(scenario + ": expected matchIndexes to be immutable");
+        } catch (UnsupportedOperationException expected) {
+        }
+    }
+
     private static void assertSearchInput(
             String scenario, String[] args, String expectedText, String expectedPattern) {
-        NaivePatternSearchCli.SearchInput input = NaivePatternSearchCli.parseArguments(args);
+        SearchRequest input = NaivePatternSearchCli.parseArguments(args);
         assertEquals(scenario + " (text)", expectedText, input.text());
         assertEquals(scenario + " (pattern)", expectedPattern, input.pattern());
     }

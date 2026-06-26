@@ -40,15 +40,4 @@ public class Aardvark extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this aardvark act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newAardvarks A list to return newly born aardvarks.
-     */
-    public void act(List<Actor> newAardvarks)
-    {
-        super.act(newAardvarks);
-    }
 }

@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-
 /**
  * A simple model of red oat grass grass.
  *
@@ -29,16 +25,5 @@ public class RedOatGrass extends Producer
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
               MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-    
-    /**
-     * Make this red oat grass act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newRedOatGrass A list to return newly born red oat grass.
-     */
-    public void act(List<Actor> newRedOatGrass)
-    {
-        super.act(newRedOatGrass);
     }
 }

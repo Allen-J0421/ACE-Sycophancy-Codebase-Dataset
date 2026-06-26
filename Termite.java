@@ -40,15 +40,4 @@ public class Termite extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this termite act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newTermites A list to return newly born termites.
-     */
-    public void act(List<Actor> newTermites)
-    {
-        super.act(newTermites);
-    }
 }

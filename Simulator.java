@@ -1,4 +1,4 @@
- import java.util.Random;
+import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +12,24 @@ import javafx.application.Application;
  */
 public class Simulator
 {
+    @FunctionalInterface
+    private interface ActorFactory
+    {
+        Actor create(Field field, Location location);
+    }
+
+    private static final class SpawnRule
+    {
+        private final double creationProbability;
+        private final ActorFactory factory;
+
+        private SpawnRule(double creationProbability, ActorFactory factory)
+        {
+            this.creationProbability = creationProbability;
+            this.factory = factory;
+        }
+    }
+
     // Constants representing configuration information for the simulation:
     //   The default width for the grid:
     private static final int DEFAULT_WIDTH = 120;
@@ -49,6 +67,20 @@ public class Simulator
     private static final Color ACACIA_COLOR        = new Color(187, 214, 134);
     // Carcasses of consumers
     private static final Color CARCASS_COLOR       = new Color(202,0,0);
+
+    // The ordered species creation rules for a starting field.
+    private static final List<SpawnRule> INITIAL_POPULATION_RULES = List.of(
+        new SpawnRule(GRASSHOPPER_CREATION_PROBABILITY, (field, location) -> new Grasshopper(true, field, location)),
+        new SpawnRule(HARVESTER_ANT_CREATION_PROBABILITY, (field, location) -> new HarvesterAnt(true, field, location)),
+        new SpawnRule(TERMITE_CREATION_PROBABILITY, (field, location) -> new Termite(true, field, location)),
+        new SpawnRule(IMPALA_CREATION_PROBABILITY, (field, location) -> new Impala(true, field, location)),
+        new SpawnRule(PANGOLIN_CREATION_PROBABILITY, (field, location) -> new Pangolin(true, field, location)),
+        new SpawnRule(AARDVARK_CREATION_PROBABILITY, (field, location) -> new Aardvark(true, field, location)),
+        new SpawnRule(MONGOOSE_CREATION_PROBABILITY, (field, location) -> new Mongoose(true, field, location)),
+        new SpawnRule(STAR_GRASS_CREATION_PROBABILITY, StarGrass::new),
+        new SpawnRule(RED_OAT_GRASS_CREATION_PROBABILITY, RedOatGrass::new),
+        new SpawnRule(ACACIA_CREATION_PROBABILITY, Acacia::new)
+    );
     
     // The number of steps in a day:
     public static final int NUMBER_OF_STEPS_PER_DAY = 25;
@@ -80,7 +112,7 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
-        boolean isSizeImpossible = depth <= 0 || depth <= 0;
+        boolean isSizeImpossible = depth <= 0 || width <= 0;
         
         if (isSizeImpossible)
         {
@@ -99,18 +131,7 @@ public class Simulator
 
         // Create a view of the state of each location in the field:
         view = new SimulatorView(this,depth, width);
-        
-        view.setColor(Grasshopper.class, GRASSHOPPER_COLOR);
-        view.setColor(HarvesterAnt.class, HARVESTER_ANT_COLOR);
-        view.setColor(Termite.class, TERMITE_COLOR);
-        view.setColor(Impala.class, IMPALA_COLOR);
-        view.setColor(Pangolin.class, PANGOLIN_COLOR);
-        view.setColor(Aardvark.class, AARDVARK_COLOR);
-        view.setColor(Mongoose.class, MONGOOSE_COLOR);
-        view.setColor(StarGrass.class, STAR_GRASS_COLOR);
-        view.setColor(RedOatGrass.class, RED_OAT_GRASS_COLOR);
-        view.setColor(Acacia.class, ACACIA_COLOR);
-        view.setColor(Carcass.class, CARCASS_COLOR);
+        registerViewColors();
         
         // Show the statistics window:
         new Thread(() -> {
@@ -157,8 +178,7 @@ public class Simulator
     
     /**
      * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each
-     * fox and rabbit.
+     * Iterate over the whole field updating the state of each actor.
      */
     public void simulateOneStep()
     {
@@ -174,7 +194,7 @@ public class Simulator
         // Provide space for newborn actors:
         List<Actor> newActors = new ArrayList<>();
         
-        // Let all rabbits act:
+        // Let all actors act:
         for (Iterator<Actor> it = actors.iterator(); it.hasNext(); )
         {
             Actor actor = it.next();
@@ -184,7 +204,7 @@ public class Simulator
             if(!actor.getIsAlive()) it.remove();
         }
                
-        // Add the newly born foxes and rabbits to the main lists:
+        // Add the newly born actors to the main list:
         actors.addAll(newActors);
 
         view.showStatus(step, field);
@@ -207,7 +227,7 @@ public class Simulator
     }
     
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Randomly populate the field with actors.
      */
     private void populate()
     {
@@ -219,33 +239,60 @@ public class Simulator
             for (int col = 0; col < field.getWidth(); col++)
             {
                 Location location = new Location(row, col);
-                Actor actor;
-                
-                // Refactor this?
-                if (rand.nextDouble() <= GRASSHOPPER_CREATION_PROBABILITY)
-                    actors.add(new Grasshopper(true, field, location));
-                else if (rand.nextDouble() <= HARVESTER_ANT_CREATION_PROBABILITY)
-                    actors.add(new HarvesterAnt(true, field, location));
-                else if (rand.nextDouble() <= TERMITE_CREATION_PROBABILITY)
-                    actors.add(new Termite(true, field, location));
-                else if (rand.nextDouble() <= IMPALA_CREATION_PROBABILITY)
-                    actors.add(new Impala(true, field, location));
-                else if (rand.nextDouble() <= PANGOLIN_CREATION_PROBABILITY)
-                    actors.add(new Pangolin(true, field, location));
-                else if (rand.nextDouble() <= AARDVARK_CREATION_PROBABILITY)
-                    actors.add(new Aardvark(true, field, location));
-                else if (rand.nextDouble() <= MONGOOSE_CREATION_PROBABILITY)
-                    actors.add(new Mongoose(true, field, location));
-                else if (rand.nextDouble() <= STAR_GRASS_CREATION_PROBABILITY)
-                    actors.add(new StarGrass(field, location));
-                else if (rand.nextDouble() <= RED_OAT_GRASS_CREATION_PROBABILITY)
-                    actors.add(new RedOatGrass(field, location));
-                else if (rand.nextDouble() <= ACACIA_CREATION_PROBABILITY)
-                    actors.add(new Acacia(field, location));
-                
-                // Else leave the location empty.
+                Actor actor = createInitialActor(location, rand);
+
+                if (actor != null) actors.add(actor);
             }
         }
+    }
+
+    /**
+     * Create the initial actor for a field location.
+     * The configured probabilities are applied in order, while using a single
+     * random draw to preserve the existing overall distribution.
+     *
+     * @param location The field location being populated.
+     * @param random   The shared random number generator.
+     * @return A new actor for the location, or null if it remains empty.
+     */
+    private Actor createInitialActor(Location location, Random random)
+    {
+        double selection = random.nextDouble();
+        double cumulativeProbability = 0.0;
+        double remainingProbability = 1.0;
+
+        for (SpawnRule rule : INITIAL_POPULATION_RULES)
+        {
+            double effectiveProbability = remainingProbability * rule.creationProbability;
+            cumulativeProbability += effectiveProbability;
+
+            if (selection <= cumulativeProbability)
+            {
+                return rule.factory.create(field, location);
+            }
+
+            remainingProbability -= effectiveProbability;
+        }
+
+        return null;
+    }
+
+    /**
+     * Configure the view colors for each actor type.
+     */
+    private void registerViewColors()
+    {
+        view.setColor(Grasshopper.class, GRASSHOPPER_COLOR);
+        view.setColor(HarvesterAnt.class, HARVESTER_ANT_COLOR);
+        view.setColor(Termite.class, TERMITE_COLOR);
+        view.setColor(Impala.class, IMPALA_COLOR);
+        view.setColor(Pangolin.class, PANGOLIN_COLOR);
+        view.setColor(Aardvark.class, AARDVARK_COLOR);
+        view.setColor(Mongoose.class, MONGOOSE_COLOR);
+        view.setColor(StarGrass.class, STAR_GRASS_COLOR);
+        view.setColor(RedOatGrass.class, RED_OAT_GRASS_COLOR);
+        view.setColor(Acacia.class, ACACIA_COLOR);
+        view.setColor(Carcass.class, CARCASS_COLOR);
     }
     
     /**

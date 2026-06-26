@@ -100,13 +100,13 @@ public abstract class Plant implements Actor
         this.feedingValue = age * FEEDING_FACTOR;
     }
 
-    protected void grow(int maxAge)
+    private void grow(int maxAge)
     {
         incrementAge(maxAge);
         updateFeedingValue();
     }
 
-    protected void multiply(double spreadProbability, List<Actor> newPlants)
+    private void multiply(double spreadProbability, List<Actor> newPlants)
     {
         List<Location> freeLocs = field.getFreeAdjacentTerrain(location);
         for (Location loc : freeLocs) {

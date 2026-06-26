@@ -19,11 +19,11 @@ public final class EuclideanAlgorithmsTest {
             new AlgorithmCase(
                 BigInteger.valueOf(Long.MIN_VALUE),
                 BigInteger.ZERO,
-                new BigInteger("9223372036854775808"),
+                big("9223372036854775808"),
                 "gcd handles the absolute value overflow case"
             ),
             new AlgorithmCase(
-                new BigInteger("9223372036854775808"),
+                big("9223372036854775808"),
                 BigInteger.TWO,
                 BigInteger.valueOf(2),
                 "gcd supports integers larger than long"
@@ -85,6 +85,10 @@ public final class EuclideanAlgorithmsTest {
             BigInteger.valueOf(expected),
             scenario
         );
+    }
+
+    private static BigInteger big(String value) {
+        return new BigInteger(value);
     }
 
     private static RunCase runCase(

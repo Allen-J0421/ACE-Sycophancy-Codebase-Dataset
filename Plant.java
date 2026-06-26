@@ -5,15 +5,13 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Plant extends Organism implements Actor
+public abstract class Plant extends Organism implements Edible
 {
     // the stages of growth for  plant
     protected int NUMBER_OF_STAGES;
     protected int STEPS_PER_STAGE = 1;
     protected int STAGE_OF_GROWTH;
 
-
-    // Implementing abstract methods to return fields to be used by the superclass
     public int STEPS_PER_STAGE(){ return STEPS_PER_STAGE; }
     protected static final Random rand = Randomizer.getRandom();
     
@@ -42,6 +40,9 @@ public abstract class Plant extends Organism implements Actor
         }
         return false;
     }
-    
-    
+
+    /**
+     * Returns the food value of the plant.
+     */
+    public abstract int getFoodValue();
 }

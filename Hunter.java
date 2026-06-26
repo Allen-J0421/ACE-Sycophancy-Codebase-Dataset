@@ -5,12 +5,8 @@ import java.util.*;
  * Hunters hunt all of the species in the simulation.
  * @version 2022.03.02
  */
-public class Hunter implements Actor
+public class Hunter extends Organism
 {
-    private boolean alive;
-    private Field field;
-    private Location location;
-
     private final Random rand = Randomizer.getRandom();
     // A hunter hunts every species. 
     private static final Set<Class<?>> DIET = Set.of(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class);
@@ -23,17 +19,7 @@ public class Hunter implements Actor
      */
     public Hunter(Field field, Location location)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
-    }
-
-    /**
-     * Returns true if the hunter is alive. 
-     */
-    public boolean isAlive() 
-    {
-        return alive;
+        super(field, location);
     }
 
     /**
@@ -47,33 +33,20 @@ public class Hunter implements Actor
             Location newLocation = findPrey();
             if(newLocation == null) {
                 // No animals found - try to move to a free location.
-                newLocation = field.freeAdjacentLocation(location);
+                newLocation = getField().freeAdjacentLocation(getLocation());
             }
-            List<Location> adjacentGrassSpots = field.adjacentLocationsWithSpecies(location, Grass.class);
+            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
 
             // See if it was possible to move.
             if(newLocation != null) {
                 setLocation(newLocation);
             }
             else if (adjacentGrassSpots.size() > 0) {
-                field.clear(location);
+                getField().clear(getLocation());
                 setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
             }
 
         }
-    }
-
-    /**
-     * Place the hunter at the new location in the given field.
-     * @param newLocation The hunter's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
     }
 
 
@@ -84,8 +57,8 @@ public class Hunter implements Actor
      */
     private Location findPrey()
     {
-        Field field = this.field;
-        List<Location> adjacent = field.adjacentLocations(location);
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
@@ -101,4 +74,5 @@ public class Hunter implements Actor
         }
         return null;
     }
+
 }

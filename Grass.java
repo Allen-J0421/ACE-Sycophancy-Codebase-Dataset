@@ -14,7 +14,7 @@ public class Grass extends Plant
      * Returns the food value of the grass.
      * @return int The food value of the grass.
      */
-    protected int FOOD_VALUE()
+    public int getFoodValue()
     {
         return foodValue;
     }

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
  *
  * @version 2022.03.02
  */
-public abstract class Animal extends Organism implements Actor
+public abstract class Animal extends Organism implements Edible
 {
 
     protected int age;
@@ -25,8 +25,8 @@ public abstract class Animal extends Organism implements Actor
     private static final double RANDOM_CONTRACTION_RATE = 0.002;
 
 
-    // Declaring abstract methods to obtain fields used by subclasses
-    // These methods have been declared in order to use common methods in the Animal class, reducing repeatability
+    // Declaring abstract methods to obtain fields used by subclasses.
+    // These methods are implemented by each species.
     protected abstract double BREEDING_AGE();
     protected abstract int MAX_LITTER_SIZE();
     protected abstract double BREEDING_PROBABILITY();
@@ -116,20 +116,20 @@ public abstract class Animal extends Organism implements Actor
         List<Location> adjacent = field.adjacentLocations(getLocation());
         for(Location loc : adjacent){
             if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
-                Organism organism = (Organism) field.getObjectAt(loc);
-                if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
-                    // contracts the first contact disease it encounters amongst the adjacent animals
-                    this.setDisease(organism.getDisease());
-                    break;
+                    Organism organism = (Organism) field.getObjectAt(loc);
+                    if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
+                        // contracts the first contact disease it encounters amongst the adjacent animals
+                        this.setDisease(organism.getDisease());
+                        break;
+                    }
                 }
-            }
         }
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
         while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal != null && DIET().contains(animal.getClass())) 
+            if(animal instanceof Edible && DIET().contains(animal.getClass()))
             {
                 Organism food = (Organism) animal;
                 if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
@@ -140,7 +140,7 @@ public abstract class Animal extends Organism implements Actor
                 if(food.isAlive()) 
                 {
                     food.setDead();
-                    int newFoodLevel = foodLevel + food.FOOD_VALUE();
+                    int newFoodLevel = foodLevel + ((Edible) food).getFoodValue();
 
                     // caps the food level at the maximum
                     foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
@@ -253,5 +253,10 @@ public abstract class Animal extends Organism implements Actor
             setDead();
         }
     }
+
+    /**
+     * Returns the food value of this animal.
+     */
+    public abstract int getFoodValue();
 
 }

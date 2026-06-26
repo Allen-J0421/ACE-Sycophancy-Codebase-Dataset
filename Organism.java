@@ -1,10 +1,12 @@
+import java.util.List;
+
 /**
  * This class represents shared characteristics of organisms
- * in the simulation. 
+ * in the simulation.
  *
  * @version 2022.03.2
  */
-public abstract class Organism {
+public abstract class Organism implements Actor {
     
 
     // Whether the organism is alive or not.
@@ -18,8 +20,6 @@ public abstract class Organism {
     private Disease disease = null;
     private boolean hasDisease = false;
 
-
-    protected abstract int FOOD_VALUE();
 
     /**
      * Creates a new organism. 
@@ -112,4 +112,9 @@ public abstract class Organism {
         this.disease = disease;
         hasDisease = true;
     }
+
+    /**
+     * Default actor behavior must be provided by subclasses.
+     */
+    public abstract void act(List<Actor> newActors, Environment environment);
 }

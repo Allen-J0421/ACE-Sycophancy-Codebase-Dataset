@@ -38,7 +38,7 @@ public class Wolf extends Animal
     protected double BREEDING_PROBABILITY() { return BREEDING_PROBABILITY; }
     protected int MAX_AGE() { return MAX_AGE; }
     protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
-    protected int FOOD_VALUE() { return FOOD_VALUE; }
+    public int getFoodValue() { return FOOD_VALUE; }
     protected Set<Class<?>> DIET() { return DIET; }
 
     /**

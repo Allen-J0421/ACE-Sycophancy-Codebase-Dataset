@@ -36,8 +36,8 @@ public abstract class Animal extends LivingOrganism
         }
     }
 
-    // Indicates whether an animal is a female or not;
-    protected boolean isFemale;
+    // Indicates whether an animal is female.
+    protected boolean female;
     // The age at which an animal can start to breed.
     protected int breedingAge;
     // The age to which an animal can live.
@@ -88,7 +88,7 @@ public abstract class Animal extends LivingOrganism
         deathFromInfectionProbability = INFECTION_DEATH_PROBABILITY;
         immuneProbability = IMMUNE_PROBABILITY;
         
-        isFemale = rand.nextBoolean();
+        female = rand.nextBoolean();
     }
     
     /**
@@ -108,7 +108,7 @@ public abstract class Animal extends LivingOrganism
         {
             tryContractDisease();
 
-            if(isFemale && canBreed() && rand.nextDouble() <= breedingProbability)
+            if(female && canBreed() && rand.nextDouble() <= breedingProbability)
             {
                 populate(newAnimals);
             }
@@ -274,9 +274,9 @@ public abstract class Animal extends LivingOrganism
     /**
      * @return True if the animal is female.
      */
-    protected boolean isFemale()
+    protected boolean female()
     {
-        return isFemale;
+        return female;
     }
     
     /**
@@ -359,7 +359,7 @@ public abstract class Animal extends LivingOrganism
         for(Location where : field.adjacentLocations(getLocation()))
         {
             Animal neighbor = (Animal) field.getObjectAt(where, Animal.class);
-            if(neighbor != null && getClass().equals(neighbor.getClass()) && !neighbor.isFemale())
+            if(neighbor != null && getClass().equals(neighbor.getClass()) && !neighbor.female())
             {
                 births = rand.nextInt(maxLitterSize) + 1;
                 break;

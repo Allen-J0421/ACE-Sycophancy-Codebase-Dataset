@@ -54,34 +54,33 @@ public class Plant extends LivingOrganism
     public void act(List<LivingOrganism> newPlants)
     {
         incrementAge();
-        if(!Time.isNight()) 
+        if(Time.isNight() || !isAlive())
         {
-            if(isAlive()) 
-            {
-                switch (Weather.getWeather())
-                {
-                    case Sunny:
-                        spreadProbability = 0.2;
-                        break;
-                    case Rainy:
-                        spreadProbability = 0.14;
-                        break;
-                    case Foggy:
-                        spreadProbability = 0.05;
-                        break;
-                    case Cloudy:
-                        spreadProbability = 0.1;
-                        break;
-                    case Clear:
-                        spreadProbability = 0.08;
-                        break;
-                }    
-                
-                if (rand.nextDouble() < spreadProbability) 
-                {
-                    populate(newPlants);
-                }
-            }
+            return;
+        }
+
+        switch (Weather.getWeather())
+        {
+            case Sunny:
+                spreadProbability = 0.2;
+                break;
+            case Rainy:
+                spreadProbability = 0.14;
+                break;
+            case Foggy:
+                spreadProbability = 0.05;
+                break;
+            case Cloudy:
+                spreadProbability = 0.1;
+                break;
+            case Clear:
+                spreadProbability = 0.08;
+                break;
+        }
+
+        if (rand.nextDouble() < spreadProbability)
+        {
+            populate(newPlants);
         }
     }
     

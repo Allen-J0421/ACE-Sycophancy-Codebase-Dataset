@@ -6,13 +6,13 @@
  */
 public class Cheetah extends Predator
 {
-    public static final double PREY_CATCHING_PROBABILITY = 0.6;
-    public static final int BREEDING_AGE = 60;
-    public static final int MAX_AGE = 1000;
-    public static final double BREEDING_PROBABILITY = 0.7;
-    public static final int MAX_LITTER_SIZE = 3;
-    public static final int MAX_FOOD_LEVEL = 40;
-    public static final int FOOD_VALUE = 16;
+    private static final double PREY_CATCHING_PROBABILITY = 0.6;
+    private static final int BREEDING_AGE = 60;
+    private static final int MAX_AGE = 1000;
+    private static final double BREEDING_PROBABILITY = 0.7;
+    private static final int MAX_LITTER_SIZE = 3;
+    private static final int MAX_FOOD_LEVEL = 40;
+    private static final int FOOD_VALUE = 16;
 
     private static final SpeciesConfig CONFIG = new SpeciesConfig(
         BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);

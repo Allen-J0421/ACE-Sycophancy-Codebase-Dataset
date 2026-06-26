@@ -76,11 +76,11 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an object at the given location.
+     * If there is already an object of the same type at the location it will
      * be lost.
-     * 
-     * @param animal The animal to be placed.
+     *
+     * @param object The object to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
@@ -90,12 +90,12 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place an object at the given location.
+     * If there is already an object of the same type at the location it will
      * be lost.
-     * 
+     *
      * @param object The object to be placed.
-     * @param location Where to place the animal.
+     * @param location Where to place the object.
      */
     public void place(Object object, Location location)
     {
@@ -103,12 +103,11 @@ public class Field
     }
     
     /**
-     * Return the animal at the given location, if any.
-     * 
+     * Return the object of the given type at the given location, if any.
+     *
      * @param location Where in the field.
-     * @param objectType Object type to fetch
-     * 
-     * @return The animal at the given location, or null if there is none.
+     * @param objectType The type of object to fetch.
+     * @return The object at the given location, or null if there is none.
      */
     public Object getObjectAt(Location location, Class<?> objectType)
     {
@@ -116,12 +115,12 @@ public class Field
     }
     
     /**
-     * Return the animal at the given location, if any.
-     * 
+     * Return the object of the given type at the given location, if any.
+     *
      * @param row The desired row.
      * @param col The desired column.
-     * 
-     * @return The animal at the given location, or null if there is none.
+     * @param objectType The type of object to fetch.
+     * @return The object at the given location, or null if there is none.
      */
     public Object getObjectAt(int row, int col, Class<?> objectType)
     {

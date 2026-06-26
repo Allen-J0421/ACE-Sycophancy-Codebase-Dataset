@@ -6,12 +6,12 @@
  */
 public class Giraffe extends Prey
 {
-    public static final int BREEDING_AGE = 30;
-    public static final int MAX_AGE = 500;
-    public static final double BREEDING_PROBABILITY = 0.65;
-    public static final int MAX_LITTER_SIZE = 2;
-    public static final int MAX_FOOD_LEVEL = 20;
-    public static final int FOOD_VALUE = 15;
+    private static final int BREEDING_AGE = 30;
+    private static final int MAX_AGE = 500;
+    private static final double BREEDING_PROBABILITY = 0.65;
+    private static final int MAX_LITTER_SIZE = 2;
+    private static final int MAX_FOOD_LEVEL = 20;
+    private static final int FOOD_VALUE = 15;
 
     private static final SpeciesConfig CONFIG = new SpeciesConfig(
         BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);

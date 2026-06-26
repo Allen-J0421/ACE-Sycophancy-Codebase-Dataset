@@ -57,7 +57,7 @@ public abstract class Predator extends Animal
         Field field = getField();
         for(Location where : field.adjacentLocations(getLocation()))
         {
-            Object animal = field.getObjectAt(where, Animal.class);
+            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
 
             if(animal instanceof Prey)
             {

@@ -6,12 +6,12 @@
  */
 public class Zebra extends Prey
 {
-    public static final int BREEDING_AGE = 25;
-    public static final int MAX_AGE = 200;
-    public static final double BREEDING_PROBABILITY = 0.45;
-    public static final int MAX_LITTER_SIZE = 3;
-    public static final int MAX_FOOD_LEVEL = 25;
-    public static final int FOOD_VALUE = 13;
+    private static final int BREEDING_AGE = 25;
+    private static final int MAX_AGE = 200;
+    private static final double BREEDING_PROBABILITY = 0.45;
+    private static final int MAX_LITTER_SIZE = 3;
+    private static final int MAX_FOOD_LEVEL = 25;
+    private static final int FOOD_VALUE = 13;
 
     private static final SpeciesConfig CONFIG = new SpeciesConfig(
         BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);

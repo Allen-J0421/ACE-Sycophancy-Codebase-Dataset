@@ -6,13 +6,13 @@
  */
 public class Lion extends Predator
 {
-    public static final double PREY_CATCHING_PROBABILITY = 0.80;
-    public static final int BREEDING_AGE = 80;
-    public static final int MAX_AGE = 1400;
-    public static final double BREEDING_PROBABILITY = 0.65;
-    public static final int MAX_LITTER_SIZE = 2;
-    public static final int MAX_FOOD_LEVEL = 50;
-    public static final int FOOD_VALUE = 35;
+    private static final double PREY_CATCHING_PROBABILITY = 0.80;
+    private static final int BREEDING_AGE = 80;
+    private static final int MAX_AGE = 1400;
+    private static final double BREEDING_PROBABILITY = 0.65;
+    private static final int MAX_LITTER_SIZE = 2;
+    private static final int MAX_FOOD_LEVEL = 50;
+    private static final int FOOD_VALUE = 35;
 
     private static final SpeciesConfig CONFIG = new SpeciesConfig(
         BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);

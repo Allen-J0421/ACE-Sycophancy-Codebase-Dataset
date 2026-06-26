@@ -74,7 +74,7 @@ public class FieldStats
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(SpeciesRegistry.INSTANCE.getDisplayName(speciesType));
+            count = new Counter(SpeciesRegistry.INSTANCE.getFactory(speciesType).getDisplayName());
             counters.put(speciesType, count);
         }
         count.increment();

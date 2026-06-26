@@ -25,6 +25,7 @@ import savannah.config.SimulationConfig;
 import savannah.model.Animal;
 import savannah.model.Field;
 import savannah.model.FieldStats;
+import savannah.model.OrganismFactory;
 import savannah.model.Plant;
 import savannah.model.SpeciesRegistry;
 import savannah.model.SpeciesType;
@@ -207,7 +208,8 @@ public class SimulatorView extends JFrame
         
         // Creates label of the appropriate color and text to be
         // displayed by the species key.
-        JLabel newClassLabel = new JLabel(SpeciesRegistry.INSTANCE.getDisplayName(speciesType), JLabel.CENTER);
+        OrganismFactory factory = SpeciesRegistry.INSTANCE.getFactory(speciesType);
+        JLabel newClassLabel = new JLabel(factory.getDisplayName(), JLabel.CENTER);
         
         // Adjusts color of the label's text
         newClassLabel.setForeground(textColor);

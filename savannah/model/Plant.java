@@ -28,9 +28,9 @@ public class Plant extends LivingOrganism
     {
         super(context, location, SpeciesType.PLANT);
 
-        SpeciesRegistry speciesRegistry = SpeciesRegistry.INSTANCE;
-        foodValue = speciesRegistry.plantConfig(speciesType, getConfig()).foodValue;
-        healthPercentage = speciesRegistry.initialPlantHealth(speciesType, randomHealthPercentage, rand, getConfig());
+        OrganismFactory factory = SpeciesRegistry.INSTANCE.getFactory(speciesType);
+        foodValue = factory.plantConfig(getConfig()).foodValue;
+        healthPercentage = factory.initialPlantHealth(randomHealthPercentage, rand, getConfig());
     }
     
     /**
@@ -48,7 +48,7 @@ public class Plant extends LivingOrganism
         {
             if(isAlive()) 
             {
-                spreadProbability = SpeciesRegistry.INSTANCE.getPlantSpreadProbability(speciesType, Weather.getWeather(), getConfig());
+                spreadProbability = SpeciesRegistry.INSTANCE.getFactory(speciesType).getPlantSpreadProbability(Weather.getWeather(), getConfig());
                 
                 if (rand.nextDouble() < spreadProbability) 
                 {
@@ -64,7 +64,7 @@ public class Plant extends LivingOrganism
      */
     protected int beEaten() 
     {
-        healthPercentage -= SpeciesRegistry.INSTANCE.plantConfig(speciesType, getConfig()).percentageEaten;
+        healthPercentage -= SpeciesRegistry.INSTANCE.getFactory(speciesType).plantConfig(getConfig()).percentageEaten;
         if (healthPercentage <= 0)
         {
             setDead();
@@ -80,7 +80,7 @@ public class Plant extends LivingOrganism
      */
     protected void incrementAge() 
     {
-        healthPercentage += SpeciesRegistry.INSTANCE.plantConfig(speciesType, getConfig()).growthRate;
+        healthPercentage += SpeciesRegistry.INSTANCE.getFactory(speciesType).plantConfig(getConfig()).growthRate;
         if (healthPercentage > 1.0) 
         {
             healthPercentage = 1.0;
@@ -151,6 +151,6 @@ public class Plant extends LivingOrganism
     private Plant createOffspring(List<Location> free) 
     {
         Location loc = free.remove(0);
-        return SpeciesRegistry.INSTANCE.createPlant(speciesType, getContext(), false, loc);
+        return SpeciesRegistry.INSTANCE.getFactory(speciesType).createPlant(getContext(), false, loc);
     }
 }

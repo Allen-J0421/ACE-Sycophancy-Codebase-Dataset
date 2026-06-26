@@ -104,7 +104,7 @@ public class SimulationEngine
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                plants.add(SpeciesRegistry.INSTANCE.createPlant(SpeciesType.PLANT, context, true, location));
+                plants.add(SpeciesRegistry.INSTANCE.getFactory(SpeciesType.PLANT).createPlant(context, true, location));
 
                 Animal animal = createInitialAnimal(location, rand);
                 if (animal != null) {
@@ -118,19 +118,19 @@ public class SimulationEngine
     {
         savannah.config.SimulationConfig config = context.getConfig();
         if (rand.nextDouble() <= config.lionCreationProbability) {
-            return SpeciesRegistry.INSTANCE.createAnimal(SpeciesType.LION, context, location, true, false, false);
+            return SpeciesRegistry.INSTANCE.getFactory(SpeciesType.LION).createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.cheetahCreationProbability) {
-            return SpeciesRegistry.INSTANCE.createAnimal(SpeciesType.CHEETAH, context, location, true, false, false);
+            return SpeciesRegistry.INSTANCE.getFactory(SpeciesType.CHEETAH).createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.zebraCreationProbability) {
-            return SpeciesRegistry.INSTANCE.createAnimal(SpeciesType.ZEBRA, context, location, true, false, false);
+            return SpeciesRegistry.INSTANCE.getFactory(SpeciesType.ZEBRA).createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.giraffeCreationProbability) {
-            return SpeciesRegistry.INSTANCE.createAnimal(SpeciesType.GIRAFFE, context, location, true, false, false);
+            return SpeciesRegistry.INSTANCE.getFactory(SpeciesType.GIRAFFE).createAnimal(context, location, true, false, false);
         }
         if (rand.nextDouble() <= config.lemurCreationProbability) {
-            return SpeciesRegistry.INSTANCE.createAnimal(SpeciesType.LEMUR, context, location, true, false, false);
+            return SpeciesRegistry.INSTANCE.getFactory(SpeciesType.LEMUR).createAnimal(context, location, true, false, false);
         }
 
         return null;

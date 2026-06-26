@@ -59,9 +59,9 @@ public abstract class Animal extends LivingOrganism
         this.infected = infected;
         this.immune = immune;
 
-        SpeciesRegistry speciesRegistry = SpeciesRegistry.INSTANCE;
+        OrganismFactory factory = SpeciesRegistry.INSTANCE.getFactory(speciesType);
         SimulationConfig config = getConfig();
-        SimulationConfig.SpeciesConfig speciesConfig = speciesRegistry.animalConfig(speciesType, config);
+        SimulationConfig.SpeciesConfig speciesConfig = factory.animalConfig(config);
         breedingAge = speciesConfig.breedingAge;
         maxAge = speciesConfig.maxAge;
         breedingProbability = speciesConfig.breedingProbability;
@@ -75,8 +75,8 @@ public abstract class Animal extends LivingOrganism
         immuneProbability = config.immuneProbability;
 
         isFemale = rand.nextBoolean();
-        age = speciesRegistry.initialAge(speciesType, randomAge, rand, config);
-        foodLevel = speciesRegistry.initialFoodLevel(speciesType, randomAge, rand, config);
+        age = factory.initialAge(randomAge, rand, config);
+        foodLevel = factory.initialFoodLevel(randomAge, rand, config);
     }
 
     /**
@@ -307,7 +307,7 @@ public abstract class Animal extends LivingOrganism
     protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
     {
         OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return SpeciesRegistry.INSTANCE.createAnimal(speciesType, getContext(), location, false, healthState.isInfected(), healthState.isImmune());
+        return SpeciesRegistry.INSTANCE.getFactory(speciesType).createAnimal(getContext(), location, false, healthState.isInfected(), healthState.isImmune());
     }
 
     /**

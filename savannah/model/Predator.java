@@ -27,7 +27,7 @@ public abstract class Predator extends Animal
     protected Predator(SimulationContext context, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType)
     {
         super(context, location, randomAge, isInfected, isImmune, speciesType);
-        preyCatchingProbability = SpeciesRegistry.INSTANCE.animalConfig(speciesType, getConfig()).preyCatchingProbability;
+        preyCatchingProbability = SpeciesRegistry.INSTANCE.getFactory(speciesType).animalConfig(getConfig()).preyCatchingProbability;
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class Predator extends Animal
             Location where = it.next();
             Animal animal = (Animal) field.getObjectAt(where, Animal.class);
             
-            if(animal != null && SpeciesRegistry.INSTANCE.isPrey(animal.getSpeciesType())) 
+            if(animal != null && SpeciesRegistry.INSTANCE.getFactory(animal.getSpeciesType()).isPrey()) 
             {
                 Prey prey = (Prey) animal;
                 if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability) 

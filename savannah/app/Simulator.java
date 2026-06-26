@@ -4,6 +4,7 @@ import javax.swing.JButton;
 
 import savannah.config.SimulationConfig;
 import savannah.engine.SimulationEngine;
+import savannah.model.OrganismFactory;
 import savannah.model.SpeciesRegistry;
 import savannah.model.SpeciesType;
 import savannah.model.Time;
@@ -77,7 +78,8 @@ public class Simulator
         // Create a view of the state of each location in the field.
         view = new SimulatorView(engine.getDepth(), engine.getWidth(), buttons, CONFIG);
         for (SpeciesType speciesType : SpeciesType.values()) {
-            view.setColor(speciesType, SpeciesRegistry.INSTANCE.getFillColor(speciesType), SpeciesRegistry.INSTANCE.getTextColor(speciesType));
+            OrganismFactory factory = SpeciesRegistry.INSTANCE.getFactory(speciesType);
+            view.setColor(speciesType, factory.getFillColor(), factory.getTextColor());
         }
         
         // Setup a valid starting point.

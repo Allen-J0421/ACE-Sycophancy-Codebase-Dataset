@@ -23,7 +23,7 @@ public class Deer extends Animal
     // The food value of a deer. 
     private static final int FOOD_VALUE = 4;
     // A set of organisms that a deer consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Grass.class));
+    private static final Set<Class<?>> DIET = Set.of(Grass.class);
 
     // Implementing abstract methods to return fields to be used by the superclass
     protected double BREEDING_AGE() { return BREEDING_AGE; }
@@ -32,7 +32,7 @@ public class Deer extends Animal
     protected int MAX_AGE() { return MAX_AGE; }
     protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
     protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected Set<Class<?>> DIET() { return DIET; }
 
 
 

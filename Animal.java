@@ -22,7 +22,7 @@ public abstract class Animal extends Organism implements Actor
         FEMALE
     }
     // An animal's chance of contracting a disease at birth
-    private double RANDOM_CONTRACTION_RATE = 0.002;
+    private static final double RANDOM_CONTRACTION_RATE = 0.002;
 
 
     // Declaring abstract methods to obtain fields used by subclasses
@@ -32,7 +32,7 @@ public abstract class Animal extends Organism implements Actor
     protected abstract double BREEDING_PROBABILITY();
     protected abstract int MAX_AGE();
     protected abstract int MAX_FOOD_LEVEL();
-    protected abstract Set<Class> DIET();
+    protected abstract Set<Class<?>> DIET();
 
 
     /**

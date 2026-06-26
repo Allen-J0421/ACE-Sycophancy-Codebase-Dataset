@@ -1,5 +1,6 @@
+import java.util.EnumSet;
 import java.util.Random;
-import java.util.*;
+import java.util.Set;
 /**
  * This class models weather in the simulation. 
  * It stores information about the current weather. 
@@ -10,10 +11,13 @@ public class Weather
 {
     private WeatherType currentWeather;
     private static final Random rand = Randomizer.getRandom();
-    private int randomInt;
     private int duration; // to keep track of when weather changes (every X hours)
     private boolean randomDuration = false;
-    private Set<WeatherType> weatherList;
+    private final Set<WeatherType> weatherList = EnumSet.of(
+            WeatherType.RAINING,
+            WeatherType.SUNNY,
+            WeatherType.CLOUDY
+    );
     
     
     /**
@@ -21,18 +25,8 @@ public class Weather
      */
     public Weather()
     {
-       weatherList = new HashSet<>();
-       addWeatherList();
        currentWeather = WeatherType.SUNNY; 
        duration = 0;
-    }
-
-    /**
-     * Add the types of weather conditions to a HashSet.
-     */
-    public void addWeatherList()
-    {
-        weatherList = new HashSet<>(Arrays.asList(WeatherType.RAINING, WeatherType.SUNNY, WeatherType.CLOUDY));
     }
     
     /**
@@ -44,14 +38,14 @@ public class Weather
     }
     
     /**
-     * Increments the variable duration. 
-     * If the duration is set to be random, the WeatherType lasts for 0-36 hours
-     * Otherwise, the WeatherType lasts for 12 hours
+     * Increments the variable duration.
+     * If the duration is set to be random, the WeatherType lasts for 1-36 hours.
+     * Otherwise, the WeatherType lasts for 12 hours.
      */
     public void checkWeatherChange(int steps)
     {
         if(randomDuration){
-            duration = rand.nextInt(36);
+            duration = rand.nextInt(36) + 1;
             if(steps % duration==0){
                 changeWeather();
             }
@@ -64,8 +58,8 @@ public class Weather
     }
 
     /**
-     * Allows for the duration of the weather to be switched from random (0-36 steps) to static (12 steps)
-     * @return The new state of the randomDuration boolean
+     * Allows for the duration of the weather to be switched from random (1-36 steps) to static (12 steps).
+     * @return The new state of the randomDuration boolean.
      */
     public boolean toggleRandomWeatherLength()
     {
@@ -78,7 +72,17 @@ public class Weather
      */
     public void changeWeather()
     {
-        randomInt = rand.nextInt(weatherList.size());
-        currentWeather = (WeatherType) weatherList.toArray()[randomInt];
+        WeatherType[] weatherOptions = weatherList.toArray(new WeatherType[0]);
+        currentWeather = weatherOptions[rand.nextInt(weatherOptions.length)];
+    }
+
+    /**
+     * Reset the weather to its initial state.
+     */
+    public void reset()
+    {
+        currentWeather = WeatherType.SUNNY;
+        duration = 0;
+        randomDuration = false;
     }
 }

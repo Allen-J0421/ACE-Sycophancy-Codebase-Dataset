@@ -9,13 +9,13 @@ import java.util.Random;
 */
 public class Disease 
 {
-    private Random rand = Randomizer.getRandom();
+    private static final Random rand = Randomizer.getRandom();
     // The propagation rate of the disease
-    private static double PROPAGATION_RATE = 0.0;
+    private final double propagationRate;
     // the lethality rate of the disease
-    private static double LETHALITY_RATE = 0.0;
+    private final double lethalityRate;
     // the transmission route of the disease 
-    private DiseaseType PROPAGATION_MODE;
+    private final DiseaseType propagationMode;
 
     /**
      * Creates a new disease with random propagation and lethality rates.
@@ -24,9 +24,8 @@ public class Disease
      */
     public Disease() 
     {
-        PROPAGATION_RATE = 0.6 * rand.nextDouble(); // max prop. rate is 60%
-        LETHALITY_RATE = 0.4 * rand.nextDouble(); // max lethality rate is 40%
-        PROPAGATION_MODE = DiseaseType.values()[rand.nextInt(DiseaseType.values().length)];
+        this(0.6 * rand.nextDouble(), 0.4 * rand.nextDouble(),
+                DiseaseType.values()[rand.nextInt(DiseaseType.values().length)]);
     }
     
     /**
@@ -37,9 +36,9 @@ public class Disease
      */
     public Disease(double propRate, double lethalRate, DiseaseType propMode)
     {
-        PROPAGATION_RATE = propRate;
-        LETHALITY_RATE = lethalRate;
-        PROPAGATION_MODE = propMode;
+        propagationRate = propRate;
+        lethalityRate = lethalRate;
+        propagationMode = propMode;
     }
 
     /**
@@ -47,7 +46,7 @@ public class Disease
      */
     public double getPropagationRate() 
     {
-        return PROPAGATION_RATE;
+        return propagationRate;
     }
 
     /**
@@ -55,7 +54,7 @@ public class Disease
      */
     public double getLethalityRate() 
     {
-        return LETHALITY_RATE;
+        return lethalityRate;
     }
 
     /**
@@ -63,6 +62,6 @@ public class Disease
      */
     public DiseaseType getDiseaseType() 
     {
-        return PROPAGATION_MODE;
+        return propagationMode;
     }
 }

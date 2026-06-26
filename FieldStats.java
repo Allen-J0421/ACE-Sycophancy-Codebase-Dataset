@@ -10,7 +10,7 @@ import java.util.*;
 public class FieldStats
 {
     // Counters for each type of entity (coyote, rabbit, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private final HashMap<Class<?>, Counter> counters;
     private Counter diseaseCounter;
     // Whether the counters are currently up to date.
     private boolean countsValid;
@@ -33,11 +33,11 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -50,7 +50,7 @@ public class FieldStats
         return buffer.toString();
     }
 
-    public int getCount(Class cls)
+    public int getCount(Class<?> cls)
     {
         Counter count = counters.get(cls);
         if(count != null){
@@ -59,7 +59,7 @@ public class FieldStats
         return 0;
     }
 
-    public String getCountDetails(Class cls)
+    public String getCountDetails(Class<?> cls)
     {
         return cls.getName() + ": " + getCount(cls);
     }
@@ -71,7 +71,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -82,7 +82,7 @@ public class FieldStats
      * Increment the count for one class of animal.
      * @param animalClass The class of animal to increment.
      */
-    public void incrementCount(Class animalClass)
+    public void incrementCount(Class<?> animalClass)
     {
         Counter count = counters.get(animalClass);
         if(count == null) {
@@ -127,21 +127,16 @@ public class FieldStats
     public boolean isViable(Field field)
     {
         // How many counts are non-zero.
-        Set<Class> aliveSpecies = new HashSet<>();
         int nonZero = 0;
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             if(info.getCount() > 0) {
                 nonZero++;
-                aliveSpecies.add(key);
             }
         }
-
-        // if viability is to be defined based on the species in the field as well, use the aliveSpecies Set
-        // eg: return nonZero > 2 && aliveSpecies.contains(Deer.class)
 
         return nonZero > 2;
     }

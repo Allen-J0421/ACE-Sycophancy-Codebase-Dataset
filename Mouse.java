@@ -27,7 +27,7 @@ public class Mouse extends Animal
     // The food value of a single mouse.
     private static final int FOOD_VALUE = 2;
     // A set of organisms that a mouse consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Grass.class));
+    private static final Set<Class<?>> DIET = Set.of(Grass.class);
 
     protected double BREEDING_AGE() { return BREEDING_AGE; }
     protected int MAX_LITTER_SIZE() { return MAX_LITTER_SIZE; }
@@ -36,7 +36,7 @@ public class Mouse extends Animal
     protected int MAX_AGE() { return MAX_AGE; }
     protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
     protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected Set<Class<?>> DIET() { return DIET; }
 
     
     /**

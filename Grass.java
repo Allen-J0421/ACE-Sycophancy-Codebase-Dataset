@@ -7,8 +7,8 @@ import java.util.List;
  */
 public class Grass extends Plant
 {
-    private static int FOOD_VALUE;
-    private static double GERMINATION_RATE = 0.1;
+    private int foodValue;
+    private double germinationRate = 0.1;
 
     /**
      * Returns the food value of the grass.
@@ -16,7 +16,7 @@ public class Grass extends Plant
      */
     protected int FOOD_VALUE()
     {
-        return FOOD_VALUE;
+        return foodValue;
     }
 
     /**
@@ -34,7 +34,7 @@ public class Grass extends Plant
         NUMBER_OF_STAGES = 3;
         STEPS_PER_STAGE = 2;
         STAGE_OF_GROWTH = rand.nextInt(NUMBER_OF_STAGES);
-        FOOD_VALUE = STAGE_OF_GROWTH;
+        foodValue = STAGE_OF_GROWTH;
 
     }
 
@@ -55,7 +55,7 @@ public class Grass extends Plant
             changeGerminationRate(0.1);
         }
 
-        if(isAlive() && environment.getTime().isDay() && rand.nextDouble() <= GERMINATION_RATE && (environment.getWeather().getCurrentWeather() != (WeatherType.CLOUDY))) {
+        if(isAlive() && environment.getTime().isDay() && rand.nextDouble() <= germinationRate && (environment.getWeather().getCurrentWeather() != (WeatherType.CLOUDY))) {
             germinate(newGrass);
         }
     }
@@ -85,7 +85,7 @@ public class Grass extends Plant
     public void changeGerminationRate(double newRate)
     {
         if(isAlive()) {
-            GERMINATION_RATE = newRate;
+            germinationRate = newRate;
         }
     }
 
@@ -98,7 +98,7 @@ public class Grass extends Plant
     public boolean incrementGrowth()
     {
         if(super.incrementGrowth()) {
-            FOOD_VALUE++;
+            foodValue++;
             return true;
         }
         return false;

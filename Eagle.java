@@ -27,7 +27,7 @@ public class Eagle extends Animal
     // The food value of a single eagle.
     private static final int FOOD_VALUE = 5;
     // A set of organisms that a eagle consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Coyote.class, Mouse.class));
+    private static final Set<Class<?>> DIET = Set.of(Deer.class, Coyote.class, Mouse.class);
 
     // Implementing abstract methods to return fields to be used by the superclass
     protected double BREEDING_AGE() { return BREEDING_AGE; }
@@ -36,7 +36,7 @@ public class Eagle extends Animal
     protected int MAX_AGE() { return MAX_AGE; }
     protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
     protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected Set<Class<?>> DIET() { return DIET; }
 
     /**
      * Create a eagle. A eagle can be created as a new born (age zero

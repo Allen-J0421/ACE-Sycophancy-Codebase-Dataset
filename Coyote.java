@@ -22,7 +22,7 @@ public class Coyote extends Animal
     // The coyotes's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 15;
     // A set of organisms that a coyote consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class));
+    private static final Set<Class<?>> DIET = Set.of(Deer.class, Mouse.class);
 
 
     // Implementing abstract methods to return fields to be used by the superclass
@@ -32,7 +32,7 @@ public class Coyote extends Animal
     protected int MAX_AGE() { return MAX_AGE; }
     protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
     protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected Set<Class<?>> DIET() { return DIET; }
 
     /**
      * Create a coyote. A coyote can be created as a new-born (age zero

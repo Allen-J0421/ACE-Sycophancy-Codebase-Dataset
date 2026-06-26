@@ -7,22 +7,21 @@ import java.util.*;
  */
 public class Hunter implements Actor
 {
-    private static boolean alive;
+    private boolean alive;
     private Field field;
     private Location location;
 
-    private Random rand = Randomizer.getRandom();
+    private final Random rand = Randomizer.getRandom();
     // A hunter hunts every species. 
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class));
+    private static final Set<Class<?>> DIET = Set.of(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class);
 
 
     /**
      * Creates a new hunter.
      * @param field The field currently occupied.
      * @param location  The location within the field.
-     * @param environment The environment that the hunter resides in. 
      */
-    public Hunter(Field field, Location location, Environment environment)
+    public Hunter(Field field, Location location)
     {
         alive = true;
         this.field = field;

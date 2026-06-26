@@ -45,7 +45,7 @@ public class Cod extends Animal
         List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
         for(Location loc : adjacent) {
             Object creature = field.getObjectAt(loc);
-            if(creature instanceof Animal && ((Animal) creature).getIsInfected()) {
+            if(creature instanceof Animal && ((Animal) creature).isInfected()) {
                 makeInfected(disease, step);
             }
             if(creature instanceof Seaweed) {

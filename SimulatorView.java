@@ -130,7 +130,7 @@ public class SimulatorView extends JFrame
     {
         if(creature instanceof Animal) {
             Animal ani = (Animal) creature;
-            if(ani.getIsInfected() && !ani.getIsImmuned()) {
+            if(ani.isInfected() && !ani.isImmune()) {
                 return INFECTED_COLOR;
             }
         }

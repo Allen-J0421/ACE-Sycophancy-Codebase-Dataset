@@ -131,7 +131,7 @@ public class Simulator
 
         double totalOxygenInvolved = 0;
 
-        disease.creationSourceOfInfection(creatures, step);
+        disease.tryStartOutbreak(creatures, step);
 
         List<Creature> newCreatures = new ArrayList<>();
         for(Iterator<Creature> it = creatures.iterator(); it.hasNext(); ) {
@@ -145,6 +145,7 @@ public class Simulator
         if(Randomizer.getRandom().nextDouble() <= STORM_HAPPEN_PROBABILITY) {
             weather.underwaterStorm();
             weather.setStormActive(true);
+            creatures.removeIf(c -> !c.isAlive());
         } else {
             weather.setStormActive(false);
         }

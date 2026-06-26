@@ -13,15 +13,10 @@ public abstract class Animal extends Creature
     // The amount of oxygen an animal needs to survive.
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
 
-    // If the animal is infected by disease.
-    private boolean isInfected;
-    // If the animal is immune from the disease.
-    private boolean isImmuned;
-
-    // Track the first step at which the animal is infected.
+    private boolean infected;
+    private boolean immune;
     private int infectionStartStep;
 
-    // Total population that has died of disease.
     private static int diseaseDeathCount = 0;
 
     // Age and food level shared by all animal subclasses.
@@ -31,8 +26,8 @@ public abstract class Animal extends Creature
     public Animal(Field field, Location location) {
         super(field, location);
         sex = Randomizer.getRandom().nextInt(2);
-        isInfected = false;
-        isImmuned = false;
+        infected = false;
+        immune = false;
         infectionStartStep = 0;
     }
 
@@ -110,7 +105,7 @@ public abstract class Animal extends Creature
 
     /** True if old enough and a mate of the same species and opposite sex is nearby. */
     private boolean canBreed() {
-        return age >= getBreedingAge() && encounterWithDiffSex();
+        return age >= getBreedingAge() && hasMateNearby();
     }
 
     /** Return the number of offspring produced this step (may be zero). */
@@ -137,7 +132,7 @@ public abstract class Animal extends Creature
      * True if an animal of the same species but opposite sex is within radius 2.
      * Uses getClass() so each species only matches its own kind.
      */
-    public boolean encounterWithDiffSex() {
+    private boolean hasMateNearby() {
         List<Location> adjacent = getField().adjacentLocations(getLocation(), 2);
         for(Location loc : adjacent) {
             Object obj = getField().getObjectAt(loc);
@@ -150,7 +145,7 @@ public abstract class Animal extends Creature
     }
 
     // -----------------------------------------------------------------------
-    // Disease mechanics (unchanged from original).
+    // Disease mechanics.
     // -----------------------------------------------------------------------
 
     /**
@@ -158,7 +153,7 @@ public abstract class Animal extends Creature
      * Used by Disease during an outbreak; bypasses the immunity probability check.
      */
     protected void infect(int step) {
-        setIsInfected(true);
+        setInfected(true);
         if(infectionStartStep == 0) {
             infectionStartStep = step;
         }
@@ -169,9 +164,9 @@ public abstract class Animal extends Creature
      * Has no effect if the animal is already immune.
      */
     protected void makeInfected(Disease disease, int step) {
-        if(!this.getIsImmuned() && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
-            setIsInfected(true);
-        if(getIsInfected() && infectionStartStep == 0)
+        if(!isImmune() && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
+            setInfected(true);
+        if(isInfected() && infectionStartStep == 0)
             infectionStartStep = step;
     }
 
@@ -179,10 +174,10 @@ public abstract class Animal extends Creature
      * Grant immunity once the animal has withstood the disease long enough.
      */
     protected void ifCanGrantImmunity(Disease disease, int step) {
-        if(getIsInfected() && !getIsImmuned()) {
-            if(step - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
-                setIsImmuned(true);
-                setIsInfected(false);
+        if(isInfected() && !isImmune()) {
+            if(step - infectionStartStep >= disease.STEPS_TO_IMMUNITY) {
+                setImmune(true);
+                setInfected(false);
             }
         }
     }
@@ -192,7 +187,7 @@ public abstract class Animal extends Creature
      * @return true if the animal died of infection.
      */
     protected boolean dieOfInfection(Disease disease) {
-        if(getIsInfected() && !getIsImmuned()) {
+        if(isInfected() && !isImmune()) {
             if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE) {
                 setDead();
                 diseaseDeathCount++;
@@ -212,25 +207,19 @@ public abstract class Animal extends Creature
     // Accessors.
     // -----------------------------------------------------------------------
 
-    /**
-     * Return the gender of this animal (0 = female, 1 = male).
-     */
-    public int getSex() {
-        return sex;
-    }
+    /** Return the gender of this animal (0 = female, 1 = male). */
+    public int getSex() { return sex; }
 
     /**
      * Return true if this animal is awake and able to act.
      * By default animals are diurnal: awake during the day, asleep at night.
      * Subclasses can override this for nocturnal behaviour.
      */
-    public boolean isAwake(boolean atDayTime) {
-        return atDayTime;
-    }
+    public boolean isAwake(boolean atDayTime) { return atDayTime; }
 
-    public boolean getIsInfected() { return isInfected; }
-    public boolean getIsImmuned()  { return isImmuned;  }
+    public boolean isInfected() { return infected; }
+    public boolean isImmune()   { return immune;   }
 
-    public void setIsInfected(boolean isInfected) { this.isInfected = isInfected; }
-    public void setIsImmuned(boolean isImmuned)   { this.isImmuned  = isImmuned;  }
+    public void setInfected(boolean infected) { this.infected = infected; }
+    public void setImmune(boolean immune)     { this.immune   = immune;   }
 }

@@ -9,15 +9,15 @@ import java.util.List;
  */
 public class Disease
 {
-    // The probability that a nearby animal may be infected.
+    // The probability that a nearby animal may be infected via contact.
     public static final double INFECTION_RATE = 0.3;
-    // The probability an infected animal dies each step.
+    // The probability that an infected animal dies each step.
     public static final double MORTALITY_RATE = 0.05;
-    // Steps an animal must remain infected before gaining immunity.
-    public static final int NUMBER_OF_STEP_TO_WITHSTAND = 3;
+    // Steps an infected animal must survive before gaining immunity.
+    public static final int STEPS_TO_IMMUNITY = 3;
 
     // Probability that a new outbreak begins on any given step (only when none is active).
-    private static final double DISEASE_OCCURENCE_PROBABILITY = 0.2;
+    private static final double OUTBREAK_PROBABILITY = 0.2;
 
     // True while at least one infected, non-immune animal exists.
     private boolean isSpread;
@@ -39,9 +39,9 @@ public class Disease
      * @param creatures All creatures currently in the simulation.
      * @param step      The current simulation step (recorded as each animal's infection start).
      */
-    public void creationSourceOfInfection(List<Creature> creatures, int step)
+    public void tryStartOutbreak(List<Creature> creatures, int step)
     {
-        if(isSpread || Randomizer.getRandom().nextDouble() > DISEASE_OCCURENCE_PROBABILITY) {
+        if(isSpread || Randomizer.getRandom().nextDouble() > OUTBREAK_PROBABILITY) {
             return;
         }
         for(Creature creature : creatures) {
@@ -67,7 +67,7 @@ public class Disease
         for(Creature creature : creatures) {
             if(creature instanceof Animal) {
                 Animal ani = (Animal) creature;
-                if(ani.getIsInfected() && !ani.getIsImmuned()) {
+                if(ani.isInfected() && !ani.isImmune()) {
                     return; // at least one infected, non-immune animal remains
                 }
             }

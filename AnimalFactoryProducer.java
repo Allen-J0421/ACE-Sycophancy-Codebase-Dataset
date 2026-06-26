@@ -10,7 +10,8 @@ public class AnimalFactoryProducer
                                 STATE
     //////////////////////////////////////////////////////////////*/   
     
-    private Field field;
+    private final AnimalFactory carnivoreFactory;
+    private final AnimalFactory herbivoreFactory;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -23,7 +24,8 @@ public class AnimalFactoryProducer
      */
     
     public AnimalFactoryProducer(Field field) {
-        this.field = field;
+        carnivoreFactory = new CarnivoreAnimalFactory(field);
+        herbivoreFactory = new HerbivoreAnimalFactory(field);
     }
     
     /**
@@ -33,9 +35,9 @@ public class AnimalFactoryProducer
      */
     public AnimalFactory getFactory(boolean isCarnivore) {
         if(isCarnivore) {
-            return new CarnivoreAnimalFactory(field);
+            return carnivoreFactory;
         } else {
-            return new HerbivoreAnimalFactory(field);
+            return herbivoreFactory;
         }
     }
 }

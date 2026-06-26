@@ -6,7 +6,7 @@
 public abstract class AnimalFactory
 {
     
-    protected Field field;
+    protected final Field field;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

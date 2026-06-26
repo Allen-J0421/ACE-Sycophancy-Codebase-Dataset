@@ -10,7 +10,7 @@ public class PlantFactory
                                 STATE
     //////////////////////////////////////////////////////////////*/
     
-    private Field field;
+    private final Field field;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

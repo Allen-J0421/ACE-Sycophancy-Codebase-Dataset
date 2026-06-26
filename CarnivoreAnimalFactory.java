@@ -26,6 +26,7 @@ public class CarnivoreAnimalFactory extends AnimalFactory
      * @param location The initial location of the newly created animal
      * @return the newly created animal
      */
+    @Override
     public Animal getAnimal(AnimalType animalType, Location location) {
         if(animalType == null) {
             return null;

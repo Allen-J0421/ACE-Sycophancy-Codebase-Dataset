@@ -4,9 +4,6 @@ import java.util.Objects;
 
 public final class NaivePatternSearch {
 
-    private static final String DEFAULT_TEXT = "aabaacaadaabaaba";
-    private static final String DEFAULT_PATTERN = "aaba";
-
     private NaivePatternSearch() {
     }
 
@@ -32,7 +29,7 @@ public final class NaivePatternSearch {
         return matchIndexes;
     }
 
-    public static String formatMatches(List<Integer> matches) {
+    public static String joinMatchIndexes(List<Integer> matches) {
         Objects.requireNonNull(matches, "matches must not be null");
 
         if (matches.isEmpty()) {
@@ -59,13 +56,5 @@ public final class NaivePatternSearch {
         }
 
         return true;
-    }
-
-    public static void main(String[] args) {
-        String text = args.length > 0 ? args[0] : DEFAULT_TEXT;
-        String pattern = args.length > 1 ? args[1] : DEFAULT_PATTERN;
-
-        List<Integer> matches = search(pattern, text);
-        System.out.println(formatMatches(matches));
     }
 }

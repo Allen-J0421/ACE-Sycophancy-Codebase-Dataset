@@ -1,4 +1,6 @@
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The grid is made up of GridSpaces which stores the current
@@ -8,16 +10,16 @@ import java.util.ArrayList;
  */
 public class GridSpace 
 {
-    private Animal animal;
-    private Plant plant;
+    private static final Class<?>[] SUPPORTED_TYPES = {Animal.class, Plant.class};
+
+    private final Map<Class<?>, Object> occupants;
     
     /**
      * Initialise the space to null.
      */
     public GridSpace() 
     {
-        animal = null;
-        plant = null;
+        occupants = new HashMap<>();
     }
     
     /**
@@ -25,7 +27,7 @@ public class GridSpace
      */
     public Animal getAnimal() 
     {
-        return animal;
+        return getObject(Animal.class);
     }
     
     /**
@@ -33,7 +35,7 @@ public class GridSpace
      */
     public Plant getPlant() 
     {
-        return plant;
+        return getObject(Plant.class);
     }
     
     /**
@@ -41,18 +43,20 @@ public class GridSpace
      * 
      * @param The class type of the object that is wanted.
      */
-    public Object getObject(Class objectType) 
+    public <T> T getObject(Class<T> objectType) 
     {
-        Object object = null;
+        Object exactMatch = occupants.get(objectType);
+        if (objectType.isInstance(exactMatch)) {
+            return objectType.cast(exactMatch);
+        }
 
-        if (objectType.equals(Animal.class)) {
-            object = animal;
+        for (Object occupant : occupants.values()) {
+            if (objectType.isInstance(occupant)) {
+                return objectType.cast(occupant);
+            }
         }
-        else if (objectType.equals(Plant.class)) {
-            object = plant;
-        }
-        
-        return object;
+
+        return null;
     }
     
     /**
@@ -62,7 +66,7 @@ public class GridSpace
      */
     public void setAnimal(Animal animal) 
     {
-        this.animal = animal;
+        storeObject(Animal.class, animal);
     }
     
     /**
@@ -71,7 +75,7 @@ public class GridSpace
      * @param The plant to store in this grid space.
      */
     public void setPlant(Plant plant) {
-        this.plant = plant;
+        storeObject(Plant.class, plant);
     }
     
     /**
@@ -82,20 +86,19 @@ public class GridSpace
      */
     public void setObject(Object object) 
     {
-        if (object instanceof Animal) {
-            setAnimal((Animal) object);
+        if (object == null) {
+            return;
         }
-        else if (object instanceof Plant) {
-            setPlant((Plant) object);
-        }
+
+        Class<?> storageType = resolveStorageType(object.getClass());
+        occupants.put(storageType, object);
     }
     
     /**
      * Clears all objects in this grid space.
      */
     public void clear() {
-        animal = null;
-        plant = null;
+        occupants.clear();
     }
     
     /**
@@ -103,13 +106,41 @@ public class GridSpace
      * 
      * @param Class type of the object to clear.
      */
-    public void clear(Class objectType) 
+    public void clear(Class<?> objectType) 
     {
-        if (objectType.equals(Animal.class)) {
-            animal = null;
+        for (Iterator<Map.Entry<Class<?>, Object>> it = occupants.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<Class<?>, Object> entry = it.next();
+
+            if (objectType.isInstance(entry.getValue())) {
+                it.remove();
+            }
         }
-        else if (objectType.equals(Plant.class)) {
-            plant = null;
+    }
+
+    /**
+     * Store a supported object type in its dedicated slot.
+     */
+    private <T> void storeObject(Class<T> objectType, T object)
+    {
+        if (object == null) {
+            occupants.remove(objectType);
         }
+        else {
+            occupants.put(objectType, object);
+        }
+    }
+
+    /**
+     * Resolve which supported slot should store this object class.
+     */
+    private Class<?> resolveStorageType(Class<?> objectType)
+    {
+        for (Class<?> supportedType : SUPPORTED_TYPES) {
+            if (supportedType.isAssignableFrom(objectType)) {
+                return supportedType;
+            }
+        }
+
+        throw new IllegalArgumentException("Unsupported GridSpace object type: " + objectType.getName());
     }
 }

@@ -9,14 +9,9 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Predator extends Animal {
+public abstract class Predator extends Hunter {
 
-    // define fields
-
-    // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
-
-    private int foodLevel;
 
     /**
      * Constructor for a predator in the simulation.
@@ -27,46 +22,7 @@ public abstract class Predator extends Animal {
      * @param location The location in which the predator spawns into.
      */
     public Predator(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-
-        this.foodLevel = foodLevel;
-    }
-
-    /**
-     * Abstract method for what the predator does, i.e. what is always run at every step.
-     *
-     * @param newPredators A list of all newborn predators in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    public void act(List<Organism> newPredators, Weather weather, TimeOfDay time) {
-        incrementAge();
-        incrementHunger();
-        if(isAlive()) {
-            giveBirth(newPredators);
-
-            if (isRestingTime(time)) {
-                return;
-            }
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            Location newLocation = chooseTargetLocation();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                remove();
-            }
-        }
+        super(foodLevel, randomAge, field, location);
     }
 
     /**
@@ -125,31 +81,4 @@ public abstract class Predator extends Animal {
         }
     }
 
-    /**
-     * Increase the predator's food level by a given integer amount.
-     *
-     * @param foodLevel The value to increment food level by.
-     */
-    public void incrementFoodLevel(int foodLevel) {
-        this.foodLevel += foodLevel;
-    }
-
-    /**
-     * Make this predator more hungry. This could result in the predator's death.
-     */
-    public void incrementHunger() {
-        foodLevel--;
-        if (foodLevel <= 0) {
-            remove();
-        }
-    }
-
-    private Location chooseTargetLocation() {
-        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
-            return findAnimalToInfect();
-        }
-        return findFood();
-    }
-
-    protected abstract boolean isRestingTime(TimeOfDay time);
 }

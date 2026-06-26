@@ -101,4 +101,9 @@ public class Vulture extends Scavenger {
         return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
     }
 
+    @Override
+    protected boolean isRestingTime(TimeOfDay time) {
+        return time == TimeOfDay.SUNSET;
+    }
+
 }

@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @version 2022.03.02
  */
-public class Zebra extends Prey {
+public class Zebra extends Herbivore {
 
     // define fields
     private static final double BREEDING_PROBABILITY = 0.305;
@@ -100,11 +100,6 @@ public class Zebra extends Prey {
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);
-    }
-
-    @Override
-    public Location findFood() {
-        return findPlantFood();
     }
 
     @Override

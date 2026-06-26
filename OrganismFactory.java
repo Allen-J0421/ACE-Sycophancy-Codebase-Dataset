@@ -20,12 +20,14 @@ public class OrganismFactory
 
     private final SimulationConfig config;
     private final RandomProvider randomProvider;
+    private final DiseaseService diseaseService;
     private final Map<Class<? extends Organism>, OrganismCreator<? extends Organism>> creators;
 
-    public OrganismFactory(RandomProvider randomProvider, SimulationConfig config)
+    public OrganismFactory(RandomProvider randomProvider, SimulationConfig config, DiseaseService diseaseService)
     {
         this.randomProvider = randomProvider;
         this.config = config;
+        this.diseaseService = diseaseService;
         this.creators = Map.ofEntries(
                 Map.entry(Grass.class, (field, location, options) -> new Grass(field, location)),
                 Map.entry(Hunter.class, (field, location, options) -> new Hunter(field, location)),
@@ -122,7 +124,9 @@ public class OrganismFactory
             throw new IllegalArgumentException("Unsupported organism type: " + organismClass.getName());
         }
 
-        return organismClass.cast(creator.create(field, location, options));
+        T organism = organismClass.cast(creator.create(field, location, options));
+        diseaseService.initializeOrganism(organism);
+        return organism;
     }
 
     private Animal.Gender getRandomSex()

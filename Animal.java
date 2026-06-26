@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
  */
 public abstract class Animal extends Organism implements Actor
 {
-    private static final double RANDOM_CONTRACTION_RATE = 0.002;
-
     protected int age;
     protected boolean isNocturnal;
     protected int foodLevel;
@@ -57,7 +55,6 @@ public abstract class Animal extends Organism implements Actor
             this.age = 0;
             foodLevel = getMaxFoodLevel();
         }
-        randomlyContractDisease();
     }
 
     /**
@@ -69,7 +66,6 @@ public abstract class Animal extends Organism implements Actor
     public void act(List<Actor> newAnimals, Environment environment)
     {
         Random rand = getRandomProvider().getRandom();
-        randomlyContractDisease();
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -98,13 +94,6 @@ public abstract class Animal extends Organism implements Actor
                 // Overcrowding
                 setDead();
             }
-
-            if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
-                // every step, check if the Animal is diseased
-                // if it is Diseased, and a random double is less than the lethality rate, the Animal dies
-                setDead();
-            }
-
         }
     }
 
@@ -125,19 +114,10 @@ public abstract class Animal extends Organism implements Actor
      */
     protected Location findFood()
     {
-        Random rand = getRandomProvider().getRandom();
         Field field = getField();
+        DiseaseService diseaseService = field.getDiseaseService();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        for(Location loc : adjacent){
-            if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
-                Organism organism = (Organism) field.getObjectAt(loc);
-                if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
-                    // contracts the first contact disease it encounters amongst the adjacent animals
-                    this.setDisease(organism.getDisease());
-                    break;
-                }
-            }
-        }
+        diseaseService.applyAdjacentExposure(this, adjacent, field);
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
         while(it.hasNext() && foodLevel <= getMaxFoodLevel()) {
@@ -146,11 +126,7 @@ public abstract class Animal extends Organism implements Actor
             if(animal != null && getDiet().contains(animal.getClass()))
             {
                 Organism food = (Organism) animal;
-                if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
-                {
-                    // contracts disease from food if it has a disease and that disease is foodborne
-                    setDisease(food.getDisease());
-                }
+                diseaseService.applyFoodborneExposure(this, food);
                 if(food.isAlive()) 
                 {
                     food.setDead();
@@ -165,18 +141,6 @@ public abstract class Animal extends Organism implements Actor
             }
         }
         return null;
-    }
-
-    /**
-     * Returns true if an animal contracts a disease at birth.
-     * Returns false if otherwise. 
-     */
-    protected void randomlyContractDisease()
-    {
-        Random rand = getRandomProvider().getRandom();
-        if(rand.nextDouble() <= RANDOM_CONTRACTION_RATE) {
-            setDisease(new Disease(getRandomProvider()));
-        }
     }
 
     /**
@@ -225,9 +189,7 @@ public abstract class Animal extends Organism implements Actor
         if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
             births = rand.nextInt(getMaxLitterSize()) + 1;
             Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
-            if(mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL){
-                this.setDisease(mate.getDisease());
-            }
+            getField().getDiseaseService().applySexualExposure(this, mate);
         }
         return births;
     }

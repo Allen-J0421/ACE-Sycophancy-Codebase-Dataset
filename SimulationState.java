@@ -34,6 +34,7 @@ public class SimulationState
 
     public static SimulationState capture(int step, Environment environment, Field field)
     {
+        DiseaseService diseaseService = field.getDiseaseService();
         Map<Class<?>, Integer> populationCounts = new LinkedHashMap<>();
         for(Class<?> actorClass : SimulationInfo.ALL_ACTORS) {
             populationCounts.put(actorClass, 0);
@@ -45,7 +46,7 @@ public class SimulationState
                 Object actor = field.getObjectAt(row, col);
                 if(actor != null) {
                     populationCounts.merge(actor.getClass(), 1, Integer::sum);
-                    if(actor instanceof Organism organism && organism.isDiseased()) {
+                    if(actor instanceof Organism organism && diseaseService.isDiseased(organism)) {
                         diseasedPopulation++;
                     }
                 }

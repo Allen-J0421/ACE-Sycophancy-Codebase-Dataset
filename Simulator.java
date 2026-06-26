@@ -25,6 +25,7 @@ public class Simulator
     // Configuration and actor creation rules for the simulation.
     private final SimulationConfig config;
     private final RandomProvider randomProvider;
+    private final DiseaseService diseaseService;
     private final OrganismFactory organismFactory;
     // Published state for observers.
     private final List<SimulationObserver> observers;
@@ -123,8 +124,9 @@ public class Simulator
         this.randomProvider = randomProvider;
         this.config = config;
         this.actors = new ArrayList<>();
-        this.organismFactory = new OrganismFactory(randomProvider, config);
-        this.field = new Field(randomProvider, organismFactory, depth, width);
+        this.diseaseService = new DiseaseService(randomProvider);
+        this.organismFactory = new OrganismFactory(randomProvider, config, diseaseService);
+        this.field = new Field(randomProvider, organismFactory, diseaseService, depth, width);
         this.environment = new Environment(new Time(), new Weather(randomProvider));
         this.observers = new ArrayList<>();
 
@@ -249,6 +251,9 @@ public class Simulator
             maybeGrowPlant(actor);
 
             if(!actor.isAlive()) {
+                if(actor instanceof Organism organism) {
+                    diseaseService.unregister(organism);
+                }
                 it.remove();
             }
         }
@@ -267,6 +272,7 @@ public class Simulator
         remainingSteps = 0;
         step = 0;
         environment.reset();
+        diseaseService.reset();
 
         actors.clear();
         actors.addAll(organismFactory.populate(field));
@@ -290,18 +296,20 @@ public class Simulator
 
     private void processActor(Actor actor, List<Actor> newActors)
     {
-        Random rand = randomProvider.getRandom();
         if(actor instanceof Animal animal) {
             if(!animal.isAwake(environment)) {
                 return;
             }
-            if(animal.isDiseased() && animal.getDisease().getPropagationRate() <= rand.nextDouble()) {
-                animal.setDead();
+            if(!diseaseService.processPreAct(animal)) {
+                return;
             }
         }
 
         if(actor.isAlive()) {
             actor.act(newActors, environment);
+            if(actor instanceof Animal animal) {
+                diseaseService.processPostAct(animal);
+            }
         }
     }
 

@@ -10,6 +10,7 @@ public class Field
 {
     private final RandomProvider randomProvider;
     private final OrganismFactory organismFactory;
+    private final DiseaseService diseaseService;
 
     // The depth and width of the field.
     private int depth, width;
@@ -21,10 +22,15 @@ public class Field
      * @param depth The depth of the field.
      * @param width The width of the field.
      */
-    public Field(RandomProvider randomProvider, OrganismFactory organismFactory, int depth, int width)
+    public Field(RandomProvider randomProvider,
+            OrganismFactory organismFactory,
+            DiseaseService diseaseService,
+            int depth,
+            int width)
     {
         this.randomProvider = randomProvider;
         this.organismFactory = organismFactory;
+        this.diseaseService = diseaseService;
         this.depth = depth;
         this.width = width;
         field = new Object[depth][width];
@@ -289,5 +295,10 @@ public class Field
     public OrganismFactory getOrganismFactory()
     {
         return organismFactory;
+    }
+
+    public DiseaseService getDiseaseService()
+    {
+        return diseaseService;
     }
 }

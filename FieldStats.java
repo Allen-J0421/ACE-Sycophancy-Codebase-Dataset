@@ -155,16 +155,15 @@ public class FieldStats
      */
     private void generateCounts(Field field)
     {
+        DiseaseService diseaseService = field.getDiseaseService();
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 Object actor = field.getObjectAt(row, col);
                 if(actor != null) {
                     incrementCount(actor.getClass());
-                    if(actor instanceof Organism){
-                        if(((Organism) actor).isDiseased()){
-                            incrementDiseasedCount();
-                        }
+                    if(actor instanceof Organism organism && diseaseService.isDiseased(organism)) {
+                        incrementDiseasedCount();
                     }
                 }
             }

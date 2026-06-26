@@ -14,10 +14,6 @@ public abstract class Organism {
     private Field field;
     // The organism's position in the field.
     private Location location;
-    
-    // Whether the organism has a disease 
-    private Disease disease = null;
-    private boolean hasDisease = false;
 
 
     protected abstract int getFoodValue();
@@ -93,30 +89,4 @@ public abstract class Organism {
         }
     }
 
-    /**
-     * Returns true if the organism is infected. 
-     */
-    public boolean isDiseased()
-    {
-        return hasDisease;
-    }
-
-    /**
-     * Returns the organism's disease.
-     * @return Disease The organism's disease.
-     */
-    public Disease getDisease()
-    {
-        return disease;
-    }
-
-    /**
-     * Sets the organism to be infected.
-     * @param disease The disease that the organism is gonna be infected by. 
-     */
-    protected void setDisease(Disease disease)
-    {
-        this.disease = disease;
-        hasDisease = true;
-    }
 }

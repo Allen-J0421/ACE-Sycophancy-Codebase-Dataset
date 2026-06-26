@@ -9,39 +9,6 @@ import java.awt.Color;
  */
 public class Simulator
 {
-    // Constants representing configuration information for the simulation.
-    // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 120;
-    // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 80;
-    // The probability that a dingo will be created in any given grid position.
-    private static final double DINGO_CREATION_PROBABILITY = 0.09;
-    // The probability that an ant will be created in any given grid position.
-    private static final double ANT_CREATION_PROBABILITY = 0.13;
-    // The probability that a rat will be created in any given grid position.
-    private static final double RAT_CREATION_PROBABILITY = 0.11;
-    // The probability that an eagle will be created in any given grid position.
-    private static final double EAGLE_CREATION_PROBABILITY = 0.12;
-    // The probability that a snake will be created in any given grid position.
-    private static final double SNAKE_CREATION_PROBABILITY = 0.12;
-    // The probability that an emu will be created in any given grid position.
-    private static final double EMU_CREATION_PROBABILITY = 0.08;
-    // The probability that acacia will be created in any given grid position.
-    private static final double ACACIA_CREATION_PROBABILITY = 0.34;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.36;
-    // Registry describing how each entity type is created.
-    private static final List<PopulationRule> POPULATION_RULES = Collections.unmodifiableList(
-            Arrays.asList(
-                    new PopulationRule(DINGO_CREATION_PROBABILITY, PopulationKind.DINGO),
-                    new PopulationRule(ANT_CREATION_PROBABILITY, PopulationKind.ANT),
-                    new PopulationRule(SNAKE_CREATION_PROBABILITY, PopulationKind.SNAKE),
-                    new PopulationRule(RAT_CREATION_PROBABILITY, PopulationKind.RAT),
-                    new PopulationRule(EAGLE_CREATION_PROBABILITY, PopulationKind.EAGLE),
-                    new PopulationRule(EMU_CREATION_PROBABILITY, PopulationKind.EMU),
-                    new PopulationRule(ACACIA_CREATION_PROBABILITY, PopulationKind.ACACIA),
-                    new PopulationRule(GRASS_CREATION_PROBABILITY, PopulationKind.GRASS)));
-
     // List of animals in the field.
     private List<Animal> animals;
     // List of plants in the field.
@@ -56,13 +23,15 @@ public class Simulator
     private int time;
     // A graphical view of the simulation.
     private SimulatorView view;
+    // Configuration for simulation timing, population, and field sizing.
+    private final SimulationConfig config;
     
     /**
      * Construct a simulation field with default size.
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(SimulationConfig.defaultConfig());
     }
     
     /**
@@ -71,22 +40,24 @@ public class Simulator
      * @param width Width of the field. Must be greater than zero.
      */
     public Simulator(int depth, int width) {
-        if(width <= 0 || depth <= 0) {
-            System.out.println("The dimensions must be greater than zero.");
-            System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
-        }
-        
+        this(createConfig(depth, width));
+    }
+
+    /**
+     * Create a simulation from an explicit configuration.
+     * @param config The simulation configuration to use.
+     */
+    public Simulator(SimulationConfig config) {
+        this.config = config;
         animals = new ArrayList<>();
         plants = new ArrayList<>();
 
         weather = Weather.NONE;
 
-        field = new Field(depth, width);
+        field = new Field(config.getDepth(), config.getWidth());
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(config.getDepth(), config.getWidth());
         view.setColor(Ant.class, Color.GRAY);
         view.setColor(Dingo.class, Color.ORANGE);
         view.setColor(Eagle.class, Color.RED);
@@ -99,6 +70,21 @@ public class Simulator
         
         // Setup a valid starting point.
         reset();
+    }
+
+    /**
+     * Create a configuration for the supplied field size.
+     * @param depth The requested depth.
+     * @param width The requested width.
+     * @return A config with validated field dimensions.
+     */
+    private static SimulationConfig createConfig(int depth, int width) {
+        if(width <= 0 || depth <= 0) {
+            System.out.println("The dimensions must be greater than zero.");
+            System.out.println("Using default values.");
+            return SimulationConfig.defaultConfig();
+        }
+        return SimulationConfig.defaultConfig().withFieldSize(depth, width);
     }
     
     /**
@@ -123,21 +109,21 @@ public class Simulator
     public void simulate(int numSteps) {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            if (time == 24) {
+            if (time == config.getDayLengthHours()) {
                 time = 0;
             }
-            if (step % 5 == 0) {
+            if (step % config.getTimeAdvanceIntervalSteps() == 0) {
                 time++;
             }
-            if (step % 50 == 0) {
+            if (step % config.getWeatherIntervalSteps() == 0) {
                 simulateWeather();
             }
-            if (step % 100 == 0) {
+            if (step % config.getDiseaseIntervalSteps() == 0) {
                 resetDisease();
                 simulateDisease();
             }
 
-            delay(20);   // uncomment this to run more slowly
+            delay(config.getStepDelayMillis());   // uncomment this to run more slowly
         }
     }
     
@@ -205,7 +191,7 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                for (PopulationRule rule : POPULATION_RULES) {
+                for (SimulationConfig.PopulationRule rule : config.getPopulationRules()) {
                     if (rule.tryPopulate(rand, field, row, col, animals, plants)) {
                         break;
                     }
@@ -343,81 +329,4 @@ public class Simulator
         }
     }
 
-    /**
-     * Supported population types and how to create them.
-     */
-    private enum PopulationKind {
-        DINGO {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                animals.add(new Dingo(true, field, location));
-            }
-        },
-        ANT {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                animals.add(new Ant(true, field, location));
-            }
-        },
-        SNAKE {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                animals.add(new Snake(true, field, location));
-            }
-        },
-        RAT {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                animals.add(new Rat(true, field, location));
-            }
-        },
-        EAGLE {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                animals.add(new Eagle(true, field, location));
-            }
-        },
-        EMU {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                animals.add(new Emu(true, field, location));
-            }
-        },
-        ACACIA {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                plants.add(new Acacia(field, location));
-            }
-        },
-        GRASS {
-            @Override
-            void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants) {
-                plants.add(new Grass(field, location));
-            }
-        };
-
-        abstract void spawn(Field field, Location location, List<Animal> animals, List<Plant> plants);
-    }
-
-    /**
-     * A population rule couples a spawn probability with a creation strategy.
-     */
-    private static final class PopulationRule {
-        private final double probability;
-        private final PopulationKind kind;
-
-        PopulationRule(double probability, PopulationKind kind) {
-            this.probability = probability;
-            this.kind = kind;
-        }
-
-        boolean tryPopulate(Random rand, Field field, int row, int col,
-                List<Animal> animals, List<Plant> plants) {
-            if (rand.nextDouble() <= probability) {
-                kind.spawn(field, new Location(row, col), animals, plants);
-                return true;
-            }
-            return false;
-        }
-    }
 }

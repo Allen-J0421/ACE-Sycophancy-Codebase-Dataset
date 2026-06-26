@@ -47,6 +47,8 @@ public abstract class Animal
     private boolean disease;
     // The animal's age.
     private int age;
+    // Tunable settings for the simulation.
+    private SimulationConfig config;
 
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -58,7 +60,19 @@ public abstract class Animal
      * @param location The location within the field.
      */
     public Animal(Field field, Location location) {
+        this(field, location, SimulationConfig.defaultConfig());
+    }
+
+    /**
+     * Create a new animal at location in field.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config The simulation configuration to use.
+     */
+    public Animal(Field field, Location location, SimulationConfig config) {
         alive = true;
+        this.config = config;
         this.field = field;
         setLocation(location);
         fog = false;
@@ -117,6 +131,13 @@ public abstract class Animal
      * Return the foods this animal can eat, in search priority order.
      */
     protected abstract FoodSource[] getFoodSources();
+
+    /**
+     * Return the simulation configuration.
+     */
+    protected SimulationConfig getConfig() {
+        return config;
+    }
 
     /**
      * Check whether the animal is alive or not.
@@ -267,10 +288,10 @@ public abstract class Animal
      * if it can breed.
      * @return The number of births (may be zero).
      */
-    protected int breed(int BREEDING_AGE, double BREEDING_PROBABILITY, int MAX_LITTER_SIZE) {
+    protected int breed(int breedingAge, double breedingProbability, int maxLitterSize) {
         int births = 0;
-        if(canBreed(BREEDING_AGE) && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+        if(canBreed(breedingAge) && rand.nextDouble() <= breedingProbability) {
+            births = rand.nextInt(maxLitterSize) + 1;
         }
         return births;
     }
@@ -279,10 +300,10 @@ public abstract class Animal
      * Check whether or not this animal is to give birth at this step.
      * animals are checked to be: of the same species(class), different genders and
      *  of breeding age
-     * @param BREEDING_AGE the minimum age this animal must be to breed
+     * @param breedingAge the minimum age this animal must be to breed
      * @retyrn true if the animal can breed, false if it can not
      */
-    protected boolean giveBirth(int BREEDING_AGE) {
+    protected boolean giveBirth(int breedingAge) {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
@@ -293,7 +314,7 @@ public abstract class Animal
                 if (animal.getClass() == this.getClass()) {
                     Animal adjAnimal = (Animal) animal;
                     if (this.getGender() != adjAnimal.getGender()) {
-                        if (age >= BREEDING_AGE) {
+                        if (age >= breedingAge) {
                             return true;
                         }
                     }
@@ -306,12 +327,12 @@ public abstract class Animal
 
     /**
      * checks to see if the animal has reached breeding age
-     * @param BREEDING_AGE the minimum an animal must be in order to breed
+     * @param breedingAge the minimum an animal must be in order to breed
      * @return true if the animal is of breeding age
      */
-    protected boolean canBreed(int BREEDING_AGE)
+    protected boolean canBreed(int breedingAge)
     {
-        return age >= BREEDING_AGE;
+        return age >= breedingAge;
     }
 
     /**
@@ -328,9 +349,9 @@ public abstract class Animal
     /**
      * Increase the age. This could result in the animal's death.
      */
-    protected void incrementAge(int MAX_AGE) {
+    protected void incrementAge(int maxAge) {
         age++;
-        if(age > MAX_AGE) {
+        if(age > maxAge) {
             setDead();
         }
     }
@@ -353,14 +374,19 @@ public abstract class Animal
      * Check whether this animal is active between two times, inclusive.
      */
     protected boolean isActiveBetween(int time, int start, int end) {
-        return time >= start && time <= end;
+        if(start <= end) {
+            return time >= start && time <= end;
+        }
+        else {
+            return time >= start || time <= end;
+        }
     }
 
     /**
      * Check whether this animal is active in a time range that crosses midnight.
      */
     protected boolean isActiveOutside(int time, int inactiveStart, int inactiveEnd) {
-        return time <= inactiveStart || time >= inactiveEnd;
+        return isActiveBetween(time, inactiveEnd, inactiveStart);
     }
 
     /**

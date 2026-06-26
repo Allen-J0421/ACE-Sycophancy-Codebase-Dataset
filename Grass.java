@@ -7,12 +7,8 @@
 
 public class Grass extends Plant
 {
-    // Characteristics shared by all grass (class variables).
-
-    // The likelihood of a grass reproducing.
-    private static final double REPRODUCING_PROBABILITY = 0.77;
-    // The maximum number of offspring that can be produced.
-    private static final int MAX_OFFSPRING_SIZE = 9;
+    // Tunable settings for grass.
+    private SimulationConfig.PlantSettings settings;
 
     /**
      * Create a grass. A grass is created as a newborn age 0
@@ -21,18 +17,30 @@ public class Grass extends Plant
      * @param location The location within the field.
      */
     public Grass(Field field, Location location) {
-        super(field, location);
+        this(field, location, SimulationConfig.defaultConfig());
+    }
+
+    /**
+     * Create grass with the given simulation configuration.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config The simulation configuration to use.
+     */
+    public Grass(Field field, Location location, SimulationConfig config) {
+        super(field, location, config);
+        settings = config.getPlantSettings(Grass.class);
     }
 
     protected double getReproducingProbability() {
-        return REPRODUCING_PROBABILITY;
+        return settings.getReproducingProbability();
     }
 
     protected int getMaxOffspringSize() {
-        return MAX_OFFSPRING_SIZE;
+        return settings.getMaxOffspringSize();
     }
 
     protected Plant createYoung(Field field, Location location) {
-        return new Grass(field, location);
+        return new Grass(field, location, getConfig());
     }
 }

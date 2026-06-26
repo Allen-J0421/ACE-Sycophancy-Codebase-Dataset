@@ -8,25 +8,10 @@ import java.util.Random;
  */
 public class Emu extends Animal
 {
-    // Characteristics shared by all emus (class variables).
-
-    // The age at which an emu can start to breed.
-    private static final int BREEDING_AGE = 30;
-    // The age to which an emu can live.
-    private static final int MAX_AGE = 600;
-    // The likelihood of an emu breeding.
-    private static final double BREEDING_PROBABILITY = 0.17;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 7;
-    // The food value of a single grass. In effect, this is the
-    // number of steps an emu can go before it has to eat again.
-    private static final int GRASS_FOOD_VALUE = 60;
-    // The food sources emus eat, in search order.
-    private static final FoodSource[] FOOD_SOURCES = {
-        new FoodSource(Grass.class, GRASS_FOOD_VALUE)
-    };
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+    // Tunable settings for emus.
+    private SimulationConfig.AnimalSettings settings;
 
     /**
      * Create an emu. An emu can be created as a newborn (age zero
@@ -37,43 +22,56 @@ public class Emu extends Animal
      * @param location The location within the field.
      */
     public Emu(boolean randomAge, Field field, Location location) {
-        super(field, location);
+        this(randomAge, field, location, SimulationConfig.defaultConfig());
+    }
+
+    /**
+     * Create an emu with the given simulation configuration.
+     *
+     * @param randomAge If true, the emu will have random age and hunger level.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config The simulation configuration to use.
+     */
+    public Emu(boolean randomAge, Field field, Location location, SimulationConfig config) {
+        super(field, location, config);
+        settings = config.getAnimalSettings(Emu.class);
         this.setGender();
         if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(GRASS_FOOD_VALUE));
+            setAge(rand.nextInt(settings.getMaxAge()));
+            setFoodLevel(rand.nextInt(settings.getInitialFoodValue()));
         }
         else {
             setAge(0);
-           setFoodLevel(GRASS_FOOD_VALUE);
+            setFoodLevel(settings.getInitialFoodValue());
         }
     }
 
     protected int getMaxAge() {
-        return MAX_AGE;
+        return settings.getMaxAge();
     }
 
     protected int getBreedingAge() {
-        return BREEDING_AGE;
+        return settings.getBreedingAge();
     }
 
     protected double getBreedingProbability() {
-        return BREEDING_PROBABILITY;
+        return settings.getBreedingProbability();
     }
 
     protected int getMaxLitterSize() {
-        return MAX_LITTER_SIZE;
+        return settings.getMaxLitterSize();
     }
 
     protected boolean isActive(int time) {
-        return isActiveOutside(time, 9, 21);
+        return isActiveBetween(time, settings.getActiveStart(), settings.getActiveEnd());
     }
 
     protected Animal createYoung(Field field, Location location) {
-        return new Emu(false, field, location);
+        return new Emu(false, field, location, getConfig());
     }
 
     protected FoodSource[] getFoodSources() {
-        return FOOD_SOURCES;
+        return settings.getFoodSources();
     }
 }

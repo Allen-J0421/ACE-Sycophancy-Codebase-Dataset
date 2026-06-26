@@ -17,6 +17,8 @@ public abstract class Plant
     private Location location;
     // whether it is raining or not
     private boolean rain;
+    // Tunable settings for the simulation.
+    private SimulationConfig config;
 
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -28,7 +30,19 @@ public abstract class Plant
      * @param location The location within the field.
      */
     public Plant(Field field, Location location) {
+        this(field, location, SimulationConfig.defaultConfig());
+    }
+
+    /**
+     * Create a new plant at a location in field.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config The simulation configuration to use.
+     */
+    public Plant(Field field, Location location, SimulationConfig config) {
         alive = true;
+        this.config = config;
         this.field = field;
         setLocation(location);
         rain = false;
@@ -59,6 +73,13 @@ public abstract class Plant
      * Create a newborn plant of this species.
      */
     protected abstract Plant createYoung(Field field, Location location);
+
+    /**
+     * Return the simulation configuration.
+     */
+    protected SimulationConfig getConfig() {
+        return config;
+    }
 
     /**
      * Check whether the plant is alive or not.
@@ -128,15 +149,15 @@ public abstract class Plant
      * If it is raining, then the number of offspring is increased
      * @return The number of offspring (may be zero).
      */
-    protected int breed(double REPRODUCING_PROBABILITY, int MAX_OFFSPRING_SIZE)
+    protected int breed(double reproducingProbability, int maxOffspringSize)
     {
         int offspring = 0;
-        if (rand.nextDouble() <= (REPRODUCING_PROBABILITY)){
+        if (rand.nextDouble() <= reproducingProbability){
             if (rain){
-                offspring = rand.nextInt(MAX_OFFSPRING_SIZE) + 3;
+                offspring = rand.nextInt(maxOffspringSize) + 3;
             }
             else {
-                offspring = rand.nextInt(MAX_OFFSPRING_SIZE);
+                offspring = rand.nextInt(maxOffspringSize);
             }
         }
         return offspring;

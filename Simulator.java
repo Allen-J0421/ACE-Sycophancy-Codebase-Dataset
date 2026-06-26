@@ -22,29 +22,25 @@ public class Simulator
      */
     private static class SpeciesConfig
     {
-        private Class<?> speciesClass;
-        private Color color;
-        private double creationProbability;
+        private SimulationConfig.PopulationSettings populationSettings;
         private OrganismFactory factory;
 
-        public SpeciesConfig(Class<?> speciesClass, Color color,
-                             double creationProbability, OrganismFactory factory) {
-            this.speciesClass = speciesClass;
-            this.color = color;
-            this.creationProbability = creationProbability;
+        public SpeciesConfig(SimulationConfig.PopulationSettings populationSettings,
+                             OrganismFactory factory) {
+            this.populationSettings = populationSettings;
             this.factory = factory;
         }
 
         public Class<?> getSpeciesClass() {
-            return speciesClass;
+            return populationSettings.getSpeciesClass();
         }
 
         public Color getColor() {
-            return color;
+            return populationSettings.getColor();
         }
 
         public boolean shouldCreate(Random rand) {
-            return rand.nextDouble() <= creationProbability;
+            return rand.nextDouble() <= populationSettings.getCreationProbability();
         }
 
         public Object create(Field field, Location location) {
@@ -57,22 +53,6 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a dingo will be created in any given grid position.
-    private static final double DINGO_CREATION_PROBABILITY = 0.09;
-    // The probability that an ant will be created in any given grid position.
-    private static final double ANT_CREATION_PROBABILITY = 0.13;
-    // The probability that a rat will be created in any given grid position.
-    private static final double RAT_CREATION_PROBABILITY = 0.11;
-    // The probability that an eagle will be created in any given grid position.
-    private static final double EAGLE_CREATION_PROBABILITY = 0.12;
-    // The probability that a snake will be created in any given grid position.
-    private static final double SNAKE_CREATION_PROBABILITY = 0.12;
-    // The probability that an emu will be created in any given grid position.
-    private static final double EMU_CREATION_PROBABILITY = 0.08;
-    // The probability that acacia will be created in any given grid position.
-    private static final double ACACIA_CREATION_PROBABILITY = 0.34;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.36;
 
     // List of animals in the field.
     private List<Animal> animals;
@@ -90,13 +70,15 @@ public class Simulator
     private SimulatorView view;
     // Species that can be created when the simulation is populated.
     private List<SpeciesConfig> speciesConfigs;
+    // Tunable settings for this simulation.
+    private SimulationConfig config;
     
     /**
      * Construct a simulation field with default size.
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(DEFAULT_DEPTH, DEFAULT_WIDTH, SimulationConfig.defaultConfig());
     }
     
     /**
@@ -105,6 +87,16 @@ public class Simulator
      * @param width Width of the field. Must be greater than zero.
      */
     public Simulator(int depth, int width) {
+        this(depth, width, SimulationConfig.defaultConfig());
+    }
+
+    /**
+     * Create a simulation field with the given size and configuration.
+     * @param depth Depth of the field. Must be greater than zero.
+     * @param width Width of the field. Must be greater than zero.
+     * @param config The simulation configuration to use.
+     */
+    public Simulator(int depth, int width, SimulationConfig config) {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
@@ -116,6 +108,7 @@ public class Simulator
         plants = new ArrayList<>();
 
         weather = "none";
+        this.config = config;
 
         field = new Field(depth, width);
         speciesConfigs = createSpeciesConfigs();
@@ -302,52 +295,52 @@ public class Simulator
      */
     private List<SpeciesConfig> createSpeciesConfigs() {
         List<SpeciesConfig> configs = new ArrayList<>();
-        configs.add(new SpeciesConfig(Dingo.class, Color.ORANGE, DINGO_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Dingo.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Dingo(true, field, location);
+                        return new Dingo(true, field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Ant.class, Color.GRAY, ANT_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Ant.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Ant(true, field, location);
+                        return new Ant(true, field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Snake.class, Color.BLACK, SNAKE_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Snake.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Snake(true, field, location);
+                        return new Snake(true, field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Rat.class, Color.PINK, RAT_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Rat.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Rat(true, field, location);
+                        return new Rat(true, field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Eagle.class, Color.RED, EAGLE_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Eagle.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Eagle(true, field, location);
+                        return new Eagle(true, field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Emu.class, Color.YELLOW, EMU_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Emu.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Emu(true, field, location);
+                        return new Emu(true, field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Acacia.class, Color.GREEN, ACACIA_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Acacia.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Acacia(field, location);
+                        return new Acacia(field, location, config);
                     }
                 }));
-        configs.add(new SpeciesConfig(Grass.class, Color.CYAN, GRASS_CREATION_PROBABILITY,
+        configs.add(new SpeciesConfig(config.getPopulationSettings(Grass.class),
                 new OrganismFactory() {
                     public Object create(Field field, Location location) {
-                        return new Grass(field, location);
+                        return new Grass(field, location, config);
                     }
                 }));
         return configs;

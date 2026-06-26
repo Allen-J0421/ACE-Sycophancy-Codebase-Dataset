@@ -7,12 +7,8 @@
 
 public class Acacia extends Plant
 {
-    // Characteristics shared by all acacias (class variables).
-    
-    // The likelihood of an acacia reproducing.
-    private static final double REPRODUCING_PROBABILITY = 0.71;
-    // The maximum number of offspring that can be produced.
-    private static final int MAX_OFFSPRING_SIZE = 9;
+    // Tunable settings for acacias.
+    private SimulationConfig.PlantSettings settings;
 
     /**
      * Create an acacia. An acacia is created as a newborn with age 0
@@ -22,18 +18,31 @@ public class Acacia extends Plant
      */
     public Acacia(Field field, Location location)
     {
-        super(field, location);
+        this(field, location, SimulationConfig.defaultConfig());
+    }
+
+    /**
+     * Create an acacia with the given simulation configuration.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param config The simulation configuration to use.
+     */
+    public Acacia(Field field, Location location, SimulationConfig config)
+    {
+        super(field, location, config);
+        settings = config.getPlantSettings(Acacia.class);
     }
 
     protected double getReproducingProbability() {
-        return REPRODUCING_PROBABILITY;
+        return settings.getReproducingProbability();
     }
 
     protected int getMaxOffspringSize() {
-        return MAX_OFFSPRING_SIZE;
+        return settings.getMaxOffspringSize();
     }
 
     protected Plant createYoung(Field field, Location location) {
-        return new Acacia(field, location);
+        return new Acacia(field, location, getConfig());
     }
 }

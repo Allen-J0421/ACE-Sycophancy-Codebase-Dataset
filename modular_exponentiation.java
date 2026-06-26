@@ -11,11 +11,9 @@ final class ModularExponentiation {
         while (currentExponent > 0) {
             if ((currentExponent & 1) == 1) {
                 result = multiplyMod(result, currentBase, modulus);
-                currentExponent--;
-            } else {
-                currentBase = multiplyMod(currentBase, currentBase, modulus);
-                currentExponent /= 2;
             }
+            currentBase = multiplyMod(currentBase, currentBase, modulus);
+            currentExponent >>= 1;
         }
 
         return result;
@@ -26,10 +24,14 @@ final class ModularExponentiation {
     }
 
     public static void main(String[] args) {
+        System.out.println(runDemo());
+    }
+
+    private static int runDemo() {
         int base = 3;
         int exponent = 2;
         int modulus = 4;
 
-        System.out.println(powMod(base, exponent, modulus));
+        return powMod(base, exponent, modulus);
     }
 }

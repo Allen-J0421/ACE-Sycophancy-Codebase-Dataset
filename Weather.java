@@ -12,7 +12,6 @@ import java.util.Random;
  */
 public class Weather {
 
-    // define fields
     private static final double SUN_PROBABILITY = 0.2;
     private static final double RAIN_PROBABILITY = 0.1;
     private static final double FOG_PROBABILITY = 0.3;
@@ -21,7 +20,7 @@ public class Weather {
 
     private static final int MAX_HOURS = 3;
 
-    private ArrayList<WeatherType> recentWeather;
+    private List<WeatherType> recentWeather;
     private WeatherType type;
     private int hours;
     private int count;
@@ -46,7 +45,7 @@ public class Weather {
         if (count != 0) {
             count++;
             if (count > hours) {
-                count = 0; // reset
+                count = 0;
             }
             return;
         }
@@ -66,13 +65,8 @@ public class Weather {
             type = WeatherType.STORM;
         }
 
-        //If in the last 4 weathers we had, there was rain or sun, grow at a higher rate.
-
-        //Adds to the end of the list,
         recentWeather.add(type);
-
-        if (recentWeather.size() == 4){
-            //remove from the start of the list
+        if (recentWeather.size() == 4) {
             recentWeather.remove(0);
         }
         count++;

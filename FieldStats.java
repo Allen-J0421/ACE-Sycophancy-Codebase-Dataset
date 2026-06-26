@@ -11,7 +11,7 @@ import java.util.Map;
 public class FieldStats
 {
     // Counts per species class; populated on demand.
-    private HashMap<Class<?>, Integer> counts;
+    private Map<Class<?>, Integer> counts;
     // Whether the counts are currently up to date.
     private boolean countsValid;
 

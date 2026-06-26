@@ -32,7 +32,6 @@ public abstract class Organism implements Entity {
      */
     public Organism(boolean randomAge, Field field, Location location) {
         alive = true;
-        removed = false;
         this.field = field;
         setLocation(location);
 
@@ -166,11 +165,8 @@ public abstract class Organism implements Entity {
      * @return The number of births as a result of breeding.
      */
     protected int breed() {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-            births = rand.nextInt(getMaxLitterSize()) + 1;
-        }
-        return births;
+        return canBreed() && rand.nextDouble() <= getBreedingProbability()
+            ? rand.nextInt(getMaxLitterSize()) + 1 : 0;
     }
 
     /**

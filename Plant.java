@@ -13,7 +13,6 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     private double size;
     private final int foodValue;
     private final boolean poisonous;
-    private final double growthRate;
     private double breedingProbability;
 
     /**
@@ -34,7 +33,6 @@ public abstract class Plant extends Organism implements Growable, Consumable {
         this.size      = size;
         this.foodValue = foodValue;
         this.poisonous = poisonous;
-        this.growthRate         = traits.growthRate;
         this.breedingProbability = traits.lowBreedingProbability;
     }
 
@@ -54,7 +52,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
 
     @Override
     public void grow() {
-        size = size * growthRate > traits.maxSize ? 1 : size * growthRate;
+        size = size * traits.growthRate > traits.maxSize ? 1 : size * traits.growthRate;
         if (size == 0) remove();
     }
 

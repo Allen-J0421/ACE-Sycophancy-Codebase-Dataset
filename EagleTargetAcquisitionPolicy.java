@@ -4,6 +4,7 @@
 public final class EagleTargetAcquisitionPolicy extends AbstractTargetAcquisitionPolicy
 {
     private static final java.util.Set<Class<?>> DIET = java.util.Set.of(Deer.class, Coyote.class, Mouse.class);
+    private static final FeedingPolicy FEEDING_POLICY = new StandardFeedingPolicy();
 
     @Override
     public Location acquireTarget(Organism forager, Environment environment)
@@ -24,7 +25,7 @@ public final class EagleTargetAcquisitionPolicy extends AbstractTargetAcquisitio
             return null;
         }
 
-        consumePrey(eagle, (Organism) eagle.getField().getObjectAt(preyLocation));
+        FEEDING_POLICY.feed(eagle, (Organism) eagle.getField().getObjectAt(preyLocation));
         return preyLocation;
     }
 }

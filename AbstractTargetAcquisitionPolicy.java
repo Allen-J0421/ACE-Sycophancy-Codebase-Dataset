@@ -31,27 +31,4 @@ public abstract class AbstractTargetAcquisitionPolicy implements TargetAcquisiti
             }
         }
     }
-
-    protected final void consumePrey(Animal consumer, Organism prey)
-    {
-        if (prey.isDiseased()
-                && prey.getDisease().getDiseaseType() == DiseaseType.FOODBORNE
-                && prey.getDisease().getPropagationRate() <= rand.nextDouble())
-        {
-            consumer.setDisease(prey.getDisease());
-        }
-        if(prey.isAlive())
-        {
-            prey.setDead();
-            int newFoodLevel = consumer.foodLevel + ((Edible) prey).getFoodValue();
-            consumer.foodLevel = Math.min(newFoodLevel, consumer.MAX_FOOD_LEVEL());
-        }
-    }
-
-    protected final void consumePrey(Organism prey)
-    {
-        if(prey.isAlive()) {
-            prey.setDead();
-        }
-    }
 }

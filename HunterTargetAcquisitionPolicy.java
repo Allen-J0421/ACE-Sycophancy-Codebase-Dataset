@@ -19,7 +19,10 @@ public final class HunterTargetAcquisitionPolicy extends AbstractTargetAcquisiti
             return null;
         }
 
-        consumePrey((Animal) hunter.getField().getObjectAt(preyLocation));
+        Animal food = (Animal) hunter.getField().getObjectAt(preyLocation);
+        if(food.isAlive()) {
+            food.setDead();
+        }
         return preyLocation;
     }
 }

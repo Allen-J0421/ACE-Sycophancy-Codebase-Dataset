@@ -5,6 +5,10 @@ class LengthIndexedValues {
         values = new int[size + 1];
     }
 
+    int size() {
+        return values.length - 1;
+    }
+
     int get(int length) {
         return values[length];
     }

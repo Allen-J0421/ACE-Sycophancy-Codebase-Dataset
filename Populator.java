@@ -29,7 +29,7 @@ public class Populator {
     }
 
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Randomly populate the field with organisms.
      */
     public void populate(List<Entity> organisms, Field field)
     {
@@ -127,7 +127,7 @@ public class Populator {
     /**
      * Configuration for one type of organism to place in the field.
      */
-    private static class PopulationRule {
+    private static final class PopulationRule {
         private final Class<?> organismClass;
         private final Color color;
         private final double creationProbability;

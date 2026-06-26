@@ -9,7 +9,6 @@ import java.util.List;
  */
 public class PoisonBerry extends Plant {
 
-    // define fields
     private static final double MAX_SIZE = 10.0;
     private static final int MAX_AGE = 20;
     private static final int BREEDING_AGE = 16;

@@ -9,7 +9,6 @@ import java.util.List;
  */
 public abstract class Plant extends Organism implements Growable, Consumable {
 
-    // define fields
     private double size;
     private final int foodValue;
     private final boolean poisonous;

@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -9,8 +10,8 @@ import java.util.HashMap;
  */
 public class FieldStats
 {
-    // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    // Counters for each type of entity in the simulation.
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -31,11 +32,11 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -52,24 +53,24 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
     }
 
     /**
-     * Increment the count for one class of animal.
-     * @param animalClass The class of animal to increment.
+     * Increment the count for one class of entity.
+     * @param entityClass The class of entity to increment.
      */
-    public void incrementCount(Class animalClass)
+    public void incrementCount(Class<?> entityClass)
     {
-        Counter count = counters.get(animalClass);
+        Counter count = counters.get(entityClass);
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
+            count = new Counter(entityClass.getName());
+            counters.put(entityClass, count);
         }
         count.increment();
     }
@@ -94,7 +95,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             if(info.getCount() > 0) {
                 nonZero++;
@@ -104,10 +105,8 @@ public class FieldStats
     }
     
     /**
-     * Generate counts of the number of foxes and rabbits.
-     * These are not kept up to date as foxes and rabbits
-     * are placed in the field, but only when a request
-     * is made for the information.
+     * Generate counts of the number of entities in the field.
+     * These are calculated only when a request is made for the information.
      * @param field The field to generate the stats for.
      */
     private void generateCounts(Field field)

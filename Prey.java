@@ -10,7 +10,6 @@ import java.util.Random;
  */
 public abstract class Prey extends Animal implements Consumable {
 
-    // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
     private static final int FOOD_VALUE_TO_STOP_EATING = 10;
     private static final Random rand = Randomizer.getRandom();

@@ -9,17 +9,10 @@ import java.util.List;
  */
 public class Lion extends Predator {
 
-    // define fields
-    private static final double BREEDING_PROBABILITY = 0.115;
+    private static final AnimalProfile PROFILE = new AnimalProfile(0.115, 2, 32, 130, 0.01, 0.01);
     private static final double EATING_PROBABILITY = 0.6;
-    private static final int MAX_LITTER_SIZE = 2;
-    private static final int BREEDING_AGE = 32;
-    private static final int MAX_AGE = 130;
 
     private static final int DEFAULT_FOOD_LEVEL = 19;
-
-    private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
-    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
 
     /**
      * Constructor for a lion in the simulation.
@@ -33,64 +26,9 @@ public class Lion extends Predator {
         super(foodLevel, randomAge, field, location);
     }
 
-    /**
-     * Getter method for the probability to breed of the lion.
-     *
-     * @return A double value representing the breeding probability.
-     */
     @Override
-    public double getBreedingProbability() {
-        return BREEDING_PROBABILITY;
-    }
-
-    /**
-     * Getter method for the maximum litter size of the lion's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    @Override
-    public int getMaxLitterSize() {
-        return MAX_LITTER_SIZE;
-    }
-
-    /**
-     * Getter method for the maximum age of the lion.
-     *
-     * @return An integer value representing the maximum age.
-     */
-    @Override
-    public int getMaxAge() {
-        return MAX_AGE;
-    }
-
-    /**
-     * Getter method for the age of breeding of the lion.
-     *
-     * @return A double value representing the breeding age.
-     */
-    @Override
-    public int getBreedingAge() {
-        return BREEDING_AGE;
-    }
-
-    /**
-     * Getter method to return this lion's disease spreading probability.
-     *
-     * @return The lion's disease spreading probability.
-     */
-    @Override
-    protected double getDiseaseSpreadProbability() {
-        return SPREAD_DISEASE_PROBABILITY;
-    }
-
-    /**
-     * Getter method to return the probability this lion dies from disease.
-     *
-     * @return The lion's disease death probability.
-     */
-    @Override
-    protected double getDeathByDiseaseProbability() {
-        return DEATH_BY_DISEASE_PROBABILITY;
+    protected AnimalProfile getProfile() {
+        return PROFILE;
     }
 
     /**

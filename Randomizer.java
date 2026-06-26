@@ -2,24 +2,24 @@ import java.util.Random;
 
 /**
  * Provide control over the randomization of the simulation. By using the shared, fixed-seed 
- * randomizer, repeated runs will perform exactly the same (which helps with testing). Set 
- * 'useShared' to false to get different random behaviour every time.
+ * randomizer, repeated runs will perform exactly the same (which helps with testing). Set
+ * 'USE_SHARED' to false to get different random behaviour every time.
  *
  * @version 2016.02.29
  */
-public class Randomizer
+public final class Randomizer
 {
     // The default seed for control of randomization.
     private static final int SEED = 1111;
     // A shared Random object, if required.
     private static final Random rand = new Random(SEED);
     // Determine whether a shared random generator is to be provided.
-    private static final boolean useShared = true;
+    private static final boolean USE_SHARED = true;
 
     /**
-     * Constructor for objects of class Randomizer
+     * Utility class.
      */
-    public Randomizer()
+    private Randomizer()
     {
     }
 
@@ -29,7 +29,7 @@ public class Randomizer
      */
     public static Random getRandom()
     {
-        if(useShared) {
+        if(USE_SHARED) {
             return rand;
         }
         else {
@@ -44,7 +44,7 @@ public class Randomizer
      */
     public static void reset()
     {
-        if(useShared) {
+        if(USE_SHARED) {
             rand.setSeed(SEED);
         }
     }

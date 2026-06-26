@@ -10,7 +10,6 @@ import java.util.List;
  */
 public abstract class Scavenger extends Animal {
 
-    // define fields
     private int foodLevel;
 
     /**
@@ -78,7 +77,6 @@ public abstract class Scavenger extends Animal {
                 Prey prey = (Prey) animal;
                 // eats animal if dead only
                 if (!prey.isAlive()) {
-                    //System.out.println("EATEN DEAD");
                     eat(prey);
                     return where;
                 }

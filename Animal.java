@@ -10,7 +10,6 @@ import java.util.Random;
  */
 public abstract class Animal extends Organism implements AbleToEat {
 
-    // define fields
     private final Gender gender; // gender of specific animal
     private boolean infected; // whether an animal has been infected or not
 
@@ -59,6 +58,53 @@ public abstract class Animal extends Organism implements AbleToEat {
      */
     @Override
     abstract protected boolean canBreed();
+
+    /**
+     * Getter method for immutable species configuration.
+     *
+     * @return The animal's species profile.
+     */
+    abstract protected AnimalProfile getProfile();
+
+    /**
+     * Getter method for the probability to breed of the animal.
+     *
+     * @return A double value representing the breeding probability.
+     */
+    @Override
+    public double getBreedingProbability() {
+        return getProfile().getBreedingProbability();
+    }
+
+    /**
+     * Getter method for the maximum litter size of the animal's newborns.
+     *
+     * @return An integer value representing the maximum allowed litter size.
+     */
+    @Override
+    public int getMaxLitterSize() {
+        return getProfile().getMaxLitterSize();
+    }
+
+    /**
+     * Getter method for the maximum age of the animal.
+     *
+     * @return An integer value representing the maximum age.
+     */
+    @Override
+    public int getMaxAge() {
+        return getProfile().getMaxAge();
+    }
+
+    /**
+     * Getter method for the age of breeding of the animal.
+     *
+     * @return An integer value representing the breeding age.
+     */
+    @Override
+    public int getBreedingAge() {
+        return getProfile().getBreedingAge();
+    }
 
     /**
      * Getter method returning the gender of this animal.
@@ -197,12 +243,16 @@ public abstract class Animal extends Organism implements AbleToEat {
      *
      * @return The animal's disease spreading probability.
      */
-    abstract protected double getDiseaseSpreadProbability();
+    protected double getDiseaseSpreadProbability() {
+        return getProfile().getDiseaseSpreadProbability();
+    }
 
     /**
      * Getter method to return the probability this animal dies from disease.
      *
      * @return The animal's disease death probability.
      */
-    abstract protected double getDeathByDiseaseProbability();
+    protected double getDeathByDiseaseProbability() {
+        return getProfile().getDeathByDiseaseProbability();
+    }
 }

@@ -11,8 +11,6 @@ import java.util.Random;
  */
 public abstract class Predator extends Animal {
 
-    // define fields
-
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
@@ -121,10 +119,8 @@ public abstract class Predator extends Animal {
         if (rand.nextDouble() <= getEatingProbability()) {
             incrementFoodLevel(consumable.getFoodValue());
             consumable.setEaten();
-            //System.out.println("EATEN PREY");
             return true;
         } else {
-            //System.out.println("LEFT PREY");
             return false;
         }
     }

@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
- * containing rabbits and foxes.
+ * containing organisms.
  *
  * @version 2022.03.02
  */
@@ -15,6 +15,12 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 200;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 200;
+    private static final int LONG_SIMULATION_STEPS = 4000;
+    private static final int SIMULATION_DELAY_MS = 5;
+    private static final int STEPS_PER_HOUR = 5;
+    private static final int HOURS_PER_DAY = 24;
+    private static final int STEPS_PER_DAY = STEPS_PER_HOUR * HOURS_PER_DAY;
+    private static final int HOURS_PER_TIME_OF_DAY = 4;
 
     // List of organisms in the field.
     private List<Entity> organisms;
@@ -29,6 +35,7 @@ public class Simulator
     // Indicates current state of time in the simulation.
     private TimeOfDay currentTime;
 
+    // The current weather in the simulation.
     private Weather currentWeather;
 
     /**
@@ -69,7 +76,7 @@ public class Simulator
      */
     public void runLongSimulation()
     {
-        simulate(4000);
+        simulate(LONG_SIMULATION_STEPS);
     }
     
     /**
@@ -81,14 +88,14 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            delay(5);   // uncomment this to run more slowly
+            delay(SIMULATION_DELAY_MS);
         }
     }
     
     /**
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each
-     * fox and rabbit.
+     * organism.
      */
     public void simulateOneStep()
     {
@@ -96,7 +103,7 @@ public class Simulator
 
         // Provide space for newborn organisms.
         List<Entity> newOrganisms = new ArrayList<>();
-        // Let all rabbits act.
+        // Let all organisms act.
         for(Iterator<Entity> it = organisms.iterator(); it.hasNext(); ) {
             Entity entity = it.next();
             Organism organism = (Organism) entity;
@@ -108,24 +115,24 @@ public class Simulator
             }
         }
                
-        // Add the newly born foxes and rabbits to the main lists.
+        // Add the newly born organisms to the main list.
         organisms.addAll(newOrganisms);
 
-        int day = step/120 +1;
-        hour = (step/5) % 24 + 1;
+        int day = step / STEPS_PER_DAY + 1;
+        hour = (step / STEPS_PER_HOUR) % HOURS_PER_DAY + 1;
 
 
         view.showStatus(step, field);
         view.updateTimeLabel(day,hour);
         view.updateEnvironmentLabel(currentWeather, currentTime);
 
-        // every hour, generate new weather if we are done with current weather
-        if (step % 5 == 0) {
+        // Every hour, generate new weather if we are done with current weather.
+        if (step % STEPS_PER_HOUR == 0) {
             currentWeather.generate();
         }
 
-        // update time
-        if ((hour % 4 == 0) && (step % 5 == 0)) {
+        // Update time of day at the configured interval.
+        if ((hour % HOURS_PER_TIME_OF_DAY == 0) && (step % STEPS_PER_HOUR == 0)) {
             currentTime = currentTime.next();
         }
     }
@@ -142,7 +149,7 @@ public class Simulator
         step = 0;
 
         currentTime = TimeOfDay.SUNRISE;
-        currentWeather = new Weather(WeatherType.SUN); // make this random at start
+        currentWeather = new Weather(WeatherType.SUN);
 
         organisms.clear();
 

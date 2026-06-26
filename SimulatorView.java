@@ -20,18 +20,18 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
-    private final String TIME_DAY_PREFIX = "Day: ";
-    private final String TIME_HOUR_PREFIX = "Hour: ";
-    private final String TIME_OF_DAY_PREFIX = "Time: ";
-    private final String POPULATION_PREFIX = "Population: ";
-    private final String WEATHER_PREFIX = "Weather: ";
+    private static final String STEP_PREFIX = "Step: ";
+    private static final String TIME_DAY_PREFIX = "Day: ";
+    private static final String TIME_HOUR_PREFIX = "Hour: ";
+    private static final String TIME_OF_DAY_PREFIX = "Time: ";
+    private static final String POPULATION_PREFIX = "Population: ";
+    private static final String WEATHER_PREFIX = "Weather: ";
 
     private JLabel stepLabel, population, infoLabel, timeLabel, environmentLabel;
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -73,13 +73,13 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Define a color to be used for a given class of animal.
-     * @param animalClass The animal's Class object.
+     * Define a color to be used for a given class of entity.
+     * @param entityClass The entity's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> entityClass, Color color)
     {
-        colors.put(animalClass, color);
+        colors.put(entityClass, color);
     }
 
     /**
@@ -91,11 +91,11 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * @return The color to be used for a given class of animal.
+     * @return The color to be used for a given class of entity.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> entityClass)
     {
-        Color col = colors.get(animalClass);
+        Color col = colors.get(entityClass);
         if(col == null) {
             // no color defined for this class
             return UNKNOWN_COLOR;

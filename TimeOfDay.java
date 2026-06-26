@@ -6,18 +6,17 @@
  * @version 2022.03.02
  */
 public enum TimeOfDay {
-    EARLY_MORNING,                  // possibly change these to 00:00  to 02:00
-    SUNRISE,    //this default reset
-    LATE_MORNING,   //goat is 10% less active
+    EARLY_MORNING,
+    SUNRISE,
+    LATE_MORNING,
     MIDDAY,
-    EARLY_AFTERNOON, //cheetah sleeps
+    EARLY_AFTERNOON,
     LATE_AFTERNOON,
-    SUNSET,  //vulture sleeps, elephant is 15% less active
+    SUNSET,
     EVENING,
-    NIGHT,  //lion sleeps
-    AROUND_MIDNIGHT; // Zebra is 10% less active
+    NIGHT,
+    AROUND_MIDNIGHT;
 
-    // define fields
     private static final TimeOfDay[] values = values();
 
     /**

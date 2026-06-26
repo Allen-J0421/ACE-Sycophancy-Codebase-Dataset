@@ -9,7 +9,6 @@ import java.util.List;
  */
 public class Grass extends Plant {
 
-    // define fields
     private static final double MAX_SIZE = 10.0;
     private static final int MAX_AGE = 25;
     private static final int BREEDING_AGE = 16;

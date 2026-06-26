@@ -10,7 +10,6 @@ import java.util.Random;
  */
 public abstract class Organism implements Entity {
 
-    // define fields
     //number of steps an organism remains for after dying but not having been eaten
     private static final int LIFETIME_AFTER_DEATH = 40;
     private boolean alive;

@@ -10,21 +10,18 @@ import java.util.Iterator;
 public abstract class Consumer extends Actor
 {
     // Properties shared between all consumers:
-    private static final int STARTING_SUSTENANCE_LEVEL = 20;
-    private static final double NEW_DISEASE = 0.0005;
+    private static final int STARTING_SUSTENANCE_LEVEL = 30;
     private static final double NIGHT_PREY_MISS_PROBABILITY = 0.5;
     private static Random rand = Randomizer.getRandom();
 
     // Properties unique to this consumer:
     private int breedingAge;
     private int sustenanceLevel;
-    private int maxSustenanceLevel;
     private List<Class<? extends Actor>> prey;
     private Disease disease;
     private boolean ifCarcass;
     private Carcass newCarcass;
     private boolean canEatCarcass;
-    private boolean primaryConsumer;
     
     /**
      * Create a new consumer at a location in the field.
@@ -37,16 +34,17 @@ public abstract class Consumer extends Actor
      * @param maxAge              The age to which this consumer can live.
      * @param breedingAge         The age at which this consumer can start to breed.
      */
-    public Consumer(Field field, Location location, List<Class<? extends Actor>> prey, int consumptionWorth,
-                    double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,int maxSustenanceLevel,boolean canEatCarcass,boolean primaryConsumer)
+    public Consumer(Field field, Location location, List<Class<? extends Actor>> prey,
+                    int consumptionWorth, double breedingProbability,
+                    int maxBirthsAtOnce, int maxAge, int breedingAge,
+                    int maxSustenanceLevel, boolean canEatCarcass)
     {
         super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,maxSustenanceLevel,maxAge);
         this.canEatCarcass = canEatCarcass;
         this.prey = prey;
         this.maxAge = maxAge;
         this.breedingAge = breedingAge;
-        this.primaryConsumer = primaryConsumer;
-        sustenanceLevel = 30;
+        sustenanceLevel = STARTING_SUSTENANCE_LEVEL;
     }
     
     /**
@@ -282,9 +280,7 @@ public abstract class Consumer extends Actor
      */
     private Location findFood()
     {
-        // Get adjacent locations:
-        Field field;
-        field = getField();
+        Field field = getField();
         List<Location> adjacentLocations = field.adjacentLocations(getLocation());
         
         Iterator<Location> it = adjacentLocations.iterator();
@@ -294,48 +290,71 @@ public abstract class Consumer extends Actor
             Location where = it.next();
             Object object = field.getObjectAt(where);
             
-            for (Class<? extends Actor> preyClass : prey)
-            {   
-                if (preyClass.isInstance(object))
-                {   
-                    Actor actor = (Actor) object;
-                    
-                    if (actor.getIsAlive())
-                    {   
-                        // If it's night, there is a probability of missing the prey:
-                        if (TimeSystem.isNightTime())
-                        {   
-                            if (rand.nextDouble() <= 1.0 - NIGHT_PREY_MISS_PROBABILITY)
-                            {   
-                                
-                                return eat(actor);
-                            }
-                        }
-                        else
-                        {
-                            
-                            return eat(actor);
-                        }
-                    }
-                }
-            }
-            if(Carcass.class.isInstance(object))
-            {   
-                if(canEatCarcass)
+            Location foodLocation = tryEatPrey(object);
+            if (foodLocation != null) return foodLocation;
+
+            foodLocation = tryEatCarcass(object, where);
+            if (foodLocation != null) return foodLocation;
+        }
+
+        return null;
+    }
+
+    /**
+     * Try to eat a live prey actor.
+     *
+     * @param object The object in an adjacent location.
+     * @return The location to move to, or null if no prey was eaten.
+     */
+    private Location tryEatPrey(Object object)
+    {
+        for (Class<? extends Actor> preyClass : prey)
+        {
+            if (preyClass.isInstance(object))
+            {
+                Actor actor = (Actor) object;
+                if (actor.getIsAlive() && canCatchPrey())
                 {
-                    Carcass carcass = (Carcass) object;
-                    if(carcass.isDiseased())
-                    {
-                        this.disease = giveDisease();
-                    }
-                    sustenanceLevel += carcass.getConsumptionWorth();
-                    carcass.setDead();
-                    return where;
+                    return eat(actor);
                 }
             }
         }
-        
+
         return null;
+    }
+
+    /**
+     * Try to eat a carcass from an adjacent location.
+     *
+     * @param object The object in an adjacent location.
+     * @param location The location of the object.
+     * @return The location to move to, or null if no carcass was eaten.
+     */
+    private Location tryEatCarcass(Object object, Location location)
+    {
+        if (!canEatCarcass || !Carcass.class.isInstance(object))
+        {
+            return null;
+        }
+
+        Carcass carcass = (Carcass) object;
+        if (carcass.isDiseased())
+        {
+            disease = giveDisease();
+        }
+
+        sustenanceLevel += carcass.getConsumptionWorth();
+        carcass.setDead();
+        return location;
+    }
+
+    /**
+     * At night a consumer may miss otherwise valid prey.
+     */
+    private boolean canCatchPrey()
+    {
+        return !TimeSystem.isNightTime()
+               || rand.nextDouble() <= 1.0 - NIGHT_PREY_MISS_PROBABILITY;
     }
     protected boolean becomeCarcass()
     {
@@ -354,8 +373,8 @@ public abstract class Consumer extends Actor
             actor.setDead();
             if((sustenanceLevel + actorConsumptionWorth) > maxSustenanceLevel)
             {   
-                int foodLeft = (sustenanceLevel + consumptionWorth) - maxSustenanceLevel;
-                sustenanceLevel = this.maxSustenanceLevel;
+                int foodLeft = (sustenanceLevel + actorConsumptionWorth) - maxSustenanceLevel;
+                sustenanceLevel = maxSustenanceLevel;
                 Carcass carcass = new Carcass(getField(),location,foodLeft);
                 newCarcass = carcass;
                 ifCarcass = true;

@@ -81,54 +81,6 @@ public abstract class Animal extends MobileForager implements Edible
     }
 
     /**
-     * Look for food adjacent to the current location.
-     * Only the first food is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood()
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        for(Location loc : adjacent){
-            if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
-                    Organism organism = (Organism) field.getObjectAt(loc);
-                    if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
-                        // contracts the first contact disease it encounters amongst the adjacent animals
-                        this.setDisease(organism.getDisease());
-                        break;
-                    }
-                }
-        }
-        Iterator<Location> it = adjacent.iterator();
-        // only eats if it's not full (food level less than max)
-        while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Edible && DIET().contains(animal.getClass()))
-            {
-                Organism food = (Organism) animal;
-                if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
-                {
-                    // contracts disease from food if it has a disease and that disease is foodborne
-                    setDisease(food.getDisease());
-                }
-                if(food.isAlive()) 
-                {
-                    food.setDead();
-                    int newFoodLevel = foodLevel + ((Edible) food).getFoodValue();
-
-                    // caps the food level at the maximum
-                    foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
-
-                    return where;
-                }
-                return where;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Returns true if an animal contracts a disease at birth.
      * Returns false if otherwise. 
      */
@@ -150,7 +102,47 @@ public abstract class Animal extends MobileForager implements Edible
     @Override
     protected Location locateTargetLocation()
     {
-        return findFood();
+        contractDiseaseFromAdjacentOrganisms();
+        Location foodLocation = findAdjacentLocationMatching(animal ->
+                animal instanceof Edible && DIET().contains(animal.getClass()));
+        if(foodLocation == null) {
+            return null;
+        }
+
+        Organism food = (Organism) getField().getObjectAt(foodLocation);
+        if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble())
+        {
+            // contracts disease from food if it has a disease and that disease is foodborne
+            setDisease(food.getDisease());
+        }
+        if(food.isAlive())
+        {
+            food.setDead();
+            int newFoodLevel = foodLevel + ((Edible) food).getFoodValue();
+
+            // caps the food level at the maximum
+            foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
+        }
+        return foodLocation;
+    }
+
+    /**
+     * Contract disease from the first adjacent infected organism that can transmit it.
+     */
+    private void contractDiseaseFromAdjacentOrganisms()
+    {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        for(Location loc : adjacent){
+            if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
+                Organism organism = (Organism) field.getObjectAt(loc);
+                if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
+                    // contracts the first contact disease it encounters amongst the adjacent animals
+                    this.setDisease(organism.getDisease());
+                    break;
+                }
+            }
+        }
     }
 
     /**

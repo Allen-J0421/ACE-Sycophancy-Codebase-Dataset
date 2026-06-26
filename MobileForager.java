@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 /**
  * Shared movement template for organisms that search adjacent cells for a target,
@@ -59,5 +60,21 @@ public abstract class MobileForager extends Organism
     protected void onMovementBlocked()
     {
         setDead();
+    }
+
+    /**
+     * Find the first adjacent location whose occupant matches the predicate.
+     * Adjacent locations are already shuffled by the field, so the first match
+     * preserves the existing random-selection behavior.
+     */
+    protected final Location findAdjacentLocationMatching(Predicate<Object> matcher)
+    {
+        for(Location location : getField().adjacentLocations(getLocation())) {
+            Object occupant = getField().getObjectAt(location);
+            if(matcher.test(occupant)) {
+                return location;
+            }
+        }
+        return null;
     }
 }

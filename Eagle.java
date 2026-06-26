@@ -121,10 +121,28 @@ public class Eagle extends Animal
      */
     protected Location findFood(Environment environment)
     {
-        while(environment.getWeather().getCurrentWeather() != WeatherType.RAINING) {
-            return(super.findFood());
+        if(environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
+            return null;
         }
-        return null;
+
+        Location preyLocation = findAdjacentLocationMatching(animal ->
+                animal != null && DIET.contains(animal.getClass()));
+        if(preyLocation == null) {
+            return null;
+        }
+
+        Organism food = (Organism) getField().getObjectAt(preyLocation);
+        if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble())
+        {
+            setDisease(food.getDisease());
+        }
+        if(food.isAlive())
+        {
+            food.setDead();
+            int newFoodLevel = foodLevel + food.getFoodValue();
+            foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
+        }
+        return preyLocation;
     }
 
 }

@@ -36,33 +36,17 @@ public class Hunter extends MobileForager
     @Override
     protected Location locateTargetLocation()
     {
-        return findPrey();
-    }
-
-
-    /**
-     * Look for animals adjacent to the current location.
-     * Only the first live animal is killed.
-     * @return Location Where an animal was found, or null if it wasn't.
-     */
-    private Location findPrey()
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal != null && DIET.contains(animal.getClass())) {
-                Animal food = (Animal) animal;
-                if(food.isAlive()) {
-                    food.setDead();
-                    return where;
-                }
-                return where;
-            }
+        Location preyLocation = findAdjacentLocationMatching(animal ->
+                animal != null && DIET.contains(animal.getClass()));
+        if(preyLocation == null) {
+            return null;
         }
-        return null;
+
+        Animal food = (Animal) getField().getObjectAt(preyLocation);
+        if(food.isAlive()) {
+            food.setDead();
+        }
+        return preyLocation;
     }
 
     @Override

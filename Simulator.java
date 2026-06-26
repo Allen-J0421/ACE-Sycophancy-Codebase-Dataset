@@ -3,8 +3,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -22,7 +20,7 @@ public class Simulator
     // List of actors in the field.
     private List<Actor> actors;
     // The probabilities that actors will be created in any given grid position.
-    private Map<Actor,Double> actorCreationProb; 
+    private List<ActorCreationRule> actorCreationRules; 
     // List of diseases in the simulation.
     public static final List<Disease> diseases = createDiseases();
     // The current state of the field.
@@ -35,6 +33,45 @@ public class Simulator
     private Time time;
     // The current weather condition of the field.
     private WeatherCond weatherCond;
+
+    /**
+     * Creates an actor at a location.
+     */
+    private interface ActorFactory
+    {
+        Actor create(Time time, Field field, Location location);
+    }
+
+    /**
+     * Describes how a species is initially spawned.
+     */
+    private static class ActorCreationRule
+    {
+        private final double probability;
+        private final boolean canMoveOnLand;
+        private final boolean canMoveOnWater;
+        private final ActorFactory factory;
+
+        private ActorCreationRule(double probability, boolean canMoveOnLand,
+                                  boolean canMoveOnWater, ActorFactory factory)
+        {
+            this.probability = probability;
+            this.canMoveOnLand = canMoveOnLand;
+            this.canMoveOnWater = canMoveOnWater;
+            this.factory = factory;
+        }
+
+        private boolean canCreateAt(Random rand, Field field, Location location)
+        {
+            return rand.nextDouble() <= probability &&
+                field.canOccupy(canMoveOnLand, canMoveOnWater, location);
+        }
+
+        private Actor createActor(Time time, Field field, Location location)
+        {
+            return factory.create(time, field, location);
+        }
+    }
 
     /**
      * Construct a simulation field with default size.
@@ -61,7 +98,7 @@ public class Simulator
         actors = new ArrayList<>();
         field = new Field(depth, width);
         time = new Time(3);
-        actorCreationProb = createActorCreationProb();
+        actorCreationRules = createActorCreationRules();
         weatherCond = WeatherCond.Sunny; //Sunny weather is default 
 
         // Create a view of the state of each location in the field.
@@ -81,24 +118,20 @@ public class Simulator
     }
 
     /**
-     * Create a Map with a key of an Actor object, one of each subclass of Animal and Plant,
-     * and a value of the creation proability.
-     * @return The actor creation prbability Map.
+     * Create the initial actor creation rules.
+     * @return The actor creation rules.
      */
-    private Map<Actor,Double> createActorCreationProb()
+    private List<ActorCreationRule> createActorCreationRules()
     {
-        Map<Actor,Double> tempMap = new HashMap<>();
-        Location location = new Location(0, 0);
-        tempMap.put(new Grass(time, field, location),0.8);
-        tempMap.put(new Water_Fern(time, field, location),0.9);
-        tempMap.put(new Salamander(time, field, location),0.5);
-        tempMap.put(new Catfish(time, field, location),0.7);
-        tempMap.put(new Lemur(time, field, location),0.45);
-        tempMap.put(new Panther(time, field, location),0.3);
-        tempMap.put(new Alligator(time, field, location),0.25);
-        
-        
-        return tempMap;
+        List<ActorCreationRule> rules = new ArrayList<>();
+        rules.add(new ActorCreationRule(0.8, true, false, Grass::new));
+        rules.add(new ActorCreationRule(0.9, false, true, Water_Fern::new));
+        rules.add(new ActorCreationRule(0.5, true, true, Salamander::new));
+        rules.add(new ActorCreationRule(0.7, false, true, Catfish::new));
+        rules.add(new ActorCreationRule(0.45, true, false, Lemur::new));
+        rules.add(new ActorCreationRule(0.3, true, false, Panther::new));
+        rules.add(new ActorCreationRule(0.25, true, true, Alligator::new));
+        return rules;
     }
 
     /**
@@ -206,10 +239,10 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                for (Actor actor : actorCreationProb.keySet()){
+                for (ActorCreationRule actorCreationRule : actorCreationRules){
                     Location location = new Location(row, col);
-                    if((rand.nextDouble() <= actorCreationProb.get(actor)) && field.canOccupy(actor, location)) {
-                        Actor newActor = actor.birth(new Location(row, col));
+                    if(actorCreationRule.canCreateAt(rand, field, location)) {
+                        Actor newActor = actorCreationRule.createActor(time, field, location);
                         actors.add(newActor);
                         break;
                     }

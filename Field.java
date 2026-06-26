@@ -194,8 +194,20 @@ public class Field
      */
     public boolean canOccupy(Actor actor, Location location)
     {
+        return canOccupy(actor.canMoveOnLand(), actor.canMoveOnWater(), location);
+    }
+
+    /**
+     * Check whether the given movement capabilities can survive on the terrain at the location.
+     * @param canMoveOnLand Whether land terrain can be occupied.
+     * @param canMoveOnWater Whether water terrain can be occupied.
+     * @param location The location to check.
+     * @return true if the terrain can be occupied.
+     */
+    public boolean canOccupy(boolean canMoveOnLand, boolean canMoveOnWater, Location location)
+    {
         boolean underWater = isUnderWater(location.getRow(), location.getCol());
-        return (underWater && actor.canMoveOnWater()) || (!underWater && actor.canMoveOnLand());
+        return (underWater && canMoveOnWater) || (!underWater && canMoveOnLand);
     }
 
     /**

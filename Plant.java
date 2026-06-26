@@ -191,11 +191,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public void setEaten() {
-        if (getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearFromField();
     }
 
     /**

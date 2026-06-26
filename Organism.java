@@ -69,12 +69,20 @@ public abstract class Organism implements Entity {
      */
     protected void remove() {
         setDead();
+        clearFromField();
+        removed = true;
+    }
+
+    /**
+     * Detach this organism from the field, clearing the cell it occupies.
+     * Has no effect if it is not currently placed on a field.
+     */
+    protected void clearFromField() {
         if(location != null) {
             field.clear(location);
             location = null;
             setField(null);
         }
-        removed = true;
     }
 
     /**
@@ -115,13 +123,6 @@ public abstract class Organism implements Entity {
         }
         location = newLocation;
         field.place(this, newLocation);
-    }
-
-    /**
-     * Set the organism's location to a null value directly.
-     */
-    protected void setLocationToNull() {
-        location = null;
     }
 
     /**

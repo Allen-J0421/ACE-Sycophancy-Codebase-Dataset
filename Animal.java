@@ -150,6 +150,32 @@ public abstract class Animal extends Organism implements AbleToEat {
     }
 
     /**
+     * Look in adjacent locations for living food of the given type. The first
+     * such organism found is killed and an attempt is made to eat it. This is
+     * the common hunting behaviour for predators (which eat live prey) and
+     * herbivorous prey (which eat live plants).
+     *
+     * @param foodType The kind of consumable organism this animal eats.
+     * @return The location of the food if it was eaten, otherwise null.
+     */
+    protected Location huntLivingFood(Class<? extends Consumable> foodType) {
+        Field field = getField();
+        for (Location where : field.adjacentLocations(getLocation())) {
+            Object occupant = field.getObjectAt(where);
+            if (foodType.isInstance(occupant)) {
+                // Every Consumable in this simulation is also an Organism.
+                Organism food = (Organism) occupant;
+                if (food.isAlive()) {
+                    food.setDead();
+                    boolean eaten = eat((Consumable) occupant);
+                    return eaten ? where : null;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Getter method to return this animal's disease spreading probability.
      *
      * @return The animal's disease spreading probability.

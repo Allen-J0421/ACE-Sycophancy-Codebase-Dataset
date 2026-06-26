@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -111,21 +110,7 @@ public abstract class Prey extends Animal implements Consumable {
      */
     @Override
     public Location findFood() {
-        Field field = getField();
-        Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();
-        while (it.hasNext()) {
-            Location where = it.next();
-            Object organism = field.getObjectAt(where);
-            if (organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-                if (plant.isAlive()) {
-                    plant.setDead();
-                    boolean eaten = eat(plant);
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+        return huntLivingFood(Plant.class);
     }
 
     /**
@@ -197,11 +182,7 @@ public abstract class Prey extends Animal implements Consumable {
      */
     @Override
     public void setEaten() {
-        if(getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearFromField();
     }
 
     /**

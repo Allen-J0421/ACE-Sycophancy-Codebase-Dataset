@@ -59,13 +59,8 @@ public class SimulatorView extends JFrame
         // setup dashboard button
         JButton dashboardButton = new JButton("Dashboard");
         dashboardButton.setMargin(new Insets(4, 4, 4, 4));
-        dashboardButton.addActionListener(new ActionListener(){
-                            public void actionPerformed(ActionEvent e) {
-                            
-                                simulator.setDashboard(new Dashboard(stats.getCounters(), simulator.getDiseaseCount()));
-                            }
-        
-                        });
+        dashboardButton.addActionListener(e ->
+            simulator.setDashboard(new Dashboard(stats.getCounters(), simulator.getDiseaseCount())));
         sideBar = new JToolBar(JToolBar.VERTICAL);
         
         dashboardButton.setAlignmentX(CENTER_ALIGNMENT);
@@ -75,14 +70,7 @@ public class SimulatorView extends JFrame
         sideBar.setLayout(new BoxLayout(sideBar, BoxLayout.Y_AXIS));
         //setup simulate step button + styling + evenhandler
         JButton simulateButton = new JButton("Simulate (1)");
-        simulateButton.addActionListener(new ActionListener(){
-                            public void actionPerformed(ActionEvent e) {
-                                
-                                
-                                simulator.simulateOneStep();
-                            }
-        
-                        });
+        simulateButton.addActionListener(e -> simulator.simulateOneStep());
         simulateButton.setAlignmentX(CENTER_ALIGNMENT);
         simulateButton.setMargin(new Insets(4, 4, 4, 4));
         

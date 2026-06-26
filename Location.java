@@ -5,9 +5,8 @@
  */
 public class Location
 {
-    // Row and column positions.
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
     /**
      * Represent a row and column.
@@ -19,41 +18,35 @@ public class Location
         this.row = row;
         this.col = col;
     }
-    
-    /**
-     * Implement content equality.
-     */
+
+    @Override
     public boolean equals(Object obj)
     {
         if(obj instanceof Location) {
             Location other = (Location) obj;
-            return row == other.getRow() && col == other.getCol();
+            return row == other.row && col == other.col;
         }
-        else {
-            return false;
-        }
+        return false;
     }
-    
-    /**
-     * Return a string of the form row,column
-     * @return A string representation of the location.
-     */
+
+    @Override
     public String toString()
     {
         return row + "," + col;
     }
-    
+
     /**
      * Use the top 16 bits for the row value and the bottom for
      * the column. Except for very big grids, this should give a
      * unique hash code for each (row, col) pair.
      * @return A hashcode for the location.
      */
+    @Override
     public int hashCode()
     {
         return (row << 16) + col;
     }
-    
+
     /**
      * @return The row.
      */
@@ -61,7 +54,7 @@ public class Location
     {
         return row;
     }
-    
+
     /**
      * @return The column.
      */

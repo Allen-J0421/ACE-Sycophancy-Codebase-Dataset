@@ -13,7 +13,7 @@ public class WeatherHandler
     private Weather currentWeather;
     private int lastRecordedDay;
     private final Random rand = Randomizer.getRandom();
-    private SimulatorClock clock;
+    private final SimulatorClock clock;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

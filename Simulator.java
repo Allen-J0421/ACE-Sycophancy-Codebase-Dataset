@@ -41,7 +41,7 @@ public class Simulator
     /**
      * Construct a simulation field with default size.
      */
-    public Simulator() throws Exception
+    public Simulator()
     {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
     }
@@ -49,16 +49,18 @@ public class Simulator
     /**
      * Create a simulation field with the given size.
      *
-     * @param depth Depth of the field. Must be a positive multiple of 20.
-     * @param width Width of the field. Must be a positive multiple of 20.
+     * @param depth Depth of the field. Must be a positive multiple of {@link Field#BLOCK_SIZE}.
+     * @param width Width of the field. Must be a positive multiple of {@link Field#BLOCK_SIZE}.
+     * @throws IllegalArgumentException if depth or width are non-positive or not multiples of BLOCK_SIZE.
      */
-    public Simulator(int depth, int width) throws Exception
+    public Simulator(int depth, int width)
     {
         if(depth <= 0 || width <= 0) {
-            throw new Exception("Depth and Width must be greater than zero");
+            throw new IllegalArgumentException("Depth and Width must be greater than zero");
         }
-        if(depth % 20 != 0 || width % 20 != 0) {
-            throw new Exception("Depth and Width must be multiples of 20");
+        if(depth % Field.BLOCK_SIZE != 0 || width % Field.BLOCK_SIZE != 0) {
+            throw new IllegalArgumentException(
+                "Depth and Width must be multiples of " + Field.BLOCK_SIZE);
         }
 
         animals = new ArrayList<>();
@@ -179,6 +181,7 @@ public class Simulator
         try {
             Thread.sleep(millisec);
         } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
         }
     }
 }

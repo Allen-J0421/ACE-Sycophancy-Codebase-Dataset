@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @version 2022.03.3
  */
-public class SimulatorView extends JFrame implements SimulationObserver
+public class SimulatorView extends JFrame implements SimulationDisplay
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -41,8 +41,6 @@ public class SimulatorView extends JFrame implements SimulationObserver
 
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
 
 
     /**
@@ -52,7 +50,6 @@ public class SimulatorView extends JFrame implements SimulationObserver
      */
     public SimulatorView(int height, int width)
     {
-        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Prey and predator simulation");
@@ -242,66 +239,36 @@ public class SimulatorView extends JFrame implements SimulationObserver
         }
     }
 
-    @Override
-    public void onStep(int step, Environment environment, Field field)
-    {
-        showStatus(step, environment, field);
-    }
-
     /**
-     * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param environment The current simulation environment (weather and time).
-     * @param field The field whose status is to be displayed.
+     * Render the current state of the field using pre-aggregated statistics.
+     * Counting is handled upstream by {@link SimulationReporter}; this method
+     * is responsible only for updating labels and painting the grid.
      */
-    public void showStatus(int step, Environment environment, Field field)
+    @Override
+    public void render(int step, Environment environment, Field field, FieldStats stats)
     {
-        if(!isVisible()) {
+        if (!isVisible()) {
             setVisible(true);
         }
 
         stepLabel.setText(STEP_PREFIX + step);
         weatherLabel.setText(WEATHER_PREFIX + environment.getWeather().getCurrentWeather());
         timeLabel.setText(TIME_PREFIX + environment.getTime().getCurrentTimeString());
-        stats.reset();
 
         fieldView.preparePaint();
-
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
                 Object actor = field.getObjectAt(row, col);
-                if(actor != null) {
-                    stats.incrementCount(actor.getClass());
-                    if(actor instanceof Organism){
-                        if(((Organism) actor).isDiseased()){
-                            stats.incrementDiseasedCount();
-                        }
-                    }
-                    fieldView.drawMark(col, row, getColor(actor.getClass()));
-                }
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                }
+                fieldView.drawMark(col, row, actor != null ? getColor(actor.getClass()) : EMPTY_COLOR);
             }
         }
-        stats.countFinished();
-        for(Class cls : SimulationInfo.ALL_ACTORS){
+
+        for (Class cls : SimulationInfo.ALL_ACTORS) {
             classToCheckBox.get(cls).setText(stats.getCountDetails(cls));
         }
-
-//        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
         diseasedPopulation.setText(stats.getDiseasedPopulation());
         setColorsByCheckBox();
         fieldView.repaint();
-    }
-
-    /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
     }
 
     /**

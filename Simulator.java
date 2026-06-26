@@ -31,7 +31,7 @@ public class Simulator implements SimulationControls
             width = SimulationEngine.DEFAULT_WIDTH;
         }
         SimulatorView view = buildView(depth, width);
-        engine = new SimulationEngine(depth, width, view);
+        engine = new SimulationEngine(depth, width, new SimulationReporter(view));
         view.wireButtons(this);
         engine.reset();
     }
@@ -54,7 +54,7 @@ public class Simulator implements SimulationControls
                 Map.entry(Grass.class,  GrassProbability),
                 Map.entry(Hunter.class, HunterProbability)
         );
-        engine = new SimulationEngine(SimulationEngine.DEFAULT_DEPTH, SimulationEngine.DEFAULT_WIDTH, probs, view);
+        engine = new SimulationEngine(SimulationEngine.DEFAULT_DEPTH, SimulationEngine.DEFAULT_WIDTH, probs, new SimulationReporter(view));
         view.wireButtons(this);
         engine.reset();
     }

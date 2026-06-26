@@ -3,7 +3,7 @@ final class ModularExponentiationDemo {
     }
 
     public static void main(String[] args) {
-        ModularExponentiationInput input = ModularExponentiationInput.fromArgs(args);
+        ModularExponentiationInput input = ModularExponentiationInputParser.parse(args);
         System.out.println(ModularExponentiation.modPow(input));
     }
 }

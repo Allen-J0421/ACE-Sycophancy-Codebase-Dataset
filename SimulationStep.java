@@ -23,7 +23,7 @@ public class SimulationStep
      */
     public SimulationStep()
     {
-        currentStep = 0;
+        this(0);
     }
 
     /**

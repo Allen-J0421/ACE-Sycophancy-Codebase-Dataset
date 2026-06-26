@@ -10,7 +10,7 @@ public class  Season
     private int aveTemperature;
     private final int tempChange;
     // store the current temperature of this season
-    private Thermometer currentTemp;
+    private final Thermometer currentTemp;
 
     /**
      * Initialise the Season object
@@ -84,6 +84,22 @@ public class  Season
     public Thermometer getCurrentTemp()
     {
         return currentTemp;
+    }
+
+    public int getCurrentTemperature()
+    {
+        return currentTemp.getTemperature();
+    }
+
+    public boolean canChangeCurrentTemperatureBy(int delta)
+    {
+        int updatedTemperature = getCurrentTemperature() + delta;
+        return updatedTemperature <= getUpperLimitTemp() && updatedTemperature >= getLowerLimitTemp();
+    }
+
+    public void changeCurrentTemperature(int delta)
+    {
+        currentTemp.incrementTemperature(delta);
     }
 
 }

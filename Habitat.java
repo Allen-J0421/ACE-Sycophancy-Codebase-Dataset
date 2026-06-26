@@ -10,18 +10,19 @@ import java.util.Random;
  */
 public class Habitat
 {
+    private static final int SPRING_INDEX = 0;
+    private static final int SEASONS_IN_YEAR = 4;
+    private static final int RANDOM_TEMPERATURE_DIRECTIONS = 2;
     // holds the habitat's seasons
-    private List<Season> seasons;
+    private final List<Season> seasons;
     // the number of steps before the season changes
     private static final int SEASON_CHANGE = 50;
-    // hold the current season
-    private Season currentSeason;
+    // hold the index of the current season
+    private int currentSeasonIndex;
     // keep track of the simulation steps.
-    private SimulationStep simStep;
+    private final SimulationStep simStep;
     // hold a climate change scenario
-    private ClimateScenarios changeScenario;
-    // true if the current season is Spring
-    private boolean isSpring;
+    private final ClimateScenarios changeScenario;
     // A random number generator
     private static final Random rand = Randomizer.getRandom();
 
@@ -40,11 +41,11 @@ public class Habitat
     {
         this.simStep = simStep;
         this.changeScenario = changeScenario;
+        this.seasons = new ArrayList<>();
 
         // Season initialisations
         initialiseSeasons(spring, summer, autumn, winter);
-        currentSeason = seasons.get(0);   // the simulation always starts with spring
-        isSpring = true;
+        currentSeasonIndex = SPRING_INDEX;   // the simulation always starts with spring
         climateChangeEffect(); // do the climate change effect on the first season
     }
 
@@ -53,7 +54,7 @@ public class Habitat
      */
     public String getCurrentSeason()
     {
-        return currentSeason.getName();
+        return getCurrentSeasonState().getName();
     }
 
     /**
@@ -61,7 +62,7 @@ public class Habitat
      */
     public int getCurrentTemperature()
     {
-        return currentSeason.getCurrentTemp().getTemperature();
+        return getCurrentSeasonState().getCurrentTemperature();
     }
 
     /**
@@ -69,7 +70,7 @@ public class Habitat
      */
     public boolean getIsSpring()
     {
-        return isSpring;
+        return currentSeasonIndex == SPRING_INDEX;
     }
 
     /**
@@ -79,7 +80,7 @@ public class Habitat
     {
         int step = simStep.getCurrentStep();
         // step+1 because step starts with 0
-        return step != 0 && (step+1) % (SEASON_CHANGE * 4) == 0;
+        return step != 0 && (step + 1) % (SEASON_CHANGE * SEASONS_IN_YEAR) == 0;
     }
 
     /**
@@ -95,16 +96,13 @@ public class Habitat
         int step = simStep.getCurrentStep();
 
         // 1)
-        if(yearPassed())
-        {
+        if (yearPassed()) {
             changeScenario.doClimateChange();
         }
 
         // 2) & 3)
-        if(step != 0 && step % SEASON_CHANGE == 0)
-        {
+        if (shouldAdvanceSeason(step)) {
             changeSeason();
-            checkIsSpring();
             climateChangeEffect();
         }
 
@@ -123,17 +121,10 @@ public class Habitat
      */
     private void initialiseSeasons(int[] springValues, int[] summerValues, int[] autumnValues, int[] winterValues)
     {
-        Season spring = new Season("spring", springValues[0], springValues[1]);
-        Season summer = new Season("summer", summerValues[0], summerValues[1]);
-        Season autumn = new Season("autumn", autumnValues[0], autumnValues[1]);
-        Season winter = new Season("winter", winterValues[0], winterValues[1]);
-
-        // Initialise seasons and fill it
-        seasons = new ArrayList<>();
-        seasons.add(spring);
-        seasons.add(summer);
-        seasons.add(autumn);
-        seasons.add(winter);
+        seasons.add(new Season("spring", springValues[0], springValues[1]));
+        seasons.add(new Season("summer", summerValues[0], summerValues[1]));
+        seasons.add(new Season("autumn", autumnValues[0], autumnValues[1]));
+        seasons.add(new Season("winter", winterValues[0], winterValues[1]));
     }
 
     /**
@@ -141,22 +132,7 @@ public class Habitat
      */
     private void changeSeason()
     {
-        int seasonIndx = seasons.indexOf(currentSeason);
-
-        if(seasonIndx == seasons.size() -1) {
-            currentSeason = seasons.get(0);
-        }
-        else {
-            currentSeason = seasons.get(seasonIndx + 1);
-        }
-    }
-
-    /**
-     * Make isSpring true or false depending on the current season.
-     */
-    private void checkIsSpring()
-    {
-        isSpring = currentSeason.getName().equals(seasons.get(0).getName());
+        currentSeasonIndex = (currentSeasonIndex + 1) % seasons.size();
     }
 
     /**
@@ -164,17 +140,12 @@ public class Habitat
      */
     private void randomizeTemperature()
     {
-        int randomize = rand.nextInt(2);
+        Season currentSeason = getCurrentSeasonState();
         int change = rand.nextInt(currentSeason.getTempChange() + 1);
-        Thermometer currentTemp = currentSeason.getCurrentTemp();
+        int delta = rand.nextInt(RANDOM_TEMPERATURE_DIRECTIONS) == 0 ? change : -change;
 
-        // make sure that the temperature doesn't go beyond the temperature upper limit
-        if (randomize == 0 && (getCurrentTemperature() + change) <= currentSeason.getUpperLimitTemp()) {
-            currentTemp.incrementTemperature(change);
-        }
-        // make sure that the temperature doesn't go below the temperature lower limit
-        else if(randomize == 1 && (getCurrentTemperature() - change) >= currentSeason.getLowerLimitTemp()) {
-            currentTemp.incrementTemperature(- change);
+        if (currentSeason.canChangeCurrentTemperatureBy(delta)) {
+            currentSeason.changeCurrentTemperature(delta);
         }
     }
 
@@ -183,6 +154,16 @@ public class Habitat
      */
     private void climateChangeEffect()
     {
-        currentSeason.incAveTemperature(changeScenario.getClimateChangeEffect());
+        getCurrentSeasonState().incAveTemperature(changeScenario.getClimateChangeEffect());
+    }
+
+    private Season getCurrentSeasonState()
+    {
+        return seasons.get(currentSeasonIndex);
+    }
+
+    private boolean shouldAdvanceSeason(int step)
+    {
+        return step != 0 && step % SEASON_CHANGE == 0;
     }
 }

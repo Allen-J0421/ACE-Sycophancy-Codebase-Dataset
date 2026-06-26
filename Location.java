@@ -6,8 +6,8 @@
 public class Location
 {
     // Row and column positions.
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
     /**
      * Represent a row and column.
@@ -24,6 +24,7 @@ public class Location
     /**
      * Implement content equality.
      */
+    @Override
     public boolean equals(Object obj)
     {
         if(obj instanceof Location) {
@@ -40,6 +41,7 @@ public class Location
      *
      * @return A string representation of the location.
      */
+    @Override
     public String toString()
     {
         return row + "," + col;
@@ -51,6 +53,7 @@ public class Location
      *
      * @return A hashcode for the location.
      */
+    @Override
     public int hashCode()
     {
         return (row << 16) + col;

@@ -6,10 +6,13 @@
  */
 public class Time
 {
+    private static final int HOURS_IN_DAY = 24;
+    private static final int DAY_START_HOUR = 6;
+    private static final int NIGHT_START_HOUR = 18;
     // true if it is night
     private boolean isNight;
     // keep track of the simulation steps.
-    private SimulationStep simStep;
+    private final SimulationStep simStep;
     // keep track of the hour of the day
     private int currentHour;
     // the number of steps before the type of day changes
@@ -25,13 +28,7 @@ public class Time
     {
         this.simStep = simStep;
         isNight = startNight;
-
-        if(isNight) {
-            currentHour = 18;
-        }
-        else {
-            currentHour = 6;
-        }
+        currentHour = isNight ? NIGHT_START_HOUR : DAY_START_HOUR;
     }
 
     /**
@@ -49,18 +46,8 @@ public class Time
      */
     public String timeString()
     {
-        String tString = "";
-
-        if(isNight) {
-            tString += "Night \t";
-        }
-        else {
-            tString += "Day \t";
-        }
-
-        tString += "(" + getHourDisplay() + ")";
-
-        return tString;
+        String period = isNight ? "Night" : "Day";
+        return period + " \t(" + getHourDisplay() + ")";
     }
 
     /**
@@ -70,7 +57,7 @@ public class Time
     {
         int step = simStep.getCurrentStep();
 
-        if(step != 0 && (step+1) % DAY_CHANGE == 0) { // step+1 because step starts with 0
+        if (shouldToggleTime(step)) { // step+1 because step starts with 0
             toggleIsNight();
         }
 
@@ -90,7 +77,7 @@ public class Time
      */
     private void incHour()
     {
-        currentHour = (currentHour + (24 / (DAY_CHANGE * 2))) % 24;
+        currentHour = (currentHour + (HOURS_IN_DAY / (DAY_CHANGE * 2))) % HOURS_IN_DAY;
     }
 
     /**
@@ -100,11 +87,11 @@ public class Time
      */
     private String getHourDisplay()
     {
-        if(currentHour < 10)
-        {
-            return "0" + currentHour + ":00";
-        }
+        return String.format("%02d:00", currentHour);
+    }
 
-        return currentHour + ":00";
+    private boolean shouldToggleTime(int step)
+    {
+        return step != 0 && (step + 1) % DAY_CHANGE == 0;
     }
 }

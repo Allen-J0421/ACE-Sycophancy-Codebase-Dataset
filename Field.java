@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -52,13 +51,13 @@ public class Field
      * 
      * @param objectType Object type to clear
      */
-    public void clear(Class objectType)
+    public void clear(Class<?> objectType)
     {
         for(int row = 0; row < depth; row++) 
         {
             for(int col = 0; col < width; col++) 
             {
-                field[row][col].clear(objectType);
+                getGridSpaceAt(row, col).clear(objectType);
             }
         }
     }
@@ -69,9 +68,9 @@ public class Field
      * @param location Location The location to clear.
      * @param objectType Type of object to clear
      */
-    public void clear(Location location, Class objectType)
+    public void clear(Location location, Class<?> objectType)
     {
-        field[location.getRow()][location.getCol()].clear(objectType);
+        getGridSpaceAt(location).clear(objectType);
     }
     
     /**
@@ -98,13 +97,7 @@ public class Field
      */
     public void place(Object object, Location location)
     {
-        GridSpace gridSpace = field[location.getRow()][location.getCol()];
-        
-        if (gridSpace == null) {
-            gridSpace = new GridSpace();
-        }
-        
-        gridSpace.setObject(object);
+        getGridSpaceAt(location).setObject(object);
     }
     
     /**
@@ -115,7 +108,7 @@ public class Field
      * 
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location, Class objectType)
+    public <T> T getObjectAt(Location location, Class<T> objectType)
     {
         return getObjectAt(location.getRow(), location.getCol(), objectType);
     }
@@ -128,14 +121,30 @@ public class Field
      * 
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col, Class objectType)
+    public <T> T getObjectAt(int row, int col, Class<T> objectType)
+    {
+        return getGridSpaceAt(row, col).getObject(objectType);
+    }
+
+    /**
+     * Return the grid space at a location, creating it if required.
+     */
+    private GridSpace getGridSpaceAt(Location location)
+    {
+        return getGridSpaceAt(location.getRow(), location.getCol());
+    }
+
+    /**
+     * Return the grid space at a row and column, creating it if required.
+     */
+    private GridSpace getGridSpaceAt(int row, int col)
     {
         if (field[row][col] == null)
         {
             field[row][col] = new GridSpace();
         }
         
-        return field[row][col].getObject(objectType);
+        return field[row][col];
     }
     
     /**
@@ -163,7 +172,7 @@ public class Field
      * 
      * @return A list of free adjacent locations.
      */
-    public List<Location> getFreeAdjacentLocations(Location location, Class objectType)
+    public List<Location> getFreeAdjacentLocations(Location location, Class<?> objectType)
     {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
@@ -190,7 +199,7 @@ public class Field
      * 
      * @return A valid location within the grid area.
      */
-    public Location freeAdjacentLocation(Location location, Class objectType)
+    public Location freeAdjacentLocation(Location location, Class<?> objectType)
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location, objectType);

@@ -260,23 +260,23 @@ public class Simulator
                 
                 if(rand.nextDouble() <= LION_CREATION_PROBABILITY) 
                 {
-                     animal = (Lion) new Lion(true, field, location, false, false);
+                     animal = new Lion(true, field, location, false, false);
                 }
                 else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY)
                 {
-                     animal = (Cheetah) new Cheetah(true, field, location, false, false);
+                     animal = new Cheetah(true, field, location, false, false);
                 }
                 else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) 
                 {
-                     animal = (Zebra) new Zebra(true, field, location, false, false);
+                     animal = new Zebra(true, field, location, false, false);
                 }
                 else if(rand.nextDouble() <= GIRAFFE_CREATION_PROBABILITY)
                 {
-                     animal = (Giraffe) new Giraffe(true, field, location, false, false);
+                     animal = new Giraffe(true, field, location, false, false);
                 }
                 else if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY) 
                 {
-                     animal = (Lemur) new Lemur(true, field, location, false, false);
+                     animal = new Lemur(true, field, location, false, false);
                 }
                 
                 if(animal != null) 

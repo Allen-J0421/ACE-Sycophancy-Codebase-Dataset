@@ -26,12 +26,9 @@ public class Lion extends Predator
      */
     public Lion(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
-        super(field, location, isInfected, isImmune);
-        
-        preyCatchingProbability = PREY_CATCHING_PROBABILITY;
-        setSpeciesCharacteristics(BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY,
-                                  MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);
-        initialiseAgeAndFoodLevel(randomAge, () -> initialNewbornFoodLevel());
+        super(field, location, isInfected, isImmune, randomAge, PREY_CATCHING_PROBABILITY,
+              BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
+              MAX_FOOD_LEVEL, FOOD_VALUE);
     }
 
     @Override

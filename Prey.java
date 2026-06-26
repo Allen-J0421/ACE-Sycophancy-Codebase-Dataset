@@ -10,52 +10,48 @@ public abstract class Prey extends Animal
 {
     /**
      * Create a new prey at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      * @param infected Intial state if the prey is infected or not
      * @param immmune Intial state if the prey is immune or not
      */
-    protected Prey(Field field, Location location, boolean infected, boolean immune)
+    protected Prey(Field field, Location location, boolean infected, boolean immune,
+                   boolean randomAge, double newbornFoodPercentage, int breedingAge, int maxAge,
+                   double breedingProbability, int maxLitterSize, int maxFoodLevel, int foodValue)
     {
-        super(field, location, infected, immune);
+        super(field, location, infected, immune, breedingAge, maxAge, breedingProbability,
+              maxLitterSize, maxFoodLevel, foodValue, randomAge, newbornFoodPercentage, false);
+
         movementProbability = 0.75;
     }
 
     /**
-     * Newborn prey start with a species-specific percentage of their max food level.
-     */
-    protected int initialNewbornFoodLevel(double percentageOfMaxFoodLevel)
-    {
-        return (int) (percentageOfMaxFoodLevel * maxFoodLevel);
-    }
-
-    /**
      * @Override
-     * 
-     * This is what the prey does most of the time - it may move around, it eats plants, 
-     * it may breed, it may get infected with a disease, it may become immune to that disease, 
+     *
+     * This is what the prey does most of the time - it may move around, it eats plants,
+     * it may breed, it may get infected with a disease, it may become immune to that disease,
      * it may die of the disease, it may die of hunger, and it may die of old age.
-     * 
+     *
      * @param newPrey A list to return newly born prey.
      */
     public void act(List<LivingOrganism> newPrey)
     {
         // Prey sleep at night
-        if(Time.isNight()) 
+        if(Time.isNight())
         {
             return;
         }
-        
+
         super.act(newPrey);
     }
 
     /**
      * @Override
-     * 
+     *
      * Look for plants adjacent to the current location.
      * Eats plants till full.
-     * 
+     *
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
@@ -63,32 +59,32 @@ public abstract class Prey extends Animal
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()) 
+
+        while(it.hasNext())
         {
             Location where = it.next();
-            
+
             // Get the plant and animal currently at this new location.
-            Plant plant = (Plant) field.getObjectAt(where, Plant.class);
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            
+            Plant plant = field.getObjectAt(where, Plant.class);
+            Animal animal = field.getObjectAt(where, Animal.class);
+
             if(animal == null)
             {
                 if(plant != null)
                 {
                     if(plant.isAlive() && foodLevel < maxFoodLevel)
-                    { 
+                    {
                         // Prey is hungry and plant is availiable so eat
                         // the plant.
                         int plantFoodValue = plant.beEaten();
                         foodLevel += plantFoodValue;
-                        
+
                         return where;
                     }
                 }
             }
         }
-        
+
         return null;
     }
 }

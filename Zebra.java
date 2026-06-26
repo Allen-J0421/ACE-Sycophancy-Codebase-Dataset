@@ -25,11 +25,9 @@ public class Zebra extends Prey
      */
     public Zebra(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
-        super(field, location, isInfected, isImmune);
-        
-        setSpeciesCharacteristics(BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY,
-                                  MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);
-        initialiseAgeAndFoodLevel(randomAge, () -> initialNewbornFoodLevel(0.25));
+        super(field, location, isInfected, isImmune, randomAge, 0.25,
+              BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
+              MAX_FOOD_LEVEL, FOOD_VALUE);
     }
 
     @Override

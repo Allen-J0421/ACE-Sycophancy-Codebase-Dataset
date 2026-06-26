@@ -1,9 +1,9 @@
-import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This class collects and provides some statistical data on the state 
- * of a field. It is flexible: it will create and maintain a counter 
+ * This class collects and provides some statistical data on the state
+ * of a field. It is flexible: it will create and maintain a counter
  * for any class of object that is found within the field.
  *
  * @version 26/02/2022
@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (lion, zebra, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -28,18 +28,18 @@ public class FieldStats
 
     /**
      * Get details of what is in the field.
-     * 
+     *
      * @param field The field to get the population details of.
-     * 
+     *
      * @return A string describing what is in the field.
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -48,15 +48,15 @@ public class FieldStats
         }
         return buffer.toString();
     }
-    
+
     /**
-     * Invalidate the current set of statistics; reset all 
+     * Invalidate the current set of statistics; reset all
      * counts to zero.
      */
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -64,10 +64,10 @@ public class FieldStats
 
     /**
      * Increment the count for one object.
-     * 
+     *
      * @param objectType The class of animal to increment.
      */
-    public void incrementCount(Class objectType)
+    public void incrementCount(Class<?> objectType)
     {
         Counter count = counters.get(objectType);
         if(count == null) {
@@ -90,54 +90,54 @@ public class FieldStats
     /**
      * Determine whether the simulation is still viable.
      * I.e., should it continue to run.
-     * 
+     *
      * @return true If there is more than one species alive.
      */
     public boolean isViable(Field field)
     {
         // How many counts are non-zero.
         int nonZero = 0;
-        if(!countsValid) 
+        if(!countsValid)
         {
             generateCounts(field);
         }
-        
-        for(Class key : counters.keySet()) 
+
+        for(Class<?> key : counters.keySet())
         {
             Counter info = counters.get(key);
-            if(info.getCount() > 0) 
+            if(info.getCount() > 0)
             {
                 nonZero++;
             }
         }
         return nonZero > 1;
     }
-    
+
     /**
-     * Generate counts of the number of all species of 
+     * Generate counts of the number of all species of
      * animal and plant.
      * These are not kept up to date as animals and plants
      * are placed in the field, but only when a request
      * is made for the information.
-     * 
+     *
      * @param field The field to generate the stats for.
      */
     private void generateCounts(Field field)
     {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) 
+        for(int row = 0; row < field.getDepth(); row++)
         {
-            for(int col = 0; col < field.getWidth(); col++) 
+            for(int col = 0; col < field.getWidth(); col++)
             {
-                Object object = field.getObjectAt(row, col, Animal.class);
-                
-                if(object != null) 
+                Animal object = field.getObjectAt(row, col, Animal.class);
+
+                if(object != null)
                 {
                     incrementCount(object.getClass());
                 }
             }
         }
-        
+
         countsValid = true;
     }
 }

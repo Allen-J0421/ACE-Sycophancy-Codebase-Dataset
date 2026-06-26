@@ -50,12 +50,12 @@ public class Weather {
         // night.
         if (Time.isNight() && currentWeather.equals(WeatherType.Sunny)) 
         {
-            currentWeather = currentWeather.Clear;
+            currentWeather = WeatherType.Clear;
         }
         
         if (!Time.isNight() && currentWeather.equals(WeatherType.Clear)) 
         {
-            currentWeather = currentWeather.Sunny;
+            currentWeather = WeatherType.Sunny;
         }
     }
     

@@ -25,11 +25,9 @@ public class Lemur extends Prey
      */
     public Lemur(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
-        super(field, location, isInfected, isImmune);
-        
-        setSpeciesCharacteristics(BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY,
-                                  MAX_LITTER_SIZE, MAX_FOOD_LEVEL, FOOD_VALUE);
-        initialiseAgeAndFoodLevel(randomAge, () -> initialNewbornFoodLevel(0.5));
+        super(field, location, isInfected, isImmune, randomAge, 0.5,
+              BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
+              MAX_FOOD_LEVEL, FOOD_VALUE);
     }
 
     @Override

@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class SimulatorView extends JFrame
     private JPanel classKey;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     
     // A statistics object computing and storing simulation information
     private FieldStats stats;
@@ -171,7 +170,7 @@ public class SimulatorView extends JFrame
      * @param classColor The color to be used for the given class.
      * @param textColor The color to be used for the text in the class key.
      */
-    public void setColor(Class newClass, Color classColor, Color textColor)
+    public void setColor(Class<?> newClass, Color classColor, Color textColor)
     {
         colors.put(newClass, classColor);
         
@@ -193,7 +192,7 @@ public class SimulatorView extends JFrame
      * 
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -231,8 +230,8 @@ public class SimulatorView extends JFrame
         {
             for(int col = 0; col < field.getWidth(); col++) 
             {
-                Animal animal = (Animal) field.getObjectAt(row, col, Animal.class);
-                Plant plant = (Plant) field.getObjectAt(row, col, Plant.class);
+                Animal animal = field.getObjectAt(row, col, Animal.class);
+                Plant plant = field.getObjectAt(row, col, Plant.class);
                 
                 if(animal != null) 
                 {

@@ -12,49 +12,45 @@ public abstract class Predator extends Animal
 
     /**
      * Create a new predator at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      * @param infected : intial state if the prey is infected or not
      * @param immmune : intial state if the prey is immune or not
      */
-    protected Predator(Field field, Location location, boolean isInfected, boolean isImmune)
+    protected Predator(Field field, Location location, boolean isInfected, boolean isImmune,
+                       boolean randomAge, double preyCatchingProbability, int breedingAge, int maxAge,
+                       double breedingProbability, int maxLitterSize, int maxFoodLevel, int foodValue)
     {
-        super(field, location, isInfected, isImmune);
+        super(field, location, isInfected, isImmune, breedingAge, maxAge, breedingProbability,
+              maxLitterSize, maxFoodLevel, foodValue, randomAge, 0, true);
+
+        this.preyCatchingProbability = preyCatchingProbability;
         movementProbability = 0.8;
     }
 
     /**
-     * Newborn predators start with a small, variable food reserve.
-     */
-    protected int initialNewbornFoodLevel()
-    {
-        double percentageOfMaxFoodLevel = rand.nextDouble() / 5.5;
-        return (int) (percentageOfMaxFoodLevel * maxFoodLevel);
-    }
-    
-    /**
      * @Override
-     * 
-     * This is what the predators does most of the time - it may move around, it eats prey, 
-     * it may breed, it may get infected with a disease, it may become immune to that disease, 
+     *
+     * This is what the predators does most of the time - it may move around, it eats prey,
+     * it may breed, it may get infected with a disease, it may become immune to that disease,
      * it may die of the disease, it may die of hunger, and it may die of old age.
-     * 
+     *
      * @param newPredators A list to return newly born prey.
      */
     public void act(List<LivingOrganism> newPredators)
     {
         // Predators have a lower chance of acting when its night
-        if(Time.isNight()) 
+        if(Time.isNight())
         {
             if (rand.nextDouble() > 0.25)
             {
                 return;
             }
         }
-        
+
         // Predators have a lower chance of acting when its foggy
-        if (Weather.getWeather() == Weather.WeatherType.Foggy) 
+        if (Weather.getWeather() == Weather.WeatherType.Foggy)
         {
             if (rand.nextDouble() > 0.50)
             {
@@ -64,14 +60,14 @@ public abstract class Predator extends Animal
 
         super.act(newPredators);
     }
-    
+
     /**
      * @Override
-     * 
+     *
      * Look for prey adjacent to the current location.
      * Eats prey till full.
      * Predators may catch the prey's disease if eaten.
-     * 
+     *
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
@@ -79,34 +75,34 @@ public abstract class Predator extends Animal
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()) 
+
+        while(it.hasNext())
         {
             Location where = it.next();
-            Object animal = field.getObjectAt(where, Animal.class);
-            
-            if(animal instanceof Prey) 
+            Animal animal = field.getObjectAt(where, Animal.class);
+
+            if(animal instanceof Prey)
             {
                 Prey prey = (Prey) animal;
-                if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability) 
-                { 
+                if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability)
+                {
                     // Predator is hungry and prey is availiable so eat
                     // the prey.
                     int preyFoodValue = prey.beEaten();
                     foodLevel += preyFoodValue;
-                    
+
                     // if the prey being eaten is infected then the predator most likely
                     // gets infected
                     if (prey.getIsInfected() && !getIsImmune() && rand.nextDouble() <= diseaseSpreadProbability)
                     {
-                        this.infected = true; 
+                        this.infected = true;
                     }
-                    
+
                     return where;
                 }
             }
         }
-        
+
         return null;
     }
 }

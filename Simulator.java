@@ -89,7 +89,7 @@ public class Simulator
             boolean isNight = time.getIsNight();
             int currentTemperature = simulationHabitat.getCurrentTemperature();
             boolean yearPassed = simulationHabitat.yearPassed();
-            SimulationConditions conditions = new SimulationConditions(isNight, currentTemperature, yearPassed);
+            SimulationConditions conditions = new SimulationConditions(isNight, currentTemperature, yearPassed, isSpring);
 
             // Provide space for newborn species.
             List<Species> newSpecies = new ArrayList<>();
@@ -97,15 +97,6 @@ public class Simulator
             for(Iterator<Species> it = species.iterator(); it.hasNext(); )
             {
                 Species specie = it.next();
-                // Update the status of isSpring in the plants (done here to reduce coupling)
-                if (specie instanceof Plant)
-                {
-                    Plant tempPlant = (Plant) specie;
-                    if (tempPlant.getIsSpring() != isSpring) {
-                        tempPlant.toggleIsSpring();
-                    }
-                }
-
                 specie.act(newSpecies, conditions);
                 if(! specie.isAlive()) {
                     it.remove();

@@ -73,6 +73,8 @@ public class Plant extends Species
      */
     public void act(List<Species> newPlants, SimulationConditions conditions)
     {
+        updateSpringState(conditions);
+
         // 1)
         if (! deadDueTemperature && ! survivesTemperature(conditions.getTemperature()))
         {
@@ -95,6 +97,18 @@ public class Plant extends Species
                 reproduce(newPlants);
                 grow();
             }
+        }
+    }
+
+    /**
+     * Synchronise this plant with the current season when that information is available.
+     *
+     * @param conditions (SimulationConditions) environmental conditions for this step
+     */
+    private void updateSpringState(SimulationConditions conditions)
+    {
+        if (conditions.hasSeason() && getIsSpring() != conditions.isSpring()) {
+            toggleIsSpring();
         }
     }
 

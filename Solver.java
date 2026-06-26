@@ -1,3 +1,3 @@
 interface Solver {
-    RodCuttingSolution solve(PriceTable prices);
+    RodCuttingSolution solve(RodCuttingProblem problem);
 }

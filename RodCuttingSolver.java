@@ -1,7 +1,8 @@
 class RodCuttingSolver implements Solver {
 
     @Override
-    public RodCuttingSolution solve(PriceTable prices) {
+    public RodCuttingSolution solve(RodCuttingProblem problem) {
+        PriceTable prices = problem.prices();
         int n = prices.rodLength();
         RevenueTable revenue = new RevenueTable(n);
         CutChoiceTable cutChoice = new CutChoiceTable(n);

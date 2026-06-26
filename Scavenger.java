@@ -18,8 +18,9 @@ public abstract class Scavenger extends Hunter {
      * @param field The field in which the scavenger resides.
      * @param location The location in which the scavenger spawns into.
      */
-    public Scavenger(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(foodLevel, randomAge, field, location);
+    public Scavenger(HunterAttributes attributes, boolean randomAge, Field field,
+                     Location location, OrganismFactory offspringFactory) {
+        super(attributes, randomAge, field, location, offspringFactory);
     }
 
     /**

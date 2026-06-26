@@ -22,9 +22,10 @@ public abstract class Hunter extends Animal {
      * @param field The field in which the hunter resides.
      * @param location The location in which the hunter spawns into.
      */
-    public Hunter(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-        this.foodLevel = foodLevel;
+    public Hunter(HunterAttributes attributes, boolean randomAge, Field field,
+                  Location location, OrganismFactory offspringFactory) {
+        super(attributes, randomAge, field, location, offspringFactory);
+        this.foodLevel = attributes.getInitialFoodLevel();
     }
 
     @Override

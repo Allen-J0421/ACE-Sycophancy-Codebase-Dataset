@@ -26,21 +26,21 @@ public class Populator {
     public Populator(SimulatorView view) {
         spawnRules = Arrays.asList(
                 new SpawnRule(Lion.class, Color.RED, ANIMAL_CREATION_PROBABILITY,
-                        (field, location) -> new Lion(19, true, field, location)),
+                        (randomAge, field, location) -> new Lion(randomAge, field, location)),
                 new SpawnRule(Zebra.class, Color.BLUE, ANIMAL_CREATION_PROBABILITY,
-                        (field, location) -> new Zebra(5, true, field, location)),
+                        (randomAge, field, location) -> new Zebra(randomAge, field, location)),
                 new SpawnRule(Vulture.class, Color.ORANGE, ANIMAL_CREATION_PROBABILITY,
-                        (field, location) -> new Vulture(40, true, field, location)),
+                        (randomAge, field, location) -> new Vulture(randomAge, field, location)),
                 new SpawnRule(Grass.class, Color.GREEN, PLANT_CREATION_PROBABILITY,
-                        (field, location) -> new Grass(1, 1, true, field, location)),
+                        (randomAge, field, location) -> new Grass(randomAge, field, location)),
                 new SpawnRule(Goat.class, Color.PINK, ANIMAL_CREATION_PROBABILITY,
-                        (field, location) -> new Goat(5, true, field, location)),
+                        (randomAge, field, location) -> new Goat(randomAge, field, location)),
                 new SpawnRule(Elephant.class, Color.GRAY, ANIMAL_CREATION_PROBABILITY,
-                        (field, location) -> new Elephant(5, true, field, location)),
+                        (randomAge, field, location) -> new Elephant(randomAge, field, location)),
                 new SpawnRule(Cheetah.class, Color.MAGENTA, ANIMAL_CREATION_PROBABILITY,
-                        (field, location) -> new Cheetah(19, true, field, location)),
+                        (randomAge, field, location) -> new Cheetah(randomAge, field, location)),
                 new SpawnRule(PoisonBerry.class, Color.BLACK, PLANT_CREATION_PROBABILITY,
-                        (field, location) -> new PoisonBerry(2, 1, true, field, location))
+                        (randomAge, field, location) -> new PoisonBerry(randomAge, field, location))
         );
 
         for (SpawnRule spawnRule : spawnRules) {
@@ -72,18 +72,14 @@ public class Populator {
         }
     }
 
-    private interface SpawnFactory {
-        Organism create(Field field, Location location);
-    }
-
     private static class SpawnRule {
         private final Class<? extends Organism> organismType;
         private final Color color;
         private final double creationProbability;
-        private final SpawnFactory spawnFactory;
+        private final OrganismFactory spawnFactory;
 
         private SpawnRule(Class<? extends Organism> organismType, Color color,
-                          double creationProbability, SpawnFactory spawnFactory) {
+                          double creationProbability, OrganismFactory spawnFactory) {
             this.organismType = organismType;
             this.color = color;
             this.creationProbability = creationProbability;
@@ -103,7 +99,7 @@ public class Populator {
         }
 
         private Organism spawn(Field field, Location location) {
-            return spawnFactory.create(field, location);
+            return spawnFactory.create(true, field, location);
         }
     }
 }

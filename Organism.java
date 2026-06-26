@@ -18,6 +18,8 @@ public abstract class Organism implements Entity {
     private Field field;
     private Location location;
     private int howLongDead;
+    private final OrganismAttributes attributes;
+    private final OrganismFactory offspringFactory;
 
     private int age;
 
@@ -31,15 +33,18 @@ public abstract class Organism implements Entity {
      * @param field The field in which this organism resides.
      * @param location The location in which this organism is spawned into.
      */
-    public Organism(boolean randomAge, Field field, Location location) {
+    public Organism(boolean randomAge, Field field, Location location,
+                    OrganismAttributes attributes, OrganismFactory offspringFactory) {
         this.howLongDead = 0;
         alive = true;
         removed = false;
         this.field = field;
+        this.attributes = attributes;
+        this.offspringFactory = offspringFactory;
         setLocation(location);
 
         if (randomAge) {
-            age = rand.nextInt(getMaxAge());
+            age = rand.nextInt(attributes.getMaxAge());
         } else {
             age = 0;
         }
@@ -148,26 +153,17 @@ public abstract class Organism implements Entity {
      */
     abstract public double getBreedingProbability();
 
-    /**
-     * Getter method for the maximum litter size of the organism's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    abstract public int getMaxLitterSize();
+    public int getMaxLitterSize() {
+        return attributes.getMaxLitterSize();
+    }
 
-    /**
-     * Getter method for the maximum age of the organism.
-     *
-     * @return An integer value representing the maximum age.
-     */
-    abstract public int getMaxAge();
+    public int getMaxAge() {
+        return attributes.getMaxAge();
+    }
 
-    /**
-     * Getter method for the age of breeding of the organism.
-     *
-     * @return A double value representing the breeding age.
-     */
-    abstract public int getBreedingAge();
+    public int getBreedingAge() {
+        return attributes.getBreedingAge();
+    }
 
     /**
      * Called when breeding occurs for this organism.
@@ -183,14 +179,6 @@ public abstract class Organism implements Entity {
     }
 
     /**
-     * Create a new instance of this organism.
-     * @param field The field in which the spawn will reside in.
-     * @param location The location in which the spawn will occupy.
-     * @return A new Organism instance.
-     */
-    abstract protected Organism createNewOrganism(Field field, Location location);
-
-    /**
      * Check whether or not this organism is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newOrganisms A list to return newly born organisms.
@@ -203,7 +191,7 @@ public abstract class Organism implements Entity {
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            newOrganisms.add(createNewOrganism(field, loc));
+            newOrganisms.add(offspringFactory.create(true, field, loc));
         }
     }
 

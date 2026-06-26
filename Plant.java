@@ -10,28 +10,25 @@ import java.util.List;
 public abstract class Plant extends Organism implements Growable, Consumable {
 
     // define fields
+    private final PlantAttributes attributes;
     private double size;
-    private final int foodValue;
-    private final boolean poisonous;
     private double growthRate;
     private double breedingProbability;
 
     /**
      * Constructor for a plant in the simulation.
      *
-     * @param poisonous Whether the plant is poisonous or not.
-     * @param foodValue The food value of this plant.
-     * @param size The initial size of this plant.
      * @param randomAge Whether the animal should have a random age or not.
      * @param field The field in which the plant resides.
      * @param location The location in which the plant spawns into.
      */
-    public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-
-        this.size = size;
-        this.foodValue = foodValue;
-        this.poisonous = poisonous;
+    public Plant(PlantAttributes attributes, boolean randomAge, Field field,
+                 Location location, OrganismFactory offspringFactory) {
+        super(randomAge, field, location, attributes, offspringFactory);
+        this.attributes = attributes;
+        this.size = attributes.getInitialSize();
+        this.growthRate = attributes.getGrowthRate();
+        this.breedingProbability = attributes.getLowBreedingProbability();
     }
 
     /**
@@ -90,7 +87,9 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return A double representing maximum size.
      */
     @Override
-    abstract public double getMaxSize();
+    public double getMaxSize() {
+        return attributes.getMaxSize();
+    }
 
     /**
      * Getter method for the maximum litter size of the plant's newborns.
@@ -98,7 +97,9 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return An integer value representing the maximum allowed litter size.
      */
     @Override
-    abstract public int getMaxLitterSize();
+    public int getMaxLitterSize() {
+        return super.getMaxLitterSize();
+    }
 
     /**
      * Checks if the plant meets specified conditions in order to breed.
@@ -127,7 +128,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public int getFoodValue() {
-        return this.foodValue;
+        return attributes.getFoodValue();
     }
 
     /**
@@ -145,7 +146,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public boolean isPoisonous() {
-        return this.poisonous;
+        return attributes.isPoisonous();
     }
 
     /**
@@ -167,9 +168,13 @@ public abstract class Plant extends Organism implements Growable, Consumable {
         return this.breedingProbability;
     }
 
-    protected abstract double getLowBreedingProbability();
-
-    protected abstract double getHighBreedingProbability();
-
     protected abstract boolean hasFavorableWeather(Weather weather);
+
+    protected double getLowBreedingProbability() {
+        return attributes.getLowBreedingProbability();
+    }
+
+    protected double getHighBreedingProbability() {
+        return attributes.getHighBreedingProbability();
+    }
 }

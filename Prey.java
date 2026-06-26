@@ -24,10 +24,10 @@ public abstract class Prey extends Animal implements Consumable {
      * @param field The field in which this prey resides.
      * @param location The location in which this prey is spawned into.
      */
-    public Prey(int foodValue, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-
-        this.foodValue = foodValue;
+    public Prey(int initialFoodValue, AnimalAttributes attributes, boolean randomAge,
+                Field field, Location location, OrganismFactory offspringFactory) {
+        super(attributes, randomAge, field, location, offspringFactory);
+        this.foodValue = initialFoodValue;
         this.activeness = DEFAULT_ACTIVENESS;
     }
 

@@ -11,6 +11,7 @@ import java.util.Random;
 public abstract class Animal extends Organism implements AbleToEat {
 
     // define fields
+    private final AnimalAttributes attributes;
     private final Gender gender; // gender of specific animal
     private boolean infected; // whether an animal has been infected or not
 
@@ -24,8 +25,10 @@ public abstract class Animal extends Organism implements AbleToEat {
      * @param field The field in which the animal resides.
      * @param location The location in which the animal spawns into.
      */
-    public Animal(boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
+    public Animal(AnimalAttributes attributes, boolean randomAge, Field field,
+                  Location location, OrganismFactory offspringFactory) {
+        super(randomAge, field, location, attributes, offspringFactory);
+        this.attributes = attributes;
 
         // randomly assign male or female
         this.gender = Gender.getRandom();
@@ -153,12 +156,21 @@ public abstract class Animal extends Organism implements AbleToEat {
      *
      * @return The animal's disease spreading probability.
      */
-    abstract protected double getDiseaseSpreadProbability();
+    protected double getDiseaseSpreadProbability() {
+        return attributes.getDiseaseSpreadProbability();
+    }
 
     /**
      * Getter method to return the probability this animal dies from disease.
      *
      * @return The animal's disease death probability.
      */
-    abstract protected double getDeathByDiseaseProbability();
+    protected double getDeathByDiseaseProbability() {
+        return attributes.getDeathByDiseaseProbability();
+    }
+
+    @Override
+    public double getBreedingProbability() {
+        return attributes.getBreedingProbability();
+    }
 }

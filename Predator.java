@@ -16,13 +16,13 @@ public abstract class Predator extends Hunter {
     /**
      * Constructor for a predator in the simulation.
      *
-     * @param foodLevel The food level of this predator.
      * @param randomAge Whether the predator should have a random age or not.
      * @param field The field in which the predator resides.
      * @param location The location in which the predator spawns into.
      */
-    public Predator(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(foodLevel, randomAge, field, location);
+    public Predator(HunterAttributes attributes, boolean randomAge, Field field,
+                    Location location, OrganismFactory offspringFactory) {
+        super(attributes, randomAge, field, location, offspringFactory);
     }
 
     /**
@@ -54,11 +54,6 @@ public abstract class Predator extends Hunter {
         return null;
     }
 
-    /**
-     * Getter method to return this predator's probability of eating if food is found.
-     *
-     * @return The predator's eating probability.
-     */
     abstract public double getEatingProbability();
 
     /**

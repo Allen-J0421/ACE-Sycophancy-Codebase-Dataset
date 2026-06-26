@@ -15,8 +15,9 @@ public abstract class Herbivore extends Prey {
      * @param field The field in which this herbivore resides.
      * @param location The location in which this herbivore is spawned into.
      */
-    public Herbivore(int foodValue, boolean randomAge, Field field, Location location) {
-        super(foodValue, randomAge, field, location);
+    public Herbivore(HerbivoreAttributes attributes, boolean randomAge, Field field,
+                     Location location, OrganismFactory offspringFactory) {
+        super(attributes.getInitialFoodValue(), attributes, randomAge, field, location, offspringFactory);
     }
 
     @Override

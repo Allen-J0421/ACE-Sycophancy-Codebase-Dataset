@@ -1,76 +1,128 @@
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Random;
 
 /**
- * Write a description of class Disease here.
+ * Models disease spread, infection progression, mortality, and immunity.
  *
- * @version (a version number or a date)
+ * @version 2022/03/02
  */
 public class Disease
 {
-    
     // The possibility that an animal may be infected by a disease.
-    public static final double INFECTION_RATE = 0.3;
+    private static final double INFECTION_RATE = 0.3;
     // The possibility an animal may die of a disease.
-    public static final double MORTALITY_RATE = 0.05;
-    // The steps an animal need to withstand in order to get immunity
-    public static final int NUMBER_OF_STEP_TO_WITHSTAND = 3;
-    // The probability that the disease may occur
-    private static final double DISEASE_OCCURENCE_PROBABILITY = 0.2;
-    
-    // Identify if a disease start to spread
+    private static final double MORTALITY_RATE = 0.05;
+    // The steps an animal needs to withstand in order to get immunity.
+    private static final int NUMBER_OF_STEPS_TO_WITHSTAND = 3;
+    // The probability that the disease may occur.
+    private static final double DISEASE_OCCURRENCE_PROBABILITY = 0.2;
+
+    private static final Random rand = Randomizer.getRandom();
+
+    // Identify if a disease has started to spread.
     private boolean isSpread;
 
     public Disease()
     {
-         isSpread = false;
+        isSpread = false;
     }
 
-   
-    public boolean getIsSpread(){
+    public boolean getIsSpread()
+    {
         return isSpread;
     }
-    
-    public void setIsSpread(boolean bl){
-        isSpread = bl;
+
+    public void setIsSpread(boolean isSpread)
+    {
+        this.isSpread = isSpread;
     }
-    
+
     /**
-     * create the source of infection
+     * Reset this disease to its initial non-spreading state.
      */
-    protected void creationSourceOfInfection(List<Creature> creatures, int step){
-       
-        if(!getIsSpread() && Randomizer.getRandom().nextDouble() <= DISEASE_OCCURENCE_PROBABILITY){
-            ArrayList<Animal> animalCollection = new ArrayList<>();
-            Iterator<Creature> it = creatures.iterator();
-            while(it.hasNext()){
-                Creature creature = it.next();
-                if(creature instanceof Animal){
-                    Animal animal = (Animal)creature;
-                        animalCollection.add(animal);
-                }
-            }
-            
-            for(Animal ani: animalCollection){
-                if(Randomizer.getRandom().nextDouble() <= 0.3){
-                    ani.setIsInfected(true);
-                    ani.infectionStartStep = step;
-                    setIsSpread(true);
+    public void reset()
+    {
+        isSpread = false;
+    }
 
-                }
-            }
-            
-
+    /**
+     * Create the source of infection if the disease starts this step.
+     * @param creatures The current simulation creatures.
+     * @param step The current simulation step.
+     */
+    protected void creationSourceOfInfection(List<Creature> creatures, int step)
+    {
+        if(isSpread || rand.nextDouble() > DISEASE_OCCURRENCE_PROBABILITY) {
+            return;
         }
 
+        for(Creature creature : creatures) {
+            if(creature instanceof Animal && rand.nextDouble() <= INFECTION_RATE) {
+                if(infect((Animal) creature, step)) {
+                    isSpread = true;
+                }
+            }
+        }
     }
-    
-   
-    
-    
-            
-}
-    
-    
 
+    /**
+     * Give an animal a chance to become infected after exposure.
+     * @param animal The exposed animal.
+     * @param step The current simulation step.
+     */
+    public void expose(Animal animal, int step)
+    {
+        if(!animal.isImmuneToDisease() && rand.nextDouble() <= INFECTION_RATE) {
+            infect(animal, step);
+        }
+    }
+
+    /**
+     * Progress an animal's infection by applying mortality and immunity rules.
+     * @param animal The animal whose infection should progress.
+     * @param step The current simulation step.
+     * @return true if the animal died from disease.
+     */
+    public boolean progressInfection(Animal animal, int step)
+    {
+        if(!animal.hasActiveInfection()) {
+            return false;
+        }
+
+        if(rand.nextDouble() <= MORTALITY_RATE) {
+            animal.dieOfDisease();
+            return true;
+        }
+
+        if(step - animal.getInfectionStartStep() >= NUMBER_OF_STEPS_TO_WITHSTAND) {
+            animal.grantDiseaseImmunity();
+        }
+        return false;
+    }
+
+    /**
+     * Update whether this disease is still spreading among the current animals.
+     * @param creatures The current simulation creatures.
+     */
+    public void updateSpreadState(List<Creature> creatures)
+    {
+        if(isSpread) {
+            isSpread = hasActiveInfections(creatures);
+        }
+    }
+
+    private boolean infect(Animal animal, int step)
+    {
+        return animal.infect(step);
+    }
+
+    private boolean hasActiveInfections(List<Creature> creatures)
+    {
+        for(Creature creature : creatures) {
+            if(creature instanceof Animal && ((Animal) creature).hasActiveInfection()) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

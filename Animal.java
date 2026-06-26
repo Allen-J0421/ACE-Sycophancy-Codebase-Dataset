@@ -31,12 +31,6 @@ public abstract class Animal extends Creature
 
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
-    // The possibility that an animal may be infected by a disease.
-    protected static final double INFECTION_RATE = 1;
-    // The possibility an animal may die of a disease.
-    protected static final double MORTALITY_RATE = 1;
-    // The steps an animal need to withstand in order to get immunity
-    protected static final int stepStandNum = 3;
 
     // If the animal is infected by disease.
     private boolean isInfected;
@@ -44,7 +38,7 @@ public abstract class Animal extends Creature
     private boolean isImmuned;
 
     // Track the first step at which the animal is infected;
-    protected int infectionStartStep;
+    private int infectionStartStep;
 
     // total population that is die of disease.
     public static int populationDieOfDisease = 0;
@@ -94,11 +88,8 @@ public abstract class Animal extends Creature
         }
 
         // If the animal dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
+        if(disease.progressInfection(this, step))
             return 0;
-
-        // Check if the animal is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
 
         incrementAge();
         incrementHunger();
@@ -204,7 +195,7 @@ public abstract class Animal extends Creature
             if(creature instanceof Animal) {
                 Animal animal = (Animal) creature;
                 if(animal.getIsInfected()) {
-                    makeInfected(disease, step);
+                    disease.expose(this, step);
                 }
             }
 
@@ -300,69 +291,41 @@ public abstract class Animal extends Creature
         return isImmuned;
     }
 
-    /**
-     * set an animal to be infected.
-     * @param isInfected 
-     */
-    public void setIsInfected(boolean isInfected){
-        this.isInfected = isInfected;
+    boolean hasActiveInfection()
+    {
+        return isInfected && !isImmuned;
     }
 
-    /**
-     * set an animal to be immuned.
-     * @param isImmuned 
-     */
-    public void setIsImmuned(boolean isImmuned){
-        this.isImmuned = isImmuned;
+    boolean isImmuneToDisease()
+    {
+        return isImmuned;
     }
 
-    /**
-     *  Make an animal infected while the disease exists.
-     *  
-     *  @param disease disease 
-     *  @param step current step.
-     */
-    protected void makeInfected(Disease disease, int step){
-        if((!this.getIsImmuned()) && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
-            setIsInfected(true);  
+    int getInfectionStartStep()
+    {
+        return infectionStartStep;
+    }
 
-        //if the animal is infected in current step, record its start step.
-        if(getIsInfected() && infectionStartStep == 0)
+    boolean infect(int step)
+    {
+        if(!isImmuned && !isInfected) {
+            isInfected = true;
             infectionStartStep = step;
-    }
-
-    /**
-     * give the animal immunity while condition is met.
-     * @param disease disease.
-     * @param step int step.
-     */
-    protected void ifCanGrantImmunity(Disease disease, int step){
-        // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
-        if(getIsInfected() && !getIsImmuned()){
-            if(step-infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND){
-                setIsImmuned(true);
-                setIsInfected(false);
-            }  
-        }
-    }
-
-    /**
-     * set an animal to death if it is die of infection.
-     * Return true if an animal dies of infection
-     * 
-     * @return true if an animal dies of infection.
-     */ 
-
-    protected boolean dieOfInfection(Disease disease){
-        // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
-        if(getIsInfected() && !getIsImmuned()){
-            if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE  ){
-                setDead();
-                populationDieOfDisease++;
-                return true;
-            }
+            return true;
         }
         return false;
+    }
+
+    void grantDiseaseImmunity()
+    {
+        isImmuned = true;
+        isInfected = false;
+    }
+
+    void dieOfDisease()
+    {
+        setDead();
+        populationDieOfDisease++;
     }
 
     

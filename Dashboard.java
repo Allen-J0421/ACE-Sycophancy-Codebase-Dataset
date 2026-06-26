@@ -20,7 +20,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
 /**
@@ -44,7 +43,7 @@ public class Dashboard
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    private HashMap<Class, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     private TreeMap<Integer, Integer> diseaseStats;
     
     private XYChart.Series series = new XYChart.Series();
@@ -69,7 +68,7 @@ public class Dashboard
      * @param counter Tracker for the population distribution of different animals
      * @param diseaseStats Tracker for the evolution of the disease
      */
-    public Dashboard(HashMap<Class, Counter> counters,TreeMap<Integer, Integer> diseaseStats)
+    public Dashboard(Map<Class<?>, Counter> counters,TreeMap<Integer, Integer> diseaseStats)
     {
         // initialise instance variables
         //renderFrame();
@@ -241,7 +240,7 @@ public class Dashboard
     {
         Platform.runLater(() -> {
             data.getData().clear();
-            for (Class key : counters.keySet()) {
+            for (Class<?> key : counters.keySet()) {
                 if(Plant.class.isAssignableFrom(key)) {
                     continue;
                 }
@@ -258,7 +257,7 @@ public class Dashboard
     {
         Platform.runLater(() -> {
             plantData.getData().clear();
-            for (Class key : counters.keySet()) {
+            for (Class<?> key : counters.keySet()) {
                 if(Animal.class.isAssignableFrom(key)) {
                     continue;
                 }

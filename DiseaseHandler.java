@@ -51,33 +51,75 @@ public class DiseaseHandler
      */
     public void simulateDiseaseStep()
     {
-        // fetch the animal per blocks eg : [block1 : [animal1,animal2, animal3]. block 2: [animal1, animal 2, animal3]...]
         List<List<Animal>> blocks = field.getAnimalsPerBlock();
         int infectionCount = 0;
         currentStep++;
         for (List<Animal> block : blocks) {
-            int densityIndex = 0;
-            List<Animal> uninfectedAnimals = new ArrayList<>();
-            for(Animal animal : block) {
-                if(animal.getInfectionTimestamp() != null && currentStep - animal.getInfectionTimestamp() < DISINFECTION_DURATION) {
-                    // increase the counter of number of animals infected within this block.
-                    densityIndex++;
-                    continue;
-                }
-                if(animal.getInfectionTimestamp() == null) {
-                    uninfectedAnimals.add(animal);
-                }
-            }
-            // compute probability of being infected.
-            double pValue = (double)((double)densityIndex/(double)block.size());
-            for(Animal animal : uninfectedAnimals) {
-                double randNumber = rand.nextDouble();
-                if(randNumber < pValue ) {
-                    animal.setInfectionTimestamp(currentStep);
-                }
-            }
-            infectionCount += densityIndex;
+            infectionCount += simulateBlock(block);
         }
         count.put(currentStep, infectionCount);
+    }
+
+    /**
+     * Simulate infection spread within a single field block.
+     *
+     * @return the number of currently infectious animals in the block.
+     */
+    private int simulateBlock(List<Animal> block)
+    {
+        int infectiousCount = 0;
+        List<Animal> susceptibleAnimals = new ArrayList<>();
+
+        for(Animal animal : block) {
+            if(isInfectious(animal)) {
+                infectiousCount++;
+            }
+            else if(isSusceptible(animal)) {
+                susceptibleAnimals.add(animal);
+            }
+        }
+
+        infectSusceptibleAnimals(susceptibleAnimals, infectionProbability(infectiousCount, block.size()));
+        return infectiousCount;
+    }
+
+    /**
+     * Determine whether an animal is actively infectious.
+     */
+    private boolean isInfectious(Animal animal)
+    {
+        return animal.getInfectionTimestamp() != null &&
+               currentStep - animal.getInfectionTimestamp() < DISINFECTION_DURATION;
+    }
+
+    /**
+     * Determine whether an animal can be infected this step.
+     */
+    private boolean isSusceptible(Animal animal)
+    {
+        return animal.getInfectionTimestamp() == null;
+    }
+
+    /**
+     * Calculate infection probability from local block density.
+     */
+    private double infectionProbability(int infectiousCount, int blockSize)
+    {
+        if(blockSize == 0) {
+            return 0.0;
+        }
+        return (double) infectiousCount / blockSize;
+    }
+
+    /**
+     * Infect susceptible animals according to a per-block probability.
+     */
+    private void infectSusceptibleAnimals(List<Animal> susceptibleAnimals, double probability)
+    {
+        for(Animal animal : susceptibleAnimals) {
+            if(rand.nextDouble() < probability) {
+                animal.setInfectionTimestamp(currentStep);
+            }
+        }
     }
 }

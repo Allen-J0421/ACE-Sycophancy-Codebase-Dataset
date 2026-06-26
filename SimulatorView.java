@@ -149,7 +149,7 @@ public class SimulatorView extends JFrame
     private JButton createDashboardButton()
     {
         JButton button = createToolbarButton("Dashboard");
-        button.addActionListener(e -> simulator.setDashboard(new Dashboard(stats.getCounters(), DiseaseHandler.count)));
+        button.addActionListener(e -> simulator.setDashboard(new Dashboard(stats.getCounters(), simulator.getDiseaseHistory())));
         return button;
     }
 

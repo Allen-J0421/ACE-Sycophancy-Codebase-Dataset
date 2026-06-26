@@ -1,3 +1,4 @@
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -18,12 +19,12 @@ public class DiseaseHandler
     private static final int DISINFECTION_DURATION = 5;
     private final Random rand = Randomizer.getRandom();
     private final Field field;
+    private final TreeMap<Integer, Integer> infectionHistory;
     
     /*///////////////////////////////////////////////////////////////
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    public static TreeMap<Integer, Integer> count;
     private int currentStep;
     
     /*///////////////////////////////////////////////////////////////
@@ -36,8 +37,8 @@ public class DiseaseHandler
      */
     public DiseaseHandler(Field field)
     {
-        count = new TreeMap<>();
         this.field = field;
+        infectionHistory = new TreeMap<>();
         currentStep = 0;
     }
     
@@ -78,6 +79,16 @@ public class DiseaseHandler
             }
             infectionCount += densityIndex;
         }
-        count.put(currentStep, infectionCount);
+        infectionHistory.put(currentStep, infectionCount);
+    }
+
+    /**
+     * Expose the accumulated infection history for reporting.
+     *
+     * @return the infection history by step.
+     */
+    public Map<Integer, Integer> getInfectionHistory()
+    {
+        return infectionHistory;
     }
 }

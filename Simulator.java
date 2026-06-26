@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 /**
  * A simple predator-prey simulator, based on a rectangular field
  * containing rabbits and foxes.
@@ -90,6 +91,14 @@ public class Simulator
      */
     public void setDashboard(Dashboard newDashboard) {
         this.dashboard = newDashboard;
+    }
+
+    /**
+     * @return the disease infection history accumulated so far.
+     */
+    public Map<Integer, Integer> getDiseaseHistory()
+    {
+        return diseaseHandler.getInfectionHistory();
     }
     
     /*///////////////////////////////////////////////////////////////

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class NaivePatternSearch implements PatternSearcher {
+final class NaivePatternSearch implements PatternSearcher {
 
-    public static final PatternSearcher INSTANCE = new NaivePatternSearch();
+    static final PatternSearcher INSTANCE = new NaivePatternSearch();
 
     private NaivePatternSearch() {
         // Singleton instance.

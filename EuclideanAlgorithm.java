@@ -1,4 +1,4 @@
-final class EuclideanAlgorithm {
+public final class EuclideanAlgorithm {
 
     private static final int EXAMPLE_FIRST_NUMBER = 35;
     private static final int EXAMPLE_SECOND_NUMBER = 15;

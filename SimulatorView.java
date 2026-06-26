@@ -1,6 +1,17 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridLayout;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,7 +39,7 @@ public class SimulatorView extends JFrame
     private final String INFECTED_PREFIX = "Infected: ";
     private final String IMMUNE_PREFIX = "Immune: ";
     
-    private JLabel stepLabel, population, infoLabel, timeLabel, 
+    private JLabel stepLabel, population, timeLabel, 
                    weatherLabel, infectedLabel, immuneLabel;
     
     // The view of the simulation.
@@ -38,7 +49,7 @@ public class SimulatorView extends JFrame
     private JPanel classKey;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     
     // A statistics object computing and storing simulation information
     private FieldStats stats;
@@ -171,7 +182,7 @@ public class SimulatorView extends JFrame
      * @param classColor The color to be used for the given class.
      * @param textColor The color to be used for the text in the class key.
      */
-    public void setColor(Class newClass, Color classColor, Color textColor)
+    public void setColor(Class<?> newClass, Color classColor, Color textColor)
     {
         colors.put(newClass, classColor);
         
@@ -193,7 +204,7 @@ public class SimulatorView extends JFrame
      * 
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -212,62 +223,13 @@ public class SimulatorView extends JFrame
      */
     public void showStatus(Field field)
     {
-        if(!isVisible()) {
-            setVisible(true);
-        }
-            
-        stepLabel.setText(STEP_PREFIX + Time.getStep());
-        timeLabel.setText(TIME_PREFIX + getTimeString());
-        weatherLabel.setText(WEATHER_PREFIX + Weather.getWeather() + "  ");
-        
-        fieldView.preparePaint();
-        
-        // Used to tally up the respective counts.
-        int numberOfInfected = 0;
-        int numberOfImmune = 0;
-        
-        for(int row = 0; row < field.getDepth(); row++) 
-        {
-            for(int col = 0; col < field.getWidth(); col++) 
-            {
-                Animal animal = (Animal) field.getObjectAt(row, col, Animal.class);
-                Plant plant = (Plant) field.getObjectAt(row, col, Plant.class);
-                
-                if(animal != null) 
-                {
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
-                    
-                    // Update the infected and immune counts
-                    if (animal.getIsInfected())
-                    {
-                        numberOfInfected++;
-                    }
-                    
-                    if (animal.getIsImmune())
-                    {
-                        numberOfImmune++;
-                    }
-                }
-                // Only show the plant if an animal is not present
-                else if(plant != null) 
-                {
-                    fieldView.drawMark(col, row, getColor(plant.getClass()));
-                }
-                else 
-                {
-                    Color emptyColor = EMPTY_COLOR;
-                    fieldView.drawMark(col, row, emptyColor);
-                    fieldView.setBackground(emptyColor);
-                }
-                
-            }
-        }
+        ensureVisible();
+        updateStatusLabels();
 
-        infectedLabel.setText(INFECTED_PREFIX + numberOfInfected);
-        immuneLabel.setText(IMMUNE_PREFIX + numberOfImmune);
-
+        FieldStatus fieldStatus = renderField(field);
+        infectedLabel.setText(INFECTED_PREFIX + fieldStatus.getNumberOfInfected());
+        immuneLabel.setText(IMMUNE_PREFIX + fieldStatus.getNumberOfImmune());
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
-        fieldView.repaint();
     }
 
     /**
@@ -300,110 +262,95 @@ public class SimulatorView extends JFrame
             }
         }
     }
-    
+
     /**
-     * Provide a graphical view of a rectangular field. This is 
-     * a nested class (a class defined inside a class) which
-     * defines a custom component for the user interface. This
-     * component displays the field.
+     * Ensure the window is visible before drawing.
      */
-    private class FieldView extends JPanel
+    private void ensureVisible()
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
-
-        private int gridWidth, gridHeight;
-        private double xScale, yScale;
-        Dimension size;
-        private Graphics g;
-        private Image fieldImage;
-
-        /**
-         * Create a new FieldView component.
-         */
-        public FieldView(int height, int width)
-        {
-            gridHeight = height;
-            gridWidth = width;
-            size = new Dimension(0, 0);
+        if(!isVisible()) {
+            setVisible(true);
         }
+    }
 
-        /**
-         * Tell the GUI manager how big we would like to be.
-         * 
-         * @return Dimensions
-         */
-        public Dimension getPreferredSize()
-        {
-            return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
-                                 gridHeight * GRID_VIEW_SCALING_FACTOR);
-        }
+    /**
+     * Update the labels that describe the current simulation state.
+     */
+    private void updateStatusLabels()
+    {
+        stepLabel.setText(STEP_PREFIX + Time.getStep());
+        timeLabel.setText(TIME_PREFIX + getTimeString());
+        weatherLabel.setText(WEATHER_PREFIX + Weather.getWeather() + "  ");
+    }
 
-        /**
-         * Prepare for a new round of painting. Since the component
-         * may be resized, compute the scaling factor again.
-         */
-        public void preparePaint()
-        {
-            if(! size.equals(getSize())) {  // if the size has changed...
-                size = getSize();
-                fieldImage = fieldView.createImage(size.width, size.height);
-                g = fieldImage.getGraphics();
-            
-                xScale = size.width / gridWidth;
-                if(xScale < 1) {
-                    xScale = GRID_VIEW_SCALING_FACTOR;
-                }
-                yScale = size.height / gridHeight;
-                if(yScale < 1) {
-                    yScale = GRID_VIEW_SCALING_FACTOR;
-                }
-                
-                // Makes sure that the grid remains in proportion
-                // (the grid squares remain as squares)
-                if(xScale > yScale) {
-                    xScale = yScale;
-                }
-                else if(xScale < yScale) {
-                    yScale = xScale;
-                }
-            }
-        }
-        
-        /**
-         * Paint on grid location on this field in a given color.
+    /**
+     * Render the field and collect infected and immune counts while doing so.
+     */
+    private FieldStatus renderField(Field field)
+    {
+        fieldView.beginFrame(EMPTY_COLOR);
 
-         * @param x X-position to draw the mark
-         * @param y Y-position to draw the mark
-         * @param color The colour to draw the mark
-         */
-        private void drawMark(int x, int y, Color color)
-        {
-            g.setColor(color);
-            g.fillRect((int)(x * xScale), (int)(y * yScale) , (int)(xScale - 1.0), (int)(yScale - 1.0));
-        }
+        int numberOfInfected = 0;
+        int numberOfImmune = 0;
 
-        /**
-         * The field view component needs to be redisplayed. Copy the
-         * internal image to screen.
-         * 
-         * @param g Graphics
-         */
-        public void paintComponent(Graphics g)
+        for(int row = 0; row < field.getDepth(); row++) 
         {
-            if(fieldImage != null) 
+            for(int col = 0; col < field.getWidth(); col++) 
             {
-                Dimension currentSize = getSize();
-                
-                if(size.equals(currentSize)) 
+                Animal animal = field.getObjectAt(row, col, Animal.class);
+                Plant plant = field.getObjectAt(row, col, Plant.class);
+
+                if(animal != null) 
                 {
-                    g.drawImage(fieldImage, 0, 0, null);
+                    fieldView.drawCell(col, row, getColor(animal.getClass()));
+
+                    if (animal.getIsInfected())
+                    {
+                        numberOfInfected++;
+                    }
+
+                    if (animal.getIsImmune())
+                    {
+                        numberOfImmune++;
+                    }
+                }
+                else if(plant != null) 
+                {
+                    fieldView.drawCell(col, row, getColor(plant.getClass()));
                 }
                 else 
                 {
-                    // Rescale the previous image.
-                    g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);
+                    fieldView.drawCell(col, row, EMPTY_COLOR);
                 }
             }
+        }
+
+        fieldView.endFrame();
+        return new FieldStatus(numberOfInfected, numberOfImmune);
+    }
+
+    /**
+     * Simple value object describing the rendered field state.
+     */
+    private static class FieldStatus
+    {
+        private final int numberOfInfected;
+        private final int numberOfImmune;
+
+        private FieldStatus(int numberOfInfected, int numberOfImmune)
+        {
+            this.numberOfInfected = numberOfInfected;
+            this.numberOfImmune = numberOfImmune;
+        }
+
+        private int getNumberOfInfected()
+        {
+            return numberOfInfected;
+        }
+
+        private int getNumberOfImmune()
+        {
+            return numberOfImmune;
         }
     }
 }

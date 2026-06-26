@@ -1,9 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-import java.util.HashMap;
 /**
  * An extension of the Animal Class that can only eat a specified type of animals
  *
@@ -36,6 +32,34 @@ public abstract class CarnivoreAnimal extends Animal
                             )
     {
         super(randomAge,field, location, gender, baseLevel, maxLevel);
+    }
+
+    /**
+     * Apply the standard carnivore step: age, hunger, breed, hunt prey, then move.
+     *
+     * @param newAnimals List of newborn animals.
+     * @param maxAge Maximum age for this species.
+     * @param maxLitterSize Maximum number of newborns per birth event.
+     * @param breedingProbability Probability of breeding this step.
+     * @param breedingAge Minimum age required for breeding.
+     * @param preys Animal classes this species can eat.
+     * @return true when prey was eaten during the step.
+     */
+    protected boolean actAsCarnivore(List<Actor> newAnimals,
+                                     int maxAge,
+                                     int maxLitterSize,
+                                     double breedingProbability,
+                                     int breedingAge,
+                                     List<Class<? extends Animal>> preys)
+    {
+        if(!surviveStep(maxAge)) {
+            return false;
+        }
+
+        meet(newAnimals, maxLitterSize, breedingProbability, breedingAge);
+        Location foodLocation = findFood(preys);
+        moveOrDie(foodLocation);
+        return foodLocation != null;
     }
     
     /**

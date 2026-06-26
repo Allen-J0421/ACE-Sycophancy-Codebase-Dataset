@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.HashMap;
 /**
  * A minimalist implementation of a Bear, a bear can only eat other animals and not plants,
  * only the act method is unique to the bear.
@@ -60,30 +59,14 @@ public class Bear extends CarnivoreAnimal
     {
         // Bear will not act at night.
         if(dayState == DayState.NIGHT) {
-                return;
+            return;
         }
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive()) {
-            if(weather == Weather.SNOW) {
-                meet(newBears, MAX_LITTER_SIZE,HIBERNATION_BREEDING_FACTOR * BREEDING_PROBABILITY, BREEDING_AGE);
-            } else {
-                meet(newBears, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);
-            }       
-            Location newLocation = findFood(PREY_DIET);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {  
-                // Overcrowding.
-                setDead();
-            }
+
+        double breedingProbability = BREEDING_PROBABILITY;
+        if(weather == Weather.SNOW) {
+            breedingProbability *= HIBERNATION_BREEDING_FACTOR;
         }
+        actAsCarnivore(newBears, MAX_AGE, MAX_LITTER_SIZE, breedingProbability, BREEDING_AGE, PREY_DIET);
     }
     
     /**

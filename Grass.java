@@ -44,18 +44,6 @@ public class Grass extends Plant
      */
     @Override
     public void act(List<Actor> newPlants, Weather weather, DayState dayState) {
-        if(dayState == DayState.NIGHT) {
-            return;
-        }
-        grow(MAX_AGE);
-        if(!isAlive()) {
-            return;
-        }
-        // Change behaviour of grass depending on the weather.
-        if (weather == Weather.RAIN || weather == Weather.SUNNY) {
-            multiply((double)OPTIMAL_BREEDING_FACTOR * MULTIPLY_PROBABILITY, newPlants);
-            return;
-        }
-        multiply(MULTIPLY_PROBABILITY, newPlants);
+        growAndMultiply(newPlants, weather, dayState, MAX_AGE, MULTIPLY_PROBABILITY, OPTIMAL_BREEDING_FACTOR);
     }
 }

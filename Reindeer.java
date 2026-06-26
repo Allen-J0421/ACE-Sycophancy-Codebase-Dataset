@@ -49,25 +49,7 @@ public class Reindeer extends HerbivoreAnimal
      */
     public void act(List<Actor> newReindeers, Weather weather, DayState dayState) 
     {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(!isAlive()) {
-            return;
-        }
-        meet(newReindeers, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);
-        Location newLocation = findFood(TARGET_PLANTS);
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }   
+        actAsHerbivore(newReindeers, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, TARGET_PLANTS);
     }
     
     /**

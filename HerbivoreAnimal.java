@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
 /**
@@ -28,6 +26,31 @@ public abstract class HerbivoreAnimal extends Animal
     public HerbivoreAnimal(boolean randomAge,Field field, Location location, Gender gender, int baseLevel, int maxAge)
     {
         super(randomAge, field, location, gender, baseLevel, maxAge);
+    }
+
+    /**
+     * Apply the standard herbivore step: age, hunger, breed, eat plants, then move.
+     *
+     * @param newAnimals List of newborn animals.
+     * @param maxAge Maximum age for this species.
+     * @param maxLitterSize Maximum number of newborns per birth event.
+     * @param breedingProbability Probability of breeding this step.
+     * @param breedingAge Minimum age required for breeding.
+     * @param targetPlants Plant classes this species can eat.
+     */
+    protected void actAsHerbivore(List<Actor> newAnimals,
+                                  int maxAge,
+                                  int maxLitterSize,
+                                  double breedingProbability,
+                                  int breedingAge,
+                                  List<Class<? extends Plant>> targetPlants)
+    {
+        if(!surviveStep(maxAge)) {
+            return;
+        }
+
+        meet(newAnimals, maxLitterSize, breedingProbability, breedingAge);
+        moveOrDie(findFood(targetPlants));
     }
     
     /**

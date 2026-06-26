@@ -1,6 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
-import java.util.HashMap;
 /**
  * A minimalist implementation of a Wolverine, a bear can only eat other animals and not plants,
  * only the act method is unique to the Wolverine.
@@ -58,24 +56,7 @@ public class Wolverine extends CarnivoreAnimal
      */
     public void act(List<Actor> newWolverines, Weather weather, DayState dayState)
     {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive()) {
-            meet(newWolverines, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);          
-            Location newLocation = findFood(PREY_DIET);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
+        actAsCarnivore(newWolverines, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, PREY_DIET);
     }
     
     /**

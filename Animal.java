@@ -82,6 +82,40 @@ public abstract class Animal implements Actor
             setDead();  
         }
     }
+
+    /**
+     * Apply the shared per-step lifecycle updates for an animal.
+     *
+     * @param maxAge The maximum age of the animal before it dies.
+     * @return true if the animal is still alive after aging and hunger updates.
+     */
+    protected boolean surviveStep(int maxAge)
+    {
+        incrementAge(maxAge);
+        incrementHunger();
+        return isAlive();
+    }
+
+    /**
+     * Move to the supplied location, fall back to a free adjacent location, or die
+     * when the animal is boxed in.
+     *
+     * @param preferredLocation The location selected by feeding behavior.
+     */
+    protected void moveOrDie(Location preferredLocation)
+    {
+        Location newLocation = preferredLocation;
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
+    }
     
     /**
      * Make this animal act - that is: make it do

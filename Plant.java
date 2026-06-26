@@ -123,6 +123,52 @@ public abstract class Plant implements Actor
             }
         }
     }
+
+    /**
+     * Apply the standard plant step: skip nights, grow, then spread faster in
+     * favorable weather.
+     *
+     * @param newPlants List of newly generated plants.
+     * @param weather The current weather.
+     * @param dayState The current day state.
+     * @param maxAge Maximum age for this plant species.
+     * @param multiplyProbability Base probability of spreading to a free adjacent cell.
+     * @param optimalBreedingFactor Multiplier used in rain and sunny weather.
+     */
+    protected void growAndMultiply(List<Actor> newPlants,
+                                   Weather weather,
+                                   DayState dayState,
+                                   int maxAge,
+                                   double multiplyProbability,
+                                   double optimalBreedingFactor)
+    {
+        if(dayState == DayState.NIGHT) {
+            return;
+        }
+
+        grow(maxAge);
+        if(!isAlive()) {
+            return;
+        }
+
+        if(isOptimalGrowingWeather(weather)) {
+            multiply(optimalBreedingFactor * multiplyProbability, newPlants);
+            return;
+        }
+
+        multiply(multiplyProbability, newPlants);
+    }
+
+    /**
+     * Weather that improves plant spreading.
+     *
+     * @param weather The current weather.
+     * @return true for favorable weather.
+     */
+    private boolean isOptimalGrowingWeather(Weather weather)
+    {
+        return weather == Weather.RAIN || weather == Weather.SUNNY;
+    }
     
     /*///////////////////////////////////////////////////////////////
                           ACCESSOR AND MUTATORS

@@ -45,21 +45,23 @@ public final class EuclideanAlgorithmsTest {
 
     private static void verifyRunCases() {
         String usage = EuclideanAlgorithms.usageText();
+        String usageOutput = usage + "\n";
         RunCase[] cases = {
             runCase(new String[0], 0, "5\n", "", "run uses default operands"),
-            runCase(new String[] {"--help"}, 0, usage + "\n", "", "run prints usage for help"),
+            runCase(new String[] {"--help"}, 0, usageOutput, "", "run prints usage for --help"),
+            runCase(new String[] {"-h"}, 0, usageOutput, "", "run prints usage for -h"),
             runCase(
                 new String[] {"abc", "10"},
                 1,
                 "",
-                "Invalid integer: abc\n" + usage + "\n",
+                "Invalid integer: abc\n" + usageOutput,
                 "run reports invalid input"
             ),
             runCase(
                 new String[] {"1"},
                 1,
                 "",
-                "Expected either zero arguments or exactly two integers.\n" + usage + "\n",
+                "Expected either zero arguments or exactly two integers.\n" + usageOutput,
                 "run rejects partial input"
             ),
             runCase(

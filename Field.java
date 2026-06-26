@@ -15,7 +15,7 @@ public class Field
 {
     // A random number generator for providing random locations.
     private static final Random rand = Randomizer.getRandom();
-    
+
     // The depth and width of the field.
     private int depth, width;
     // Storage for the creatures.
@@ -32,7 +32,7 @@ public class Field
         this.width = width;
         field = new Object[depth][width];
     }
-    
+
     /**
      * Empty the field.
      */
@@ -44,7 +44,7 @@ public class Field
             }
         }
     }
-    
+
     /**
      * Clear the given location.
      * @param location The location to clear.
@@ -53,11 +53,10 @@ public class Field
     {
         field[location.getRow()][location.getCol()] = null;
     }
-    
+
     /**
      * Place a creature at the given location.
-     * If there is already a creature at the location it will
-     * be lost.
+     * If there is already a creature at the location it will be lost.
      * @param creature The creature to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
@@ -66,11 +65,10 @@ public class Field
     {
         place(creature, new Location(row, col));
     }
-    
+
     /**
-     * Place an creature at the given location.
-     * If there is already an creature at the location it will
-     * be lost.
+     * Place a creature at the given location.
+     * If there is already a creature at the location it will be lost.
      * @param creature The creature to be placed.
      * @param location Where to place the creature.
      */
@@ -78,7 +76,7 @@ public class Field
     {
         field[location.getRow()][location.getCol()] = creature;
     }
-    
+
     /**
      * Return the creature at the given location, if any.
      * @param location Where in the field.
@@ -88,7 +86,7 @@ public class Field
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
-    
+
     /**
      * Return the creature at the given location, if any.
      * @param row The desired row.
@@ -99,12 +97,10 @@ public class Field
     {
         return field[row][col];
     }
-    
+
     /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
+     * Generate a random location that is adjacent to the given location, or is the same location.
+     * The returned location will be within the valid bounds of the field.
      * @param location The location from which to generate an adjacency.
      * @return A valid location within the grid area.
      */
@@ -113,7 +109,7 @@ public class Field
         List<Location> adjacent = adjacentLocations(location, 1);
         return adjacent.get(0);
     }
-    
+
     /**
      * Get a shuffled list of the free adjacent locations.
      * @param location Get locations adjacent to this.
@@ -130,148 +126,121 @@ public class Field
         }
         return free;
     }
-    
+
     /**
-     * Try to find a free location that is adjacent to the
-     * given location. If there is none, return null.
-     * The returned location will be within the valid bounds
-     * of the field.
+     * Try to find a free location adjacent to the given location.
      * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
+     * @return A valid free location, or null if none exists.
      */
     public Location freeAdjacentLocation(Location location)
     {
-        // The available free ones.
-         List<Location> free = getFreeAdjacentLocations(location);
-        if(free.size() > 0) {
-            return free.get(0);
-        }
-        else {
-            return null;
-        }
+        List<Location> free = getFreeAdjacentLocations(location);
+        return free.size() > 0 ? free.get(0) : null;
     }
 
-   
     /**
-     * Return a shuffled list of locations adjacent to the given one.
-     * The list will INCLUDE the location itself.
-     * All locations will lie within the grid.
-     * 
+     * Return a shuffled list of locations adjacent to the given one (excluding self).
+     * All locations lie within the grid.
      * @param location The location from which to generate adjacencies.
-     * @return A list of locations adjacent to that given.
-     */
-    public List<Location> adjacentLocationsIncludingSelf(Location location, int adjacentDistance)
-    {
-        assert location != null : "Null location passed to adjacentLocations";
-        // The list of locations to be returned.
-        List<Location> locations = new LinkedList<>();
-        if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
-            for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
-                int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
-                    }
-                }
-            }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
-            Collections.shuffle(locations, rand);
-        }
-        return locations;
-    }
-    
-    /**
-     * Return a shuffled list of locations adjacent to the given one.
-     * The list will not include the location itself.
-     * All locations will lie within the grid.
-     * @param location The location from which to generate adjacencies.
-     * @return A list of locations adjacent to that given.
+     * @param adjacentDistance The search radius.
+     * @return A shuffled list of adjacent locations.
      */
     public List<Location> adjacentLocations(Location location, int adjacentDistance)
     {
-        assert location != null : "Null location passed to adjacentLocations";
-        // The list of locations to be returned.
-        List<Location> locations = new LinkedList<>();
-        if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
-            for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
-                int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
-                    }
-                }
-            }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
-            Collections.shuffle(locations, rand);
-        }
-        return locations;
+        return buildAdjacentLocations(location, adjacentDistance, false);
+    }
+
+    /**
+     * Return a shuffled list of locations adjacent to the given one, including the location itself.
+     * All locations lie within the grid.
+     * @param location The location from which to generate adjacencies.
+     * @param adjacentDistance The search radius.
+     * @return A shuffled list of adjacent locations including the origin.
+     */
+    public List<Location> adjacentLocationsIncludingSelf(Location location, int adjacentDistance)
+    {
+        return buildAdjacentLocations(location, adjacentDistance, true);
     }
 
     /**
      * Return the depth of the field.
-     * @return The depth of the field.
      */
     public int getDepth()
     {
         return depth;
     }
-    
+
     /**
      * Return the width of the field.
-     * @return The width of the field.
      */
     public int getWidth()
     {
         return width;
     }
+
     /**
-     * Generate a random location from the field.
-     * Using randomWidth and randomDepth to create an instance of Location.
-     * @return Location a random location.
+     * Generate a random location within the field.
+     * @return A random Location with valid row and column coordinates.
      */
-     public Location generateRandomLocation()
+    public Location generateRandomLocation()
     {
-       int randomWidth = rand.nextInt(width);
-       int randomDepth = rand.nextInt(depth);
-       
-       return new Location(randomWidth, randomDepth);
-         
+        int randomRow = rand.nextInt(depth);
+        int randomCol = rand.nextInt(width);
+        return new Location(randomRow, randomCol);
     }
+
     /**
-     * Create a list and holds all objects that is adjacent to this specific location.
-     * @param location The location from which to generate adjacencies.
-     * @param adjacentDistance used to Controls the range to which this method can search in the field.
-     * @return a list of adjacent objects.
+     * Return a list of all non-null objects within adjacentDistance of location (inclusive).
+     * @param location The centre of the search area.
+     * @param adjacentDistance The search radius.
+     * @return A list of objects found in the search area.
      */
     public List<Object> getAllObjectAt(Location location, int adjacentDistance)
     {
         List<Object> adjacentObjectList = new ArrayList();
-        
         List<Location> adjacent = adjacentLocationsIncludingSelf(location, adjacentDistance);
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
-            Location where = it.next();
-            Object adjacentObject = getObjectAt(where);
+            Object adjacentObject = getObjectAt(it.next());
             if(adjacentObject != null) {
-            adjacentObjectList.add(adjacentObject);
+                adjacentObjectList.add(adjacentObject);
             }
         }
         return adjacentObjectList;
+    }
+
+    // -----------------------------------------------------------------------
+    // Private helpers
+    // -----------------------------------------------------------------------
+
+    /**
+     * Build a shuffled list of grid locations within adjacentDistance of the given location.
+     * @param location  The origin.
+     * @param distance  The search radius.
+     * @param includeSelf  Whether to include the origin itself.
+     * @return A shuffled list of matching locations within the field bounds.
+     */
+    private List<Location> buildAdjacentLocations(Location location, int distance, boolean includeSelf)
+    {
+        assert location != null : "Null location passed to adjacentLocations";
+        List<Location> locations = new LinkedList<>();
+        if(location != null) {
+            int row = location.getRow();
+            int col = location.getCol();
+            for(int roffset = -distance; roffset <= distance; roffset++) {
+                int nextRow = row + roffset;
+                if(nextRow >= 0 && nextRow < depth) {
+                    for(int coffset = -distance; coffset <= distance; coffset++) {
+                        int nextCol = col + coffset;
+                        if(nextCol >= 0 && nextCol < width
+                                && (includeSelf || roffset != 0 || coffset != 0)) {
+                            locations.add(new Location(nextRow, nextCol));
+                        }
+                    }
+                }
+            }
+            Collections.shuffle(locations, rand);
+        }
+        return locations;
     }
 }

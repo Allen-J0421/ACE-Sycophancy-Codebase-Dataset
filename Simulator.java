@@ -42,14 +42,13 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
+        speciesCatalog = new SpeciesCatalog();
         field = new Field(depth, width);
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(depth, width, speciesCatalog);
         simulationState = new SimulationState(WeatherType.SUN, TimeOfDay.SUNRISE);
-        speciesCatalog = new SpeciesCatalog();
         population = new OrganismPopulation(new Populator(speciesCatalog));
-        view.registerSpecies(speciesCatalog);
 
         // Setup a valid starting point
         reset();

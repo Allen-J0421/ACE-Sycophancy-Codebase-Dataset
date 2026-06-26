@@ -6,6 +6,7 @@ import java.awt.Color;
 public class SpeciesDefinition {
 
     private final Class<? extends Organism> organismType;
+    private final String displayName;
     private final Color color;
     private final double creationProbability;
     private final OrganismFactory factory;
@@ -13,6 +14,7 @@ public class SpeciesDefinition {
     public SpeciesDefinition(Class<? extends Organism> organismType, Color color,
                              double creationProbability, OrganismFactory factory) {
         this.organismType = organismType;
+        this.displayName = organismType.getSimpleName();
         this.color = color;
         this.creationProbability = creationProbability;
         this.factory = factory;
@@ -24,6 +26,10 @@ public class SpeciesDefinition {
 
     public Color getColor() {
         return color;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public double getCreationProbability() {

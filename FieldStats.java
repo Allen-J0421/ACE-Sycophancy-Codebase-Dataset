@@ -9,6 +9,7 @@ import java.util.HashMap;
  */
 public class FieldStats
 {
+    private final SpeciesCatalog speciesCatalog;
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
     private HashMap<Class<? extends Organism>, Counter> counters;
     // Whether the counters are currently up to date.
@@ -17,8 +18,9 @@ public class FieldStats
     /**
      * Construct a FieldStats object.
      */
-    public FieldStats()
+    public FieldStats(SpeciesCatalog speciesCatalog)
     {
+        this.speciesCatalog = speciesCatalog;
         // Set up a collection for counters for each type of animal that
         // we might find
         counters = new HashMap<>();
@@ -68,7 +70,7 @@ public class FieldStats
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(animalClass.getName());
+            count = new Counter(speciesCatalog.getDisplayName(animalClass));
             counters.put(animalClass, count);
         }
         count.increment();

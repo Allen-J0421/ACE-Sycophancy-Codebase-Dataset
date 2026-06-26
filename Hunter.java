@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -10,9 +9,7 @@ import java.util.function.Predicate;
  *
  * @version 2022.03.02
  */
-public abstract class Hunter extends Animal {
-
-    private static final Random rand = Randomizer.getRandom();
+public abstract class Hunter extends ForagingAnimal {
 
     private final HunterAttributes attributes;
     private int foodLevel;
@@ -43,22 +40,12 @@ public abstract class Hunter extends Animal {
                 return;
             }
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
+            if (diesFromDiseaseThisTurn()) {
                 remove();
                 return;
             }
 
-            Location newLocation = chooseTargetLocation();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                remove();
-            }
+            moveToTargetOrRemove(chooseTargetLocation());
         }
     }
 
@@ -79,13 +66,6 @@ public abstract class Hunter extends Animal {
         if (foodLevel <= 0) {
             remove();
         }
-    }
-
-    private Location chooseTargetLocation() {
-        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
-            return findAnimalToInfect();
-        }
-        return findFood();
     }
 
     protected boolean isRestingTime(TimeOfDay time) {

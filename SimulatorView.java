@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * A graphical view of the simulation grid.
@@ -30,8 +28,7 @@ public class SimulatorView extends JFrame
     private JLabel stepLabel, population, infoLabel, timeLabel, environmentLabel;
     private FieldView fieldView;
     
-    // A map for storing colors for participants in the simulation
-    private Map<Class<? extends Organism>, Color> colors;
+    private final SpeciesCatalog speciesCatalog;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -40,10 +37,10 @@ public class SimulatorView extends JFrame
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width)
+    public SimulatorView(int height, int width, SpeciesCatalog speciesCatalog)
     {
-        stats = new FieldStats();
-        colors = new LinkedHashMap<>();
+        this.speciesCatalog = speciesCatalog;
+        stats = new FieldStats(speciesCatalog);
 
         setTitle("Predator Prey Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -73,22 +70,6 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Define a color to be used for a given class of animal.
-     * @param animalClass The animal's Class object.
-     * @param color The color to be used for the given class.
-     */
-    public void setColor(Class<? extends Organism> animalClass, Color color)
-    {
-        colors.put(animalClass, color);
-    }
-
-    public void registerSpecies(SpeciesCatalog speciesCatalog) {
-        for (SpeciesDefinition speciesDefinition : speciesCatalog.getDefinitions()) {
-            setColor(speciesDefinition.getOrganismType(), speciesDefinition.getColor());
-        }
-    }
-
-    /**
      * Display a short information label at the top of the window.
      */
     public void setInfoText(String text)
@@ -101,7 +82,7 @@ public class SimulatorView extends JFrame
      */
     private Color getColor(Class<? extends Organism> animalClass)
     {
-        Color col = colors.get(animalClass);
+        Color col = speciesCatalog.getColor(animalClass);
         if(col == null) {
             // no color defined for this class
             return UNKNOWN_COLOR;

@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @version 2022.03.02
  */
-public abstract class Prey extends Animal implements Consumable {
+public abstract class Prey extends ForagingAnimal implements Consumable {
 
     // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
@@ -45,23 +45,13 @@ public abstract class Prey extends Animal implements Consumable {
         if(isAlive()) {
             giveBirth(newPrey);
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
+            if (diesFromDiseaseThisTurn()) {
                 remove();
                 return;
             }
 
             if (rand.nextDouble() <= getActiveness()){
-                Location newLocation = chooseTargetLocation();
-                if ((newLocation == null) || (getFoodValue() > 10)) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    remove();
-                }
+                moveToTargetOrRemove(chooseTargetLocation());
             }
         } else {
             decayifDead();
@@ -155,14 +145,12 @@ public abstract class Prey extends Animal implements Consumable {
         return null;
     }
 
-    private Location chooseTargetLocation() {
-        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
-            return findAnimalToInfect();
-        }
-        return findFood();
-    }
-
     protected double getActivenessFor(TimeOfDay time) {
         return DEFAULT_ACTIVENESS;
+    }
+
+    @Override
+    protected boolean shouldUseFallbackLocation(Location targetLocation) {
+        return targetLocation == null || getFoodValue() > 10;
     }
 }

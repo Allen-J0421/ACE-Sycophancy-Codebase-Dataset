@@ -9,7 +9,7 @@ import java.util.List;
  */
 public abstract class Plant extends Organism implements Growable, Consumable {
 
-    // define fields
+    private final PlantTraits traits;
     private double size;
     private final int foodValue;
     private final boolean poisonous;
@@ -19,112 +19,52 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     /**
      * Constructor for a plant in the simulation.
      *
+     * @param traits    Species-level configuration for this plant.
      * @param poisonous Whether the plant is poisonous or not.
-     * @param foodValue The food value of this plant.
-     * @param size The initial size of this plant.
-     * @param randomAge Whether the animal should have a random age or not.
-     * @param field The field in which the plant resides.
-     * @param location The location in which the plant spawns into.
+     * @param foodValue The food value of this plant when eaten.
+     * @param size      The initial size of this plant.
+     * @param randomAge Whether the plant should have a random age or not.
+     * @param field     The field in which the plant resides.
+     * @param location  The location in which the plant spawns into.
      */
-    public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field, Location location) {
+    public Plant(PlantTraits traits, boolean poisonous, int foodValue, double size,
+                 boolean randomAge, Field field, Location location) {
         super(randomAge, field, location);
-
-        this.size = size;
+        this.traits    = traits;
+        this.size      = size;
         this.foodValue = foodValue;
         this.poisonous = poisonous;
+        this.growthRate         = traits.growthRate;
+        this.breedingProbability = traits.lowBreedingProbability;
     }
 
-    /**
-     * Abstract method for what the plant does, i.e. what is always run at every step.
-     *
-     * @param newPlants A list of all newborn plants in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    abstract public void act(List<Entity> newPlants, Weather weather, TimeOfDay time);
+    // ── Organism stat getters (satisfied here so subclasses need not override) ──
 
-    /**
-     * Grow in size in accordance with the current growth rate.
-     */
+    @Override public int    getMaxAge()        { return traits.maxAge; }
+    @Override public int    getBreedingAge()   { return traits.breedingAge; }
+    @Override public int    getMaxLitterSize() { return traits.maxLitterSize; }
+
+    @Override
+    public double getBreedingProbability() { return breedingProbability; }
+
+    // ── Growable interface ─────────────────────────────────────────────────────
+
+    @Override public double getMaxSize()                   { return traits.maxSize; }
+    @Override public double getSize()                      { return size; }
+    @Override public double getGrowthRate()                { return growthRate; }
+    @Override public void   setGrowthRate(double rate)     { growthRate = rate; }
+
     @Override
     public void grow() {
-        size = size*getGrowthRate() > getMaxSize() ? 1 : size*getGrowthRate();
-        if (size == 0) {
-            remove();
-        }
+        size = size * growthRate > traits.maxSize ? 1 : size * growthRate;
+        if (size == 0) remove();
     }
 
-    /**
-     * Getter method for rate of growth of this plant.
-     *
-     * @return A double representing growth rate.
-     */
-    @Override
-    public double getGrowthRate() {
-        return this.growthRate;
-    }
+    // ── Consumable interface ───────────────────────────────────────────────────
 
-    /**
-     * Setter method for rate of growth of this plant.
-     *
-     * @param rate A given growth rate.
-     */
-    @Override
-    public void setGrowthRate(double rate) {
-        this.growthRate = rate;
-    }
+    @Override public int     getFoodValue()  { return foodValue; }
+    @Override public boolean isPoisonous()   { return poisonous; }
 
-    /**
-     * Get maximum size of the plant.
-     *
-     * @return A double representing maximum size.
-     */
-    @Override
-    abstract public double getMaxSize();
-
-    /**
-     * Getter method for the maximum litter size of the plant's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    @Override
-    abstract public int getMaxLitterSize();
-
-    /**
-     * Checks if the plant meets specified conditions in order to breed.
-     *
-     * @return Whether this plant can breed or not.
-     */
-    @Override
-    protected boolean canBreed() {
-        return getAge() >= getBreedingAge();
-    }
-
-    /**
-     * Get the current size of the plant.
-     *
-     * @return A double representing current size.
-     */
-    @Override
-    public double getSize() {
-        return this.size;
-    }
-
-    /**
-     * Getter method of the value of the food of this plant.
-     *
-     * @return An integer for the plant's food value.
-     */
-    @Override
-    public int getFoodValue() {
-        return this.foodValue;
-    }
-
-    /**
-     * Setter method to clear this plant from the simulation
-     * when it is eaten.
-     */
     @Override
     public void setEaten() {
         if (getLocation() != null) {
@@ -134,31 +74,44 @@ public abstract class Plant extends Organism implements Growable, Consumable {
         }
     }
 
-    /**
-     * Returns whether this plant is poisonous or not.
-     * @return Whether this plant is poisonous or not.
-     */
+    // ── Breeding ───────────────────────────────────────────────────────────────
+
     @Override
-    public boolean isPoisonous() {
-        return this.poisonous;
+    protected boolean canBreed() {
+        return getAge() >= getBreedingAge();
     }
 
+    // ── act() — shared across all plant species ────────────────────────────────
+
     /**
-     * Setter  method for the probability to breed of the organism.
+     * Returns the weather types that boost this plant's breeding probability.
+     * Concrete plant classes declare which WeatherTypes trigger the high rate.
      *
-     * @param probability A given double value representing the breeding probability.
+     * @return Array of WeatherType values that trigger high breeding probability.
      */
+    abstract protected WeatherType[] getBoostWeatherTypes();
+
+    /**
+     * Grows and attempts to spread seeds each step, with a boosted breeding
+     * probability whenever any of the boost weather types appear in recent history.
+     */
+    @Override
+    public void act(List<Entity> newPlants, Weather weather, TimeOfDay time) {
+        if (isAlive()) {
+            breedingProbability = traits.lowBreedingProbability;
+            for (WeatherType boostType : getBoostWeatherTypes()) {
+                if (weather.getRecentWeather().contains(boostType)) {
+                    breedingProbability = traits.highBreedingProbability;
+                    break;
+                }
+            }
+            grow();
+            giveBirth(newPlants);
+        }
+    }
+
+    /** Allows subclasses to update the breeding probability (kept for compatibility). */
     protected void setBreedingProbability(double probability) {
         this.breedingProbability = probability;
-    }
-
-    /**
-     * Getter method for the probability to breed of the organism.
-     *
-     * @return A double value representing the breeding probability.
-     */
-    @Override
-    public double getBreedingProbability() {
-        return this.breedingProbability;
     }
 }

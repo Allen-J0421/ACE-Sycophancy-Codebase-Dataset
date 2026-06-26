@@ -11,8 +11,7 @@ import java.util.Random;
  */
 public abstract class Prey extends Animal implements Consumable {
 
-    // define fields
-    private static final double DEFAULT_ACTIVENESS = 1;
+    private static final double DEFAULT_ACTIVENESS = 1.0;
     private static final int SATIATION_THRESHOLD = 10;
 
     private int foodValue;
@@ -24,39 +23,29 @@ public abstract class Prey extends Animal implements Consumable {
     /**
      * Constructor for a Prey in the simulation.
      *
-     * @param foodValue The value of food of this prey.
+     * @param traits    Species-level configuration for this prey.
+     * @param foodValue The initial food value carried by this prey.
      * @param randomAge Whether we assign this prey a random age or not.
-     * @param field The field in which this prey resides.
-     * @param location The location in which this prey is spawned into.
+     * @param field     The field in which this prey resides.
+     * @param location  The location in which this prey is spawned into.
      */
-    public Prey(int foodValue, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-
-        this.foodValue = foodValue;
+    public Prey(AnimalTraits traits, int foodValue, boolean randomAge, Field field, Location location) {
+        super(traits, randomAge, field, location);
+        this.foodValue  = foodValue;
         this.activeness = DEFAULT_ACTIVENESS;
     }
 
     /**
-     * Returns the time of day at which this prey is less active.
+     * Returns the activeness multiplier applied during this prey's rest period.
+     * Override in each concrete species with the species-specific fraction.
      *
-     * @return The TimeOfDay that reduces this prey's activeness.
-     */
-    abstract protected TimeOfDay getRestTime();
-
-    /**
-     * Returns the activeness multiplier applied during the prey's rest period.
-     *
-     * @return A double between 0 and 1 representing reduced activeness.
+     * @return A double in (0, 1] representing reduced activity.
      */
     abstract protected double getRestActiveness();
 
     /**
      * Performs one simulation step: ages, breeds, spreads disease, forages, and moves.
-     * Dead prey linger on the field to allow scavengers to eat them.
-     *
-     * @param newOrganisms A list to receive newborn organisms this step.
-     * @param weather The current weather state.
-     * @param time The current time of day.
+     * Dead prey linger on the field so scavengers can eat their corpses.
      */
     @Override
     public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
@@ -95,9 +84,9 @@ public abstract class Prey extends Animal implements Consumable {
     }
 
     /**
-     * Searches adjacent locations for a plant to eat.
+     * Searches adjacent cells for a living plant to eat.
      *
-     * @return The location of the consumed plant, or null if none found.
+     * @return The location of the eaten plant, or null if none found.
      */
     @Override
     public Location findFood() {
@@ -117,40 +106,26 @@ public abstract class Prey extends Animal implements Consumable {
         return null;
     }
 
-    /**
-     * Clear the prey from the simulation as it has been eaten.
-     */
+    /** Clears this prey from the field when it has been eaten. */
     @Override
     public void setEaten() {
-        if(getLocation() != null) {
+        if (getLocation() != null) {
             getField().clear(getLocation());
             setLocationToNull();
             setField(null);
         }
     }
 
-    /**
-     * Getter method for this prey's food value.
-     * @return The food value of the prey.
-     */
     @Override
-    public int getFoodValue() {
-        return this.foodValue;
-    }
+    public int getFoodValue() { return foodValue; }
+
+    protected void incrementFoodValue(int amount) { foodValue += amount; }
 
     /**
-     * Increment the food value of this prey by a specified amount.
-     * @param foodValue The given amount to increase the food value by.
-     */
-    protected void incrementFoodValue(int foodValue) {
-        this.foodValue += foodValue;
-    }
-
-    /**
-     * Called when this prey eats a plant.
+     * Eats a plant; infects this prey if the plant is poisonous.
      *
      * @param consumable The plant to be eaten.
-     * @return Whether the plant was eaten.
+     * @return true always (prey always eat what they find).
      */
     @Override
     public boolean eat(Consumable consumable) {
@@ -162,29 +137,10 @@ public abstract class Prey extends Animal implements Consumable {
         return true;
     }
 
-    /**
-     * Prey can never be poisonous.
-     * @return false as prey don't have this attribute.
-     */
+    /** Prey are never poisonous. */
     @Override
-    public boolean isPoisonous() {
-        return false;
-    }
+    public boolean isPoisonous() { return false; }
 
-    /**
-     * The activeness of this prey.
-     * @return A double value for the activeness of this prey
-     */
-    public double getActiveness() {
-        return activeness;
-    }
-
-    /**
-     * Setter method for the activeness of this prey.
-     *
-     * @param activeness A given value for activeness.
-     */
-    public void setActiveness(double activeness) {
-        this.activeness = activeness;
-    }
+    public double getActiveness()               { return activeness; }
+    public void   setActiveness(double value)   { activeness = value; }
 }

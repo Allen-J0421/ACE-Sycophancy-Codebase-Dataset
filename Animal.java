@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -10,9 +9,9 @@ import java.util.Random;
  */
 public abstract class Animal extends Organism implements AbleToEat {
 
-    // define fields
-    private final Gender gender; // gender of specific animal
-    private boolean infected; // whether an animal has been infected or not
+    private final AnimalTraits traits;
+    private final Gender gender;
+    private boolean infected;
 
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
@@ -20,40 +19,43 @@ public abstract class Animal extends Organism implements AbleToEat {
     /**
      * Constructor for an animal in the simulation.
      *
+     * @param traits    Species-level configuration for this animal.
      * @param randomAge Whether the animal should have a random age or not.
-     * @param field The field in which the animal resides.
-     * @param location The location in which the animal spawns into.
+     * @param field     The field in which the animal resides.
+     * @param location  The location in which the animal spawns into.
      */
-    public Animal(boolean randomAge, Field field, Location location) {
+    public Animal(AnimalTraits traits, boolean randomAge, Field field, Location location) {
         super(randomAge, field, location);
-
-        // randomly assign male or female
+        this.traits = traits;
         this.gender = Gender.getRandom();
         this.infected = false;
     }
 
-    /**
-     * Abstract method for what the animal does, i.e. what is always run at every step.
-     *
-     * @param newAnimals A list of all newborn animals in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    abstract public void act(List<Entity> newAnimals, Weather weather, TimeOfDay time);
+    // ── Organism stat getters (satisfied here so subclasses need not override) ──
+
+    @Override public double getBreedingProbability()       { return traits.breedingProbability; }
+    @Override public int    getMaxLitterSize()             { return traits.maxLitterSize; }
+    @Override public int    getMaxAge()                    { return traits.maxAge; }
+    @Override public int    getBreedingAge()               { return traits.breedingAge; }
+
+    // ── Disease stat getters ───────────────────────────────────────────────────
+
+    protected double getDiseaseSpreadProbability()         { return traits.diseaseSpreadProbability; }
+    protected double getDeathByDiseaseProbability()        { return traits.deathByDiseaseProbability; }
+
+    // ── Rest behaviour (common to Predator, Scavenger, and Prey) ──────────────
 
     /**
-     * Called when a consumable food item may be eaten.
-     *
-     * @param consumable The item to be eaten.
-     * @return Whether the item was eaten or not.
+     * Returns the time of day at which this animal is inactive.
+     * Provided by traits so concrete subclasses need not override it.
      */
-    @Override
-    abstract public boolean eat(Consumable consumable);
+    protected TimeOfDay getRestTime()                      { return traits.restTime; }
+
+    // ── Breeding ───────────────────────────────────────────────────────────────
 
     /**
-     * Checks adjacent locations for an animal of the same species
-     * and opposite gender.
+     * Checks adjacent locations for an animal of the same species and
+     * opposite gender.
      *
      * @return Whether this animal can breed or not.
      */
@@ -70,68 +72,29 @@ public abstract class Animal extends Organism implements AbleToEat {
         return false;
     }
 
-    /**
-     * Getter method returning the gender of this animal.
-     *
-     * @return The gender of the animal.
-     */
-    private Gender getGender() {
-        return this.gender;
-    }
+    // ── Gender ─────────────────────────────────────────────────────────────────
+
+    protected boolean isMale() { return gender == Gender.MALE; }
+
+    // ── Disease ────────────────────────────────────────────────────────────────
+
+    protected boolean isInfected() { return infected; }
+
+    protected void infect(Animal animal) { animal.infected = true; }
 
     /**
-     * Returns if the animal is a male or not.
+     * If this animal is infected, attempts to infect a healthy animal in
+     * an adjacent cell.
      *
-     * @return Whether the animal's gender is male or not.
-     */
-    protected boolean isMale() {
-        return getGender() == Gender.MALE;
-    }
-
-    /**
-     * Getter method returning whether the animal has been
-     * infected or not.
-     *
-     * @return Whether the animal is infectious or not.
-     */
-    protected boolean isInfected() {
-        return this.infected;
-    }
-
-    /**
-     * Setter method to alter the infected field of this animal
-     * to a given boolean.
-     *
-     * @param infected The value the infected field should be changed to.
-     */
-    private void setInfected(boolean infected) {
-        this.infected = infected;
-    }
-
-    /**
-     * Infects a given animal.
-     *
-     * @param animal The animal to infect.
-     */
-    protected void infect(Animal animal) {
-        animal.setInfected(true);
-    }
-
-    /**
-     * Find an animal in an adjacent location for this animal to infect.
-     *
-     * @return The location of a nearby animal that can be infected.
+     * @return The location of the targeted neighbour, or null if none found.
      */
     protected Location findAnimalToInfect() {
-        if (!infected) {
-            return null;
-        }
-
+        if (!infected) return null;
         for (Location loc : getField().adjacentLocations(getLocation())) {
             Object organism = getField().getObjectAt(loc);
             if (organism instanceof Animal) {
                 Animal animal = (Animal) organism;
-                if (animal.isAlive() && (!animal.isInfected())) {
+                if (animal.isAlive() && !animal.isInfected()) {
                     if (rand.nextDouble() <= 0.01) {
                         infect(animal);
                     }
@@ -139,21 +102,6 @@ public abstract class Animal extends Organism implements AbleToEat {
                 }
             }
         }
-
         return null;
     }
-
-    /**
-     * Getter method to return this animal's disease spreading probability.
-     *
-     * @return The animal's disease spreading probability.
-     */
-    abstract protected double getDiseaseSpreadProbability();
-
-    /**
-     * Getter method to return the probability this animal dies from disease.
-     *
-     * @return The animal's disease death probability.
-     */
-    abstract protected double getDeathByDiseaseProbability();
 }

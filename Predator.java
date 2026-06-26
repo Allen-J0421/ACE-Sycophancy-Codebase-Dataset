@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -11,9 +10,6 @@ import java.util.Random;
  */
 public abstract class Predator extends Animal {
 
-    // define fields
-
-    // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
     private int foodLevel;
@@ -21,30 +17,20 @@ public abstract class Predator extends Animal {
     /**
      * Constructor for a predator in the simulation.
      *
-     * @param foodLevel The food level of this predator.
+     * @param traits    Species-level configuration for this predator.
+     * @param foodLevel The initial food level of this predator.
      * @param randomAge Whether the predator should have a random age or not.
-     * @param field The field in which the predator resides.
-     * @param location The location in which the predator spawns into.
+     * @param field     The field in which the predator resides.
+     * @param location  The location in which the predator spawns into.
      */
-    public Predator(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-
+    public Predator(AnimalTraits traits, int foodLevel, boolean randomAge, Field field, Location location) {
+        super(traits, randomAge, field, location);
         this.foodLevel = foodLevel;
     }
 
     /**
-     * Returns the time of day when this predator rests and skips its turn.
-     *
-     * @return The TimeOfDay at which this predator is inactive.
-     */
-    abstract public TimeOfDay getRestTime();
-
-    /**
      * Performs one simulation step: ages, hungers, breeds, spreads disease, hunts, and moves.
-     *
-     * @param newOrganisms A list to receive newborn organisms this step.
-     * @param weather The current weather state.
-     * @param time The current time of day.
+     * The predator skips acting entirely during its rest period.
      */
     @Override
     public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
@@ -71,28 +57,20 @@ public abstract class Predator extends Animal {
     }
 
     /**
-     * Finds the nearest food source and returns its location.
+     * Searches adjacent cells for a live Prey to kill and eat.
      *
-     * @return Location of food source.
+     * @return The location of the eaten prey, or null if none found.
      */
     @Override
     public Location findFood() {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Prey) {
-                Prey prey = (Prey) animal;
+        for (Location where : field.adjacentLocations(getLocation())) {
+            Object obj = field.getObjectAt(where);
+            if (obj instanceof Prey) {
+                Prey prey = (Prey) obj;
                 if (prey.isAlive()) {
-                    // kills animal
                     prey.setDead();
-                    // random chance to eat
-                    boolean eaten = eat(prey);
-
-                    return eaten ? where : null;
+                    return eat(prey) ? where : null;
                 }
             }
         }
@@ -100,43 +78,35 @@ public abstract class Predator extends Animal {
     }
 
     /**
-     * Getter method to return this predator's probability of eating if food is found.
-     *
-     * @return The predator's eating probability.
+     * Returns the probability this predator eats a kill rather than leaving it.
      */
     abstract public double getEatingProbability();
 
     /**
-     * Called when a predator either eats or leaves a prey it
-     * has killed.
+     * Eats a killed prey with probability given by {@link #getEatingProbability()}.
      *
      * @param consumable The prey to be eaten.
-     * @return Whether the prey has been eaten or not.
+     * @return Whether the prey was consumed.
      */
     @Override
     public boolean eat(Consumable consumable) {
         if (rand.nextDouble() <= getEatingProbability()) {
             incrementFoodLevel(consumable.getFoodValue());
             consumable.setEaten();
-            //System.out.println("EATEN PREY");
             return true;
-        } else {
-            //System.out.println("LEFT PREY");
-            return false;
         }
+        return false;
     }
 
     /**
-     * Increase the predator's food level by a given integer amount.
-     *
-     * @param foodLevel The value to increment food level by.
+     * Increase the predator's food level by a given amount.
      */
-    public void incrementFoodLevel(int foodLevel) {
-        this.foodLevel += foodLevel;
+    public void incrementFoodLevel(int amount) {
+        this.foodLevel += amount;
     }
 
     /**
-     * Make this predator more hungry. This could result in the predator's death.
+     * Decrease hunger by one step; removes the predator if food level reaches zero.
      */
     public void incrementHunger() {
         foodLevel--;

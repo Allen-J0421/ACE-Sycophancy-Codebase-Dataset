@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -11,98 +10,65 @@ import java.util.Random;
  */
 public abstract class Scavenger extends Animal {
 
-    // define fields
     private int foodLevel;
 
-    // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a scavenger in the simulation.
      *
-     * @param foodLevel The food level of this scavenger.
+     * @param traits    Species-level configuration for this scavenger.
+     * @param foodLevel The initial food level of this scavenger.
      * @param randomAge Whether the scavenger should have a random age or not.
-     * @param field The field in which the scavenger resides.
-     * @param location The location in which the scavenger spawns into.
+     * @param field     The field in which the scavenger resides.
+     * @param location  The location in which the scavenger spawns into.
      */
-    public Scavenger(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
+    public Scavenger(AnimalTraits traits, int foodLevel, boolean randomAge, Field field, Location location) {
+        super(traits, randomAge, field, location);
         this.foodLevel = foodLevel;
     }
 
     /**
-     * Returns the time of day when this scavenger rests and skips its turn.
-     *
-     * @return The TimeOfDay at which this scavenger is inactive.
-     */
-    abstract public TimeOfDay getRestTime();
-
-    /**
      * Performs one simulation step: ages, hungers, breeds, spreads disease, scavenges, and moves.
-     *
-     * @param newScavengers A list to receive newborn organisms this step.
-     * @param weather The current weather state.
-     * @param time The current time of day.
+     * The scavenger skips acting entirely during its rest period.
      */
     @Override
-    public void act(List<Entity> newScavengers, Weather weather, TimeOfDay time) {
+    public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
-        if(isAlive()) {
-            giveBirth(newScavengers);
-
-            if (time == getRestTime()) {
-                return;
-            }
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
+        if (isAlive()) {
+            giveBirth(newOrganisms);
+            if (time == getRestTime()) return;
+            if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
                 remove();
                 return;
             }
-
-            // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
-
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
+            Location newLocation = rand.nextDouble() <= getDiseaseSpreadProbability()
+                ? findAnimalToInfect() : findFood();
+            if (newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
-
-            // See if it was possible to move.
-            if(newLocation != null) {
+            if (newLocation != null) {
                 setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                //setDead();
+            } else {
                 remove();
             }
         }
     }
 
     /**
-     * Find a food source the scavenger would want to eat.
-     * @return The location of the food source.
+     * Searches adjacent cells for a dead Prey corpse to eat.
+     *
+     * @return The location of the consumed corpse, or null if none found.
      */
     @Override
     public Location findFood() {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal instanceof Prey) {
-                Prey prey = (Prey) animal;
-                // eats animal if dead only
+        for (Location where : field.adjacentLocations(getLocation())) {
+            Object obj = field.getObjectAt(where);
+            if (obj instanceof Prey) {
+                Prey prey = (Prey) obj;
                 if (!prey.isAlive()) {
-                    //System.out.println("EATEN DEAD");
                     eat(prey);
                     return where;
                 }
@@ -112,30 +78,27 @@ public abstract class Scavenger extends Animal {
     }
 
     /**
-     * Eat the corpse of a dead prey.
+     * Unconditionally eats a dead prey corpse.
      *
-     * @param consumable The item to be eaten.
-     * @return Whether the consumable was eaten or not.
+     * @param consumable The corpse to be consumed.
+     * @return true always (scavengers never leave their food).
      */
     @Override
     public boolean eat(Consumable consumable) {
-        // the scavenger does not leave its prey
         consumable.setEaten();
         incrementFoodLevel(consumable.getFoodValue());
         return true;
     }
 
     /**
-     * Increment the food level of this scavenger by a given amount.
-     *
-     * @param foodLevel A given food level.
+     * Increase the scavenger's food level by a given amount.
      */
-    public void incrementFoodLevel(int foodLevel) {
-        this.foodLevel += foodLevel;
+    public void incrementFoodLevel(int amount) {
+        this.foodLevel += amount;
     }
 
     /**
-     * Make this scavenger more hungry. This could result in the scavenger's death.
+     * Decrease hunger by one step; removes the scavenger if food level reaches zero.
      */
     public void incrementHunger() {
         foodLevel--;

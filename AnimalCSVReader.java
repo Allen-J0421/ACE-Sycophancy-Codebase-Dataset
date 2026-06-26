@@ -202,4 +202,12 @@ public class AnimalCSVReader extends CSVReader
     {
         return isNocturnal;
     }
+
+    /**
+     * @return (AnimalProfile) The immutable profile represented by the last extracted CSV row.
+     */
+    public AnimalProfile getAnimalProfile()
+    {
+        return new AnimalProfile(name, isPredator, maximumTemperature, minimumTemperature, maximumAge, breedingAge, breedingProbability, maxLitterSize, nutritionalValue, strength, hibernates, isNocturnal);
+    }
 }

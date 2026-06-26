@@ -10,6 +10,8 @@ public class Plant extends Species
 {
     // The plant's maximum health
     private int maxHealth;
+    // The immutable profile used to create this plant and its offspring.
+    private final PlantProfile profile;
     // The probability that the plant's health grows
     private static final double GROWING_PROBABILITY = 0.1;
     // Keep track of the plant's health
@@ -35,8 +37,21 @@ public class Plant extends Species
      */
     public Plant(Field field, Location location, String name, int maximumTemperature, int minimumTemperature, int nutritionalValue, double reproductionProbability, int maxHealth)
     {
-        super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability);
-        this.maxHealth = maxHealth;
+        this(field, location, new PlantProfile(name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxHealth));
+    }
+
+    /**
+     * Create an instance of Plant from an immutable profile.
+     *
+     * @param field (Field) The field currently occupied.
+     * @param location (Location) The location within the field.
+     * @param profile (PlantProfile) immutable plant species configuration
+     */
+    public Plant(Field field, Location location, PlantProfile profile)
+    {
+        super(field, location, profile);
+        this.profile = profile;
+        this.maxHealth = profile.getMaxHealth();
         currentHealth = maxHealth;
         isSpring = true;
         canRegrow = true;
@@ -104,7 +119,7 @@ public class Plant extends Species
 
                 if (free.size() > 0) {
                     Location loc = free.remove(0);
-                    Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
+                    Plant newPlant = new Plant(field, loc, profile);
                     newPlant.setIsSpring(isSpring);
                     newPlants.add(newPlant);
                 }

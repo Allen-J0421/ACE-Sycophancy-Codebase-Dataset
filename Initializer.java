@@ -148,41 +148,25 @@ public class Initializer
             animalReader.extractDataFor(animalName);
             if (animalsToCreate.get(animalName) != 0)
             {
-                // Retrieve appropriate data.
-                String name = animalReader.getName();
-                int maximumTemperature = animalReader.getMaximumTemperature();
-                int minimumTemperature = animalReader.getMinimumTemperature();
-                int maxAge = animalReader.getMaximumAge();
-                int breedingAge = animalReader.getBreedingAge();
-                double breedingProbability = animalReader.getBreedingProbability();
-                int maxLitterSize = animalReader.getMaxLitterSize();
-                int nutritionalValue = animalReader.getNutritionalValue();
-                boolean hibernates = animalReader.canHibernate();
-                boolean isNocturnal = animalReader.isNocturnal();
+                AnimalProfile animalProfile = animalReader.getAnimalProfile();
 
-                if (animalReader.isPredator()) {
-                    // Predator object should be created, retrieving appropriate data.
-                    int strength = animalReader.getStrength();
-
-                    // Creating the right number of Predator objects.
+                if (animalProfile.isPredator()) {
                     for (int i = 0; i < animalsToCreate.get(animalName); i++) {
                         freeLocationToPlaceAnimal = findAvailableLocation(field);
-                        Predator newPredator = new Predator(strength, field, freeLocationToPlaceAnimal, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
+                        Predator newPredator = new Predator(field, freeLocationToPlaceAnimal, animalProfile, RANDOM_ANIMAL_AGE);
                         speciesToEvolveInSimulation.add(newPredator);
                     }
                 }
                 else {
-                    // Animal object should be created
-                    // Creating the right number of Animal objects.
                     for (int i = 0; i < animalsToCreate.get(animalName); i++) {
                         freeLocationToPlaceAnimal = findAvailableLocation(field);
-                        Animal newAnimal = new Animal(field, freeLocationToPlaceAnimal, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
+                        Animal newAnimal = new Animal(field, freeLocationToPlaceAnimal, animalProfile, RANDOM_ANIMAL_AGE);
                         speciesToEvolveInSimulation.add(newAnimal);
                     }
                 }
 
                 // Setting the color for this species.
-                view.setColor(name, listOfColorsForAnimals.get(idxOfColorToUseNext));
+                view.setColor(animalProfile.getName(), listOfColorsForAnimals.get(idxOfColorToUseNext));
                 idxOfColorToUseNext ++;
             }
         }
@@ -251,18 +235,13 @@ public class Initializer
     {
         Location freeLocationToPlacePlant;
         plantReader.extractDataFor(DEFAULT_PLANT_NAME);
-        String name = plantReader.getName();
-        int maximumTemperature = plantReader.getMaximumTemperature();
-        int minimumTemperature = plantReader.getMinimumTemperature();
-        int nutritionalValue = plantReader.getNutritionalValue();
-        double reproductionProbability = plantReader.getReproductionProbability();
-        int maxHealth = plantReader.getMaxHealth();
+        PlantProfile plantProfile = plantReader.getPlantProfile();
         for (int i = 0; i< getNumberOfPlants(); i++) {
             freeLocationToPlacePlant = findAvailableLocation(field);
-            Plant createdPlant = new Plant(field, freeLocationToPlacePlant, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxHealth);
+            Plant createdPlant = new Plant(field, freeLocationToPlacePlant, plantProfile);
             speciesToEvolveInSimulation.add(createdPlant);
         }
-        view.setColor(name, DEFAULT_PLANT_COLOR);
+        view.setColor(plantProfile.getName(), DEFAULT_PLANT_COLOR);
     }
 
     /**

@@ -55,6 +55,18 @@ public abstract class Species
     }
 
     /**
+     * Create a new specie at location in field using immutable species configuration.
+     *
+     * @param field (Field) The field currently occupied.
+     * @param location (Location) The location within the field.
+     * @param profile (SpeciesProfile) The profile describing this species.
+     */
+    public Species(Field field, Location location, SpeciesProfile profile)
+    {
+        this(field, location, profile.getName(), profile.getMaximumTemperature(), profile.getMinimumTemperature(), profile.getNutritionalValue(), profile.getReproductionProbability());
+    }
+
+    /**
      * Make this animal act - that is: make it do whatever it wants/needs to do.
      *
      * @param newSpecies (List<Species>) A list to receive newly born animals.

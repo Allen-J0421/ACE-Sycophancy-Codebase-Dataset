@@ -25,6 +25,8 @@ public class Animal extends Species
     private final boolean hibernates;
     // true if the animal is active at night
     private final boolean isNocturnal;
+    // The immutable profile used to create this animal and its offspring.
+    private final AnimalProfile profile;
     // the number of steps that should pass until an animal in hibernation moves
     private static final int STAY_STEPS = 10;
 
@@ -59,14 +61,28 @@ public class Animal extends Species
      */
     public Animal(Field field, Location location, String name, int maximumTemperature, int minimumTemperature, int nutritionalValue, double reproductionProbability, int maxAge, int breedingAge, int maxLitterSize, boolean randomAge, boolean hibernates, boolean isNocturnal)
     {
-        super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability);
+        this(field, location, new AnimalProfile(name, false, maximumTemperature, minimumTemperature, maxAge, breedingAge, reproductionProbability, maxLitterSize, nutritionalValue, 0, hibernates, isNocturnal), randomAge);
+    }
 
-        this.breedingAge = breedingAge;
-        this.maxAge = maxAge;
-        this.maxLitterSize = maxLitterSize;
+    /**
+     * Create a new animal from an immutable profile.
+     *
+     * @param field (Field) the field where the simulation takes place
+     * @param location (Location) the Location at which the animal should appear
+     * @param profile (AnimalProfile) immutable animal species configuration
+     * @param randomAge (boolean) whether an animal should be created with a random age
+     */
+    public Animal(Field field, Location location, AnimalProfile profile, boolean randomAge)
+    {
+        super(field, location, profile);
+
+        this.profile = profile;
+        this.breedingAge = profile.getBreedingAge();
+        this.maxAge = profile.getMaximumAge();
+        this.maxLitterSize = profile.getMaxLitterSize();
         this.isFemale = randomSex();
-        this.hibernates = hibernates;
-        this.isNocturnal = isNocturnal;
+        this.hibernates = profile.canHibernate();
+        this.isNocturnal = profile.isNocturnal();
         // Default value is nutritionalValue to simulate the nutriment apart from the mother's milk/ other parental feeding.
         this.foodLevel = randomFoodLevel();
         inHibernation = false;
@@ -306,7 +322,7 @@ public class Animal extends Species
             int births = numberOfBirths();
             for(int b = 0; b < births && free.size() > 0; b++) {
                 Location loc = free.remove(0);
-                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
+                Animal young = new Animal(field, loc, profile, false);
                 speciesInSimulation.add(young);
             }
         }
@@ -423,6 +439,14 @@ public class Animal extends Species
      */
     public void incrementFoodLevel(int value) {
         foodLevel += value;
+    }
+
+    /**
+     * @return (AnimalProfile) immutable profile used to create this animal.
+     */
+    protected AnimalProfile getProfile()
+    {
+        return profile;
     }
 
 }

@@ -118,4 +118,12 @@ public class PlantCSVReader extends CSVReader
     public int getMaxHealth() {
         return maxHealth;
     }
+
+    /**
+     * @return (PlantProfile) The immutable profile represented by the last extracted CSV row.
+     */
+    public PlantProfile getPlantProfile()
+    {
+        return new PlantProfile(name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxHealth);
+    }
 }

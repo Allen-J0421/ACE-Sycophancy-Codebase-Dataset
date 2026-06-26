@@ -36,10 +36,23 @@ public class Predator extends Animal
      */
     public Predator (int strength, Field field, Location location, String name, int maximumTemperature, int minimumTemperature, int nutritionalValue, double reproductionProbability, int maxAge, int breedingAge, int maxLitterSize,  boolean randomAge, boolean hibernates, boolean isNocturnal)
     {
-        // call to the constructor of the Animal class
-        super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxAge, breedingAge, maxLitterSize, randomAge, hibernates, isNocturnal);
+        this(field, location, new AnimalProfile(name, true, maximumTemperature, minimumTemperature, maxAge, breedingAge, reproductionProbability, maxLitterSize, nutritionalValue, strength, hibernates, isNocturnal), randomAge);
+    }
 
-        this.strength = strength;
+    /**
+     * Create a new predator from an immutable profile.
+     *
+     * @param field (Field) the field where the simulation takes place
+     * @param location (Location) the Location at which the predator should appear
+     * @param profile (AnimalProfile) immutable predator species configuration
+     * @param randomAge (boolean) whether or not predator should be created with a random age
+     */
+    public Predator(Field field, Location location, AnimalProfile profile, boolean randomAge)
+    {
+        // call to the constructor of the Animal class
+        super(field, location, profile, randomAge);
+
+        this.strength = profile.getStrength();
     }
 
     /**
@@ -172,7 +185,7 @@ public class Predator extends Animal
             int births = numberOfBirths();
             for(int b = 0; b < births && free.size() > 0; b++) {
                 Location loc = free.remove(0);
-                Predator young = new Predator(strength, field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(),false, getHibernates(), getIsNocturnal());
+                Predator young = new Predator(field, loc, getProfile(), false);
                 newOfThisKind.add(young);
             }
         }

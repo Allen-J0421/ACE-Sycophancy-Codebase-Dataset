@@ -1,6 +1,6 @@
 
-import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (jaguar, gazelle, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -35,12 +35,9 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field, Simulator simulator)
     {
-        StringBuffer buffer = new StringBuffer();
-        if(!countsValid) {
-            generateCounts(field, simulator);
-        }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
+        StringBuilder buffer = new StringBuilder();
+        ensureCountsValid(field, simulator);
+        for(Counter info : counters.values()) {
             buffer.append(info.getName());
             buffer.append(": ");
             buffer.append(info.getCount());
@@ -56,8 +53,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -69,19 +65,11 @@ public class FieldStats
      */
     public void incrementCount(Object actor, Simulator simulator)
     {
-        Class animalClass = actor.getClass();
-        Counter count = counters.get(animalClass);
-        if(count == null) {
-            // We do not have a counter for this species yet.
-            // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
-        }
+        Class<?> actorClass = actor.getClass();
+        Counter count = getCounter(actorClass);
         count.increment();
-        if (simulator.getSteps() != 0){
-            if(actor instanceof Grass){
-                count.setCount(simulator.getNoOfGrass());
-            }
+        if(simulator.getSteps() != 0 && actor instanceof Grass){
+            count.setCount(simulator.getNoOfGrass());
         }
     }
 
@@ -102,18 +90,8 @@ public class FieldStats
      */
     public boolean isViable(Field field, Simulator simulator)
     {
-        // How many counts are non-zero.
-        int nonZero = 0;
-        if(!countsValid) {
-            generateCounts(field, simulator);
-        }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) {
-                nonZero++;
-            }
-        }
-        return nonZero > 1;
+        ensureCountsValid(field, simulator);
+        return countNonZeroSpecies() > 1;
     }
 
     /**
@@ -136,5 +114,47 @@ public class FieldStats
             }
         }
         countsValid = true;
+    }
+
+    /**
+     * Ensure the current counts are populated before they are read.
+     * @param field The field currently occupied.
+     * @param simulator The current simulator the simulation is being run on.
+     */
+    private void ensureCountsValid(Field field, Simulator simulator)
+    {
+        if(!countsValid) {
+            generateCounts(field, simulator);
+        }
+    }
+
+    /**
+     * Get or create the counter associated with an actor type.
+     * @param actorClass The actor class to track.
+     * @return The matching counter.
+     */
+    private Counter getCounter(Class<?> actorClass)
+    {
+        Counter count = counters.get(actorClass);
+        if(count == null) {
+            count = new Counter(actorClass.getName());
+            counters.put(actorClass, count);
+        }
+        return count;
+    }
+
+    /**
+     * Count the number of actor types with a non-zero population.
+     * @return The number of species with active members.
+     */
+    private int countNonZeroSpecies()
+    {
+        int nonZero = 0;
+        for(Counter info : counters.values()) {
+            if(info.getCount() > 0) {
+                nonZero++;
+            }
+        }
+        return nonZero;
     }
 }

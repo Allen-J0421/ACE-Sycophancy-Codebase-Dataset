@@ -200,14 +200,7 @@ public class SimulatorView extends JFrame
         stats.reset();
         
         fieldView.preparePaint();
-
-        for (int row = 0; row < field.getDepth(); row++)
-        {
-            for (int col = 0; col < field.getWidth(); col++)
-            {
-                drawActor(field.getActorAt(row, col), row, col);
-            }
-        }
+        field.forEachLocation((location, actor) -> drawActor(actor, location));
         
         stats.countFinished();
 
@@ -222,11 +215,13 @@ public class SimulatorView extends JFrame
      * Draw a single field location and update statistics for its actor.
      *
      * @param actor The actor at the location, or null if empty.
-     * @param row The row coordinate.
-     * @param col The column coordinate.
+     * @param location The field location.
      */
-    private void drawActor(Actor actor, int row, int col)
+    private void drawActor(Actor actor, Location location)
     {
+        int row = location.getRow();
+        int col = location.getCol();
+
         if (actor == null)
         {
             fieldView.drawMark(col, row, EMPTY_COLOR);

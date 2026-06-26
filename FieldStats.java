@@ -134,16 +134,14 @@ public class FieldStats
     private void generateCounts(Field field)
     {
         reset();
-        
-        for (int row = 0; row < field.getDepth(); row++)
+
+        field.forEachLocation((location, actor) ->
         {
-            for (int col = 0; col < field.getWidth(); col++)
+            if (actor != null)
             {
-                Actor actor = field.getActorAt(row, col);
-                
-                if (actor != null) incrementCount(actor.getClass());
+                incrementCount(actor.getClass());
             }
-        }
+        });
         
         areCountsValid = true;
     }

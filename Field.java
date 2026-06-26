@@ -11,6 +11,12 @@ import java.util.Random;
  */
 public class Field
 {
+    @FunctionalInterface
+    public interface FieldVisitor
+    {
+        void visit(Location location, Actor actor);
+    }
+
     // A random number generator for providing random locations:
     private static final Random rand = Randomizer.getRandom();
     // The depth and width of the field:
@@ -269,6 +275,23 @@ public class Field
      * @return The width of the field.
      */
     public int getWidth() { return width; }
+
+    /**
+     * Visit each location in the field in row-major order.
+     *
+     * @param visitor The visitor to invoke for each location.
+     */
+    public void forEachLocation(FieldVisitor visitor)
+    {
+        for (int row = 0; row < depth; row++)
+        {
+            for (int col = 0; col < width; col++)
+            {
+                Location location = new Location(row, col);
+                visitor.visit(location, getActorAt(row, col));
+            }
+        }
+    }
 
     public Field createProducerField()
     {

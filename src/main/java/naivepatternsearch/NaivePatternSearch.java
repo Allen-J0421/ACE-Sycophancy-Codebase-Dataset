@@ -1,6 +1,7 @@
 package naivepatternsearch;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,18 +17,18 @@ public final class NaivePatternSearch {
 
         int patternLength = pattern.length();
         int textLength = text.length();
-        int expectedMatches = patternLength == 0 ? textLength + 1 : Math.max(0, textLength - patternLength + 1);
+        if (patternLength > textLength) {
+            return Collections.emptyList();
+        }
+
+        int expectedMatches = patternLength == 0 ? textLength + 1 : textLength - patternLength + 1;
         List<Integer> matches = new ArrayList<>(expectedMatches);
 
         if (patternLength == 0) {
             for (int index = 0; index <= textLength; index++) {
                 matches.add(index);
             }
-            return matches;
-        }
-
-        if (patternLength > textLength) {
-            return matches;
+            return Collections.unmodifiableList(matches);
         }
 
         for (int start = 0; start <= textLength - patternLength; start++) {
@@ -36,7 +37,7 @@ public final class NaivePatternSearch {
             }
         }
 
-        return matches;
+        return matches.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(matches);
     }
 
     private static boolean matchesAt(CharSequence pattern, CharSequence text, int start, int patternLength) {

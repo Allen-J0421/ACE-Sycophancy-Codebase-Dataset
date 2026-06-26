@@ -61,15 +61,15 @@ public class Plant extends Species
     public void act(List<Species> newPlants, boolean isNight, int temperature, boolean yearPassed)
     {
         // 1)
-        if (! deadDueTemperature && ! survivesTemperature(temperature))
+        if (!deadDueTemperature && isTemperatureLethal(temperature))
         {
-            setDead();
+            onTemperatureDeath();
         }
         // 2)
         else if (! isNight)
         {
             // i)
-            if (deadDueTemperature && survivesTemperature(temperature) && isSpring) {
+            if (deadDueTemperature && !isTemperatureLethal(temperature) && isSpring) {
                 regrow();
             }
             // ii)
@@ -116,10 +116,11 @@ public class Plant extends Species
     }
 
     /**
-     * The plant dies because of the temperature or because it was eaten.
-     * Its location in the field is cleared, but it still remembers its field and location
+     * The plant dies because of the temperature.
+     * Its location in the field is cleared, but it still remembers its field and location.
      */
-    protected void setDead()
+    @Override
+    protected void onTemperatureDeath()
     {
         if(getLocation() != null) {
             deadDueTemperature = true;

@@ -149,17 +149,27 @@ public abstract class Species
     }
 
     /**
-     * Check if animal can survive the current temperature. If temperature is too low or too high, animal has a high probability of dying
-     * (probability defined as a class constant to allow easy adjusting).
+     * Check whether the current temperature is lethal for this species.
+     * If temperature is too low or too high, the species has a high probability of dying.
      *
-     * @return (Field) The animal's field.
+     * @param temperature the current temperature.
+     * @return true if the temperature is lethal.
      */
-    protected boolean survivesTemperature(int temperature)
+    protected boolean isTemperatureLethal(int temperature)
     {
         if (temperature > maximumTemperature || temperature < minimumTemperature) {
-            return Math.random() <= DYING_OF_COLD_OR_HEAT_PROBABILITY;
+            return rand.nextDouble() <= DYING_OF_COLD_OR_HEAT_PROBABILITY;
         }
-        return true;
+        return false;
+    }
+
+    /**
+     * Handle death caused by temperature exposure.
+     * Subclasses can override this to preserve additional state.
+     */
+    protected void onTemperatureDeath()
+    {
+        setDead();
     }
 
     /**

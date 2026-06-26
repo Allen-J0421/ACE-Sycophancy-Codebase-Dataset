@@ -111,8 +111,8 @@ public class Animal extends Species
         if (inHibernation) {
             handleHibernatingStep(newSpecies);
         }
-        else if (!survivesTemperature(temperature)) {
-            setDead();
+        else if (isTemperatureLethal(temperature)) {
+            onTemperatureDeath();
         }
         else {
             handleAwakeStep(newSpecies, isNight);

@@ -10,8 +10,6 @@ import java.util.List;
  */
 public abstract class Scavenger extends HungryAnimal {
 
-    // define fields
-
     /**
      * Constructor for a scavenger in the simulation.
      *
@@ -20,8 +18,14 @@ public abstract class Scavenger extends HungryAnimal {
      * @param field The field in which the scavenger resides.
      * @param location The location in which the scavenger spawns into.
      */
-    public Scavenger(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(foodLevel, randomAge, field, location);
+    public Scavenger(int foodLevel, boolean randomAge, Field field, Location location,
+                     Class<? extends Animal> speciesClass, double breedingProbability,
+                     int maxLitterSize, int breedingAge, int maxAge,
+                     double diseaseSpreadProbability, double deathByDiseaseProbability,
+                     TimeOfDay restingTime) {
+        super(foodLevel, randomAge, field, location, speciesClass, breedingProbability,
+                maxLitterSize, breedingAge, maxAge, diseaseSpreadProbability,
+                deathByDiseaseProbability, restingTime);
     }
 
     /**
@@ -61,23 +65,5 @@ public abstract class Scavenger extends HungryAnimal {
         consumable.setEaten();
         incrementFoodLevel(consumable.getFoodValue());
         return true;
-    }
-
-    /**
-     * Checks all adjacent location for scavengers that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this scavenger can breed or not.
-     */
-    @Override
-    abstract public boolean canBreed();
-
-    /**
-     * Increment the food level of this scavenger by a given amount.
-     *
-     * @param foodLevel A given food level.
-     */
-    protected TimeOfDay restingTime() {
-        return TimeOfDay.SUNSET;
     }
 }

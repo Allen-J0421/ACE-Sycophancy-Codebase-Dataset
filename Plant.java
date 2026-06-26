@@ -13,6 +13,13 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     private double size;
     private final int foodValue;
     private final boolean poisonous;
+    private final double maxSize;
+    private final int maxAge;
+    private final int breedingAge;
+    private final int maxLitterSize;
+    private final double lowBreedingProbability;
+    private final double highBreedingProbability;
+    private final WeatherType[] favorableWeather;
     private double growthRate;
     private double breedingProbability;
 
@@ -26,23 +33,40 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @param field The field in which the plant resides.
      * @param location The location in which the plant spawns into.
      */
-    public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field, Location location) {
+    public Plant(boolean poisonous, int foodValue, double size, boolean randomAge, Field field,
+                 Location location, double maxSize, int maxAge, int breedingAge, int maxLitterSize,
+                 double lowBreedingProbability, double highBreedingProbability,
+                 WeatherType... favorableWeather) {
         super(randomAge, field, location);
 
         this.size = size;
         this.foodValue = foodValue;
         this.poisonous = poisonous;
+        this.maxSize = maxSize;
+        this.maxAge = maxAge;
+        this.breedingAge = breedingAge;
+        this.maxLitterSize = maxLitterSize;
+        this.lowBreedingProbability = lowBreedingProbability;
+        this.highBreedingProbability = highBreedingProbability;
+        this.favorableWeather = favorableWeather;
     }
 
     /**
-     * Abstract method for what the plant does, i.e. what is always run at every step.
+     * Method for what the plant does, i.e. what is always run at every step.
      *
      * @param newPlants A list of all newborn plants in this simulation step.
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPlants, Weather weather, TimeOfDay time);
+    public void act(List<Entity> newPlants, Weather weather, TimeOfDay time) {
+        if (isAlive()) {
+            setBreedingProbabilityForWeather(weather, lowBreedingProbability,
+                    highBreedingProbability, favorableWeather);
+            grow();
+            giveBirth(newPlants);
+        }
+    }
 
     /**
      * Grow in size in accordance with the current growth rate.
@@ -50,7 +74,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public void grow() {
         double grownSize = size * getGrowthRate();
-        size = grownSize > getMaxSize() ? 1 : grownSize;
+        size = grownSize > maxSize ? 1 : grownSize;
         if (size == 0) {
             remove();
         }
@@ -82,7 +106,9 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return A double representing maximum size.
      */
     @Override
-    abstract public double getMaxSize();
+    public double getMaxSize() {
+        return maxSize;
+    }
 
     /**
      * Getter method for the maximum litter size of the plant's newborns.
@@ -90,7 +116,9 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return An integer value representing the maximum allowed litter size.
      */
     @Override
-    abstract public int getMaxLitterSize();
+    public int getMaxLitterSize() {
+        return maxLitterSize;
+    }
 
     /**
      * Checks if the plant meets specified conditions in order to breed.
@@ -99,7 +127,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     protected boolean canBreed() {
-        return getAge() >= getBreedingAge();
+        return getAge() >= breedingAge;
     }
 
     /**
@@ -176,5 +204,21 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public double getBreedingProbability() {
         return this.breedingProbability;
+    }
+
+    /**
+     * @return The maximum age for this plant species.
+     */
+    @Override
+    public int getMaxAge() {
+        return maxAge;
+    }
+
+    /**
+     * @return The breeding age for this plant species.
+     */
+    @Override
+    public int getBreedingAge() {
+        return breedingAge;
     }
 }

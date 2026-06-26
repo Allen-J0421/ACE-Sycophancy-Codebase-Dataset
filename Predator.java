@@ -11,6 +11,7 @@ import java.util.List;
 public abstract class Predator extends HungryAnimal {
 
     // define fields
+    private final double eatingProbability;
 
     /**
      * Constructor for a predator in the simulation.
@@ -20,8 +21,15 @@ public abstract class Predator extends HungryAnimal {
      * @param field The field in which the predator resides.
      * @param location The location in which the predator spawns into.
      */
-    public Predator(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(foodLevel, randomAge, field, location);
+    public Predator(int foodLevel, boolean randomAge, Field field, Location location,
+                    Class<? extends Animal> speciesClass, double breedingProbability,
+                    int maxLitterSize, int breedingAge, int maxAge,
+                    double diseaseSpreadProbability, double deathByDiseaseProbability,
+                    TimeOfDay restingTime, double eatingProbability) {
+        super(foodLevel, randomAge, field, location, speciesClass, breedingProbability,
+                maxLitterSize, breedingAge, maxAge, diseaseSpreadProbability,
+                deathByDiseaseProbability, restingTime);
+        this.eatingProbability = eatingProbability;
     }
 
     /**
@@ -54,13 +62,6 @@ public abstract class Predator extends HungryAnimal {
     }
 
     /**
-     * Getter method to return this predator's probability of eating if food is found.
-     *
-     * @return The predator's eating probability.
-     */
-    abstract public double getEatingProbability();
-
-    /**
      * Called when a predator either eats or leaves a prey it
      * has killed.
      *
@@ -69,29 +70,11 @@ public abstract class Predator extends HungryAnimal {
      */
     @Override
     public boolean eat(Consumable consumable) {
-        if (Randomizer.getRandom().nextDouble() <= getEatingProbability()) {
+        if (Randomizer.getRandom().nextDouble() <= eatingProbability) {
             incrementFoodLevel(consumable.getFoodValue());
             consumable.setEaten();
             return true;
         }
         return false;
-    }
-
-    /**
-     * Checks all adjacent location for predators that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this lion can breed or not.
-     */
-    @Override
-    abstract protected boolean canBreed();
-
-    /**
-     * Increase the predator's food level by a given integer amount.
-     *
-     * @param foodLevel The value to increment food level by.
-     */
-    protected TimeOfDay restingTime() {
-        return TimeOfDay.NIGHT;
     }
 }

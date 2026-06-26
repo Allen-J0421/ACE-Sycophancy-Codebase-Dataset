@@ -10,8 +10,16 @@ public abstract class Herbivore extends Prey {
 
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
-    private static final double DEFAULT_ACTIVENESS = 1;
 
+    private final Class<? extends Animal> speciesClass;
+    private final double breedingProbability;
+    private final int maxLitterSize;
+    private final int breedingAge;
+    private final int maxAge;
+    private final double diseaseSpreadProbability;
+    private final double deathByDiseaseProbability;
+    private final TimeOfDay reducedActivenessTime;
+    private final double reducedActiveness;
     private double activeness;
 
     /**
@@ -22,9 +30,22 @@ public abstract class Herbivore extends Prey {
      * @param field The field in which this herbivore resides.
      * @param location The location in which this herbivore is spawned into.
      */
-    public Herbivore(int foodValue, boolean randomAge, Field field, Location location) {
+    public Herbivore(int foodValue, boolean randomAge, Field field, Location location,
+                     Class<? extends Animal> speciesClass,
+                     double breedingProbability, int maxLitterSize, int breedingAge, int maxAge,
+                     double diseaseSpreadProbability, double deathByDiseaseProbability,
+                     TimeOfDay reducedActivenessTime, double reducedActiveness) {
         super(foodValue, randomAge, field, location);
-        this.activeness = DEFAULT_ACTIVENESS;
+        this.speciesClass = speciesClass;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.breedingAge = breedingAge;
+        this.maxAge = maxAge;
+        this.diseaseSpreadProbability = diseaseSpreadProbability;
+        this.deathByDiseaseProbability = deathByDiseaseProbability;
+        this.reducedActivenessTime = reducedActivenessTime;
+        this.reducedActiveness = reducedActiveness;
+        this.activeness = 1;
     }
 
     /**
@@ -37,23 +58,23 @@ public abstract class Herbivore extends Prey {
     @Override
     public void act(List<Entity> newHerbivores, Weather weather, TimeOfDay time) {
         incrementAge();
-        setActiveness(DEFAULT_ACTIVENESS);
+        setActiveness(1);
 
         if (isAlive()) {
             giveBirth(newHerbivores);
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
+            if (rand.nextDouble() <= deathByDiseaseProbability) {
                 remove();
                 return;
             }
 
-            if (time == getReducedActivenessTime()) {
-                setActiveness(getReducedActiveness());
+            if (time == reducedActivenessTime) {
+                setActiveness(reducedActiveness);
             }
 
             if (rand.nextDouble() <= getActiveness()) {
                 Location newLocation;
-                if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+                if (rand.nextDouble() <= diseaseSpreadProbability) {
                     newLocation = findAnimalToInfect();
                 } else {
                     newLocation = findFood();
@@ -75,14 +96,62 @@ public abstract class Herbivore extends Prey {
     }
 
     /**
-     * @return The time of day when this herbivore is less active.
+     * @return The breeding probability for this herbivore species.
      */
-    protected abstract TimeOfDay getReducedActivenessTime();
+    @Override
+    public double getBreedingProbability() {
+        return breedingProbability;
+    }
 
     /**
-     * @return The activeness value used at the reduced-activeness time.
+     * @return The maximum litter size for this herbivore species.
      */
-    protected abstract double getReducedActiveness();
+    @Override
+    public int getMaxLitterSize() {
+        return maxLitterSize;
+    }
+
+    /**
+     * @return The maximum age for this herbivore species.
+     */
+    @Override
+    public int getMaxAge() {
+        return maxAge;
+    }
+
+    /**
+     * @return The breeding age for this herbivore species.
+     */
+    @Override
+    public int getBreedingAge() {
+        return breedingAge;
+    }
+
+    /**
+     * @return The disease spread probability for this herbivore species.
+     */
+    @Override
+    protected double getDiseaseSpreadProbability() {
+        return diseaseSpreadProbability;
+    }
+
+    /**
+     * @return The death-by-disease probability for this herbivore species.
+     */
+    @Override
+    protected double getDeathByDiseaseProbability() {
+        return deathByDiseaseProbability;
+    }
+
+    /**
+     * Checks all adjacent location for herbivores that meet breeding conditions.
+     *
+     * @return Whether this herbivore can breed or not.
+     */
+    @Override
+    public boolean canBreed() {
+        return getAge() >= breedingAge && hasCompatibleMateNearby(speciesClass);
+    }
 
     /**
      * Getter method for this herbivore's activeness.

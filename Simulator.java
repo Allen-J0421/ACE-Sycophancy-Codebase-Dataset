@@ -137,10 +137,9 @@ public class Simulator
     {
         step++;
         advanceSimulationState();
-        Weather weather = weatherHandler.getWeather();
-        DayState dayState = clock.getDayState();
-        advanceActorGroup(plants, weather, dayState);
-        advanceActorGroup(animals, weather, dayState);
+        SimulationStep simulationStep = new SimulationStep(weatherHandler.getWeather(), clock.getDayState());
+        advanceActorGroup(plants, simulationStep);
+        advanceActorGroup(animals, simulationStep);
         refreshViews();
     }
         
@@ -162,15 +161,14 @@ public class Simulator
      * Iterates through a set of actors and makes them act, then removes the dead and appends newborns.
      *
      * @param actors List of all actors in the field.
-     * @param weather current weather state.
-     * @param dayState current day state.
+     * @param step current simulation step context.
      */
-    private void advanceActorGroup(List<Actor> actors, Weather weather, DayState dayState)
+    private void advanceActorGroup(List<Actor> actors, SimulationStep step)
     {
         List<Actor> newActors = new ArrayList<>();
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
-            actor.act(newActors, weather, dayState);
+            actor.act(newActors, step);
             if(! actor.isAlive()) {
                 it.remove();
             }

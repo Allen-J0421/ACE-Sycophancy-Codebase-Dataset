@@ -47,7 +47,7 @@ public class Reindeer extends HerbivoreAnimal
      * 
      * @param newReindeers the new reeindeers to be born in case the reindeer succesfully mates
      */
-    public void act(List<Actor> newReindeers, Weather weather, DayState dayState) 
+    public void act(List<Actor> newReindeers, SimulationStep step) 
     {
         incrementAge(MAX_AGE);
         incrementHunger();

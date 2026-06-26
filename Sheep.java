@@ -47,7 +47,7 @@ public class Sheep extends HerbivoreAnimal
      * 
      * @param newSheeps the new sheeps to be born in case the sheep succesfully mates.
      */
-    public void act(List<Actor> newSheeps, Weather weather, DayState dayState) 
+    public void act(List<Actor> newSheeps, SimulationStep step) 
     {
         incrementAge(MAX_AGE);
         incrementHunger();

@@ -55,10 +55,10 @@ public class CarnivoreFox extends CarnivoreAnimal
      * 
      * @param newFoxes the new sheeps to be born in case the sheep succesfully mates.
      */
-    public void act(List<Actor> newFoxes, Weather weather, DayState dayState)
+    public void act(List<Actor> newFoxes, SimulationStep step)
     {
         // Fox will not act at night.
-        if(dayState == DayState.NIGHT) {
+        if(step.getDayState() == DayState.NIGHT) {
             return;
         }
         incrementAge(MAX_AGE);

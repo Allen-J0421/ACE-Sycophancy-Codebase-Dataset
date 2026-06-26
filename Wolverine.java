@@ -55,7 +55,7 @@ public class Wolverine extends CarnivoreAnimal
      * 
      * @param newWolverines the new sheeps to be born in case the sheep succesfully mates.
      */
-    public void act(List<Actor> newWolverines, Weather weather, DayState dayState)
+    public void act(List<Actor> newWolverines, SimulationStep step)
     {
         incrementAge(MAX_AGE);
         incrementHunger();

@@ -86,10 +86,9 @@ public abstract class Animal implements Actor
      * whatever it wants/needs to do.
      * 
      * @param newAnimals A list to receive newly born animals.
-     * @param weather The current weather
-     * @param dayState The different state of the day
+     * @param step The current simulation step context.
      */
-    abstract public void act(List<Actor> newAnimals, Weather weather, DayState dayState);
+    abstract public void act(List<Actor> newAnimals, SimulationStep step);
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.

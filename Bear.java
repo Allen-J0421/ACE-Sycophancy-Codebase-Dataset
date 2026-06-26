@@ -55,16 +55,16 @@ public class Bear extends CarnivoreAnimal
      * 
      * @param newBears the new bears to be born in case the sheep succesfully mates.
      */
-    public void act(List<Actor> newBears, Weather weather, DayState dayState)
+    public void act(List<Actor> newBears, SimulationStep step)
     {
         // Bear will not act at night.
-        if(dayState == DayState.NIGHT) {
+        if(step.getDayState() == DayState.NIGHT) {
                 return;
         }
         incrementAge(MAX_AGE);
         incrementHunger();
         if(isAlive()) {
-            if(weather == Weather.SNOW) {
+            if(step.getWeather() == Weather.SNOW) {
                 meet(newBears, MAX_LITTER_SIZE,HIBERNATION_BREEDING_FACTOR * BREEDING_PROBABILITY, BREEDING_AGE);
             } else {
                 meet(newBears, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);

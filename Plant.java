@@ -59,11 +59,10 @@ public abstract class Plant implements Actor
      * whatever it wants/needs to do.
      * 
      * @param newPlants A list to receive newly generated plants.
-     * @param weather The current weather
-     * @param dayState The different state of the day
+     * @param step The current simulation step context.
      */
     
-    public abstract void act(List<Actor> newPlants, Weather weather, DayState dayState);
+    public abstract void act(List<Actor> newPlants, SimulationStep step);
 
     /**
      * Create a new offspring of the current concrete plant type.
@@ -132,12 +131,11 @@ public abstract class Plant implements Actor
      * @param spreadProbability the base probability of spreading.
      */
     protected void actWithGrowthCycle(List<Actor> newPlants,
-                                      Weather weather,
-                                      DayState dayState,
+                                      SimulationStep step,
                                       int maxAge,
                                       double spreadProbability)
     {
-        if(dayState == DayState.NIGHT) {
+        if(step.getDayState() == DayState.NIGHT) {
             return;
         }
         grow(maxAge);
@@ -146,6 +144,7 @@ public abstract class Plant implements Actor
         }
 
         double effectiveProbability = spreadProbability;
+        Weather weather = step.getWeather();
         if(weather == Weather.RAIN || weather == Weather.SUNNY) {
             effectiveProbability *= OPTIMAL_BREEDING_FACTOR;
         }

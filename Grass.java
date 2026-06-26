@@ -42,8 +42,8 @@ public class Grass extends Plant
      * @param newPlants the new plants to be generated
      */
     @Override
-    public void act(List<Actor> newPlants, Weather weather, DayState dayState) {
-        actWithGrowthCycle(newPlants, weather, dayState, MAX_AGE, MULTIPLY_PROBABILITY);
+    public void act(List<Actor> newPlants, SimulationStep step) {
+        actWithGrowthCycle(newPlants, step, MAX_AGE, MULTIPLY_PROBABILITY);
     }
 
     @Override

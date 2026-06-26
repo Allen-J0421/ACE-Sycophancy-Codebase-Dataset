@@ -1,7 +1,3 @@
-
-import java.util.List;
-import java.util.Random;
-
 /**
  * A class representing shared characteristics of plants.
  *
@@ -9,7 +5,9 @@ import java.util.Random;
  */
 public abstract class Plants extends Actor
 {
-    //private static final Random rand = Randomizer.getRandom();
+    private static final int LATE_GROWTH_STEP_THRESHOLD = 1600;
+    private static final int LATE_GROWTH_BONUS = 20;
+
     private int sunLevel; 
     private int waterLevel;
     /**
@@ -37,8 +35,8 @@ public abstract class Plants extends Actor
             births = getRandom().nextInt(getMaxLitter()) + 1;
         }
         
-        if(step > 1600){
-            births = births + 20;
+        if(step > LATE_GROWTH_STEP_THRESHOLD){
+            births = births + LATE_GROWTH_BONUS;
         }
         return births;
     }

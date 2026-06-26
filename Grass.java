@@ -1,5 +1,3 @@
-
-import java.util.Random;
 import java.util.List;
 
 /**
@@ -44,45 +42,67 @@ public class Grass extends Plants
     public void act(List<Actor> newGrass,Simulator simulator){
         incrementAge(simulator.getSteps());
         setGrowthLevel(0.05);
-        if(simulator.isDay()){
-            if(isActive()) {
-                 Field field = getField();
-                //sets the location to show the grass once the actor on top of it has moved.
-                if (field.getObjectAt(getLocation()) == null ){
-                    setLocation(getLocation());
-                }else if (field.getObjectAt(getLocation()) != this && (field.getObjectAt(getLocation()) instanceof Plants)){
-                    Object grassObject = field.getObjectAt(getLocation());
-                    Plants grassPlant = (Plants)grassObject;
-                    grassPlant.setDead();
-                    setLocation(getLocation());
+        if(simulator.isDay() && isActive()) {
+            Field field = getField();
+            restoreVisibleGrass(field);
+            applyWeather(simulator.getWeather());
+            spread(newGrass, field, simulator.getSteps());
+        }
+    }
 
-                }
-                
-                switch(simulator.getWeather()){
-                    case SUNNY:
-                        increaseSunLevel();
-                        decreaseWaterLevel();
-                        break;
-                    case RAINY:
-                        increaseWaterLevel();
-                        decreaseSunLevel();
-                        break;
-                    case FOGGY:
-                        increaseWaterLevel();
-                        break;
-                    default:
-                        break;
-                }
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = growth(simulator.getSteps());
-                for(int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Grass young = new Grass(false, field, loc);
-                    newGrass.add(young);
-                }
-            }  
-        }else{
-            //space for potential night activities
+    /**
+     * Restore this grass in the field after an actor has moved away.
+     * @param field The field currently occupied.
+     */
+    private void restoreVisibleGrass(Field field)
+    {
+        Object actorAtLocation = field.getObjectAt(getLocation());
+        if(actorAtLocation == null) {
+            setLocation(getLocation());
+        } else if(actorAtLocation != this && actorAtLocation instanceof Plants) {
+            Plants grassPlant = (Plants) actorAtLocation;
+            grassPlant.setDead();
+            setLocation(getLocation());
+        }
+    }
+
+    /**
+     * Update water and sunlight levels for the current weather.
+     * @param weather The current weather.
+     */
+    private void applyWeather(Weather weather)
+    {
+        switch(weather){
+            case SUNNY:
+                increaseSunLevel();
+                decreaseWaterLevel();
+                break;
+            case RAINY:
+                increaseWaterLevel();
+                decreaseSunLevel();
+                break;
+            case FOGGY:
+                increaseWaterLevel();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Spread new grass into free adjacent locations.
+     * @param newGrass A list to receive newly born grass.
+     * @param field The field currently occupied.
+     * @param step The current simulation step.
+     */
+    private void spread(List<Actor> newGrass, Field field, int step)
+    {
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = growth(step);
+        for(int b = 0; b < births && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            Grass young = new Grass(false, field, loc);
+            newGrass.add(young);
         }
     }
 

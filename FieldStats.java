@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity in the simulation.
-    private HashMap<String, Counter> counters;
+    private final Map<String, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -32,9 +33,7 @@ public class FieldStats
      */
     public void checkCountIsValid(Field field)
     {
-        if(!countsValid) {
-            generateCounts(field);
-        }
+        ensureCountsValid(field);
     }
     /**
      * Get details of what is in the field.
@@ -44,7 +43,7 @@ public class FieldStats
     public int getCount (String speciesName)
     {
         Counter info = counters.get(speciesName);
-        return info.getCount();
+        return info == null ? 0 : info.getCount();
     }
     
     /**
@@ -53,8 +52,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(String key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for (Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -67,10 +65,8 @@ public class FieldStats
     public void incrementCount(String specieName)
     {
         Counter count = counters.get(specieName);
-        if(count == null) {
-            // We do not have a counter for this specie yet.
-            // Create one.
-            count = new Counter(specieName);
+        if (count == null) {
+            count = new Counter();
             counters.put(specieName, count);
         }
         count.increment();
@@ -91,18 +87,8 @@ public class FieldStats
      */
     public boolean isViable(Field field)
     {
-        // How many counts are non-zero.
-        int nonZero = 0;
-        if(!countsValid) {
-            generateCounts(field);
-        }
-        for(String key : counters.keySet()) {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) {
-                nonZero++;
-            }
-        }
-        return nonZero > 1;
+        ensureCountsValid(field);
+        return countLivingSpecies() > 1;
     }
     
     /**
@@ -122,5 +108,23 @@ public class FieldStats
             }
         }
         countsValid = true;
+    }
+
+    private void ensureCountsValid(Field field)
+    {
+        if (!countsValid) {
+            generateCounts(field);
+        }
+    }
+
+    private int countLivingSpecies()
+    {
+        int nonZero = 0;
+        for (Counter info : counters.values()) {
+            if (info.getCount() > 0) {
+                nonZero++;
+            }
+        }
+        return nonZero;
     }
 }

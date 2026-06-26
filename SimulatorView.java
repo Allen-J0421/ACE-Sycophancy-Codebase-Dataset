@@ -16,6 +16,8 @@ import javax.swing.border.LineBorder;
  */
 public class SimulatorView extends JFrame
 {
+    private static final String WINDOW_TITLE = "Ultimate Simulator 3000";
+    private static final String CELSIUS_SUFFIX = " C";
     // Color used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
     // Color used for objects that have no defined color.
@@ -36,11 +38,11 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
 
     // A map for storing colors for participants in the simulation
-    private Map<String, Color> colors;
+    private final Map<String, Color> colors;
     // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    private final FieldStats stats;
     // The GUIHandler governing the simulation's GUI.
-    private GUIHandler handler;
+    private final GUIHandler handler;
 
     /**
      * Constructor has two roles:
@@ -54,8 +56,8 @@ public class SimulatorView extends JFrame
     {
         // INITIALIZES FIELDS
         this.handler = handler;
-        stats = new FieldStats();
-        colors = new LinkedHashMap<>();
+        this.stats = new FieldStats();
+        this.colors = new LinkedHashMap<>();
 
         // Various information labels initialization.
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -72,8 +74,8 @@ public class SimulatorView extends JFrame
         fieldView = new FieldView(height, width);
 
         // BUILDS THE VIEW
-        JFrame frame = new JFrame("Ultimate Simulator 3000");
-        frame.setMinimumSize(new Dimension(800, 600));
+        setTitle(WINDOW_TITLE);
+        setMinimumSize(new Dimension(800, 600));
 
         // Information display on habitat conditions and step counter.
         FlowLayout simInfo = new FlowLayout();
@@ -123,8 +125,6 @@ public class SimulatorView extends JFrame
         bottomComponents.add(population);
         bottomComponents.add(buttons);
         
-        JPanel centeredFieldView = new JPanel(new BorderLayout());
-        centeredFieldView.add(fieldView, BorderLayout.CENTER);
         add(infoPane, BorderLayout.NORTH);
         add(fieldView, BorderLayout.CENTER);
         add(bottomComponents, BorderLayout.SOUTH);
@@ -182,32 +182,13 @@ public class SimulatorView extends JFrame
             setVisible(true);
         }
 
-        stepLabel.setText(STEP_PREFIX + step);
-        timeLabel.setText(TIME_PREFIX + time);
-        seasonLabel.setText(SEASON_PREFIX + season);
-        temperatureLabel.setText(TEMPERATURE_PREFIX + temperature + " C");
+        updateStatusLabels(step, time, season, temperature);
         stats.reset();
-
-        fieldView.preparePaint();
-
-        for(int row = 0; row < field.getDepth(); row++)
-        {
-            for(int col = 0; col < field.getWidth(); col++)
-            {
-                Species specie = field.getObjectAt(row, col);
-                if(specie != null) {
-                    stats.incrementCount(specie.getName());
-                    fieldView.drawMark(col, row, getColor(specie.getName()));
-                }
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                }
-            }
-        }
+        drawField(field);
         stats.countFinished();
         
         fieldView.repaint();
-        generatePopulationComponent(field);
+        refreshPopulationComponent(field);
     }
     
     /**
@@ -216,27 +197,15 @@ public class SimulatorView extends JFrame
      *
      * @param field (Field) The field whose population status has to be displayed.
      */
-    private void generatePopulationComponent(Field field)
+    private void refreshPopulationComponent(Field field)
     {
         population.removeAll();
         stats.checkCountIsValid(field);
-        for (String speciesName : colors.keySet()) {
-            int count = stats.getCount(speciesName);
-            
-            Box speciesDetails = Box.createHorizontalBox();
-            population.add(speciesDetails);
-            JPanel colorDisplay = new JPanel();
-            colorDisplay.setMaximumSize(new Dimension(10, 10));
-            colorDisplay.setBorder(LineBorder.createGrayLineBorder());
-            colorDisplay.setBackground(colors.get(speciesName));
-            // The pre-leading space should be improved as it is just a way to add a
-            // natural looking padding between the colored square and text.
-            JLabel nameAndCount = new JLabel(" " + speciesName + ": " + count);
-            speciesDetails.add(colorDisplay);
-            speciesDetails.add(nameAndCount);
-
-            population.add(speciesDetails);
+        for (Map.Entry<String, Color> entry : colors.entrySet()) {
+            population.add(createPopulationEntry(entry.getKey(), entry.getValue()));
         }
+        population.revalidate();
+        population.repaint();
     }
 
     /**
@@ -247,6 +216,51 @@ public class SimulatorView extends JFrame
     public boolean isViable(Field field)
     {
         return stats.isViable(field);
+    }
+
+    private void updateStatusLabels(int step, String time, String season, int temperature)
+    {
+        stepLabel.setText(STEP_PREFIX + step);
+        timeLabel.setText(TIME_PREFIX + time);
+        seasonLabel.setText(SEASON_PREFIX + season);
+        temperatureLabel.setText(TEMPERATURE_PREFIX + temperature + CELSIUS_SUFFIX);
+    }
+
+    private void drawField(Field field)
+    {
+        fieldView.preparePaint();
+        for(int row = 0; row < field.getDepth(); row++)
+        {
+            for(int col = 0; col < field.getWidth(); col++)
+            {
+                Species specie = field.getObjectAt(row, col);
+                if(specie != null) {
+                    String speciesName = specie.getName();
+                    stats.incrementCount(speciesName);
+                    fieldView.drawMark(col, row, getColor(speciesName));
+                }
+                else {
+                    fieldView.drawMark(col, row, EMPTY_COLOR);
+                }
+            }
+        }
+    }
+
+    private Box createPopulationEntry(String speciesName, Color color)
+    {
+        int count = stats.getCount(speciesName);
+
+        Box speciesDetails = Box.createHorizontalBox();
+        JPanel colorDisplay = new JPanel();
+        colorDisplay.setMaximumSize(new Dimension(10, 10));
+        colorDisplay.setBorder(LineBorder.createGrayLineBorder());
+        colorDisplay.setBackground(color);
+        // The pre-leading space should be improved as it is just a way to add a
+        // natural looking padding between the colored square and text.
+        JLabel nameAndCount = new JLabel(" " + speciesName + ": " + count);
+        speciesDetails.add(colorDisplay);
+        speciesDetails.add(nameAndCount);
+        return speciesDetails;
     }
 
     /**

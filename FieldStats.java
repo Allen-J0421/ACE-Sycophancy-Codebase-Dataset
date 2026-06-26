@@ -53,8 +53,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -97,8 +96,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             if(info.getCount() > 0) {
                 nonZero++;
             }
@@ -116,14 +114,11 @@ public class FieldStats
     private void generateCounts(Field field)
     {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Creature animal = field.getCreatureAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
-                }
+        field.forEachLocation((location, creature) -> {
+            if(creature != null) {
+                incrementCount(creature.getClass());
             }
-        }
+        });
         countsValid = true;
     }
 }

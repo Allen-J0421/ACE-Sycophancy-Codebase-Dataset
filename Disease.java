@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Write a description of class Disease here.
@@ -8,6 +9,7 @@ import java.util.ArrayList;
  */
 public class Disease
 {
+    private static final Random RAND = Randomizer.getRandom();
     
     // The possibility that an animal may be infected by a disease.
     public static final double INFECTION_RATE = 0.3;
@@ -36,18 +38,39 @@ public class Disease
     }
     
     /**
-     * create the source of infection
+     * Attempt to start a new disease spread event.
      */
-    protected void tryToStartSpread(List<Creature> creatures, int step){
-        if(!getIsSpread() && Randomizer.getRandom().nextDouble() <= DISEASE_OCCURENCE_PROBABILITY){
+    protected void beginSpreadIfPossible(List<Creature> creatures, int step)
+    {
+        if(!getIsSpread() && RAND.nextDouble() <= DISEASE_OCCURENCE_PROBABILITY){
             List<Animal> animals = collectAnimals(creatures);
-            for(Animal animal : animals){
-                if(Randomizer.getRandom().nextDouble() <= INFECTION_RATE){
+            for(Animal animal : animals) {
+                if(RAND.nextDouble() <= INFECTION_RATE) {
                     animal.infect(step);
                     setIsSpread(true);
                 }
             }
         }
+    }
+
+    /**
+     * Refresh whether the disease is still actively spreading.
+     */
+    protected void refreshSpreadState(List<Creature> creatures)
+    {
+        if(getIsSpread()) {
+            setIsSpread(hasActiveInfections(creatures));
+        }
+    }
+
+    private boolean hasActiveInfections(List<Creature> creatures)
+    {
+        for(Animal animal : collectAnimals(creatures)) {
+            if(animal.getIsInfected() && !animal.getIsImmuned()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Animal> collectAnimals(List<Creature> creatures)

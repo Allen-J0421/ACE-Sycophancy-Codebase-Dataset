@@ -1,8 +1,8 @@
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
 
 /**
  * Represent a rectangular grid of field positions.
@@ -12,6 +12,12 @@ import java.util.ArrayList;
  */
 public class Field
 {
+    @FunctionalInterface
+    public interface FieldVisitor
+    {
+        void visit(Location location, Creature creature);
+    }
+
     // A random number generator for providing random locations.
     private static final Random rand = Randomizer.getRandom();
     
@@ -37,11 +43,7 @@ public class Field
      */
     public void clear()
     {
-        for(int row = 0; row < depth; row++) {
-            for(int col = 0; col < width; col++) {
-                field[row][col] = null;
-            }
-        }
+        forEachLocation((location, creature) -> clear(location));
     }
     
     /**
@@ -161,30 +163,7 @@ public class Field
      */
     public List<Location> adjacentLocationsIncludingSelf(Location location, int adjacentDistance)
     {
-        assert location != null : "Null location passed to adjacentLocations";
-        // The list of locations to be returned.
-        List<Location> locations = new LinkedList<>();
-        if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
-            for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
-                int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
-                    }
-                }
-            }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
-            Collections.shuffle(locations, rand);
-        }
-        return locations;
+        return adjacentLocations(location, adjacentDistance, true);
     }
     
     /**
@@ -196,30 +175,7 @@ public class Field
      */
     public List<Location> adjacentLocations(Location location, int adjacentDistance)
     {
-        assert location != null : "Null location passed to adjacentLocations";
-        // The list of locations to be returned.
-        List<Location> locations = new LinkedList<>();
-        if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
-            for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
-                int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
-                    }
-                }
-            }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
-            Collections.shuffle(locations, rand);
-        }
-        return locations;
+        return adjacentLocations(location, adjacentDistance, false);
     }
 
     /**
@@ -260,15 +216,63 @@ public class Field
      */
     public List<Creature> getCreaturesAt(Location location, int adjacentDistance)
     {
-        List<Creature> adjacentCreatures = new ArrayList<>();
-        
-        List<Location> adjacent = adjacentLocationsIncludingSelf(location, adjacentDistance);
-        for(Location where : adjacent) {
-            Creature adjacentCreature = getCreatureAt(where);
-            if(adjacentCreature != null) {
-                adjacentCreatures.add(adjacentCreature);
+        return getCreaturesAt(adjacentLocationsIncludingSelf(location, adjacentDistance));
+    }
+
+    /**
+     * Visit every location in the field.
+     */
+    public void forEachLocation(FieldVisitor visitor)
+    {
+        for(int row = 0; row < depth; row++) {
+            for(int col = 0; col < width; col++) {
+                Location location = new Location(row, col);
+                visitor.visit(location, getCreatureAt(location));
             }
         }
-        return adjacentCreatures;
+    }
+
+    private List<Location> adjacentLocations(Location location, int adjacentDistance, boolean includeSelf)
+    {
+        assert location != null : "Null location passed to adjacentLocations";
+
+        List<Location> locations = new LinkedList<>();
+        if(location == null) {
+            return locations;
+        }
+
+        int row = location.getRow();
+        int col = location.getCol();
+        for(int rowOffset = -adjacentDistance; rowOffset <= adjacentDistance; rowOffset++) {
+            int nextRow = row + rowOffset;
+            if(nextRow >= 0 && nextRow < depth) {
+                for(int colOffset = -adjacentDistance; colOffset <= adjacentDistance; colOffset++) {
+                    int nextCol = col + colOffset;
+                    if(isValidColumn(nextCol) && (includeSelf || rowOffset != 0 || colOffset != 0)) {
+                        locations.add(new Location(nextRow, nextCol));
+                    }
+                }
+            }
+        }
+
+        Collections.shuffle(locations, rand);
+        return locations;
+    }
+
+    private List<Creature> getCreaturesAt(List<Location> locations)
+    {
+        List<Creature> creatures = new ArrayList<>();
+        for(Location location : locations) {
+            Creature creature = getCreatureAt(location);
+            if(creature != null) {
+                creatures.add(creature);
+            }
+        }
+        return creatures;
+    }
+
+    private boolean isValidColumn(int column)
+    {
+        return column >= 0 && column < width;
     }
 }

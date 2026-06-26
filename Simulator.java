@@ -126,14 +126,14 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        disease.tryToStartSpread(creatures, step);
+        disease.beginSpreadIfPossible(creatures, step);
 
         List<Creature> newCreatures = new ArrayList<>();
         double oxygenChange = actForAllCreatures(newCreatures);
 
         updateStormState();
         oxygenLevel += oxygenChange;
-        updateDiseaseState();
+        disease.refreshSpreadState(creatures);
         creatures.addAll(newCreatures);
         showStatus();
     }
@@ -159,23 +159,6 @@ public class Simulator
     public boolean timeOfDay()
     {
         return (step % FULL_DAY_LENGTH) < DAY_LENGTH;
-    }
-
-    /**
-     * If all animals infected die or all animals get immunity, the disease stops.
-     * Only animal can be infected.
-     */
-    public boolean hasActiveInfections()
-    {
-        for(Creature creature : creatures) {
-            if(creature instanceof Animal) {
-                Animal animal = (Animal) creature;
-                if(animal.getIsInfected() && !animal.getIsImmuned()) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private int[] sanitizeDimensions(int depth, int width)
@@ -226,20 +209,7 @@ public class Simulator
 
     private void updateStormState()
     {
-        if(Randomizer.getRandom().nextDouble() <= STORM_HAPPEN_PROBABILITY) {
-            weather.underwaterStorm(STORM_SCOPE);
-            weather.setStormStart(true);
-        }
-        else {
-            weather.setStormStart(false);
-        }
-    }
-
-    private void updateDiseaseState()
-    {
-        if(disease.getIsSpread()) {
-            disease.setIsSpread(hasActiveInfections());
-        }
+        weather.updateStorm(STORM_HAPPEN_PROBABILITY, STORM_SCOPE);
     }
 
     private void showStatus()
@@ -255,11 +225,8 @@ public class Simulator
     {
         Random random = Randomizer.getRandom();
         field.clear();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                addCreature(createRandomCreature(random, new Location(row, col)));
-            }
-        }
+        field.forEachLocation((location, creature) ->
+            addCreature(createRandomCreature(random, location)));
     }
 
     /**

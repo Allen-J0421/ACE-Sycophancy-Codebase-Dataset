@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -77,14 +76,6 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
-    }
-
-    /**
      * Show the current status of the field.
      * @param step Which iteration step it is.
      * @param field The field whose status is to be displayed.
@@ -100,7 +91,7 @@ public class SimulatorView extends JFrame
         fieldView.preparePaint();
         renderField(field);
         if(weather.getStormStart()) {
-            drawStormOverlay(field, weather);
+            drawStormOverlay(weather);
         }
 
         stats.countFinished();
@@ -149,11 +140,8 @@ public class SimulatorView extends JFrame
 
     private void renderField(Field field)
     {
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                drawLocation(field.getCreatureAt(row, col), row, col);
-            }
-        }
+        field.forEachLocation((location, creature) ->
+            drawLocation(creature, location.getRow(), location.getCol()));
     }
 
     private void drawLocation(Creature creature, int row, int col)
@@ -167,11 +155,9 @@ public class SimulatorView extends JFrame
         fieldView.drawMark(col, row, getCreatureColor(creature));
     }
 
-    private void drawStormOverlay(Field field, Weather weather)
+    private void drawStormOverlay(Weather weather)
     {
-        List<Location> stormLocations =
-            field.adjacentLocationsIncludingSelf(weather.getRandomLocation(), weather.getStormScope());
-        for(Location location : stormLocations) {
+        for(Location location : weather.getStormArea()) {
             fieldView.drawMark(location.getCol(), location.getRow(), getColor(Weather.class));
         }
     }

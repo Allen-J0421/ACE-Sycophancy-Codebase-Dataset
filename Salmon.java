@@ -34,19 +34,8 @@ public class Salmon extends Animal
     public Salmon(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location, MAX_AGE, SEAWEED_FOOD_VALUE,
-              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, true);
-    }
-
-    
-    /**
-     * Decide if two salmons countered has different sex;
-     */
-    public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(2);
-    }
-
-    protected Animal createYoung(Field field, Location location){
-        return new Salmon(false, field, location);
+              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, true, 2,
+              (birthField, birthLocation) -> new Salmon(false, birthField, birthLocation));
     }
 
     protected int getFoodValueFor(Animal animal){

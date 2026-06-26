@@ -34,19 +34,8 @@ public class Whale extends Animal
     public Whale(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location, MAX_AGE, COD_FOOD_VALUE,
-              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, false);
-    }
-
-    /**
-     * Decide whether two whales have different sex.
-     * @return true if two whales have different sex, false otherwise.
-     */
-    public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(2);
-    }
-
-    protected Animal createYoung(Field field, Location location){
-        return new Whale(false, field, location);
+              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, false, 2,
+              (birthField, birthLocation) -> new Whale(false, birthField, birthLocation));
     }
 
     protected int getFoodValueFrom(Cod cod){

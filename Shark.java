@@ -34,19 +34,8 @@ public class Shark extends Animal
     public Shark(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location, MAX_AGE, COD_FOOD_VALUE,
-              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, false);
-    }
-
-    /**
-     *  Decide whether two sharks have different sex.
-     *  @return true if two sharks have different sex, false otherwise.
-     */
-    public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(2);
-    }
-
-    protected Animal createYoung(Field field, Location location){
-        return new Shark(false, field, location);
+              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, false, 2,
+              (birthField, birthLocation) -> new Shark(false, birthField, birthLocation));
     }
 
     protected int getFoodValueFrom(Cod cod){

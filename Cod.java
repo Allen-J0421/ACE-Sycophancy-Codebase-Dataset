@@ -34,19 +34,8 @@ public class Cod extends Animal
     public Cod(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location, MAX_AGE, SEAWEED_FOOD_VALUE,
-              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, true);
-    }
-
-    /**
-     * Decide whether two cods have different sex.
-     * @return true if two cods have different sex, false otherwise.
-     */
-    public boolean encounterWithDiffSex(){
-        return encounterWithDiffSex(1);
-    }
-
-    protected Animal createYoung(Field field, Location location){
-        return new Cod(false, field, location);
+              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, true, 1,
+              (birthField, birthLocation) -> new Cod(false, birthField, birthLocation));
     }
 
     protected int getFoodValueFor(Animal animal){

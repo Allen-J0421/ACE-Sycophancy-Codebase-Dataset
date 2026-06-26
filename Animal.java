@@ -1,13 +1,14 @@
 import java.util.List;
 import java.lang.Math;
 import java.util.Random;
+import java.util.function.BiFunction;
 
 /**
  * A class representing shared characteristics of animals.
  *
  * @version 2022/03/02
  */
-public abstract class Animal extends Creature
+public class Animal extends Creature
 {   
     // A shared random number generator to control aging, hunger and breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -28,6 +29,10 @@ public abstract class Animal extends Creature
     private int maxLitterSize;
     // Whether this animal needs a different-sex encounter to breed.
     private boolean requiresDifferentSexToBreed;
+    // Distance at which this animal looks for a mate.
+    private int mateSearchDistance;
+    // Factory used to create newborn animals of the same species.
+    private BiFunction<Field, Location, Animal> offspringFactory;
 
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
@@ -45,7 +50,8 @@ public abstract class Animal extends Creature
 
     public Animal(boolean randomAge, Field field, Location location, int maxAge, int foodValue,
                   int breedingAge, double breedingProbability, int maxLitterSize,
-                  boolean requiresDifferentSexToBreed){
+                  boolean requiresDifferentSexToBreed, int mateSearchDistance,
+                  BiFunction<Field, Location, Animal> offspringFactory){
         super(field, location);
         sex = (int)(Math.round(Math.random()));
         this.maxAge = maxAge;
@@ -53,6 +59,8 @@ public abstract class Animal extends Creature
         this.breedingProbability = breedingProbability;
         this.maxLitterSize = maxLitterSize;
         this.requiresDifferentSexToBreed = requiresDifferentSexToBreed;
+        this.mateSearchDistance = mateSearchDistance;
+        this.offspringFactory = offspringFactory;
         if(randomAge) {
             age = rand.nextInt(maxAge);
             foodLevel = rand.nextInt(foodValue);
@@ -150,7 +158,7 @@ public abstract class Animal extends Creature
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = createYoung(field, loc);
+            Animal young = offspringFactory.apply(field, loc);
             newAnimals.add(young);
         }
     }
@@ -218,10 +226,13 @@ public abstract class Animal extends Creature
     }
 
     /**
-     * Every animal have different gender. and the implementation of this method is at its subclass.
-     * 
+     * Check whether this animal has encountered a compatible different-sex mate.
+     * @return true if a compatible different-sex mate is nearby, false otherwise.
      */
-    public abstract boolean encounterWithDiffSex();
+    public boolean encounterWithDiffSex()
+    {
+        return encounterWithDiffSex(mateSearchDistance);
+    }
 
     /**
      * Look for a nearby animal of the given class with a different sex.
@@ -241,14 +252,6 @@ public abstract class Animal extends Creature
         }
         return false;
     }
-
-    /**
-     * Create a new born animal of the same species.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @return A new born animal.
-     */
-    protected abstract Animal createYoung(Field field, Location location);
 
     /**
      * Return the food value of a cod for this animal.

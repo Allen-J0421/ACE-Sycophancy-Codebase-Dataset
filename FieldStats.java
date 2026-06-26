@@ -155,7 +155,7 @@ public class FieldStats
      */
     private void generateCounts(Field field)
     {
-        DiseaseService diseaseService = field.getDiseaseService();
+        DiseaseService diseaseService = field.getSimulationContext().getDiseaseService();
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {

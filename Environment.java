@@ -7,15 +7,15 @@
 
 public class Environment {
     private final Time time;
-    private final WeatherService weatherService;
+    private final SimulationContext context;
 
     /**
      * Create a new instance of class Environment.
      */
-    public Environment(Time time, WeatherService weatherService)
+    public Environment(Time time, SimulationContext context)
     {
         this.time = time;
-        this.weatherService = weatherService;
+        this.context = context;
     }
 
     /**
@@ -31,12 +31,12 @@ public class Environment {
      */
     public Weather getWeather()
     {
-        return weatherService.getCurrentWeather();
+        return context.getWeatherService().getCurrentWeather();
     }
 
     public WeatherService getWeatherService()
     {
-        return weatherService;
+        return context.getWeatherService();
     }
 
     public void advanceTime()

@@ -32,11 +32,11 @@ public class Grass extends Plant
      */
     public Grass(Field field, Location location)
     {
-        super(field.getRandomProvider(), field, location);
+        super(field.getSimulationContext(), field, location);
 
         numberOfStages = MAX_GROWTH_STAGES;
         stepsPerStage = DEFAULT_STEPS_PER_STAGE;
-        stageOfGrowth = getRandomProvider().getRandom().nextInt(numberOfStages);
+        stageOfGrowth = getSimulationContext().getRandomProvider().getRandom().nextInt(numberOfStages);
         foodValue = stageOfGrowth;
 
     }
@@ -50,7 +50,7 @@ public class Grass extends Plant
      */
     public void act(List<Actor> newGrass, Environment environment)
     {
-        Random rand = getRandomProvider().getRandom();
+        Random rand = getSimulationContext().getRandomProvider().getRandom();
         WeatherService weatherService = environment.getWeatherService();
         if(isAlive()
                 && environment.getTime().isDay()
@@ -70,10 +70,10 @@ public class Grass extends Plant
         // New grass are made into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getMovementService().getFreeAdjacentLocations(field, getLocation());
+        List<Location> free = getSimulationContext().getMovementService().getFreeAdjacentLocations(field, getLocation());
         for(int b = 0; b < free.size(); b++) {
             Location loc = free.remove(0);
-            Grass young = field.getOrganismFactory().createOffspring(Grass.class, field, loc);
+            Grass young = getSimulationContext().getOrganismFactory().createOffspring(Grass.class, field, loc);
             newGrass.add(young);
         }
     }

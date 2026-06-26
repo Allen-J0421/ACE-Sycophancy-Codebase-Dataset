@@ -46,7 +46,7 @@ public class Deer extends Animal
      */
     public Deer(boolean randomAge, Field field, Location location, Gender sex)
     {
-        super(field.getRandomProvider(), field, location, randomAge, sex);
+        super(field.getSimulationContext(), field, location, randomAge, sex);
         this.isNocturnal = false;
     }
     /**

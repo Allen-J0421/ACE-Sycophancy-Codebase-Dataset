@@ -16,9 +16,9 @@ public abstract class Plant extends Organism implements Actor
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Plant(RandomProvider randomProvider, Field field, Location location)
+    public Plant(SimulationContext context, Field field, Location location)
     {
-        super(randomProvider, field, location);
+        super(context, field, location);
     }
 
     public int getStepsPerStage()

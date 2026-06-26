@@ -18,16 +18,12 @@ public class OrganismFactory
             Hunter.class
     );
 
-    private final SimulationConfig config;
-    private final RandomProvider randomProvider;
-    private final DiseaseService diseaseService;
+    private final SimulationContext context;
     private final Map<Class<? extends Organism>, OrganismCreator<? extends Organism>> creators;
 
-    public OrganismFactory(RandomProvider randomProvider, SimulationConfig config, DiseaseService diseaseService)
+    public OrganismFactory(SimulationContext context)
     {
-        this.randomProvider = randomProvider;
-        this.config = config;
-        this.diseaseService = diseaseService;
+        this.context = context;
         this.creators = Map.ofEntries(
                 Map.entry(Grass.class, (field, location, options) -> new Grass(field, location)),
                 Map.entry(Hunter.class, (field, location, options) -> new Hunter(field, location)),
@@ -63,14 +59,14 @@ public class OrganismFactory
 
     public List<Actor> createGrassPatches(Field field, Environment environment)
     {
-        Random rand = randomProvider.getRandom();
+        Random rand = context.getRandomProvider().getRandom();
         if(!environment.getWeatherService().canCreateGrassPatches()) {
             return List.of();
         }
 
-        double creationRate = config.getCreationProbability(Grass.class);
+        double creationRate = context.getConfig().getCreationProbability(Grass.class);
         List<Actor> grassActors = new ArrayList<>();
-        for(Location location : field.getMovementService().getRandomFreePatches(field, creationRate)) {
+        for(Location location : context.getMovementService().getRandomFreePatches(field, creationRate)) {
             if(rand.nextDouble() <= creationRate) {
                 grassActors.add(createOffspring(Grass.class, field, location));
             }
@@ -100,13 +96,13 @@ public class OrganismFactory
 
     private Organism maybeCreateOrganism(Field field, Location location, int hunterCount)
     {
-        Random rand = randomProvider.getRandom();
+        Random rand = context.getRandomProvider().getRandom();
         for(Class<? extends Organism> organismClass : CREATION_ORDER) {
-            if(organismClass == Hunter.class && hunterCount >= config.getHunterLimit()) {
+            if(organismClass == Hunter.class && hunterCount >= context.getConfig().getHunterLimit()) {
                 continue;
             }
 
-            if(rand.nextDouble() <= config.getCreationProbability(organismClass)) {
+            if(rand.nextDouble() <= context.getConfig().getCreationProbability(organismClass)) {
                 return createInitialOrganism(organismClass, field, location);
             }
         }
@@ -125,13 +121,13 @@ public class OrganismFactory
         }
 
         T organism = organismClass.cast(creator.create(field, location, options));
-        diseaseService.initializeOrganism(organism);
+        context.getDiseaseService().initializeOrganism(organism);
         return organism;
     }
 
     private Animal.Gender getRandomSex()
     {
-        return randomProvider.getRandom().nextBoolean()
+        return context.getRandomProvider().getRandom().nextBoolean()
                 ? Animal.Gender.MALE
                 : Animal.Gender.FEMALE;
     }

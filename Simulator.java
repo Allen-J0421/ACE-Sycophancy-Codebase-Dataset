@@ -20,8 +20,7 @@ public class Simulator
     private final Environment environment;
     // Configuration and actor creation rules for the simulation.
     private final SimulationConfig config;
-    private final DiseaseService diseaseService;
-    private final WeatherService weatherService;
+    private final SimulationContext context;
     private final ActorService actorService;
     // Published state for observers.
     private final List<SimulationObserver> observers;
@@ -118,13 +117,14 @@ public class Simulator
         }
 
         this.config = config;
-        this.diseaseService = new DiseaseService(randomProvider);
-        this.weatherService = new WeatherService(randomProvider);
-        MovementService movementService = new MovementService(randomProvider);
-        OrganismFactory organismFactory = new OrganismFactory(randomProvider, config, diseaseService);
-        this.field = new Field(randomProvider, organismFactory, diseaseService, movementService, depth, width);
-        this.actorService = new ActorService(field, organismFactory, diseaseService);
-        this.environment = new Environment(new Time(), weatherService);
+        this.context = new SimulationContext(randomProvider, config);
+        this.field = new Field(context, depth, width);
+        context.setField(field);
+        OrganismFactory organismFactory = new OrganismFactory(context);
+        context.setOrganismFactory(organismFactory);
+        this.actorService = new ActorService(context, field);
+        context.setActorService(actorService);
+        this.environment = new Environment(new Time(), context);
         this.observers = new ArrayList<>();
 
         reset();
@@ -239,7 +239,7 @@ public class Simulator
 
         step++;
         environment.advanceTime();
-        weatherService.advance();
+        context.getWeatherService().advance();
         actorService.updateActors(environment, step);
         publishState();
     }
@@ -253,8 +253,8 @@ public class Simulator
         remainingSteps = 0;
         step = 0;
         environment.reset();
-        weatherService.reset();
-        diseaseService.reset();
+        context.getWeatherService().reset();
+        context.getDiseaseService().reset();
 
         actorService.reset();
 

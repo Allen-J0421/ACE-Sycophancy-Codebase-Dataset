@@ -34,7 +34,7 @@ public class SimulationState
 
     public static SimulationState capture(int step, Environment environment, Field field)
     {
-        DiseaseService diseaseService = field.getDiseaseService();
+        DiseaseService diseaseService = field.getSimulationContext().getDiseaseService();
         Map<Class<?>, Integer> populationCounts = new LinkedHashMap<>();
         for(Class<?> actorClass : SimulationInfo.ALL_ACTORS) {
             populationCounts.put(actorClass, 0);

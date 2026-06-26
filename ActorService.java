@@ -7,23 +7,21 @@ import java.util.List;
  */
 public class ActorService
 {
+    private final SimulationContext context;
     private final List<Actor> actors;
     private final Field field;
-    private final OrganismFactory organismFactory;
-    private final DiseaseService diseaseService;
 
-    public ActorService(Field field, OrganismFactory organismFactory, DiseaseService diseaseService)
+    public ActorService(SimulationContext context, Field field)
     {
+        this.context = context;
         this.actors = new ArrayList<>();
         this.field = field;
-        this.organismFactory = organismFactory;
-        this.diseaseService = diseaseService;
     }
 
     public void reset()
     {
         actors.clear();
-        actors.addAll(organismFactory.populate(field));
+        actors.addAll(context.getOrganismFactory().populate(field));
     }
 
     public void updateActors(Environment environment, int step)
@@ -37,7 +35,7 @@ public class ActorService
         }
 
         actors.addAll(newActors);
-        actors.addAll(organismFactory.createGrassPatches(field, environment));
+        actors.addAll(context.getOrganismFactory().createGrassPatches(field, environment));
     }
 
     private void updateActor(Actor actor, List<Actor> newActors, Environment environment)
@@ -46,7 +44,7 @@ public class ActorService
             if(!animal.isAwake(environment)) {
                 return;
             }
-            if(!diseaseService.processPreAct(animal)) {
+            if(!context.getDiseaseService().processPreAct(animal)) {
                 return;
             }
         }
@@ -54,7 +52,7 @@ public class ActorService
         if(actor.isAlive()) {
             actor.act(newActors, environment);
             if(actor instanceof Animal animal) {
-                diseaseService.processPostAct(animal);
+                context.getDiseaseService().processPostAct(animal);
             }
         }
     }
@@ -70,7 +68,7 @@ public class ActorService
     {
         if(!actor.isAlive()) {
             if(actor instanceof Organism organism) {
-                diseaseService.unregister(organism);
+                context.getDiseaseService().unregister(organism);
             }
             iterator.remove();
         }

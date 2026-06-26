@@ -24,7 +24,7 @@ public class Hunter extends Organism implements Actor
      */
     public Hunter(Field field, Location location)
     {
-        super(field.getRandomProvider(), field, location);
+        super(field.getSimulationContext(), field, location);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Hunter extends Organism implements Actor
     private void move()
     {
         Field field = getField();
-        MovementService movementService = field.getMovementService();
+        MovementService movementService = getSimulationContext().getMovementService();
         List<Location> adjacentLocations = movementService.getAdjacentLocations(field, getLocation());
         MovementService.MovementDecision movementDecision = movementService.resolveHunterMovement(this, adjacentLocations);
 

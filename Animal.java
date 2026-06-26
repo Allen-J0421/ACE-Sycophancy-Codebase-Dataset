@@ -40,11 +40,11 @@ public abstract class Animal extends Organism implements Actor
      * @param randomAge The animal's random starting age.
      * @param sex The animal's gender. 
      */
-    public Animal(RandomProvider randomProvider, Field field, Location location, boolean randomAge, Gender sex)
+    public Animal(SimulationContext context, Field field, Location location, boolean randomAge, Gender sex)
     {
-        super(randomProvider, field, location);
+        super(context, field, location);
         this.sex = sex;
-        Random rand = getRandomProvider().getRandom();
+        Random rand = getSimulationContext().getRandomProvider().getRandom();
         if(randomAge) {
             this.age = rand.nextInt(getMaxAge());
             foodLevel = rand.nextInt(getMaxFoodLevel());
@@ -79,8 +79,9 @@ public abstract class Animal extends Organism implements Actor
     protected MovementService.MovementDecision findFood(Environment environment)
     {
         Field field = getField();
-        MovementService movementService = field.getMovementService();
-        DiseaseService diseaseService = field.getDiseaseService();
+        SimulationContext context = getSimulationContext();
+        MovementService movementService = context.getMovementService();
+        DiseaseService diseaseService = context.getDiseaseService();
         List<Location> adjacent = movementService.getAdjacentLocations(field, getLocation());
         diseaseService.applyAdjacentExposure(this, adjacent, field);
         return movementService.resolveAnimalMovement(this, environment, adjacent);
@@ -95,18 +96,19 @@ public abstract class Animal extends Organism implements Actor
     protected void giveBirth(List<Actor> newAnimals, Environment environment)
     {
         Field field = getField();
-        List<Location> free = field.getMovementService().getFreeAdjacentLocations(field, getLocation());
+        List<Location> free = getSimulationContext().getMovementService().getFreeAdjacentLocations(field, getLocation());
         int births = breed();
         for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
-            Gender sex = getRandomProvider().getRandom().nextBoolean() ? Gender.MALE : Gender.FEMALE;
+            Gender sex = getSimulationContext().getRandomProvider().getRandom().nextBoolean() ? Gender.MALE : Gender.FEMALE;
             newAnimals.add(createYoung(field, loc, sex));
         }
     }
 
     protected Animal createYoung(Field field, Location location, Gender sex)
     {
-        return field.getOrganismFactory().createOffspring(getClass().asSubclass(Animal.class), field, location, sex);
+        return getSimulationContext().getOrganismFactory()
+                .createOffspring(getClass().asSubclass(Animal.class), field, location, sex);
     }
 
     /**
@@ -127,12 +129,12 @@ public abstract class Animal extends Organism implements Actor
      */
     protected int breed()
     {
-        Random rand = getRandomProvider().getRandom();
+        Random rand = getSimulationContext().getRandomProvider().getRandom();
         int births = 0;
         if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
             births = rand.nextInt(getMaxLitterSize()) + 1;
             Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
-            getField().getDiseaseService().applySexualExposure(this, mate);
+            getSimulationContext().getDiseaseService().applySexualExposure(this, mate);
         }
         return births;
     }
@@ -154,7 +156,7 @@ public abstract class Animal extends Organism implements Actor
     protected List<Organism> getPotentialMates()
     {
         if(getField() != null){
-            return getField().getMovementService().findPotentialMates(this);
+            return getSimulationContext().getMovementService().findPotentialMates(this);
         }
         return new ArrayList<>();
     }
@@ -190,7 +192,7 @@ public abstract class Animal extends Organism implements Actor
         }
 
         if(movementDecision.targetLocation() != null) {
-            getField().getMovementService().moveOrganism(this, movementDecision.targetLocation());
+            getSimulationContext().getMovementService().moveOrganism(this, movementDecision.targetLocation());
         }
         else if(movementDecision.overcrowded()) {
             setDead();
@@ -199,7 +201,7 @@ public abstract class Animal extends Organism implements Actor
 
     private void consume(Organism food)
     {
-        getField().getDiseaseService().applyFoodborneExposure(this, food);
+        getSimulationContext().getDiseaseService().applyFoodborneExposure(this, food);
         if(food.isAlive()) {
             food.setDead();
             int newFoodLevel = foodLevel + food.getFoodValue();

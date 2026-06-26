@@ -9,7 +9,7 @@ public abstract class Organism {
 
     // Whether the organism is alive or not.
     private boolean alive;
-    private final RandomProvider randomProvider;
+    private final SimulationContext context;
     // The organism's field.
     private Field field;
     // The organism's position in the field.
@@ -21,10 +21,10 @@ public abstract class Organism {
     /**
      * Creates a new organism. 
      */
-    public Organism(RandomProvider randomProvider, Field field, Location location)
+    public Organism(SimulationContext context, Field field, Location location)
     {
         alive = true;
-        this.randomProvider = randomProvider;
+        this.context = context;
         this.field = field;
         setLocation(location);
     }
@@ -61,9 +61,9 @@ public abstract class Organism {
         return field;
     }
 
-    protected RandomProvider getRandomProvider()
+    protected SimulationContext getSimulationContext()
     {
-        return randomProvider;
+        return context;
     }
 
     /**

@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class NaivePatternSearch {
+public final class NaivePatternSearch implements PatternSearcher {
+
+    public static final PatternSearcher INSTANCE = new NaivePatternSearch();
 
     private NaivePatternSearch() {
-        // Utility class.
+        // Singleton instance.
     }
 
-    public static List<Integer> search(CharSequence pattern, CharSequence text) {
+    @Override
+    public List<Integer> search(CharSequence pattern, CharSequence text) {
         Objects.requireNonNull(pattern, "pattern");
         Objects.requireNonNull(text, "text");
 

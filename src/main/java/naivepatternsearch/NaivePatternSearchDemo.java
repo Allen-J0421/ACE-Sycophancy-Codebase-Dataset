@@ -23,7 +23,7 @@ public final class NaivePatternSearchDemo {
             return;
         }
 
-        List<Integer> matches = NaivePatternSearch.search(pattern, text);
+        List<Integer> matches = NaivePatternSearch.INSTANCE.search(pattern, text);
         for (int index : matches) {
             System.out.print(index + " ");
         }

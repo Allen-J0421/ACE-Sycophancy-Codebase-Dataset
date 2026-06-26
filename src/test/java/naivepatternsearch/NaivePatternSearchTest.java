@@ -15,13 +15,13 @@ public final class NaivePatternSearchTest {
         assertMatches("", "abc", Arrays.asList(0, 1, 2, 3));
         assertMatches("abcd", "ab", List.of());
         assertMatches(new StringBuilder("aba"), new StringBuilder("ababa"), Arrays.asList(0, 2));
-        assertUnmodifiable(NaivePatternSearch.search("aba", "ababa"));
-        assertThrowsNullPointer(() -> NaivePatternSearch.search(null, "text"));
-        assertThrowsNullPointer(() -> NaivePatternSearch.search("pattern", null));
+        assertUnmodifiable(NaivePatternSearch.INSTANCE.search("aba", "ababa"));
+        assertThrowsNullPointer(() -> NaivePatternSearch.INSTANCE.search(null, "text"));
+        assertThrowsNullPointer(() -> NaivePatternSearch.INSTANCE.search("pattern", null));
     }
 
     private static void assertMatches(CharSequence pattern, CharSequence text, List<Integer> expected) {
-        List<Integer> actual = NaivePatternSearch.search(pattern, text);
+        List<Integer> actual = NaivePatternSearch.INSTANCE.search(pattern, text);
         if (!actual.equals(expected)) {
             throw new AssertionError("Expected " + expected + " but got " + actual);
         }

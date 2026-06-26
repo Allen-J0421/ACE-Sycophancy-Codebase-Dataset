@@ -1,7 +1,6 @@
 import java.util.List;
 import java.lang.Math;
 import java.util.Random;
-import java.util.function.BiFunction;
 
 /**
  * A class representing shared characteristics of animals.
@@ -17,22 +16,10 @@ public class Animal extends Creature
     private int sex;
     // The animal's age.
     private int age;
-    // The age to which this animal can live.
-    private int maxAge;
     // The animal's food level.
     private int foodLevel;
-    // The age at which this animal can start to breed.
-    private int breedingAge;
-    // The likelihood of this animal breeding.
-    private double breedingProbability;
-    // The maximum number of births.
-    private int maxLitterSize;
-    // Whether this animal needs a different-sex encounter to breed.
-    private boolean requiresDifferentSexToBreed;
-    // Distance at which this animal looks for a mate.
-    private int mateSearchDistance;
-    // Factory used to create newborn animals of the same species.
-    private BiFunction<Field, Location, Animal> offspringFactory;
+    // Species-specific lifecycle and feeding behavior.
+    private final AnimalSpecies species;
 
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
@@ -48,26 +35,17 @@ public class Animal extends Creature
     // total population that is die of disease.
     public static int populationDieOfDisease = 0;
 
-    public Animal(boolean randomAge, Field field, Location location, int maxAge, int foodValue,
-                  int breedingAge, double breedingProbability, int maxLitterSize,
-                  boolean requiresDifferentSexToBreed, int mateSearchDistance,
-                  BiFunction<Field, Location, Animal> offspringFactory){
+    public Animal(boolean randomAge, Field field, Location location, AnimalSpecies species){
         super(field, location);
         sex = (int)(Math.round(Math.random()));
-        this.maxAge = maxAge;
-        this.breedingAge = breedingAge;
-        this.breedingProbability = breedingProbability;
-        this.maxLitterSize = maxLitterSize;
-        this.requiresDifferentSexToBreed = requiresDifferentSexToBreed;
-        this.mateSearchDistance = mateSearchDistance;
-        this.offspringFactory = offspringFactory;
+        this.species = species;
         if(randomAge) {
-            age = rand.nextInt(maxAge);
-            foodLevel = rand.nextInt(foodValue);
+            age = rand.nextInt(species.getMaxAge());
+            foodLevel = rand.nextInt(species.getInitialFoodValue());
         }
         else {
             age = 0;
-            foodLevel = foodValue;
+            foodLevel = species.getInitialFoodValue();
         }
         isInfected = false;
         isImmuned = false;
@@ -130,7 +108,7 @@ public class Animal extends Creature
     private void incrementAge()
     {
         age++;
-        if(age > maxAge) {
+        if(age > species.getMaxAge()) {
             setDead();
         }
     }
@@ -158,7 +136,7 @@ public class Animal extends Creature
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = offspringFactory.apply(field, loc);
+            Animal young = species.createYoung(field, loc);
             newAnimals.add(young);
         }
     }
@@ -171,8 +149,8 @@ public class Animal extends Creature
     private int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= breedingProbability) {
-            births = rand.nextInt(maxLitterSize) + 1;
+        if(canBreed() && rand.nextDouble() <= species.getBreedingProbability()) {
+            births = rand.nextInt(species.getMaxLitterSize()) + 1;
         }
         return births;
     }
@@ -183,7 +161,8 @@ public class Animal extends Creature
      */
     private boolean canBreed()
     {
-        return age >= breedingAge && (!requiresDifferentSexToBreed || encounterWithDiffSex());
+        return age >= species.getBreedingAge() &&
+               (!species.requiresDifferentSexToBreed() || encounterWithDiffSex());
     }
 
     /**
@@ -231,7 +210,7 @@ public class Animal extends Creature
      */
     public boolean encounterWithDiffSex()
     {
-        return encounterWithDiffSex(mateSearchDistance);
+        return encounterWithDiffSex(species.getMateSearchDistance());
     }
 
     /**
@@ -258,7 +237,7 @@ public class Animal extends Creature
      */
     protected int getFoodValueFrom(Cod cod)
     {
-        return 0;
+        return species.getFoodValueFrom(cod.getSpecies());
     }
 
     /**
@@ -266,7 +245,7 @@ public class Animal extends Creature
      */
     protected int getFoodValueFrom(Salmon salmon)
     {
-        return 0;
+        return species.getFoodValueFrom(salmon.getSpecies());
     }
 
     /**
@@ -274,7 +253,7 @@ public class Animal extends Creature
      */
     protected int getFoodValueFrom(Seaweed seaweed)
     {
-        return 0;
+        return species.getFoodValueFromSeaweed();
     }
 
     /**
@@ -282,7 +261,7 @@ public class Animal extends Creature
      */
     protected boolean canMateWith(Cod cod)
     {
-        return false;
+        return species.canMateWith(cod.getSpecies());
     }
 
     /**
@@ -290,7 +269,12 @@ public class Animal extends Creature
      */
     protected boolean canMateWith(Salmon salmon)
     {
-        return false;
+        return species.canMateWith(salmon.getSpecies());
+    }
+
+    protected AnimalSpecies getSpecies()
+    {
+        return species;
     }
 
     /**

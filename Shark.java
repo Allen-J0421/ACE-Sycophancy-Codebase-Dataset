@@ -8,21 +8,6 @@
  */
 public class Shark extends Animal
 {
-    // Characteristics shared by all sharkes (class variables).
-
-    // The age at which a shark can start to breed.
-    private static final int BREEDING_AGE = 6;
-    // The age to which a shark can live.
-    private static final int MAX_AGE = 150;
-    // The likelihood of a shark breeding.
-    private static final double BREEDING_PROBABILITY = 0.4;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 8;
-    // The food value of a single rabbit. In effect, this is the
-    // number of steps a shark can go before it has to eat again.
-    private static final int COD_FOOD_VALUE = 8;
-    private static final int SALMON_FOOD_VALUE = 8;
-
     /**
      * Create a shark. A shark can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -33,21 +18,7 @@ public class Shark extends Animal
      */
     public Shark(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, MAX_AGE, COD_FOOD_VALUE,
-              BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, false, 2,
-              (birthField, birthLocation) -> new Shark(false, birthField, birthLocation));
-    }
-
-    protected int getFoodValueFrom(Cod cod){
-        return COD_FOOD_VALUE;
-    }
-
-    protected int getFoodValueFrom(Salmon salmon){
-        return SALMON_FOOD_VALUE;
-    }
-
-    protected boolean canMateWith(Cod cod){
-        return true;
+        super(randomAge, field, location, AnimalSpecies.SHARK);
     }
 
 }

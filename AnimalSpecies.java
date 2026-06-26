@@ -1,3 +1,8 @@
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Species-level animal configuration and offspring factory.
  */
@@ -28,6 +33,13 @@ public enum AnimalSpecies
         }
     };
 
+    private enum FoodSource
+    {
+        SEAWEED,
+        COD,
+        SALMON
+    }
+
     private final int maxAge;
     private final int initialFoodValue;
     private final int breedingAge;
@@ -35,6 +47,21 @@ public enum AnimalSpecies
     private final int maxLitterSize;
     private final boolean requiresDifferentSexToBreed;
     private final int mateSearchDistance;
+    private final Map<FoodSource, Integer> foodValues;
+    private final Set<AnimalSpecies> compatibleMates;
+
+    static {
+        COD.eats(FoodSource.SEAWEED, 13)
+           .matesWith(COD);
+        SALMON.eats(FoodSource.SEAWEED, 13)
+              .matesWith(SALMON);
+        SHARK.eats(FoodSource.COD, 8)
+             .eats(FoodSource.SALMON, 8)
+             .matesWith(COD);
+        WHALE.eats(FoodSource.COD, 8)
+             .eats(FoodSource.SALMON, 8)
+             .matesWith(SALMON);
+    }
 
     AnimalSpecies(int maxAge, int initialFoodValue, int breedingAge, double breedingProbability,
                   int maxLitterSize, boolean requiresDifferentSexToBreed, int mateSearchDistance)
@@ -46,6 +73,8 @@ public enum AnimalSpecies
         this.maxLitterSize = maxLitterSize;
         this.requiresDifferentSexToBreed = requiresDifferentSexToBreed;
         this.mateSearchDistance = mateSearchDistance;
+        foodValues = new EnumMap<>(FoodSource.class);
+        compatibleMates = EnumSet.noneOf(AnimalSpecies.class);
     }
 
     public abstract Animal createYoung(Field field, Location location);
@@ -85,4 +114,52 @@ public enum AnimalSpecies
         return mateSearchDistance;
     }
 
+    public int getFoodValueFromSeaweed()
+    {
+        return getFoodValue(FoodSource.SEAWEED);
+    }
+
+    public int getFoodValueFrom(AnimalSpecies prey)
+    {
+        FoodSource preySource = foodSourceFor(prey);
+        if(preySource == null) {
+            return 0;
+        }
+        return getFoodValue(preySource);
+    }
+
+    public boolean canMateWith(AnimalSpecies other)
+    {
+        return compatibleMates.contains(other);
+    }
+
+    private AnimalSpecies eats(FoodSource foodSource, int foodValue)
+    {
+        foodValues.put(foodSource, foodValue);
+        return this;
+    }
+
+    private AnimalSpecies matesWith(AnimalSpecies mate)
+    {
+        compatibleMates.add(mate);
+        return this;
+    }
+
+    private int getFoodValue(FoodSource foodSource)
+    {
+        Integer value = foodValues.get(foodSource);
+        return value == null ? 0 : value;
+    }
+
+    private static FoodSource foodSourceFor(AnimalSpecies species)
+    {
+        switch(species) {
+            case COD:
+                return FoodSource.COD;
+            case SALMON:
+                return FoodSource.SALMON;
+            default:
+                return null;
+        }
+    }
 }

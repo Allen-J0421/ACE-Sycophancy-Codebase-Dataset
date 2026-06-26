@@ -237,7 +237,7 @@ public class Animal extends Creature
      */
     protected int getFoodValueFrom(Cod cod)
     {
-        return AnimalInteractionRegistry.getFoodValue(species, cod.getSpecies());
+        return species.getFoodValueFrom(cod.getSpecies());
     }
 
     /**
@@ -245,7 +245,7 @@ public class Animal extends Creature
      */
     protected int getFoodValueFrom(Salmon salmon)
     {
-        return AnimalInteractionRegistry.getFoodValue(species, salmon.getSpecies());
+        return species.getFoodValueFrom(salmon.getSpecies());
     }
 
     /**
@@ -253,7 +253,7 @@ public class Animal extends Creature
      */
     protected int getFoodValueFrom(Seaweed seaweed)
     {
-        return AnimalInteractionRegistry.getFoodValueFromSeaweed(species);
+        return species.getFoodValueFromSeaweed();
     }
 
     /**
@@ -261,7 +261,7 @@ public class Animal extends Creature
      */
     protected boolean canMateWith(Cod cod)
     {
-        return AnimalInteractionRegistry.canMateWith(species, cod.getSpecies());
+        return species.canMateWith(cod.getSpecies());
     }
 
     /**
@@ -269,7 +269,7 @@ public class Animal extends Creature
      */
     protected boolean canMateWith(Salmon salmon)
     {
-        return AnimalInteractionRegistry.canMateWith(species, salmon.getSpecies());
+        return species.canMateWith(salmon.getSpecies());
     }
 
     protected AnimalSpecies getSpecies()

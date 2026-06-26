@@ -1,13 +1,10 @@
 public final class EuclideanAlgorithm {
 
-    private static final int DEFAULT_A = 35;
-    private static final int DEFAULT_B = 15;
-
     private EuclideanAlgorithm() {
         // Utility class.
     }
 
-    static int gcd(int a, int b) {
+    public static int gcd(int a, int b) {
         long x = Math.abs((long) a);
         long y = Math.abs((long) b);
 
@@ -27,32 +24,9 @@ public final class EuclideanAlgorithm {
         return toIntExact(x);
     }
 
-    static int findGCD(int a, int b) {
+    @Deprecated
+    public static int findGCD(int a, int b) {
         return gcd(a, b);
-    }
-
-    public static void main(String[] args) {
-        int a = DEFAULT_A;
-        int b = DEFAULT_B;
-
-        if (args.length == 2) {
-            a = parseIntArg(args[0], "first");
-            b = parseIntArg(args[1], "second");
-        } else if (args.length != 0) {
-            throw new IllegalArgumentException(
-                "Expected either zero arguments or two integers: <a> <b>"
-            );
-        }
-
-        System.out.println(gcd(a, b));
-    }
-
-    private static int parseIntArg(String value, String label) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Invalid " + label + " integer: " + value, ex);
-        }
     }
 
     private static int toIntExact(long value) {

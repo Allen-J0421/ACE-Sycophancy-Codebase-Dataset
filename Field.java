@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Represent a rectangular grid of field positions. Each position is able to store a single animal.
+ * Represent a rectangular grid of field positions. Each position is able to store a single species.
  *
  * @version 2022.02.28
  */
@@ -15,8 +15,8 @@ public class Field
     
     // The depth and width of the field.
     private int depth, width;
-    // Storage for the animals.
-    private Object[][] field;
+    // Storage for the species currently occupying each cell.
+    private Species[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -28,7 +28,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new Species[depth][width];
     }
     
     /**
@@ -54,47 +54,47 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location. If there is already an animal at the location it will be lost.
+     * Place a species at the given location. If there is already a species at the location it will be lost.
      *
-     * @param species The animal to be placed.
+     * @param species The species to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object species, int row, int col)
+    public void place(Species species, int row, int col)
     {
         place(species, new Location(row, col));
     }
     
     /**
-     * Place an animal at the given location. If there is already an animal at the location it will be lost.
+     * Place a species at the given location. If there is already a species at the location it will be lost.
      *
-     * @param species The animal to be placed.
-     * @param location Where to place the animal.
+     * @param species The species to be placed.
+     * @param location Where to place the species.
      */
-    public void place(Object species, Location location)
+    public void place(Species species, Location location)
     {
         field[location.getRow()][location.getCol()] = species;
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the species at the given location, if any.
      *
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The species at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Species getObjectAt(Location location)
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the species at the given location, if any.
      *
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The species at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Species getObjectAt(int row, int col)
     {
         return field[row][col];
     }

@@ -131,7 +131,7 @@ public class Plant extends Species
      */
     private void regrow()
     {
-        if(getField().getObjectAt(getLocation()) == null && canRegrow)   {
+        if(getField().getObjectAt(getLocation()) == null && canRegrow) {
             deadDueTemperature = false;
             getField().place(this, getLocation());
             currentHealth = maxHealth;

@@ -41,7 +41,7 @@ public class Simulator
         this.view = simulatorView;
         this.simulationIsOn = true;
 
-        view.showStatus(simStep.getCurrentStep(), time.timeString(), simulationHabitat.getCurrentSeason(), simulationHabitat.getCurrentTemperature(), field);
+        refreshView();
     }
 
 
@@ -96,14 +96,7 @@ public class Simulator
             for(Iterator<Species> it = species.iterator(); it.hasNext(); )
             {
                 Species specie = it.next();
-                // Update the status of isSpring in the plants (done here to reduce coupling)
-                if (specie instanceof Plant)
-                {
-                    Plant tempPlant = (Plant) specie;
-                    if (tempPlant.getIsSpring() != isSpring) {
-                        tempPlant.toggleIsSpring();
-                    }
-                }
+                updatePlantSeasonState(specie, isSpring);
 
                 specie.act(newSpecies, isNight, currentTemperature, yearPassed);
                 if(! specie.isAlive()) {
@@ -113,7 +106,7 @@ public class Simulator
 
             // Add the newly born species to the main lists.
             species.addAll(newSpecies);
-            view.showStatus(simStep.getCurrentStep(), time.timeString(), simulationHabitat.getCurrentSeason(), simulationHabitat.getCurrentTemperature(), field);
+            refreshView();
         }
     }
 
@@ -139,5 +132,26 @@ public class Simulator
         catch (InterruptedException ie) {
             // wake up
         }
+    }
+
+    private void updatePlantSeasonState(Species specie, boolean isSpring)
+    {
+        if (specie instanceof Plant) {
+            Plant plant = (Plant) specie;
+            if (plant.getIsSpring() != isSpring) {
+                plant.toggleIsSpring();
+            }
+        }
+    }
+
+    private void refreshView()
+    {
+        view.showStatus(
+            simStep.getCurrentStep(),
+            time.timeString(),
+            simulationHabitat.getCurrentSeason(),
+            simulationHabitat.getCurrentTemperature(),
+            field
+        );
     }
 }

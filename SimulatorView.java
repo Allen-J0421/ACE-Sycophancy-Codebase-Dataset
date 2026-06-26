@@ -194,11 +194,10 @@ public class SimulatorView extends JFrame
         {
             for(int col = 0; col < field.getWidth(); col++)
             {
-                Object specie = field.getObjectAt(row, col);
+                Species specie = field.getObjectAt(row, col);
                 if(specie != null) {
-                    Species speciesObjects = (Species) specie;
-                    stats.incrementCount(speciesObjects.getName());
-                    fieldView.drawMark(col, row, getColor(speciesObjects.getName()));
+                    stats.incrementCount(specie.getName());
+                    fieldView.drawMark(col, row, getColor(specie.getName()));
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);

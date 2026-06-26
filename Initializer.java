@@ -94,6 +94,7 @@ public class Initializer
      */
     public Simulator initializeSimulation(String chosenHabitat, HashMap<String, Integer> animalsToCreate, String scenarioName)
     {
+        speciesToEvolveInSimulation = new ArrayList<>();
         SimulationStep simulatorStepCounter = new SimulationStep();
         Field field = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
         ClimateScenarios chosenClimateChangeScenario = createChosenClimateChangeScenario(scenarioName);
@@ -142,46 +143,15 @@ public class Initializer
     private void populateWithAnimals(HashMap<String, Integer> animalsToCreate, Field field)
     {
         idxOfColorToUseNext = 0;
-        Location freeLocationToPlaceAnimal;
 
         for(String animalName : animalsToCreate.keySet()) {
             animalReader.extractDataFor(animalName);
-            if (animalsToCreate.get(animalName) != 0)
+            int animalsToSpawn = animalsToCreate.get(animalName);
+            if (animalsToSpawn != 0)
             {
-                // Retrieve appropriate data.
                 String name = animalReader.getName();
-                int maximumTemperature = animalReader.getMaximumTemperature();
-                int minimumTemperature = animalReader.getMinimumTemperature();
-                int maxAge = animalReader.getMaximumAge();
-                int breedingAge = animalReader.getBreedingAge();
-                double breedingProbability = animalReader.getBreedingProbability();
-                int maxLitterSize = animalReader.getMaxLitterSize();
-                int nutritionalValue = animalReader.getNutritionalValue();
-                boolean hibernates = animalReader.canHibernate();
-                boolean isNocturnal = animalReader.isNocturnal();
+                addAnimalsOfType(field, animalsToSpawn);
 
-                if (animalReader.isPredator()) {
-                    // Predator object should be created, retrieving appropriate data.
-                    int strength = animalReader.getStrength();
-
-                    // Creating the right number of Predator objects.
-                    for (int i = 0; i < animalsToCreate.get(animalName); i++) {
-                        freeLocationToPlaceAnimal = findAvailableLocation(field);
-                        Predator newPredator = new Predator(strength, field, freeLocationToPlaceAnimal, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
-                        speciesToEvolveInSimulation.add(newPredator);
-                    }
-                }
-                else {
-                    // Animal object should be created
-                    // Creating the right number of Animal objects.
-                    for (int i = 0; i < animalsToCreate.get(animalName); i++) {
-                        freeLocationToPlaceAnimal = findAvailableLocation(field);
-                        Animal newAnimal = new Animal(field, freeLocationToPlaceAnimal, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
-                        speciesToEvolveInSimulation.add(newAnimal);
-                    }
-                }
-
-                // Setting the color for this species.
                 view.setColor(name, listOfColorsForAnimals.get(idxOfColorToUseNext));
                 idxOfColorToUseNext ++;
             }
@@ -263,6 +233,63 @@ public class Initializer
             speciesToEvolveInSimulation.add(createdPlant);
         }
         view.setColor(name, DEFAULT_PLANT_COLOR);
+    }
+
+    private void addAnimalsOfType(Field field, int animalCount)
+    {
+        for (int i = 0; i < animalCount; i++) {
+            Location location = findAvailableLocation(field);
+            speciesToEvolveInSimulation.add(createAnimal(field, location));
+        }
+    }
+
+    private Animal createAnimal(Field field, Location location)
+    {
+        String name = animalReader.getName();
+        int maximumTemperature = animalReader.getMaximumTemperature();
+        int minimumTemperature = animalReader.getMinimumTemperature();
+        int maxAge = animalReader.getMaximumAge();
+        int breedingAge = animalReader.getBreedingAge();
+        double breedingProbability = animalReader.getBreedingProbability();
+        int maxLitterSize = animalReader.getMaxLitterSize();
+        int nutritionalValue = animalReader.getNutritionalValue();
+        boolean hibernates = animalReader.canHibernate();
+        boolean isNocturnal = animalReader.isNocturnal();
+
+        if (animalReader.isPredator()) {
+            return new Predator(
+                animalReader.getStrength(),
+                field,
+                location,
+                name,
+                maximumTemperature,
+                minimumTemperature,
+                nutritionalValue,
+                breedingProbability,
+                maxAge,
+                breedingAge,
+                maxLitterSize,
+                RANDOM_ANIMAL_AGE,
+                hibernates,
+                isNocturnal
+            );
+        }
+
+        return new Animal(
+            field,
+            location,
+            name,
+            maximumTemperature,
+            minimumTemperature,
+            nutritionalValue,
+            breedingProbability,
+            maxAge,
+            breedingAge,
+            maxLitterSize,
+            RANDOM_ANIMAL_AGE,
+            hibernates,
+            isNocturnal
+        );
     }
 
     /**

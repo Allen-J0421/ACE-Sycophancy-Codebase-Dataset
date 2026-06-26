@@ -1,16 +1,10 @@
-final class ModularExponentiationInput {
+record ModularExponentiationInput(int base, int exponent, int modulus) {
     private static final String USAGE = "Expected either no arguments or: <base> <exponent> <modulus>.";
-    private static final ModularExponentiationInput SAMPLE =
-            new ModularExponentiationInput(3, 2, 4);
+    private static final ModularExponentiationInput SAMPLE = new ModularExponentiationInput(3, 2, 4);
 
-    private final int base;
-    private final int exponent;
-    private final int modulus;
-
-    private ModularExponentiationInput(int base, int exponent, int modulus) {
-        this.base = base;
-        this.exponent = exponent;
-        this.modulus = modulus;
+    ModularExponentiationInput {
+        validateExponent(exponent);
+        validateModulus(modulus);
     }
 
     static ModularExponentiationInput fromArgs(String[] args) {
@@ -28,16 +22,16 @@ final class ModularExponentiationInput {
                 parseArgument(args[2], "modulus"));
     }
 
-    int base() {
-        return base;
+    private static void validateExponent(int exponent) {
+        if (exponent < 0) {
+            throw new IllegalArgumentException("Exponent must be non-negative.");
+        }
     }
 
-    int exponent() {
-        return exponent;
-    }
-
-    int modulus() {
-        return modulus;
+    private static void validateModulus(int modulus) {
+        if (modulus <= 0) {
+            throw new IllegalArgumentException("Modulus must be positive.");
+        }
     }
 
     private static int parseArgument(String rawValue, String name) {

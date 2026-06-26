@@ -58,10 +58,10 @@ public class PopulationGenerator
     private void setUpColors()
     {
         for (AnimalSpecies species : AnimalSpecies.values()) {
-            view.setColor(species.getActorClass(), species.getColor());
+            view.setColor(species, species.getColor());
         }
         for (PlantSpecies species : PlantSpecies.values()) {
-            view.setColor(species.getActorClass(), species.getColor());
+            view.setColor(species, species.getColor());
         }
         view.showColors();
     }

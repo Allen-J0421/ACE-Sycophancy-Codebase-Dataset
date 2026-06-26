@@ -81,6 +81,12 @@ public abstract class Plant implements Actor
      */
     protected abstract PlantSpecies getSpecies();
 
+    @Override
+    public final ActorType getActorType()
+    {
+        return getSpecies();
+    }
+
     protected abstract int getMaxAge();
 
     protected abstract double getSpreadProbability(Weather weather);

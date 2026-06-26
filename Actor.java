@@ -5,6 +5,8 @@
  */
 public interface Actor
 {
+    ActorType getActorType();
+
     /**
      * Describes the behaviour of an actor within a step.
      *

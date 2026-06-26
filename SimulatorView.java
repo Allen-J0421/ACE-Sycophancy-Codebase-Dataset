@@ -30,7 +30,7 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
-    private final Map<Class<?>, Color> colors;
+    private final Map<ActorType, Color> colors;
     // A statistics object computing and storing simulation information
     private final FieldStats stats;
     private final Simulator simulator;
@@ -132,14 +132,14 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Define a color to be used for a given class of animal.
+     * Define a color to be used for a given actor type.
      * 
-     * @param animalClass The animal's Class object.
-     * @param color The color to be used for the given class.
+     * @param actorType The actor type to color.
+     * @param color The color to be used for the given actor type.
      */
-    public void setColor(Class<?> animalClass, Color color)
+    public void setColor(ActorType actorType, Color color)
     {
-        colors.put(animalClass, color);
+        colors.put(actorType, color);
     }
 
     /**
@@ -155,9 +155,9 @@ public class SimulatorView extends JFrame
      */
     public void showColors()
     {
-        for (Class<?> cls : colors.keySet()) {
-            JLabel tempLabel = new JLabel(cls.getName());
-            tempLabel.setForeground(colors.get(cls));
+        for (ActorType actorType : colors.keySet()) {
+            JLabel tempLabel = new JLabel(actorType.getDisplayName());
+            tempLabel.setForeground(colors.get(actorType));
             tempLabel.setAlignmentX(CENTER_ALIGNMENT);
             tempLabel.setBorder(new EmptyBorder(4,0,4,0));
             sideBar.add(tempLabel);
@@ -166,13 +166,13 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Returns a color to be used for a given class of animal
+     * Returns a color to be used for a given actor type.
      * 
-     * @return The color to be used for a given class of animal.
+     * @return The color to be used for a given actor type.
      */
-    private Color getColor(Class<?> animalClass)
+    private Color getColor(ActorType actorType)
     {
-        Color col = colors.get(animalClass);
+        Color col = colors.get(actorType);
         if(col == null) {
             // no color defined for this class
             return UNKNOWN_COLOR;
@@ -204,8 +204,8 @@ public class SimulatorView extends JFrame
 
         field.forEachLocation((row, col) -> fieldView.drawMark(col, row, EMPTY_COLOR));
         field.forEachOccupiedLocation((row, col, actor) -> {
-            stats.incrementCount(actor.getClass());
-            fieldView.drawMark(col, row, getColor(actor.getClass()));
+            stats.incrementCount(actor.getActorType());
+            fieldView.drawMark(col, row, getColor(actor.getActorType()));
         });
         stats.countFinished();
 

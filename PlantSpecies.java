@@ -6,14 +6,14 @@ import java.awt.Color;
 /**
  * Central definition of the supported plant species and their creation metadata.
  */
-public enum PlantSpecies
+public enum PlantSpecies implements ActorType
 {
-    GRASS(0.09, Grass.class, new Color(50, 184, 121), 25, 0.2, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Grass::new),
-    SAGE(0.075, Sage.class, new Color(27, 117, 19), 20, 0.15, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Sage::new),
-    SEDGE(0.07, Sedge.class, new Color(78, 117, 19), 20, 0.15, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Sedge::new);
+    GRASS("Grass", 0.09, new Color(50, 184, 121), 25, 0.2, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Grass::new),
+    SAGE("Sage", 0.075, new Color(27, 117, 19), 20, 0.15, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Sage::new),
+    SEDGE("Sedge", 0.07, new Color(78, 117, 19), 20, 0.15, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Sedge::new);
 
+    private final String displayName;
     private final double spawnProbability;
-    private final Class<? extends Plant> actorClass;
     private final Color color;
     private final int maxAge;
     private final double spreadProbability;
@@ -22,8 +22,8 @@ public enum PlantSpecies
     private final PlantCreator creator;
 
     PlantSpecies(
+        String displayName,
         double spawnProbability,
-        Class<? extends Plant> actorClass,
         Color color,
         int maxAge,
         double spreadProbability,
@@ -31,8 +31,8 @@ public enum PlantSpecies
         Set<Weather> boostedWeather,
         PlantCreator creator
     ) {
+        this.displayName = displayName;
         this.spawnProbability = spawnProbability;
-        this.actorClass = actorClass;
         this.color = color;
         this.maxAge = maxAge;
         this.spreadProbability = spreadProbability;
@@ -46,9 +46,16 @@ public enum PlantSpecies
         return spawnProbability;
     }
 
-    public Class<? extends Plant> getActorClass()
+    @Override
+    public String getDisplayName()
     {
-        return actorClass;
+        return displayName;
+    }
+
+    @Override
+    public ActorCategory getCategory()
+    {
+        return ActorCategory.PLANT;
     }
 
     public Color getColor()

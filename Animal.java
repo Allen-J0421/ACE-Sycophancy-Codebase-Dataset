@@ -104,6 +104,12 @@ public abstract class Animal implements Actor
      * @return the current animal species.
      */
     protected abstract AnimalSpecies getSpecies();
+
+    @Override
+    public final ActorType getActorType()
+    {
+        return getSpecies();
+    }
     
     /**
      * Imitates the meeting of the animal by breeding new born animals.

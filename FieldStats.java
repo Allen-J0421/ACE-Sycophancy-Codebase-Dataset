@@ -4,14 +4,14 @@ import java.util.Map;
 /**
  * This class collects and provides some statistical data on the state 
  * of a field. It is flexible: it will create and maintain a counter 
- * for any class of object that is found within the field.
+ * for any actor type that is found within the field.
  *
  * @version 2016.02.29
  */
 public class FieldStats
 {
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private final Map<Class<?>, Counter> counters;
+    private final Map<ActorType, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -58,17 +58,17 @@ public class FieldStats
     }
 
     /**
-     * Increment the count for one class of animal.
-     * @param animalClass The class of animal to increment.
+     * Increment the count for one actor type.
+     * @param actorType The actor type to increment.
      */
-    public void incrementCount(Class<?> actorClass)
+    public void incrementCount(ActorType actorType)
     {
-        Counter count = counters.get(actorClass);
+        Counter count = counters.get(actorType);
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(actorClass.getSimpleName());
-            counters.put(actorClass, count);
+            count = new Counter(actorType.getDisplayName());
+            counters.put(actorType, count);
         }
         count.increment();
     }
@@ -102,8 +102,8 @@ public class FieldStats
     }
     
     /**
-     * Generate counts of the number of foxes and rabbits.
-     * These are not kept up to date as foxes and rabbits
+     * Generate counts of the number of actors in the field.
+     * These are not kept up to date as actors
      * are placed in the field, but only when a request
      * is made for the information.
      * @param field The field to generate the stats for.
@@ -111,11 +111,11 @@ public class FieldStats
     private void generateCounts(Field field)
     {
         reset();
-        field.forEachStoredActor((row, col, actor) -> incrementCount(actor.getClass()));
+        field.forEachStoredActor((row, col, actor) -> incrementCount(actor.getActorType()));
         countsValid = true;
     }
 
-    public Map<Class<?>, Counter> getCounters()
+    public Map<ActorType, Counter> getCounters()
     {
         return counters;
     }

@@ -14,47 +14,12 @@ public class SimulationEngine
 {
     private static final Random rand = Randomizer.getRandom();
 
-    // Maximum number of hunters in the simulation.
-    private static final int HUNTER_LIMIT = 5;
-    private static int hunterCount = 0;
+    // Per-species counts of how many have been spawned, used to enforce
+    // Species.maxCount(). Static and never reset, so a cap (e.g. the hunter
+    // limit) applies globally across resets - matching the original behaviour.
+    private static final Map<Species, Integer> spawnedCounts = new EnumMap<>(Species.class);
 
-    /**
-     * Creates a single actor of a species at a location, or returns null when
-     * one cannot be created (e.g. the hunter limit has been reached).
-     */
-    @FunctionalInterface
-    private interface ActorSpawner {
-        Actor spawn(Field field, Location location, Animal.Gender sex, Environment environment);
-    }
-
-    /**
-     * Static configuration for one species: its default creation probability and
-     * how to create an instance. Collecting these (and their order below) here
-     * means a species is defined in exactly one place.
-     */
-    private record SpeciesSpawn(Class<?> type, double defaultProbability, ActorSpawner spawner) {}
-
-    /**
-     * The species considered for each cell when populating the field, in
-     * priority order: the first whose creation probability succeeds is placed,
-     * so the order is significant.
-     */
-    private static final List<SpeciesSpawn> SPECIES = List.of(
-            new SpeciesSpawn(Grass.class,  0.030, (f, l, s, e) -> new Grass(f, l)),
-            new SpeciesSpawn(Deer.class,   0.080, (f, l, s, e) -> new Deer(true, f, l, s)),
-            new SpeciesSpawn(Coyote.class, 0.010, (f, l, s, e) -> new Coyote(true, f, l, s)),
-            new SpeciesSpawn(Wolf.class,   0.010, (f, l, s, e) -> new Wolf(true, f, l, s)),
-            new SpeciesSpawn(Eagle.class,  0.01,  (f, l, s, e) -> new Eagle(true, f, l, s)),
-            new SpeciesSpawn(Mouse.class,  0.080, (f, l, s, e) -> new Mouse(true, f, l, s)),
-            new SpeciesSpawn(Hunter.class, 0.03,  (f, l, s, e) -> {
-                if(hunterCount >= HUNTER_LIMIT) {
-                    return null;
-                }
-                hunterCount++;
-                return new Hunter(f, l, e);
-            }));
-
-    // The creation probabilities, keyed by class. Initialised from the SPECIES
+    // The creation probabilities, keyed by class. Initialised from the Species
     // defaults but mutable so that probability sweeps (see TestingMain) can
     // substitute their own combinations.
     private static Map<Class<?>, Double> creationProbabilities = defaultProbabilities();
@@ -62,8 +27,8 @@ public class SimulationEngine
     private static Map<Class<?>, Double> defaultProbabilities()
     {
         Map<Class<?>, Double> probabilities = new HashMap<>();
-        for(SpeciesSpawn species : SPECIES) {
-            probabilities.put(species.type(), species.defaultProbability());
+        for(Species species : Species.values()) {
+            probabilities.put(species.actorClass(), species.defaultProbability());
         }
         return probabilities;
     }
@@ -207,12 +172,13 @@ public class SimulationEngine
                 Location location = new Location(row, col);
 
                 // Consider each species in priority order; the first whose
-                // creation probability succeeds is placed here (if any).
-                for(SpeciesSpawn species : SPECIES) {
-                    if(rand.nextDouble() <= creationProbabilities.get(species.type())) {
-                        Actor actor = species.spawner().spawn(field, location, sex, environment);
-                        if(actor != null) {
-                            actors.add(actor);
+                // creation probability succeeds is placed here (subject to its
+                // population cap).
+                for(Species species : Species.values()) {
+                    if(rand.nextDouble() <= creationProbabilities.get(species.actorClass())) {
+                        if(spawnedCounts.getOrDefault(species, 0) < species.maxCount()) {
+                            actors.add(species.spawn(field, location, sex, environment));
+                            spawnedCounts.merge(species, 1, Integer::sum);
                         }
                         break;
                     }

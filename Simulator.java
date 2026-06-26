@@ -84,8 +84,8 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        for(Class cls : SimulationInfo.DEFAULT_COLOR_MAP.keySet()) {
-            view.setColor(cls, SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
+        for(Species species : Species.values()) {
+            view.setColor(species.actorClass(), species.color());
         }
 
         // adding additional buttons to the GUI

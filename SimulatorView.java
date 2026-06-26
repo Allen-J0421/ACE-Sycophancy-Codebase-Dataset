@@ -36,7 +36,7 @@ public class SimulatorView extends JFrame
 
     // adding the new buttons
     private JButton oneStepButton,stopButton, longButton, resetButton;
-    private JCheckBox grassCheckBox, mouseCheckBox, deerCheckBox, wolfCheckBox, coyoteCheckBox, hunterCheckBox, eagleCheckBox;
+    // One population checkbox per species, built from the Species registry.
     private Map<Class<?>, JCheckBox> classToCheckBox;
 
 
@@ -100,48 +100,22 @@ public class SimulatorView extends JFrame
 
 
 
-        grassCheckBox = new JCheckBox("Grass: 0", true);
-        mouseCheckBox = new JCheckBox("Mouse: 0", true);
-        deerCheckBox = new JCheckBox("Deer: 0", true);
-        wolfCheckBox = new JCheckBox("Wolf: 0", true);
-        coyoteCheckBox = new JCheckBox("Coyote: 0", true);
-        hunterCheckBox = new JCheckBox("Hunter: 0", true);
-        eagleCheckBox = new JCheckBox("Eagle: 0", true);
-
-
-        classToCheckBox = Map.ofEntries(
-                Map.entry(Deer.class, deerCheckBox),
-                Map.entry(Coyote.class, coyoteCheckBox),
-                Map.entry(Wolf.class, wolfCheckBox),
-                Map.entry(Mouse.class, mouseCheckBox),
-                Map.entry(Grass.class, grassCheckBox),
-                Map.entry(Hunter.class, hunterCheckBox),
-                Map.entry(Eagle.class, eagleCheckBox)
-        );
-
-        for(Class cls : SimulationInfo.ALL_ACTORS){
-            classToCheckBox.get(cls).setForeground(SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
-        }
-
-        deerCheckBox.addItemListener(e -> checkCheckBoxByColor(Deer.class));
-        coyoteCheckBox.addItemListener(e -> checkCheckBoxByColor(Coyote.class));
-        wolfCheckBox.addItemListener(e -> checkCheckBoxByColor(Wolf.class));
-        mouseCheckBox.addItemListener(e -> checkCheckBoxByColor(Mouse.class));
-        grassCheckBox.addItemListener(e -> checkCheckBoxByColor(Grass.class));
-        hunterCheckBox.addItemListener(e -> checkCheckBoxByColor(Hunter.class));
-        eagleCheckBox.addItemListener(e -> checkCheckBoxByColor(Eagle.class));
-
-
+        // Build a population checkbox per species, driven entirely by the Species
+        // registry: label, colour, tooltip and toggle behaviour are all derived,
+        // so adding a species needs no change here.
+        classToCheckBox = new LinkedHashMap<>();
         JPanel checkboxes = new JPanel();
         checkboxes.setLayout(new BoxLayout(checkboxes, BoxLayout.Y_AXIS));
         checkboxes.add(new JLabel("POPULATIONS"));
-        checkboxes.add(grassCheckBox);
-        checkboxes.add(mouseCheckBox);
-        checkboxes.add(deerCheckBox);
-        checkboxes.add(wolfCheckBox);
-        checkboxes.add(coyoteCheckBox);
-        checkboxes.add(hunterCheckBox);
-        checkboxes.add(eagleCheckBox);
+        for(Species species : Species.values()) {
+            Class<?> cls = species.actorClass();
+            JCheckBox checkBox = new JCheckBox(species.displayName() + ": 0", true);
+            checkBox.setForeground(species.color());
+            checkBox.setToolTipText("Show/hide " + species.displayName() + " in the field view");
+            checkBox.addItemListener(e -> checkCheckBoxByColor(cls));
+            classToCheckBox.put(cls, checkBox);
+            checkboxes.add(checkBox);
+        }
         checkboxes.add(diseasedPopulation);
 
         toolbar.add(checkboxes);
@@ -219,12 +193,13 @@ public class SimulatorView extends JFrame
     }
 
     public void setColorsByCheckBox(){
-        for(Class c : new Class[] {Grass.class, Deer.class, Coyote.class, Wolf.class, Eagle.class, Hunter.class}){
+        for(Species species : Species.values()){
+            Class<?> c = species.actorClass();
             if(!classToCheckBox.get(c).isSelected()){
                 setColor(c, Color.white);
             }
             else if(classToCheckBox.get(c).isSelected() && getColor(c).equals(UNKNOWN_COLOR)){
-                setColor(c, SimulationInfo.DEFAULT_COLOR_MAP.get(c));
+                setColor(c, species.color());
             }
         }
     }
@@ -234,7 +209,7 @@ public class SimulatorView extends JFrame
             setColor(c, Color.white);
         }
         else if(classToCheckBox.get(c).isSelected() && getColor(c).equals(Color.white)){
-            setColor(c, SimulationInfo.DEFAULT_COLOR_MAP.get(c));
+            setColor(c, Species.forClass(c).color());
         }
     }
 
@@ -274,8 +249,8 @@ public class SimulatorView extends JFrame
             }
         }
         stats.countFinished();
-        for(Class cls : SimulationInfo.ALL_ACTORS){
-            classToCheckBox.get(cls).setText(stats.getCountDetails(cls));
+        for(Species species : Species.values()){
+            classToCheckBox.get(species.actorClass()).setText(stats.getCountDetails(species.actorClass()));
         }
 
 //        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));

@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -128,6 +129,27 @@ public abstract class Animal extends Organism implements AbleToEat {
     }
 
     /**
+     * Find the first adjacent object of the requested type that satisfies the given handler.
+     *
+     * @param targetType The type of adjacent object to search for.
+     * @param handler A predicate that decides whether the object should be accepted.
+     * @param <T> The concrete adjacent object type.
+     * @return The matching location, or null if none matched.
+     */
+    protected <T> Location findAdjacentObject(Class<T> targetType, Predicate<? super T> handler) {
+        for (Location loc : getField().adjacentLocations(getLocation())) {
+            Object organism = getField().getObjectAt(loc);
+            if (targetType.isInstance(organism)) {
+                T target = targetType.cast(organism);
+                if (handler.test(target)) {
+                    return loc;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Find an animal in an adjacent location for this animal to infect.
      *
      * @return The location of a nearby animal that can be infected.
@@ -137,20 +159,15 @@ public abstract class Animal extends Organism implements AbleToEat {
             return null;
         }
 
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object organism = getField().getObjectAt(loc);
-            if (organism instanceof Animal) {
-                Animal animal = (Animal) organism;
-                if (animal.isAlive() && (!animal.isInfected())) {
-                    if (rand.nextDouble() <= 0.01) {
-                        infect(animal);
-                    }
-                    return loc;
-                }
+        return findAdjacentObject(Animal.class, animal -> {
+            if (!animal.isAlive() || animal.isInfected()) {
+                return false;
             }
-        }
-
-        return null;
+            if (rand.nextDouble() <= 0.01) {
+                infect(animal);
+            }
+            return true;
+        });
     }
 
     /**

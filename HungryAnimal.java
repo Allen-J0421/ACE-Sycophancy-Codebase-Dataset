@@ -92,14 +92,7 @@ public abstract class HungryAnimal extends Animal {
     }
 
     /**
-     * The time of day when this animal does not act.
-     *
-     * @return The resting time.
-     */
-    /**
      * @return The breeding probability for this species.
-     *
-     * @return Breeding probability.
      */
     @Override
     public double getBreedingProbability() {

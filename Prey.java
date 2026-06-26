@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -61,22 +60,13 @@ public abstract class Prey extends Animal implements Consumable {
      */
     @Override
     public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while (it.hasNext()) {
-            Location where = it.next();
-            Object organism = field.getObjectAt(where);
-            if (organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-                if (plant.isAlive()) {
-                    plant.setDead();
-                    boolean eaten = eat(plant);
-                    return eaten ? where : null;
-                }
+        return findAdjacentObject(Plant.class, plant -> {
+            if (!plant.isAlive()) {
+                return false;
             }
-        }
-        return null;
+            plant.setDead();
+            return eat(plant);
+        });
     }
 
     /**

@@ -21,27 +21,26 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "  Step: ";
-    private final String POPULATION_PREFIX = "Population: ";
-    private final String TIME_PREFIX = "Time: ";
-    private final String WEATHER_PREFIX = "Weather: ";
-    private final String INFECTED_PREFIX = "Infected: ";
-    private final String IMMUNE_PREFIX = "Immune: ";
-    
-    private JLabel stepLabel, population, infoLabel, timeLabel, 
-                   weatherLabel, infectedLabel, immuneLabel;
+    private static final String STEP_PREFIX = "  Step: ";
+    private static final String POPULATION_PREFIX = "Population: ";
+    private static final String TIME_PREFIX = "Time: ";
+    private static final String WEATHER_PREFIX = "Weather: ";
+    private static final String INFECTED_PREFIX = "Infected: ";
+    private static final String IMMUNE_PREFIX = "Immune: ";
+
+    private final JLabel stepLabel, population, timeLabel, weatherLabel, infectedLabel, immuneLabel;
     
     // The view of the simulation.
-    private FieldView fieldView;
+    private final FieldView fieldView;
     
     // Stores a graph key which displays the colors of the classes.
-    private JPanel classKey;
+    private final JPanel classKey;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class<?>, Color> colors;
+    private final Map<Class<?>, Color> colors;
     
     // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    private final FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -109,22 +108,19 @@ public class SimulatorView extends JFrame
      * options.
      * @return Returns the new menu bar.
      */
-    public JMenuBar makeMenuBar() {
+    private JMenuBar makeMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         
-        JMenu menu;
-        JMenuItem menuItem;
-        
-        menu = new JMenu("Help");
-            menuBar.add(menu);
-        
-            menuItem = new JMenuItem("Instructions");
-                menuItem.addActionListener(e -> showInstructions());
-                menu.add(menuItem);
-                
-            menuItem = new JMenuItem("About");
-                menuItem.addActionListener(e -> showAbout());
-                menu.add(menuItem);
+        JMenu menu = new JMenu("Help");
+        menuBar.add(menu);
+
+        JMenuItem instructions = new JMenuItem("Instructions");
+        instructions.addActionListener(e -> showInstructions());
+        menu.add(instructions);
+
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(e -> showAbout());
+        menu.add(about);
         
         return menuBar;
     }
@@ -195,14 +191,7 @@ public class SimulatorView extends JFrame
      */
     private Color getColor(Class<?> animalClass)
     {
-        Color col = colors.get(animalClass);
-        if(col == null) {
-            // no color defined for this class
-            return UNKNOWN_COLOR;
-        }
-        else {
-            return col;
-        }
+        return colors.getOrDefault(animalClass, UNKNOWN_COLOR);
     }
 
     /**
@@ -296,17 +285,8 @@ public class SimulatorView extends JFrame
     private String getTimeString()
     {
         int time = Time.getTime();
-        if (time >= 12){
-            return time + ":00 ";
-        }
-        else {
-            if(time<10){
-                return "0" + time + ":00 ";
-            }
-            else {
-                return time + ":00 ";
-            }
-        }
+        String prefix = time < 10 ? "0" : "";
+        return prefix + time + ":00 ";
     }
     
     /**

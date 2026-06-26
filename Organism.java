@@ -69,11 +69,7 @@ public abstract class Organism implements Entity {
      */
     protected void remove() {
         setDead();
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            setField(null);
-        }
+        clearFromField();
         removed = true;
     }
 
@@ -122,6 +118,18 @@ public abstract class Organism implements Entity {
      */
     protected void setLocationToNull() {
         location = null;
+    }
+
+    /**
+     * Remove this organism from the field without changing its alive state.
+     * This is used when an organism is eaten or otherwise detached from the grid.
+     */
+    protected void clearFromField() {
+        if (location != null) {
+            field.clear(location);
+            location = null;
+            setField(null);
+        }
     }
 
     /**

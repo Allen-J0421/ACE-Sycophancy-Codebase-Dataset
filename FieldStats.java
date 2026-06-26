@@ -1,5 +1,6 @@
-import java.awt.Color;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -11,9 +12,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (lion, zebra, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
-    // Whether the counters are currently up to date.
-    private boolean countsValid;
+    private Map<Class<?>, Counter> counters;
 
     /**
      * Construct a FieldStats object.
@@ -22,8 +21,7 @@ public class FieldStats
     {
         // Set up a collection for counters for each type of animal that
         // we might find
-        counters = new HashMap<>();
-        countsValid = true;
+        counters = new LinkedHashMap<>();
     }
 
     /**
@@ -35,12 +33,10 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
-        if(!countsValid) {
-            generateCounts(field);
-        }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
+        StringBuilder buffer = new StringBuilder();
+
+        syncCounts(field);
+        for(Counter info : counters.values()) {
             buffer.append(info.getName());
             buffer.append(": ");
             buffer.append(info.getCount());
@@ -53,38 +49,11 @@ public class FieldStats
      * Invalidate the current set of statistics; reset all 
      * counts to zero.
      */
-    public void reset()
+    private void reset()
     {
-        countsValid = false;
-        for(Class key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
-    }
-
-    /**
-     * Increment the count for one object.
-     * 
-     * @param objectType The class of animal to increment.
-     */
-    public void incrementCount(Class objectType)
-    {
-        Counter count = counters.get(objectType);
-        if(count == null) {
-            // We do not have a counter for this species yet.
-            // Create one.
-            count = new Counter(objectType.getName());
-            counters.put(objectType, count);
-        }
-        count.increment();
-    }
-
-    /**
-     * Indicate that an animal count has been completed.
-     */
-    public void countFinished()
-    {
-        countsValid = true;
     }
 
     /**
@@ -95,49 +64,27 @@ public class FieldStats
      */
     public boolean isViable(Field field)
     {
-        // How many counts are non-zero.
-        int nonZero = 0;
-        if(!countsValid) 
-        {
-            generateCounts(field);
-        }
-        
-        for(Class key : counters.keySet()) 
-        {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) 
-            {
-                nonZero++;
-            }
-        }
-        return nonZero > 1;
+        return field.getActivePopulationTypeCount() > 1;
     }
-    
+
     /**
-     * Generate counts of the number of all species of 
-     * animal and plant.
-     * These are not kept up to date as animals and plants
-     * are placed in the field, but only when a request
-     * is made for the information.
-     * 
-     * @param field The field to generate the stats for.
+     * Synchronise display counters with the populations tracked by Field.
      */
-    private void generateCounts(Field field)
+    private void syncCounts(Field field)
     {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) 
-        {
-            for(int col = 0; col < field.getWidth(); col++) 
-            {
-                Object object = field.getObjectAt(row, col, Animal.class);
-                
-                if(object != null) 
-                {
-                    incrementCount(object.getClass());
+
+        Map<Class<?>, Integer> populations = field.getPopulationCounts();
+        populations.entrySet().stream()
+            .sorted(Comparator.comparing(entry -> entry.getKey().getName()))
+            .forEach(entry -> {
+                Counter counter = counters.get(entry.getKey());
+                if(counter == null) {
+                    counter = new Counter(entry.getKey().getName());
+                    counters.put(entry.getKey(), counter);
                 }
-            }
-        }
-        
-        countsValid = true;
+
+                counter.setCount(entry.getValue());
+            });
     }
 }

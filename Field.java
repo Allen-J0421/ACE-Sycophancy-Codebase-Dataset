@@ -1,7 +1,9 @@
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -19,6 +21,8 @@ public class Field
     private int depth, width;
     // Storage for the animals.
     private GridSpace[][] field;
+    // Current populations by concrete organism type.
+    private Map<Class<?>, Integer> populationCounts;
 
     /**
      * Represent a field of the given dimensions.
@@ -31,6 +35,7 @@ public class Field
         this.depth = depth;
         this.width = width;
         field = new GridSpace[depth][width];
+        populationCounts = new LinkedHashMap<>();
     }
     
     /**
@@ -38,6 +43,7 @@ public class Field
      */
     public void clear()
     {
+        populationCounts.clear();
         for(int row = 0; row < depth; row++) 
         {
             for(int col = 0; col < width; col++) 
@@ -58,7 +64,7 @@ public class Field
         {
             for(int col = 0; col < width; col++) 
             {
-                field[row][col].clear(objectType);
+                clear(new Location(row, col), objectType);
             }
         }
     }
@@ -71,7 +77,15 @@ public class Field
      */
     public void clear(Location location, Class<?> objectType)
     {
-        field[location.getRow()][location.getCol()].clear(objectType);
+        GridSpace gridSpace = getGridSpace(location);
+        if (gridSpace == null) {
+            return;
+        }
+
+        Object removedObject = gridSpace.removeObject(objectType);
+        if (removedObject != null) {
+            decrementPopulationCount(removedObject.getClass());
+        }
     }
     
     /**
@@ -98,13 +112,15 @@ public class Field
      */
     public void place(Object object, Location location)
     {
-        GridSpace gridSpace = field[location.getRow()][location.getCol()];
-        
-        if (gridSpace == null) {
-            gridSpace = new GridSpace();
+        GridSpace gridSpace = ensureGridSpace(location);
+        Object replacedObject = gridSpace.setObject(object);
+
+        if (replacedObject != null) {
+            decrementPopulationCount(replacedObject.getClass());
         }
-        
-        gridSpace.setObject(object);
+        if (object != null) {
+            incrementPopulationCount(object.getClass());
+        }
     }
     
     /**
@@ -130,12 +146,7 @@ public class Field
      */
     public <T> T getObjectAt(int row, int col, Class<T> objectType)
     {
-        if (field[row][col] == null)
-        {
-            field[row][col] = new GridSpace();
-        }
-        
-        return field[row][col].getObject(objectType);
+        return ensureGridSpace(row, col).getObject(objectType);
     }
     
     /**
@@ -270,5 +281,82 @@ public class Field
     public int getWidth()
     {
         return width;
+    }
+
+    /**
+     * Return a snapshot of the tracked populations by concrete type.
+     */
+    public Map<Class<?>, Integer> getPopulationCounts()
+    {
+        return new LinkedHashMap<>(populationCounts);
+    }
+
+    /**
+     * Return how many concrete species currently have a non-zero population.
+     */
+    public int getActivePopulationTypeCount()
+    {
+        return populationCounts.size();
+    }
+
+    /**
+     * Get the grid space at a location without forcing allocation.
+     */
+    private GridSpace getGridSpace(Location location)
+    {
+        return field[location.getRow()][location.getCol()];
+    }
+
+    /**
+     * Get or create the grid space at a location.
+     */
+    private GridSpace ensureGridSpace(Location location)
+    {
+        return ensureGridSpace(location.getRow(), location.getCol());
+    }
+
+    /**
+     * Get or create the grid space at the given coordinates.
+     */
+    private GridSpace ensureGridSpace(int row, int col)
+    {
+        if (field[row][col] == null)
+        {
+            field[row][col] = new GridSpace();
+        }
+
+        return field[row][col];
+    }
+
+    /**
+     * Increase the tracked population for a concrete type.
+     */
+    private void incrementPopulationCount(Class<?> objectType)
+    {
+        Integer count = populationCounts.get(objectType);
+        if (count == null) {
+            populationCounts.put(objectType, 1);
+        }
+        else {
+            populationCounts.put(objectType, count + 1);
+        }
+    }
+
+    /**
+     * Decrease the tracked population for a concrete type.
+     */
+    private void decrementPopulationCount(Class<?> objectType)
+    {
+        Integer count = populationCounts.get(objectType);
+        if (count == null) {
+            return;
+        }
+
+        if (count <= 1) {
+            populationCounts.remove(objectType);
+        }
+        else {
+            populationCounts.put(objectType, count - 1);
+        }
     }
 }

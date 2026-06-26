@@ -219,7 +219,6 @@ public class SimulatorView extends JFrame
         stepLabel.setText(STEP_PREFIX + Time.getStep());
         timeLabel.setText(TIME_PREFIX + getTimeString());
         weatherLabel.setText(WEATHER_PREFIX + Weather.getWeather() + "  ");
-        stats.reset();
         
         fieldView.preparePaint();
         
@@ -236,7 +235,6 @@ public class SimulatorView extends JFrame
                 
                 if(animal != null) 
                 {
-                    stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                     
                     // Update the infected and immune counts
@@ -262,15 +260,9 @@ public class SimulatorView extends JFrame
                     fieldView.setBackground(emptyColor);
                 }
                 
-                if (plant != null) 
-                {
-                   stats.incrementCount(plant.getClass()); 
-                }
             }
         }
-        
-        stats.countFinished();
-        
+
         infectedLabel.setText(INFECTED_PREFIX + numberOfInfected);
         immuneLabel.setText(IMMUNE_PREFIX + numberOfImmune);
 

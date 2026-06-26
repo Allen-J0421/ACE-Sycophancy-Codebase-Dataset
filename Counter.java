@@ -56,4 +56,12 @@ public class Counter
     {
         count = 0;
     }
+
+    /**
+     * Replace the current count.
+     */
+    public void setCount(int count)
+    {
+        this.count = count;
+    }
 }

@@ -84,14 +84,14 @@ public class GridSpace
      * 
      * @param Object to store in this grid space.
      */
-    public void setObject(Object object) 
+    public Object setObject(Object object) 
     {
         if (object == null) {
-            return;
+            return null;
         }
 
         Class<?> storageType = resolveStorageType(object.getClass());
-        occupants.put(storageType, object);
+        return occupants.put(storageType, object);
     }
     
     /**
@@ -115,6 +115,19 @@ public class GridSpace
                 it.remove();
             }
         }
+    }
+
+    /**
+     * Remove and return the stored object matching the requested type.
+     */
+    public <T> T removeObject(Class<T> objectType)
+    {
+        T existingObject = getObject(objectType);
+        if (existingObject != null) {
+            clear(objectType);
+        }
+
+        return existingObject;
     }
 
     /**

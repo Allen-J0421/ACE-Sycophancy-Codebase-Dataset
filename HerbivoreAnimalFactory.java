@@ -26,17 +26,18 @@ public class HerbivoreAnimalFactory extends AnimalFactory
      * @param location The initial location of the newly created animal.
      * @return the newly created animal.
      */
-    public Animal getAnimal(String animalType, Location location) {
+    public Animal getAnimal(AnimalType animalType, Location location) {
         if(animalType == null) {
             return null;
         }
         Gender randomGender = Utils.getRandomEnumValue(Gender.class);
-        if (animalType.equalsIgnoreCase("SHEEP")) {
-            return new Sheep(true, field, location, randomGender);
+        switch(animalType) {
+            case SHEEP:
+                return new Sheep(true, field, location, randomGender);
+            case REINDEER:
+                return new Reindeer(true, field, location, randomGender);
+            default:
+                return null;
         }
-        else if (animalType.equalsIgnoreCase("REINDEER")) {
-            return new Reindeer(true, field, location, randomGender);
-        }
-        return null;
     }
 }

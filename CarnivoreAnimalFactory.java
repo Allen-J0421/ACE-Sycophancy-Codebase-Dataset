@@ -26,20 +26,20 @@ public class CarnivoreAnimalFactory extends AnimalFactory
      * @param location The initial location of the newly created animal
      * @return the newly created animal
      */
-    public Animal getAnimal(String animalType, Location location) {
+    public Animal getAnimal(AnimalType animalType, Location location) {
         if(animalType == null) {
             return null;
         }
         Gender randomGender = Utils.getRandomEnumValue(Gender.class);
-        if(animalType.equalsIgnoreCase("FOX")) {
-            return new CarnivoreFox(true, field, location, randomGender);
-        } 
-        else if (animalType.equalsIgnoreCase("WOLVERINE")) {
-            return new Wolverine(true, field, location, randomGender);
+        switch(animalType) {
+            case FOX:
+                return new CarnivoreFox(true, field, location, randomGender);
+            case WOLVERINE:
+                return new Wolverine(true, field, location, randomGender);
+            case BEAR:
+                return new Bear(true, field, location, randomGender);
+            default:
+                return null;
         }
-        else if (animalType.equalsIgnoreCase("BEAR")) {
-            return new Bear(true, field, location, randomGender);
-        }
-        return null;
     }
 }

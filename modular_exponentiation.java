@@ -9,14 +9,15 @@ final class ModularExponentiation {
     public static int powMod(int base, int exponent, int modulus) {
         int result = 1;
         int basePower = base;
+        int remainingExponent = exponent;
 
-        while (exponent > 0) {
-            if (isOdd(exponent)) {
+        while (remainingExponent > 0) {
+            if (isOdd(remainingExponent)) {
                 result = multiplyMod(result, basePower, modulus);
             }
 
             basePower = squareMod(basePower, modulus);
-            exponent /= 2;
+            remainingExponent /= 2;
         }
 
         return result;

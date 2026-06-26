@@ -95,8 +95,6 @@ public class Simulator
     private static FieldStats stats;
     // A graphical view of the simulation:
     private static SimulatorView view;
-    // A Boolean indicating whether or not to reset the StatisticsView:
-    public static boolean resetStatisticsView = false;
     
     /**
      * Construct a simulation field with default size.
@@ -228,9 +226,6 @@ public class Simulator
         
         // Show the starting state in the view:
         view.showStatus(step, field);
-        
-        // Toggle boolean to show StatisticsView should be reset:
-        resetStatisticsView = true;
     }
 
     /**

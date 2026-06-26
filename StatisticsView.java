@@ -1,7 +1,6 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Label;
 import javafx.scene.chart.LineChart;
@@ -47,6 +46,8 @@ public class StatisticsView extends Application
     private static final double UPDATE_TIME_IN_SECONDS = 0.1;
     // The last day recorded:
     private static int lastDayRecorded = -1; // Set to -1 so we record day 0
+    // The last simulation step recorded:
+    private static int lastStepRecorded = -1;
     // The highest recorded population:
     private static int highestPopulation = 0;
     
@@ -112,16 +113,17 @@ public class StatisticsView extends Application
      */
     private void updatePopulationLineChart()
     {
-        // Reset if necessary:
-        if (Simulator.resetStatisticsView)
+        int currentStep = Simulator.getCurrentStep();
+        int currentDay = TimeSystem.getCurrentDay();
+
+        if (hasSimulationReset(currentStep))
         {
             resetPopulationLineChart();
-            Simulator.resetStatisticsView = false;
         }
         
         // Guard statement: Don't continue with this if the day
         // hasn't changed since the last update:
-        if (lastDayRecorded == TimeSystem.getCurrentDay()) return;
+        if (lastDayRecorded == currentDay) return;
         
         // Iterate through each counter in FieldStats:
         Field field = Simulator.getCurrentField();
@@ -133,7 +135,7 @@ public class StatisticsView extends Application
             Counter counter = entry.getValue();
             
             // Get the new data to add to the XYSeries:
-            Data<Number, Number> newData = new XYChart.Data<>(TimeSystem.getCurrentDay(), counter.getCount());
+            Data<Number, Number> newData = new XYChart.Data<>(currentDay, counter.getCount());
             
             // Create a new XYSeries for this actor if there is none already:
             if (!actorXYSeries.containsKey(actorType))
@@ -155,11 +157,20 @@ public class StatisticsView extends Application
         }
         
         // Set the new last day recorded:
-        lastDayRecorded = TimeSystem.getCurrentDay();
+        lastDayRecorded = currentDay;
+        lastStepRecorded = currentStep;
         
         // Set the upper bounds for each of the axes:
-        xAxis.setUpperBound(TimeSystem.getCurrentDay());
+        xAxis.setUpperBound(currentDay);
         yAxis.setUpperBound(highestPopulation);
+    }
+
+    /**
+     * @return Whether the simulation has restarted since the last chart update.
+     */
+    private boolean hasSimulationReset(int currentStep)
+    {
+        return lastStepRecorded != -1 && currentStep < lastStepRecorded;
     }
     
     /**
@@ -175,6 +186,7 @@ public class StatisticsView extends Application
         actorXYSeries.clear();
         
         lastDayRecorded = -1;
+        lastStepRecorded = -1;
         
         highestPopulation = 0;
     }

@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NavigableMap;
 /**
  * A simple predator-prey simulator, based on a rectangular field
  * containing rabbits and foxes.
@@ -150,12 +151,23 @@ public class Simulator
     public void reset()
     {
         step = 0;
+        clock.reset();
+        weatherHandler.reset();
+        diseaseHandler.reset();
         animals.clear();
         plants.clear();
         populationGenerator.populate(animals, plants);
         
         // Show the starting state in the view.
         view.showStatus(step, field, clock, weatherHandler.getWeather());
+    }
+
+    /**
+     * Returns the tracked disease history.
+     */
+    public NavigableMap<Integer, Integer> getDiseaseHistory()
+    {
+        return diseaseHandler.getInfectionCounts();
     }
     
     /**

@@ -20,9 +20,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.NavigableMap;
 /**
  * A dashboard showcasing the distribution of animals, plants as well as the evolution of the disease and the weather.
  *
@@ -44,8 +43,8 @@ public class Dashboard
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    private HashMap<Class, Counter> counters;
-    private TreeMap<Integer, Integer> diseaseStats;
+    private Map<Class<?>, Counter> counters;
+    private NavigableMap<Integer, Integer> diseaseStats;
     
     private XYChart.Series series = new XYChart.Series();
     private XYChart.Series data = new XYChart.Series();
@@ -69,7 +68,7 @@ public class Dashboard
      * @param counter Tracker for the population distribution of different animals
      * @param diseaseStats Tracker for the evolution of the disease
      */
-    public Dashboard(HashMap<Class, Counter> counters,TreeMap<Integer, Integer> diseaseStats)
+    public Dashboard(Map<Class<?>, Counter> counters, NavigableMap<Integer, Integer> diseaseStats)
     {
         // initialise instance variables
         //renderFrame();

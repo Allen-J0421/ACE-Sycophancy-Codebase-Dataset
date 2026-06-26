@@ -12,8 +12,8 @@ public class WeatherHandler
     
     private Weather currentWeather;
     private int lastRecordedDay;
-    private Random rand = Randomizer.getRandom();
-    private SimulatorClock clock;
+    private final Random rand = Randomizer.getRandom();
+    private final SimulatorClock clock;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -24,9 +24,8 @@ public class WeatherHandler
      */
     public WeatherHandler(SimulatorClock clock)
     {
-        currentWeather = getRandomWeather();
-        lastRecordedDay = 1;
         this.clock = clock;
+        reset();
     }
     
     /**
@@ -47,6 +46,15 @@ public class WeatherHandler
             currentWeather = getRandomWeather();
             lastRecordedDay = clock.getDayCount();
         }
+    }
+
+    /**
+     * Reset the tracked weather state for a new simulation run.
+     */
+    public void reset()
+    {
+        currentWeather = getRandomWeather();
+        lastRecordedDay = clock.getDayCount();
     }
     
     /**

@@ -1,4 +1,3 @@
-import java.util.List;
 /**
  * Implementation of a grass plant, the lifecycle of grass consists of spreading, growing and getting eaten
  *
@@ -43,25 +42,23 @@ public class Grass extends Plant
      * @param newPlants the new plants to be generated
      */
     @Override
-    public void act(List<Actor> newPlants, Weather weather, DayState dayState) {
-        if(dayState == DayState.NIGHT) {
-            return;
-        }
-        grow(MAX_AGE);
-        if(!isAlive()) {
-            return;
-        }
-        // Change behaviour of grass depending on the weather.
-        if (weather == Weather.RAIN || weather == Weather.SUNNY) {
-            multiply((double)OPTIMAL_BREEDING_FACTOR * MULTIPLY_PROBABILITY, newPlants);
-            return;
-        }
-        multiply(MULTIPLY_PROBABILITY, newPlants);
-    }
-
-    @Override
     protected PlantSpecies getSpecies()
     {
         return PlantSpecies.GRASS;
+    }
+
+    @Override
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
+    }
+
+    @Override
+    protected double getSpreadProbability(Weather weather)
+    {
+        if (weather == Weather.RAIN || weather == Weather.SUNNY) {
+            return OPTIMAL_BREEDING_FACTOR * MULTIPLY_PROBABILITY;
+        }
+        return MULTIPLY_PROBABILITY;
     }
 }

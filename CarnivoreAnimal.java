@@ -1,9 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-import java.util.HashMap;
 /**
  * An extension of the Animal Class that can only eat a specified type of animals
  *
@@ -36,6 +32,52 @@ public abstract class CarnivoreAnimal extends Animal
                             )
     {
         super(randomAge,field, location, gender, baseLevel, maxLevel);
+    }
+
+    protected abstract int getMaxAge();
+
+    protected abstract int getBreedingAge();
+
+    protected abstract double getBreedingProbability(Weather weather);
+
+    protected abstract int getMaxLitterSize();
+
+    protected abstract List<Class<? extends Animal>> getPreyDiet();
+
+    protected boolean canAct(Weather weather, DayState dayState)
+    {
+        return true;
+    }
+
+    protected void onFoodFound(Location location)
+    {
+    }
+
+    @Override
+    public final void act(List<Actor> newAnimals, Weather weather, DayState dayState)
+    {
+        if(!canAct(weather, dayState)) {
+            return;
+        }
+        incrementAge(getMaxAge());
+        incrementHunger();
+        if(!isAlive()) {
+            return;
+        }
+        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
+        Location newLocation = findFood(getPreyDiet());
+        if(newLocation != null) {
+            onFoodFound(newLocation);
+        }
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
     }
     
     /**

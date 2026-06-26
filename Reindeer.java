@@ -47,27 +47,33 @@ public class Reindeer extends HerbivoreAnimal
      * 
      * @param newReindeers the new reeindeers to be born in case the reindeer succesfully mates
      */
-    public void act(List<Actor> newReindeers, Weather weather, DayState dayState) 
+    protected int getMaxAge()
     {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(!isAlive()) {
-            return;
-        }
-        meet(newReindeers, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);
-        Location newLocation = findFood(TARGET_PLANTS);
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }   
+        return MAX_AGE;
+    }
+
+    @Override
+    protected int getBreedingAge()
+    {
+        return BREEDING_AGE;
+    }
+
+    @Override
+    protected double getBreedingProbability(Weather weather)
+    {
+        return BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected int getMaxLitterSize()
+    {
+        return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected List<Class<? extends Plant>> getTargetPlants()
+    {
+        return TARGET_PLANTS;
     }
     
     /**

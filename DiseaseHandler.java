@@ -1,3 +1,4 @@
+import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class DiseaseHandler
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    public static TreeMap<Integer, Integer> count;
+    private final NavigableMap<Integer, Integer> infectionCounts;
     private int currentStep;
     
     /*///////////////////////////////////////////////////////////////
@@ -36,9 +37,9 @@ public class DiseaseHandler
      */
     public DiseaseHandler(Field field)
     {
-        count = new TreeMap<>();
         this.field = field;
-        currentStep = 0;
+        infectionCounts = new TreeMap<>();
+        reset();
     }
     
     /*///////////////////////////////////////////////////////////////
@@ -69,7 +70,7 @@ public class DiseaseHandler
                 }
             }
             // compute probability of being infected.
-            double pValue = (double)((double)densityIndex/(double)block.size());
+            double pValue = block.isEmpty() ? 0.0 : ((double) densityIndex / (double) block.size());
             for(Animal animal : uninfectedAnimals) {
                 double randNumber = rand.nextDouble();
                 if(randNumber < pValue ) {
@@ -78,6 +79,23 @@ public class DiseaseHandler
             }
             infectionCount += densityIndex;
         }
-        count.put(currentStep, infectionCount);
+        infectionCounts.put(currentStep, infectionCount);
+    }
+
+    /**
+     * Reset the disease state for a fresh simulation run.
+     */
+    public void reset()
+    {
+        currentStep = 0;
+        infectionCounts.clear();
+    }
+
+    /**
+     * Returns the tracked infection counts over time.
+     */
+    public NavigableMap<Integer, Integer> getInfectionCounts()
+    {
+        return infectionCounts;
     }
 }

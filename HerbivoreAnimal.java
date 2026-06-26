@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
 /**
@@ -28,6 +26,37 @@ public abstract class HerbivoreAnimal extends Animal
     public HerbivoreAnimal(boolean randomAge,Field field, Location location, Gender gender, int baseLevel, int maxAge)
     {
         super(randomAge, field, location, gender, baseLevel, maxAge);
+    }
+
+    protected abstract int getMaxAge();
+
+    protected abstract int getBreedingAge();
+
+    protected abstract double getBreedingProbability(Weather weather);
+
+    protected abstract int getMaxLitterSize();
+
+    protected abstract List<Class<? extends Plant>> getTargetPlants();
+
+    @Override
+    public final void act(List<Actor> newAnimals, Weather weather, DayState dayState)
+    {
+        incrementAge(getMaxAge());
+        incrementHunger();
+        if(!isAlive()) {
+            return;
+        }
+        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
+        Location newLocation = findFood(getTargetPlants());
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
     }
     
     /**

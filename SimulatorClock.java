@@ -14,8 +14,6 @@ public class SimulatorClock
     private final int TIME_FACTOR = 3;
     private final int STEPS_PER_DAY = 8;
     private int step;
-    private int dayCount;
-    
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/    
@@ -25,7 +23,7 @@ public class SimulatorClock
      */
     public SimulatorClock()
     {
-        step = 0;
+        reset();
     }
     
     /**
@@ -82,6 +80,14 @@ public class SimulatorClock
     {
         step++;
     }
+
+    /**
+     * Resets the clock back to the initial simulation state.
+     */
+    public void reset()
+    {
+        step = 0;
+    }
     
     /**
      * Returns the number of days passed since the start of the simulation(starts at day 1).
@@ -100,7 +106,7 @@ public class SimulatorClock
      */
     public DayState getDayState()
     {
-        if(getTime() > 24 || getTime() < 6) {
+        if(getHourOfDay() < 6) {
             return DayState.NIGHT;
         } else {
             return DayState.DAYLIGHT;

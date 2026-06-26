@@ -62,7 +62,17 @@ public abstract class Plant implements Actor
      * @param dayState The different state of the day
      */
     
-    public abstract void act(List<Actor> newPlants, Weather weather, DayState dayState);
+    public final void act(List<Actor> newPlants, Weather weather, DayState dayState)
+    {
+        if(!canAct(dayState)) {
+            return;
+        }
+        grow(getMaxAge());
+        if(!isAlive()) {
+            return;
+        }
+        multiply(getSpreadProbability(weather), newPlants);
+    }
 
     /**
      * Returns the species definition for this plant.
@@ -70,6 +80,15 @@ public abstract class Plant implements Actor
      * @return the current plant species.
      */
     protected abstract PlantSpecies getSpecies();
+
+    protected abstract int getMaxAge();
+
+    protected abstract double getSpreadProbability(Weather weather);
+
+    protected boolean canAct(DayState dayState)
+    {
+        return dayState != DayState.NIGHT;
+    }
     
     /**
      * Increments the age of the plant.

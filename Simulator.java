@@ -15,38 +15,18 @@ public class Simulator
 
     private static final Random rand = Randomizer.getRandom();
 
-    // Constants representing configuration information for the simulation.
-    // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 240;
-    // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 160;
-
-    // A map of the creation probabilities for the organisms in the simulation
-    private static Map<Class<?>, Double> CREATION_PROBABILITIES = Map.ofEntries(
-            Map.entry(Coyote.class, 0.010),
-            Map.entry(Deer.class, 0.080),
-            Map.entry(Wolf.class, 0.010),
-            Map.entry(Eagle.class, 0.01),
-            Map.entry(Mouse.class, 0.080),
-            Map.entry(Grass.class, 0.030),
-            Map.entry(Hunter.class, 0.03)
-
-    );
-
-    // Maximum number of hunters in the simulation
-    private static final int HUNTER_LIMIT = 5;
-
-
+    // Configuration data for the simulation setup.
+    private final SimulationConfig config;
     // List of actors in the field.
-    private List<Actor> actors;
+    private final List<Actor> actors;
     // The current state of the field.
-    private Field field;
+    private final Field field;
     // The current step of the simulation.
     private int step;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private final SimulatorView view;
     // Environment in the simulation.
-    private Environment environment;
+    private final Environment environment;
     // Factories used to create initial actors in population order.
     private final Map<Class<?>, ActorFactory> actorFactories;
     // Number of hunters created in the current population.
@@ -70,24 +50,22 @@ public class Simulator
      * @param HunterProbability Probability of Hunter being generated
      * @param MouseProbability Probability of Mouse being generated
      */
-    public Simulator(double GrassProbability, double DeerProbability, double CoyoteProbability, double WolfProbability, double EagleProbability, double HunterProbability, double MouseProbability){
-        this(DEFAULT_WIDTH, DEFAULT_DEPTH);
-
-        CREATION_PROBABILITIES = Map.ofEntries(
-                Map.entry(Coyote.class, CoyoteProbability),
-                Map.entry(Deer.class, DeerProbability),
-                Map.entry(Wolf.class, WolfProbability),
-                Map.entry(Eagle.class, EagleProbability),
-                Map.entry(Mouse.class, MouseProbability),
-                Map.entry(Grass.class, GrassProbability),
-                Map.entry(Hunter.class, HunterProbability)
-        );
-
-        actors = new ArrayList<>();
-        field = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
-        environment = new Environment(new Time(), new Weather());
-
-        reset();
+    public Simulator(double grassProbability,
+                     double deerProbability,
+                     double coyoteProbability,
+                     double wolfProbability,
+                     double eagleProbability,
+                     double hunterProbability,
+                     double mouseProbability)
+    {
+        this(SimulationConfig.withPopulationRates(
+                grassProbability,
+                deerProbability,
+                coyoteProbability,
+                wolfProbability,
+                eagleProbability,
+                hunterProbability,
+                mouseProbability));
     }
 
     /**
@@ -95,7 +73,7 @@ public class Simulator
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(SimulationConfig.defaultConfig());
     }
 
     /**
@@ -105,19 +83,22 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
-        if(width <= 0 || depth <= 0) {
-            System.out.println("The dimensions must be greater than zero.");
-            System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
-        }
+        this(createConfigWithDimensions(depth, width));
+    }
 
+    /**
+     * Create a simulation from a configuration object.
+     * @param config The simulation setup data.
+     */
+    public Simulator(SimulationConfig config)
+    {
+        this.config = Objects.requireNonNull(config, "config");
         actors = new ArrayList<>();
-        field = new Field(depth, width);
+        field = new Field(config.getDepth(), config.getWidth());
         environment = new Environment(new Time(), new Weather());
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(config.getDepth(), config.getWidth());
         for(Class cls : SimulationInfo.DEFAULT_COLOR_MAP.keySet()) {
             view.setColor(cls, SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
         }
@@ -218,7 +199,7 @@ public class Simulator
                     // If multiple instances of the simulation are created in the same session (for testing),
                     // the fields in SimulationInfo can be used for optimizing the default probabilities
                     SimulationInfo.HIGHEST_STEPS = backupCounter;
-                    SimulationInfo.HIGHEST_STEP_PROBS = this.CREATION_PROBABILITIES;
+                    SimulationInfo.HIGHEST_STEP_PROBS = config.getPopulationRates();
                 }
                 playingSimulation = false;
                 break;
@@ -281,8 +262,9 @@ public class Simulator
      */
     private void plantGrassInPatches(){
         // new grass is randomly added in patches
-        for(Location location:field.getRandomFreePatches(CREATION_PROBABILITIES.get(Grass.class))){
-            if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Grass.class) && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
+        double grassRate = config.getPopulationRate(Grass.class);
+        for(Location location:field.getRandomFreePatches(grassRate)){
+            if(rand.nextDouble() <= grassRate && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
                 Grass grass = new Grass(field, location);
                 actors.add(grass);
             }
@@ -359,16 +341,26 @@ public class Simulator
 
     private double getCreationProbability(Class<?> actorClass)
     {
-        return CREATION_PROBABILITIES.getOrDefault(actorClass, 0.0);
+        return config.getPopulationRate(actorClass);
     }
 
     private Actor createHunter(Location location)
     {
-        if(hunterCount >= HUNTER_LIMIT) {
+        if(hunterCount >= config.getHunterLimit()) {
             return null;
         }
         hunterCount++;
         return new Hunter(field, location, environment);
+    }
+
+    private static SimulationConfig createConfigWithDimensions(int depth, int width)
+    {
+        if(width <= 0 || depth <= 0) {
+            System.out.println("The dimensions must be greater than zero.");
+            System.out.println("Using default values.");
+            return SimulationConfig.defaultConfig();
+        }
+        return SimulationConfig.withDimensions(depth, width);
     }
 
     /**

@@ -6,8 +6,9 @@ import java.awt.Color;
 import javax.swing.JButton;
 
 /**
- * A simple predator-prey simulator, based on a rectangular field
- * containing rabbits and foxes.
+ * A predator-prey simulator set in an African savannah. The field contains
+ * two predator species (Lion, Cheetah) and three prey species (Zebra,
+ * Giraffe, Lemur), alongside vegetation (Plant).
  *
  * @version 26/02/2022
  */

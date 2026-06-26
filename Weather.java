@@ -8,7 +8,7 @@ import java.util.Random;
  */
 public class Weather {
     // Stores all of the possible weather types.
-    public static enum WeatherType { Sunny, Rainy, Foggy, Clear, Cloudy }
+    public enum WeatherType { Sunny, Rainy, Foggy, Clear, Cloudy }
     
     private static WeatherType currentWeather;
     
@@ -19,7 +19,7 @@ public class Weather {
     private static final Random rand = Randomizer.getRandom();
     
     /**
-     * @return Returns the current weather.
+     * @return The current weather type.
      */
     public static WeatherType getWeather() 
     {
@@ -47,19 +47,19 @@ public class Weather {
         }
         
         // Sunny can only occur during daytime; clear can only occur at night.
-        if (Time.isNight() && currentWeather.equals(WeatherType.Sunny))
+        if (Time.isNight() && currentWeather == WeatherType.Sunny)
         {
             currentWeather = WeatherType.Clear;
         }
 
-        if (!Time.isNight() && currentWeather.equals(WeatherType.Clear))
+        if (!Time.isNight() && currentWeather == WeatherType.Clear)
         {
             currentWeather = WeatherType.Sunny;
         }
     }
     
     /**
-     * @return Returns a random weather type.
+     * @return A randomly chosen weather type, with a new duration set.
      */
     private static WeatherType pickRandomWeather() 
     {

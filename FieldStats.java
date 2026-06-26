@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (lion, zebra, etc.) in the simulation.
-    private HashMap<Class<?>, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -108,12 +109,10 @@ public class FieldStats
     }
     
     /**
-     * Generate counts of the number of all species of 
-     * animal and plant.
-     * These are not kept up to date as animals and plants
-     * are placed in the field, but only when a request
-     * is made for the information.
-     * 
+     * Generate counts of the number of each animal species present.
+     * Plants are not counted here; their counts are maintained
+     * incrementally by {@link SimulatorView#showStatus}.
+     *
      * @param field The field to generate the stats for.
      */
     private void generateCounts(Field field)

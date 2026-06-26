@@ -133,7 +133,7 @@ public class SimulatorView extends JFrame
      * Displays a new popup screen containing instructions on how
      * to use the simulation.
      */
-    public void showInstructions() 
+    private void showInstructions() 
     {
         String dialogue = "How to use:\n" +
                           "   - Use 'Play/Pause' button to stop and resume the simulation whilst in progress.\n" +

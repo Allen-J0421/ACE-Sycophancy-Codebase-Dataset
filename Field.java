@@ -129,23 +129,6 @@ public class Field
     }
     
     /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * 
-     * @param location The location from which to generate an adjacency.
-     * 
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location);
-        
-        return adjacent.get(0);
-    }
-    
-    /**
      * Get a shuffled list of the free adjacent locations.
      * 
      * @param location Get locations adjacent to this.

@@ -3,23 +3,21 @@ public final class ModularExponentiation {
     }
 
     public static int modPow(int base, int exponent, int modulus) {
-        validateExponent(exponent);
-        validateModulus(modulus);
-
-        int normalizedBase = normalizeBase(base, modulus);
-        return compute(normalizedBase, exponent, modulus);
+        return compute(ExponentiationContext.create(base, exponent, modulus));
     }
 
-    private static int compute(int base, int exponent, int modulus) {
-        int remainingExponent = exponent;
+    private static int compute(ExponentiationContext context) {
+        int factor = context.normalizedBase();
+        int remainingExponent = context.exponent();
+        int modulus = context.modulus();
         long result = 1 % modulus;
 
         while (remainingExponent > 0) {
             if ((remainingExponent & 1) != 0) {
-                result = multiplyMod(result, base, modulus);
+                result = multiplyMod(result, factor, modulus);
             }
 
-            base = multiplyMod(base, base, modulus);
+            factor = multiplyMod(factor, factor, modulus);
             remainingExponent >>= 1;
         }
 
@@ -38,15 +36,17 @@ public final class ModularExponentiation {
         return (int) ((left * right) % modulus);
     }
 
-    private static void validateExponent(int exponent) {
-        if (exponent < 0) {
-            throw new IllegalArgumentException("Exponent must be non-negative.");
-        }
-    }
+    private record ExponentiationContext(int normalizedBase, int exponent, int modulus) {
+        private static ExponentiationContext create(int base, int exponent, int modulus) {
+            if (exponent < 0) {
+                throw new IllegalArgumentException("Exponent must be non-negative.");
+            }
 
-    private static void validateModulus(int modulus) {
-        if (modulus <= 0) {
-            throw new IllegalArgumentException("Modulus must be positive.");
+            if (modulus <= 0) {
+                throw new IllegalArgumentException("Modulus must be positive.");
+            }
+
+            return new ExponentiationContext(normalizeBase(base, modulus), exponent, modulus);
         }
     }
 }

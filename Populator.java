@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiFunction;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -55,48 +56,52 @@ public class Populator {
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(19, true, field, location);
-                    organisms.add(lion);
+                if (maybeAddOrganism(rand, organisms, field, row, col, LION_CREATION_PROBABILITY,
+                        (currentField, location) -> new Lion(19, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Zebra zebra = new Zebra(5, true, field, location);
-                    organisms.add(zebra);
+                if (maybeAddOrganism(rand, organisms, field, row, col, ZEBRA_CREATION_PROBABILITY,
+                        (currentField, location) -> new Zebra(5, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= VULTURE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Vulture vulture = new Vulture(40, true, field, location);
-                    organisms.add(vulture);
+                if (maybeAddOrganism(rand, organisms, field, row, col, VULTURE_CREATION_PROBABILITY,
+                        (currentField, location) -> new Vulture(40, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(1, 1, true, field, location);
-                    organisms.add(grass);
+                if (maybeAddOrganism(rand, organisms, field, row, col, GRASS_CREATION_PROBABILITY,
+                        (currentField, location) -> new Grass(1, 1, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= GOAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Goat goat = new Goat(5, true, field, location);
-                    organisms.add(goat);
+                if (maybeAddOrganism(rand, organisms, field, row, col, GOAT_CREATION_PROBABILITY,
+                        (currentField, location) -> new Goat(5, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= ELEPHANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Elephant elephant = new Elephant(5, true, field, location);
-                    organisms.add(elephant);
+                if (maybeAddOrganism(rand, organisms, field, row, col, ELEPHANT_CREATION_PROBABILITY,
+                        (currentField, location) -> new Elephant(5, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Cheetah cheetah = new Cheetah(19, true, field, location);
-                    organisms.add(cheetah);
+                if (maybeAddOrganism(rand, organisms, field, row, col, CHEETAH_CREATION_PROBABILITY,
+                        (currentField, location) -> new Cheetah(19, true, currentField, location))) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= POISON_BERRIES_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    PoisonBerry berry = new PoisonBerry(2, 1, true, field, location);
-                    organisms.add(berry);
-                }
+                maybeAddOrganism(rand, organisms, field, row, col, POISON_BERRIES_CREATION_PROBABILITY,
+                        (currentField, location) -> new PoisonBerry(2, 1, true, currentField, location));
                 // else leave the location empty.
             }
         }
+    }
+
+    /**
+     * Add a single organism to the requested location when the probability check passes.
+     *
+     * @return true if an organism was created and added.
+     */
+    private boolean maybeAddOrganism(Random rand, List<Entity> organisms, Field field, int row, int col,
+                                     double probability, BiFunction<Field, Location, Entity> creator) {
+        if (rand.nextDouble() <= probability) {
+            organisms.add(creator.apply(field, new Location(row, col)));
+            return true;
+        }
+        return false;
     }
 }

@@ -169,20 +169,7 @@ public class Goat extends Prey {
      */
     @Override
     public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Goat) {
-                Goat goat = (Goat) animal;
-                if (!(((goat.isMale() && isMale())) || ((!goat.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return getAge() >= getBreedingAge() && hasCompatibleMateNearby(Goat.class);
     }
 
     /**

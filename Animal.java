@@ -108,6 +108,26 @@ public abstract class Animal extends Organism implements AbleToEat {
     }
 
     /**
+     * Check whether there is an adjacent, alive animal of the requested
+     * species with the opposite gender.
+     *
+     * @param species The species to search for.
+     * @return true if a compatible mate is nearby.
+     */
+    protected boolean hasCompatibleMateNearby(Class<? extends Animal> species) {
+        for (Location loc : getField().adjacentLocations(getLocation())) {
+            Object organism = getField().getObjectAt(loc);
+            if (species.isInstance(organism)) {
+                Animal mate = (Animal) organism;
+                if (mate.isAlive() && mate.isMale() != isMale()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Find an animal in an adjacent location for this animal to infect.
      *
      * @return The location of a nearby animal that can be infected.

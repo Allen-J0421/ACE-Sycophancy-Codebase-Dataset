@@ -111,23 +111,10 @@ public class Simulator
         // Add the newly born foxes and rabbits to the main lists.
         organisms.addAll(newOrganisms);
 
-        int day = step/120 +1;
-        hour = (step/5) % 24 + 1;
+        updateClock();
 
-
-        view.showStatus(step, field);
-        view.updateTimeLabel(day,hour);
-        view.updateEnvironmentLabel(currentWeather, currentTime);
-
-        // every hour, generate new weather if we are done with current weather
-        if (step % 5 == 0) {
-            currentWeather.generate();
-        }
-
-        // update time
-        if ((hour % 4 == 0) && (step % 5 == 0)) {
-            currentTime = currentTime.next();
-        }
+        updateView();
+        advanceEnvironment();
     }
 
     public int getHour() {
@@ -164,6 +151,36 @@ public class Simulator
         }
         catch (InterruptedException ie) {
             // wake up
+        }
+    }
+
+    /**
+     * Update the clock fields derived from the current simulation step.
+     */
+    private void updateClock() {
+        hour = (step / 5) % 24 + 1;
+    }
+
+    /**
+     * Refresh the visible simulation state.
+     */
+    private void updateView() {
+        int day = step / 120 + 1;
+        view.showStatus(step, field);
+        view.updateTimeLabel(day, hour);
+        view.updateEnvironmentLabel(currentWeather, currentTime);
+    }
+
+    /**
+     * Advance weather and time after the current frame has been rendered.
+     */
+    private void advanceEnvironment() {
+        if (step % 5 == 0) {
+            currentWeather.generate();
+        }
+
+        if ((hour % 4 == 0) && (step % 5 == 0)) {
+            currentTime = currentTime.next();
         }
     }
 }

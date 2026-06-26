@@ -18,7 +18,7 @@ public class Weather {
 
     private static final int MAX_HOURS = 3;
 
-    private ArrayList<WeatherType> recentWeather;
+    private final ArrayList<WeatherType> recentWeather;
     private WeatherType type;
     private int hours;
     private int count;
@@ -79,7 +79,7 @@ public class Weather {
      * Returns an ArrayList of the most recent weathers.
      * @return ArrayList of most recent weathers.
      */
-    public ArrayList<WeatherType> getRecentWeather() {
+    public List<WeatherType> getRecentWeather() {
         return recentWeather;
     }
 

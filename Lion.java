@@ -175,19 +175,6 @@ public class Lion extends Predator {
      */
     @Override
     public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Lion) {
-                Lion lion = (Lion) animal;
-                if (!(((lion.isMale() && isMale())) || ((!lion.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return getAge() >= getBreedingAge() && hasCompatibleMateNearby(Lion.class);
     }
 }

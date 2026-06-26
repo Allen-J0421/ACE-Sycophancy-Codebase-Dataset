@@ -169,20 +169,7 @@ public class Zebra extends Prey {
      */
     @Override
     public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Zebra) {
-                Zebra zebra = (Zebra) animal;
-                if (!(((zebra.isMale() && isMale())) || ((!zebra.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return getAge() >= getBreedingAge() && hasCompatibleMateNearby(Zebra.class);
     }
 
     /**

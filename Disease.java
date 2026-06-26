@@ -22,10 +22,11 @@ public class Disease
     
     // Identify if a disease start to spread
     private boolean isSpread;
+    private int diseaseDeaths;
 
     public Disease()
     {
-         isSpread = false;
+         reset();
     }
 
    
@@ -35,6 +36,22 @@ public class Disease
     
     public void setIsSpread(boolean bl){
         isSpread = bl;
+    }
+
+    public int getDiseaseDeaths()
+    {
+        return diseaseDeaths;
+    }
+
+    public void reset()
+    {
+        isSpread = false;
+        diseaseDeaths = 0;
+    }
+
+    public void recordDeath()
+    {
+        diseaseDeaths++;
     }
     
     /**

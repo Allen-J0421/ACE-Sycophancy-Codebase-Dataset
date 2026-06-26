@@ -28,9 +28,6 @@ public abstract class Animal extends Creature
     // Track the first step at which the animal is infected;
     protected int infectionStartStep;
 
-    // total population that is die of disease.
-    public static int populationDieOfDisease = 0;
-
     public Animal(boolean randomAge, Field field, Location location, AnimalProfile profile)
     {
         super(field, location);
@@ -166,7 +163,7 @@ public abstract class Animal extends Creature
     {
         if(getIsInfected() && !getIsImmuned() && RAND.nextDouble() <= disease.MORTALITY_RATE) {
             setDead();
-            populationDieOfDisease++;
+            disease.recordDeath();
             return true;
         }
         return false;

@@ -82,20 +82,20 @@ public class SimulatorView extends JFrame
      * @param weather the object of weather class
      * @param oxygenLevel the oxygen level that is to be displayed in the current step.
      */
-    public void showStatus(int step, Field field, boolean timeOfDay, Weather weather, double oxygenLevel)
+    public void showStatus(SimulationSnapshot snapshot)
     {
         ensureVisible();
-        updateLabels(step, timeOfDay, weather, oxygenLevel);
+        updateLabels(snapshot);
 
         stats.reset();
         fieldView.preparePaint();
-        renderField(field);
-        if(weather.getStormStart()) {
-            drawStormOverlay(weather);
+        renderField(snapshot.getField());
+        if(snapshot.getWeather().getStormStart()) {
+            drawStormOverlay(snapshot.getWeather());
         }
 
         stats.countFinished();
-        populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(snapshot.getField()));
         fieldView.repaint();
     }
 
@@ -129,13 +129,13 @@ public class SimulatorView extends JFrame
         }
     }
 
-    private void updateLabels(int step, boolean timeOfDay, Weather weather, double oxygenLevel)
+    private void updateLabels(SimulationSnapshot snapshot)
     {
-        stepLabel.setText(STEP_PREFIX + step);
-        infoLabel.setText(TIME_PREFIX + (timeOfDay ? "daytime" : "night")
-                          + "        Oxygen Level: " + (int) (oxygenLevel * 100) + "%"
-                          + "        Storm: " + (weather.getStormStart() ? "exists" : "subsides"));
-        diseaseLabel.setText(DISEASE_PREFIX + Animal.populationDieOfDisease);
+        stepLabel.setText(STEP_PREFIX + snapshot.getStep());
+        infoLabel.setText(TIME_PREFIX + (snapshot.isAtDayTime() ? "daytime" : "night")
+                          + "        Oxygen Level: " + (int) (snapshot.getOxygenLevel() * 100) + "%"
+                          + "        Storm: " + (snapshot.getWeather().getStormStart() ? "exists" : "subsides"));
+        diseaseLabel.setText(DISEASE_PREFIX + snapshot.getDiseaseDeaths());
     }
 
     private void renderField(Field field)

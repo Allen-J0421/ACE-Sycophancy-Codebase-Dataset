@@ -111,7 +111,7 @@ public class Simulator
         creatures.clear();
         populate();
         oxygenLevel = 1;
-        Animal.populationDieOfDisease = 0;
+        disease.reset();
         showStatus();
     }
 
@@ -161,7 +161,8 @@ public class Simulator
 
     private void showStatus()
     {
-        view.showStatus(step, field, timeOfDay(), weather, oxygenLevel);
+        view.showStatus(new SimulationSnapshot(step, field, timeOfDay(), weather,
+                                               oxygenLevel, disease.getDiseaseDeaths()));
     }
 
     /**

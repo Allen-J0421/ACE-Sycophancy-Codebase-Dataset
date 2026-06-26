@@ -1,7 +1,6 @@
 
-import java.util.Random;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple model of a Jaguar.
@@ -32,8 +31,8 @@ public class Jaguar extends Predator
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.7;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.4;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private static final Map<Class<? extends Actor>, Integer> FOOD_VALUES =
+        Map.<Class<? extends Actor>, Integer>of(Gazelle.class, GAZELLE_FOOD_VALUE);
     /**
      * Create a Jaguar. A Jaguar can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -53,9 +52,7 @@ public class Jaguar extends Predator
             setAge( 0);
             setFoodLevel(GAZELLE_FOOD_VALUE);
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/89.0);
-        addFood(field);
     }
 
     /**
@@ -98,11 +95,13 @@ public class Jaguar extends Predator
     }
 
     /**
-     * Returns the current jaguar occupying the location.
-     * @return the current jaguar.
+     * Creates a newborn jaguar at the given location.
+     * @param field The field the newborn is in.
+     * @param location The newborn's location.
+     * @return A newborn jaguar.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createYoung(Field field, Location location){
+        return new Jaguar(false, field, location);
     }
 
     /**
@@ -122,22 +121,11 @@ public class Jaguar extends Predator
     }
 
     /**
-     * Adds the food the jaguar eats & the corresponding food value to a hashMap.
-     * @param field The field the jaguar is in.
+     * Returns the prey types the jaguar eats and the amount of food each gives.
+     * @return A map of prey type to food value.
      */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the jaguar eats and the amount of food each gazelle gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+    protected Map<Class<? extends Actor>, Integer> getFoodValues(){
+        return FOOD_VALUES;
     }
 
     /**

@@ -1,7 +1,5 @@
 import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple model of a Gazelle.
@@ -33,8 +31,8 @@ public class Gazelle extends Animal
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 1;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private static final Map<Class<? extends Actor>, Integer> FOOD_VALUES =
+        Map.<Class<? extends Actor>, Integer>of(Grass.class, GRASS_FOOD_VALUE);
     /**
      * Create a new Gazelle. A Gazelle may be created with age
      * zero (a new born) or with a random age.
@@ -52,9 +50,7 @@ public class Gazelle extends Animal
             setAge(getRandom().nextInt(MAX_AGE));
             setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/75.0);
-        addFood(field);
     }
 
     /**
@@ -113,30 +109,21 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Returns the current gazelle occupying the location.
-     * @return the current gazelle.
+     * Creates a newborn gazelle at the given location.
+     * @param field The field the newborn is in.
+     * @param location The newborn's location.
+     * @return A newborn gazelle.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createYoung(Field field, Location location){
+        return new Gazelle(false, field, location);
     }
 
     /**
-     * Adds the food the gazelle eats & the corresponding food value to a hashMap.
-     * @param field The field the gazelle is in.
+     * Returns the prey types the gazelle eats and the amount of food each gives.
+     * @return A map of prey type to food value.
      */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Plants grass = new Grass(true,field,tempLocation );
-        food.put(grass, GRASS_FOOD_VALUE);
-        grass.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the gazelle eats and the amount of food each plant gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+    protected Map<Class<? extends Actor>, Integer> getFoodValues(){
+        return FOOD_VALUES;
     }
 
     /**

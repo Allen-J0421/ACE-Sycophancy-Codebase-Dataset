@@ -1,7 +1,5 @@
 import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple model of a Lion.
@@ -36,8 +34,10 @@ public class Lion extends Predator
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.9;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.8;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private static final Map<Class<? extends Actor>, Integer> FOOD_VALUES =
+        Map.<Class<? extends Actor>, Integer>of(
+            Gazelle.class, PREY_GAZELLE_FOOD_VALUE,
+            Cheetah.class, PREY_CHEETAH_FOOD_VALUE);
     /**
      * Create a Lion. A Lion can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -57,9 +57,7 @@ public class Lion extends Predator
             setAge( 0);
             setFoodLevel(PREY_CHEETAH_FOOD_VALUE);
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/100.0);
-        addFood(field);
     }
 
     /**
@@ -102,11 +100,13 @@ public class Lion extends Predator
     }
 
     /**
-     * Returns the current lion occupying the location.
-     * @return the current lion.
+     * Creates a newborn lion at the given location.
+     * @param field The field the newborn is in.
+     * @param location The newborn's location.
+     * @return A newborn lion.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal createYoung(Field field, Location location){
+        return new Lion(false, field, location);
     }
 
     /**
@@ -126,25 +126,11 @@ public class Lion extends Predator
     }
 
     /**
-     * Adds the food the lion eats & the corresponding food value to a hashMap
-     * @param field The field the lion is in
+     * Returns the prey types the lion eats and the amount of food each gives.
+     * @return A map of prey type to food value.
      */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, PREY_GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
-        Cheetah cheetah = new Cheetah(true,field,tempLocation );
-        food.put(cheetah, PREY_CHEETAH_FOOD_VALUE);
-        cheetah.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the lion eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */   
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+    protected Map<Class<? extends Actor>, Integer> getFoodValues(){
+        return FOOD_VALUES;
     }
 
     /**

@@ -37,16 +37,16 @@ public class Simulator
     private static final int BUTTON_COUNT = 5;
 
     // List of animals in the field.
-    private final List<LivingOrganism> animals;
+    private final List<Animal> animals;
     // List of plants in the field
-    private final List<LivingOrganism> plants;
+    private final List<Plant> plants;
     // The current state of the field.
     private final Field field;
     // A graphical view of the simulation.
     private final SimulatorView view;
     // List of buttons that are used to control the simulation.
     private final JButton[] buttons;
-    
+
     /**
      * Construct a simulation field with default size.
      */
@@ -54,7 +54,7 @@ public class Simulator
     {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
     }
-    
+
     /**
      * Create a simulation field with the given size.
      * @param depth Depth of the field. Must be greater than zero.
@@ -68,7 +68,7 @@ public class Simulator
             depth = DEFAULT_DEPTH;
             width = DEFAULT_WIDTH;
         }
-        
+
         animals = new ArrayList<>();
         plants = new ArrayList<>();
         field = new Field(depth, width);
@@ -80,7 +80,7 @@ public class Simulator
         buttons[SIM_ONE_STEP_BUTTON] = createButton("Sim One Step", this::simulateOneStep);
         buttons[RESET_BUTTON] = createButton("Reset", this::reset);
         buttons[QUIT_BUTTON] = createButton("Quit", this::quit);
-        
+
         // Sets the visibility of the buttons in accordance to the current state of the simulation.
         buttonToggle();
 
@@ -92,7 +92,7 @@ public class Simulator
         view.setColor(Lion.class, Color.RED, Color.WHITE);
         view.setColor(Cheetah.class, Color.ORANGE, Color.BLACK);
         view.setColor(Plant.class, Color.GREEN, Color.BLACK);
-        
+
         // Setup a valid starting point.
         reset();
     }
@@ -114,37 +114,37 @@ public class Simulator
     {
         new Thread(action).start();
     }
-    
+
     /**
      * Controls the functionality of the Play/Pause button. This depends
      * on whether the simulation is paused or not.
      */
-    private void playPauseButton() 
+    private void playPauseButton()
     {
         boolean isPaused = Time.getIsPaused();
-        
+
         Time.toggleIsPaused();
-        
+
         if (isPaused) {
             if (! Time.getIsFinished()) {
                 simulate();
             }
         }
-        
+
         buttonToggle();
     }
-    
+
     /**
-     * Run the simulation from its current state for a reasonably long 
+     * Run the simulation from its current state for a reasonably long
      * period: 500 steps.
      */
     private void runLongSimulation()
     {
         simulate(500);
     }
-    
+
     /**
-     * Run the simulation from its current state for the given number of 
+     * Run the simulation from its current state for the given number of
      * steps.
      * @param numSteps The number of steps to run for.
      */
@@ -154,28 +154,28 @@ public class Simulator
         Time.setStepsToRunFor(numSteps);
         simulate();
     }
-    
+
     /**
-     * Run the simulation from its current state for the given number of 
+     * Run the simulation from its current state for the given number of
      * steps in the Time Class.
      * Stop before the given number of steps if it ceases to be viable.
      * This is considered to be when only one species remains.
      */
-    private void simulate() 
+    private void simulate()
     {
         Time.setIsPaused(false);
-        
+
         // Adjust button visibility.
         buttonToggle();
-        
+
         while (! Time.getIsPaused() && ! Time.getIsFinished() && view.isViable(field)) {
             simulateOneStep();
         }
-        
+
         Time.setIsPaused(true);
         buttonToggle();
     }
-    
+
     /**
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each
@@ -187,47 +187,47 @@ public class Simulator
         Weather.updateWeather();
 
         // Provide space for newborn animals and plants;
-        List<LivingOrganism> newAnimals = new ArrayList<>();
-        List<LivingOrganism> newPlants = new ArrayList<>();
-        
+        List<Animal> newAnimals = new ArrayList<>();
+        List<Plant> newPlants = new ArrayList<>();
+
         // Let all animals act.
-        for(Iterator<LivingOrganism> it = animals.iterator(); it.hasNext(); ) 
+        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); )
         {
-            Animal animal = (Animal) it.next();
-            
-            if(animal != null) 
+            Animal animal = it.next();
+
+            if(animal != null)
             {
                 animal.act(newAnimals);
-                
+
                 if (! animal.isAlive())
                 {
                     it.remove();
                 }
             }
         }
-        
+
         // Let all plants act.
-        for(Iterator<LivingOrganism> it = plants.iterator(); it.hasNext(); ) {
-            Plant plant = (Plant) it.next();
-            if(plant != null) 
+        for(Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
+            Plant plant = it.next();
+            if(plant != null)
             {
                 plant.act(newPlants);
-                
+
                 if (! plant.isAlive())
                 {
                     it.remove();
                 }
             }
         }
-        
+
         // Add the newly born animals and plants to the main lists.
         animals.addAll(newAnimals);
-        plants.addAll(newPlants); 
+        plants.addAll(newPlants);
 
         // Show the current state in the view.
         view.showStatus(field);
     }
-        
+
     /**
      * Reset the simulation to a starting position.
      */
@@ -236,16 +236,16 @@ public class Simulator
         // Resets the visibility of the buttons and resets the step number
         Time.resetStep();
         buttonToggle();
-        
+
         // Clears all current animals and plants then repopulates the area
         animals.clear();
         plants.clear();
         populate();
-        
+
         // Show the starting state in the view.
         view.showStatus(field);
     }
-    
+
     /**
      * Randomly populate the field with predators, prey, and plants.
      */
@@ -253,18 +253,18 @@ public class Simulator
     {
         Random rand = Randomizer.getRandom();
         field.clear();
-        for(int row = 0; row < field.getDepth(); row++) 
+        for(int row = 0; row < field.getDepth(); row++)
         {
-            for(int col = 0; col < field.getWidth(); col++) 
+            for(int col = 0; col < field.getWidth(); col++)
             {
                 //plants will fill the entire field initially.
                 Location location = new Location(row, col);
                 Plant plant = new Plant(true, field, location);
                 plants.add(plant);
-                
+
                 Animal animal = null;
-                
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) 
+
+                if(rand.nextDouble() <= LION_CREATION_PROBABILITY)
                 {
                      animal = new Lion(true, field, location, false, false);
                 }
@@ -272,7 +272,7 @@ public class Simulator
                 {
                      animal = new Cheetah(true, field, location, false, false);
                 }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) 
+                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY)
                 {
                      animal = new Zebra(true, field, location, false, false);
                 }
@@ -280,38 +280,38 @@ public class Simulator
                 {
                      animal = new Giraffe(true, field, location, false, false);
                 }
-                else if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY) 
+                else if(rand.nextDouble() <= LEMUR_CREATION_PROBABILITY)
                 {
                      animal = new Lemur(true, field, location, false, false);
                 }
-                
-                if(animal != null) 
+
+                if(animal != null)
                 {
                     animals.add(animal);
                 }
             }
         }
     }
-    
+
     /**
      * Sets the visibility of the buttons in accordance with the current
      * state of the simulation.
      */
-    private void buttonToggle() 
+    private void buttonToggle()
     {
         boolean isPaused = Time.getIsPaused();
         boolean isFinished = Time.getIsFinished();
-        
+
         boolean isStopped = isPaused || isFinished;
-        
+
         // Adjust button usability.
         buttons[PLAY_PAUSE_BUTTON].setEnabled(!isFinished);
         buttons[RUN_LONG_SIM_BUTTON].setEnabled(isStopped);
         buttons[SIM_ONE_STEP_BUTTON].setEnabled(isStopped);
         buttons[RESET_BUTTON].setEnabled(isStopped);
-        
+
         // Set the label on the play/pause button.
-        if (isStopped) 
+        if (isStopped)
         {
             buttons[PLAY_PAUSE_BUTTON].setText("Play");
         }
@@ -319,7 +319,7 @@ public class Simulator
             buttons[PLAY_PAUSE_BUTTON].setText("Pause");
         }
     }
-    
+
     /**
      * Used by the quit button to close the application.
      */

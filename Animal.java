@@ -124,7 +124,7 @@ public abstract class Animal extends LivingOrganism
      *
      * @param newAnimals A list to receive newly born animals.
      */
-    public void act(List<LivingOrganism> newAnimals)
+    public void act(List<Animal> newAnimals)
     {
         incrementAge();
         incrementHunger();
@@ -183,7 +183,7 @@ public abstract class Animal extends LivingOrganism
     /**
      * Breed when this animal is eligible and probability allows it.
      */
-    private void maybeBreed(List<LivingOrganism> newAnimals)
+    private void maybeBreed(List<Animal> newAnimals)
     {
         if(this.getIsFemale())
         {
@@ -342,7 +342,7 @@ public abstract class Animal extends LivingOrganism
      * New births will be made into free adjacent locations.
      * @param newAnimals A list to return newly born Animals.
      */
-    protected void populate(List<LivingOrganism> newAnimals)
+    protected void populate(List<Animal> newAnimals)
     {
         // Get a list of adjacent free locations.
         Field field = getField();

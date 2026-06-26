@@ -37,7 +37,7 @@ public abstract class Predator extends Animal
      *
      * @param newPredators A list to return newly born prey.
      */
-    public void act(List<LivingOrganism> newPredators)
+    public void act(List<Animal> newPredators)
     {
         // Predators have a lower chance of acting when its night
         if(Time.isNight())

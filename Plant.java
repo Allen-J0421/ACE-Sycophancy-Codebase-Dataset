@@ -53,7 +53,7 @@ public class Plant extends LivingOrganism
      *
      * @param newPlants A list to return new Plants.
      */
-    public void act(List<LivingOrganism> newPlants)
+    public void act(List<Plant> newPlants)
     {
         incrementAge();
         if(!Time.isNight() && isAlive())
@@ -159,7 +159,7 @@ public class Plant extends LivingOrganism
      *
      * @param newPlants A list to return newly born Plants.
      */
-    protected void populate(List<LivingOrganism> newPlants)
+    protected void populate(List<Plant> newPlants)
     {
         // Get a list of adjacent free locations.
         Field field = getField();

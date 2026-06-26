@@ -34,7 +34,7 @@ public abstract class Prey extends Animal
      *
      * @param newPrey A list to return newly born prey.
      */
-    public void act(List<LivingOrganism> newPrey)
+    public void act(List<Animal> newPrey)
     {
         // Prey sleep at night
         if(Time.isNight())

@@ -1,5 +1,4 @@
 import java.util.Random;
-import java.util.List;
 
 /**
  * A class representing the shared characteristics between Living Organisms.
@@ -37,14 +36,6 @@ public abstract class LivingOrganism
      * Increments the organism's age.
      */
     protected abstract void incrementAge();
-    
-    /**
-     * Make this organism act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newOrganisms A list to receive newly born organsims.
-     */
-    protected abstract void act(List<LivingOrganism> newOrganisms);
     
     /**
      * Check whether the organism is alive or not.
@@ -86,14 +77,6 @@ public abstract class LivingOrganism
     protected abstract void setLocation(Location newLocation);
     
     /**
-     * Check whether or not this Organism is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * 
-     * @param newOrganisms A list to return newly born Organisms.
-     */
-    protected abstract void populate(List<LivingOrganism> newOrganisms);
-    
-    /**
      * Return the organism's field.
      * 
      * @return The organism's field.
@@ -103,6 +86,5 @@ public abstract class LivingOrganism
         return field;
     }
 }
-
 
 

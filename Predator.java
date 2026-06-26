@@ -159,24 +159,14 @@ public class Predator extends Animal
     }
 
     /**
-     * Creates the appropriate number of predators of the same species due to reproduction. These new predators of course share the same
-     * features as their "parent" except the sex which is randomized, their age and foodLevel are not randomized.
+     * Create a newborn predator of the current species.
      *
-     * @param newOfThisKind (List<Species>) The list of species to which newborns must be added.
+     * @param location the location at which the newborn should appear.
+     * @return the newborn predator.
      */
-    protected void reproduce(List<Species> newOfThisKind)
+    protected Species createOffspring(Location location)
     {
-        Field field = getField();
-        if (field != null)
-        {
-            List<Location> free = field.getFreeAdjacentLocations(getLocation());
-            int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Predator young = new Predator(strength, field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(),false, getHibernates(), getIsNocturnal());
-                newOfThisKind.add(young);
-            }
-        }
+        return new Predator(strength, getField(), location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(), false, getHibernates(), getIsNocturnal());
     }
 
     /**

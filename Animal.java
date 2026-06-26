@@ -292,16 +292,35 @@ public class Animal extends Species
     protected void reproduce(List<Species> speciesInSimulation)
     {
         Field field = getField();
-        if (field != null)
-        {
-            List<Location> free = field.getFreeAdjacentLocations(getLocation());
-            int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
-                speciesInSimulation.add(young);
-            }
+        if (field != null) {
+            reproduceAtFreeLocations(speciesInSimulation, field.getFreeAdjacentLocations(getLocation()));
         }
+    }
+
+    /**
+     * Create newborn species in the provided free locations.
+     *
+     * @param speciesInSimulation the list receiving newborn species.
+     * @param freeLocations the available locations for newborns.
+     */
+    protected final void reproduceAtFreeLocations(List<Species> speciesInSimulation, List<Location> freeLocations)
+    {
+        int births = numberOfBirths();
+        for (int birth = 0; birth < births && !freeLocations.isEmpty(); birth++) {
+            Location loc = freeLocations.remove(0);
+            speciesInSimulation.add(createOffspring(loc));
+        }
+    }
+
+    /**
+     * Create a newborn animal of the current species.
+     *
+     * @param location the location at which the newborn should appear.
+     * @return the newborn species.
+     */
+    protected Species createOffspring(Location location)
+    {
+        return new Animal(getField(), location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize, false, hibernates, isNocturnal);
     }
 
     /**

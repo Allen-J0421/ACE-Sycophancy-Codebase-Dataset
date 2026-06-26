@@ -10,14 +10,14 @@ public final class EuclideanAlgorithm {
         return gcdOfNonNegativeNumbers(Math.abs(firstNumber), Math.abs(secondNumber));
     }
 
-    private static int gcdOfNonNegativeNumbers(int a, int b) {
-        while (a != 0) {
-            final int remainder = b % a;
-            b = a;
-            a = remainder;
+    private static int gcdOfNonNegativeNumbers(int divisor, int dividend) {
+        while (divisor != 0) {
+            final int remainder = dividend % divisor;
+            dividend = divisor;
+            divisor = remainder;
         }
 
-        return b;
+        return dividend;
     }
 
     static int findGCD(int firstNumber, int secondNumber) {

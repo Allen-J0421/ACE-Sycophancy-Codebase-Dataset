@@ -36,7 +36,6 @@ public class Simulator
     private Weather weather;
     private int numberOfDays;
     private static final Random rand = Randomizer.getRandom();
-    private int noOfGrass; // keeps count of the no.of grass species in the field.
     /**
      * Construct a simulation field with default size.
      */
@@ -134,14 +133,11 @@ public class Simulator
             }
         }
         animals.addAll(newAnimals);
-        noOfGrass = 0;
         for(Iterator<Actor> it = plants.iterator(); it.hasNext(); ) {
             Actor plants = it.next();
             plants.act(newGrass,this);
             if(! plants.isActive()) {
                 it.remove();
-            }else if(plants instanceof Plants){
-                noOfGrass++;
             }
         }
         plants.addAll(newGrass);
@@ -242,14 +238,6 @@ public class Simulator
                 animal.setUnhealthy();
             }
         }
-    }
-    
-    /**
-     * Returns the number of grass in the plants arrayList.
-     * @return number of grass in arraylist.
-     */
-    public int getNoOfGrass(){
-        return noOfGrass;
     }
     
     /**

@@ -1,14 +1,13 @@
 package safari;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal.
+ * Each position can store one blocking actor and one traversable actor.
  *
  * @version 2016.02.29
  */
@@ -18,9 +17,11 @@ public class Field
     private static final Random rand = Randomizer.getRandom();
     
     // The depth and width of the field.
-    private int depth, width;
-    // Storage for the animals.
-    private Object[][] field;
+    private final int depth, width;
+    // Storage for blocking actors, such as animals and hunters.
+    private final Actor[][] occupants;
+    // Storage for traversable actors, such as grass.
+    private final Actor[][] traversableActors;
 
     /**
      * Represent a field of the given dimensions.
@@ -31,7 +32,8 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        occupants = new Actor[depth][width];
+        traversableActors = new Actor[depth][width];
     }
     
     /**
@@ -41,7 +43,8 @@ public class Field
     {
         for(int row = 0; row < depth; row++) {
             for(int col = 0; col < width; col++) {
-                field[row][col] = null;
+                occupants[row][col] = null;
+                traversableActors[row][col] = null;
             }
         }
     }
@@ -52,7 +55,29 @@ public class Field
      */
     public void clear(Location location)
     {
-        field[location.getRow()][location.getCol()] = null;
+        occupants[location.getRow()][location.getCol()] = null;
+        traversableActors[location.getRow()][location.getCol()] = null;
+    }
+
+    /**
+     * Clear the given actor from the field.
+     * @param actor The actor to clear.
+     */
+    public void clear(Actor actor)
+    {
+        if(actor == null) {
+            return;
+        }
+        Location location = actor.getLocation();
+        if(location == null) {
+            return;
+        }
+        if(actor.isTraversable()) {
+            traversableActors[location.getRow()][location.getCol()] = null;
+        }
+        else {
+            occupants[location.getRow()][location.getCol()] = null;
+        }
     }
     
     /**
@@ -63,9 +88,9 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void place(Actor actor, int row, int col)
     {
-        place(animal, new Location(row, col));
+        place(actor, new Location(row, col));
     }
     
     /**
@@ -75,30 +100,71 @@ public class Field
      * @param animal The animal to be placed.
      * @param location Where to place the animal.
      */
-    public void place(Object animal, Location location)
+    public void place(Actor actor, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        if(actor == null || location == null) {
+            return;
+        }
+        if(actor.isTraversable()) {
+            traversableActors[location.getRow()][location.getCol()] = actor;
+        }
+        else {
+            occupants[location.getRow()][location.getCol()] = actor;
+        }
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the visible actor at the given location, if any.
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Actor getActorAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getActorAt(location.getRow(), location.getCol());
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the visible actor at the given location, if any.
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Actor getActorAt(int row, int col)
     {
-        return field[row][col];
+        if(occupants[row][col] != null) {
+            return occupants[row][col];
+        }
+        return traversableActors[row][col];
+    }
+
+    /**
+     * Return the blocking actor at the given location, if any.
+     * @param location Where in the field.
+     * @return The blocking actor at the location, or null.
+     */
+    public Actor getOccupantAt(Location location)
+    {
+        return occupants[location.getRow()][location.getCol()];
+    }
+
+    /**
+     * Return the traversable actor at the given location, if any.
+     * @param location Where in the field.
+     * @return The traversable actor at the location, or null.
+     */
+    public Actor getTraversableActorAt(Location location)
+    {
+        return traversableActors[location.getRow()][location.getCol()];
+    }
+
+    /**
+     * Determine whether a location has a blocking occupant.
+     * @param location The location to inspect.
+     * @return true if the location is blocked by an occupant.
+     */
+    public boolean isOccupied(Location location)
+    {
+        return getOccupantAt(location) != null;
     }
     
     /**
@@ -125,7 +191,24 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(getOccupantAt(next) == null) {
+                free.add(next);
+            }
+        }
+        return free;
+    }
+
+    /**
+     * Get a shuffled list of the free adjacent locations for traversable actors.
+     * @param location Get locations adjacent to this.
+     * @return A list of free adjacent locations for ground-cover actors.
+     */
+    public List<Location> getFreeAdjacentTraversableLocations(Location location)
+    {
+        List<Location> free = new LinkedList<>();
+        List<Location> adjacent = adjacentLocations(location);
+        for(Location next : adjacent) {
+            if(getTraversableActorAt(next) == null) {
                 free.add(next);
             }
         }
@@ -185,6 +268,16 @@ public class Field
             Collections.shuffle(locations, rand);
         }
         return locations;
+    }
+
+    /**
+     * Return whether a location can accept a new traversable actor.
+     * @param location The location to check.
+     * @return true if no traversable actor is present.
+     */
+    public boolean isFreeForTraversableActor(Location location)
+    {
+        return getTraversableActorAt(location) == null;
     }
 
     /**

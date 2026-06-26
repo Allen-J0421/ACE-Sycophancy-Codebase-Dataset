@@ -51,7 +51,7 @@ public abstract class Actor
     protected void setLocation(Location newLocation)
     {
         if(location != null) {
-            field.clear(location);
+            field.clear(this);
         }
         location = newLocation;
         field.place(this, newLocation);
@@ -99,11 +99,12 @@ public abstract class Actor
     protected void setDead()
     {
         setAlive(false);
-        if(getLocation() != null) {
-            getField().clear(getLocation());
-            location = null ;
-            field = null;
+        Field currentField = field;
+        if(currentField != null && location != null) {
+            currentField.clear(this);
         }
+        location = null;
+        field = null;
     }
 
     /**
@@ -165,6 +166,15 @@ public abstract class Actor
      */
     protected void setGrowthLevel(double value){
         growthLevel = value + growthLevel;
+    }
+
+    /**
+     * Indicates whether the actor can be traversed by blocking actors.
+     * @return true if the actor is traversable.
+     */
+    protected boolean isTraversable()
+    {
+        return false;
     }
     
     /**

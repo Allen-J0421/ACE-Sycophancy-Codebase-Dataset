@@ -110,4 +110,10 @@ public abstract class Plants extends Actor
             setDead();
         }
     }
+
+    @Override
+    protected boolean isTraversable()
+    {
+        return true;
+    }
 }

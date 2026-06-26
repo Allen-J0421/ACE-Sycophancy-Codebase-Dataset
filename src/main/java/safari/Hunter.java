@@ -76,16 +76,16 @@ public class Hunter extends Actor
      * @param probability The probability the hunting is successful.
      */
     private void hunt(double probability){
-        if(getRandom().nextDouble() < probability){
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            for(int i = 0; i< SHOTS; i++){
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if( animal != null && (animal instanceof Lion  || animal instanceof Cheetah)){
-                    Animal currentAnimal = (Animal) animal;
-                    if(currentAnimal.isActive()) { 
+            if(getRandom().nextDouble() < probability){
+                Field field = getField();
+                List<Location> adjacent = field.adjacentLocations(getLocation());
+                Iterator<Location> it = adjacent.iterator();
+                for(int i = 0; i< SHOTS; i++){
+                    Location where = it.next();
+                    Actor animal = field.getActorAt(where);
+                    if( animal != null && (animal instanceof Lion  || animal instanceof Cheetah)){
+                        Animal currentAnimal = (Animal) animal;
+                        if(currentAnimal.isActive()) { 
                         currentAnimal.setDead();
                         break;
                     }

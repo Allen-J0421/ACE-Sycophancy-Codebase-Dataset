@@ -184,15 +184,16 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object actor = field.getObjectAt(row, col);
+                Location location = new Location(row, col);
+                Actor surfaceActor = field.getTraversableActorAt(location);
+                Actor occupant = field.getOccupantAt(location);
+                Actor actor = field.getActorAt(row, col);
                 if(actor != null) {
-                    stats.incrementCount(actor, simulator);
+                    stats.incrementCount(surfaceActor);
+                    stats.incrementCount(occupant);
                     fieldView.drawMark(col, row, getColor(actor.getClass()));
-                    if(actor instanceof Animal){
-                        Animal animal = (Animal) actor;
-                        if (!animal.getHealth()){
-                            infectedPopulationCount ++;
-                        }
+                    if(actor instanceof Animal animal && !animal.getHealth()){
+                        infectedPopulationCount ++;
                     }
                 }
                 else {
@@ -208,7 +209,7 @@ public class SimulatorView extends JFrame
         }
 
         infoLabel.setText(" " + simulator.getWeather() + "        " + INFECTION_PREFIX + infectedPopulationCount );
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field, simulator));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
         fieldView.repaint();
     }
 
@@ -218,7 +219,7 @@ public class SimulatorView extends JFrame
      */
     public boolean isViable(Field field)
     {
-        return stats.isViable(field, simulator);
+        return stats.isViable(field);
     }
 
     /**
@@ -326,4 +327,3 @@ public class SimulatorView extends JFrame
         }
     }
 }
-

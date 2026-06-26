@@ -1,6 +1,5 @@
 package safari;
 
-import java.awt.Color;
 import java.util.HashMap;
 
 /**
@@ -34,11 +33,11 @@ public class FieldStats
      * @param simulator. The current simulator the simulation is being run on.
      * @return A string listing what is in the field.
      */
-    public String getPopulationDetails(Field field, Simulator simulator)
+    public String getPopulationDetails(Field field)
     {
         StringBuffer buffer = new StringBuffer();
         if(!countsValid) {
-            generateCounts(field, simulator);
+            generateCounts(field);
         }
         for(Class key : counters.keySet()) {
             Counter info = counters.get(key);
@@ -68,8 +67,11 @@ public class FieldStats
      * @param actor The object of animal to increment.
      * @param simulator. The current simulator the simulation is being run on.
      */
-    public void incrementCount(Object actor, Simulator simulator)
+    public void incrementCount(Actor actor)
     {
+        if(actor == null) {
+            return;
+        }
         Class animalClass = actor.getClass();
         Counter count = counters.get(animalClass);
         if(count == null) {
@@ -79,11 +81,6 @@ public class FieldStats
             counters.put(animalClass, count);
         }
         count.increment();
-        if (simulator.getSteps() != 0){
-            if(actor instanceof Grass){
-                count.setCount(simulator.getNoOfGrass());
-            }
-        }
     }
 
     /**
@@ -101,12 +98,12 @@ public class FieldStats
      * @param simulator The current simulator the simulation is being run on.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field, Simulator simulator)
+    public boolean isViable(Field field)
     {
         // How many counts are non-zero.
         int nonZero = 0;
         if(!countsValid) {
-            generateCounts(field, simulator);
+            generateCounts(field);
         }
         for(Class key : counters.keySet()) {
             Counter info = counters.get(key);
@@ -125,15 +122,14 @@ public class FieldStats
      * @param field The field to generate the stats for.
      * @param simulator The current simulator the simulation is being run on.
      */
-    private void generateCounts(Field field, Simulator simulator)
+    private void generateCounts(Field field)
     {
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal, simulator);
-                }
+                Location location = new Location(row, col);
+                incrementCount(field.getTraversableActorAt(location));
+                incrementCount(field.getOccupantAt(location));
             }
         }
         countsValid = true;

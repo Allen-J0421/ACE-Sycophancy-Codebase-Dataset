@@ -44,16 +44,14 @@ public class Grass extends Plants
         addGrowthLevel(0.05);
         if(simulator.isDay()){
             if(isActive()) {
-                 Field field = getField();
+                Field field = getField();
+                Object occupant = field.getObjectAt(getLocation());
                 //sets the location to show the grass once the actor on top of it has moved.
-                if (field.getObjectAt(getLocation()) == null ){
+                if(occupant == null) {
                     setLocation(getLocation());
-                }else if (field.getObjectAt(getLocation()) != this && (field.getObjectAt(getLocation()) instanceof Plants)){
-                    Object grassObject = field.getObjectAt(getLocation());
-                    Plants grassPlant = (Plants)grassObject;
-                    grassPlant.setDead();
+                } else if(occupant != this && occupant instanceof Plants) {
+                    ((Plants) occupant).setDead();
                     setLocation(getLocation());
-
                 }
                 
                 switch(simulator.getWeather()){

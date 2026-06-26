@@ -83,7 +83,7 @@ public abstract class Actor
         alive = false;
         if(getLocation() != null) {
             getField().clear(getLocation());
-            location = null ;
+            location = null;
             field = null;
         }
     }
@@ -108,8 +108,8 @@ public abstract class Actor
      * Set age of an actor
      * @param age. Age of the actor.
      */
-    protected void setAge(int  age){
-        this.age = age ;
+    protected void setAge(int age){
+        this.age = age;
     }
 
     /**

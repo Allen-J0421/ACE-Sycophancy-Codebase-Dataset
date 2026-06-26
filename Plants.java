@@ -55,7 +55,7 @@ public abstract class Plants extends Actor
      * Get the maximum number of squares the plant can grow into.
      * @return  The number of squares the plant can grow into.
      */
-    abstract protected int getMaxLitter();  
+    abstract protected int getMaxLitter();
 
     /**
      * Increase the current water level.
@@ -83,22 +83,6 @@ public abstract class Plants extends Actor
      */
     protected void decreaseSunLevel(){
         sunLevel--;
-    }
-
-    /**
-     * Get the current water level.
-     * @return The plants current water level.
-     */
-    protected int getWaterLevel(){
-        return waterLevel;
-    }
-
-    /**
-     * Get the current sun level.
-     * @return The plants current sun level.
-     */
-    protected int getSunLevel(){
-        return sunLevel;
     }
 
     /**

@@ -1,6 +1,6 @@
 
-import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (jaguar, gazelle, etc.) in the simulation.
-    private HashMap<Class<?>, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 

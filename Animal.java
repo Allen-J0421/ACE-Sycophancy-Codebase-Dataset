@@ -83,8 +83,6 @@ public abstract class Animal extends Actor
      */
     protected void giveBirth(List<Actor> newAnimals)
     {
-        // New animals are born into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         if (timeLeftUntilBreedingAgain != 0){

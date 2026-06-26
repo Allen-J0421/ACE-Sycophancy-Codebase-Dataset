@@ -17,23 +17,15 @@ public class Simulator
     private static final int DEFAULT_DEPTH = 200;
     private static final int LONG_SIMULATION_STEPS = 4000;
     private static final int SIMULATION_DELAY_MS = 5;
-    private static final int STEPS_PER_HOUR = 5;
-    private static final int HOURS_PER_DAY = 24;
-    private static final int STEPS_PER_DAY = STEPS_PER_HOUR * HOURS_PER_DAY;
-    private static final int HOURS_PER_TIME_OF_DAY = 4;
 
     // List of organisms in the field.
     private List<Organism> organisms;
     // The current state of the field.
     private Field field;
-    // The current step of the simulation.
-    private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
-    // The current hour of the simulation.
-    private int hour;
-    // Indicates current state of time in the simulation.
-    private TimeOfDay currentTime;
+    // The current simulation clock.
+    private SimulationClock clock;
 
     // The current weather in the simulation.
     private Weather currentWeather;
@@ -62,6 +54,7 @@ public class Simulator
         
         organisms = new ArrayList<>();
         field = new Field(depth, width);
+        clock = new SimulationClock();
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
@@ -99,7 +92,7 @@ public class Simulator
      */
     public void simulateOneStep()
     {
-        step++;
+        clock.advanceStep();
 
         // Provide space for newborn organisms.
         List<Organism> newOrganisms = new ArrayList<>();
@@ -107,7 +100,7 @@ public class Simulator
         for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
             Organism organism = it.next();
 
-            organism.act(newOrganisms, currentWeather, currentTime);
+            organism.act(newOrganisms, currentWeather, clock.getCurrentTime());
 
             if(organism.isRemoved()) {
                 it.remove();
@@ -117,27 +110,21 @@ public class Simulator
         // Add the newly born organisms to the main list.
         organisms.addAll(newOrganisms);
 
-        int day = step / STEPS_PER_DAY + 1;
-        hour = (step / STEPS_PER_HOUR) % HOURS_PER_DAY + 1;
-
-
-        view.showStatus(step, field);
-        view.updateTimeLabel(day,hour);
-        view.updateEnvironmentLabel(currentWeather, currentTime);
+        view.showStatus(clock.getStep(), field);
+        view.updateTimeLabel(clock.getDay(), clock.getHour());
+        view.updateEnvironmentLabel(currentWeather, clock.getCurrentTime());
 
         // Every hour, generate new weather if we are done with current weather.
-        if (step % STEPS_PER_HOUR == 0) {
+        if (clock.isStartOfHour()) {
             currentWeather.generate();
         }
 
         // Update time of day at the configured interval.
-        if ((hour % HOURS_PER_TIME_OF_DAY == 0) && (step % STEPS_PER_HOUR == 0)) {
-            currentTime = currentTime.next();
-        }
+        clock.advanceTimeOfDayIfNeeded();
     }
 
     public int getHour() {
-        return hour;
+        return clock.getHour();
     }
 
     /**
@@ -145,9 +132,7 @@ public class Simulator
      */
     public void reset()
     {
-        step = 0;
-
-        currentTime = TimeOfDay.SUNRISE;
+        clock.reset();
         currentWeather = new Weather(WeatherType.SUN);
 
         organisms.clear();
@@ -156,7 +141,7 @@ public class Simulator
         populator.populate(organisms, field);
         
         // Show the starting state in the view.
-        view.showStatus(step, field);
+        view.showStatus(clock.getStep(), field);
     }
     
     /**

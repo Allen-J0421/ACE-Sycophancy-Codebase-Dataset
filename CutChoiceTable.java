@@ -9,8 +9,9 @@ class CutChoiceTable extends LengthIndexedValues {
     List<Integer> reconstructCuts(int remaining) {
         List<Integer> cuts = new ArrayList<>();
         while (remaining > 0) {
-            cuts.add(get(remaining));
-            remaining -= get(remaining);
+            int cut = get(remaining);
+            cuts.add(cut);
+            remaining -= cut;
         }
         return cuts;
     }

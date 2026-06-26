@@ -10,19 +10,7 @@ import java.util.Random;
  */
 public class Dingo extends Animal
 {
-    // Characteristics shared by all dingoes (class variables).
-    
-    // The age at which a dingo can start to breed.
-    private static final int BREEDING_AGE = 50;
-    // The age to which a dingo can live.
-    private static final int MAX_AGE = 700;
-    // The likelihood of a dingo breeding.
-    private static final double BREEDING_PROBABILITY = 0.04;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 3;
-    // The food value of a single snake. In effect, this is the
-    // number of steps a dingo can go before it has to eat again.
-    private static final int SNAKE_FOOD_VALUE = 100;
+    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.dingo();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -38,12 +26,12 @@ public class Dingo extends Animal
         super(field, location);
         this.setGender();
         if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(SNAKE_FOOD_VALUE));
+            setAge(rand.nextInt(TUNING.getMaxAge()));
+            setFoodLevel(rand.nextInt(TUNING.getNewbornFoodLevel()));
         }
         else {
             setAge(0);
-            setFoodLevel(SNAKE_FOOD_VALUE);
+            setFoodLevel(TUNING.getNewbornFoodLevel());
         }
     }
     
@@ -55,15 +43,16 @@ public class Dingo extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newDingoes, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(TUNING.getMaxAge());
         incrementHunger();
-        if(isAlive() && ((time>=8)&&(time <=24)))
+        if(isAlive() && TUNING.isActive(time))
         {
             if (getDisease()){
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                breedOffspring(newDingoes, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+            if (giveBirth(TUNING.getBreedingAge())) {
+                breedOffspring(newDingoes, TUNING.getBreedingAge(),
+                        TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
             Location newLocation = findFood();
             if(newLocation == null) {
@@ -92,7 +81,7 @@ public class Dingo extends Animal
                         Snake snake = (Snake) animal;
                         if (snake.isAlive()) {
                             snake.setDead();
-                            setFoodLevel(SNAKE_FOOD_VALUE);
+                            setFoodLevel(TUNING.foodValueFor(Snake.class));
                             return where;
                         }
                     } else if (animal instanceof Plant) {
@@ -117,7 +106,7 @@ public class Dingo extends Animal
                     Snake snake = (Snake) animal;
                     if (snake.isAlive()) {
                         snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
+                        setFoodLevel(TUNING.foodValueFor(Snake.class));
                         return where;
                     }
                 }

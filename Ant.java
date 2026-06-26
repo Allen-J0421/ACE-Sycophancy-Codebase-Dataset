@@ -10,22 +10,7 @@ import java.util.Random;
  */
 public class Ant extends Animal
 {
-    // Characteristics shared by all ants (class variables).
-
-    // The age at which an ant can start to breed.
-    private static final int BREEDING_AGE = 20;
-    // The age to which an ant can live.
-    private static final int MAX_AGE = 400;
-    // The likelihood of an ant breeding.
-    private static final double BREEDING_PROBABILITY = 0.32;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 14;
-    // The food value of a single acacia. In effect, this is the
-    // number of steps an ant can go before it has to eat again.
-    private static final int ACACIA_FOOD_VALUE = 60;
-    // The food value of a single grass. In effect, this is the
-    // number of steps an ant can go before it has to eat again.
-    private static final int GRASS_FOOD_VALUE = 60;
+    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.ant();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -41,12 +26,12 @@ public class Ant extends Animal
         super(field, location);
         this.setGender();
         if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ACACIA_FOOD_VALUE));
+            setAge(rand.nextInt(TUNING.getMaxAge()));
+            setFoodLevel(rand.nextInt(TUNING.getNewbornFoodLevel()));
         }
         else {
             setAge(0);
-            setFoodLevel(ACACIA_FOOD_VALUE);
+            setFoodLevel(TUNING.getNewbornFoodLevel());
         }
     }
 
@@ -58,16 +43,17 @@ public class Ant extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newAnts, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(TUNING.getMaxAge());
         incrementHunger();
 
-        if(isAlive() && ((time >= 4)&&(time <= 20)))
+        if(isAlive() && TUNING.isActive(time))
         {
             if (getDisease()) {
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                breedOffspring(newAnts, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+            if (giveBirth(TUNING.getBreedingAge())) {
+                breedOffspring(newAnts, TUNING.getBreedingAge(),
+                        TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
 
             Location newLocation = findFood();
@@ -94,7 +80,7 @@ public class Ant extends Animal
                 Acacia acacia = (Acacia) plant;
                 if (acacia.isAlive()) {
                     acacia.setDead();
-                    setFoodLevel(ACACIA_FOOD_VALUE);
+                    setFoodLevel(TUNING.foodValueFor(Acacia.class));
                     return where;
                 }
             }
@@ -102,7 +88,7 @@ public class Ant extends Animal
                 Grass grass = (Grass) plant;
                 if(grass.isAlive()) {
                     grass.setDead();
-                    setFoodLevel(GRASS_FOOD_VALUE);
+                    setFoodLevel(TUNING.foodValueFor(Grass.class));
                     return where;
                 }
             }

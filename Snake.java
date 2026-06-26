@@ -10,19 +10,7 @@ import java.util.Random;
  */
 public class Snake extends Animal
 {
-// Characteristics shared by all snakes (class variables).
-
-    // The age at which a snake can start to breed.
-    private static final int BREEDING_AGE = 30;
-    // The age to which a snake can live.
-    private static final int MAX_AGE = 700;
-    // The likelihood of a snake breeding.
-    private static final double BREEDING_PROBABILITY = 0.33;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 11;
-    // The food value of a single rat. In effect, this is the
-    // number of steps a snake can go before it has to eat again.
-    private static final int RAT_FOOD_VALUE = 100;
+    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.snake();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -38,12 +26,12 @@ public class Snake extends Animal
         super(field, location);
         this.setGender();
         if(randomAge) {
-            setAge( rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(RAT_FOOD_VALUE));
+            setAge( rand.nextInt(TUNING.getMaxAge()));
+            setFoodLevel(rand.nextInt(TUNING.getNewbornFoodLevel()));
         }
         else {
             setAge(0);
-            setFoodLevel(RAT_FOOD_VALUE);
+            setFoodLevel(TUNING.getNewbornFoodLevel());
         }
     }
 
@@ -55,15 +43,16 @@ public class Snake extends Animal
      * @param newSnakes A list to return newly born snakes.
      */
     public void act(List<Animal> newSnakes, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(TUNING.getMaxAge());
         incrementHunger();
-        if(isAlive() && ((time >= 5)&&(time <= 23)))
+        if(isAlive() && TUNING.isActive(time))
         {
             if (getDisease()){
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                breedOffspring(newSnakes, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+            if (giveBirth(TUNING.getBreedingAge())) {
+                breedOffspring(newSnakes, TUNING.getBreedingAge(),
+                        TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
             Location newLocation = findFood();
             if(newLocation == null) {
@@ -91,7 +80,7 @@ public class Snake extends Animal
                 Rat rat = (Rat) animal;
                 if(rat.isAlive()) {
                     rat.setDead();
-                    setFoodLevel(RAT_FOOD_VALUE);
+                    setFoodLevel(TUNING.foodValueFor(Rat.class));
                     return where;
                 }
             }

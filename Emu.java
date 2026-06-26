@@ -10,19 +10,7 @@ import java.util.Random;
  */
 public class Emu extends Animal
 {
-    // Characteristics shared by all emus (class variables).
-
-    // The age at which an emu can start to breed.
-    private static final int BREEDING_AGE = 30;
-    // The age to which an emu can live.
-    private static final int MAX_AGE = 600;
-    // The likelihood of an emu breeding.
-    private static final double BREEDING_PROBABILITY = 0.17;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 7;
-    // The food value of a single grass. In effect, this is the
-    // number of steps an emu can go before it has to eat again.
-    private static final int GRASS_FOOD_VALUE = 60;
+    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.emu();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -38,12 +26,12 @@ public class Emu extends Animal
         super(field, location);
         this.setGender();
         if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(GRASS_FOOD_VALUE));
+            setAge(rand.nextInt(TUNING.getMaxAge()));
+            setFoodLevel(rand.nextInt(TUNING.getNewbornFoodLevel()));
         }
         else {
             setAge(0);
-           setFoodLevel(GRASS_FOOD_VALUE);
+           setFoodLevel(TUNING.getNewbornFoodLevel());
         }
     }
 
@@ -55,15 +43,16 @@ public class Emu extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newEmus,int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(TUNING.getMaxAge());
         incrementHunger();
 
-        if(isAlive() && ((time <= 9)||(time >= 21))) {
+        if(isAlive() && TUNING.isActive(time)) {
             if (getDisease()){
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                breedOffspring(newEmus, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+            if (giveBirth(TUNING.getBreedingAge())) {
+                breedOffspring(newEmus, TUNING.getBreedingAge(),
+                        TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
             Location newLocation = findFood();
             if(newLocation == null) {
@@ -88,12 +77,12 @@ public class Emu extends Animal
             Location where = it.next();
             Object searchPlant = field.getObjectAt(where);
             if(searchPlant instanceof Grass) {
-                Grass grass = (Grass) searchPlant;
-                if (grass.isAlive()) {
-                    grass.setDead();
-                    setFoodLevel(GRASS_FOOD_VALUE);
-                    return where;
-                }
+            Grass grass = (Grass) searchPlant;
+            if (grass.isAlive()) {
+                grass.setDead();
+                setFoodLevel(TUNING.foodValueFor(Grass.class));
+                return where;
+            }
             }
             else if (searchPlant instanceof Plant) {
                 Plant plant = (Plant) searchPlant;

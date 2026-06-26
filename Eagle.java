@@ -11,22 +11,7 @@ import java.util.Random;
 
 public class Eagle extends Animal
 {
-    // Characteristics shared by all eagles (class variables).
-
-    // The age at which an eagle can start to breed.
-    private static final int BREEDING_AGE = 50;
-    // The age to which an eagle can live.
-    private static final int MAX_AGE = 700;
-    // The likelihood of an  eagle breeding.
-    private static final double BREEDING_PROBABILITY = 0.1;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 11;
-    // The food value of a single rat. In effect, this is the
-    // number of steps an eagle can go before it has to eat again.
-    private static final int RAT_FOOD_VALUE = 40;
-    // The food value of a single snake. In effect, this is the
-    // number of steps an eagle can go before it has to eat again.
-    private static final int SNAKE_FOOD_VALUE = 60;
+    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.eagle();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -42,12 +27,12 @@ public class Eagle extends Animal
         super(field, location);
         this.setGender();
         if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(SNAKE_FOOD_VALUE));
+            setAge(rand.nextInt(TUNING.getMaxAge()));
+            setFoodLevel(rand.nextInt(TUNING.getNewbornFoodLevel()));
         }
         else {
             setAge(0);
-            setFoodLevel(SNAKE_FOOD_VALUE);
+            setFoodLevel(TUNING.getNewbornFoodLevel());
         }
     }
 
@@ -59,14 +44,15 @@ public class Eagle extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newEagles, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(TUNING.getMaxAge());
         incrementHunger();
-        if(isAlive() && ((time >= 6)&&(time <= 22))) {
+        if(isAlive() && TUNING.isActive(time)) {
             if (getDisease()){
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                breedOffspring(newEagles, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+            if (giveBirth(TUNING.getBreedingAge())) {
+                breedOffspring(newEagles, TUNING.getBreedingAge(),
+                        TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
             Location newLocation = findFood();
             if(newLocation == null) {
@@ -96,7 +82,7 @@ public class Eagle extends Animal
                     Snake snake = (Snake) animal;
                     if(snake.isAlive()) {
                         snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
+                        setFoodLevel(TUNING.foodValueFor(Snake.class));
                         return where;
                     }
                 }
@@ -104,7 +90,7 @@ public class Eagle extends Animal
                     Rat rat = (Rat) animal;
                     if(rat.isAlive()) {
                         rat.setDead();
-                        setFoodLevel(RAT_FOOD_VALUE);
+                        setFoodLevel(TUNING.foodValueFor(Rat.class));
                         return where;
                     }
                 }
@@ -129,7 +115,7 @@ public class Eagle extends Animal
                     Snake snake = (Snake) animal;
                     if (snake.isAlive()) {
                         snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
+                        setFoodLevel(TUNING.foodValueFor(Snake.class));
                         return where;
                     }
                 }
@@ -137,7 +123,7 @@ public class Eagle extends Animal
                     Rat rat = (Rat) animal;
                     if(rat.isAlive()) {
                         rat.setDead();
-                        setFoodLevel(RAT_FOOD_VALUE);
+                        setFoodLevel(TUNING.foodValueFor(Rat.class));
                         return where;
                     }
                 }

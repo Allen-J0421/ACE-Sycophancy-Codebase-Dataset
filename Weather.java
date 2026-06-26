@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.*;
 /**
  * This class models weather in the simulation. 
@@ -10,21 +9,18 @@ public class Weather
 {
     private WeatherType currentWeather;
     private static final Random rand = Randomizer.getRandom();
-    private int randomInt;
-    private int duration; // to keep track of when weather changes (every X hours)
     private boolean randomDuration = false;
     private Set<WeatherType> weatherList;
-    
-    
+
+
     /**
-     * Create a new instance of weather. 
+     * Create a new instance of weather.
      */
     public Weather()
     {
        weatherList = new HashSet<>();
        addWeatherList();
-       currentWeather = WeatherType.SUNNY; 
-       duration = 0;
+       currentWeather = WeatherType.SUNNY;
     }
 
     /**
@@ -51,7 +47,7 @@ public class Weather
     public void checkWeatherChange(int steps)
     {
         if(randomDuration){
-            duration = rand.nextInt(36);
+            int duration = rand.nextInt(36);
             if(steps % duration==0){
                 changeWeather();
             }
@@ -78,7 +74,7 @@ public class Weather
      */
     public void changeWeather()
     {
-        randomInt = rand.nextInt(weatherList.size());
+        int randomInt = rand.nextInt(weatherList.size());
         currentWeather = (WeatherType) weatherList.toArray()[randomInt];
     }
 }

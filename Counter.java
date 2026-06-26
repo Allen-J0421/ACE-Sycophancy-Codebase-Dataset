@@ -48,6 +48,16 @@ public class Counter
     {
         count++;
     }
+
+    /**
+     * Decrement the current count by one.
+     */
+    public void decrement()
+    {
+        if(count > 0) {
+            count--;
+        }
+    }
     
     /**
      * Reset the current count to zero.

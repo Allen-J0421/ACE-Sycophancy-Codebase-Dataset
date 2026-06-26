@@ -18,6 +18,8 @@ public class Field
     private int depth, width;
     // Storage for the occupants.
     private FieldOccupant[][] field;
+    // Incremental statistics for current field occupants.
+    private FieldStats stats;
 
     /**
      * Represent a field of the given dimensions.
@@ -28,6 +30,7 @@ public class Field
         this.depth = depth;
         this.width = width;
         field = new FieldOccupant[depth][width];
+        stats = new FieldStats();
     }
     
     /**
@@ -39,6 +42,7 @@ public class Field
                 field[row][col] = null;
             }
         }
+        stats.reset();
     }
     
     /**
@@ -46,7 +50,11 @@ public class Field
      * @param location The location to clear.
      */
     public void clear(Location location) {
-        field[location.getRow()][location.getCol()] = null;
+        FieldOccupant occupant = getOccupantAt(location);
+        if(occupant != null) {
+            stats.occupantRemoved(occupant);
+            field[location.getRow()][location.getCol()] = null;
+        }
     }
     
     /**
@@ -71,7 +79,19 @@ public class Field
      */
     public void place(FieldOccupant occupant, Location location)
     {
+        FieldOccupant previousOccupant = getOccupantAt(location);
+        if(previousOccupant != null) {
+            stats.occupantRemoved(previousOccupant);
+        }
         field[location.getRow()][location.getCol()] = occupant;
+        stats.occupantAdded(occupant);
+    }
+
+    /**
+     * Return current field statistics.
+     */
+    public FieldStats getStats() {
+        return stats;
     }
     
     /**

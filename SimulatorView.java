@@ -30,8 +30,6 @@ public class SimulatorView extends JFrame
     
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -39,7 +37,6 @@ public class SimulatorView extends JFrame
      * @param width  The simulation's width.
      */
     public SimulatorView(int height, int width) {
-        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Australian Outback Simulation");
@@ -112,7 +109,6 @@ public class SimulatorView extends JFrame
         stepLabel.setText(STEP_PREFIX + step);
         timeLabel.setText(TIME_PREFIX + time + ":00");
         weatherLabel.setText(WEATHER_PREFIX + weather);
-        stats.reset();
         
         fieldView.preparePaint();
 
@@ -120,7 +116,6 @@ public class SimulatorView extends JFrame
             for(int col = 0; col < field.getWidth(); col++) {
                 FieldOccupant occupant = field.getOccupantAt(row, col);
                 if(occupant != null) {
-                    stats.incrementCount(occupant.getClass());
                     fieldView.drawMark(col, row, getColor(occupant.getClass()));
                 }
                 else {
@@ -128,9 +123,8 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        stats.countFinished();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + field.getStats().getPopulationDetails());
         fieldView.repaint();
     }
 
@@ -140,7 +134,7 @@ public class SimulatorView extends JFrame
      */
     public boolean isViable(Field field)
     {
-        return stats.isViable(field);
+        return field.getStats().isViable();
     }
     
     /**

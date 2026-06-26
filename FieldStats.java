@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.util.HashMap;
 
 /**
@@ -12,8 +11,6 @@ public class FieldStats
 {
     // Counters for each type of entity (dingo, ant, etc.) in the simulation.
     private HashMap<Class, Counter> counters;
-    // Whether the counters are currently up to date.
-    private boolean countsValid;
 
     /**
      * Construct a FieldStats object.
@@ -22,18 +19,14 @@ public class FieldStats
         // Set up a collection for counters for each type of animal that
         // we might find
         counters = new HashMap<>();
-        countsValid = true;
     }
 
     /**
      * Get details of what is in the field.
      * @return A string describing what is in the field.
      */
-    public String getPopulationDetails(Field field) {
+    public String getPopulationDetails() {
         StringBuffer buffer = new StringBuffer();
-        if(!countsValid) {
-            generateCounts(field);
-        }
         for(Class key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
@@ -43,13 +36,19 @@ public class FieldStats
         }
         return buffer.toString();
     }
+
+    /**
+     * Get details of what is in the field.
+     * @return A string describing what is in the field.
+     */
+    public String getPopulationDetails(Field field) {
+        return getPopulationDetails();
+    }
     
     /**
-     * Invalidate the current set of statistics; reset all 
-     * counts to zero.
+     * Reset all counts to zero.
      */
     public void reset() {
-        countsValid = false;
         for(Class key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
@@ -57,8 +56,8 @@ public class FieldStats
     }
 
     /**
-     * Increment the count for one class of animal.
-     * @param animalClass The class of animal to increment.
+     * Increment the count for one class of occupant.
+     * @param animalClass The class of occupant to increment.
      */
     public void incrementCount(Class animalClass) {
         Counter count = counters.get(animalClass);
@@ -72,11 +71,32 @@ public class FieldStats
     }
 
     /**
-     * Indicate that an animal count has been completed.
+     * Decrement the count for one class of occupant.
+     * @param animalClass The class of occupant to decrement.
      */
-    public void countFinished()
-    {
-        countsValid = true;
+    public void decrementCount(Class animalClass) {
+        Counter count = counters.get(animalClass);
+        if(count != null) {
+            count.decrement();
+        }
+    }
+
+    /**
+     * Record that an occupant has been added to the field.
+     */
+    public void occupantAdded(FieldOccupant occupant) {
+        if(occupant != null) {
+            incrementCount(occupant.getClass());
+        }
+    }
+
+    /**
+     * Record that an occupant has been removed from the field.
+     */
+    public void occupantRemoved(FieldOccupant occupant) {
+        if(occupant != null) {
+            decrementCount(occupant.getClass());
+        }
     }
 
     /**
@@ -84,12 +104,9 @@ public class FieldStats
      * I.e., should it continue to run.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field) {
+    public boolean isViable() {
         // How many counts are non-zero.
         int nonZero = 0;
-        if(!countsValid) {
-            generateCounts(field);
-        }
         for(Class key : counters.keySet()) {
             Counter info = counters.get(key);
             if(info.getCount() > 0) {
@@ -98,24 +115,13 @@ public class FieldStats
         }
         return nonZero > 1;
     }
-    
+
     /**
-     * Generate counts of the number of dingoes and ants.
-     * These are not kept up to date as dingoes and ants
-     * are placed in the field, but only when a request
-     * is made for the information.
-     * @param field The field to generate the stats for.
+     * Determine whether the simulation is still viable.
+     * I.e., should it continue to run.
+     * @return true If there is more than one species alive.
      */
-    private void generateCounts(Field field) {
-        reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                FieldOccupant occupant = field.getOccupantAt(row, col);
-                if(occupant != null) {
-                    incrementCount(occupant.getClass());
-                }
-            }
-        }
-        countsValid = true;
+    public boolean isViable(Field field) {
+        return isViable();
     }
 }

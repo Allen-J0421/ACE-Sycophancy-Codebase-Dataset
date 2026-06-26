@@ -1,4 +1,4 @@
-class ModularExponentiation {
+final class ModularExponentiation {
     private static final int DEMO_BASE = 3;
     private static final int DEMO_EXPONENT = 2;
     private static final int DEMO_MODULUS = 4;
@@ -7,7 +7,7 @@ class ModularExponentiation {
         int result = 1;
         int currentBase = base;
 
-        while (exponent >= 1) {
+        while (exponent > 0) {
             if ((exponent & 1) == 1) {
                 result = multiplyMod(result, currentBase, modulus);
             }

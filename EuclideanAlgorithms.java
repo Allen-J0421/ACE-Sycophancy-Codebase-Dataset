@@ -4,6 +4,8 @@ import java.math.BigInteger;
 public final class EuclideanAlgorithms {
     private static final BigInteger DEFAULT_FIRST_OPERAND = BigInteger.valueOf(35);
     private static final BigInteger DEFAULT_SECOND_OPERAND = BigInteger.valueOf(15);
+    private static final String INVALID_ARGUMENT_COUNT_MESSAGE =
+        "Expected either zero arguments or exactly two integers.";
 
     private EuclideanAlgorithms() {
         // Utility class.
@@ -52,19 +54,20 @@ public final class EuclideanAlgorithms {
     }
 
     private static CliRequest parseRequest(String[] args) {
-        if (args.length == 0) {
-            return CliRequest.compute(Operands.defaults());
-        }
+        return switch (args.length) {
+            case 0 -> CliRequest.compute(Operands.defaults());
+            case 1 -> parseSingleArgumentRequest(args[0]);
+            case 2 -> CliRequest.compute(Operands.of(parseInteger(args[0]), parseInteger(args[1])));
+            default -> throw new IllegalArgumentException(INVALID_ARGUMENT_COUNT_MESSAGE);
+        };
+    }
 
-        if (args.length == 1 && ("--help".equals(args[0]) || "-h".equals(args[0]))) {
+    private static CliRequest parseSingleArgumentRequest(String argument) {
+        if ("--help".equals(argument) || "-h".equals(argument)) {
             return CliRequest.help();
         }
 
-        if (args.length != 2) {
-            throw new IllegalArgumentException("Expected either zero arguments or exactly two integers.");
-        }
-
-        return CliRequest.compute(Operands.of(parseInteger(args[0]), parseInteger(args[1])));
+        throw new IllegalArgumentException(INVALID_ARGUMENT_COUNT_MESSAGE);
     }
 
     private static BigInteger parseInteger(String value) {
@@ -106,20 +109,11 @@ public final class EuclideanAlgorithms {
         }
 
         private BigInteger gcd() {
-            BigInteger left = first.abs();
-            BigInteger right = second.abs();
-
-            if (left.equals(BigInteger.ZERO) && right.equals(BigInteger.ZERO)) {
+            if (first.signum() == 0 && second.signum() == 0) {
                 throw new IllegalArgumentException("At least one operand must be non-zero.");
             }
 
-            while (!right.equals(BigInteger.ZERO)) {
-                BigInteger remainder = left.remainder(right);
-                left = right;
-                right = remainder;
-            }
-
-            return left;
+            return first.abs().gcd(second.abs());
         }
     }
 }

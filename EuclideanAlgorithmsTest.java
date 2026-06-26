@@ -96,17 +96,23 @@ public final class EuclideanAlgorithmsTest {
     }
 
     private static void assertRun(RunCase testCase) {
+        RunResult result = captureRun(testCase.args());
+
+        assertEquals(testCase.expectedExitCode(), result.exitCode(), testCase.scenario() + ": exit code");
+        assertEquals(testCase.expectedStdout(), result.stdout(), testCase.scenario() + ": stdout");
+        assertEquals(testCase.expectedStderr(), result.stderr(), testCase.scenario() + ": stderr");
+    }
+
+    private static RunResult captureRun(String[] args) {
         ByteArrayOutputStream stdoutBuffer = new ByteArrayOutputStream();
         ByteArrayOutputStream stderrBuffer = new ByteArrayOutputStream();
         int exitCode = EuclideanAlgorithms.run(
-            testCase.args(),
+            args,
             new PrintStream(stdoutBuffer),
             new PrintStream(stderrBuffer)
         );
 
-        assertEquals(testCase.expectedExitCode(), exitCode, testCase.scenario() + ": exit code");
-        assertEquals(testCase.expectedStdout(), stdoutBuffer.toString(), testCase.scenario() + ": stdout");
-        assertEquals(testCase.expectedStderr(), stderrBuffer.toString(), testCase.scenario() + ": stderr");
+        return new RunResult(exitCode, stdoutBuffer.toString(), stderrBuffer.toString());
     }
 
     private static void assertThrows(Runnable operation, String scenario) {
@@ -153,5 +159,8 @@ public final class EuclideanAlgorithmsTest {
         String expectedStderr,
         String scenario
     ) {
+    }
+
+    private record RunResult(int exitCode, String stdout, String stderr) {
     }
 }

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class FieldStats
 {
-    private HashMap<Class, Counter> counters;
+    private HashMap<Class<?>, Counter> counters;
     private boolean countsValid;
 
     /**
@@ -32,7 +32,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Map.Entry<Class, Counter> entry : counters.entrySet()) {
+        for(Map.Entry<Class<?>, Counter> entry : counters.entrySet()) {
             Counter info = entry.getValue();
             buffer.append(info.getName());
             buffer.append(": ");
@@ -58,7 +58,7 @@ public class FieldStats
      * Increment the count for one class of animal.
      * @param animalClass The class of animal to increment.
      */
-    public void incrementCount(Class animalClass)
+    public void incrementCount(Class<?> animalClass)
     {
         Counter count = counters.get(animalClass);
         if(count == null) {
@@ -116,7 +116,7 @@ public class FieldStats
         countsValid = true;
     }
 
-    public HashMap<Class, Counter> getCounters()
+    public HashMap<Class<?>, Counter> getCounters()
     {
         return counters;
     }

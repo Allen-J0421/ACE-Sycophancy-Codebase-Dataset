@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 /**
  * An extension of the Animal Class that can only eat a specified type of plants
  *
@@ -52,9 +51,7 @@ public abstract class HerbivoreAnimal extends Animal
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
+        for(Location where : adjacent) {
             Plant plant = field.getPlantAt(where);
             if(plant != null && targetPlants.contains(plant.getClass())) {
                 if(plant.isAlive()) {

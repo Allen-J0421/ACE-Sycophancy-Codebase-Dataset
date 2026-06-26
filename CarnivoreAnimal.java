@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 /**
  * An extension of the Animal Class that can only eat a specified type of animals
  *
@@ -53,9 +52,7 @@ public abstract class CarnivoreAnimal extends Animal
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
+        for(Location where : adjacent) {
             Object obj = field.getObjectAt(where);
             if(obj instanceof Animal) {
                 Animal animal = (Animal) obj;

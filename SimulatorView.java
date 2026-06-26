@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
     private Simulator simulator;
@@ -76,11 +75,7 @@ public class SimulatorView extends JFrame
         
         //setup simulate long simulation + eventhandler
         JButton simulateLong = new JButton("Simulate(1000)");
-        simulateLong.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e) {
-                    new Thread(simulator::runLongSimulation).start();
-                }
-        });
+        simulateLong.addActionListener(e -> new Thread(simulator::runLongSimulation).start());
         simulateLong.setAlignmentX(CENTER_ALIGNMENT);
         simulateLong.setMargin(new Insets(4, 4, 4, 4));
         
@@ -125,7 +120,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -143,9 +138,9 @@ public class SimulatorView extends JFrame
      */
     public void showColors()
     {
-        for (Class cls : colors.keySet()) {
-            JLabel tempLabel = new JLabel(cls.getName());
-            tempLabel.setForeground(colors.get(cls));
+        for (Map.Entry<Class<?>, Color> entry : colors.entrySet()) {
+            JLabel tempLabel = new JLabel(entry.getKey().getName());
+            tempLabel.setForeground(entry.getValue());
             tempLabel.setAlignmentX(CENTER_ALIGNMENT);
             tempLabel.setBorder(new EmptyBorder(4,0,4,0));
             sideBar.add(tempLabel);
@@ -158,7 +153,7 @@ public class SimulatorView extends JFrame
      * 
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {

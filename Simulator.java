@@ -3,8 +3,9 @@
  *
  * This class is a thin entry point: it wires the Swing-based {@link
  * SimulatorView} to a {@link SimulationEngine} (which holds all the simulation
- * logic) and delegates to it. The engine itself depends only on the {@link
- * SimulationView} abstraction, so the simulation is decoupled from the GUI.
+ * logic) and delegates to it. The view observes the engine as a {@link
+ * SimulationListener}, so the engine drives the GUI through events rather than
+ * depending on it directly.
  *
  * @version 2022.03.02
  */
@@ -41,10 +42,16 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
 
-        // Create the GUI view and hand it to the engine through the
-        // SimulationView abstraction.
+        // Create the GUI view, build a populator that draws species onto it,
+        // and wire the view to the engine as an observer. The engine never
+        // references the view directly - it only emits events.
         SimulatorView view = new SimulatorView(depth, width);
-        engine = new SimulationEngine(depth, width, view);
+        Populator populator = new Populator(view);
+        engine = new SimulationEngine(depth, width, populator);
+        engine.addListener(view);
+
+        // Populate the field and show the initial state (fires a reset event).
+        engine.reset();
     }
 
     /**

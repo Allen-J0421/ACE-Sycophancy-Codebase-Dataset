@@ -8,11 +8,15 @@ public final class EuclideanAlgorithm {
     }
 
     public static int gcd(int firstNumber, int secondNumber) {
-        return gcdOfNonNegativeNumbers(Math.abs(firstNumber), Math.abs(secondNumber));
+        return gcdOfNonNegativeNumbers(nonNegative(firstNumber), nonNegative(secondNumber));
     }
 
     static int findGCD(int firstNumber, int secondNumber) {
         return gcd(firstNumber, secondNumber);
+    }
+
+    private static int nonNegative(int number) {
+        return Math.abs(number);
     }
 
     private static int gcdOfNonNegativeNumbers(int divisor, int dividend) {

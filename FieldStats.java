@@ -1,6 +1,5 @@
-
-import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -12,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (jaguar, gazelle, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -35,11 +34,11 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field, Simulator simulator)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field, simulator);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -56,7 +55,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -69,14 +68,7 @@ public class FieldStats
      */
     public void incrementCount(Object actor, Simulator simulator)
     {
-        Class animalClass = actor.getClass();
-        Counter count = counters.get(animalClass);
-        if(count == null) {
-            // We do not have a counter for this species yet.
-            // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
-        }
+        Counter count = getCounter(actor.getClass());
         count.increment();
         if (simulator.getSteps() != 0){
             if(actor instanceof Grass){
@@ -107,7 +99,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field, simulator);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             if(info.getCount() > 0) {
                 nonZero++;
@@ -136,5 +128,20 @@ public class FieldStats
             }
         }
         countsValid = true;
+    }
+
+    /**
+     * Return the counter for the actor class, creating it if needed.
+     * @param actorClass The class to count.
+     * @return The counter for the class.
+     */
+    private Counter getCounter(Class<?> actorClass)
+    {
+        Counter count = counters.get(actorClass);
+        if(count == null) {
+            count = new Counter(actorClass.getName());
+            counters.put(actorClass, count);
+        }
+        return count;
     }
 }

@@ -100,13 +100,13 @@ public abstract class Animal extends Organism implements Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
 
-        scanForContactDisease(adjacent);
+        DiseaseTransmission.scanForProximity(this, adjacent, field);
 
         for (Location where : adjacent) {
             Object obj = field.getObjectAt(where);
             if (obj != null && getStats().getDiet().contains(obj.getClass())) {
                 Organism food = (Organism) obj;
-                tryContractFoodbornDisease(food);
+                DiseaseTransmission.tryFoodborne(this, food);
                 if (food.isAlive()) {
                     food.setDead();
                     foodLevel = Math.min(foodLevel + food.FOOD_VALUE(), getStats().getMaxFoodLevel());
@@ -116,44 +116,6 @@ public abstract class Animal extends Organism implements Actor
             }
         }
         return null;
-    }
-
-    // --- Disease transmission helpers ---
-
-    /** Scans adjacent locations for non-contact diseases and contracts the first one found. */
-    private void scanForContactDisease(List<Location> adjacent)
-    {
-        Field field = getField();
-        for (Location loc : adjacent) {
-            Object obj = field.getObjectAt(loc);
-            if (obj instanceof Organism) {
-                Organism organism = (Organism) obj;
-                if (organism.isDiseased()
-                        && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT
-                        && organism.getDisease().getPropagationRate() <= rand.nextDouble()) {
-                    setDisease(organism.getDisease());
-                    break;
-                }
-            }
-        }
-    }
-
-    /** Attempts to contract a foodborne disease from prey being eaten. */
-    private void tryContractFoodbornDisease(Organism food)
-    {
-        if (food.isDiseased()
-                && food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE
-                && food.getDisease().getPropagationRate() <= rand.nextDouble()) {
-            setDisease(food.getDisease());
-        }
-    }
-
-    /** Attempts to contract a sexually transmitted disease from a breeding mate. */
-    private void tryContractSexualDisease(Animal mate)
-    {
-        if (mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL) {
-            setDisease(mate.getDisease());
-        }
     }
 
     // --- Reproduction ---
@@ -191,7 +153,7 @@ public abstract class Animal extends Organism implements Actor
             births = rand.nextInt(getStats().getMaxLitterSize()) + 1;
             List<Organism> mates = getPotentialMates();
             Animal mate = (Animal) mates.get(rand.nextInt(mates.size()));
-            tryContractSexualDisease(mate);
+            DiseaseTransmission.trySexual(this, mate);
         }
         return births;
     }

@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A class representing shared characteristics of animals,
@@ -152,7 +151,7 @@ public class Animal extends Species
      */
     protected void makeMove(List<Species> newSpecies)
     {
-        ArrayList<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
+        List<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
 
         if (canReproduce(neighboringAnimalsList)) {
             reproduce(newSpecies);
@@ -167,13 +166,7 @@ public class Animal extends Species
         Location newLocation = getField().freeAdjacentLocation(getLocation());
 
         // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }
+        moveToOrDie(newLocation);
     }
 
     /**
@@ -181,16 +174,13 @@ public class Animal extends Species
      *
      * @return (ArrayList) list of neighboring animals
      */
-    protected ArrayList<Animal> getNeighboringAnimalsList()
+    protected List<Animal> getNeighboringAnimalsList()
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> locationIterator = adjacent.iterator();
 
         ArrayList<Animal> neighboringAnimals = new ArrayList<>();
-        while (locationIterator.hasNext())
-        {
-            Location where = locationIterator.next();
+        for (Location where : adjacent) {
             Species species = field.getObjectAt(where);
 
             if (species instanceof Animal) {
@@ -249,11 +239,8 @@ public class Animal extends Species
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
 
-        while(it.hasNext())
-        {
-            Location where = it.next();
+        for (Location where : adjacent) {
             Species species = field.getObjectAt(where);
             if(species instanceof Plant)
             {
@@ -276,7 +263,7 @@ public class Animal extends Species
      * @return (boolean) if animal can reproduce.
      *
      */
-    protected boolean canReproduce(ArrayList<Animal> neighboringAnimalsList)
+    protected boolean canReproduce(List<Animal> neighboringAnimalsList)
     {
         // task to reproduce is handed to women only so that the same reproduction does not happen twice
         if (this.isFemale)
@@ -306,10 +293,28 @@ public class Animal extends Species
             int births = numberOfBirths();
             for(int b = 0; b < births && free.size() > 0; b++) {
                 Location loc = free.remove(0);
-                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
-                speciesInSimulation.add(young);
+                speciesInSimulation.add(createYoung(field, loc));
             }
         }
+    }
+
+    protected Animal createYoung(Field field, Location location)
+    {
+        return new Animal(
+            field,
+            location,
+            getName(),
+            getMaximumTemperature(),
+            getMinimumTemperature(),
+            getNutritionalValue(),
+            getReproductionProbability(),
+            maxAge,
+            breedingAge,
+            maxLitterSize,
+            false,
+            hibernates,
+            isNocturnal
+        );
     }
 
     /**
@@ -423,6 +428,17 @@ public class Animal extends Species
      */
     public void incrementFoodLevel(int value) {
         foodLevel += value;
+    }
+
+    protected void moveToOrDie(Location newLocation)
+    {
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
+        }
     }
 
 }

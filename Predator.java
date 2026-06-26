@@ -52,7 +52,7 @@ public class Predator extends Animal
      */
     protected void makeMove(List<Species> newSpecies)
     {
-        ArrayList<Animal> neighboringAnimals = getNeighboringAnimalsList();
+        List<Animal> neighboringAnimals = getNeighboringAnimalsList();
         checkForAttack(neighboringAnimals);
 
         if (isAlive()) {
@@ -71,14 +71,7 @@ public class Predator extends Animal
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
 
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            moveToOrDie(newLocation);
         }
     }
 
@@ -88,13 +81,14 @@ public class Predator extends Animal
      * @param  neighboringAnimals (ArrayList<Animal>) A list of neighboring animals.
      * @return (Location) the location of the eaten prey, null if no prey was found.
      */
-    private Location findFoodAndEat(ArrayList<Animal> neighboringAnimals)
+    private Location findFoodAndEat(List<Animal> neighboringAnimals)
     {
         for (Animal animal : neighboringAnimals) {
             if(!(animal instanceof Predator)){
+                Location preyLocation = animal.getLocation();
                 animal.setDead();
                 foodLevel += animal.getNutritionalValue();
-                return animal.getLocation();
+                return preyLocation;
             }
         }
         // No food found
@@ -107,34 +101,18 @@ public class Predator extends Animal
      *
      * @param  neighboringAnimals (ArrayList<Animal>) A list of neighboring animals.
      */
-    private void checkForAttack(ArrayList<Animal> neighboringAnimals)
+    private void checkForAttack(List<Animal> neighboringAnimals)
     {
-        ArrayList<Predator> hordeMembers = new ArrayList<>();
+        for (Animal neighboringAnimal : neighboringAnimals) {
+            if (neighboringAnimal instanceof Predator) {
+                Predator neighboringPredator = (Predator) neighboringAnimal;
+                String hordeName = neighboringPredator.getName();
 
-        for (int i =0; i < neighboringAnimals.size(); i++)
-        {
-            if (neighboringAnimals.get(i) instanceof Predator) {
-
-                Predator neighboringPredator = (Predator)neighboringAnimals.get(i);
-                String nameOfInvestigatedHorde = neighboringPredator.getName();
-                
-                if(! this.getName().equals(nameOfInvestigatedHorde))
-                {
-                    int totalHordeStrength =  neighboringPredator.getStrength();
-
-                    hordeMembers.add(neighboringPredator);
-                    for (int j =0; j < neighboringAnimals.size(); j++) {
-                        if (nameOfInvestigatedHorde.equals(neighboringAnimals.get(j).getName())) {
-                            Predator predatorObject = (Predator)neighboringAnimals.get(i);
-                            totalHordeStrength += predatorObject.getStrength();
-                            hordeMembers.add(predatorObject);
-                        }
-                    }
-                    if (totalHordeStrength > strength) {
+                if (!getName().equals(hordeName)) {
+                    List<Predator> hordeMembers = getHordeMembers(hordeName, neighboringAnimals);
+                    if (getTotalStrength(hordeMembers) > strength) {
                         attackedByHorde(hordeMembers);
                         break;
-                    } else {
-                        hordeMembers.clear();
                     }
                 }
             }
@@ -147,7 +125,7 @@ public class Predator extends Animal
      *
      * @param hordeMembers (ArrayList<Predator>) List of the predators constituting the horde.
      */
-    private void attackedByHorde(ArrayList<Predator> hordeMembers)
+    private void attackedByHorde(List<Predator> hordeMembers)
     {
         // Sharing predator's nutritional value amongst the various horde members.
         int foodLevelAddedToEachHordeMember = this.getNutritionalValue() / hordeMembers.size();
@@ -158,24 +136,46 @@ public class Predator extends Animal
     }
 
     /**
-     * Creates the appropriate number of predators of the same species due to reproduction. These new predators of course share the same
-     * features as their "parent" except the sex which is randomized, their age and foodLevel are not randomized.
-     *
-     * @param newOfThisKind (List<Species>) The list of species to which newborns must be added.
+     * Creates a predator offspring that inherits the parent's predator-specific traits.
      */
-    protected void reproduce(List<Species> newOfThisKind)
+    protected Animal createYoung(Field field, Location location)
     {
-        Field field = getField();
-        if (field != null)
-        {
-            List<Location> free = field.getFreeAdjacentLocations(getLocation());
-            int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Predator young = new Predator(strength, field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(),false, getHibernates(), getIsNocturnal());
-                newOfThisKind.add(young);
+        return new Predator(
+            strength,
+            field,
+            location,
+            getName(),
+            getMaximumTemperature(),
+            getMinimumTemperature(),
+            getNutritionalValue(),
+            getReproductionProbability(),
+            getMaxAge(),
+            getBreedingAge(),
+            getMaxLitterSize(),
+            false,
+            getHibernates(),
+            getIsNocturnal()
+        );
+    }
+
+    private List<Predator> getHordeMembers(String hordeName, List<Animal> neighboringAnimals)
+    {
+        List<Predator> hordeMembers = new ArrayList<>();
+        for (Animal neighboringAnimal : neighboringAnimals) {
+            if (neighboringAnimal instanceof Predator && hordeName.equals(neighboringAnimal.getName())) {
+                hordeMembers.add((Predator) neighboringAnimal);
             }
         }
+        return hordeMembers;
+    }
+
+    private int getTotalStrength(List<Predator> hordeMembers)
+    {
+        int totalStrength = 0;
+        for (Predator predator : hordeMembers) {
+            totalStrength += predator.getStrength();
+        }
+        return totalStrength;
     }
 
     /**

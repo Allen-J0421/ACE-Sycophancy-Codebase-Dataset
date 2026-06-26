@@ -16,21 +16,13 @@ public final class NaivePatternSearch {
 
         int patternLength = pattern.length();
         int textLength = text.length();
-        if (patternLength > textLength) {
+        int maxStart = textLength - patternLength;
+        if (maxStart < 0) {
             return List.of();
         }
 
-        int expectedMatches = patternLength == 0 ? textLength + 1 : textLength - patternLength + 1;
-        List<Integer> matches = new ArrayList<>(expectedMatches);
-
-        if (patternLength == 0) {
-            for (int index = 0; index <= textLength; index++) {
-                matches.add(index);
-            }
-            return List.copyOf(matches);
-        }
-
-        for (int start = 0; start <= textLength - patternLength; start++) {
+        List<Integer> matches = new ArrayList<>(maxStart + 1);
+        for (int start = 0; start <= maxStart; start++) {
             if (matchesAt(pattern, text, start, patternLength)) {
                 matches.add(start);
             }

@@ -1,7 +1,9 @@
 public final class ModularExponentiationRequestParser {
+    private static final int ARGUMENT_COUNT = 3;
     private static final int DEFAULT_BASE = 3;
     private static final int DEFAULT_EXPONENT = 2;
     private static final int DEFAULT_MODULUS = 4;
+    private static final String USAGE = "Usage: java ModularExponentiationApp [base exponent modulus]";
 
     private ModularExponentiationRequestParser() {
         // Parser utility.
@@ -12,10 +14,8 @@ public final class ModularExponentiationRequestParser {
             return defaultRequest();
         }
 
-        if (args.length != 3) {
-            throw new IllegalArgumentException(
-                "Usage: java ModularExponentiationApp [base exponent modulus]"
-            );
+        if (args.length != ARGUMENT_COUNT) {
+            throw new IllegalArgumentException(USAGE);
         }
 
         return new ModularExponentiationRequest(

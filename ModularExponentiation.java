@@ -1,4 +1,4 @@
-final class ModularExponentiation {
+public final class ModularExponentiation {
     private ModularExponentiation() {
         // Utility class.
     }

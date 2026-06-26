@@ -38,7 +38,17 @@ public abstract class Animal extends LivingOrganism
     protected int maxFoodLevel;
     // Probability that an animal will move at a given step.
     protected double movementProbability;
-    
+
+    // Probability an animal dies when boxed in with no free adjacent cell.
+    private static final double OVERCROWDING_DEATH_PROBABILITY = 0.3;
+    // An immune animal loses its immunity each step with probability
+    // immuneProbability scaled down by this divisor.
+    private static final double IMMUNITY_LOSS_DIVISOR = 15;
+    // Probability the offspring of an infected, non-immune mother is born immune.
+    private static final double OFFSPRING_IMMUNITY_INHERITANCE_PROBABILITY = 0.15;
+    // Probability the offspring of an immune mother is NOT born immune.
+    private static final double OFFSPRING_IMMUNITY_LOSS_PROBABILITY = 0.9;
+
     /**
      * Create a new animal at location in field.
      * 
@@ -110,7 +120,7 @@ public abstract class Animal extends LivingOrganism
         // of losing immunity.
         else
         {
-            if(rand.nextDouble() <= (immuneProbability / 15)) {
+            if(rand.nextDouble() <= (immuneProbability / IMMUNITY_LOSS_DIVISOR)) {
                 immune = false;
             }
         }
@@ -175,7 +185,7 @@ public abstract class Animal extends LivingOrganism
             {
                 // no free adjacent locations therefore it is
                 // overcrowded
-                if (rand.nextDouble() < 0.3)
+                if (rand.nextDouble() < OVERCROWDING_DEATH_PROBABILITY)
                 {
                     setDead();
                 }
@@ -334,13 +344,13 @@ public abstract class Animal extends LivingOrganism
 
         // If the mother is immune and the mother is infected, then there is
         // a small of the child getting immunity
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15)
+        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < OFFSPRING_IMMUNITY_INHERITANCE_PROBABILITY)
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
         }
         // If the mother is immune then there is a chance child isn't immune
-        else if (motherIsImmune && rand.nextDouble() < 0.9)
+        else if (motherIsImmune && rand.nextDouble() < OFFSPRING_IMMUNITY_LOSS_PROBABILITY)
         {
             offspringIsImmune = false;
         }

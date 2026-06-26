@@ -10,6 +10,11 @@ public abstract class Predator extends Animal
     // The likelihood of the predator catching its prey
     protected double preyCatchingProbability;
 
+    // Chance a predator still acts during the night (it mostly rests).
+    private static final double NIGHT_ACTIVITY_CHANCE = 0.25;
+    // Chance a predator still acts when the weather is foggy.
+    private static final double FOG_ACTIVITY_CHANCE = 0.50;
+
     /**
      * Create a new predator at location in field, initialising its species-specific
      * statistics. Shared by every predator species so the per-species constructors
@@ -69,18 +74,18 @@ public abstract class Predator extends Animal
     public void act(List<LivingOrganism> newPredators)
     {
         // Predators have a lower chance of acting when its night
-        if(Time.isNight()) 
+        if(Time.isNight())
         {
-            if (rand.nextDouble() > 0.25)
+            if (rand.nextDouble() > NIGHT_ACTIVITY_CHANCE)
             {
                 return;
             }
         }
-        
+
         // Predators have a lower chance of acting when its foggy
-        if (Weather.getWeather() == Weather.WeatherType.Foggy) 
+        if (Weather.getWeather() == Weather.WeatherType.Foggy)
         {
-            if (rand.nextDouble() > 0.50)
+            if (rand.nextDouble() > FOG_ACTIVITY_CHANCE)
             {
                 return;
             }

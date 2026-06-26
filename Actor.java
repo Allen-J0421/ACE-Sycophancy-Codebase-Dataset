@@ -13,11 +13,11 @@ public interface Actor
      * @param weather The current weather.
      * @param dayState The different state of the day.
      */
-    public void act(List<Actor> newActors, Weather weather, DayState dayState);
+    void act(List<Actor> newActors, Weather weather, DayState dayState);
     
     /**
      * Indicates whether an actor is alive or not.
      * @return Boolean value indicating whether an actor is alive or not.
      */
-    public boolean isAlive();
+    boolean isAlive();
 }

@@ -1,13 +1,23 @@
 class EuclideanAlgorithm {
 
-    static int findGCD(int a, int b) {
-        if (a == 0)
-            return b;
-        return findGCD(b % a, a);
+    static int findGCD(int firstNumber, int secondNumber) {
+        int a = Math.abs(firstNumber);
+        int b = Math.abs(secondNumber);
+
+        while (a != 0) {
+            int remainder = b % a;
+            b = a;
+            a = remainder;
+        }
+
+        return b;
     }
+
     public static void main(String[] args) {
-        int a = 35, b = 15;
-        int g = findGCD(a, b);
-        System.out.println(g);
+        final int firstNumber = 35;
+        final int secondNumber = 15;
+        final int greatestCommonDivisor = findGCD(firstNumber, secondNumber);
+
+        System.out.println(greatestCommonDivisor);
     }
 }

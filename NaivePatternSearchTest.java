@@ -2,6 +2,9 @@ import java.util.List;
 
 public final class NaivePatternSearchTest {
 
+    private static final SearchApplication APPLICATION =
+            new SearchApplication(new NaiveSearchEngine());
+
     private NaivePatternSearchTest() {
     }
 
@@ -20,6 +23,8 @@ public final class NaivePatternSearchTest {
                 new SearchRequest("banana", "ana"), List.of(1, 3));
         assertImmutability("search results expose an immutable match list",
                 new SearchRequest("aaaa", "aa"));
+        assertApplicationOutput("application formats the search output",
+                new SearchRequest("banana", "ana"), "1 3");
         assertSearchInput("uses CLI defaults when no arguments are provided",
                 new String[0], "aabaacaadaabaaba", "aaba");
         assertSearchInput("allows overriding the text only",
@@ -49,6 +54,11 @@ public final class NaivePatternSearchTest {
             throw new AssertionError(scenario + ": expected matchIndexes to be immutable");
         } catch (UnsupportedOperationException expected) {
         }
+    }
+
+    private static void assertApplicationOutput(
+            String scenario, SearchRequest request, String expectedOutput) {
+        assertEquals(scenario, expectedOutput, APPLICATION.run(request));
     }
 
     private static void assertSearchInput(

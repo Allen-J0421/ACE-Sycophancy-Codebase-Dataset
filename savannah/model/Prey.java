@@ -3,7 +3,6 @@ package savannah.model;
 import java.util.Iterator;
 import java.util.List;
 
-import savannah.config.SimulationConfig;
 import savannah.engine.SimulationContext;
 
 /**
@@ -14,12 +13,14 @@ import savannah.engine.SimulationContext;
 public abstract class Prey extends Animal
 {
     /**
-     * Create a new prey at location in field.
+     * Create a new prey using the shared simulation context.
      * 
-     * @param field The field currently occupied.
+     * @param context Shared simulation context.
      * @param location The location within the field.
-     * @param infected Intial state if the prey is infected or not
-     * @param immmune Intial state if the prey is immune or not
+     * @param randomAge If true, the prey will have random age and hunger level.
+     * @param infected Initial state if the prey is infected or not.
+     * @param immune Initial state if the prey is immune or not.
+     * @param speciesType The species being created.
      */
     protected Prey(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
     {

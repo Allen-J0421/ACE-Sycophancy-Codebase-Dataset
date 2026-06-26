@@ -3,7 +3,6 @@ package savannah.model;
 import java.util.Iterator;
 import java.util.List;
 
-import savannah.config.SimulationConfig;
 import savannah.engine.SimulationContext;
 /**
  * A class representing the shared characteristics between predators
@@ -16,17 +15,19 @@ public abstract class Predator extends Animal
     protected double preyCatchingProbability;
 
     /**
-     * Create a new predator at location in field.
+     * Create a new predator using the shared simulation context.
      * 
-     * @param field The field currently occupied.
+     * @param context Shared simulation context.
      * @param location The location within the field.
-     * @param infected : intial state if the prey is infected or not
-     * @param immmune : intial state if the prey is immune or not
+     * @param randomAge If true, the predator will have random age and hunger level.
+     * @param isInfected Whether or not the animal will be infected.
+     * @param isImmune Whether or not the animal will be immune.
+     * @param speciesType The species being created.
      */
     protected Predator(SimulationContext context, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType)
     {
         super(context, location, randomAge, isInfected, isImmune, speciesType);
-        preyCatchingProbability = speciesType.animalConfig(getConfig()).preyCatchingProbability;
+        preyCatchingProbability = SpeciesRegistry.INSTANCE.animalConfig(speciesType, getConfig()).preyCatchingProbability;
     }
 
     /**
@@ -81,7 +82,7 @@ public abstract class Predator extends Animal
             Location where = it.next();
             Animal animal = (Animal) field.getObjectAt(where, Animal.class);
             
-            if(animal != null && animal.getSpeciesType().isPrey()) 
+            if(animal != null && SpeciesRegistry.INSTANCE.isPrey(animal.getSpeciesType())) 
             {
                 Prey prey = (Prey) animal;
                 if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability) 

@@ -2,7 +2,6 @@ package savannah.model;
 
 import java.util.List;
 
-import savannah.config.SimulationConfig;
 import savannah.engine.SimulationContext;
 
 /**
@@ -22,15 +21,16 @@ public class Plant extends LivingOrganism
      * Create a new PLANT with the shared simulation context.
      * 
      * @param context Shared simulation context.
-     * @param randomHealthPercentage If true, the plant will have a random age.
+     * @param randomHealthPercentage If true, the plant will have randomized health.
      * @param location The location within the field.
      */
     public Plant(SimulationContext context, boolean randomHealthPercentage, Location location) 
     {
         super(context, location, SpeciesType.PLANT);
 
-        foodValue = speciesType.plantConfig(getConfig()).foodValue;
-        healthPercentage = speciesType.initialPlantHealth(randomHealthPercentage, rand, getConfig());
+        SpeciesRegistry speciesRegistry = SpeciesRegistry.INSTANCE;
+        foodValue = speciesRegistry.plantConfig(speciesType, getConfig()).foodValue;
+        healthPercentage = speciesRegistry.initialPlantHealth(speciesType, randomHealthPercentage, rand, getConfig());
     }
     
     /**
@@ -48,7 +48,7 @@ public class Plant extends LivingOrganism
         {
             if(isAlive()) 
             {
-                spreadProbability = speciesType.getPlantSpreadProbability(Weather.getWeather(), getConfig());
+                spreadProbability = SpeciesRegistry.INSTANCE.getPlantSpreadProbability(speciesType, Weather.getWeather(), getConfig());
                 
                 if (rand.nextDouble() < spreadProbability) 
                 {
@@ -64,7 +64,7 @@ public class Plant extends LivingOrganism
      */
     protected int beEaten() 
     {
-        healthPercentage -= speciesType.plantConfig(getConfig()).percentageEaten;
+        healthPercentage -= SpeciesRegistry.INSTANCE.plantConfig(speciesType, getConfig()).percentageEaten;
         if (healthPercentage <= 0)
         {
             setDead();
@@ -80,7 +80,7 @@ public class Plant extends LivingOrganism
      */
     protected void incrementAge() 
     {
-        healthPercentage += speciesType.plantConfig(getConfig()).growthRate;
+        healthPercentage += SpeciesRegistry.INSTANCE.plantConfig(speciesType, getConfig()).growthRate;
         if (healthPercentage > 1.0) 
         {
             healthPercentage = 1.0;
@@ -151,6 +151,6 @@ public class Plant extends LivingOrganism
     private Plant createOffspring(List<Location> free) 
     {
         Location loc = free.remove(0);
-        return speciesType.createPlant(getContext(), false, loc);
+        return SpeciesRegistry.INSTANCE.createPlant(speciesType, getContext(), false, loc);
     }
 }

@@ -27,10 +27,11 @@ public abstract class LivingOrganism
     protected static final Random rand = Randomizer.getRandom();
     
     /**
-     * Creates a new Organism at the location.
-     * 
-     * @param field The field currently occupied.
+     * Creates a new organism using the shared simulation context.
+     *
+     * @param context Shared simulation context.
      * @param location The location within the field.
+     * @param speciesType The species being created.
      */
     protected LivingOrganism(SimulationContext context, Location location, SpeciesType speciesType) 
     {
@@ -140,4 +141,3 @@ public abstract class LivingOrganism
         return context;
     }
 }
-

@@ -26,6 +26,7 @@ import savannah.model.Animal;
 import savannah.model.Field;
 import savannah.model.FieldStats;
 import savannah.model.Plant;
+import savannah.model.SpeciesRegistry;
 import savannah.model.SpeciesType;
 import savannah.model.Time;
 import savannah.model.Weather;
@@ -197,21 +198,21 @@ public class SimulatorView extends JFrame
      * Define a color to be used for the given species.
      *
      * @param speciesType The species.
-     * @param classColor The color to be used for the given species.
-     * @param textColor The color to be used for the text in the class key.
+     * @param fillColor The color to be used for the given species.
+     * @param textColor The color to be used for the legend text.
      */
-    public void setColor(SpeciesType speciesType, Color classColor, Color textColor)
+    public void setColor(SpeciesType speciesType, Color fillColor, Color textColor)
     {
-        colors.put(speciesType, classColor);
+        colors.put(speciesType, fillColor);
         
         // Creates label of the appropriate color and text to be
-        // displayed by the class key.
-        JLabel newClassLabel = new JLabel(speciesType.getDisplayName(), JLabel.CENTER);
+        // displayed by the species key.
+        JLabel newClassLabel = new JLabel(SpeciesRegistry.INSTANCE.getDisplayName(speciesType), JLabel.CENTER);
         
         // Adjusts color of the label's text
         newClassLabel.setForeground(textColor);
         
-        newClassLabel.setBackground(classColor);
+        newClassLabel.setBackground(fillColor);
         newClassLabel.setOpaque(true);
         
         classKey.add(newClassLabel);
@@ -226,7 +227,7 @@ public class SimulatorView extends JFrame
     {
         Color col = colors.get(speciesType);
         if(col == null) {
-            // no color defined for this class
+            // no color defined for this species
             return UNKNOWN_COLOR;
         }
         else {

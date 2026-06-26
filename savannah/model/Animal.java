@@ -45,12 +45,13 @@ public abstract class Animal extends LivingOrganism
     protected double movementProbability;
     
     /**
-     * Create a new animal at location in field.
+     * Create a new animal using the shared simulation context.
      * 
-     * @param field The field currently occupied.
+     * @param context Shared simulation context.
      * @param location The location within the field.
-     * @param infected Intial state if the animal is infected or not
-     * @param immmune Intial state if the animal is immune or not
+     * @param infected Initial state if the animal is infected or not.
+     * @param immune Initial state if the animal is immune or not.
+     * @param speciesType The species being created.
      */
     public Animal(SimulationContext context, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
     {
@@ -58,8 +59,9 @@ public abstract class Animal extends LivingOrganism
         this.infected = infected;
         this.immune = immune;
 
+        SpeciesRegistry speciesRegistry = SpeciesRegistry.INSTANCE;
         SimulationConfig config = getConfig();
-        SimulationConfig.SpeciesConfig speciesConfig = speciesType.animalConfig(config);
+        SimulationConfig.SpeciesConfig speciesConfig = speciesRegistry.animalConfig(speciesType, config);
         breedingAge = speciesConfig.breedingAge;
         maxAge = speciesConfig.maxAge;
         breedingProbability = speciesConfig.breedingProbability;
@@ -73,8 +75,8 @@ public abstract class Animal extends LivingOrganism
         immuneProbability = config.immuneProbability;
 
         isFemale = rand.nextBoolean();
-        age = speciesType.initialAge(randomAge, rand, config);
-        foodLevel = speciesType.initialFoodLevel(randomAge, rand, config);
+        age = speciesRegistry.initialAge(speciesType, randomAge, rand, config);
+        foodLevel = speciesRegistry.initialFoodLevel(speciesType, randomAge, rand, config);
     }
 
     /**
@@ -305,7 +307,7 @@ public abstract class Animal extends LivingOrganism
     protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
     {
         OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return speciesType.createAnimal(getContext(), location, false, healthState.isInfected(), healthState.isImmune());
+        return SpeciesRegistry.INSTANCE.createAnimal(speciesType, getContext(), location, false, healthState.isInfected(), healthState.isImmune());
     }
 
     /**

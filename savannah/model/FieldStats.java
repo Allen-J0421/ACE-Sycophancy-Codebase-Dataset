@@ -4,9 +4,8 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * This class collects and provides some statistical data on the state 
- * of a field. It is flexible: it will create and maintain a counter 
- * for any class of object that is found within the field.
+ * This class collects and provides some statistical data on the state
+ * of a field. It maintains counters for each species found within the field.
  *
  * @version 26/02/2022
  */
@@ -65,8 +64,8 @@ public class FieldStats
     }
 
     /**
-     * Increment the count for one object.
-     * 
+     * Increment the count for one species.
+     *
      * @param speciesType The species to increment.
      */
     public void incrementCount(SpeciesType speciesType)
@@ -75,14 +74,14 @@ public class FieldStats
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(speciesType.getDisplayName());
+            count = new Counter(SpeciesRegistry.INSTANCE.getDisplayName(speciesType));
             counters.put(speciesType, count);
         }
         count.increment();
     }
 
     /**
-     * Indicate that an animal count has been completed.
+     * Indicate that a species count has been completed.
      */
     public void countFinished()
     {

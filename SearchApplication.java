@@ -11,8 +11,20 @@ public final class SearchApplication {
         this.searchEngine = Objects.requireNonNull(searchEngine, "searchEngine must not be null");
     }
 
+    public static SearchApplication createDefault() {
+        return new SearchApplication(SearchEngines.naive());
+    }
+
+    public SearchResult search(SearchRequest request) {
+        return searchEngine.search(request);
+    }
+
     public String run(SearchRequest request) {
-        return searchEngine.search(request).joinMatchIndexes();
+        return search(request).joinMatchIndexes();
+    }
+
+    public String run(String[] args) {
+        return run(parseArguments(args));
     }
 
     public SearchRequest parseArguments(String[] args) {

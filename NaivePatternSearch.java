@@ -2,7 +2,7 @@ import java.util.List;
 
 public final class NaivePatternSearch {
 
-    private static final SearchEngine SEARCH_ENGINE = new NaiveSearchEngine();
+    private static final SearchEngine SEARCH_ENGINE = SearchEngines.naive();
 
     private NaivePatternSearch() {
     }

@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Write a description of class Disease here.
@@ -39,38 +38,28 @@ public class Disease
     /**
      * create the source of infection
      */
-    protected void creationSourceOfInfection(List<Creature> creatures, int step){
-       
+    protected void tryToStartSpread(List<Creature> creatures, int step){
         if(!getIsSpread() && Randomizer.getRandom().nextDouble() <= DISEASE_OCCURENCE_PROBABILITY){
-            ArrayList<Animal> animalCollection = new ArrayList<>();
-            Iterator<Creature> it = creatures.iterator();
-            while(it.hasNext()){
-                Creature creature = it.next();
-                if(creature instanceof Animal){
-                    Animal animal = (Animal)creature;
-                        animalCollection.add(animal);
-                }
-            }
-            
-            for(Animal ani: animalCollection){
-                if(Randomizer.getRandom().nextDouble() <= 0.3){
-                    ani.setIsInfected(true);
-                    ani.infectionStartStep = step;
+            List<Animal> animals = collectAnimals(creatures);
+            for(Animal animal : animals){
+                if(Randomizer.getRandom().nextDouble() <= INFECTION_RATE){
+                    animal.infect(step);
                     setIsSpread(true);
-
                 }
             }
-            
-
         }
-
     }
-    
-   
-    
-    
-            
+
+    private List<Animal> collectAnimals(List<Creature> creatures)
+    {
+        List<Animal> animals = new ArrayList<>();
+        for(Creature creature : creatures) {
+            if(creature instanceof Animal) {
+                animals.add((Animal) creature);
+            }
+        }
+        return animals;
+    }
 }
     
     
-

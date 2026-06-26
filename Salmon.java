@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 
 /**
  * A simple model of a Salmon.
@@ -72,53 +71,7 @@ public class Salmon extends Animal
      * 
      * @return the oxygen level the species produced or consumed after action.
      */
-    public double act(List<Creature> newSalmons, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {
-        // if there is not enough oxygen, set to death;
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED){
-            setDead();
-            return 0;
-        }     
-
-        //if the salmon dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
-            return 0;
-
-        // check if the salmon is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
-
-        incrementAge();
-        incrementHunger();
-
-        if(isAlive() && !needSleep(atDayTime)) {
-            giveBirth(newSalmons);            
-            // Move towards a source of food if found.
-            Location newLocation = search(disease, step);
-            Field field = getField();
-
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = field.freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-
-        }
-
-        return -ANIMAL_OXYGEN_REQUIRED;
-    }
-
-    /**
-     * Increase the age.
-     * This could result in the salmon's death.
-     */
-    private void incrementAge()
+    protected void incrementAge()
     {
         age++;
         if(age > MAX_AGE) {
@@ -129,7 +82,7 @@ public class Salmon extends Animal
     /**
      * Make this salmon more hungry. This could result in the salmon's death.
      */
-    private void incrementHunger()
+    protected void incrementHunger()
     {
         foodLevel--;
         if(foodLevel <= 0) {
@@ -146,40 +99,14 @@ public class Salmon extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     public Location search(Disease disease, int step){
-        Field field = getField();
-         //trying to find food.
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location loc = it.next();
-            Object creature = field.getObjectAt(loc);
-            //If nearby animal is infected,then it has the probability to be infected as well
-            if(creature instanceof Animal){
-                Animal animal = (Animal)creature;
-                if(animal.getIsInfected()){
-                    makeInfected(disease, step);
-                }
-            }
-            // if food is found, set the food death.
-            if(creature instanceof Seaweed) {
-                Seaweed seaweed = (Seaweed) creature;
-                if(seaweed.isAlive()) { 
-                    seaweed.setDead();
-                    foodLevel = SEAWEED_FOOD_VALUE;
-                    return loc;
-                }
-            }
-        }
-        return null;
-
-        
+        return findFood(disease, step, 1, SEAWEED_FOOD_VALUE, Seaweed.class);
     }
     /**
      * Check whether or not this salmon is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newsalmons A list to return newly born salmons.
      */
-    private void giveBirth(List<Creature> newSalmons)
+    protected void giveBirth(List<Creature> newSalmons)
     {
         // New salmons are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -221,18 +148,12 @@ public class Salmon extends Animal
      * Decide if two salmons countered has different sex;
      */
     public boolean encounterWithDiffSex(){
+        return hasDifferentSexNearby(Salmon.class, 2);
+    }
 
-        List<Location> adjacentLocation = getField().adjacentLocations(getLocation(), 2);
-
-        for(Location loc: adjacentLocation){
-            Object creatureAtThisLoc = getField().getObjectAt(loc);
-            if(creatureAtThisLoc != null && creatureAtThisLoc instanceof Salmon){
-                Salmon salmonAtThisLoc = (Salmon)creatureAtThisLoc;
-                if(this.getSex() != salmonAtThisLoc.getSex())
-                    return true;
-            }
-        }
-        return false;
+    protected void setFoodLevel(int foodLevel)
+    {
+        this.foodLevel = foodLevel;
     }
 
 }

@@ -1,10 +1,8 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Iterator;
 
 
 /**
@@ -24,9 +22,6 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
     
-    // Colour used for underwater storm
-    private static final Color UNDERWATERSTORM_COLOR = Color.blue;
-    
     // Colour used for objects that are infected by disease;
     private static final Color INFECTED_COLOR = Color.green;
     
@@ -41,7 +36,7 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -86,7 +81,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -102,7 +97,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -138,7 +133,7 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object creature = field.getObjectAt(row, col);
+                Creature creature = field.getCreatureAt(row, col);
                 if(creature != null && weather.getStormStart() == false) {
                     stats.incrementCount(creature.getClass());
                     if(creature instanceof Animal){
@@ -188,9 +183,7 @@ public class SimulatorView extends JFrame
      */
     private void drawStormColor(Field field, Weather weather) {
         List<Location> stormLocation = field.adjacentLocationsIncludingSelf(weather.getRandomLocation(),weather.getStormScope());
-        Iterator<Location> it = stormLocation.iterator();
-        while(it.hasNext() ) {
-            Location location = it.next();
+        for(Location location : stormLocation) {
             fieldView.drawMark(location.getCol(),location.getRow(),getColor(Weather.class));
         }
         

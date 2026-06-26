@@ -14,12 +14,6 @@ public abstract class Animal extends Creature
 
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
-    // The possibility that an animal may be infected by a disease.
-    protected static final double INFECTION_RATE = 1;
-    // The possibility an animal may die of a disease.
-    protected static final double MORTALITY_RATE = 1;
-    // The steps an animal need to withstand in order to get immunity
-    protected static final int stepStandNum = 3;
 
     // If the animal is infected by disease.
     private boolean isInfected;
@@ -57,6 +51,14 @@ public abstract class Animal extends Creature
     public abstract boolean encounterWithDiffSex();
 
     public abstract Location search(Disease disease, int step);
+
+    protected abstract void incrementAge();
+
+    protected abstract void incrementHunger();
+
+    protected abstract void giveBirth(List<Creature> newAnimals);
+
+    protected abstract void setFoodLevel(int foodLevel);
 
     /**
      * identify whether a creature need to sleep
@@ -104,18 +106,44 @@ public abstract class Animal extends Creature
     }
 
     /**
+     * Run one simulation step for an animal.
+     *
+     * @return the oxygen level the species consumed after action.
+     */
+    public final double act(List<Creature> newAnimals, boolean atDayTime, double oxygenLevel,
+                            Disease disease, int step)
+    {
+        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED) {
+            setDead();
+            return 0;
+        }
+
+        if(dieOfInfection(disease)) {
+            return 0;
+        }
+
+        ifCanGrantImmunity(disease, step);
+        incrementAge();
+        incrementHunger();
+
+        if(isAlive() && !needSleep(atDayTime)) {
+            giveBirth(newAnimals);
+            moveTo(search(disease, step));
+        }
+
+        return -ANIMAL_OXYGEN_REQUIRED;
+    }
+
+    /**
      *  Make an animal infected while the disease exists.
      *  
      *  @param disease disease 
      *  @param step current step.
      */
     protected void makeInfected(Disease disease, int step){
-        if((!this.getIsImmuned()) && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
-            setIsInfected(true);  
-
-        //if the animal is infected in current step, record its start step.
-        if(getIsInfected() && infectionStartStep == 0)
-            infectionStartStep = step;
+        if((!this.getIsImmuned()) && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE) {
+            infect(step);
+        }
     }
 
     /**
@@ -146,6 +174,95 @@ public abstract class Animal extends Creature
             if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE  ){
                 setDead();
                 populationDieOfDisease++;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Mark the animal as infected and record the first infected step.
+     */
+    public void infect(int step)
+    {
+        setIsInfected(true);
+        if(infectionStartStep == 0) {
+            infectionStartStep = step;
+        }
+    }
+
+    /**
+     * Find whether there is an adjacent animal of the same species but opposite sex.
+     */
+    protected boolean hasDifferentSexNearby(Class<? extends Animal> species, int searchDistance)
+    {
+        for(Location location : getField().adjacentLocations(getLocation(), searchDistance)) {
+            Creature nearbyCreature = getField().getCreatureAt(location);
+            if(species.isInstance(nearbyCreature)) {
+                Animal nearbyAnimal = species.cast(nearbyCreature);
+                if(this.getSex() != nearbyAnimal.getSex()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Search for prey around the animal and handle infection spread during the search.
+     */
+    @SafeVarargs
+    protected final Location findFood(Disease disease, int step, int searchDistance, int foodValue,
+                                      Class<? extends Creature>... preyTypes)
+    {
+        for(Location location : getField().adjacentLocations(getLocation(), searchDistance)) {
+            Creature nearbyCreature = getField().getCreatureAt(location);
+            exposeToInfection(nearbyCreature, disease, step);
+            if(isMatchingPrey(nearbyCreature, preyTypes) && nearbyCreature.isAlive()) {
+                nearbyCreature.setDead();
+                setFoodLevel(foodValue);
+                return location;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Move to a new location if possible, otherwise die from overcrowding.
+     */
+    private void moveTo(Location preferredLocation)
+    {
+        Location newLocation = preferredLocation;
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
+    }
+
+    private void exposeToInfection(Creature nearbyCreature, Disease disease, int step)
+    {
+        if(nearbyCreature instanceof Animal) {
+            Animal nearbyAnimal = (Animal) nearbyCreature;
+            if(nearbyAnimal.getIsInfected()) {
+                makeInfected(disease, step);
+            }
+        }
+    }
+
+    @SafeVarargs
+    private final boolean isMatchingPrey(Creature creature, Class<? extends Creature>... preyTypes)
+    {
+        if(creature == null) {
+            return false;
+        }
+        for(Class<? extends Creature> preyType : preyTypes) {
+            if(preyType.isInstance(creature)) {
                 return true;
             }
         }

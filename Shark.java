@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -25,7 +24,6 @@ public class Shark extends Animal
     // The food value of a single rabbit. In effect, this is the
     // number of steps a shark can go before it has to eat again.
     private static final int COD_FOOD_VALUE = 8;
-    private static final int SALMON_FOOD_VALUE = 8;
 
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -71,49 +69,7 @@ public class Shark extends Animal
      * 
      * @return the oxygen level the species produced or consumed after action.
      */
-    public double act(List<Creature> newSharks, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {   
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED){
-            setDead();
-            return 0;
-        }     
-
-        //if the shark dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
-            return 0;
-
-        // check if the shark is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
-
-        incrementAge();
-        incrementHunger();
-
-        if(isAlive() && !needSleep(atDayTime)) {
-            giveBirth(newSharks);            
-            // Move towards a source of food if found.
-            Location newLocation = search(disease, step);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-
-        }
-
-        return -ANIMAL_OXYGEN_REQUIRED;
-    }
-
-    /**
-     * Increase the age. This could result in the shark's death.
-     */
-    private void incrementAge()
+    protected void incrementAge()
     {
         age++;
         if(age > MAX_AGE) {
@@ -124,7 +80,7 @@ public class Shark extends Animal
     /**
      * Make this shark more hungry. This could result in the shark's death.
      */
-    private void incrementHunger()
+    protected void incrementHunger()
     {
         foodLevel--;
         if(foodLevel <= 0) {
@@ -141,35 +97,7 @@ public class Shark extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     public Location search(Disease disease, int step){
-        Field field = getField();
-        //trying to find food.
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location loc = it.next();
-            Object creature = field.getObjectAt(loc);
-            //If nearby animal is infected,then it has the probability to be infected as well
-            if(creature instanceof Animal){
-                Animal animal = (Animal)creature;
-                if(animal.getIsInfected()){
-                    makeInfected(disease, step);
-                }
-            }
-            // if food is found, set the food death.
-            if(creature instanceof Cod || creature instanceof Salmon) {
-                Animal animal = (Animal) creature;
-                if(animal.isAlive()) { 
-                    animal.setDead();
-                    if(animal instanceof Cod)
-                        foodLevel = COD_FOOD_VALUE;
-                    else
-                        foodLevel = SALMON_FOOD_VALUE;
-                    return loc;
-                }
-            }
-        }
-        return null;
-
+        return findFood(disease, step, 1, COD_FOOD_VALUE, Cod.class, Salmon.class);
     }
 
     /**
@@ -177,7 +105,7 @@ public class Shark extends Animal
      * New births will be made into free adjacent locations.
      * @param newsharkes A list to return newly born sharkes.
      */
-    private void giveBirth(List<Creature> newSharkes)
+    protected void giveBirth(List<Creature> newSharkes)
     {
         // New sharkes are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -218,20 +146,12 @@ public class Shark extends Animal
      *  @return true if two sharks have different sex, false otherwise.
      */
     public boolean encounterWithDiffSex(){
+        return hasDifferentSexNearby(Shark.class, 2);
+    }
 
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 2);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animalAtThisLoc = field.getObjectAt(where);
-            if(animalAtThisLoc != null && animalAtThisLoc instanceof Cod){
-                Cod codAtThisLoc = (Cod)animalAtThisLoc;
-                if(this.getSex() != codAtThisLoc.getSex())
-                    return true;
-            }
-        }
-        return false;
+    protected void setFoodLevel(int foodLevel)
+    {
+        this.foodLevel = foodLevel;
     }
 
 }

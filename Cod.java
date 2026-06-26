@@ -1,6 +1,5 @@
 import java.util.Random;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A simple model of a cod.
@@ -38,9 +37,6 @@ public class Cod extends Animal
     // THe cod's food level
     private int foodLevel;
 
-    // Track the first step at which the animal is infected;
-    private int infectionStartStep;
-
     /**
      * Create a new cod. A cod may be created with age
      * zero (a new born) or with a random age.
@@ -76,49 +72,7 @@ public class Cod extends Animal
      * @return the oxygen level the species produced or consumed after action.
      * 
      */
-    public double act(List<Creature> newCods, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {   
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED){
-            setDead();
-            return 0;
-        }     
-
-        //if the cod dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
-            return 0;
-
-        // check if the cod is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
-
-        incrementAge();
-        incrementHunger();
-
-        if(isAlive() && !needSleep(atDayTime)) {
-            giveBirth(newCods);            
-            // Move towards a source of food if found.
-            Location newLocation = search(disease, step);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-
-        }
-        return -ANIMAL_OXYGEN_REQUIRED;         
-    }
-
-    /**
-     * Increase the age.
-     * This could result in the cod's death.
-     */
-    private void incrementAge()
+    protected void incrementAge()
     {
         age++;
         if(age > MAX_AGE) {
@@ -129,7 +83,7 @@ public class Cod extends Animal
     /**
      * Make this cod more hungry. This could result in the cod's death.
      */
-    private void incrementHunger()
+    protected void incrementHunger()
     {
         foodLevel--;
         if(foodLevel <= 0) {
@@ -143,7 +97,7 @@ public class Cod extends Animal
      * @param newCods A list to return newly born cods.
 
      */
-    private void giveBirth(List<Creature> newCod)
+    protected void giveBirth(List<Creature> newCod)
     {
         // New cods are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -185,20 +139,7 @@ public class Cod extends Animal
      * @return true if two cods have different sex, false otherwise.
      */
     public boolean encounterWithDiffSex(){
-        Field field = getField();
-
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animalAtThisLoc = field.getObjectAt(where);
-            if(animalAtThisLoc != null && animalAtThisLoc instanceof Cod){
-                Cod codAtThisLoc = (Cod)animalAtThisLoc;
-                if(this.getSex() != codAtThisLoc.getSex())
-                    return true;
-            }
-        }
-        return false;
+        return hasDifferentSexNearby(Cod.class, 1);
     }
 
     /**
@@ -210,32 +151,12 @@ public class Cod extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     public Location search(Disease disease, int step){
-        Field field = getField();
-        //trying to find food.
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location loc = it.next();
-            Object creature = field.getObjectAt(loc);
-            //If nearby animal is infected,then it has the probability to be infected as well
-            if(creature instanceof Animal){
-                Animal animal = (Animal)creature;
-                if(animal.getIsInfected()){
-                    makeInfected(disease, step);
-                }
-            }
-            // if food is found, set the food death.
-            if(creature instanceof Seaweed) {
-                Seaweed seaweed = (Seaweed) creature;
-                if(seaweed.isAlive()) { 
-                    seaweed.setDead();
-                    foodLevel = SEAWEED_FOOD_VALUE;
-                    return loc;
-                }
-            }
-        }
-        return null;
+        return findFood(disease, step, 1, SEAWEED_FOOD_VALUE, Seaweed.class);
+    }
 
+    protected void setFoodLevel(int foodLevel)
+    {
+        this.foodLevel = foodLevel;
     }
 
 }

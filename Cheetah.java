@@ -1,24 +1,17 @@
 /**
  * This file is part of the Predator-Prey Simulation.
  *
- * A Cheetah predator in the simulation.
+ * A Cheetah predator in the simulation. Shares the standard predator tuning
+ * defined in {@link Predator}, differing only in lifespan, breeding age and
+ * the time of day at which it rests.
  *
  * @version 2022.03.02
  */
 public class Cheetah extends Predator {
 
     // define fields
-    private static final double BREEDING_PROBABILITY = 0.115;
-    private static final double EATING_PROBABILITY = 0.6;
-    private static final int MAX_LITTER_SIZE = 2;
     private static final int BREEDING_AGE = 26;
     private static final int MAX_AGE = 140;
-
-    private static final int DEFAULT_FOOD_LEVEL = 19;
-
-    private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
-    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
-
     // The cheetah rests in the early afternoon.
     private static final TimeOfDay INACTIVE_TIME = TimeOfDay.EARLY_AFTERNOON;
 
@@ -35,26 +28,6 @@ public class Cheetah extends Predator {
     }
 
     /**
-     * Getter method for the probability to breed of the cheetah.
-     *
-     * @return A double value representing the breeding probability.
-     */
-    @Override
-    public double getBreedingProbability() {
-        return BREEDING_PROBABILITY;
-    }
-
-    /**
-     * Getter method for the maximum litter size of the cheetah's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    @Override
-    public int getMaxLitterSize() {
-        return MAX_LITTER_SIZE;
-    }
-
-    /**
      * Getter method for the maximum age of the cheetah.
      *
      * @return An integer value representing the maximum age.
@@ -67,31 +40,11 @@ public class Cheetah extends Predator {
     /**
      * Getter method for the age of breeding of the cheetah.
      *
-     * @return A double value representing the breeding age.
+     * @return An integer value representing the breeding age.
      */
     @Override
     public int getBreedingAge() {
         return BREEDING_AGE;
-    }
-
-    /**
-     * Getter method to return this cheetah's disease spreading probability.
-     *
-     * @return The cheetah's disease spreading probability.
-     */
-    @Override
-    protected double getDiseaseSpreadProbability() {
-        return SPREAD_DISEASE_PROBABILITY;
-    }
-
-    /**
-     * Getter method to return the probability this cheetah dies from disease.
-     *
-     * @return The cheetah's disease death probability.
-     */
-    @Override
-    protected double getDeathByDiseaseProbability() {
-        return DEATH_BY_DISEASE_PROBABILITY;
     }
 
     /**
@@ -103,16 +56,6 @@ public class Cheetah extends Predator {
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Cheetah(DEFAULT_FOOD_LEVEL, true, field, location);
-    }
-
-    /**
-     * Getter method to return this cheetah's probability of eating if food is found.
-     *
-     * @return The cheetah's eating probability.
-     */
-    @Override
-    public double getEatingProbability() {
-        return EATING_PROBABILITY;
     }
 
     /**

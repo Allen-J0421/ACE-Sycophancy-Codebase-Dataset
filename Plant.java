@@ -10,10 +10,22 @@ import java.util.List;
 public abstract class Plant extends Organism implements Growable, Consumable {
 
     // define fields
+    // Tuning shared by all plants; individual species override only the values
+    // that genuinely differ (see getMaxAge / getMaxLitterSize / the breeding
+    // probabilities and favourable weather).
+    private static final double MAX_SIZE = 10.0;
+    private static final int BREEDING_AGE = 16;
+    private static final double DEFAULT_GROWTH_RATE = 1.2;
+    // Defaults used when spawning newborn plants.
+    protected static final double DEFAULT_SIZE = 1.00;
+    protected static final int DEFAULT_FOOD_VALUE = 5;
+
     private double size;
     private final int foodValue;
     private final boolean poisonous;
-    private double growthRate;
+    // All plants share the same growth rate; species set their own breeding
+    // probability (which also varies with the weather - see act).
+    private double growthRate = DEFAULT_GROWTH_RATE;
     private double breedingProbability;
 
     /**
@@ -35,14 +47,54 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     }
 
     /**
-     * Abstract method for what the plant does, i.e. what is always run at every step.
+     * What the plant does at every step: while alive it breeds faster when the
+     * recent weather has been favourable, then grows and reproduces. This is
+     * shared by all plants; species vary only in their breeding probabilities
+     * and which weather they find favourable.
      *
      * @param newPlants A list of all newborn plants in this simulation step.
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPlants, Weather weather, TimeOfDay time);
+    public void act(List<Entity> newPlants, Weather weather, TimeOfDay time) {
+        if (!isAlive()) {
+            return;
+        }
+
+        setBreedingProbability(getLowBreedingProbability());
+        for (WeatherType favourable : getFavourableWeather()) {
+            if (weather.getRecentWeather().contains(favourable)) {
+                setBreedingProbability(getHighBreedingProbability());
+                break;
+            }
+        }
+
+        grow();
+        giveBirth(newPlants);
+    }
+
+    /**
+     * Getter method for this plant's breeding probability under normal weather.
+     *
+     * @return A double value representing the standard breeding probability.
+     */
+    abstract protected double getLowBreedingProbability();
+
+    /**
+     * Getter method for this plant's breeding probability when the weather has
+     * recently been favourable.
+     *
+     * @return A double value representing the boosted breeding probability.
+     */
+    abstract protected double getHighBreedingProbability();
+
+    /**
+     * Getter method for the weather types under which this plant breeds faster.
+     *
+     * @return The weather types this plant finds favourable.
+     */
+    abstract protected WeatherType[] getFavourableWeather();
 
     /**
      * Grow in size in accordance with the current growth rate.
@@ -81,7 +133,19 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @return A double representing maximum size.
      */
     @Override
-    abstract public double getMaxSize();
+    public double getMaxSize() {
+        return MAX_SIZE;
+    }
+
+    /**
+     * Getter method for the age of breeding of the plant.
+     *
+     * @return An integer value representing the breeding age.
+     */
+    @Override
+    public int getBreedingAge() {
+        return BREEDING_AGE;
+    }
 
     /**
      * Getter method for the maximum litter size of the plant's newborns.

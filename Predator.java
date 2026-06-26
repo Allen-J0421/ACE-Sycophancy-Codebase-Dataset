@@ -12,6 +12,15 @@ import java.util.Random;
 public abstract class Predator extends Animal {
 
     // define fields
+    // Tuning shared by all predators; individual species override only the
+    // values that genuinely differ (see getMaxAge / getBreedingAge / getInactiveTime).
+    private static final double BREEDING_PROBABILITY = 0.115;
+    private static final double EATING_PROBABILITY = 0.6;
+    private static final int MAX_LITTER_SIZE = 2;
+    private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
+    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
+    // The food level given to newborn predators.
+    protected static final int DEFAULT_FOOD_LEVEL = 19;
 
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
@@ -125,7 +134,49 @@ public abstract class Predator extends Animal {
      *
      * @return The predator's eating probability.
      */
-    abstract public double getEatingProbability();
+    public double getEatingProbability() {
+        return EATING_PROBABILITY;
+    }
+
+    /**
+     * Getter method for the probability to breed of the predator.
+     *
+     * @return A double value representing the breeding probability.
+     */
+    @Override
+    public double getBreedingProbability() {
+        return BREEDING_PROBABILITY;
+    }
+
+    /**
+     * Getter method for the maximum litter size of the predator's newborns.
+     *
+     * @return An integer value representing the maximum allowed litter size.
+     */
+    @Override
+    public int getMaxLitterSize() {
+        return MAX_LITTER_SIZE;
+    }
+
+    /**
+     * Getter method to return this predator's disease spreading probability.
+     *
+     * @return The predator's disease spreading probability.
+     */
+    @Override
+    protected double getDiseaseSpreadProbability() {
+        return SPREAD_DISEASE_PROBABILITY;
+    }
+
+    /**
+     * Getter method to return the probability this predator dies from disease.
+     *
+     * @return The predator's disease death probability.
+     */
+    @Override
+    protected double getDeathByDiseaseProbability() {
+        return DEATH_BY_DISEASE_PROBABILITY;
+    }
 
     /**
      * Called when a predator either eats or leaves a prey it

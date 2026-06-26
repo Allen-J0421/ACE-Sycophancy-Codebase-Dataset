@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
@@ -11,23 +11,46 @@ import java.util.Random;
  */
 public class Populator {
 
-    // define fields
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.05;
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.05;
-    // The probability that a vulture will be created in any given grid position.
-    private static final double VULTURE_CREATION_PROBABILITY = 0.05;
-    // The probability that an elephant will be created in any given grid position.
-    private static final double ELEPHANT_CREATION_PROBABILITY = 0.05;
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.05;
-    // The probability that a goat will be created in any given grid position.
-    private static final double GOAT_CREATION_PROBABILITY = 0.05;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.04;
-    // The probability that some poison berries will be created in any given grid position.
-    private static final double POISON_BERRIES_CREATION_PROBABILITY = 0.04;
+    /**
+     * Creates a new organism of a particular species at a field location.
+     */
+    @FunctionalInterface
+    private interface OrganismFactory {
+        Organism create(Field field, Location location);
+    }
+
+    /**
+     * Describes how a species is seeded into the field: how likely it is to
+     * appear in any given cell, the colour used to draw it, and how to create
+     * an instance.
+     */
+    private static class SpawnRule {
+        final double probability;
+        final Class<?> species;
+        final Color color;
+        final OrganismFactory factory;
+
+        SpawnRule(double probability, Class<?> species, Color color, OrganismFactory factory) {
+            this.probability = probability;
+            this.species = species;
+            this.color = color;
+            this.factory = factory;
+        }
+    }
+
+    // The spawn rules, evaluated in order for each grid cell: the first rule
+    // whose probability check passes claims the cell. Order and probabilities
+    // are preserved from the original simulation.
+    private static final List<SpawnRule> SPAWN_RULES = List.of(
+        new SpawnRule(0.05, Lion.class,        Color.RED,     (f, l) -> new Lion(19, true, f, l)),
+        new SpawnRule(0.05, Zebra.class,       Color.BLUE,    (f, l) -> new Zebra(5, true, f, l)),
+        new SpawnRule(0.05, Vulture.class,     Color.ORANGE,  (f, l) -> new Vulture(40, true, f, l)),
+        new SpawnRule(0.04, Grass.class,       Color.GREEN,   (f, l) -> new Grass(1, 1, true, f, l)),
+        new SpawnRule(0.05, Goat.class,        Color.PINK,    (f, l) -> new Goat(5, true, f, l)),
+        new SpawnRule(0.05, Elephant.class,    Color.GRAY,    (f, l) -> new Elephant(5, true, f, l)),
+        new SpawnRule(0.05, Cheetah.class,     Color.MAGENTA, (f, l) -> new Cheetah(19, true, f, l)),
+        new SpawnRule(0.04, PoisonBerry.class, Color.BLACK,   (f, l) -> new PoisonBerry(2, 1, true, f, l))
+    );
 
     /**
      * Constructor for the populator.
@@ -35,19 +58,14 @@ public class Populator {
      * @param view A given SimulatorView.
      */
     public Populator(SimulatorView view) {
-        // Create a view of the state of each location in the field.
-        view.setColor(Zebra.class, Color.BLUE);
-        view.setColor(Lion.class, Color.RED);
-        view.setColor(Vulture.class, Color.ORANGE);
-        view.setColor(Grass.class, Color.GREEN);
-        view.setColor(Goat.class, Color.PINK);
-        view.setColor(Elephant.class, Color.GRAY);
-        view.setColor(Cheetah.class, Color.MAGENTA);
-        view.setColor(PoisonBerry.class, Color.BLACK);
+        // Register the display colour of each species with the view.
+        for (SpawnRule rule : SPAWN_RULES) {
+            view.setColor(rule.species, rule.color);
+        }
     }
 
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Randomly populate the field with the simulation's organisms.
      */
     public void populate(List<Entity> organisms, Field field)
     {
@@ -55,45 +73,12 @@ public class Populator {
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(19, true, field, location);
-                    organisms.add(lion);
-                }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Zebra zebra = new Zebra(5, true, field, location);
-                    organisms.add(zebra);
-                }
-                else if(rand.nextDouble() <= VULTURE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Vulture vulture = new Vulture(40, true, field, location);
-                    organisms.add(vulture);
-                }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(1, 1, true, field, location);
-                    organisms.add(grass);
-                }
-                else if(rand.nextDouble() <= GOAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Goat goat = new Goat(5, true, field, location);
-                    organisms.add(goat);
-                }
-                else if(rand.nextDouble() <= ELEPHANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Elephant elephant = new Elephant(5, true, field, location);
-                    organisms.add(elephant);
-                }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Cheetah cheetah = new Cheetah(19, true, field, location);
-                    organisms.add(cheetah);
-                }
-                else if(rand.nextDouble() <= POISON_BERRIES_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    PoisonBerry berry = new PoisonBerry(2, 1, true, field, location);
-                    organisms.add(berry);
+                // The first rule that passes its probability check claims the cell.
+                for (SpawnRule rule : SPAWN_RULES) {
+                    if (rand.nextDouble() <= rule.probability) {
+                        organisms.add(rule.factory.create(field, new Location(row, col)));
+                        break;
+                    }
                 }
                 // else leave the location empty.
             }

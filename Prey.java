@@ -15,6 +15,18 @@ public abstract class Prey extends Animal implements Consumable {
     private static final double DEFAULT_ACTIVENESS = 1;
     // Food value above which prey prefers to wander rather than keep eating.
     private static final int SATIATED_FOOD_VALUE = 10;
+
+    // Tuning shared by all prey; individual species override only the values
+    // that genuinely differ (see getBreedingProbability / getLowActivityTime /
+    // getLowActiveness).
+    private static final int MAX_AGE = 150;
+    private static final int BREEDING_AGE = 10;
+    private static final int MAX_LITTER_SIZE = 3;
+    private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
+    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
+    // The food value given to newborn prey.
+    protected static final int DEFAULT_FOOD_VALUE = 5;
+
     private int foodValue;
     private double activeness;  // denotes how likely it is for the act method to be called
 
@@ -129,6 +141,56 @@ public abstract class Prey extends Animal implements Consumable {
      * @return A double value representing the reduced activeness.
      */
     abstract protected double getLowActiveness();
+
+    /**
+     * Getter method for the maximum age of the prey.
+     *
+     * @return An integer value representing the maximum age.
+     */
+    @Override
+    public int getMaxAge() {
+        return MAX_AGE;
+    }
+
+    /**
+     * Getter method for the age of breeding of the prey.
+     *
+     * @return An integer value representing the breeding age.
+     */
+    @Override
+    public int getBreedingAge() {
+        return BREEDING_AGE;
+    }
+
+    /**
+     * Getter method for the maximum litter size of the prey's newborns.
+     *
+     * @return An integer value representing the maximum allowed litter size.
+     */
+    @Override
+    public int getMaxLitterSize() {
+        return MAX_LITTER_SIZE;
+    }
+
+    /**
+     * Getter method to return this prey's disease spreading probability.
+     *
+     * @return The prey's disease spreading probability.
+     */
+    @Override
+    protected double getDiseaseSpreadProbability() {
+        return SPREAD_DISEASE_PROBABILITY;
+    }
+
+    /**
+     * Getter method to return the probability this prey dies from disease.
+     *
+     * @return The prey's disease death probability.
+     */
+    @Override
+    protected double getDeathByDiseaseProbability() {
+        return DEATH_BY_DISEASE_PROBABILITY;
+    }
 
     /**
      * Clear the prey from the simulation as it has been eaten.

@@ -1,7 +1,9 @@
 /**
  * This file is part of the Predator-Prey Simulation.
  *
- * A Zebra prey in the simulation.
+ * A Zebra prey in the simulation. Shares the standard prey tuning defined in
+ * {@link Prey}, differing only in breeding probability and its low-activity
+ * period.
  *
  * @version 2022.03.02
  */
@@ -9,15 +11,6 @@ public class Zebra extends Prey {
 
     // define fields
     private static final double BREEDING_PROBABILITY = 0.305;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int BREEDING_AGE = 10;
-    private static final int MAX_AGE = 150;
-
-    private static final int DEFAULT_FOOD_VALUE = 5;
-
-    private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
-    private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
-
     // The zebra is 10% less active around midnight.
     private static final TimeOfDay LOW_ACTIVITY_TIME = TimeOfDay.AROUND_MIDNIGHT;
     private static final double LOW_ACTIVENESS = 0.9;
@@ -25,6 +18,7 @@ public class Zebra extends Prey {
     /**
      * Constructor for a Zebra in the simulation.
      *
+     * @param foodValue The food value the zebra is at initially.
      * @param randomAge Whether we assign this zebra a random age or not.
      * @param field The field in which this zebra resides.
      * @param location The location in which this zebra is spawned into.
@@ -41,56 +35,6 @@ public class Zebra extends Prey {
     @Override
     public double getBreedingProbability() {
         return BREEDING_PROBABILITY;
-    }
-
-    /**
-     * Getter method for the maximum litter size of the zebra's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    @Override
-    public int getMaxLitterSize() {
-        return MAX_LITTER_SIZE;
-    }
-
-    /**
-     * Getter method for the maximum age of the zebra.
-     *
-     * @return An integer value representing the maximum age.
-     */
-    @Override
-    public int getMaxAge() {
-        return MAX_AGE;
-    }
-
-    /**
-     * Getter method for the age of breeding of the zebra.
-     *
-     * @return A double value representing the breeding age.
-     */
-    @Override
-    public int getBreedingAge() {
-        return BREEDING_AGE;
-    }
-
-    /**
-     * Getter method to return this zebra's disease spreading probability.
-     *
-     * @return The zebra's disease spreading probability.
-     */
-    @Override
-    protected double getDiseaseSpreadProbability() {
-        return SPREAD_DISEASE_PROBABILITY;
-    }
-
-    /**
-     * Getter method to return the probability this zebra dies from disease.
-     *
-     * @return The zebra's disease death probability.
-     */
-    @Override
-    protected double getDeathByDiseaseProbability() {
-        return DEATH_BY_DISEASE_PROBABILITY;
     }
 
     /**

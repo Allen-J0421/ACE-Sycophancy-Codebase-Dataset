@@ -101,27 +101,4 @@ public class Vulture extends Scavenger {
         return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
     }
 
-    /**
-     * Checks all adjacent location for vultures that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this vulture can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Vulture) {
-                Vulture vulture = (Vulture) animal;
-                if (!(((vulture.isMale() && isMale())) || ((!vulture.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

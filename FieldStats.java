@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private HashMap<Class<? extends Organism>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -35,7 +35,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<? extends Organism> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -52,7 +52,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(Class<? extends Organism> key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -62,7 +62,7 @@ public class FieldStats
      * Increment the count for one class of animal.
      * @param animalClass The class of animal to increment.
      */
-    public void incrementCount(Class animalClass)
+    public void incrementCount(Class<? extends Organism> animalClass)
     {
         Counter count = counters.get(animalClass);
         if(count == null) {
@@ -94,7 +94,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<? extends Organism> key : counters.keySet()) {
             Counter info = counters.get(key);
             if(info.getCount() > 0) {
                 nonZero++;
@@ -115,9 +115,9 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
+                Organism organism = field.getOrganismAt(row, col);
+                if(organism != null) {
+                    incrementCount(organism.getClass());
                 }
             }
         }

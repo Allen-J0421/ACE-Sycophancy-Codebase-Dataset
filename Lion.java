@@ -115,7 +115,7 @@ public class Lion extends Predator {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newLions, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newLions, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -167,27 +167,4 @@ public class Lion extends Predator {
         return EATING_PROBABILITY;
     }
 
-    /**
-     * Checks all adjacent location for lions that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this lion can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Lion) {
-                Lion lion = (Lion) animal;
-                if (!(((lion.isMale() && isMale())) || ((!lion.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

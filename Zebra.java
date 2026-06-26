@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -115,7 +114,7 @@ public class Zebra extends Prey {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newZebras, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newZebras, Weather weather, TimeOfDay time) {
         incrementAge();
         setActiveness(1);//resets activeness
 
@@ -161,55 +160,8 @@ public class Zebra extends Prey {
         }
     }
 
-    /**
-     * Checks all adjacent location for zebras that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this zebra can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Zebra) {
-                Zebra zebra = (Zebra) animal;
-                if (!(((zebra.isMale() && isMale())) || ((!zebra.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find a food source the zebra would want to eat.
-     * @return The location of the food source.
-     */
     @Override
     public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Object organism = field.getObjectAt(where);
-            if(organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-
-                if (plant.isAlive()) {
-                    // kill plant
-                    plant.setDead();
-                    boolean eaten = eat(plant);
-
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+        return findPlantFood();
     }
 }

@@ -40,7 +40,7 @@ public abstract class Predator extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPredators, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newPredators, Weather weather, TimeOfDay time);
 
     /**
      * Finds the nearest food source and returns its location.
@@ -55,7 +55,7 @@ public abstract class Predator extends Animal {
         while(it.hasNext()) {
             Location where = it.next();
 
-            Object animal = field.getObjectAt(where);
+            Organism animal = field.getOrganismAt(where);
             if(animal instanceof Prey) {
                 Prey prey = (Prey) animal;
                 if (prey.isAlive()) {
@@ -97,15 +97,6 @@ public abstract class Predator extends Animal {
             return false;
         }
     }
-
-    /**
-     * Checks all adjacent location for predators that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this lion can breed or not.
-     */
-    @Override
-    abstract protected boolean canBreed();
 
     /**
      * Increase the predator's food level by a given integer amount.

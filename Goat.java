@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -115,7 +114,7 @@ public class Goat extends Prey {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newGoats, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newGoats, Weather weather, TimeOfDay time) {
         incrementAge();
         setActiveness(1);
 
@@ -161,59 +160,8 @@ public class Goat extends Prey {
         }
     }
 
-    /**
-     * Checks all adjacent location for goats that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this goat can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Goat) {
-                Goat goat = (Goat) animal;
-                if (!(((goat.isMale() && isMale())) || ((!goat.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find a food source the goat would want to eat.
-     * @return The location of the food source.
-     */
     @Override
     public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Object organism = field.getObjectAt(where);
-            if(organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-                // kills animal
-                //prey.setDead();
-                //eatOrLeave(prey);
-                if (plant.isAlive()) {
-                    //System.out.println("ALIVE");
-                    plant.setDead();
-                    // NOTE: ONLY RETURN WHERE IF EATEN
-                    boolean eaten = eat(plant);
-
-                    //return where;
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+        return findPlantFood();
     }
 }

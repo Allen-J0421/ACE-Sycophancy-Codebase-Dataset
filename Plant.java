@@ -42,7 +42,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPlants, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newPlants, Weather weather, TimeOfDay time);
 
     /**
      * Grow in size in accordance with the current growth rate.
@@ -127,11 +127,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      */
     @Override
     public void setEaten() {
-        if (getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearFromField();
     }
 
     /**

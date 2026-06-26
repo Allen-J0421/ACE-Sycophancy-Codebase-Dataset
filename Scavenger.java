@@ -38,7 +38,7 @@ public abstract class Scavenger extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newScavengers, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newScavengers, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -90,7 +90,7 @@ public abstract class Scavenger extends Animal {
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Organism animal = field.getOrganismAt(where);
             if (animal instanceof Prey) {
                 Prey prey = (Prey) animal;
                 // eats animal if dead only
@@ -117,15 +117,6 @@ public abstract class Scavenger extends Animal {
         incrementFoodLevel(consumable.getFoodValue());
         return true;
     }
-
-    /**
-     * Checks all adjacent location for scavengers that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this scavenger can breed or not.
-     */
-    @Override
-    abstract public boolean canBreed();
 
     /**
      * Increment the food level of this scavenger by a given amount.

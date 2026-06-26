@@ -53,7 +53,7 @@ public abstract class Organism implements Entity {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time);
 
     /**
      * Check whether the organism is alive or not.
@@ -69,11 +69,7 @@ public abstract class Organism implements Entity {
      */
     protected void remove() {
         setDead();
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            setField(null);
-        }
+        clearFromField();
         removed = true;
     }
 
@@ -122,6 +118,18 @@ public abstract class Organism implements Entity {
      */
     protected void setLocationToNull() {
         location = null;
+    }
+
+    /**
+     * Detach this organism from its current field position without
+     * changing its alive/removed lifecycle flags.
+     */
+    protected void clearFromField() {
+        if(location != null && field != null) {
+            field.clear(location);
+        }
+        location = null;
+        field = null;
     }
 
     /**
@@ -187,7 +195,7 @@ public abstract class Organism implements Entity {
      * New births will be made into free adjacent locations.
      * @param newOrganisms A list to return newly born organisms.
      */
-    protected void giveBirth(List<Entity> newOrganisms) {
+    protected void giveBirth(List<Organism> newOrganisms) {
         // New organisms are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();

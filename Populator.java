@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -12,22 +13,10 @@ import java.util.Random;
 public class Populator {
 
     // define fields
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.05;
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.05;
-    // The probability that a vulture will be created in any given grid position.
-    private static final double VULTURE_CREATION_PROBABILITY = 0.05;
-    // The probability that an elephant will be created in any given grid position.
-    private static final double ELEPHANT_CREATION_PROBABILITY = 0.05;
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.05;
-    // The probability that a goat will be created in any given grid position.
-    private static final double GOAT_CREATION_PROBABILITY = 0.05;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.04;
-    // The probability that some poison berries will be created in any given grid position.
-    private static final double POISON_BERRIES_CREATION_PROBABILITY = 0.04;
+    private static final double ANIMAL_CREATION_PROBABILITY = 0.05;
+    private static final double PLANT_CREATION_PROBABILITY = 0.04;
+
+    private final List<SpawnRule> spawnRules;
 
     /**
      * Constructor for the populator.
@@ -35,68 +24,86 @@ public class Populator {
      * @param view A given SimulatorView.
      */
     public Populator(SimulatorView view) {
-        // Create a view of the state of each location in the field.
-        view.setColor(Zebra.class, Color.BLUE);
-        view.setColor(Lion.class, Color.RED);
-        view.setColor(Vulture.class, Color.ORANGE);
-        view.setColor(Grass.class, Color.GREEN);
-        view.setColor(Goat.class, Color.PINK);
-        view.setColor(Elephant.class, Color.GRAY);
-        view.setColor(Cheetah.class, Color.MAGENTA);
-        view.setColor(PoisonBerry.class, Color.BLACK);
+        spawnRules = Arrays.asList(
+                new SpawnRule(Lion.class, Color.RED, ANIMAL_CREATION_PROBABILITY,
+                        (field, location) -> new Lion(19, true, field, location)),
+                new SpawnRule(Zebra.class, Color.BLUE, ANIMAL_CREATION_PROBABILITY,
+                        (field, location) -> new Zebra(5, true, field, location)),
+                new SpawnRule(Vulture.class, Color.ORANGE, ANIMAL_CREATION_PROBABILITY,
+                        (field, location) -> new Vulture(40, true, field, location)),
+                new SpawnRule(Grass.class, Color.GREEN, PLANT_CREATION_PROBABILITY,
+                        (field, location) -> new Grass(1, 1, true, field, location)),
+                new SpawnRule(Goat.class, Color.PINK, ANIMAL_CREATION_PROBABILITY,
+                        (field, location) -> new Goat(5, true, field, location)),
+                new SpawnRule(Elephant.class, Color.GRAY, ANIMAL_CREATION_PROBABILITY,
+                        (field, location) -> new Elephant(5, true, field, location)),
+                new SpawnRule(Cheetah.class, Color.MAGENTA, ANIMAL_CREATION_PROBABILITY,
+                        (field, location) -> new Cheetah(19, true, field, location)),
+                new SpawnRule(PoisonBerry.class, Color.BLACK, PLANT_CREATION_PROBABILITY,
+                        (field, location) -> new PoisonBerry(2, 1, true, field, location))
+        );
+
+        for (SpawnRule spawnRule : spawnRules) {
+            view.setColor(spawnRule.getOrganismType(), spawnRule.getColor());
+        }
     }
 
     /**
      * Randomly populate the field with foxes and rabbits.
      */
-    public void populate(List<Entity> organisms, Field field)
+    public void populate(List<Organism> organisms, Field field)
     {
         Random rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(19, true, field, location);
-                    organisms.add(lion);
-                }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Zebra zebra = new Zebra(5, true, field, location);
-                    organisms.add(zebra);
-                }
-                else if(rand.nextDouble() <= VULTURE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Vulture vulture = new Vulture(40, true, field, location);
-                    organisms.add(vulture);
-                }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(1, 1, true, field, location);
-                    organisms.add(grass);
-                }
-                else if(rand.nextDouble() <= GOAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Goat goat = new Goat(5, true, field, location);
-                    organisms.add(goat);
-                }
-                else if(rand.nextDouble() <= ELEPHANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Elephant elephant = new Elephant(5, true, field, location);
-                    organisms.add(elephant);
-                }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Cheetah cheetah = new Cheetah(19, true, field, location);
-                    organisms.add(cheetah);
-                }
-                else if(rand.nextDouble() <= POISON_BERRIES_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    PoisonBerry berry = new PoisonBerry(2, 1, true, field, location);
-                    organisms.add(berry);
-                }
-                // else leave the location empty.
+                populateLocation(organisms, field, row, col, rand);
             }
+        }
+    }
+
+    private void populateLocation(List<Organism> organisms, Field field, int row, int col, Random rand) {
+        Location location = new Location(row, col);
+        for (SpawnRule spawnRule : spawnRules) {
+            if (rand.nextDouble() <= spawnRule.getCreationProbability()) {
+                organisms.add(spawnRule.spawn(field, location));
+                return;
+            }
+        }
+    }
+
+    private interface SpawnFactory {
+        Organism create(Field field, Location location);
+    }
+
+    private static class SpawnRule {
+        private final Class<? extends Organism> organismType;
+        private final Color color;
+        private final double creationProbability;
+        private final SpawnFactory spawnFactory;
+
+        private SpawnRule(Class<? extends Organism> organismType, Color color,
+                          double creationProbability, SpawnFactory spawnFactory) {
+            this.organismType = organismType;
+            this.color = color;
+            this.creationProbability = creationProbability;
+            this.spawnFactory = spawnFactory;
+        }
+
+        private Class<? extends Organism> getOrganismType() {
+            return organismType;
+        }
+
+        private Color getColor() {
+            return color;
+        }
+
+        private double getCreationProbability() {
+            return creationProbability;
+        }
+
+        private Organism spawn(Field field, Location location) {
+            return spawnFactory.create(field, location);
         }
     }
 }

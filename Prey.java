@@ -37,27 +37,14 @@ public abstract class Prey extends Animal implements Consumable {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPrey, Weather weather, TimeOfDay time);
-
-    /**
-     * Checks all adjacent location for prey that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this prey can breed or not.
-     */
-    @Override
-    abstract public boolean canBreed();
+    abstract public void act(List<Organism> newPrey, Weather weather, TimeOfDay time);
 
     /**
      * Clear the prey from the simulation as it has been eaten.
      */
     @Override
     public void setEaten() {
-        if(getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearFromField();
     }
 
     /**
@@ -117,5 +104,25 @@ public abstract class Prey extends Animal implements Consumable {
      */
     public void setActiveness(double activeness) {
         this.activeness = activeness;
+    }
+
+    /**
+     * Find a nearby plant and consume it if possible.
+     *
+     * @return The location of the food source, or null if none was eaten.
+     */
+    protected Location findPlantFood() {
+        Field field = getField();
+        for (Location where : field.adjacentLocations(getLocation())) {
+            Organism organism = field.getOrganismAt(where);
+            if (organism instanceof Plant) {
+                Plant plant = (Plant) organism;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    return eat(plant) ? where : null;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -16,6 +16,6 @@ public interface Entity {
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
-    void act(List<Entity> newEntities, Weather weather, TimeOfDay time);
+    void act(List<Organism> newEntities, Weather weather, TimeOfDay time);
 
 }

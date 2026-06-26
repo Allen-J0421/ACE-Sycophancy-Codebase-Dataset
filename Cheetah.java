@@ -116,7 +116,7 @@ public class Cheetah extends Predator {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Entity> newCheetahs, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newCheetahs, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -168,27 +168,4 @@ public class Cheetah extends Predator {
         return EATING_PROBABILITY;
     }
 
-    /**
-     * Checks all adjacent location for cheetahs that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this cheetah can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Cheetah) {
-                Cheetah lion = (Cheetah) animal;
-                if (!(((lion.isMale() && isMale())) || ((!lion.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

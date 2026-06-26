@@ -175,13 +175,10 @@ public abstract class Animal implements Actor
      */
     private int breed(int maxLitter, double breedingProbability, int breedingAge)
     {
-        int births = 0;
-        if(age >= breedingAge) {
-            if(rand.nextDouble() <= breedingProbability) {
-                births = rand.nextInt(maxLitter) + 1;
-            }
+        if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
+            return rand.nextInt(maxLitter) + 1;
         }
-        return births;
+        return 0;
     }
 
     /**

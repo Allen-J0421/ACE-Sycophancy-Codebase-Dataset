@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,11 +45,11 @@ public class DiseaseHandler
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * Returns the map of simulation step → infection count.
+     * Returns an unmodifiable view of the simulation step → infection count map.
      */
-    public TreeMap<Integer, Integer> getCount()
+    public Map<Integer, Integer> getCount()
     {
-        return count;
+        return Collections.unmodifiableMap(count);
     }
 
     /**
@@ -73,6 +75,7 @@ public class DiseaseHandler
                     uninfectedAnimals.add(animal);
                 }
             }
+            if(block.isEmpty()) continue;
             double pValue = (double) densityIndex / block.size();
             for(Animal animal : uninfectedAnimals) {
                 if(rand.nextDouble() < pValue) {

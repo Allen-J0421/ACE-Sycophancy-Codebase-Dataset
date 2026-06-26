@@ -7,7 +7,7 @@ import java.util.Random;
 public final class Utils
 {
 
-    private static Random rand = Randomizer.getRandom();
+    private static final Random rand = Randomizer.getRandom();
     
     /**
      * Throws an exception as a utility class cannot be instantiated.
@@ -24,8 +24,8 @@ public final class Utils
      * @return T a random value from the set of possible values in an enumerator.
      */
     public static <T extends Enum<?>> T getRandomEnumValue(Class<T> enumerator){
-        int x = rand.nextInt(enumerator.getEnumConstants().length);
-        return enumerator.getEnumConstants()[x];
+        T[] constants = enumerator.getEnumConstants();
+        return constants[rand.nextInt(constants.length)];
     }
     
     /**

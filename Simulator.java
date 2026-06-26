@@ -1,4 +1,4 @@
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -78,7 +78,7 @@ public class Simulator
     /**
      * Returns the per-step infection count recorded by the disease handler.
      */
-    public TreeMap<Integer, Integer> getDiseaseCount()
+    public Map<Integer, Integer> getDiseaseCount()
     {
         return diseaseHandler.getCount();
     }

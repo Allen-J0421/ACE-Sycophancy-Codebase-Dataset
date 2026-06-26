@@ -31,10 +31,10 @@ public class PopulationGenerator
                                    STATE
     //////////////////////////////////////////////////////////////*/
 
-    private SimulatorView view;
-    private AnimalFactory animalFactory;
-    private PlantFactory plantFactory;
-    private Field field;
+    private final SimulatorView view;
+    private final AnimalFactory animalFactory;
+    private final PlantFactory plantFactory;
+    private final Field field;
 
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -97,9 +97,7 @@ public class PopulationGenerator
         }
 
         for(int i = 0; i < INITIAL_INFECTION_COUNT; i++) {
-            if(animals.get(i) instanceof Animal) {
-                ((Animal) animals.get(i)).setInfectionTimestamp(0);
-            }
+            ((Animal) animals.get(i)).setInfectionTimestamp(0);
         }
 
         for(int row = 0; row < field.getDepth(); row++) {

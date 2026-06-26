@@ -1,7 +1,6 @@
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A class representing shared characteristics of animals.
@@ -17,7 +16,7 @@ public abstract class Animal extends Actor
     private boolean isGirl;
     private boolean isHealthy;
     private int infectedStepCounter;
-    private int timeLeftUntilBreedingAgain = 0;
+    private int timeLeftUntilBreedingAgain;
     /**
      * Create a new animal at location in field.
      * 
@@ -29,7 +28,6 @@ public abstract class Animal extends Actor
         super(field,location);
         setRandomGender();
         isHealthy = true;
-        infectedStepCounter = 0;
         timeLeftUntilBreedingAgain = getRandom().nextInt(getMaxTimeUntilBreedingAgain());
         if(!isGirl) {
             timeLeftUntilBreedingAgain = 0;
@@ -96,7 +94,7 @@ public abstract class Animal extends Actor
             timeLeftUntilBreedingAgain --;
         }
         int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
+        for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
             Animal baby = createOffspring(field, loc);
             if(!getHealth()){
@@ -131,10 +129,7 @@ public abstract class Animal extends Actor
     protected boolean findMate()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
+        for(Location where : field.adjacentLocations(getLocation())) {
             Object animal = field.getObjectAt(where);
             if (animal != null && animal.getClass() == this.getClass()){
                 Animal mate = (Animal) animal;
@@ -198,13 +193,9 @@ public abstract class Animal extends Actor
     protected Location findFood(double probability)
     {
 
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-
         if(getRandom().nextDouble() < probability && getFoodLevel() < getMaxFoodLevel()){
-            while(it.hasNext()) {
-                Location where = it.next();
+            Field field = getField();
+            for(Location where : field.adjacentLocations(getLocation())) {
                 Object animal = field.getObjectAt(where);
                 if(animal instanceof Actor){
                     Actor currentAnimal = (Actor) animal;
@@ -230,7 +221,7 @@ public abstract class Animal extends Actor
      * Returns the HashMap which maps prey class types to their food values.
      * @return The HashMap which maps Class to food value Integer.
      */
-    abstract protected HashMap<Class<? extends Actor>, Integer> getFood();
+    abstract protected Map<Class<? extends Actor>, Integer> getFood();
 
     /**
      * Uses a random generator to assign if the animal is female or not.

@@ -52,7 +52,7 @@ public class Hunter extends Actor
                 } 
                 if(simulator.getSteps() % SPAWN_INTERVAL == 0) {
                     List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                    if(free.size() > 0) {
+                    if(!free.isEmpty()) {
                         Location loc = free.remove(0);
                         Hunter hunter = new Hunter(field, loc);
                         newHunters.add(hunter);

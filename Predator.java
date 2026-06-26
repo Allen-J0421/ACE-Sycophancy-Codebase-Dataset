@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -10,14 +9,13 @@ import java.util.List;
  */
 public abstract class Predator extends Animal
 {
-
     /**
      * Create a new predator at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
-     *
-     */public Predator(Field field, Location location){
+     */
+    public Predator(Field field, Location location){
         super(field, location);
     }
 
@@ -34,12 +32,8 @@ public abstract class Predator extends Animal
             return preyLocation;
         }
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object actor = field.getObjectAt(where);
-            if(actor instanceof Plants){
+        for(Location where : field.adjacentLocations(getLocation())) {
+            if(field.getObjectAt(where) instanceof Plants){
                 return where;
             }
         }

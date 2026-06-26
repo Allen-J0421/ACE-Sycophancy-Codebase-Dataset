@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple model of a Lion.
@@ -24,8 +25,11 @@ public class Lion extends Predator
     private static final double MAX_FOOD_LEVEL = 50;
     private static final double GROWTH_RATE = 0.01;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Class<? extends Actor>, Integer> food;
+    private static final Map<Class<? extends Actor>, Integer> FOOD = new HashMap<>();
+    static {
+        FOOD.put(Gazelle.class, PREY_GAZELLE_FOOD_VALUE);
+        FOOD.put(Cheetah.class, PREY_CHEETAH_FOOD_VALUE);
+    }
 
     /**
      * Create a Lion. A Lion can be created as a new born (age zero
@@ -45,9 +49,7 @@ public class Lion extends Predator
             setAge(0);
             setFoodLevel(PREY_CHEETAH_FOOD_VALUE);
         }
-        food = new HashMap<>();
         addGrowthLevel(getAge()/100.0);
-        addFood();
     }
 
     protected double getGrowthRate() { return GROWTH_RATE; }
@@ -74,12 +76,7 @@ public class Lion extends Predator
         return new Lion(false, field, location);
     }
 
-    private void addFood() {
-        food.put(Gazelle.class, PREY_GAZELLE_FOOD_VALUE);
-        food.put(Cheetah.class, PREY_CHEETAH_FOOD_VALUE);
-    }
-
-    protected HashMap<Class<? extends Actor>, Integer> getFood() { return food; }
+    protected Map<Class<? extends Actor>, Integer> getFood() { return FOOD; }
 
     protected double getMaxFoodLevel() { return MAX_FOOD_LEVEL; }
 }

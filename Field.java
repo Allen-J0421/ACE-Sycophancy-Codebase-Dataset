@@ -128,7 +128,7 @@ public class Field
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);
-        if(free.size() > 0) {
+        if(!free.isEmpty()) {
             return free.get(0);
         }
         else {

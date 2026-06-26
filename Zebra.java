@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple model of a Zebra.
@@ -23,8 +24,10 @@ public class Zebra extends Animal
     private static final double MAX_FOOD_LEVEL = 28;
     private static final double GROWTH_RATE = 0.015;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Class<? extends Actor>, Integer> food;
+    private static final Map<Class<? extends Actor>, Integer> FOOD = new HashMap<>();
+    static {
+        FOOD.put(Grass.class, GRASS_FOOD_VALUE);
+    }
 
     /**
      * Create a new Zebra. A Zebra may be created with age
@@ -44,9 +47,7 @@ public class Zebra extends Animal
             setAge(0);
             setFoodLevel(GRASS_FOOD_VALUE);
         }
-        food = new HashMap<>();
         addGrowthLevel(getAge()/67.0);
-        addFood();
     }
 
     protected double getGrowthRate() { return GROWTH_RATE; }
@@ -69,11 +70,7 @@ public class Zebra extends Animal
         return new Zebra(false, field, location);
     }
 
-    private void addFood() {
-        food.put(Grass.class, GRASS_FOOD_VALUE);
-    }
-
-    protected HashMap<Class<? extends Actor>, Integer> getFood() { return food; }
+    protected Map<Class<? extends Actor>, Integer> getFood() { return FOOD; }
 
     protected double getMaxFoodLevel() { return MAX_FOOD_LEVEL; }
 }

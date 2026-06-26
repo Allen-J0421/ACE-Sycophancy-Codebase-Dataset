@@ -89,7 +89,20 @@ public abstract class Animal implements Actor
      * @param weather The current weather
      * @param dayState The different state of the day
      */
-    abstract public void act(ActorSink newAnimals, Weather weather, DayState dayState);
+    @Override
+    public final void act(ActorSink newAnimals, Weather weather, DayState dayState)
+    {
+        if(!canAct(weather, dayState)) {
+            return;
+        }
+        incrementAge(getMaxAge());
+        incrementHunger();
+        if(!isAlive()) {
+            return;
+        }
+        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
+        moveToNextLocation(findFood());
+    }
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.
@@ -109,6 +122,25 @@ public abstract class Animal implements Actor
     public final ActorType getActorType()
     {
         return getSpecies();
+    }
+
+    protected abstract int getMaxAge();
+
+    protected abstract int getBreedingAge();
+
+    protected abstract double getBreedingProbability(Weather weather);
+
+    protected abstract int getMaxLitterSize();
+
+    protected abstract Location findFood();
+
+    protected boolean canAct(Weather weather, DayState dayState)
+    {
+        return true;
+    }
+
+    protected void onFoodFound(Location location)
+    {
     }
     
     /**
@@ -171,6 +203,22 @@ public abstract class Animal implements Actor
             Gender randomGender = Utils.getRandomEnumValue(Gender.class);
             Animal newBorn = getSpecies().createYoung(field, loc, randomGender);
             newAnimals.add(newBorn);
+        }
+    }
+
+    private void moveToNextLocation(Location nextLocation)
+    {
+        if(nextLocation != null) {
+            onFoodFound(nextLocation);
+        }
+        if(nextLocation == null) {
+            nextLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(nextLocation != null) {
+            setLocation(nextLocation);
+        }
+        else {
+            setDead();
         }
     }
     

@@ -28,35 +28,12 @@ public abstract class HerbivoreAnimal extends Animal
         super(randomAge, field, location, gender, baseLevel, maxAge);
     }
 
-    protected abstract int getMaxAge();
-
-    protected abstract int getBreedingAge();
-
-    protected abstract double getBreedingProbability(Weather weather);
-
-    protected abstract int getMaxLitterSize();
-
     protected abstract Set<PlantSpecies> getTargetPlants();
 
     @Override
-    public final void act(ActorSink newAnimals, Weather weather, DayState dayState)
+    protected final Location findFood()
     {
-        incrementAge(getMaxAge());
-        incrementHunger();
-        if(!isAlive()) {
-            return;
-        }
-        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
-        Location newLocation = findFood(getTargetPlants());
-        if(newLocation == null) {
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            setDead();
-        }
+        return findPlantFood(getTargetPlants());
     }
     
     /**
@@ -64,7 +41,7 @@ public abstract class HerbivoreAnimal extends Animal
      * @param targetPlants the preferred diet of the animal (e.g eats only grass)
      * @return the location traveled to in order to access the food
      */
-    public Location findFood(Set<PlantSpecies> targetPlants) 
+    private Location findPlantFood(Set<PlantSpecies> targetPlants) 
     {
         Field field = getField();
         Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();

@@ -34,50 +34,12 @@ public abstract class CarnivoreAnimal extends Animal
         super(randomAge,field, location, gender, baseLevel, maxLevel);
     }
 
-    protected abstract int getMaxAge();
-
-    protected abstract int getBreedingAge();
-
-    protected abstract double getBreedingProbability(Weather weather);
-
-    protected abstract int getMaxLitterSize();
-
     protected abstract Set<AnimalSpecies> getPreyDiet();
 
-    protected boolean canAct(Weather weather, DayState dayState)
-    {
-        return true;
-    }
-
-    protected void onFoodFound(Location location)
-    {
-    }
-
     @Override
-    public final void act(ActorSink newAnimals, Weather weather, DayState dayState)
+    protected final Location findFood()
     {
-        if(!canAct(weather, dayState)) {
-            return;
-        }
-        incrementAge(getMaxAge());
-        incrementHunger();
-        if(!isAlive()) {
-            return;
-        }
-        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
-        Location newLocation = findFood(getPreyDiet());
-        if(newLocation != null) {
-            onFoodFound(newLocation);
-        }
-        if(newLocation == null) {
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            setDead();
-        }
+        return findAnimalFood(getPreyDiet());
     }
     
     /**
@@ -86,7 +48,7 @@ public abstract class CarnivoreAnimal extends Animal
      * @param preys The preys of the animal.
      * @return the location traveled to in order to access the food.
      */
-    public Location findFood(Set<AnimalSpecies> preys)
+    private Location findAnimalFood(Set<AnimalSpecies> preys)
     {   
         Field field = getField();
         Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();

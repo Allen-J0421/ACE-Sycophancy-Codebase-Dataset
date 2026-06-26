@@ -60,19 +60,8 @@ public class Predator extends Animal
             return;
         }
 
-        if (canReproduce(neighboringAnimals)) {
-            reproduce(newSpecies);
-        }
-
-        Location newLocation = null;
-        if (isNotFull()) {
-            newLocation = findFoodAndEat(neighboringAnimals);
-        }
-        if (newLocation == null) {
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-
-        moveToLocationOrDie(newLocation);
+        reproduceIfPossible(newSpecies, neighboringAnimals);
+        moveToLocationOrDie(determineMoveLocation(neighboringAnimals));
     }
 
     /**
@@ -93,6 +82,23 @@ public class Predator extends Animal
         }
         // No food found
         return null;
+    }
+
+    /**
+     * Determine where the predator should move after it has acted.
+     *
+     * @param neighboringAnimals the neighboring animals.
+     * @return the location to move to, or null if no move is available.
+     */
+    private Location determineMoveLocation(List<Animal> neighboringAnimals)
+    {
+        if (isNotFull()) {
+            Location preyLocation = findFoodAndEat(neighboringAnimals);
+            if (preyLocation != null) {
+                return preyLocation;
+            }
+        }
+        return getFreeAdjacentLocation();
     }
 
     /**

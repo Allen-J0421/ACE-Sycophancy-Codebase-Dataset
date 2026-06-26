@@ -106,17 +106,42 @@ public class Animal extends Species
             return;
         }
 
+        handleLivingStep(newSpecies, isNight, temperature);
+    }
+
+    /**
+     * Handle the portion of the step where the animal is alive.
+     *
+     * @param newSpecies a list to receive newborn species.
+     * @param isNight true if it is currently night.
+     * @param temperature the current temperature.
+     */
+    private void handleLivingStep(List<Species> newSpecies, boolean isNight, int temperature)
+    {
         checkHibernation(temperature);
 
         if (inHibernation) {
             handleHibernatingStep(newSpecies);
         }
-        else if (isTemperatureLethal(temperature)) {
-            onTemperatureDeath();
-        }
         else {
-            handleAwakeStep(newSpecies, isNight);
+            handleAwakeOrTemperatureDeathStep(newSpecies, isNight, temperature);
         }
+    }
+
+    /**
+     * Handle the awake branch and temperature death transition.
+     *
+     * @param newSpecies a list to receive newborn species.
+     * @param isNight true if it is currently night.
+     * @param temperature the current temperature.
+     */
+    private void handleAwakeOrTemperatureDeathStep(List<Species> newSpecies, boolean isNight, int temperature)
+    {
+        if (isTemperatureLethal(temperature)) {
+            onTemperatureDeath();
+            return;
+        }
+        handleAwakeStep(newSpecies, isNight);
     }
 
     /**
@@ -167,10 +192,7 @@ public class Animal extends Species
     protected void makeMove(List<Species> newSpecies)
     {
         List<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
-
-        if (canReproduce(neighboringAnimalsList)) {
-            reproduce(newSpecies);
-        }
+        reproduceIfPossible(newSpecies, neighboringAnimalsList);
 
         // Eats if it is possible
         if (isNotFull()) {
@@ -314,7 +336,30 @@ public class Animal extends Species
      */
     protected void moveToFreeAdjacentLocationOrDie()
     {
-        moveToLocationOrDie(getField().freeAdjacentLocation(getLocation()));
+        moveToLocationOrDie(getFreeAdjacentLocation());
+    }
+
+    /**
+     * Look up a free adjacent location around the current animal.
+     *
+     * @return a free adjacent location, or null if none exists.
+     */
+    protected Location getFreeAdjacentLocation()
+    {
+        return getField().freeAdjacentLocation(getLocation());
+    }
+
+    /**
+     * Reproduce if the current neighboring animals allow it.
+     *
+     * @param speciesInSimulation the list receiving newborn species.
+     * @param neighboringAnimalsList the neighboring animals.
+     */
+    protected final void reproduceIfPossible(List<Species> speciesInSimulation, List<Animal> neighboringAnimalsList)
+    {
+        if (canReproduce(neighboringAnimalsList)) {
+            reproduce(speciesInSimulation);
+        }
     }
 
     /**

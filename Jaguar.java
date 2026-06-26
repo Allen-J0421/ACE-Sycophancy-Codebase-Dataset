@@ -45,7 +45,7 @@ public class Jaguar extends Predator
             setFoodLevel(GAZELLE_FOOD_VALUE);
         }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/89.0);
+        addGrowthLevel(getAge()/89.0);
         addFood();
     }
 

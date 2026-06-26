@@ -46,7 +46,7 @@ public class Lion extends Predator
             setFoodLevel(PREY_CHEETAH_FOOD_VALUE);
         }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/100.0);
+        addGrowthLevel(getAge()/100.0);
         addFood();
     }
 

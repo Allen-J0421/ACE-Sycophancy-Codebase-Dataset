@@ -46,7 +46,7 @@ public class Cheetah extends Predator
             setFoodLevel(ZEBRA_FOOD_VALUE);
         }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/102.0);
+        addGrowthLevel(getAge()/102.0);
         addFood();
     }
 

@@ -29,7 +29,6 @@ public class Hunter extends Actor
     {
         super(field, location);
         setAge(50);
-        setGrowthLevel(0);
     }
 
     /**
@@ -43,17 +42,7 @@ public class Hunter extends Actor
         incrementAge(simulator.getSteps());
         if(!simulator.isDay()){
             if(isActive() ) {
-                switch(simulator.getWeather()){
-                    case RAINY:
-                        hunt(0.7);
-                        break;
-                    case FOGGY:
-                        hunt(0.4);
-                        break;
-                    default:
-                        hunt(getRandom().nextDouble());
-                        break;
-                }
+                hunt(getHuntProbability(simulator.getWeather()));
                 Field field = getField();
                 Location newLocation = field.freeAdjacentLocation(getLocation());
                 if(newLocation != null) {
@@ -72,6 +61,14 @@ public class Hunter extends Actor
         }
     }
 
+    private double getHuntProbability(Weather weather) {
+        switch(weather) {
+            case RAINY: return 0.7;
+            case FOGGY: return 0.4;
+            default:    return getRandom().nextDouble();
+        }
+    }
+
     /**
      * This determine how the hunter hunts nearby lions
      * The hunter has 2 shots.
@@ -82,12 +79,12 @@ public class Hunter extends Actor
             Field field = getField();
             List<Location> adjacent = field.adjacentLocations(getLocation());
             Iterator<Location> it = adjacent.iterator();
-            for(int i = 0; i< SHOTS; i++){
+            for(int i = 0; i < SHOTS && it.hasNext(); i++){
                 Location where = it.next();
                 Object animal = field.getObjectAt(where);
                 if(animal != null && HUNTABLE_SPECIES.contains(animal.getClass())){
                     Animal currentAnimal = (Animal) animal;
-                    if(currentAnimal.isActive()) { 
+                    if(currentAnimal.isActive()) {
                         currentAnimal.setDead();
                         break;
                     }

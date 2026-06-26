@@ -45,7 +45,7 @@ public class Zebra extends Animal
             setFoodLevel(GRASS_FOOD_VALUE);
         }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/67.0);
+        addGrowthLevel(getAge()/67.0);
         addFood();
     }
 

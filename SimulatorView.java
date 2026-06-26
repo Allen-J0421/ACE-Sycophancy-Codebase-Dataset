@@ -32,7 +32,7 @@ public class SimulatorView extends JFrame
     
     private FieldView fieldView;
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
     
@@ -106,7 +106,7 @@ public class SimulatorView extends JFrame
      * @param actorClass The actor's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class actorClass, Color color)
+    public void setColor(Class<?> actorClass, Color color)
     {
         colors.put(actorClass, color);
     }
@@ -151,7 +151,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of actor.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {

@@ -159,11 +159,11 @@ public abstract class Actor
     }
 
     /**
-     * Increase the actor growth level by how much the actor has grown during this step.
-     * @param value. How much more the actor has grown.
+     * Increase the actor growth level by the given amount.
+     * @param value How much more the actor has grown.
      */
-    protected void setGrowthLevel(double value){
-        growthLevel = value + growthLevel;
+    protected void addGrowthLevel(double value){
+        growthLevel += value;
     }
     
     /**

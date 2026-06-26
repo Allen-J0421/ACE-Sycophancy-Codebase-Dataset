@@ -42,7 +42,7 @@ public abstract class Animal extends Actor
      * @param simulator The simulator.
      */
     public void act(List<Actor> newActors, Simulator simulator) {
-        setGrowthLevel(getGrowthRate());
+        addGrowthLevel(getGrowthRate());
         if(simulator.isDay()) {
             incrementAge(simulator.getSteps());
             incrementHunger();

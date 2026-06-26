@@ -45,7 +45,7 @@ public class Gazelle extends Animal
             setFoodLevel(GRASS_FOOD_VALUE);
         }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/75.0);
+        addGrowthLevel(getAge()/75.0);
         addFood();
     }
 

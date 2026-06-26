@@ -1,5 +1,4 @@
 
-import java.util.Random;
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ public class Grass extends Plants
         if(randomAge) {
             setAge(getRandom().nextInt(MAX_AGE));
         } 
-        setGrowthLevel(getAge()/50.0);
+        addGrowthLevel(getAge()/50.0);
     }
 
     /**
@@ -43,7 +42,7 @@ public class Grass extends Plants
      */
     public void act(List<Actor> newGrass,Simulator simulator){
         incrementAge(simulator.getSteps());
-        setGrowthLevel(0.05);
+        addGrowthLevel(0.05);
         if(simulator.isDay()){
             if(isActive()) {
                  Field field = getField();

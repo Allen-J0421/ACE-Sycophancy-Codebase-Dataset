@@ -8,6 +8,10 @@ import java.util.List;
  */
 public abstract class Plants extends Actor
 {
+    // After this many simulation steps, plants enter a rapid-growth phase.
+    private static final int RAPID_GROWTH_STEP_THRESHOLD = 1600;
+    private static final int RAPID_GROWTH_BONUS = 20;
+
     private int sunLevel;
     private int waterLevel;
     /**
@@ -35,8 +39,8 @@ public abstract class Plants extends Actor
             births = getRandom().nextInt(getMaxLitter()) + 1;
         }
         
-        if(step > 1600){
-            births = births + 20;
+        if(step > RAPID_GROWTH_STEP_THRESHOLD){
+            births += RAPID_GROWTH_BONUS;
         }
         return births;
     }

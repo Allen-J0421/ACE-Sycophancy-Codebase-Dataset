@@ -37,19 +37,8 @@ public class Ant extends Animal
      * @param location The location within the field.
      */
     public Ant(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        initializeAnimal(randomAge, rand, MAX_AGE, ACACIA_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the ant does most of the time: it eats grass
-     * and acacia. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newAnts A list to return newly born ants.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newAnts, int time) {
-        performAct(newAnts, time, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        super(field, location, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY,
+                MAX_LITTER_SIZE, randomAge, rand, ACACIA_FOOD_VALUE);
     }
 
     protected boolean isActiveAt(int time) {

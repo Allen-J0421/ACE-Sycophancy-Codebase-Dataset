@@ -34,19 +34,8 @@ public class Snake extends Animal
      * @param location The location within the field.
      */
     public Snake(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        initializeAnimal(randomAge, rand, MAX_AGE, RAT_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the snake does most of the time: it hunts for
-     * rats. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param time the current time in the simulation
-     * @param newSnakes A list to return newly born snakes.
-     */
-    public void act(List<Animal> newSnakes, int time) {
-        performAct(newSnakes, time, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        super(field, location, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY,
+                MAX_LITTER_SIZE, randomAge, rand, RAT_FOOD_VALUE);
     }
 
     protected boolean isActiveAt(int time) {

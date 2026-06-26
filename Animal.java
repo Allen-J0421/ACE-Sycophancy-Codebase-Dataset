@@ -9,6 +9,14 @@ import java.util.Random;
  */
 public abstract class Animal extends Organism
 {
+    // The age to which the animal can live.
+    private final int maxAge;
+    // The age at which the animal can start to breed.
+    private final int breedingAge;
+    // The likelihood of the animal breeding.
+    private final double breedingProbability;
+    // The maximum number of births.
+    private final int maxLitterSize;
     // Distinguishes between male and female to determine breeding
     private boolean isMale;
     // whether or not the weather is fog
@@ -29,10 +37,17 @@ public abstract class Animal extends Organism
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field field, Location location) {
+    public Animal(Field field, Location location, int maxAge, int breedingAge,
+            double breedingProbability, int maxLitterSize, boolean randomAge,
+            Random random, int foodValue) {
         super(field, location);
+        this.maxAge = maxAge;
+        this.breedingAge = breedingAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
         fog = false;
         disease = false;
+        initializeAnimal(randomAge, random, foodValue);
     }
     
     /**
@@ -40,7 +55,9 @@ public abstract class Animal extends Organism
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
      */
-    abstract public void act(List<Animal> newAnimals, int time);
+    public final void act(List<Animal> newAnimals, int time) {
+        performAct(newAnimals, time, maxAge, breedingAge, breedingProbability, maxLitterSize);
+    }
 
     /**
      * Determine whether this animal is active at the current time.
@@ -67,10 +84,9 @@ public abstract class Animal extends Organism
      * Apply the common initialization for a new animal instance.
      * @param randomAge If true, use random age and food level.
      * @param random The random source for initial state.
-     * @param maxAge The maximum age for the species.
      * @param foodValue The initial or maximum food value for the species.
      */
-    protected final void initializeAnimal(boolean randomAge, Random random, int maxAge, int foodValue) {
+    private void initializeAnimal(boolean randomAge, Random random, int foodValue) {
         setGender();
         if(randomAge) {
             setAge(random.nextInt(maxAge));

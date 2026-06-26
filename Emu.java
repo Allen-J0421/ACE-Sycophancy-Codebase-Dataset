@@ -34,19 +34,8 @@ public class Emu extends Animal
      * @param location The location within the field.
      */
     public Emu(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        initializeAnimal(randomAge, rand, MAX_AGE, GRASS_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the emu does most of the time: it eats grass.
-     * In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newEmus A list to return newly born emus.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newEmus,int time) {
-        performAct(newEmus, time, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        super(field, location, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY,
+                MAX_LITTER_SIZE, randomAge, rand, GRASS_FOOD_VALUE);
     }
 
     protected boolean isActiveAt(int time) {

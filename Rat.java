@@ -34,19 +34,8 @@ public class Rat extends Animal
      * @param location The location within the field.
      */
     public Rat(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        initializeAnimal(randomAge, rand, MAX_AGE, ANT_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the rat does most of the time: it hunts for
-     * ants. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newRats A list to return newly born rats.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newRats, int time) {
-        performAct(newRats, time, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        super(field, location, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY,
+                MAX_LITTER_SIZE, randomAge, rand, ANT_FOOD_VALUE);
     }
 
     protected boolean isActiveAt(int time) {

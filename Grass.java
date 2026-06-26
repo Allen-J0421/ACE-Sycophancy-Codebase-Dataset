@@ -74,7 +74,7 @@ public class Grass extends Plant
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         for(int b = 0; b < free.size(); b++) {
             Location loc = free.remove(0);
-            Grass young = new Grass(field, loc);
+            Grass young = field.getOrganismFactory().createOffspring(Grass.class, field, loc);
             newGrass.add(young);
         }
     }

@@ -47,15 +47,4 @@ public class Coyote extends Animal
         super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = true;
     }
-
-    /**
-     * Check whether this coyote is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newCoyotes A list to return newly born coyotes.
-     * @param environment The environment that the coyote resides in. 
-     */
-    protected Animal createYoung(Field field, Location location, Gender sex)
-    {
-        return new Coyote(false, field, location, sex);
-    }
 }

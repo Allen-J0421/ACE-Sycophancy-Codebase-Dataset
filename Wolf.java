@@ -48,15 +48,4 @@ public class Wolf extends Animal
         super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = true;
     }
-
-    /**
-     * Check whether this wolf is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newWolves A list to return newly born wolves.
-     * @param environment The environment that the wolf resides in. 
-     */
-    protected Animal createYoung(Field field, Location location, Gender sex)
-    {
-        return new Wolf(false, field, location, sex);
-    }
 }

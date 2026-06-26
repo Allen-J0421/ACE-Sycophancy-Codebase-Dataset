@@ -25,7 +25,7 @@ public class Simulator
     // Configuration and actor creation rules for the simulation.
     private final SimulationConfig config;
     private final RandomProvider randomProvider;
-    private final ActorFactory actorFactory;
+    private final OrganismFactory organismFactory;
     // Published state for observers.
     private final List<SimulationObserver> observers;
     private SimulationState currentState;
@@ -123,9 +123,9 @@ public class Simulator
         this.randomProvider = randomProvider;
         this.config = config;
         this.actors = new ArrayList<>();
-        this.field = new Field(randomProvider, depth, width);
+        this.organismFactory = new OrganismFactory(randomProvider, config);
+        this.field = new Field(randomProvider, organismFactory, depth, width);
         this.environment = new Environment(new Time(), new Weather(randomProvider));
-        this.actorFactory = new ActorFactory(randomProvider, config);
         this.observers = new ArrayList<>();
 
         reset();
@@ -254,7 +254,7 @@ public class Simulator
         }
 
         actors.addAll(newActors);
-        actors.addAll(actorFactory.createGrassPatches(field, environment));
+        actors.addAll(organismFactory.createGrassPatches(field, environment));
         publishState();
     }
 
@@ -269,7 +269,7 @@ public class Simulator
         environment.reset();
 
         actors.clear();
-        actors.addAll(actorFactory.populate(field));
+        actors.addAll(organismFactory.populate(field));
 
         publishState();
     }

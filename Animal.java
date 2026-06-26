@@ -34,7 +34,6 @@ public abstract class Animal extends Organism implements Actor
     protected abstract int getMaxAge();
     protected abstract int getMaxFoodLevel();
     protected abstract Set<Class<? extends Organism>> getDiet();
-    protected abstract Animal createYoung(Field field, Location location, Gender sex);
 
 
     /**
@@ -196,6 +195,11 @@ public abstract class Animal extends Organism implements Actor
             Gender sex = getRandomProvider().getRandom().nextBoolean() ? Gender.MALE : Gender.FEMALE;
             newAnimals.add(createYoung(field, loc, sex));
         }
+    }
+
+    protected Animal createYoung(Field field, Location location, Gender sex)
+    {
+        return field.getOrganismFactory().createOffspring(getClass().asSubclass(Animal.class), field, location, sex);
     }
 
     /**

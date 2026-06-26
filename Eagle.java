@@ -48,19 +48,6 @@ public class Eagle extends Animal
         super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = false;
     }
-
-    
-    /**
-     * Check whether this eagle is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newEagles A list to return newly born Eagles.
-     * @param environment The environment that the eagle resides in. 
-     */
-    protected Animal createYoung(Field field, Location location, Gender sex)
-    {
-        return new Eagle(false, field, location, sex);
-    }
-
     /**
      * Additional functionality that doesn't allow eagles to find food while it's raining
      * @param environment The environment that the eagle resides in. 

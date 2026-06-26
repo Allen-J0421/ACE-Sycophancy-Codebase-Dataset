@@ -9,6 +9,7 @@ import java.util.*;
 public class Field
 {
     private final RandomProvider randomProvider;
+    private final OrganismFactory organismFactory;
 
     // The depth and width of the field.
     private int depth, width;
@@ -20,9 +21,10 @@ public class Field
      * @param depth The depth of the field.
      * @param width The width of the field.
      */
-    public Field(RandomProvider randomProvider, int depth, int width)
+    public Field(RandomProvider randomProvider, OrganismFactory organismFactory, int depth, int width)
     {
         this.randomProvider = randomProvider;
+        this.organismFactory = organismFactory;
         this.depth = depth;
         this.width = width;
         field = new Object[depth][width];
@@ -282,5 +284,10 @@ public class Field
     public RandomProvider getRandomProvider()
     {
         return randomProvider;
+    }
+
+    public OrganismFactory getOrganismFactory()
+    {
+        return organismFactory;
     }
 }

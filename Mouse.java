@@ -48,16 +48,4 @@ public class Mouse extends Animal
         super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = false;
     }
-
-
-    /**
-     * Check whether this mouse is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newMouses A list to return newly born mice.
-     * @param environment The environment that mouse resides in. 
-     */
-    protected Animal createYoung(Field field, Location location, Gender sex)
-    {
-        return new Mouse(false, field, location, sex);
-    }
 }

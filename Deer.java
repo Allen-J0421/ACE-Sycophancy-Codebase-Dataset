@@ -49,8 +49,6 @@ public class Deer extends Animal
         super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = false;
     }
-
-
     /**
      * Makes the deer stay awake regardless of the time of the day
      * Overrides the method in the Animal class that uses the isNocturnal field to determine if it is awake
@@ -58,16 +56,5 @@ public class Deer extends Animal
     @Override
     public boolean isAwake(Environment environment) {
         return true;
-    }
-
-    /**
-     * Check whether this deer is ready to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newDeers A list to return newly born deers.
-     * @param environment The environment that the deer resides in. 
-     */
-    protected Animal createYoung(Field field, Location location, Gender sex)
-    {
-        return new Deer(false, field, location, sex);
     }
 }

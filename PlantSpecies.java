@@ -6,7 +6,7 @@ import java.awt.Color;
 /**
  * Central definition of the supported plant species and their creation metadata.
  */
-public enum PlantSpecies implements ActorType
+public enum PlantSpecies implements SpawnableActorType<Plant>
 {
     GRASS("Grass", 0.09, new Color(50, 184, 121), 25, 0.2, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Grass::new),
     SAGE("Sage", 0.075, new Color(27, 117, 19), 20, 0.15, 4.0, EnumSet.of(Weather.RAIN, Weather.SUNNY), Sage::new),
@@ -41,6 +41,7 @@ public enum PlantSpecies implements ActorType
         this.creator = creator;
     }
 
+    @Override
     public double getSpawnProbability()
     {
         return spawnProbability;
@@ -58,6 +59,7 @@ public enum PlantSpecies implements ActorType
         return ActorCategory.PLANT;
     }
 
+    @Override
     public Color getColor()
     {
         return color;
@@ -76,6 +78,7 @@ public enum PlantSpecies implements ActorType
         return spreadProbability;
     }
 
+    @Override
     public Plant createRandom(Field field, Location location)
     {
         return creator.create(true, field, location);

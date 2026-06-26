@@ -47,39 +47,74 @@ public class DiseaseHandler
     //////////////////////////////////////////////////////////////*/
     
     /**
-     * Simulates the disease by iterating through every block in the field, and computing the density of the number of ppl infected 
-     * in the given block to determine the likelyhood of being infected in the block
+     * Simulates disease spread by evaluating each field block independently.
      */
     public void simulateDiseaseStep()
     {
-        int infectionCount = 0;
-        int[] totalInfections = {0};
         currentStep++;
+        InfectionTally infectionTally = new InfectionTally();
         field.forEachAnimalBlock(block -> {
-            int densityIndex = 0;
-            List<Animal> uninfectedAnimals = new ArrayList<>();
-            for(Animal animal : block) {
-                if(animal.getInfectionTimestamp() != null && currentStep - animal.getInfectionTimestamp() < DISINFECTION_DURATION) {
-                    // increase the counter of number of animals infected within this block.
-                    densityIndex++;
-                    continue;
-                }
-                if(animal.getInfectionTimestamp() == null) {
-                    uninfectedAnimals.add(animal);
-                }
-            }
-            // compute probability of being infected.
-            double pValue = block.isEmpty() ? 0.0 : ((double) densityIndex / (double) block.size());
-            for(Animal animal : uninfectedAnimals) {
-                double randNumber = rand.nextDouble();
-                if(randNumber < pValue ) {
-                    animal.setInfectionTimestamp(currentStep);
-                }
-            }
-            totalInfections[0] += densityIndex;
+            infectionTally.addInfected(evaluateBlock(block));
         });
-        infectionCount = totalInfections[0];
-        infectionCounts.put(currentStep, infectionCount);
+        infectionCounts.put(currentStep, infectionTally.getInfectedCount());
+    }
+
+    private int evaluateBlock(List<Animal> block)
+    {
+        int infectedCount = countActiveInfections(block);
+        infectSusceptibleAnimals(block, infectedCount);
+        return infectedCount;
+    }
+
+    private int countActiveInfections(List<Animal> block)
+    {
+        int infectedCount = 0;
+        for(Animal animal : block) {
+            if(isActivelyInfected(animal)) {
+                infectedCount++;
+            }
+        }
+        return infectedCount;
+    }
+
+    private void infectSusceptibleAnimals(List<Animal> block, int infectedCount)
+    {
+        double infectionProbability = calculateInfectionProbability(block.size(), infectedCount);
+        if(infectionProbability == 0.0) {
+            return;
+        }
+
+        for(Animal animal : findSusceptibleAnimals(block)) {
+            if(rand.nextDouble() < infectionProbability) {
+                animal.setInfectionTimestamp(currentStep);
+            }
+        }
+    }
+
+    private List<Animal> findSusceptibleAnimals(List<Animal> block)
+    {
+        List<Animal> susceptibleAnimals = new ArrayList<>();
+        for(Animal animal : block) {
+            if(animal.getInfectionTimestamp() == null) {
+                susceptibleAnimals.add(animal);
+            }
+        }
+        return susceptibleAnimals;
+    }
+
+    private boolean isActivelyInfected(Animal animal)
+    {
+        Integer infectionTimestamp = animal.getInfectionTimestamp();
+        return infectionTimestamp != null
+            && currentStep - infectionTimestamp < DISINFECTION_DURATION;
+    }
+
+    private double calculateInfectionProbability(int blockSize, int infectedCount)
+    {
+        if(blockSize == 0) {
+            return 0.0;
+        }
+        return (double) infectedCount / (double) blockSize;
     }
 
     /**
@@ -97,5 +132,20 @@ public class DiseaseHandler
     public NavigableMap<Integer, Integer> getInfectionCounts()
     {
         return infectionCounts;
+    }
+
+    private static class InfectionTally
+    {
+        private int infectedCount;
+
+        void addInfected(int amount)
+        {
+            infectedCount += amount;
+        }
+
+        int getInfectedCount()
+        {
+            return infectedCount;
+        }
     }
 }

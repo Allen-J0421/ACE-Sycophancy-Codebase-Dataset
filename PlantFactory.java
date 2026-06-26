@@ -1,42 +1,17 @@
 /**
- * Plant factory for creating objects that extend the Plant class.
+ * Factory for creating plants from explicit species definitions.
  *
  * @version 1.0
  */
-public class PlantFactory
+public class PlantFactory extends ActorFactory<Plant, PlantSpecies>
 {
-    
-    /*///////////////////////////////////////////////////////////////
-                                STATE
-    //////////////////////////////////////////////////////////////*/
-    
-    private Field field;
-    
-    /*///////////////////////////////////////////////////////////////
-                                CONSTRUCTOR
-    //////////////////////////////////////////////////////////////*/
-    
     /**
-     * Creates a Plant Factory.
+     * Creates a PlantFactory.
      * 
      * @param field reference to field to later pass in to plants.
      */
     public PlantFactory(Field field)
     {
-        this.field = field;
-    }
-    
-    /**
-     * Creates a Plant given an input plant type.
-     * 
-     * @param plantType the type of the plant.
-     * @param location The base location of the newly created plant.
-     * @return the created plant.
-     */
-    public Plant create(PlantSpecies plantType, Location location) {
-        if(plantType == null) {
-            return null;
-        }
-        return plantType.createRandom(field, location);
+        super(field);
     }
 }

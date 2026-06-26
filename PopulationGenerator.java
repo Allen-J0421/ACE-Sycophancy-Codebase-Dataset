@@ -1,7 +1,7 @@
 import java.util.Random;
 /**
  * A class responsible for generating the population,
- * as well as setting up the colours associated with each animal and plant class.
+ * as well as setting up the colours associated with each actor type.
  *
  * @version 1.0
  */
@@ -35,13 +35,19 @@ public class PopulationGenerator
     private final AnimalFactory animalFactory;
     private final PlantFactory plantFactory;
     private final Field field;
+
+    @FunctionalInterface
+    private interface PopulationAdder<T extends Actor>
+    {
+        void add(SimulationPopulation population, T actor);
+    }
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     
     /**
-     * Construct a population generator and set up the colours for representation of each animal class.
+     * Construct a population generator and set up the colours for each supported actor type.
      */
     public PopulationGenerator(SimulatorView view, Field field)
     {
@@ -53,16 +59,12 @@ public class PopulationGenerator
     }
     
     /**
-     * The RGB colours associated with the given animals and plants passed to the constructor of Color class from awt library.
+     * The RGB colours associated with the supported actor types.
      */
     private void setUpColors()
     {
-        for (AnimalSpecies species : AnimalSpecies.values()) {
-            view.setColor(species, species.getColor());
-        }
-        for (PlantSpecies species : PlantSpecies.values()) {
-            view.setColor(species, species.getColor());
-        }
+        registerColors(AnimalSpecies.values());
+        registerColors(PlantSpecies.values());
         view.showColors();
     }
     
@@ -74,50 +76,43 @@ public class PopulationGenerator
     public void populate(SimulationPopulation population)
     {
         field.clear();
-        populateAnimals(population);
+        populateActors(population, ANIMAL_SPAWN_ORDER, animalFactory, SimulationPopulation::addAnimal);
         population.infectInitialAnimals(INITIAL_INFECTION_COUNT);
-        populatePlants(population);
+        populateActors(population, PLANT_SPAWN_ORDER, plantFactory, SimulationPopulation::addPlant);
     }
 
-    private void populateAnimals(SimulationPopulation population)
+    private void registerColors(SpawnableActorType<?>[] actorTypes)
     {
-        Random rand = Randomizer.getRandom();
-        field.forEachLocation((row, col) -> {
-            Location location = new Location(row, col);
-            Animal animal = createAnimalAt(rand, location);
-            if(animal != null) {
-                population.addAnimal(animal);
-            }
-        });
-    }
-
-    private void populatePlants(SimulationPopulation population)
-    {
-        Random rand = Randomizer.getRandom();
-        field.forEachLocation((row, col) -> {
-            Location location = new Location(row, col);
-            Plant plant = createPlantAt(rand, location);
-            if(plant != null) {
-                population.addPlant(plant);
-            }
-        });
-    }
-
-    private Animal createAnimalAt(Random rand, Location location)
-    {
-        for (AnimalSpecies species : ANIMAL_SPAWN_ORDER) {
-            if(rand.nextDouble() <= species.getSpawnProbability()) {
-                return animalFactory.create(species, location);
-            }
+        for (SpawnableActorType<?> actorType : actorTypes) {
+            view.setColor(actorType, actorType.getColor());
         }
-        return null;
     }
 
-    private Plant createPlantAt(Random rand, Location location)
-    {
-        for (PlantSpecies species : PLANT_SPAWN_ORDER) {
+    private <T extends Actor, S extends SpawnableActorType<T>> void populateActors(
+        SimulationPopulation population,
+        S[] spawnOrder,
+        ActorFactory<T, S> factory,
+        PopulationAdder<T> populationAdder
+    ) {
+        Random rand = Randomizer.getRandom();
+        field.forEachLocation((row, col) -> {
+            Location location = new Location(row, col);
+            T actor = createActorAt(rand, location, spawnOrder, factory);
+            if(actor != null) {
+                populationAdder.add(population, actor);
+            }
+        });
+    }
+
+    private <T extends Actor, S extends SpawnableActorType<T>> T createActorAt(
+        Random rand,
+        Location location,
+        S[] spawnOrder,
+        ActorFactory<T, S> factory
+    ) {
+        for (S species : spawnOrder) {
             if(rand.nextDouble() <= species.getSpawnProbability()) {
-                return plantFactory.create(species, location);
+                return factory.create(species, location);
             }
         }
         return null;

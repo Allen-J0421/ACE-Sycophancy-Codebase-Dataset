@@ -3,7 +3,7 @@ import java.awt.Color;
 /**
  * Central definition of the supported animal species and their creation metadata.
  */
-public enum AnimalSpecies implements ActorType
+public enum AnimalSpecies implements SpawnableActorType<Animal>
 {
     FOX("Fox", true, 0.09, new Color(227, 93, 57), 25, 18, 71, 12, 0.076, 3, false, 1.0, CarnivoreFox::new),
     REINDEER("Reindeer", false, 0.11, new Color(217, 162, 147), 15, 18, 28, 4, 0.7, 5, true, 1.0, Reindeer::new),
@@ -72,11 +72,13 @@ public enum AnimalSpecies implements ActorType
         return ActorCategory.ANIMAL;
     }
 
+    @Override
     public double getSpawnProbability()
     {
         return spawnProbability;
     }
 
+    @Override
     public Color getColor()
     {
         return color;
@@ -120,6 +122,7 @@ public enum AnimalSpecies implements ActorType
         return activeAtNight || dayState != DayState.NIGHT;
     }
 
+    @Override
     public Animal createRandom(Field field, Location location)
     {
         return creator.create(true, field, location, Utils.getRandomEnumValue(Gender.class));

@@ -50,7 +50,7 @@ public class Populator {
     public void populate(List<Entity> entities, Field field)
     {
         Random rand = Randomizer.getRandom();
-        field.clear();
+        Placement.clearAll(field);
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 populateLocation(entities, field, rand, new Location(row, col));

@@ -50,7 +50,7 @@ public abstract class Scavenger extends FoodDependentAnimal {
 
             if(newLocation == null) {
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = Placement.freeAdjacentLocation(getField(), getLocation());
             }
 
             // See if it was possible to move.
@@ -69,7 +69,7 @@ public abstract class Scavenger extends FoodDependentAnimal {
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Organism organism = field.getOrganismAt(where);
+            Organism organism = Placement.getOccupant(field, where);
             if (organism instanceof Prey) {
                 Prey prey = (Prey) organism;
                 // eats prey if dead only

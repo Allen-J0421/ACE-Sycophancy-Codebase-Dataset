@@ -48,7 +48,7 @@ public class Field
      * Clear the given location.
      * @param location The location to clear.
      */
-    public void clear(Location location)
+    void clear(Location location)
     {
         field[location.getRow()][location.getCol()] = null;
     }
@@ -58,22 +58,9 @@ public class Field
      * If there is already an organism at the location it will
      * be lost.
      * @param organism The organism to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Organism organism, int row, int col)
-    {
-        place(organism, new Location(row, col));
-    }
-    
-    /**
-     * Place an organism at the given location.
-     * If there is already an organism at the location it will
-     * be lost.
-     * @param organism The organism to be placed.
      * @param location Where to place the organism.
      */
-    public void place(Organism organism, Location location)
+    void place(Organism organism, Location location)
     {
         field[location.getRow()][location.getCol()] = organism;
     }
@@ -83,7 +70,7 @@ public class Field
      * @param location Where in the field.
      * @return The organism at the given location, or null if there is none.
      */
-    public Organism getOrganismAt(Location location)
+    Organism getOrganismAt(Location location)
     {
         return getOrganismAt(location.getRow(), location.getCol());
     }
@@ -94,7 +81,7 @@ public class Field
      * @param col The desired column.
      * @return The organism at the given location, or null if there is none.
      */
-    public Organism getOrganismAt(int row, int col)
+    Organism getOrganismAt(int row, int col)
     {
         return field[row][col];
     }
@@ -118,12 +105,12 @@ public class Field
      * @param location Get locations adjacent to this.
      * @return A list of free adjacent locations.
      */
-    public List<Location> getFreeAdjacentLocations(Location location)
+    List<Location> getFreeAdjacentLocations(Location location)
     {
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getOrganismAt(next) == null) {
+            if(!Placement.isOccupied(this, next)) {
                 free.add(next);
             }
         }
@@ -138,7 +125,7 @@ public class Field
      * @param location The location from which to generate an adjacency.
      * @return A valid location within the grid area.
      */
-    public Location freeAdjacentLocation(Location location)
+    Location freeAdjacentLocation(Location location)
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);

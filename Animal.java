@@ -165,7 +165,7 @@ public abstract class Animal extends Organism implements AbleToEat {
         }
 
         for (Location loc : getField().adjacentLocations(getLocation())) {
-            Organism organism = getField().getOrganismAt(loc);
+            Organism organism = Placement.getOccupant(getField(), loc);
             if (species.isInstance(organism)) {
                 Animal animal = species.cast(organism);
                 if (animal.isMale() != isMale()) {
@@ -223,7 +223,7 @@ public abstract class Animal extends Organism implements AbleToEat {
         }
 
         for (Location loc : getField().adjacentLocations(getLocation())) {
-            Organism organism = getField().getOrganismAt(loc);
+            Organism organism = Placement.getOccupant(getField(), loc);
             if (organism instanceof Animal) {
                 Animal animal = (Animal) organism;
                 if (animal.isAlive() && (!animal.isInfected())) {

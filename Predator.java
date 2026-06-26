@@ -60,7 +60,7 @@ public abstract class Predator extends FoodDependentAnimal {
 
             Location newLocation = findFoodOrInfectionTarget();
             if (newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = Placement.freeAdjacentLocation(getField(), getLocation());
             }
 
             moveOrRemove(newLocation);
@@ -80,7 +80,7 @@ public abstract class Predator extends FoodDependentAnimal {
         while(it.hasNext()) {
             Location where = it.next();
 
-            Organism organism = field.getOrganismAt(where);
+            Organism organism = Placement.getOccupant(field, where);
             if(organism instanceof Prey) {
                 Prey prey = (Prey) organism;
                 if (prey.isAlive()) {

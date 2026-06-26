@@ -71,7 +71,7 @@ public abstract class Prey extends Animal implements Consumable {
                 Location newLocation = findFoodOrInfectionTarget();
 
                 if ((newLocation == null) || (getFoodValue() > FOOD_VALUE_TO_STOP_EATING)) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
+                    newLocation = Placement.freeAdjacentLocation(getField(), getLocation());
                 }
 
                 moveOrRemove(newLocation);
@@ -151,7 +151,7 @@ public abstract class Prey extends Animal implements Consumable {
     public Location findFood() {
         Field field = getField();
         for (Location where : field.adjacentLocations(getLocation())) {
-            Organism organism = field.getOrganismAt(where);
+            Organism organism = Placement.getOccupant(field, where);
             if (organism instanceof Plant) {
                 Plant plant = (Plant) organism;
                 if (plant.isAlive()) {

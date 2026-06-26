@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Random;
-
 /**
  * A simple model of a Salmon.
  * 
@@ -26,18 +23,6 @@ public class Salmon extends Animal
     // number of steps a fox can go before it has to eat again.
     private static final int SEAWEED_FOOD_VALUE = 13;
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-
-    // Individual characteristics (instance fields).
-
-    // The salmon's age.
-    private int age;
-
-    // The salmon's food level
-    private int foodLevel;
-
-
     /**
      * Create a new salmon. A salmon may be created with age
      * zero (a new born) or with a random age.
@@ -49,111 +34,50 @@ public class Salmon extends Animal
     public Salmon(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(SEAWEED_FOOD_VALUE);
-        }
-        else {
-            age = 0;
-            foodLevel = SEAWEED_FOOD_VALUE;
-        }
+        initializeState(randomAge, MAX_AGE, SEAWEED_FOOD_VALUE);
     }
 
     /**
-     * This is what the salmon does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * 
-     * @param newSalmons A list to return newly born salmons.
-     * @param atDayTime true if current step is daytime false otherwise.
-     * @param oxygenLevel The inital level of dissolved oxygen in the water.
-     * @param disease The disease may happened during simulation.  
-     * @param step current step.
-     * 
-     * @return the oxygen level the species produced or consumed after action.
+     * Decide if two salmons countered has different sex;
      */
-    protected void incrementAge()
+    public boolean encounterWithDiffSex()
     {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-
-    /**
-     * Make this salmon more hungry. This could result in the salmon's death.
-     */
-    protected void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
+        return hasDifferentSexNearby(Salmon.class, 2);
     }
 
     /**
      * Look for seaweed adjacent to the current location.
-     * Only the first live seaweed is eaten, if the nearby animal is 
+     * Only the first live seaweed is eaten, if the nearby animal is
      * infected, then this animal also may be infected.
-     * @param disease disease.
-     * @param step int current step.
-     * @return Where food was found, or null if it wasn't.
      */
-    public Location search(Disease disease, int step){
-        return findFood(disease, step, 1, SEAWEED_FOOD_VALUE, Seaweed.class);
-    }
-    /**
-     * Check whether or not this salmon is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newsalmons A list to return newly born salmons.
-     */
-    protected void giveBirth(List<Creature> newSalmons)
+    public Location search(Disease disease, int step)
     {
-        // New salmons are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Salmon young = new Salmon(false, field, loc);
-            newSalmons.add(young);
-        }
+        return findFood(disease, step, SEAWEED_FOOD_VALUE, Seaweed.class);
     }
 
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
+    protected int getMaxAge()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return MAX_AGE;
     }
 
-    /**
-     * A salmon can breed if it has reached the breeding age and has countered the salmon of opposite sex.
-     * @return true if the salmon can breed, false otherwise.
-     */
-    private boolean canBreed()
+    protected double getBreedingProbability()
     {
-        return age >= BREEDING_AGE && encounterWithDiffSex();
+        return BREEDING_PROBABILITY;
     }
 
-    
-    /**
-     * Decide if two salmons countered has different sex;
-     */
-    public boolean encounterWithDiffSex(){
-        return hasDifferentSexNearby(Salmon.class, 2);
+    protected int getMaxLitterSize()
+    {
+        return MAX_LITTER_SIZE;
     }
 
-    protected void setFoodLevel(int foodLevel)
+    protected boolean canBreed()
     {
-        this.foodLevel = foodLevel;
+        return getAge() >= BREEDING_AGE && encounterWithDiffSex();
+    }
+
+    protected Animal createYoung(Field field, Location location)
+    {
+        return new Salmon(false, field, location);
     }
 
 }

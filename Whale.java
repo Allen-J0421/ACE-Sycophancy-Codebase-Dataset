@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Random;
-
 /**
  * A simple model of a whale.
  * 
@@ -25,15 +22,6 @@ public class Whale extends Animal
     // number of steps a whale can go before it has to eat again.
     private static final int COD_FOOD_VALUE = 8;
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-
-    // Individual characteristics (instance fields).
-    // The whale's age.
-    private int age;
-    // The whale's food level, which is increased by eating Cods.
-    private int foodLevel;
-
     /**
      * Create a whale. A whale can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -45,46 +33,7 @@ public class Whale extends Animal
     public Whale(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(COD_FOOD_VALUE);
-        }
-        else {
-            age = 0;
-            foodLevel = COD_FOOD_VALUE;
-        }
-    }
-
-    /**
-     * This is what the cod does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * 
-     * @param newWhales A list to return newly born whales.
-     * @param atDayTime true if current step is daytime false otherwise.
-     * @param oxygenLevel The inital level of dissolved oxygen in the water.
-     * @param disease The disease may happened during simulation.  
-     * @param step current step.
-     * 
-     * @return the oxygen level the species produced or consumed after action.
-     * 
-     */
-    protected void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-
-    /**
-     * Make this whale more hungry. This could result in the whale's death.
-     */
-    protected void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
+        initializeState(randomAge, MAX_AGE, COD_FOOD_VALUE);
     }
 
     /**
@@ -95,62 +44,46 @@ public class Whale extends Animal
      * @param step int current step.
      * @return Where food was found, or null if it wasn't.
      */
-    public Location search(Disease disease, int step){
-        return findFood(disease, step, 1, COD_FOOD_VALUE, Cod.class, Salmon.class);
+    public Location search(Disease disease, int step)
+    {
+        return findFood(disease, step, COD_FOOD_VALUE, Cod.class, Salmon.class);
     }
 
-    /**
-     * Check whether or not this whale is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newwhales A list to return newly born whales.
-     */
-    protected void giveBirth(List<Creature> newWhales)
+    protected int getMaxAge()
     {
-        // New whales are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Whale young = new Whale(false, field, loc);
-            newWhales.add(young);
-        }
-    }
-
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return MAX_AGE;
     }
 
     /**
      * A whale can breed if it has reached the breeding age.
      */
-    private boolean canBreed()
+    protected boolean canBreed()
     {
-        return age >= BREEDING_AGE;
+        return getAge() >= BREEDING_AGE;
     }
 
     /**
      * Decide whether two whales have different sex.
      * @return true if two whales have different sex, false otherwise.
      */
-    public boolean encounterWithDiffSex(){
+    public boolean encounterWithDiffSex()
+    {
         return hasDifferentSexNearby(Whale.class, 2);
     }
 
-    protected void setFoodLevel(int foodLevel)
+    protected double getBreedingProbability()
     {
-        this.foodLevel = foodLevel;
+        return BREEDING_PROBABILITY;
+    }
+
+    protected int getMaxLitterSize()
+    {
+        return MAX_LITTER_SIZE;
+    }
+
+    protected Animal createYoung(Field field, Location location)
+    {
+        return new Whale(false, field, location);
     }
 
 }

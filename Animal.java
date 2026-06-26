@@ -1,5 +1,5 @@
 import java.util.List;
-import java.lang.Math;
+import java.util.Random;
 
 /**
  * A class representing shared characteristics of animals.
@@ -7,7 +7,8 @@ import java.lang.Math;
  * @version 2022/03/02
  */
 public abstract class Animal extends Creature
-{   
+{
+    private static final Random RAND = Randomizer.getRandom();
 
     // sex of an animal, 0 = female and 1 = male
     private int sex;
@@ -19,6 +20,10 @@ public abstract class Animal extends Creature
     private boolean isInfected;
     // If the animal is immuned from the diease.
     private boolean isImmuned;
+    // The animal's age.
+    private int age;
+    // The animal's food level.
+    private int foodLevel;
 
     // Track the first step at which the animal is infected;
     protected int infectionStartStep;
@@ -26,83 +31,113 @@ public abstract class Animal extends Creature
     // total population that is die of disease.
     public static int populationDieOfDisease = 0;
 
-    public Animal(Field field, Location location){
+    public Animal(Field field, Location location)
+    {
         super(field, location);
-        sex = (int)(Math.round(Math.random()));
+        sex = RAND.nextBoolean() ? 1 : 0;
         isInfected = false;
         isImmuned = false;
-        // Track the first step at which the animal is infected;
         infectionStartStep = 0;
-
     }
 
     /**
      * get the gender of an animal.
      * @return sex  0 = female and 1 = male.
      */
-    public int getSex(){
+    public int getSex()
+    {
         return sex;
     }
 
     /**
      * Every animal have different gender. and the implementation of this method is at its subclass.
-     * 
      */
     public abstract boolean encounterWithDiffSex();
 
     public abstract Location search(Disease disease, int step);
 
-    protected abstract void incrementAge();
+    protected abstract int getMaxAge();
 
-    protected abstract void incrementHunger();
+    protected abstract double getBreedingProbability();
 
-    protected abstract void giveBirth(List<Creature> newAnimals);
+    protected abstract int getMaxLitterSize();
 
-    protected abstract void setFoodLevel(int foodLevel);
+    protected abstract boolean canBreed();
+
+    protected abstract Animal createYoung(Field field, Location location);
 
     /**
      * identify whether a creature need to sleep
-     * 
+     *
      * @param atDayTime true if it is at day time false if it is at night time.
      * @return true if currently it is night.
      */
-    public boolean needSleep(boolean atDayTime){
+    public boolean needSleep(boolean atDayTime)
+    {
         return !atDayTime;
     }
 
-    
     /**
      * get whether an animal is infected.
-     * 
-     * @return true if an animal is infected, false otherwise. 
+     *
+     * @return true if an animal is infected, false otherwise.
      */
-    public boolean getIsInfected(){
+    public boolean getIsInfected()
+    {
         return isInfected;
     }
 
     /**
      * get if an animal is immuned.
-     * 
+     *
      * @return true if an animal is immuned, false otherwise.
      */
-    public boolean getIsImmuned(){
+    public boolean getIsImmuned()
+    {
         return isImmuned;
     }
 
     /**
      * set an animal to be infected.
-     * @param isInfected 
+     * @param isInfected infection state.
      */
-    public void setIsInfected(boolean isInfected){
+    public void setIsInfected(boolean isInfected)
+    {
         this.isInfected = isInfected;
     }
 
     /**
      * set an animal to be immuned.
-     * @param isImmuned 
+     * @param isImmuned immunity state.
      */
-    public void setIsImmuned(boolean isImmuned){
+    public void setIsImmuned(boolean isImmuned)
+    {
         this.isImmuned = isImmuned;
+    }
+
+    /**
+     * Set the animal's age and food state.
+     */
+    protected void initializeState(boolean randomAge, int maxAge, int foodValue)
+    {
+        if(randomAge) {
+            age = RAND.nextInt(maxAge);
+            foodLevel = RAND.nextInt(foodValue);
+        }
+        else {
+            age = 0;
+            foodLevel = foodValue;
+        }
+    }
+
+    protected int getAge()
+    {
+        return age;
+    }
+
+    protected void setFoodLevel(int foodLevel)
+    {
+        this.foodLevel = foodLevel;
     }
 
     /**
@@ -136,12 +171,13 @@ public abstract class Animal extends Creature
 
     /**
      *  Make an animal infected while the disease exists.
-     *  
-     *  @param disease disease 
+     *
+     *  @param disease disease
      *  @param step current step.
      */
-    protected void makeInfected(Disease disease, int step){
-        if((!this.getIsImmuned()) && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE) {
+    protected void makeInfected(Disease disease, int step)
+    {
+        if((!this.getIsImmuned()) && RAND.nextDouble() <= disease.INFECTION_RATE) {
             infect(step);
         }
     }
@@ -151,27 +187,26 @@ public abstract class Animal extends Creature
      * @param disease disease.
      * @param step int step.
      */
-    protected void ifCanGrantImmunity(Disease disease, int step){
-        // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
-        if(getIsInfected() && !getIsImmuned()){
-            if(step-infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND){
+    protected void ifCanGrantImmunity(Disease disease, int step)
+    {
+        if(getIsInfected() && !getIsImmuned()) {
+            if(step - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
                 setIsImmuned(true);
                 setIsInfected(false);
-            }  
+            }
         }
     }
 
     /**
      * set an animal to death if it is die of infection.
      * Return true if an animal dies of infection
-     * 
+     *
      * @return true if an animal dies of infection.
-     */ 
-
-    protected boolean dieOfInfection(Disease disease){
-        // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
-        if(getIsInfected() && !getIsImmuned()){
-            if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE  ){
+     */
+    protected boolean dieOfInfection(Disease disease)
+    {
+        if(getIsInfected() && !getIsImmuned()) {
+            if(RAND.nextDouble() <= disease.MORTALITY_RATE) {
                 setDead();
                 populationDieOfDisease++;
                 return true;
@@ -209,13 +244,44 @@ public abstract class Animal extends Creature
     }
 
     /**
+     * Increase the animal's age.
+     */
+    protected void incrementAge()
+    {
+        age++;
+        if(age > getMaxAge()) {
+            setDead();
+        }
+    }
+
+    /**
+     * Reduce the animal's food level.
+     */
+    protected void incrementHunger()
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
+            setDead();
+        }
+    }
+
+    /**
+     * Create offspring into nearby free locations.
+     */
+    protected void giveBirth(List<Creature> newAnimals)
+    {
+        int births = breed();
+        createAdjacentCreatures(newAnimals, births, this::createYoung);
+    }
+
+    /**
      * Search for prey around the animal and handle infection spread during the search.
      */
     @SafeVarargs
-    protected final Location findFood(Disease disease, int step, int searchDistance, int foodValue,
+    protected final Location findFood(Disease disease, int step, int foodValue,
                                       Class<? extends Creature>... preyTypes)
     {
-        for(Location location : getField().adjacentLocations(getLocation(), searchDistance)) {
+        for(Location location : getField().adjacentLocations(getLocation(), 1)) {
             Creature nearbyCreature = getField().getCreatureAt(location);
             exposeToInfection(nearbyCreature, disease, step);
             if(isMatchingPrey(nearbyCreature, preyTypes) && nearbyCreature.isAlive()) {
@@ -269,5 +335,11 @@ public abstract class Animal extends Creature
         return false;
     }
 
-    
+    private int breed()
+    {
+        if(canBreed() && RAND.nextDouble() <= getBreedingProbability()) {
+            return RAND.nextInt(getMaxLitterSize()) + 1;
+        }
+        return 0;
+    }
 }

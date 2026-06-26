@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Abstract class Creature - A class representing shared characteristics of creatures(animals and plants.)
@@ -8,6 +7,12 @@ import java.util.Iterator;
  */
 public abstract class Creature
 {
+    @FunctionalInterface
+    protected interface CreatureFactory
+    {
+        Creature create(Field field, Location location);
+    }
+
     // Whether the creature is alive or not.
     private boolean alive;
     // The creature's field.
@@ -95,6 +100,17 @@ public abstract class Creature
     {
         return field;
     }
-    
+
+    /**
+     * Create new creatures into free adjacent locations.
+     */
+    protected void createAdjacentCreatures(List<Creature> newCreatures, int count, CreatureFactory factory)
+    {
+        List<Location> freeLocations = field.getFreeAdjacentLocations(location);
+        for(int created = 0; created < count && !freeLocations.isEmpty(); created++) {
+            Location where = freeLocations.remove(0);
+            newCreatures.add(factory.create(field, where));
+        }
+    }
 
 }

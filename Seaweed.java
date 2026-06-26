@@ -16,8 +16,6 @@ public class Seaweed extends Creature
     private static final int MATURE_AGE = 20;
     // The age to which a shrimp can live.
     private static final int MAX_AGE = 40;
-    // The likelihood of a seaweed propagate.
-    private static final double PROPAGATE_PROBABILITY = 0.05;
     // The maximum number of births.
     private static final int MAX_PROPAGATE_SIZE = 1;
     // A shared random number generator to control breeding.
@@ -95,15 +93,7 @@ public class Seaweed extends Creature
      */
     private void giveBirth(List<Creature> newSeaweeds)
     {
-        // New seaweed are created into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-
-        for(int b = 0; free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Seaweed young = new Seaweed(false, field, loc);
-            newSeaweeds.add(young);
-        }
+        createAdjacentCreatures(newSeaweeds, MAX_PROPAGATE_SIZE,
+            (field, location) -> new Seaweed(false, field, location));
     }
 }

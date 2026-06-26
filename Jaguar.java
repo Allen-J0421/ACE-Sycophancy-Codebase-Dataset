@@ -1,5 +1,3 @@
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,29 +51,6 @@ public class Jaguar extends Predator
             setFoodLevel(GAZELLE_FOOD_VALUE);
         }
         setGrowthLevel(getAge()/89.0);
-    }
-
-    /**
-     * This is what the Jaguar does most of the time: it finds
-     * gazelle to eat. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newJaguars A list to return newly born Jaguars.
-     * @param simulator The simulator.
-     */
-    public void act(List<Actor> newJaguars, Simulator simulator)
-    {
-        setGrowthLevel(0.013);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newJaguars);  
-                super.act(newJaguars,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
     }
 
     /**
@@ -134,6 +109,14 @@ public class Jaguar extends Predator
      */
     protected double getMaxFoodLevel(){
         return MAX_FOOD_LEVEL;
+    }
+
+    /**
+     * Returns how much the jaguar grows each step.
+     * @return The jaguar's per-step growth increment.
+     */
+    protected double getGrowthPerStep(){
+        return 0.013;
     }
 
     /**

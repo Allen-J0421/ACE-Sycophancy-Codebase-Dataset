@@ -37,11 +37,50 @@ public abstract class Animal extends Actor
 
     /**
      * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
+     * whatever it wants/needs to do during the current step.
      * @param newAnimals A list to receive newly born animals.
      * @param simulator The simulator.
      */
     public void act(List<Actor> newAnimals, Simulator simulator){
+        setGrowthLevel(getGrowthPerStep());
+        if(simulator.isDay()){
+            actDuringDay(newAnimals, simulator);
+        }else{
+            actDuringNight(newAnimals, simulator);
+        }
+    }
+
+    /**
+     * Execute the default daytime behavior for animals.
+     * @param newAnimals A list to receive newly born animals.
+     * @param simulator The simulator.
+     */
+    protected void actDuringDay(List<Actor> newAnimals, Simulator simulator)
+    {
+        incrementAge(simulator.getSteps());
+        incrementHunger();
+        if(isActive()) {
+            giveBirth(newAnimals);
+            move(simulator);
+        }
+    }
+
+    /**
+     * Execute nighttime behavior for animals.
+     * Subclasses can override this if they gain night actions later.
+     * @param newAnimals A list to receive newly born animals.
+     * @param simulator The simulator.
+     */
+    protected void actDuringNight(List<Actor> newAnimals, Simulator simulator)
+    {
+    }
+
+    /**
+     * Move the animal according to the current weather and nearby food.
+     * @param simulator The simulator.
+     */
+    private void move(Simulator simulator)
+    {
         Location newLocation = null;
         switch(simulator.getWeather()){
             case SUNNY:
@@ -69,6 +108,12 @@ public abstract class Animal extends Actor
             setDead();
         }
     }
+
+    /**
+     * Returns how much this animal grows each step.
+     * @return The per-step growth increment.
+     */
+    abstract protected double getGrowthPerStep();
 
     /**
      * An animal can breed if it has reached the breeding age.

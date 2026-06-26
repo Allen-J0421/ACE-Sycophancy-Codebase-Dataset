@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Map;
 /**
  * A simple model of a Cheetah.
@@ -58,29 +57,6 @@ public class Cheetah extends Predator
     }
 
     /**
-     * This is what the Cheetah does most of the time: it hunts for
-     * zebras. In the process, it might breed, die of hunger,
-     * die of infection or die of old age.
-     * 
-     * @param newCheetahs A list to return newly born Cheetahs.
-     * @param simulator The simulator.
-     */
-    public void act(List<Actor> newCheetahs, Simulator simulator)
-    {
-        setGrowthLevel(0.012);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newCheetahs);  
-                super.act(newCheetahs,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
-    }
-
-    /**
      * Returns the maximum number of babies the cheetah can give birth to at once.
      * @return the max litter size of the cheetah.
      */
@@ -136,6 +112,14 @@ public class Cheetah extends Predator
      */
     protected double getMaxFoodLevel(){
         return MAX_FOOD_LEVEL;
+    }
+
+    /**
+     * Returns how much the cheetah grows each step.
+     * @return The cheetah's per-step growth increment.
+     */
+    protected double getGrowthPerStep(){
+        return 0.012;
     }
     
     /**

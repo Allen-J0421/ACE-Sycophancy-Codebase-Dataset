@@ -1,5 +1,3 @@
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,29 +49,6 @@ public class Zebra extends Animal
             setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
         }
         setGrowthLevel(getAge()/67.0);
-    }
-
-    /**
-     * This is what the Zebra does most of the time: it finds
-     * grass to eat. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newZebras A list to return newly born Zebras.
-     * @param simulator The simulator.
-     */
-    public void act(List<Actor> newZebra, Simulator simulator)
-    {
-        setGrowthLevel(0.015);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newZebra); 
-                super.act(newZebra,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
     }
 
     /**
@@ -132,6 +107,14 @@ public class Zebra extends Animal
      */
     protected double getMaxFoodLevel(){
         return MAX_FOOD_LEVEL;
+    }
+
+    /**
+     * Returns how much the zebra grows each step.
+     * @return The zebra's per-step growth increment.
+     */
+    protected double getGrowthPerStep(){
+        return 0.015;
     }
     
     /**

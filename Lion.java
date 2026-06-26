@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,29 +60,6 @@ public class Lion extends Predator
     }
 
     /**
-     * This is what the Lion does most of the time: it hunts for
-     * gazelle & cheetahs. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newLions A list to return newly born Lions.
-     * @param simulator The simulator.
-     */
-    public void act(List<Actor> newLions,Simulator simulator)
-    {
-        setGrowthLevel(0.01);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newLions);  
-                super.act(newLions,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
-    }
-
-    /**
      * Returns the maximum number of babies the lion can give birth to at once.
      * @return max litter size of the lion.
      */
@@ -139,6 +115,14 @@ public class Lion extends Predator
      */
     protected double getMaxFoodLevel(){
         return MAX_FOOD_LEVEL;
+    }
+
+    /**
+     * Returns how much the lion grows each step.
+     * @return The lion's per-step growth increment.
+     */
+    protected double getGrowthPerStep(){
+        return 0.01;
     }
 
     /**

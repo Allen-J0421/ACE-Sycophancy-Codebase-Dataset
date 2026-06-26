@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,29 +50,6 @@ public class Gazelle extends Animal
             setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
         }
         setGrowthLevel(getAge()/75.0);
-    }
-
-    /**
-     * This is what the Gazelle does most of the time: it finds
-     * grass to eat. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newGazelles A list to return newly born Gazelles.
-     * @param simulator The simulator.
-     */
-    public void act(List<Actor> newGazelles, Simulator simulator)
-    {
-        setGrowthLevel(0.012);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newGazelles);  
-                super.act(newGazelles,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
     }
 
     /**
@@ -132,6 +108,14 @@ public class Gazelle extends Animal
      */
     protected double getMaxFoodLevel(){
         return MAX_FOOD_LEVEL;
+    }
+
+    /**
+     * Returns how much the gazelle grows each step.
+     * @return The gazelle's per-step growth increment.
+     */
+    protected double getGrowthPerStep(){
+        return 0.012;
     }
     
     /**

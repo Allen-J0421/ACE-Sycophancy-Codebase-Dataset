@@ -325,10 +325,10 @@ public class Simulator
         // Set the label on the play/pause button.
         if (isStopped) 
         {
-            buttons[0].setLabel("Play");   
+            buttons[0].setText("Play");   
         }
         else {
-            buttons[0].setLabel("Pause");
+            buttons[0].setText("Pause");
         }
     }
     

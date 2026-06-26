@@ -23,6 +23,14 @@ public abstract class Prey extends Animal
     }
 
     /**
+     * Newborn prey start with a species-specific percentage of their max food level.
+     */
+    protected int initialNewbornFoodLevel(double percentageOfMaxFoodLevel)
+    {
+        return (int) (percentageOfMaxFoodLevel * maxFoodLevel);
+    }
+
+    /**
      * @Override
      * 
      * This is what the prey does most of the time - it may move around, it eats plants, 

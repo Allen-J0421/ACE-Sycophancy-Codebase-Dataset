@@ -23,6 +23,15 @@ public abstract class Predator extends Animal
         super(field, location, isInfected, isImmune);
         movementProbability = 0.8;
     }
+
+    /**
+     * Newborn predators start with a small, variable food reserve.
+     */
+    protected int initialNewbornFoodLevel()
+    {
+        double percentageOfMaxFoodLevel = rand.nextDouble() / 5.5;
+        return (int) (percentageOfMaxFoodLevel * maxFoodLevel);
+    }
     
     /**
      * @Override

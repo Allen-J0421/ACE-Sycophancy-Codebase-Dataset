@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Iterator;
+import java.util.function.IntSupplier;
 /**
  * A class representing shared characteristics of animals.
  *
@@ -60,6 +61,37 @@ public abstract class Animal extends LivingOrganism
         immuneProbability = 0.05;
         
         isFemale = rand.nextBoolean();
+    }
+
+    /**
+     * Set the species-specific behavior values shared by all animals.
+     */
+    protected void setSpeciesCharacteristics(int breedingAge, int maxAge, double breedingProbability,
+                                             int maxLitterSize, int maxFoodLevel, int foodValue)
+    {
+        this.breedingAge = breedingAge;
+        this.maxAge = maxAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.maxFoodLevel = maxFoodLevel;
+        this.foodValue = foodValue;
+    }
+
+    /**
+     * Set starting age and food level for either an existing animal or a newborn.
+     */
+    protected void initialiseAgeAndFoodLevel(boolean randomAge, IntSupplier newbornFoodLevel)
+    {
+        if (randomAge)
+        {
+            age = rand.nextInt(maxAge);
+            foodLevel = rand.nextInt(maxFoodLevel);
+        }
+        else
+        {
+            age = 0;
+            foodLevel = newbornFoodLevel.getAsInt();
+        }
     }
     
     /**
@@ -277,7 +309,7 @@ public abstract class Animal extends LivingOrganism
         
         for(int b = 0; b < births && free.size() > 0; b++) 
         {
-            Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
+            Animal newAnimal = createNewOffspring(free, infected, immune);
             newAnimals.add(newAnimal);
         }
     }
@@ -285,16 +317,14 @@ public abstract class Animal extends LivingOrganism
     /**
      * Creates a new offspring and places it into the field at the first free location
      * 
-     * @param classOfAnimal The class type of the new animal
      * @param free A list of the free adjacent location
      * @param motherIsInfected If the mother has currently the disease, so will the child
      * 
      * @return Returns the new animal
      */
-    protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
+    protected Animal createNewOffspring(List<Location> free, boolean motherIsInfected, boolean motherIsImmune)
     {
         Location loc = free.remove(0);
-        Animal offspring = null;
         
         boolean offspringIsInfected = motherIsInfected;
         boolean offspringIsImmune = motherIsImmune;
@@ -312,29 +342,13 @@ public abstract class Animal extends LivingOrganism
             offspringIsImmune = false;
         }
         
-        if (classOfAnimal.equals(Lemur.class))
-        {
-            offspring = new Lemur(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Giraffe.class)) 
-        {
-            offspring = new Giraffe(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Zebra.class)) 
-        {
-            offspring = new Zebra(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Cheetah.class)) 
-        {
-            offspring = new Cheetah(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Lion.class)) 
-        {
-            offspring = new Lion(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        
-        return offspring;
+        return createOffspring(loc, offspringIsInfected, offspringIsImmune);
     }
+
+    /**
+     * Create a new animal of this animal's concrete species.
+     */
+    protected abstract Animal createOffspring(Location loc, boolean isInfected, boolean isImmune);
     
     /**
      * Generate a number representing the number of births,

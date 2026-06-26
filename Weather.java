@@ -34,10 +34,7 @@ public class Weather
         List<Object> adjacentObjectList = field.getAllObjectAt(stormCenter, STORM_SCOPE);
         for(Object obj : adjacentObjectList) {
             if(obj instanceof Creature) {
-                Creature creature = (Creature) obj;
-                if(creature.isAlive()) {
-                    creature.setDead();
-                }
+                ((Creature) obj).setDead();
             }
         }
     }

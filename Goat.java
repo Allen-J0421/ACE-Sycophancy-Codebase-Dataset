@@ -59,7 +59,7 @@ public class Goat extends Prey {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Organism> newGoats, Weather weather, TimeOfDay time) {
+    public void act(List<Entity> newGoats, Weather weather, TimeOfDay time) {
         actAsPrey(newGoats, time, TimeOfDay.LATE_MORNING, 0.8);
     }
 }

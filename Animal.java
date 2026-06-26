@@ -39,7 +39,7 @@ public abstract class Animal extends Organism implements AbleToEat {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Organism> newAnimals, Weather weather, TimeOfDay time);
+    abstract public void act(List<Entity> newAnimals, Weather weather, TimeOfDay time);
 
     /**
      * Called when a consumable food item may be eaten.

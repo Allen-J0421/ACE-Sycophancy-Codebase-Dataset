@@ -18,8 +18,8 @@ public class Simulator
     private static final int LONG_SIMULATION_STEPS = 4000;
     private static final int SIMULATION_DELAY_MS = 5;
 
-    // List of organisms in the field.
-    private final List<Organism> organisms;
+    // Active entities in the simulation.
+    private final List<Entity> entities;
     // The current state of the field.
     private final Field field;
     // A graphical view of the simulation.
@@ -48,7 +48,7 @@ public class Simulator
         int simulationDepth = depth > 0 ? depth : DEFAULT_DEPTH;
         int simulationWidth = width > 0 ? width : DEFAULT_WIDTH;
         
-        organisms = new ArrayList<>();
+        entities = new ArrayList<>();
         field = new Field(simulationDepth, simulationWidth);
         clock = new SimulationClock();
 
@@ -90,21 +90,21 @@ public class Simulator
     {
         clock.advanceStep();
 
-        // Provide space for newborn organisms.
-        List<Organism> newOrganisms = new ArrayList<>();
-        // Let all organisms act.
-        for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
-            Organism organism = it.next();
+        // Provide space for newborn entities.
+        List<Entity> newEntities = new ArrayList<>();
+        // Let all entities act.
+        for(Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+            Entity entity = it.next();
 
-            organism.act(newOrganisms, currentWeather, clock.getCurrentTime());
+            entity.act(newEntities, currentWeather, clock.getCurrentTime());
 
-            if(organism.isRemoved()) {
+            if(entity.isRemoved()) {
                 it.remove();
             }
         }
                
-        // Add the newly born organisms to the main list.
-        organisms.addAll(newOrganisms);
+        // Add the newly born entities to the main list.
+        entities.addAll(newEntities);
 
         view.showStatus(clock.getStep(), field);
         view.updateTimeLabel(clock.getDay(), clock.getHour());
@@ -131,10 +131,10 @@ public class Simulator
         clock.reset();
         currentWeather = new Weather(WeatherType.SUN);
 
-        organisms.clear();
+        entities.clear();
 
         Populator populator = new Populator(view);
-        populator.populate(organisms, field);
+        populator.populate(entities, field);
         
         // Show the starting state in the view.
         view.showStatus(clock.getStep(), field);

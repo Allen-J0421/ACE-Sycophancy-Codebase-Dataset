@@ -61,7 +61,7 @@ public class PoisonBerry extends Plant {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Organism> newBerries, Weather weather, TimeOfDay time) {
+    public void act(List<Entity> newBerries, Weather weather, TimeOfDay time) {
         actAsPlant(newBerries, weather);
     }
 

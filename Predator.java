@@ -38,7 +38,7 @@ public abstract class Predator extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Organism> newPredators, Weather weather, TimeOfDay time);
+    abstract public void act(List<Entity> newPredators, Weather weather, TimeOfDay time);
 
     /**
      * Run the common predator lifecycle for one simulation step.
@@ -47,7 +47,7 @@ public abstract class Predator extends Animal {
      * @param time The current state of time in the simulation.
      * @param inactiveTime The time of day when this predator does not move or eat.
      */
-    protected void actAsPredator(List<Organism> newPredators, TimeOfDay time, TimeOfDay inactiveTime) {
+    protected void actAsPredator(List<Entity> newPredators, TimeOfDay time, TimeOfDay inactiveTime) {
         incrementAge();
         incrementHunger();
         if (isAlive()) {

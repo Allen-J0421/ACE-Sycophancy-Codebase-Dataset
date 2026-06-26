@@ -33,7 +33,7 @@ public abstract class Scavenger extends Animal {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Organism> newScavengers, Weather weather, TimeOfDay time) {
+    public void act(List<Entity> newScavengers, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
         if(isAlive()) {

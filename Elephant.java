@@ -59,7 +59,7 @@ public class Elephant extends Prey {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Organism> newElephants, Weather weather, TimeOfDay time) {
+    public void act(List<Entity> newElephants, Weather weather, TimeOfDay time) {
         actAsPrey(newElephants, time, TimeOfDay.SUNSET, 0.85);
     }
 }

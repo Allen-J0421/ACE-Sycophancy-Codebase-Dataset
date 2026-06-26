@@ -47,13 +47,13 @@ public class Populator {
     /**
      * Randomly populate the field with organisms.
      */
-    public void populate(List<Organism> organisms, Field field)
+    public void populate(List<Entity> entities, Field field)
     {
         Random rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                populateLocation(organisms, field, rand, new Location(row, col));
+                populateLocation(entities, field, rand, new Location(row, col));
             }
         }
     }
@@ -61,15 +61,15 @@ public class Populator {
     /**
      * Try each population rule in order for a single location.
      *
-     * @param organisms The organisms list to add to.
+     * @param entities The entities list to add to.
      * @param field The field to populate.
      * @param rand The random source.
      * @param location The location being populated.
      */
-    private void populateLocation(List<Organism> organisms, Field field, Random rand, Location location) {
+    private void populateLocation(List<Entity> entities, Field field, Random rand, Location location) {
         for (PopulationRule rule : POPULATION_RULES) {
             if (rand.nextDouble() <= rule.getCreationProbability()) {
-                organisms.add(rule.create(field, location));
+                entities.add(rule.create(field, location));
                 return;
             }
         }

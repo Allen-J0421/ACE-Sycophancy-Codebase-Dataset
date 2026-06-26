@@ -40,7 +40,7 @@ public abstract class Prey extends Animal implements Consumable {
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Organism> newPrey, Weather weather, TimeOfDay time);
+    abstract public void act(List<Entity> newPrey, Weather weather, TimeOfDay time);
 
     /**
      * Run the common prey lifecycle for one simulation step.
@@ -50,7 +50,7 @@ public abstract class Prey extends Animal implements Consumable {
      * @param reducedActivenessTime The time of day when this prey is less active.
      * @param reducedActiveness The activeness to use during the reduced activity time.
      */
-    protected void actAsPrey(List<Organism> newPrey, TimeOfDay time,
+    protected void actAsPrey(List<Entity> newPrey, TimeOfDay time,
                              TimeOfDay reducedActivenessTime, double reducedActiveness) {
         incrementAge();
         setActiveness(DEFAULT_ACTIVENESS);

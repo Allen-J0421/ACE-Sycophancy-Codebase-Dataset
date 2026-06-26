@@ -59,7 +59,7 @@ public class Zebra extends Prey {
      * @param time The current state of time in the simulation.
      */
     @Override
-    public void act(List<Organism> newZebras, Weather weather, TimeOfDay time) {
+    public void act(List<Entity> newZebras, Weather weather, TimeOfDay time) {
         actAsPrey(newZebras, time, TimeOfDay.AROUND_MIDNIGHT, 0.9);
     }
 }

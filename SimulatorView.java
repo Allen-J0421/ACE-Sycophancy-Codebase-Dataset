@@ -38,9 +38,6 @@ public class SimulatorView extends JFrame
 
     // A map for storing colors for participants in the simulation
     private Map<Class<?>, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
-
     /**
      * Create a view of the given width and height.
      * @param height The simulation's height.
@@ -48,7 +45,6 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
-        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Underwater Environment Simulation");
@@ -87,25 +83,15 @@ public class SimulatorView extends JFrame
         ensureVisible();
         updateLabels(snapshot);
 
-        stats.reset();
         fieldView.preparePaint();
         renderField(snapshot.getField());
         if(snapshot.getWeather().getStormStart()) {
             drawStormOverlay(snapshot.getWeather());
         }
 
-        stats.countFinished();
-        populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(snapshot.getField()));
+        populationLabel.setText(POPULATION_PREFIX
+                                + snapshot.getPopulationSummary().getPopulationDetails());
         fieldView.repaint();
-    }
-
-    /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
     }
 
     private void addPanels()
@@ -151,7 +137,6 @@ public class SimulatorView extends JFrame
             return;
         }
 
-        stats.incrementCount(creature.getClass());
         fieldView.drawMark(col, row, getCreatureColor(creature));
     }
 

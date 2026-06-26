@@ -78,7 +78,9 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int simulatedSteps = 0; simulatedSteps < numSteps && view.isViable(field); simulatedSteps++) {
+        for(int simulatedSteps = 0;
+            simulatedSteps < numSteps && SimulationAnalyzer.analyze(field).isViable();
+            simulatedSteps++) {
             simulateOneStep();
             delay(60);
         }
@@ -161,8 +163,10 @@ public class Simulator
 
     private void showStatus()
     {
+        PopulationSummary populationSummary = SimulationAnalyzer.analyze(field);
         view.showStatus(new SimulationSnapshot(step, field, timeOfDay(), weather,
-                                               oxygenLevel, disease.getDiseaseDeaths()));
+                                               oxygenLevel, disease.getDiseaseDeaths(),
+                                               populationSummary));
     }
 
     /**

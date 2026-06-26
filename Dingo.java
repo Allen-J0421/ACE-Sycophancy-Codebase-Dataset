@@ -2,6 +2,8 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
 
+import configuration.Configuration;
+
 /**
  * A simple model of a dingo.
  * Dingoes age, move, eat snakes, and die.
@@ -10,7 +12,7 @@ import java.util.Random;
  */
 public class Dingo extends Animal
 {
-    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.dingo();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().dingo();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -79,11 +81,11 @@ public class Dingo extends Animal
                     Object animal = field.getObjectAt(where);
                     if (animal instanceof Snake) {
                         Snake snake = (Snake) animal;
-                        if (snake.isAlive()) {
-                            snake.setDead();
-                            setFoodLevel(TUNING.foodValueFor(Snake.class));
-                            return where;
-                        }
+                    if (snake.isAlive()) {
+                        snake.setDead();
+                        setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.SNAKE));
+                        return where;
+                    }
                     } else if (animal instanceof Plant) {
                         Plant plant = (Plant) animal;
                         if (plant.isAlive()) {
@@ -106,7 +108,7 @@ public class Dingo extends Animal
                     Snake snake = (Snake) animal;
                     if (snake.isAlive()) {
                         snake.setDead();
-                        setFoodLevel(TUNING.foodValueFor(Snake.class));
+                        setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.SNAKE));
                         return where;
                     }
                 }

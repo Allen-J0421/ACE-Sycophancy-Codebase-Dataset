@@ -2,6 +2,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import configuration.Configuration;
+
 /**
  * A simple model of a rat.
  * Rats age, move, eat ants, breed, and die.
@@ -10,7 +12,7 @@ import java.util.Random;
  */
 public class Rat extends Animal
 {
-    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.rat();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().rat();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -80,7 +82,7 @@ public class Rat extends Animal
                 Ant ant = (Ant) animal;
                 if(ant.isAlive()) {
                     ant.setDead();
-                    setFoodLevel(TUNING.foodValueFor(Ant.class));
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.ANT));
                     return where;
                 }
             }

@@ -2,6 +2,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import configuration.Configuration;
+
 /**
  * A simple model of an eagle.
  * Eagles age, move, eat snakes and rats, and die.
@@ -11,7 +13,7 @@ import java.util.Random;
 
 public class Eagle extends Animal
 {
-    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.eagle();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().eagle();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -82,7 +84,7 @@ public class Eagle extends Animal
                     Snake snake = (Snake) animal;
                     if(snake.isAlive()) {
                         snake.setDead();
-                        setFoodLevel(TUNING.foodValueFor(Snake.class));
+                        setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.SNAKE));
                         return where;
                     }
                 }
@@ -90,7 +92,7 @@ public class Eagle extends Animal
                     Rat rat = (Rat) animal;
                     if(rat.isAlive()) {
                         rat.setDead();
-                        setFoodLevel(TUNING.foodValueFor(Rat.class));
+                        setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.RAT));
                         return where;
                     }
                 }
@@ -115,7 +117,7 @@ public class Eagle extends Animal
                     Snake snake = (Snake) animal;
                     if (snake.isAlive()) {
                         snake.setDead();
-                        setFoodLevel(TUNING.foodValueFor(Snake.class));
+                        setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.SNAKE));
                         return where;
                     }
                 }
@@ -123,7 +125,7 @@ public class Eagle extends Animal
                     Rat rat = (Rat) animal;
                     if(rat.isAlive()) {
                         rat.setDead();
-                        setFoodLevel(TUNING.foodValueFor(Rat.class));
+                        setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.RAT));
                         return where;
                     }
                 }

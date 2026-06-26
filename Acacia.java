@@ -1,5 +1,7 @@
 import java.util.List;
 
+import configuration.Configuration;
+
 /**
  * A simple model of an acacia plant.
  * Acacia plants reproduce and grow into other locations
@@ -9,7 +11,7 @@ import java.util.List;
 
 public class Acacia extends Plant
 {
-    private static final SpeciesTuning.PlantTuning TUNING = SpeciesTuning.acacia();
+    private static final Configuration.PlantTuning TUNING = Configuration.defaults().species().acacia();
 
     /**
      * Create an acacia. An acacia is created as a newborn with age 0

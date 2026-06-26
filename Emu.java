@@ -2,6 +2,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import configuration.Configuration;
+
 /**
  * A simple model of an emu.
  * Emu age, move, eat grass, and die.
@@ -10,7 +12,7 @@ import java.util.Random;
  */
 public class Emu extends Animal
 {
-    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.emu();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().emu();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -80,7 +82,7 @@ public class Emu extends Animal
             Grass grass = (Grass) searchPlant;
             if (grass.isAlive()) {
                 grass.setDead();
-                setFoodLevel(TUNING.foodValueFor(Grass.class));
+                setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.GRASS));
                 return where;
             }
             }

@@ -2,6 +2,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import configuration.Configuration;
+
 /**
  * A simple model of a snake.
  * Snakes age, move, eat rats, breed, and die.
@@ -10,7 +12,7 @@ import java.util.Random;
  */
 public class Snake extends Animal
 {
-    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.snake();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().snake();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -80,7 +82,7 @@ public class Snake extends Animal
                 Rat rat = (Rat) animal;
                 if(rat.isAlive()) {
                     rat.setDead();
-                    setFoodLevel(TUNING.foodValueFor(Rat.class));
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.RAT));
                     return where;
                 }
             }

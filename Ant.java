@@ -2,6 +2,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import configuration.Configuration;
+
 /**
  * A simple model of an ant.
  * Ants age, move, eat acacia and grass, breed, and die.
@@ -10,7 +12,7 @@ import java.util.Random;
  */
 public class Ant extends Animal
 {
-    private static final SpeciesTuning.AnimalTuning TUNING = SpeciesTuning.ant();
+    private static final Configuration.AnimalTuning TUNING = Configuration.defaults().species().ant();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -80,7 +82,7 @@ public class Ant extends Animal
                 Acacia acacia = (Acacia) plant;
                 if (acacia.isAlive()) {
                     acacia.setDead();
-                    setFoodLevel(TUNING.foodValueFor(Acacia.class));
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.ACACIA));
                     return where;
                 }
             }
@@ -88,7 +90,7 @@ public class Ant extends Animal
                 Grass grass = (Grass) plant;
                 if(grass.isAlive()) {
                     grass.setDead();
-                    setFoodLevel(TUNING.foodValueFor(Grass.class));
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.GRASS));
                     return where;
                 }
             }

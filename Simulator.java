@@ -1,5 +1,11 @@
-import java.util.*;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+
+import configuration.Configuration;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -24,14 +30,14 @@ public class Simulator
     // A graphical view of the simulation.
     private SimulatorView view;
     // Configuration for simulation timing, population, and field sizing.
-    private final SimulationConfig config;
+    private final Configuration config;
     
     /**
      * Construct a simulation field with default size.
      */
     public Simulator()
     {
-        this(SimulationConfig.defaultConfig());
+        this(Configuration.defaults());
     }
     
     /**
@@ -47,17 +53,17 @@ public class Simulator
      * Create a simulation from an explicit configuration.
      * @param config The simulation configuration to use.
      */
-    public Simulator(SimulationConfig config) {
+    public Simulator(Configuration config) {
         this.config = config;
         animals = new ArrayList<>();
         plants = new ArrayList<>();
 
         weather = Weather.NONE;
 
-        field = new Field(config.getDepth(), config.getWidth());
+        field = new Field(config.simulation().getDepth(), config.simulation().getWidth());
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(config.getDepth(), config.getWidth());
+        view = new SimulatorView(config.simulation().getDepth(), config.simulation().getWidth());
         view.setColor(Ant.class, Color.GRAY);
         view.setColor(Dingo.class, Color.ORANGE);
         view.setColor(Eagle.class, Color.RED);
@@ -78,13 +84,13 @@ public class Simulator
      * @param width The requested width.
      * @return A config with validated field dimensions.
      */
-    private static SimulationConfig createConfig(int depth, int width) {
+    private static Configuration createConfig(int depth, int width) {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
-            return SimulationConfig.defaultConfig();
+            return Configuration.defaults();
         }
-        return SimulationConfig.defaultConfig().withFieldSize(depth, width);
+        return Configuration.defaults().withFieldSize(depth, width);
     }
     
     /**
@@ -109,21 +115,21 @@ public class Simulator
     public void simulate(int numSteps) {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            if (time == config.getDayLengthHours()) {
+            if (time == config.simulation().getDayLengthHours()) {
                 time = 0;
             }
-            if (step % config.getTimeAdvanceIntervalSteps() == 0) {
+            if (step % config.simulation().getTimeAdvanceIntervalSteps() == 0) {
                 time++;
             }
-            if (step % config.getWeatherIntervalSteps() == 0) {
+            if (step % config.simulation().getWeatherIntervalSteps() == 0) {
                 simulateWeather();
             }
-            if (step % config.getDiseaseIntervalSteps() == 0) {
+            if (step % config.simulation().getDiseaseIntervalSteps() == 0) {
                 resetDisease();
                 simulateDisease();
             }
 
-            delay(config.getStepDelayMillis());   // uncomment this to run more slowly
+            delay(config.simulation().getStepDelayMillis());   // uncomment this to run more slowly
         }
     }
     
@@ -191,8 +197,9 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                for (SimulationConfig.PopulationRule rule : config.getPopulationRules()) {
-                    if (rule.tryPopulate(rand, field, row, col, animals, plants)) {
+                for (Configuration.PopulationRule rule : config.simulation().getPopulationRules()) {
+                    if (rand.nextDouble() <= rule.getProbability()) {
+                        spawnPopulation(rule.getKind(), row, col);
                         break;
                     }
                 }
@@ -326,6 +333,44 @@ public class Simulator
     private void resetDisease() {
         for (int i = 0; i < animals.size(); i++) {
             animals.get(i).resetDisease();
+        }
+    }
+
+    /**
+     * Create an entity for a populated location.
+     * @param kind The configured population kind.
+     * @param row The row to populate.
+     * @param col The column to populate.
+     */
+    private void spawnPopulation(Configuration.PopulationKind kind, int row, int col) {
+        Location location = new Location(row, col);
+        switch (kind) {
+            case DINGO:
+                animals.add(new Dingo(true, field, location));
+                break;
+            case ANT:
+                animals.add(new Ant(true, field, location));
+                break;
+            case SNAKE:
+                animals.add(new Snake(true, field, location));
+                break;
+            case RAT:
+                animals.add(new Rat(true, field, location));
+                break;
+            case EAGLE:
+                animals.add(new Eagle(true, field, location));
+                break;
+            case EMU:
+                animals.add(new Emu(true, field, location));
+                break;
+            case ACACIA:
+                plants.add(new Acacia(field, location));
+                break;
+            case GRASS:
+                plants.add(new Grass(field, location));
+                break;
+            default:
+                break;
         }
     }
 

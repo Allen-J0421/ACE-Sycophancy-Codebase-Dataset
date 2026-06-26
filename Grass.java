@@ -1,5 +1,7 @@
 import java.util.List;
 
+import configuration.Configuration;
+
 /**
  * A simple model of a grass plant.
  * Grass plants reproduce and grow into other locations
@@ -9,7 +11,7 @@ import java.util.List;
 
 public class Grass extends Plant
 {
-    private static final SpeciesTuning.PlantTuning TUNING = SpeciesTuning.grass();
+    private static final Configuration.PlantTuning TUNING = Configuration.defaults().species().grass();
 
     /**
      * Create a grass. A grass is created as a newborn age 0

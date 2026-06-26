@@ -7,143 +7,182 @@ import java.lang.Math;
  * @version 2022/03/02
  */
 public abstract class Animal extends Creature
-{   
-
+{
     // sex of an animal, 0 = female and 1 = male
     private int sex;
 
-    // The amount of oxygen an animal need to survive
+    // The amount of oxygen an animal needs to survive.
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
-    // The possibility that an animal may be infected by a disease.
-    protected static final double INFECTION_RATE = 1;
-    // The possibility an animal may die of a disease.
-    protected static final double MORTALITY_RATE = 1;
-    // The steps an animal need to withstand in order to get immunity
-    protected static final int stepStandNum = 3;
 
     // If the animal is infected by disease.
     private boolean isInfected;
-    // If the animal is immuned from the diease.
+    // If the animal is immune from the disease.
     private boolean isImmuned;
 
-    // Track the first step at which the animal is infected;
+    // Track the first step at which the animal is infected.
     protected int infectionStartStep;
 
-    // total population that is die of disease.
+    // Total population that has died of disease.
     public static int populationDieOfDisease = 0;
 
-    public Animal(Field field, Location location){
+    // Age and food level shared by all animal subclasses.
+    protected int age;
+    protected int foodLevel;
+
+    public Animal(Field field, Location location) {
         super(field, location);
         sex = (int)(Math.round(Math.random()));
         isInfected = false;
         isImmuned = false;
-        // Track the first step at which the animal is infected;
         infectionStartStep = 0;
-
     }
 
-    /**
-     * get the gender of an animal.
-     * @return sex  0 = female and 1 = male.
-     */
-    public int getSex(){
-        return sex;
-    }
+    // -----------------------------------------------------------------------
+    // Abstract methods — subclasses supply species-specific values and types.
+    // -----------------------------------------------------------------------
+
+    protected abstract int getBreedingAge();
+    protected abstract int getMaxAge();
+    protected abstract double getBreedingProbability();
+    protected abstract int getMaxLitterSize();
+
+    /** Factory method: return a newborn of this species placed at location. */
+    protected abstract Animal createYoung(Field field, Location location);
 
     /**
-     * Every animal have different gender. and the implementation of this method is at its subclass.
-     * 
+     * Look for food adjacent to the current location.
+     * Herbivores eat seaweed; carnivores hunt prey animals.
+     * Also spreads disease from infected neighbours encountered during the search.
      */
-    public abstract boolean encounterWithDiffSex();
-
     public abstract Location search(Disease disease, int step);
 
+    // -----------------------------------------------------------------------
+    // Template act() — identical lifecycle for every animal species.
+    // -----------------------------------------------------------------------
+
     /**
-     * identify whether a creature need to sleep
-     * 
-     * @param atDayTime true if it is at day time false if it is at night time.
-     * @return true if currently it is night.
+     * Core lifecycle: check oxygen, handle disease, age, hunger, breed, move.
+     *
+     * @return oxygen consumed (negative) or 0 if the animal died this step.
      */
-    public boolean needSleep(boolean atDayTime){
-        return !atDayTime;
+    public double act(List<Creature> newAnimals, boolean atDayTime, double oxygenLevel, Disease disease, int step) {
+        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED) {
+            setDead();
+            return 0;
+        }
+        if(dieOfInfection(disease)) return 0;
+        ifCanGrantImmunity(disease, step);
+        incrementAge();
+        incrementHunger();
+        if(isAlive() && !needSleep(atDayTime)) {
+            giveBirth(newAnimals);
+            Location newLocation = search(disease, step);
+            if(newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            if(newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                setDead();
+            }
+        }
+        return -ANIMAL_OXYGEN_REQUIRED;
     }
 
-    
-    /**
-     * get whether an animal is infected.
-     * 
-     * @return true if an animal is infected, false otherwise. 
-     */
-    public boolean getIsInfected(){
-        return isInfected;
+    // -----------------------------------------------------------------------
+    // Shared breeding and lifecycle helpers.
+    // -----------------------------------------------------------------------
+
+    /** Increase age; die on reaching MAX_AGE. */
+    protected void incrementAge() {
+        age++;
+        if(age > getMaxAge()) {
+            setDead();
+        }
+    }
+
+    /** Decrease food level; die on starvation. */
+    protected void incrementHunger() {
+        foodLevel--;
+        if(foodLevel <= 0) {
+            setDead();
+        }
+    }
+
+    /** True if old enough and a mate of the same species and opposite sex is nearby. */
+    private boolean canBreed() {
+        return age >= getBreedingAge() && encounterWithDiffSex();
+    }
+
+    /** Return the number of offspring produced this step (may be zero). */
+    private int breed() {
+        int births = 0;
+        if(canBreed() && Randomizer.getRandom().nextDouble() <= getBreedingProbability()) {
+            births = Randomizer.getRandom().nextInt(getMaxLitterSize()) + 1;
+        }
+        return births;
+    }
+
+    /** Place offspring of this species in adjacent free locations. */
+    private void giveBirth(List<Creature> newAnimals) {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = breed();
+        for(int b = 0; b < births && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            newAnimals.add(createYoung(field, loc));
+        }
     }
 
     /**
-     * get if an animal is immuned.
-     * 
-     * @return true if an animal is immuned, false otherwise.
+     * True if an animal of the same species but opposite sex is within radius 2.
+     * Uses getClass() so each species only matches its own kind.
      */
-    public boolean getIsImmuned(){
-        return isImmuned;
+    public boolean encounterWithDiffSex() {
+        List<Location> adjacent = getField().adjacentLocations(getLocation(), 2);
+        for(Location loc : adjacent) {
+            Object obj = getField().getObjectAt(loc);
+            if(obj != null && obj.getClass() == this.getClass()) {
+                Animal other = (Animal) obj;
+                if(this.getSex() != other.getSex()) return true;
+            }
+        }
+        return false;
     }
 
-    /**
-     * set an animal to be infected.
-     * @param isInfected 
-     */
-    public void setIsInfected(boolean isInfected){
-        this.isInfected = isInfected;
-    }
+    // -----------------------------------------------------------------------
+    // Disease mechanics (unchanged from original).
+    // -----------------------------------------------------------------------
 
     /**
-     * set an animal to be immuned.
-     * @param isImmuned 
+     * Make an animal infected while the disease is active.
      */
-    public void setIsImmuned(boolean isImmuned){
-        this.isImmuned = isImmuned;
-    }
-
-    /**
-     *  Make an animal infected while the disease exists.
-     *  
-     *  @param disease disease 
-     *  @param step current step.
-     */
-    protected void makeInfected(Disease disease, int step){
-        if((!this.getIsImmuned()) && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
-            setIsInfected(true);  
-
-        //if the animal is infected in current step, record its start step.
+    protected void makeInfected(Disease disease, int step) {
+        if(!this.getIsImmuned() && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
+            setIsInfected(true);
         if(getIsInfected() && infectionStartStep == 0)
             infectionStartStep = step;
     }
 
     /**
-     * give the animal immunity while condition is met.
-     * @param disease disease.
-     * @param step int step.
+     * Grant immunity once the animal has withstood the disease long enough.
      */
-    protected void ifCanGrantImmunity(Disease disease, int step){
-        // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
-        if(getIsInfected() && !getIsImmuned()){
-            if(step-infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND){
+    protected void ifCanGrantImmunity(Disease disease, int step) {
+        if(getIsInfected() && !getIsImmuned()) {
+            if(step - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
                 setIsImmuned(true);
                 setIsInfected(false);
-            }  
+            }
         }
     }
 
     /**
-     * set an animal to death if it is die of infection.
-     * Return true if an animal dies of infection
-     * 
-     * @return true if an animal dies of infection.
-     */ 
-
-    protected boolean dieOfInfection(Disease disease){
-        // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
-        if(getIsInfected() && !getIsImmuned()){
-            if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE  ){
+     * Kill the animal if it succumbs to infection this step.
+     * @return true if the animal died of infection.
+     */
+    protected boolean dieOfInfection(Disease disease) {
+        if(getIsInfected() && !getIsImmuned()) {
+            if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE) {
                 setDead();
                 populationDieOfDisease++;
                 return true;
@@ -152,5 +191,27 @@ public abstract class Animal extends Creature
         return false;
     }
 
-    
+    // -----------------------------------------------------------------------
+    // Accessors.
+    // -----------------------------------------------------------------------
+
+    /**
+     * Return the gender of this animal (0 = female, 1 = male).
+     */
+    public int getSex() {
+        return sex;
+    }
+
+    /**
+     * Return true if this animal needs to sleep (i.e. it is night-time).
+     */
+    public boolean needSleep(boolean atDayTime) {
+        return !atDayTime;
+    }
+
+    public boolean getIsInfected() { return isInfected; }
+    public boolean getIsImmuned()  { return isImmuned;  }
+
+    public void setIsInfected(boolean isInfected) { this.isInfected = isInfected; }
+    public void setIsImmuned(boolean isImmuned)   { this.isImmuned  = isImmuned;  }
 }

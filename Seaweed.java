@@ -95,15 +95,13 @@ public class Seaweed extends Creature
      */
     private void giveBirth(List<Creature> newSeaweeds)
     {
-        // New seaweed are created into adjacent locations.
-        // Get a list of adjacent free locations.
+        if(rand.nextDouble() > PROPAGATE_PROBABILITY) return;
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-
-        for(int b = 0; free.size() > 0; b++) {
+        int births = rand.nextInt(MAX_PROPAGATE_SIZE) + 1;
+        for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Seaweed young = new Seaweed(false, field, loc);
-            newSeaweeds.add(young);
+            newSeaweeds.add(new Seaweed(false, field, loc));
         }
     }
 }

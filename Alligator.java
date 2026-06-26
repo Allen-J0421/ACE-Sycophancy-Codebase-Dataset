@@ -82,7 +82,7 @@ public final class Alligator extends Animal
     {
         Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put("Lemurs", 8);
-        mapTemp.put("Catfish", 4);
+        mapTemp.put(Catfish.name, 4);
         return mapTemp;
     }
 

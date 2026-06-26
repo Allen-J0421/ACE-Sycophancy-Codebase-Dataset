@@ -144,22 +144,18 @@ public class Simulator
     private static List<Disease> createDiseases()
     {
         List<Disease> list = new ArrayList<>();
-        Disease dengue = new Disease("dengue", true, true);
-
-        dengue.getActorsAffectedMap().put("Lemur",0.9);
-        dengue.getActorsAffectedMap().put("Panther",0.6);
-        dengue.getActorsAffectedMap().put("Alligator",0.6);
-
-        dengue.getStartingActorsMap().put("Lemur",0.4);
+        Disease dengue = new Disease("dengue", true, true)
+            .addAffectedActor(Lemur.name, 0.9)
+            .addAffectedActor(Panther.name, 0.6)
+            .addAffectedActor(Alligator.name, 0.6)
+            .addStartingActor(Lemur.name, 0.4);
         list.add(dengue);
         
-        Disease river_fever = new Disease("river_fever", true, false);
-
-        river_fever.getActorsAffectedMap().put("Water_Fern",1.0);
-        river_fever.getActorsAffectedMap().put("Catfish",0.7);
-        river_fever.getActorsAffectedMap().put("Salamander",0.8);
-
-        river_fever.getStartingActorsMap().put("Water_Fern",0.4);
+        Disease river_fever = new Disease("river_fever", true, false)
+            .addAffectedActor(Water_Fern.name, 1.0)
+            .addAffectedActor(Catfish.name, 0.7)
+            .addAffectedActor(Salamander.name, 0.8)
+            .addStartingActor(Water_Fern.name, 0.4);
         list.add(river_fever);
         
         return list;

@@ -82,7 +82,7 @@ public final class Catfish extends Animal
     private static Map<String, Integer> createPreyFoodValueMap()
     {
         Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Water_Fern", 3);
+        mapTemp.put(Water_Fern.name, 3);
         return mapTemp;
     }
 

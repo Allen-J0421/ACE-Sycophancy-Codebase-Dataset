@@ -81,8 +81,8 @@ public final class Lemur extends Animal
     private static Map<String, Integer> createPreyFoodValueMap()
     {
         Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Grass", 3);
-        mapTemp.put("Salamander",4);
+        mapTemp.put(Grass.name, 3);
+        mapTemp.put(Salamander.name,4);
         return mapTemp;
     }
 

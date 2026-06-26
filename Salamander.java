@@ -83,8 +83,8 @@ public final class Salamander extends Animal
     private static Map<String, Integer> createPreyFoodValueMap()
     {
         Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Grass", 4);
-        mapTemp.put("Water_Fern", 5);
+        mapTemp.put(Grass.name, 4);
+        mapTemp.put(Water_Fern.name, 5);
         return mapTemp;
     }
 

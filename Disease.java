@@ -64,6 +64,30 @@ public class Disease
     {
         return spreadByEating;
     }
+
+    /**
+     * Add an actor affected by this disease.
+     * @param actorName The actor name.
+     * @param severity The disease severity multiplier.
+     * @return This disease for chained configuration.
+     */
+    public Disease addAffectedActor(String actorName, double severity)
+    {
+        actorsAffected.put(actorName, severity);
+        return this;
+    }
+
+    /**
+     * Add an actor that can start the simulation with this disease.
+     * @param actorName The actor name.
+     * @param probability The probability of starting with the disease.
+     * @return This disease for chained configuration.
+     */
+    public Disease addStartingActor(String actorName, double probability)
+    {
+        startingActors.put(actorName, probability);
+        return this;
+    }
     
     /**
      * returns the map of the actors affected by the disease

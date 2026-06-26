@@ -124,14 +124,28 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
-     * Look for food adjacent to the current location.
-     * Only the first food is eaten.
+     * Look for food adjacent to the current location. While scanning, the animal
+     * may catch a contact disease from a neighbour; it then eats the first
+     * organism in its diet (if still hungry).
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
     {
+        // The adjacency is computed once and shared so both passes scan the same
+        // (already shuffled) order.
+        List<Location> adjacent = getField().adjacentLocations(getLocation());
+        maybeContractContactDisease(adjacent);
+        return eatFromAdjacent(adjacent);
+    }
+
+    /**
+     * Possibly catch a non-CONTACT-type disease from the first diseased
+     * neighbour encountered (hunters excluded).
+     * @param adjacent The adjacent locations to scan.
+     */
+    private void maybeContractContactDisease(List<Location> adjacent)
+    {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
         for(Location loc : adjacent){
             if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
                 Organism organism = (Organism) field.getObjectAt(loc);
@@ -142,6 +156,17 @@ public abstract class Animal extends Organism implements Actor
                 }
             }
         }
+    }
+
+    /**
+     * Eat the first adjacent organism that is in this animal's diet, provided it
+     * is still hungry. Foodborne disease may be contracted from the meal.
+     * @param adjacent The adjacent locations to scan.
+     * @return Where food was found, or null if it wasn't.
+     */
+    private Location eatFromAdjacent(List<Location> adjacent)
+    {
+        Field field = getField();
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
         while(it.hasNext() && foodLevel <= traits.getMaxFoodLevel()) {

@@ -1,7 +1,10 @@
 package safari;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Central registry for species configuration and construction.
@@ -9,6 +12,7 @@ import java.util.Map;
 final class SpeciesFactory
 {
     private static final Map<SpeciesType, SpeciesConfig> CONFIGS = new EnumMap<>(SpeciesType.class);
+    private static final List<SpawnRule> SEEDING_RULES = new ArrayList<>();
 
     static {
         CONFIGS.put(
@@ -18,6 +22,7 @@ final class SpeciesFactory
                 2,
                 80,
                 0.8900995,
+                0.2,
                 7,
                 2,
                 14,
@@ -40,6 +45,7 @@ final class SpeciesFactory
                 2,
                 160,
                 0.27587999058995,
+                0.4998,
                 4,
                 15,
                 19,
@@ -62,6 +68,7 @@ final class SpeciesFactory
                 2,
                 1200,
                 0.4196975694969952,
+                0.032,
                 4,
                 11,
                 34,
@@ -87,6 +94,7 @@ final class SpeciesFactory
                 15,
                 1500,
                 0.40752995,
+                0.017,
                 2,
                 20,
                 25,
@@ -112,6 +120,7 @@ final class SpeciesFactory
                 10,
                 1000,
                 0.2,
+                0.011,
                 5,
                 6,
                 35,
@@ -127,6 +136,14 @@ final class SpeciesFactory
                 Map.of(Gazelle.class, 35)
             )
         );
+
+        SEEDING_RULES.add(new SpawnRule("Lion", config(SpeciesType.LION).spawnProbability(), (field, location) -> new Lion(true, field, location)));
+        SEEDING_RULES.add(new SpawnRule("Cheetah", config(SpeciesType.CHEETAH).spawnProbability(), (field, location) -> new Cheetah(true, field, location)));
+        SEEDING_RULES.add(new SpawnRule("Gazelle", config(SpeciesType.GAZELLE).spawnProbability(), (field, location) -> new Gazelle(true, field, location)));
+        SEEDING_RULES.add(new SpawnRule("Jaguar", config(SpeciesType.JAGUAR).spawnProbability(), (field, location) -> new Jaguar(true, field, location)));
+        SEEDING_RULES.add(new SpawnRule("Grass", 0.55, (field, location) -> new Grass(true, field, location)));
+        SEEDING_RULES.add(new SpawnRule("Zebra", config(SpeciesType.ZEBRA).spawnProbability(), (field, location) -> new Zebra(true, field, location)));
+        SEEDING_RULES.add(new SpawnRule("Hunter", 0.01, (field, location) -> new Hunter(field, location)));
     }
 
     private SpeciesFactory()
@@ -151,5 +168,16 @@ final class SpeciesFactory
             case LION -> new Lion(randomAge, field, location);
             case JAGUAR -> new Jaguar(randomAge, field, location);
         };
+    }
+
+    static Actor seedActor(Field field, int row, int col, Random random)
+    {
+        Location location = new Location(row, col);
+        for(SpawnRule rule : SEEDING_RULES) {
+            if(random.nextDouble() <= rule.probability()) {
+                return rule.create(field, location);
+            }
+        }
+        return null;
     }
 }

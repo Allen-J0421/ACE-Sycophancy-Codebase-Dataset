@@ -20,15 +20,6 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 150;
 
-    // The probability that each actor will be created in any given grid position.
-    private static final double JAGUAR_CREATION_PROBABILITY = 0.011; 
-    private static final double GAZELLE_CREATION_PROBABILITY = 0.2;
-    private static final double LION_CREATION_PROBABILITY = 0.017 ; 
-    private static final double PLANT_CREATION_PROBABILITY = 0.55; 
-    private static final double CHEETAH_CREATION_PROBABILITY =0.032;
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.4998; 
-    private static final double HUNTER_CREATION_PROBABILITY = 0.01; 
-
     // List of animals and plants which can not be stood on in the field.
     private List<Actor> animals;
     // List of plants that can be stood on in the field.
@@ -188,32 +179,12 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    animals.add(SpeciesFactory.create(SpeciesType.LION, true, field, location));
+                Actor actor = SpeciesFactory.seedActor(field, row, col, rand);
+                if(actor instanceof Plants plant) {
+                    plants.add(plant);
                 }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    animals.add(SpeciesFactory.create(SpeciesType.CHEETAH, true, field, location));
-                }
-                else if(rand.nextDouble() <= GAZELLE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    animals.add(SpeciesFactory.create(SpeciesType.GAZELLE, true, field, location));
-                }else if(rand.nextDouble() <= JAGUAR_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    animals.add(SpeciesFactory.create(SpeciesType.JAGUAR, true, field, location));
-                }else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Plants grass = new Grass(true, field, location);
-                    plants.add(grass);
-                }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    animals.add(SpeciesFactory.create(SpeciesType.ZEBRA, true, field, location));
-                }else if(rand.nextDouble() <= HUNTER_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Hunter hunter = new Hunter(field, location);
-                    animals.add(hunter);
+                else if(actor != null) {
+                    animals.add(actor);
                 }
                 // else leave the location empty.
             }

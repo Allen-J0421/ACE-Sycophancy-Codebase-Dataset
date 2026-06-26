@@ -156,7 +156,7 @@ public class SimulatorView extends JFrame
     public void showColors()
     {
         for (Class cls : colors.keySet()) {
-            JLabel tempLabel = new JLabel(cls.getName());
+            JLabel tempLabel = new JLabel(cls.getSimpleName());
             tempLabel.setForeground(colors.get(cls));
             tempLabel.setAlignmentX(CENTER_ALIGNMENT);
             tempLabel.setBorder(new EmptyBorder(4,0,4,0));

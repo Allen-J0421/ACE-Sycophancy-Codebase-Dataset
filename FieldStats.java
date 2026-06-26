@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.util.HashMap;
 
 /**
@@ -69,7 +68,7 @@ public class FieldStats
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(animalClass.getName());
+            count = new Counter(getDisplayName(animalClass));
             counters.put(animalClass, count);
         }
         count.increment();
@@ -131,5 +130,26 @@ public class FieldStats
     public HashMap<Class, Counter> getCounters()
     {
         return counters;
+    }
+
+    /**
+     * Resolve the user-facing display name for a class tracked in the simulation.
+     *
+     * @param actorClass the tracked class.
+     * @return a readable name for the class.
+     */
+    private String getDisplayName(Class actorClass)
+    {
+        AnimalType animalType = AnimalType.fromActorClass(actorClass);
+        if(animalType != null) {
+            return animalType.getDisplayName();
+        }
+
+        PlantType plantType = PlantType.fromActorClass(actorClass);
+        if(plantType != null) {
+            return plantType.getDisplayName();
+        }
+
+        return actorClass.getSimpleName();
     }
 }

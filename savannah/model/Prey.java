@@ -27,34 +27,6 @@ public abstract class Prey extends Animal
     }
 
     /**
-     * Create a new prey at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected Intial state if the prey is infected or not
-     * @param immmune Intial state if the prey is immune or not
-     * @param config Shared simulation configuration.
-     */
-    protected Prey(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
-    {
-        this(new SimulationContext(field, SimulationConfig.DEFAULT), location, randomAge, infected, immune, speciesType);
-    }
-
-    /**
-     * Create a new prey at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected Intial state if the prey is infected or not
-     * @param immmune Intial state if the prey is immune or not
-     * @param config Shared simulation configuration.
-     */
-    protected Prey(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
-    {
-        this(new SimulationContext(field, config), location, randomAge, infected, immune, speciesType);
-    }
-
-    /**
      * @Override
      * 
      * This is what the prey does most of the time - it may move around, it eats plants, 

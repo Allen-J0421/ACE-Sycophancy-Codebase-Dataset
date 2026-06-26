@@ -78,34 +78,6 @@ public abstract class Animal extends LivingOrganism
     }
 
     /**
-     * Create a new animal at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected Intial state if the animal is infected or not
-     * @param immmune Intial state if the animal is immune or not
-     * @param config Shared simulation configuration.
-     */
-    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
-    {
-        this(new SimulationContext(field, SimulationConfig.DEFAULT), location, randomAge, infected, immune, speciesType);
-    }
-
-    /**
-     * Create a new animal at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected Intial state if the animal is infected or not
-     * @param immmune Intial state if the animal is immune or not
-     * @param config Shared simulation configuration.
-     */
-    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
-    {
-        this(new SimulationContext(field, config), location, randomAge, infected, immune, speciesType);
-    }
-    
-    /**
      * @Override
      * 
      * Make this animal act - that is: make it do

@@ -1,6 +1,5 @@
 package savannah.model;
 
-import savannah.config.SimulationConfig;
 import savannah.engine.SimulationContext;
 
 /**
@@ -12,11 +11,10 @@ import savannah.engine.SimulationContext;
 public class Giraffe extends Prey
 {
     /**
-     * Create a new Giraffe. A Giraffe may be created with age
-     * zero (a new born) or with a random age.
+     * Create a new Giraffe with the shared simulation context.
      * 
+     * @param context Shared simulation context.
      * @param randomAge If true, the Giraffe will have a random age.
-     * @param field The field currently occupied.
      * @param location The location within the field.
      * @param isInfected Whether or not the animal will be infected.
      * @param isImmune Whether or not the animal will be immune.
@@ -24,26 +22,5 @@ public class Giraffe extends Prey
     public Giraffe(SimulationContext context, boolean randomAge, Location location, boolean isInfected, boolean isImmune)
     {
         super(context, location, randomAge, isInfected, isImmune, SpeciesType.GIRAFFE);
-    }
-
-    /**
-     * Create a new Giraffe. A Giraffe may be created with age
-     * zero (a new born) or with a random age.
-     * 
-     * @param randomAge If true, the Giraffe will have a random age.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param isInfected Whether or not the animal will be infected.
-     * @param isImmune Whether or not the animal will be immune.
-     * @param config Shared simulation configuration.
-     */
-    public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
-    {
-        this(new SimulationContext(field, SimulationConfig.DEFAULT), randomAge, location, isInfected, isImmune);
-    }
-
-    public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
-    {
-        this(new SimulationContext(field, config), randomAge, location, isInfected, isImmune);
     }
 }

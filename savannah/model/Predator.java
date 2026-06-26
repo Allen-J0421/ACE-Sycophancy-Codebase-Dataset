@@ -30,34 +30,6 @@ public abstract class Predator extends Animal
     }
 
     /**
-     * Create a new predator at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected : intial state if the prey is infected or not
-     * @param immmune : intial state if the prey is immune or not
-     * @param config Shared simulation configuration.
-     */
-    protected Predator(Field field, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType)
-    {
-        this(new SimulationContext(field, SimulationConfig.DEFAULT), location, randomAge, isInfected, isImmune, speciesType);
-    }
-
-    /**
-     * Create a new predator at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected : intial state if the prey is infected or not
-     * @param immmune : intial state if the prey is immune or not
-     * @param config Shared simulation configuration.
-     */
-    protected Predator(Field field, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType, SimulationConfig config)
-    {
-        this(new SimulationContext(field, config), location, randomAge, isInfected, isImmune, speciesType);
-    }
-    
-    /**
      * @Override
      * 
      * This is what the predators does most of the time - it may move around, it eats prey, 

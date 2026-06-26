@@ -187,18 +187,8 @@ public enum SpeciesType
         throw new UnsupportedOperationException(displayName + " is not an animal factory");
     }
 
-    public Animal createAnimal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SimulationConfig config)
-    {
-        return createAnimal(new SimulationContext(field, config), location, randomAge, infected, immune);
-    }
-
     public Plant createPlant(SimulationContext context, boolean randomHealthPercentage, Location location)
     {
         throw new UnsupportedOperationException(displayName + " is not a plant factory");
-    }
-
-    public Plant createPlant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config)
-    {
-        return createPlant(new SimulationContext(field, config), randomHealthPercentage, location);
     }
 }

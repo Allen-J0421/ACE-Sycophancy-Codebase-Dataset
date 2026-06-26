@@ -19,10 +19,10 @@ public class Plant extends LivingOrganism
     private double spreadProbability;
     
     /**
-     * Create a new PLANT at location in field.
+     * Create a new PLANT with the shared simulation context.
      * 
+     * @param context Shared simulation context.
      * @param randomHealthPercentage If true, the plant will have a random age.
-     * @param field The field currently occupied.
      * @param location The location within the field.
      */
     public Plant(SimulationContext context, boolean randomHealthPercentage, Location location) 
@@ -31,32 +31,6 @@ public class Plant extends LivingOrganism
 
         foodValue = speciesType.plantConfig(getConfig()).foodValue;
         healthPercentage = speciesType.initialPlantHealth(randomHealthPercentage, rand, getConfig());
-    }
-
-    /**
-     * Create a new PLANT at location in field.
-     * 
-     * @param randomHealthPercentage If true, the plant will have a random age.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param config Shared simulation configuration.
-     */
-    public Plant(boolean randomHealthPercentage, Field field, Location location) 
-    {
-        this(new SimulationContext(field, SimulationConfig.DEFAULT), randomHealthPercentage, location);
-    }
-
-    /**
-     * Create a new PLANT at location in field.
-     * 
-     * @param randomHealthPercentage If true, the plant will have a random age.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param config Shared simulation configuration.
-     */
-    public Plant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config) 
-    {
-        this(new SimulationContext(field, config), randomHealthPercentage, location);
     }
     
     /**

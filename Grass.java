@@ -58,7 +58,7 @@ public class Grass extends Plants
     private void restorePlantPresence()
     {
         Field field = getField();
-        Object occupant = field.getObjectAt(getLocation());
+        Actor occupant = field.getObjectAt(getLocation());
         if(occupant == null){
             setLocation(getLocation());
         }

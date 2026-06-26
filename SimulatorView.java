@@ -182,7 +182,7 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object actor = field.getObjectAt(row, col);
+                Actor actor = field.getObjectAt(row, col);
                 if(actor != null) {
                     stats.incrementCount(actor, simulator);
                     fieldView.drawMark(col, row, getColor(actor.getClass()));
@@ -324,4 +324,3 @@ public class SimulatorView extends JFrame
         }
     }
 }
-

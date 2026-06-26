@@ -63,7 +63,7 @@ public class FieldStats
      * @param actor The object of animal to increment.
      * @param simulator. The current simulator the simulation is being run on.
      */
-    public void incrementCount(Object actor, Simulator simulator)
+    public void incrementCount(Actor actor, Simulator simulator)
     {
         Class<?> actorClass = actor.getClass();
         Counter count = getCounter(actorClass);
@@ -107,7 +107,7 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
+                Actor animal = field.getObjectAt(row, col);
                 if(animal != null) {
                     incrementCount(animal, simulator);
                 }

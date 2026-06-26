@@ -76,7 +76,7 @@ public class Hunter extends Actor
             Iterator<Location> it = adjacent.iterator();
             for(int i = 0; i< SHOTS; i++){
                 Location where = it.next();
-                Object animal = field.getObjectAt(where);
+                Actor animal = field.getObjectAt(where);
                 if( animal != null && (animal instanceof Lion  || animal instanceof Cheetah)){
                     Animal currentAnimal = (Animal) animal;
                     if(currentAnimal.isActive()) { 

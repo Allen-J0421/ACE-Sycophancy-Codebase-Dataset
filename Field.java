@@ -17,8 +17,8 @@ public class Field
     
     // The depth and width of the field.
     private int depth, width;
-    // Storage for the animals.
-    private Object[][] field;
+    // Storage for the actors.
+    private Actor[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -29,7 +29,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new Actor[depth][width];
     }
     
     /**
@@ -57,44 +57,44 @@ public class Field
      * Place an animal at the given location.
      * If there is already an animal at the location it will
      * be lost.
-     * @param animal The animal to be placed.
+     * @param actor The actor to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void place(Actor actor, int row, int col)
     {
-        place(animal, new Location(row, col));
+        place(actor, new Location(row, col));
     }
     
     /**
      * Place an animal at the given location.
      * If there is already an animal at the location it will
      * be lost.
-     * @param animal The animal to be placed.
-     * @param location Where to place the animal.
+     * @param actor The actor to be placed.
+     * @param location Where to place the actor.
      */
-    public void place(Object animal, Location location)
+    public void place(Actor actor, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        field[location.getRow()][location.getCol()] = actor;
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the actor at the given location, if any.
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Actor getObjectAt(Location location)
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the actor at the given location, if any.
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Actor getObjectAt(int row, int col)
     {
         return field[row][col];
     }

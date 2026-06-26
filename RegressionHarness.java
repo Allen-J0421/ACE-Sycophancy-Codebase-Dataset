@@ -21,32 +21,31 @@ public class RegressionHarness
         SimulationEngine engine = new SimulationEngine(DEPTH, WIDTH);
         engine.reset();
 
+        boolean verbose = args.length > 0 && args[0].equals("verbose");
         long fingerprint = 1469598103934665603L; // FNV-1a offset basis
         for (int step = 1; step <= STEPS; step++) {
             engine.step();
-            fingerprint = mix(fingerprint, signature(engine.getField(), step));
+            long sig = signature(engine.getField(), step);
+            if (verbose) System.out.println(step + "," + sig);
+            fingerprint = mix(fingerprint, sig);
         }
         System.out.println("FINGERPRINT=" + fingerprint);
     }
 
     private static long signature(Field field, int step)
     {
-        Map<String, Integer> counts = new TreeMap<>();
-        int diseased = 0;
+        // Position-sensitive: hash the class (and diseased flag) at every cell.
+        long s = 1469598103934665603L ^ step;
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Object o = field.getObjectAt(row, col);
+                long cell = 0;
                 if (o != null) {
-                    counts.merge(o.getClass().getName(), 1, Integer::sum);
-                    if (o instanceof Organism && ((Organism) o).isDiseased()) {
-                        diseased++;
-                    }
+                    cell = o.getClass().getName().hashCode();
+                    if (o instanceof Organism && ((Organism) o).isDiseased()) cell = cell * 7 + 3;
                 }
+                s = (s ^ cell) * 1099511628211L;
             }
-        }
-        long s = step * 1000003L + diseased * 31L;
-        for (Map.Entry<String, Integer> e : counts.entrySet()) {
-            s = s * 1000003L + e.getKey().hashCode() * 17L + e.getValue();
         }
         return s;
     }

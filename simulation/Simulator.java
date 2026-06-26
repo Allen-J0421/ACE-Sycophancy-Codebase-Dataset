@@ -16,6 +16,7 @@ import configuration.Configuration;
  * @version 01.03.22
  */
 public class Simulator
+implements SimulationContext
 {
     // List of animals in the field.
     private List<Animal> animals;
@@ -33,6 +34,10 @@ public class Simulator
     private SimulatorView view;
     // Configuration for simulation timing, population, and field sizing.
     private final Configuration config;
+    // Event bus used by entities to notify the simulator.
+    private final SimulationEventBus eventBus;
+    // Births captured during the current step or initial population.
+    private List<BirthEvent> pendingBirths;
     
     /**
      * Construct a simulation field with default size.
@@ -57,8 +62,11 @@ public class Simulator
      */
     public Simulator(Configuration config) {
         this.config = config;
+        this.eventBus = new SimulationEventBus();
+        this.eventBus.addListener(new SimulationStateListener());
         animals = new ArrayList<>();
         plants = new ArrayList<>();
+        pendingBirths = new ArrayList<>();
 
         weather = Weather.NONE;
 
@@ -143,25 +151,22 @@ public class Simulator
      */
     public void simulateOneStep() {
         step++;
+        pendingBirths = new ArrayList<>();
 
         applyWeatherEffects();
 
-        // Provide space for newborn animals.
-        List<Animal> newAnimals = new ArrayList<>();        
         // Let all ants act.
         for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
             Animal animal = it.next();
-            animal.act(newAnimals,time);
+            animal.act(time);
             if(! animal.isAlive()) {
                 it.remove();
             }
         }
 
-        //provide space for new created plants
-        List<Plant> newPlants = new ArrayList<>();
         for(Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
             Plant plant = it.next();
-            plant.act(newPlants);
+            plant.act();
             if(! plant.isAlive()) {
                 it.remove();
             }
@@ -169,8 +174,7 @@ public class Simulator
 
                
         // Add the newly born animals and plants to the main lists.
-        animals.addAll(newAnimals);
-        plants.addAll(newPlants);
+        flushPendingBirths();
 
         view.showStatus(step, field, time, weather);
     }
@@ -185,7 +189,9 @@ public class Simulator
         weather = Weather.NONE;
         animals.clear();
         plants.clear();
+        pendingBirths.clear();
         populate();
+        flushPendingBirths();
         
         // Show the starting state in the view.
         view.showStatus(step, field, time, weather);
@@ -346,33 +352,122 @@ public class Simulator
      */
     private void spawnPopulation(Configuration.PopulationKind kind, int row, int col) {
         Location location = new Location(row, col);
+        LivingEntity entity;
         switch (kind) {
             case DINGO:
-                animals.add(new Dingo(true, field, location));
+                entity = new Dingo(true, this, location);
                 break;
             case ANT:
-                animals.add(new Ant(true, field, location));
+                entity = new Ant(true, this, location);
                 break;
             case SNAKE:
-                animals.add(new Snake(true, field, location));
+                entity = new Snake(true, this, location);
                 break;
             case RAT:
-                animals.add(new Rat(true, field, location));
+                entity = new Rat(true, this, location);
                 break;
             case EAGLE:
-                animals.add(new Eagle(true, field, location));
+                entity = new Eagle(true, this, location);
                 break;
             case EMU:
-                animals.add(new Emu(true, field, location));
+                entity = new Emu(true, this, location);
                 break;
             case ACACIA:
-                plants.add(new Acacia(field, location));
+                entity = new Acacia(this, location);
                 break;
             case GRASS:
-                plants.add(new Grass(field, location));
+                entity = new Grass(this, location);
                 break;
             default:
+                entity = null;
                 break;
+        }
+        if (entity != null) {
+            emit(new BirthEvent(this, entity, location));
+        }
+    }
+
+    @Override
+    public List<Location> adjacentLocations(Location location) {
+        return field.adjacentLocations(location);
+    }
+
+    @Override
+    public List<Location> getFreeAdjacentLocations(Location location) {
+        return field.getFreeAdjacentLocations(location);
+    }
+
+    @Override
+    public Location freeAdjacentLocation(Location location) {
+        return field.freeAdjacentLocation(location);
+    }
+
+    @Override
+    public Object getObjectAt(Location location) {
+        return field.getObjectAt(location);
+    }
+
+    @Override
+    public void emit(SimulationEvent event) {
+        eventBus.publish(event);
+    }
+
+    /**
+     * Place any births captured during the current cycle into the field.
+     */
+    private void flushPendingBirths() {
+        for (BirthEvent birth : pendingBirths) {
+            LivingEntity offspring = birth.getOffspring();
+            field.place(offspring, birth.getLocation());
+            if (offspring instanceof Animal) {
+                animals.add((Animal) offspring);
+            }
+            else if (offspring instanceof Plant) {
+                plants.add((Plant) offspring);
+            }
+        }
+        pendingBirths.clear();
+    }
+
+    /**
+     * Listener that applies simulation events to the field state.
+     */
+    private final class SimulationStateListener implements SimulationEventListener
+    {
+        @Override
+        public void onSimulationEvent(SimulationEvent event) {
+            switch (event.getType()) {
+                case BIRTH:
+                    pendingBirths.add((BirthEvent) event);
+                    break;
+                case DEATH:
+                    handleDeath((DeathEvent) event);
+                    break;
+                case MOVED:
+                    handleMovement((MovementEvent) event);
+                    break;
+                case FOOD_CONSUMED:
+                default:
+                    break;
+            }
+        }
+
+        private void handleDeath(DeathEvent event) {
+            Location location = event.getLocation();
+            if (location != null) {
+                field.clear(location);
+            }
+        }
+
+        private void handleMovement(MovementEvent event) {
+            Location from = event.getFrom();
+            Location to = event.getTo();
+            if (from != null) {
+                field.clear(from);
+            }
+            if (to != null) {
+                field.place(event.getEntity(), to);
+            }
         }
     }
 

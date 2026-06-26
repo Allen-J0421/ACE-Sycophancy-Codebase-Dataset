@@ -23,17 +23,16 @@ public abstract class Plant extends LivingEntity
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Plant(Field field, Location location) {
-        super(field, location);
+    public Plant(SimulationContext context, Location location) {
+        super(context, location);
         rain = false;
     }
 
     /**
      * Make this plant act - that is: make it do
      * whatever it wants/needs to do.
-     * @param newPlants A list to receive newly created plants.
      */
-    abstract public void act(List<Plant> newPlants);
+    abstract public void act();
 
     /**
      * assign true to rain
@@ -67,27 +66,27 @@ public abstract class Plant extends LivingEntity
 
     /**
      * Create a new offspring of this plant's species.
-     * @param field The field occupied by the offspring.
+     * @param context The simulation context for the offspring.
      * @param location The offspring's location.
      * @return A new plant instance.
      */
-    protected abstract Plant createOffspring(Field field, Location location);
+    protected abstract Plant createOffspring(SimulationContext context, Location location);
 
     /**
      * Reproduce into free adjacent locations.
-     * @param newPlants A list to receive newly created plants.
      * @param REPRODUCING_PROBABILITY The likelihood of reproduction.
      * @param MAX_OFFSPRING_SIZE The maximum number of offspring.
      */
-    protected void growPlants(List<Plant> newPlants, double REPRODUCING_PROBABILITY,
+    protected void growPlants(double REPRODUCING_PROBABILITY,
             int MAX_OFFSPRING_SIZE)
     {
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        SimulationContext context = getContext();
+        List<Location> free = context.getFreeAdjacentLocations(getLocation());
         int offspring = breed(REPRODUCING_PROBABILITY, MAX_OFFSPRING_SIZE);
         for(int b = 0; b < offspring && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            newPlants.add(createOffspring(field, loc));
+            Plant offspringPlant = createOffspring(context, loc);
+            context.emit(new BirthEvent(this, offspringPlant, loc));
         }
     }
 }

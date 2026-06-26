@@ -26,8 +26,8 @@ public class Snake extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Snake(boolean randomAge, Field field, Location location) {
-        super(field, location);
+    public Snake(boolean randomAge, SimulationContext context, Location location) {
+        super(context, location);
         this.setGender();
         if(randomAge) {
             setAge( rand.nextInt(TUNING.getMaxAge()));
@@ -46,7 +46,7 @@ public class Snake extends Animal
      * @param time the current time in the simulation
      * @param newSnakes A list to return newly born snakes.
      */
-    public void act(List<Animal> newSnakes, int time) {
+    public void act(int time) {
         incrementAge(TUNING.getMaxAge());
         incrementHunger();
         if(isAlive() && TUNING.isActive(time))
@@ -55,12 +55,12 @@ public class Snake extends Animal
                 spreadDisease();
             }
             if (giveBirth(TUNING.getBreedingAge())) {
-                breedOffspring(newSnakes, TUNING.getBreedingAge(),
+                breedOffspring(TUNING.getBreedingAge(),
                         TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
             Location newLocation = findFood();
             if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getContext().freeAdjacentLocation(getLocation());
             }
             moveOrDie(newLocation);
         }
@@ -74,16 +74,18 @@ public class Snake extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        SimulationContext context = getContext();
+        List<Location> adjacent = context.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Object animal = context.getObjectAt(where);
             if(animal instanceof Rat) {
                 Rat rat = (Rat) animal;
                 if(rat.isAlive()) {
                     rat.setDead();
+                    context.emit(new FoodConsumptionEvent(this, this, rat,
+                            TUNING.foodValueFor(Configuration.SpeciesId.RAT)));
                     setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.RAT));
                     return where;
                 }
@@ -92,6 +94,7 @@ public class Snake extends Animal
                 Plant plant = (Plant) animal;
                 if(plant.isAlive()) {
                     plant.setDead();
+                    context.emit(new FoodConsumptionEvent(this, this, plant, 0));
                     return where;
                 }
             }
@@ -102,8 +105,8 @@ public class Snake extends Animal
     /**
      * Create a new snake offspring.
      */
-    protected Animal createOffspring(Field field, Location location) {
-        return new Snake(false, field, location);
+    protected Animal createOffspring(SimulationContext context, Location location) {
+        return new Snake(false, context, location);
     }
 
 }

@@ -31,8 +31,8 @@ public abstract class Animal extends LivingEntity
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field field, Location location) {
-        super(field, location);
+    public Animal(SimulationContext context, Location location) {
+        super(context, location);
         fog = false;
         disease = false;
     }
@@ -40,9 +40,9 @@ public abstract class Animal extends LivingEntity
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
+     * @param time The current time in the simulation.
      */
-    abstract public void act(List<Animal> newAnimals, int time);
+    abstract public void act(int time);
 
     /**
      * Return the animal's gender.
@@ -117,12 +117,12 @@ public abstract class Animal extends LivingEntity
      * in adjacent locations
      */
     protected void spreadDisease() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        SimulationContext context = getContext();
+        List<Location> adjacent = context.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Object animal = context.getObjectAt(where);
             if(animal instanceof Animal) {
                 Animal diseaseAnimal = (Animal) animal;
                 diseaseAnimal.giveDisease();
@@ -133,31 +133,31 @@ public abstract class Animal extends LivingEntity
 
     /**
      * Breed new offspring into free adjacent locations.
-     * @param newAnimals A list to receive newly born animals.
      * @param BREEDING_AGE The minimum age required to breed.
      * @param BREEDING_PROBABILITY The likelihood of breeding.
      * @param MAX_LITTER_SIZE The maximum number of births.
      */
-    protected void breedOffspring(List<Animal> newAnimals, int BREEDING_AGE,
+    protected void breedOffspring(int BREEDING_AGE,
             double BREEDING_PROBABILITY, int MAX_LITTER_SIZE) {
         if(giveBirth(BREEDING_AGE)) {
-            Field field = getField();
-            List<Location> free = field.getFreeAdjacentLocations(getLocation());
+            SimulationContext context = getContext();
+            List<Location> free = context.getFreeAdjacentLocations(getLocation());
             int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
             for (int b = 0; b < births && free.size() > 0; b++) {
                 Location loc = free.remove(0);
-                newAnimals.add(createOffspring(field, loc));
+                Animal offspring = createOffspring(context, loc);
+                context.emit(new BirthEvent(this, offspring, loc));
             }
         }
     }
 
     /**
      * Create a new offspring of this animal's species.
-     * @param field The field occupied by the offspring.
+     * @param context The simulation context for the offspring.
      * @param location The offspring's location.
      * @return A new animal instance.
      */
-    protected abstract Animal createOffspring(Field field, Location location);
+    protected abstract Animal createOffspring(SimulationContext context, Location location);
 
     /**
      * Move to a new location if one exists, otherwise die.
@@ -199,12 +199,12 @@ public abstract class Animal extends LivingEntity
      * @retyrn true if the animal can breed, false if it can not
      */
     protected boolean giveBirth(int BREEDING_AGE) {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        SimulationContext context = getContext();
+        List<Location> adjacent = context.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Object animal = context.getObjectAt(where);
             if (animal != null) {
                 if (animal.getClass() == this.getClass()) {
                     Animal adjAnimal = (Animal) animal;

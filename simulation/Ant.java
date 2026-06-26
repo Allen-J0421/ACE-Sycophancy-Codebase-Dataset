@@ -26,8 +26,8 @@ public class Ant extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Ant(boolean randomAge, Field field, Location location) {
-        super(field, location);
+    public Ant(boolean randomAge, SimulationContext context, Location location) {
+        super(context, location);
         this.setGender();
         if(randomAge) {
             setAge(rand.nextInt(TUNING.getMaxAge()));
@@ -46,7 +46,7 @@ public class Ant extends Animal
      * @param newAnts A list to return newly born ants.
      * @param time the current time in the simulation
      */
-    public void act(List<Animal> newAnts, int time) {
+    public void act(int time) {
         incrementAge(TUNING.getMaxAge());
         incrementHunger();
 
@@ -56,13 +56,13 @@ public class Ant extends Animal
                 spreadDisease();
             }
             if (giveBirth(TUNING.getBreedingAge())) {
-                breedOffspring(newAnts, TUNING.getBreedingAge(),
+                breedOffspring(TUNING.getBreedingAge(),
                         TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
 
             Location newLocation = findFood();
             if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getContext().freeAdjacentLocation(getLocation());
             }
             moveOrDie(newLocation);
         }
@@ -74,16 +74,18 @@ public class Ant extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     private Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        SimulationContext context = getContext();
+        List<Location> adjacent = context.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object plant = field.getObjectAt(where);
+            Object plant = context.getObjectAt(where);
             if(plant instanceof Acacia) {
                 Acacia acacia = (Acacia) plant;
                 if (acacia.isAlive()) {
                     acacia.setDead();
+                    context.emit(new FoodConsumptionEvent(this, this, acacia,
+                            TUNING.foodValueFor(Configuration.SpeciesId.ACACIA)));
                     setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.ACACIA));
                     return where;
                 }
@@ -92,6 +94,8 @@ public class Ant extends Animal
                 Grass grass = (Grass) plant;
                 if(grass.isAlive()) {
                     grass.setDead();
+                    context.emit(new FoodConsumptionEvent(this, this, grass,
+                            TUNING.foodValueFor(Configuration.SpeciesId.GRASS)));
                     setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.GRASS));
                     return where;
                 }
@@ -103,8 +107,8 @@ public class Ant extends Animal
     /**
      * Create a new ant offspring.
      */
-    protected Animal createOffspring(Field field, Location location) {
-        return new Ant(false, field, location);
+    protected Animal createOffspring(SimulationContext context, Location location) {
+        return new Ant(false, context, location);
     }
 
 }

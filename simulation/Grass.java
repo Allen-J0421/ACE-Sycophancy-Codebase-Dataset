@@ -21,8 +21,8 @@ public class Grass extends Plant
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Grass(Field field, Location location) {
-        super(field, location);
+    public Grass(SimulationContext context, Location location) {
+        super(context, location);
     }
 
     /**
@@ -30,9 +30,9 @@ public class Grass extends Plant
      * it grows and reproduces offspring into adjacent locations
      * @param newGrass A list to return newly produced grasses.
      */
-    public void act(List<Plant> newGrass) {
+    public void act() {
         if(isAlive()) {
-            growPlants(newGrass, TUNING.getReproducingProbability(),
+            growPlants(TUNING.getReproducingProbability(),
                     TUNING.getMaxOffspringSize());
         }
     }
@@ -40,7 +40,7 @@ public class Grass extends Plant
     /**
      * Create a new grass offspring.
      */
-    protected Plant createOffspring(Field field, Location location) {
-        return new Grass(field, location);
+    protected Plant createOffspring(SimulationContext context, Location location) {
+        return new Grass(context, location);
     }
 }

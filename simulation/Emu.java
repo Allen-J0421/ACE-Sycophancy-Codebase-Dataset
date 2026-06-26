@@ -26,8 +26,8 @@ public class Emu extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Emu(boolean randomAge, Field field, Location location) {
-        super(field, location);
+    public Emu(boolean randomAge, SimulationContext context, Location location) {
+        super(context, location);
         this.setGender();
         if(randomAge) {
             setAge(rand.nextInt(TUNING.getMaxAge()));
@@ -46,7 +46,7 @@ public class Emu extends Animal
      * @param newEmus A list to return newly born emus.
      * @param time the current time in the simulation
      */
-    public void act(List<Animal> newEmus,int time) {
+    public void act(int time) {
         incrementAge(TUNING.getMaxAge());
         incrementHunger();
 
@@ -55,12 +55,12 @@ public class Emu extends Animal
                 spreadDisease();
             }
             if (giveBirth(TUNING.getBreedingAge())) {
-                breedOffspring(newEmus, TUNING.getBreedingAge(),
+                breedOffspring(TUNING.getBreedingAge(),
                         TUNING.getBreedingProbability(), TUNING.getMaxLitterSize());
             }
             Location newLocation = findFood();
             if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getContext().freeAdjacentLocation(getLocation());
             }
             moveOrDie(newLocation);
         }
@@ -74,24 +74,27 @@ public class Emu extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     private Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        SimulationContext context = getContext();
+        List<Location> adjacent = context.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object searchPlant = field.getObjectAt(where);
+            Object searchPlant = context.getObjectAt(where);
             if(searchPlant instanceof Grass) {
-            Grass grass = (Grass) searchPlant;
-            if (grass.isAlive()) {
-                grass.setDead();
-                setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.GRASS));
-                return where;
-            }
+                Grass grass = (Grass) searchPlant;
+                if (grass.isAlive()) {
+                    grass.setDead();
+                    context.emit(new FoodConsumptionEvent(this, this, grass,
+                            TUNING.foodValueFor(Configuration.SpeciesId.GRASS)));
+                    setFoodLevel(TUNING.foodValueFor(Configuration.SpeciesId.GRASS));
+                    return where;
+                }
             }
             else if (searchPlant instanceof Plant) {
                 Plant plant = (Plant) searchPlant;
                 if(plant.isAlive()) {
                     plant.setDead();
+                    context.emit(new FoodConsumptionEvent(this, this, plant, 0));
                     return where;
                 }
             }
@@ -102,7 +105,7 @@ public class Emu extends Animal
     /**
      * Create a new emu offspring.
      */
-    protected Animal createOffspring(Field field, Location location) {
-        return new Emu(false, field, location);
+    protected Animal createOffspring(SimulationContext context, Location location) {
+        return new Emu(false, context, location);
     }
 }

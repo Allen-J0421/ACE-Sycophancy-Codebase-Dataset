@@ -6,19 +6,19 @@ package simulation;
 public abstract class LivingEntity
 {
     private boolean alive;
-    private Field field;
+    private SimulationContext context;
     private Location location;
 
     /**
      * Create a new entity at a location in a field.
      *
-     * @param field The field currently occupied.
+     * @param context The simulation context currently occupied.
      * @param location The location within the field.
      */
-    protected LivingEntity(Field field, Location location) {
+    protected LivingEntity(SimulationContext context, Location location) {
         alive = true;
-        this.field = field;
-        setLocation(location);
+        this.context = context;
+        this.location = location;
     }
 
     /**
@@ -36,11 +36,10 @@ public abstract class LivingEntity
      */
     protected void setDead() {
         alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
+        if(location != null && context != null) {
+            context.emit(new DeathEvent(this, this, location));
         }
+        location = null;
     }
 
     /**
@@ -57,19 +56,19 @@ public abstract class LivingEntity
      * @param newLocation The entity's new location.
      */
     protected void setLocation(Location newLocation) {
-        if(location != null) {
-            field.clear(location);
-        }
+        Location oldLocation = location;
         location = newLocation;
-        field.place(this, newLocation);
+        if(context != null) {
+            context.emit(new MovementEvent(this, this, oldLocation, newLocation));
+        }
     }
 
     /**
-     * Return the entity's field.
-     * @return The entity's field.
+     * Return the simulation context.
+     * @return The entity's simulation context.
      */
-    protected Field getField()
+    protected SimulationContext getContext()
     {
-        return field;
+        return context;
     }
 }

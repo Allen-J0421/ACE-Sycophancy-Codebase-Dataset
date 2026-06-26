@@ -91,21 +91,20 @@ public class FieldStats
      */
     public boolean isViable(Field field)
     {
-        // How many counts are non-zero.
-        int nonZero = 0;
-        if(!countsValid) 
+        if(!countsValid)
         {
             generateCounts(field);
         }
-        
+
+        int nonZero = 0;
         for(Counter info : counters.values())
         {
-            if(info.getCount() > 0)
+            if(info.getCount() > 0 && ++nonZero > 1)
             {
-                nonZero++;
+                return true;
             }
         }
-        return nonZero > 1;
+        return false;
     }
     
     /**

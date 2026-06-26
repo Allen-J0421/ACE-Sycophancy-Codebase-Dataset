@@ -293,7 +293,7 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * Make this animal's more hungry. This could result in the animal's death.
+     * Make this animal more hungry. This could result in the animal's death.
      */
     protected void incrementHunger()
     {

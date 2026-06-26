@@ -10,7 +10,7 @@ public class Weather {
     // Stores all of the possible weather types.
     public enum WeatherType { Sunny, Rainy, Foggy, Clear, Cloudy }
     
-    private static WeatherType currentWeather;
+    private static WeatherType currentWeather = pickRandomWeather();
     
     private static int weatherLastsForSteps;
     private static final int MINIMUM_STEPS_WEATHER_LASTS_FOR = 27;
@@ -21,13 +21,8 @@ public class Weather {
     /**
      * @return The current weather type.
      */
-    public static WeatherType getWeather() 
+    public static WeatherType getWeather()
     {
-        if (currentWeather == null) 
-        {
-            currentWeather = pickRandomWeather();
-        }
-        
         return currentWeather;
     }
     

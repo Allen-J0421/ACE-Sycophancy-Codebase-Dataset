@@ -48,17 +48,4 @@ public class Eagle extends Animal
         super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = false;
     }
-    /**
-     * Additional functionality that doesn't allow eagles to find food while it's raining
-     * @param environment The environment that the eagle resides in. 
-     * @return Location Where food was found, or null if it wasn't.
-     */
-    @Override
-    protected Location findFood(Environment environment)
-    {
-        if(environment.getWeatherService().allowsEagleForaging()) {
-            return super.findFood(environment);
-        }
-        return null;
-    }
 }

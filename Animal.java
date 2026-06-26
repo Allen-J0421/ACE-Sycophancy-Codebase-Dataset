@@ -1,9 +1,7 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A class representing shared characteristics of animals.
@@ -65,35 +63,11 @@ public abstract class Animal extends Organism implements Actor
      */
     public void act(List<Actor> newAnimals, Environment environment)
     {
-        Random rand = getRandomProvider().getRandom();
         incrementAge();
         incrementHunger();
         if(isAlive()) {
             giveBirth(newAnimals, environment);
-            // Move towards a source of food if found.
-            Location newLocation = findFood(environment);
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // list of adjacent locations that contain an instance of Grass
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            if(newLocation != null) {
-                // See if it was possible to move.
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                // if there is grass adjacent to the animal, clear the current location
-                // and move to a random location that contained grass
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-            else {
-                // Overcrowding
-                setDead();
-            }
+            move(environment);
         }
     }
 
@@ -102,45 +76,14 @@ public abstract class Animal extends Organism implements Actor
      * Only the first food is eaten.
      * @return Where food was found, or null if it wasn't.
      */
-    protected Location findFood(Environment environment)
-    {
-        return findFood();
-    }
-
-    /**
-     * Look for food adjacent to the current location.
-     * Only the first food is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood()
+    protected MovementService.MovementDecision findFood(Environment environment)
     {
         Field field = getField();
+        MovementService movementService = field.getMovementService();
         DiseaseService diseaseService = field.getDiseaseService();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        List<Location> adjacent = movementService.getAdjacentLocations(field, getLocation());
         diseaseService.applyAdjacentExposure(this, adjacent, field);
-        Iterator<Location> it = adjacent.iterator();
-        // only eats if it's not full (food level less than max)
-        while(it.hasNext() && foodLevel <= getMaxFoodLevel()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal != null && getDiet().contains(animal.getClass()))
-            {
-                Organism food = (Organism) animal;
-                diseaseService.applyFoodborneExposure(this, food);
-                if(food.isAlive()) 
-                {
-                    food.setDead();
-                    int newFoodLevel = foodLevel + food.getFoodValue();
-
-                    // caps the food level at the maximum
-                    foodLevel = Math.min(newFoodLevel, getMaxFoodLevel());
-
-                    return where;
-                }
-                return where;
-            }
-        }
-        return null;
+        return movementService.resolveAnimalMovement(this, environment, adjacent);
     }
 
     /**
@@ -152,7 +95,7 @@ public abstract class Animal extends Organism implements Actor
     protected void giveBirth(List<Actor> newAnimals, Environment environment)
     {
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = field.getMovementService().getFreeAdjacentLocations(field, getLocation());
         int births = breed();
         for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
@@ -210,18 +153,10 @@ public abstract class Animal extends Organism implements Actor
      */
     protected List<Organism> getPotentialMates()
     {
-        List<Organism> potentialMates = new ArrayList<>();
         if(getField() != null){
-            potentialMates = getField().adjacentLocations(getLocation()).stream()
-                    .map(s -> getField().getObjectAt(s))
-                    .filter(s -> s != null)
-                    .filter(s -> s.getClass().equals(this.getClass()))
-                    .filter(s -> this.sex != ((Animal) s).sex)
-                    .map(s -> (Organism) s)
-                    .collect(Collectors.toList());
-            // stream counts the number of Animals of the same species, as well as opposite gender
+            return getField().getMovementService().findPotentialMates(this);
         }
-        return potentialMates;
+        return new ArrayList<>();
     }
 
 
@@ -244,6 +179,31 @@ public abstract class Animal extends Organism implements Actor
         foodLevel--;
         if(foodLevel <= 0) {
             setDead();
+        }
+    }
+
+    private void move(Environment environment)
+    {
+        MovementService.MovementDecision movementDecision = findFood(environment);
+        if(movementDecision.consumedOrganism() != null) {
+            consume(movementDecision.consumedOrganism());
+        }
+
+        if(movementDecision.targetLocation() != null) {
+            getField().getMovementService().moveOrganism(this, movementDecision.targetLocation());
+        }
+        else if(movementDecision.overcrowded()) {
+            setDead();
+        }
+    }
+
+    private void consume(Organism food)
+    {
+        getField().getDiseaseService().applyFoodborneExposure(this, food);
+        if(food.isAlive()) {
+            food.setDead();
+            int newFoodLevel = foodLevel + food.getFoodValue();
+            foodLevel = Math.min(newFoodLevel, getMaxFoodLevel());
         }
     }
 

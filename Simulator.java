@@ -27,6 +27,7 @@ public class Simulator
     private final RandomProvider randomProvider;
     private final DiseaseService diseaseService;
     private final WeatherService weatherService;
+    private final MovementService movementService;
     private final OrganismFactory organismFactory;
     // Published state for observers.
     private final List<SimulationObserver> observers;
@@ -127,8 +128,9 @@ public class Simulator
         this.actors = new ArrayList<>();
         this.diseaseService = new DiseaseService(randomProvider);
         this.weatherService = new WeatherService(randomProvider);
+        this.movementService = new MovementService(randomProvider);
         this.organismFactory = new OrganismFactory(randomProvider, config, diseaseService);
-        this.field = new Field(randomProvider, organismFactory, diseaseService, depth, width);
+        this.field = new Field(randomProvider, organismFactory, diseaseService, movementService, depth, width);
         this.environment = new Environment(new Time(), weatherService);
         this.observers = new ArrayList<>();
 

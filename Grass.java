@@ -70,7 +70,7 @@ public class Grass extends Plant
         // New grass are made into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = field.getMovementService().getFreeAdjacentLocations(field, getLocation());
         for(int b = 0; b < free.size(); b++) {
             Location loc = free.remove(0);
             Grass young = field.getOrganismFactory().createOffspring(Grass.class, field, loc);

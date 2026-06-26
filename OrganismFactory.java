@@ -70,7 +70,7 @@ public class OrganismFactory
 
         double creationRate = config.getCreationProbability(Grass.class);
         List<Actor> grassActors = new ArrayList<>();
-        for(Location location : field.getRandomFreePatches(creationRate)) {
+        for(Location location : field.getMovementService().getRandomFreePatches(field, creationRate)) {
             if(rand.nextDouble() <= creationRate) {
                 grassActors.add(createOffspring(Grass.class, field, location));
             }

@@ -40,50 +40,32 @@ public class Hunter extends Organism implements Actor
      */
     public void act(List<Actor> newActors, Environment environment)
     {
-        Random rand = getRandomProvider().getRandom();
         if(isAlive()) {
-            Location newLocation = findPrey();
-            if(newLocation == null) {
-                // No animals found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-
+            move();
         }
     }
 
     /**
-     * Look for animals adjacent to the current location.
-     * Only the first live animal is killed.
-     * @return Location Where an animal was found, or null if it wasn't.
+     * Returns the species that hunters can target.
      */
-    private Location findPrey()
+    protected Set<Class<? extends Organism>> getDiet()
+    {
+        return DIET;
+    }
+
+    private void move()
     {
         Field field = getField();
-        Location currentLocation = getLocation();
-        List<Location> adjacent = field.adjacentLocations(currentLocation);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal != null && DIET.contains(animal.getClass())) {
-                Organism food = (Organism) animal;
-                if(food.isAlive()) {
-                    food.setDead();
-                    return where;
-                }
-                return where;
-            }
+        MovementService movementService = field.getMovementService();
+        List<Location> adjacentLocations = movementService.getAdjacentLocations(field, getLocation());
+        MovementService.MovementDecision movementDecision = movementService.resolveHunterMovement(this, adjacentLocations);
+
+        if(movementDecision.consumedOrganism() != null) {
+            movementDecision.consumedOrganism().setDead();
         }
-        return null;
+
+        if(movementDecision.targetLocation() != null) {
+            movementService.moveOrganism(this, movementDecision.targetLocation());
+        }
     }
 }

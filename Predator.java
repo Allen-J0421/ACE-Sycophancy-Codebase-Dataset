@@ -56,7 +56,7 @@ public abstract class Predator extends Animal
     public void act(List<LivingOrganism> newPredators)
     {
         // Predators have a lower chance of acting when its night
-        if(Time.isNight()) 
+        if(getTime().isNight()) 
         {
             if (rand.nextDouble() > 0.25)
             {
@@ -65,7 +65,7 @@ public abstract class Predator extends Animal
         }
         
         // Predators have a lower chance of acting when its foggy
-        if (Weather.getWeather() == Weather.WeatherType.Foggy) 
+        if (getWeather().getWeather() == Weather.WeatherType.Foggy) 
         {
             if (rand.nextDouble() > 0.50)
             {

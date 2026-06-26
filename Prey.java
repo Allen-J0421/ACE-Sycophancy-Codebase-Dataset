@@ -34,7 +34,7 @@ public abstract class Prey extends Animal
     public void act(List<LivingOrganism> newPrey)
     {
         // Prey sleep at night
-        if(Time.isNight()) 
+        if(getTime().isNight()) 
         {
             return;
         }

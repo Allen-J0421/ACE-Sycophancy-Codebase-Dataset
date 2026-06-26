@@ -6,26 +6,22 @@
  */
 public class Time
 {
-    private static int step = 0;
+    private int step = 0;
     
     // The offset of the time to start the simulation at.
     private static final int TIME_OFFSET = 12;
     
     // Stores the actual number of steps that the current
     // run of the simulation should pause at if viable.
-    private static int stepsToRunUntil;
-    
-    // Stores the starting point of the current run of the
-    // simulation.
-    private static int stepOffset;
+    private int stepsToRunUntil;
     
     // Stores whether the simulation is paused or not
-    private static boolean isPaused = true;
+    private boolean isPaused = true;
     
     /**
      * Increments the step number.
      */
-    public static void incrementStep() 
+    public void incrementStep() 
     {
         step++;
     }
@@ -33,7 +29,7 @@ public class Time
     /**
      * @return Returns the current step number.
      */
-    public static int getStep() 
+    public int getStep() 
     {
         return step;
     }
@@ -41,48 +37,41 @@ public class Time
     /**
      * Resets the step number and pauses the simulation.
      */
-    public static void resetStep() 
+    public void resetStep() 
     {
         step = 0;
         stepsToRunUntil = 0;
-        stepOffset = 0;
         isPaused = true;
     }
     
     /**
      * @return Returns the time in hours (between 0 and 24).
      */
-    public static int getTime() {
-        int time = (step + TIME_OFFSET)%24;
-        return time;
+    public int getTime() {
+        return (step + TIME_OFFSET) % 24;
     }
     
     /**
      * @return Returns if it is currently night.
      */
-    public static boolean isNight() {
-        boolean isNight = false;
+    public boolean isNight() {
         int time = getTime();
-        if (time < 6 || time > 18) {
-            isNight = true;
-        }
-        return isNight;
+        return time < 6 || time > 18;
     }
     
     /**
      * Sets the number of steps to run the simulation for.
      * @param The number of steps to run the simulation for.
      */
-    public static void setStepsToRunFor(int stepsToRunFor) {
-        stepOffset = step;
-        stepsToRunUntil = stepsToRunFor + Time.getStep();
+    public void setStepsToRunFor(int stepsToRunFor) {
+        stepsToRunUntil = stepsToRunFor + getStep();
     }
     
     /**
      * @return Returns the step number to pause the current run
      * of the simualtion at.
      */
-    public static int getStepsToRunUntil() {
+    public int getStepsToRunUntil() {
         return stepsToRunUntil;
     }
     
@@ -90,28 +79,28 @@ public class Time
      * Set whether the simulation is paused or not.
      * @param The value of whether the simulation is paused or not.
      */
-    public static void setIsPaused(boolean newIsPaused) {
+    public void setIsPaused(boolean newIsPaused) {
         isPaused = newIsPaused;
     }
     
     /**
      * Toggles whether the simulation is paused.
      */
-    public static void toggleIsPaused() {
+    public void toggleIsPaused() {
         isPaused = ! isPaused;
     }
     
     /**
      * @return Returns if the simulation in paused.
      */
-    public static boolean getIsPaused() {
+    public boolean getIsPaused() {
         return isPaused;
     }
     
     /**
      * @return Returns if the simulation has finished or not.
      */
-    public static boolean getIsFinished() {
+    public boolean getIsFinished() {
         if (getStep() == getStepsToRunUntil()) {
             isPaused = true;
         }

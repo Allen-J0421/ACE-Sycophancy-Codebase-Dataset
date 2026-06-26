@@ -224,7 +224,7 @@ public class SimulatorView extends JFrame
     public void showStatus(Field field)
     {
         ensureVisible();
-        updateStatusLabels();
+        updateStatusLabels(field);
 
         FieldStatus fieldStatus = renderField(field);
         infectedLabel.setText(INFECTED_PREFIX + fieldStatus.getNumberOfInfected());
@@ -247,9 +247,9 @@ public class SimulatorView extends JFrame
     /**
      * @return Returns the properly formated time in 24 hr format.
      */
-    private String getTimeString()
+    private String getTimeString(Time fieldViewTime)
     {
-        int time = Time.getTime();
+        int time = fieldViewTime.getTime();
         if (time >= 12){
             return time + ":00 ";
         }
@@ -276,11 +276,12 @@ public class SimulatorView extends JFrame
     /**
      * Update the labels that describe the current simulation state.
      */
-    private void updateStatusLabels()
+    private void updateStatusLabels(Field field)
     {
-        stepLabel.setText(STEP_PREFIX + Time.getStep());
-        timeLabel.setText(TIME_PREFIX + getTimeString());
-        weatherLabel.setText(WEATHER_PREFIX + Weather.getWeather() + "  ");
+        Time currentTime = field.getTime();
+        stepLabel.setText(STEP_PREFIX + currentTime.getStep());
+        timeLabel.setText(TIME_PREFIX + getTimeString(currentTime));
+        weatherLabel.setText(WEATHER_PREFIX + field.getWeather().getWeather() + "  ");
     }
 
     /**

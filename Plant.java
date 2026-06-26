@@ -56,11 +56,11 @@ public class Plant extends LivingOrganism
     public void act(List<LivingOrganism> newPlants)
     {
         incrementAge();
-        if(!Time.isNight()) 
+        if(!getTime().isNight()) 
         {
             if(isAlive()) 
             {
-                switch (Weather.getWeather())
+                switch (getWeather().getWeather())
                 {
                     case Sunny:
                         spreadProbability = 0.2;
@@ -127,7 +127,7 @@ public class Plant extends LivingOrganism
         alive = false;
         if(location != null) 
         {
-            field.clear(location, Plant.class);
+            getField().clear(location, Plant.class);
             location = null;
         }
     }
@@ -143,11 +143,11 @@ public class Plant extends LivingOrganism
     {
         if(location != null) 
         {
-            field.clear(location, Plant.class);
+            getField().clear(location, Plant.class);
         }
         
         location = newLocation;
-        field.place(this, newLocation);
+        getField().place(this, newLocation);
     }
     
     /**
@@ -182,7 +182,7 @@ public class Plant extends LivingOrganism
         Location loc = free.remove(0);
         Plant offspring = null;
         
-        offspring = new Plant(false, field, loc);
+        offspring = new Plant(false, getField(), loc);
         
         return offspring;
     }

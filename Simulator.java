@@ -39,6 +39,10 @@ public class Simulator
     private List<LivingOrganism> plants;
     // The current state of the field.
     private Field field;
+    // The simulation clock.
+    private Time time;
+    // The simulation weather system.
+    private Weather weather;
     // A graphical view of the simulation.
     private SimulatorView view;
     // Buttons used to control the simulation.
@@ -72,7 +76,9 @@ public class Simulator
         
         animals = new ArrayList<>();
         plants = new ArrayList<>();
-        field = new Field(depth, width);
+        time = new Time();
+        weather = new Weather(time);
+        field = new Field(depth, width, time, weather);
 
         createButtons();
         updateButtonState();
@@ -91,12 +97,12 @@ public class Simulator
      */
     private void handlePlayPause() 
     {
-        boolean isPaused = Time.getIsPaused();
+        boolean isPaused = time.getIsPaused();
         
-        Time.toggleIsPaused();
+        time.toggleIsPaused();
         
         if (isPaused) {
-            if (! Time.getIsFinished()) {
+            if (! time.getIsFinished()) {
                 simulate();
             }
         }
@@ -121,7 +127,7 @@ public class Simulator
     private void simulate(int numSteps)
     {
         // Sets the number of steps that the simulation run started at
-        Time.setStepsToRunFor(numSteps);
+        time.setStepsToRunFor(numSteps);
         simulate();
     }
     
@@ -133,16 +139,16 @@ public class Simulator
      */
     private void simulate() 
     {
-        Time.setIsPaused(false);
+        time.setIsPaused(false);
         
         // Adjust button visibility.
         updateButtonState();
         
-        while (! Time.getIsPaused() && ! Time.getIsFinished() && view.isViable(field)) {
+        while (! time.getIsPaused() && ! time.getIsFinished() && view.isViable(field)) {
             simulateOneStep();
         }
         
-        Time.setIsPaused(true);
+        time.setIsPaused(true);
         updateButtonState();
     }
     
@@ -153,8 +159,8 @@ public class Simulator
      */
     private void simulateOneStep()
     {
-        Time.incrementStep();
-        Weather.updateWeather();
+        time.incrementStep();
+        weather.updateWeather();
 
         // Provide space for newborn animals and plants;
         List<LivingOrganism> newAnimals = new ArrayList<>();
@@ -177,7 +183,7 @@ public class Simulator
     private void reset()
     {
         // Resets the visibility of the buttons and resets the step number
-        Time.resetStep();
+        time.resetStep();
         updateButtonState();
         
         // Clears all current animals and plants then repopulates the area
@@ -336,8 +342,8 @@ public class Simulator
      */
     private void updateButtonState() 
     {
-        boolean isFinished = Time.getIsFinished();
-        boolean isStopped = Time.getIsPaused() || isFinished;
+        boolean isFinished = time.getIsFinished();
+        boolean isStopped = time.getIsPaused() || isFinished;
 
         // Adjust button usability.
         playPauseButton.setEnabled(!isFinished);

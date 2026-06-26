@@ -21,6 +21,10 @@ public class Field
     private int depth, width;
     // Storage for the animals.
     private GridSpace[][] field;
+    // The simulation clock for this field.
+    private final Time time;
+    // The weather system for this field.
+    private final Weather weather;
     // Current populations by concrete organism type.
     private Map<Class<?>, Integer> populationCounts;
 
@@ -30,11 +34,13 @@ public class Field
      * @param depth The depth of the field.
      * @param width The width of the field.
      */
-    public Field(int depth, int width)
+    public Field(int depth, int width, Time time, Weather weather)
     {
         this.depth = depth;
         this.width = width;
         field = new GridSpace[depth][width];
+        this.time = time;
+        this.weather = weather;
         populationCounts = new LinkedHashMap<>();
     }
     
@@ -281,6 +287,22 @@ public class Field
     public int getWidth()
     {
         return width;
+    }
+
+    /**
+     * Return the simulation clock associated with this field.
+     */
+    public Time getTime()
+    {
+        return time;
+    }
+
+    /**
+     * Return the weather system associated with this field.
+     */
+    public Weather getWeather()
+    {
+        return weather;
     }
 
     /**

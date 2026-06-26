@@ -102,8 +102,23 @@ public abstract class LivingOrganism
     {
         return field;
     }
-}
 
+    /**
+     * Return the simulation clock for this organism's field.
+     */
+    protected Time getTime()
+    {
+        return field.getTime();
+    }
+
+    /**
+     * Return the weather system for this organism's field.
+     */
+    protected Weather getWeather()
+    {
+        return field.getWeather();
+    }
+}
 
 
 

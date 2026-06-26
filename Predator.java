@@ -1,5 +1,4 @@
 import java.util.Iterator;
-import java.util.Random;
 import java.util.List;
 
 /**
@@ -23,23 +22,25 @@ public abstract class Predator extends Animal
     }
 
     /**
-     * If food is not found then the animal moves towards the nearest plant.
-     * It does not eat the plant, instead stands on top of it.
+     * Hunts for prey in adjacent cells. If prey is found, returns its location.
+     * If no prey is found, returns the location of the nearest plant to stand on (without eating it).
      * @param probability The probability the animal finds prey.
-     * @return Where plant was found, or null if it wasn't.
+     * @return Where to move, or null if nowhere suitable was found.
      */
     protected Location findFood(double probability)
     {
-        if (super.findFood(probability) == null){
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while(it.hasNext()) {
-                Location where = it.next();
-                Object actor = field.getObjectAt(where);
-                if(actor != null && actor  instanceof Plants){
-                    return where;
-                }
+        Location preyLocation = super.findFood(probability);
+        if(preyLocation != null) {
+            return preyLocation;
+        }
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object actor = field.getObjectAt(where);
+            if(actor instanceof Plants){
+                return where;
             }
         }
         return null;

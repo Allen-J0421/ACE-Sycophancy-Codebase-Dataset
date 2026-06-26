@@ -1,6 +1,5 @@
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * A class representing shared characteristics of plants.
@@ -9,8 +8,7 @@ import java.util.Random;
  */
 public abstract class Plants extends Actor
 {
-    //private static final Random rand = Randomizer.getRandom();
-    private int sunLevel; 
+    private int sunLevel;
     private int waterLevel;
     /**
      * Create a new plant at location in field.

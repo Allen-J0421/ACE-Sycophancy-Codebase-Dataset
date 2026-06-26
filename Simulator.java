@@ -101,7 +101,6 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            //delay(120);   // uncomment this to run more slowly
         }
     }
 
@@ -127,7 +126,7 @@ public class Simulator
         List<Actor> newGrass = new ArrayList<>();  
 
         getRandomWeather();
-        while(!isDay && weather == weather.SUNNY){
+        while(!isDay && weather == Weather.SUNNY){
             getRandomWeather();
         }
         // Let all actors act.
@@ -182,7 +181,6 @@ public class Simulator
      */
     private void populate()
     {
-        //Random rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
@@ -220,20 +218,6 @@ public class Simulator
                 }
                 // else leave the location empty.
             }
-        }
-    }
-
-    /**
-     * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
-     */
-    private void delay(int millisec)
-    {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
-            // wake up
         }
     }
 

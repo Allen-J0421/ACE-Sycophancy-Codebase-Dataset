@@ -38,37 +38,32 @@ public abstract class Animal extends Actor
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
+     * @param newActors A list to receive newly born animals.
      * @param simulator The simulator.
      */
-    public void act(List<Actor> newAnimals, Simulator simulator){
-        Location newLocation = null;
-        switch(simulator.getWeather()){
-            case SUNNY:
-                newLocation = findFood(getSunnyFindingFoodProbability());
-                break;
-            case RAINY:
-                newLocation = findFood(getRainyFindingFoodProbability());
-                break;
-            case FOGGY:
-                newLocation = findFood(getFoggyFindingFoodProbability());
-                break;
-            default:
-                findFood(getRandom().nextDouble());
-                break;
-        }
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
+    public void act(List<Actor> newActors, Simulator simulator) {
+        setGrowthLevel(getGrowthRate());
+        if(simulator.isDay()) {
+            incrementAge(simulator.getSteps());
+            incrementHunger();
+            if(isActive()) {
+                giveBirth(newActors);
+                Location newLocation = findFood(getFoodProbability(simulator.getWeather()));
+                if(newLocation == null) {
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+                if(newLocation != null) {
+                    setLocation(newLocation);
+                } else {
+                    setDead();
+                }
+            }
         }
     }
+
+    abstract protected double getGrowthRate();
+
+    abstract protected double getFoodProbability(Weather weather);
 
     /**
      * An animal can breed if it has reached the breeding age.
@@ -176,10 +171,10 @@ public abstract class Animal extends Actor
 
     /**
      * Sets the animal's food level.
-     * @param food level The amount of food the animal gets.
+     * @param foodlevel The new food level.
      */
     protected void setFoodLevel(double foodlevel){
-        this.foodLevel += foodlevel ; 
+        this.foodLevel = foodlevel;
     }
 
     /**
@@ -221,10 +216,7 @@ public abstract class Animal extends Actor
                             }
                         }
                         currentAnimal.setDead();
-                        setFoodLevel(foodValue + currentAnimal.getGrowthLevel());
-                        if(getFoodLevel() > getMaxFoodLevel()){
-                            setFoodLevel(getMaxFoodLevel() - getFoodLevel());
-                        }
+                        setFoodLevel(Math.min(getFoodLevel() + foodValue + currentAnimal.getGrowthLevel(), getMaxFoodLevel()));
                         return where;
                     }
                 }
@@ -299,21 +291,4 @@ public abstract class Animal extends Actor
      */
     abstract protected int getMaxTimeUntilBreedingAgain();
 
-    /**
-     * Gets the probability the animal will find food when it is sunny
-     * @return The probability the animal will find food when it is sunny
-     */
-    abstract protected double getSunnyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is rainy
-     * @return The probability the animal will find food when it is rainy
-     */
-    abstract protected double getRainyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is foggy
-     * @return The probability the animal will find food when it is foggy
-     */
-    abstract protected double getFoggyFindingFoodProbability();
 }

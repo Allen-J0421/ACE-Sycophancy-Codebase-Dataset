@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @version 2022.03.3
  */
-public class SimulatorView extends JFrame
+public class SimulatorView extends JFrame implements SimulationObserver
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -240,6 +240,12 @@ public class SimulatorView extends JFrame
         else if(classToCheckBox.get(c).isSelected() && getColor(c).equals(Color.white)){
             setColor(c, SimulationInfo.DEFAULT_COLOR_MAP.get(c));
         }
+    }
+
+    @Override
+    public void onStep(int step, Environment environment, Field field)
+    {
+        showStatus(step, environment, field);
     }
 
     /**

@@ -12,42 +12,40 @@ public class Timer
     private static final Random random = Randomizer.getRandom();
     
     /**
-     * Constructor for objects of class Timer
-     */
-    public Timer()
-    {
-        
-    }
-    
-    /**
      * Generates a random time between 6 and 11am.
      */
     public String getMorningTime(){
-        currentTime = Integer.toString(random.nextInt(6) + 6);
-        return currentTime;
+        return getRandomHour(6);
     }
 
     /**
      * Generates a random time between 12 and 5pm.
      */
     public String getAfternoonTime(){
-        currentTime = Integer.toString(random.nextInt(6) + 12);
-        return currentTime;
+        return getRandomHour(12);
     }
 
     /**
      * Generates a random time between 6 and 11pm.
      */
     public String getEveningTime(){
-        currentTime = Integer.toString(random.nextInt(6) + 18);
-        return currentTime;
+        return getRandomHour(18);
     }
 
     /**
      * Generates a random time between 12 and 5am.
      */
     public String getNightTime(){
-        currentTime =Integer.toString(random.nextInt(6));
+        return getRandomHour(0);
+    }
+
+    /**
+     * Generate an hour within a six-hour period.
+     * @param startHour The first hour in the period.
+     * @return The generated hour as a string.
+     */
+    private String getRandomHour(int startHour){
+        currentTime = Integer.toString(random.nextInt(6) + startHour);
         return currentTime;
     }
 
@@ -65,11 +63,20 @@ public class Timer
      */
     public String getMinutes(){
         int min = random.nextInt(60);
-        minutes = Integer.toString(min);
-        if(min < 10){
-            minutes = "0" + minutes;
-        }
+        minutes = formatMinutes(min);
         return minutes;
+    }
+
+    /**
+     * Format minute values with a leading zero when needed.
+     * @param min The minute value.
+     * @return The formatted minutes.
+     */
+    private String formatMinutes(int min){
+        if(min < 10){
+            return "0" + min;
+        }
+        return Integer.toString(min);
     }
 
     /**
@@ -79,17 +86,23 @@ public class Timer
      */
     public String getTime(int steps){
         int value = steps % 4;
-        if(value == 0){
-            currentTime =  getMorningTime();
-        } else if(value == 1){
-            currentTime = getAfternoonTime();
-        } else if(value == 2){
-            currentTime = getEveningTime();
-        } else if(value == 3){
-            currentTime = getNightTime();
+        switch(value) {
+            case 0:
+                getMorningTime();
+                break;
+            case 1:
+                getAfternoonTime();
+                break;
+            case 2:
+                getEveningTime();
+                break;
+            case 3:
+                getNightTime();
+                break;
+            default:
+                break;
         }
         getMinutes();
         return toString();
     }
 }
-

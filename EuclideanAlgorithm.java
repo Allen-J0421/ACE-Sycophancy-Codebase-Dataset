@@ -24,9 +24,11 @@ public final class EuclideanAlgorithm {
         return gcd(firstNumber, secondNumber);
     }
 
-    public static void main(String[] args) {
-        final int greatestCommonDivisor = gcd(EXAMPLE_FIRST_NUMBER, EXAMPLE_SECOND_NUMBER);
+    private static int exampleGcd() {
+        return gcd(EXAMPLE_FIRST_NUMBER, EXAMPLE_SECOND_NUMBER);
+    }
 
-        System.out.println(greatestCommonDivisor);
+    public static void main(String[] args) {
+        System.out.println(exampleGcd());
     }
 }

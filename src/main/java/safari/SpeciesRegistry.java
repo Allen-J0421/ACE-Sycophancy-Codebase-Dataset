@@ -30,7 +30,7 @@ final class SpeciesRegistry
                     Weather.RAINY, 1.0,
                     Weather.FOGGY, 1.0
                 ),
-                Map.of(Grass.class, 14)
+                Map.of(ActorKind.GRASS, 14)
             )
         );
         CONFIGS.put(
@@ -52,7 +52,7 @@ final class SpeciesRegistry
                     Weather.RAINY, 1.0,
                     Weather.FOGGY, 1.0
                 ),
-                Map.of(Grass.class, 19)
+                Map.of(ActorKind.GRASS, 19)
             )
         );
         CONFIGS.put(
@@ -75,8 +75,8 @@ final class SpeciesRegistry
                     Weather.FOGGY, 0.7
                 ),
                 Map.of(
-                    Zebra.class, 34,
-                    Gazelle.class, 33
+                    ActorKind.ZEBRA, 34,
+                    ActorKind.GAZELLE, 33
                 )
             )
         );
@@ -100,8 +100,8 @@ final class SpeciesRegistry
                     Weather.FOGGY, 0.8
                 ),
                 Map.of(
-                    Gazelle.class, 24,
-                    Cheetah.class, 25
+                    ActorKind.GAZELLE, 24,
+                    ActorKind.CHEETAH, 25
                 )
             )
         );
@@ -124,7 +124,7 @@ final class SpeciesRegistry
                     Weather.RAINY, 0.7,
                     Weather.FOGGY, 0.4
                 ),
-                Map.of(Gazelle.class, 35)
+                Map.of(ActorKind.GAZELLE, 35)
             )
         );
     }
@@ -144,12 +144,6 @@ final class SpeciesRegistry
 
     static Animal create(SpeciesType type, boolean randomAge, Field field, Location location)
     {
-        return switch(type) {
-            case GAZELLE -> new Gazelle(randomAge, field, location);
-            case ZEBRA -> new Zebra(randomAge, field, location);
-            case CHEETAH -> new Cheetah(randomAge, field, location);
-            case LION -> new Lion(randomAge, field, location);
-            case JAGUAR -> new Jaguar(randomAge, field, location);
-        };
+        return new Animal(type, randomAge, field, location);
     }
 }

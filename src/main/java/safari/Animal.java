@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @version 2022.03.01
  */
-public abstract class Animal extends Actor
+public class Animal extends Actor
 {
     private final SpeciesType speciesType;
     private final SpeciesConfig speciesConfig;
@@ -51,6 +51,12 @@ public abstract class Animal extends Actor
             timeLeftUntilBreedingAgain = 0;
         }
         setGrowthLevel(getAge() / speciesConfig.initialGrowthScale());
+    }
+
+    @Override
+    protected ActorKind getKind()
+    {
+        return speciesType.toActorKind();
     }
 
     /**
@@ -198,8 +204,8 @@ public abstract class Animal extends Actor
             for(Location where : adjacent) {
                 Actor occupant = field.getActorAt(where);
                 if(occupant instanceof Actor currentAnimal) {
-                    for(Map.Entry<Class<? extends Actor>, Integer> prey : speciesConfig.food().entrySet()) {
-                        if(prey.getKey() == currentAnimal.getClass()) {
+                    for(Map.Entry<ActorKind, Integer> prey : speciesConfig.food().entrySet()) {
+                        if(prey.getKey() == currentAnimal.getKind()) {
                             if(currentAnimal instanceof Animal current && !current.getHealth()) {
                                 setUnhealthy();
                             }

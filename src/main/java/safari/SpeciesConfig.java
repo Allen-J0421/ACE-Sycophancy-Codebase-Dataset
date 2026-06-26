@@ -18,7 +18,7 @@ record SpeciesConfig(
     double initialGrowthScale,
     double actGrowthIncrement,
     Map<Weather, Double> foodFindingProbabilities,
-    Map<Class<? extends Actor>, Integer> food
+    Map<ActorKind, Integer> food
 )
 {
     SpeciesConfig

@@ -99,4 +99,10 @@ public class Grass extends Plants
     protected int getMaxLitter(){
         return MAX_LITTER_SIZE;
     }
+
+    @Override
+    protected ActorKind getKind()
+    {
+        return ActorKind.GRASS;
+    }
 }

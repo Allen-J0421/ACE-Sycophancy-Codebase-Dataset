@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (jaguar, gazelle, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private HashMap<ActorKind, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -39,7 +39,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(ActorKind key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -56,7 +56,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
+        for(ActorKind key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -72,13 +72,13 @@ public class FieldStats
         if(actor == null) {
             return;
         }
-        Class animalClass = actor.getClass();
-        Counter count = counters.get(animalClass);
+        ActorKind actorKind = actor.getKind();
+        Counter count = counters.get(actorKind);
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
+            count = new Counter(actorKind.displayName());
+            counters.put(actorKind, count);
         }
         count.increment();
     }
@@ -105,7 +105,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(ActorKind key : counters.keySet()) {
             Counter info = counters.get(key);
             if(info.getCount() > 0) {
                 nonZero++;

@@ -116,6 +116,12 @@ public abstract class Actor
     public abstract void act(List<Actor> newActors, Simulator simulator);
 
     /**
+     * Returns the logical kind of this actor.
+     * @return The actor kind.
+     */
+    protected abstract ActorKind getKind();
+
+    /**
      * Get age of an actor
      * @return age of the actor.
      */

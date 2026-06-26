@@ -34,7 +34,7 @@ public class SimulatorView extends JFrame
     
     private FieldView fieldView;
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<ActorKind, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
     
@@ -108,9 +108,9 @@ public class SimulatorView extends JFrame
      * @param actorClass The actor's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class actorClass, Color color)
+    public void setColor(ActorKind actorKind, Color color)
     {
-        colors.put(actorClass, color);
+        colors.put(actorKind, color);
     }
 
     /**
@@ -153,9 +153,9 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of actor.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(ActorKind actorKind)
     {
-        Color col = colors.get(animalClass);
+        Color col = colors.get(actorKind);
         if(col == null) {
             // no color defined for this class
             return UNKNOWN_COLOR;
@@ -191,7 +191,7 @@ public class SimulatorView extends JFrame
                 if(actor != null) {
                     stats.incrementCount(surfaceActor);
                     stats.incrementCount(occupant);
-                    fieldView.drawMark(col, row, getColor(actor.getClass()));
+                    fieldView.drawMark(col, row, getColor(actor.getKind()));
                     if(actor instanceof Animal animal && !animal.getHealth()){
                         infectedPopulationCount ++;
                     }

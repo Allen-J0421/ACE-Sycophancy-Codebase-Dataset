@@ -83,14 +83,14 @@ public class Hunter extends Actor
                 for(int i = 0; i< SHOTS; i++){
                     Location where = it.next();
                     Actor animal = field.getActorAt(where);
-                    if( animal != null && (animal instanceof Lion  || animal instanceof Cheetah)){
-                        Animal currentAnimal = (Animal) animal;
-                        if(currentAnimal.isActive()) { 
-                        currentAnimal.setDead();
-                        break;
+                    if( animal instanceof Animal currentAnimal &&
+                        (currentAnimal.getKind() == ActorKind.LION || currentAnimal.getKind() == ActorKind.CHEETAH)) {
+                        if(currentAnimal.isActive()) {
+                            currentAnimal.setDead();
+                            break;
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -100,5 +100,11 @@ public class Hunter extends Actor
      */
     protected int getMaxAge(){
         return MAX_AGE;
+    }
+
+    @Override
+    protected ActorKind getKind()
+    {
+        return ActorKind.HUNTER;
     }
 }

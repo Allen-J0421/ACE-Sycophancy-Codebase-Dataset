@@ -64,13 +64,13 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width, this);
-        view.setColor(Gazelle.class, Color.ORANGE);
-        view.setColor(Jaguar.class, Color.BLUE);
-        view.setColor(Cheetah.class, Color.RED);
-        view.setColor(Lion.class, Color.PINK);
-        view.setColor(Grass.class, Color.GREEN);
-        view.setColor(Zebra.class, Color.BLACK);
-        view.setColor(Hunter.class, Color.MAGENTA);
+        view.setColor(ActorKind.GAZELLE, Color.ORANGE);
+        view.setColor(ActorKind.JAGUAR, Color.BLUE);
+        view.setColor(ActorKind.CHEETAH, Color.RED);
+        view.setColor(ActorKind.LION, Color.PINK);
+        view.setColor(ActorKind.GRASS, Color.GREEN);
+        view.setColor(ActorKind.ZEBRA, Color.BLACK);
+        view.setColor(ActorKind.HUNTER, Color.MAGENTA);
         // Setup a valid starting point.
         reset();
     }

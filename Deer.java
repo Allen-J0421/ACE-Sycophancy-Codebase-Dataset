@@ -1,5 +1,3 @@
-import java.util.*;
-
 /**
  * A simple model of a deer.
  * Deers age, move, breed,contract diseases, eat plants and die.
@@ -9,32 +7,14 @@ import java.util.*;
 public class Deer extends Animal
 {
     // Characteristics shared by all deers (class variables).
-
-    // The age at which a deer can start to breed.
-    protected static final int BREEDING_AGE = 5;
-    // The age to which a deer can live.
-    private static final int MAX_AGE = 40;
-    // The likelihood of a deer breeding.
-    protected static final double BREEDING_PROBABILITY = 0.5;
-    // The maximum number of births.
-    protected static final int MAX_LITTER_SIZE = 2;
-    // The deer's food level which is increased by eating grass.
-    private static final int MAX_FOOD_LEVEL = 9;
-    // The food value of a deer. 
-    private static final int FOOD_VALUE = 4;
-    // A set of organisms that a deer consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Grass.class));
-
-    // Implementing abstract methods to return fields to be used by the superclass
-    protected double BREEDING_AGE() { return BREEDING_AGE; }
-    protected int MAX_LITTER_SIZE() { return MAX_LITTER_SIZE; }
-    protected double BREEDING_PROBABILITY() { return BREEDING_PROBABILITY; }
-    protected int MAX_AGE() { return MAX_AGE; }
-    protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
-    protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
-
-
+    private static final AnimalTraits TRAITS = new AnimalTraits(
+            5,
+            40,
+            0.5,
+            2,
+            9,
+            4,
+            Grass.class);
 
     /**
      * Create a new deer. A deer may be created with age
@@ -46,7 +26,7 @@ public class Deer extends Animal
      */
     public Deer(boolean randomAge, Field field, Location location, Gender sex)
     {
-        super(field, location, randomAge, sex);
+        super(field, location, randomAge, sex, TRAITS);
         this.isNocturnal = false;
     }
 
@@ -61,23 +41,11 @@ public class Deer extends Animal
     }
 
     /**
-     * Check whether this deer is ready to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newDeers A list to return newly born deers.
-     * @param environment The environment that the deer resides in. 
+     * Create a newborn deer.
      */
-    protected void giveBirth(List<Actor> newDeers, Environment environment)
+    @Override
+    protected Animal createOffspring(Field field, Location location, Gender sex)
     {
-        // New deers are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = super.breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            Deer young = new Deer(false, field, loc, sex);
-            newDeers.add(young);
-        }
+        return new Deer(false, field, location, sex);
     }
 }

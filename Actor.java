@@ -66,14 +66,6 @@ public abstract class Actor
     }
 
     /**
-     * Set the field.
-     * @param place. The field.
-     */
-    protected void setField(Field place){
-        field = place;
-    }
-
-    /**
      * Check whether the actor is alive or not.
      * @return true if the actor is still alive.
      */
@@ -83,21 +75,12 @@ public abstract class Actor
     }
 
     /**
-     * Set if the actor is alive or not.
-     * @param alive. If the actor is alive.
-     */
-    protected void setAlive(boolean alive)
-    {
-        this.alive = alive;
-    }
-
-    /**
      * Indicate that the actor is no longer alive.
      * It is removed from the field.
      */
     protected void setDead()
     {
-        setAlive(false);
+        alive = false;
         if(getLocation() != null) {
             getField().clear(getLocation());
             location = null ;

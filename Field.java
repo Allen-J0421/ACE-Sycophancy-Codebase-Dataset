@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -51,19 +50,6 @@ public class Field
     public void clear(Location location)
     {
         field[location.getRow()][location.getCol()] = null;
-    }
-    
-    /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
-     * be lost.
-     * @param animal The animal to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Object animal, int row, int col)
-    {
-        place(animal, new Location(row, col));
     }
     
     /**
@@ -128,12 +114,7 @@ public class Field
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);
-        if(!free.isEmpty()) {
-            return free.get(0);
-        }
-        else {
-            return null;
-        }
+        return !free.isEmpty() ? free.get(0) : null;
     }
 
     /**

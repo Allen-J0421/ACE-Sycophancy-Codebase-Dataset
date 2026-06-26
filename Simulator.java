@@ -228,10 +228,9 @@ public class Simulator
      */
     public void introduceInfection(){
         if(!animals.isEmpty()){
-            int value = rand.nextInt(animals.size());
-            if(animals.get(value) instanceof Animal){
-                Animal animal = (Animal)animals.get(value);
-                animal.setUnhealthy();
+            Actor actor = animals.get(rand.nextInt(animals.size()));
+            if(actor instanceof Animal){
+                ((Animal) actor).setUnhealthy();
             }
         }
     }

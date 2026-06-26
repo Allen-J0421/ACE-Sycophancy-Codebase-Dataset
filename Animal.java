@@ -28,10 +28,7 @@ public abstract class Animal extends Actor
         super(field,location);
         setRandomGender();
         isHealthy = true;
-        timeLeftUntilBreedingAgain = getRandom().nextInt(getMaxTimeUntilBreedingAgain());
-        if(!isGirl) {
-            timeLeftUntilBreedingAgain = 0;
-        }
+        timeLeftUntilBreedingAgain = isGirl ? getRandom().nextInt(getMaxTimeUntilBreedingAgain()) : 0;
     }
 
     /**
@@ -115,7 +112,7 @@ public abstract class Animal extends Actor
     protected int breed()
     {
         int births = 0;
-        if(canBreed()  && findMate() && getRandom().nextDouble() <= getBreedingProbability() && timeLeftUntilBreedingAgain == 0) {
+        if(canBreed() && findMate() && getRandom().nextDouble() <= getBreedingProbability() && timeLeftUntilBreedingAgain == 0) {
             births = getRandom().nextInt(getMaxLitterSize()) + 1;
             timeLeftUntilBreedingAgain = getMaxTimeUntilBreedingAgain();
         }
@@ -192,7 +189,6 @@ public abstract class Animal extends Actor
      */
     protected Location findFood(double probability)
     {
-
         if(getRandom().nextDouble() < probability && getFoodLevel() < getMaxFoodLevel()){
             Field field = getField();
             for(Location where : field.adjacentLocations(getLocation())) {
@@ -217,16 +213,8 @@ public abstract class Animal extends Actor
         return null;
     }
 
-    /**
-     * Returns the HashMap which maps prey class types to their food values.
-     * @return The HashMap which maps Class to food value Integer.
-     */
     abstract protected Map<Class<? extends Actor>, Integer> getFood();
 
-    /**
-     * Uses a random generator to assign if the animal is female or not.
-     * @return True if the animal is a female.
-     */
     protected void setRandomGender(){
         isGirl = getRandom().nextDouble() > 0.5;
     }

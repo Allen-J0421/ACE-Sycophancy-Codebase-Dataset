@@ -246,7 +246,7 @@ public class Simulator
             }
 
             if(actor instanceof Plant){
-                if(step % ((Plant) actor).STEPS_PER_STAGE()==0){
+                if(step % ((Plant) actor).getStepsPerStage()==0){
                     ((Plant) actor).incrementGrowth();
                 }
             }

@@ -14,7 +14,7 @@ public abstract class Plant extends Organism implements Actor
 
 
     // Implementing abstract methods to return fields to be used by the superclass
-    public int STEPS_PER_STAGE(){ return STEPS_PER_STAGE; }
+    public int getStepsPerStage(){ return STEPS_PER_STAGE; }
     protected static final Random rand = Randomizer.getRandom();
     
     

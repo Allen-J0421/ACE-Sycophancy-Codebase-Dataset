@@ -4,19 +4,25 @@ import java.util.stream.Collectors;
 /**
  * A class representing shared characteristics of animals.
  *
+ * Concrete species supply their fixed characteristics as an {@link AnimalTraits}
+ * profile and implement {@link #createOffspring} to produce newborns; all of the
+ * common behaviour (ageing, hunger, movement, feeding, breeding and disease) lives
+ * here.
+ *
  * @version 2022.03.02
  */
 public abstract class Animal extends Organism implements Actor
 {
+    // Fixed characteristics of this animal's species.
+    protected final AnimalTraits traits;
 
     protected int age;
-    protected boolean isNocturnal;
     protected int foodLevel;
     protected Gender sex;
 
     protected static final Random rand = Randomizer.getRandom();
 
-    // An animal is either male or female 
+    // An animal is either male or female
     protected enum Gender {
         MALE,
         FEMALE
@@ -25,37 +31,37 @@ public abstract class Animal extends Organism implements Actor
     private double RANDOM_CONTRACTION_RATE = 0.002;
 
 
-    // Declaring abstract methods to obtain fields used by subclasses
-    // These methods have been declared in order to use common methods in the Animal class, reducing repeatability
-    protected abstract double BREEDING_AGE();
-    protected abstract int MAX_LITTER_SIZE();
-    protected abstract double BREEDING_PROBABILITY();
-    protected abstract int MAX_AGE();
-    protected abstract int MAX_FOOD_LEVEL();
-    protected abstract Set<Class> DIET();
-
-
     /**
      * Create a new animal at location in field.
      *
+     * @param traits The fixed characteristics of this animal's species.
      * @param field The field currently occupied.
      * @param location The location within the field.
      * @param randomAge The animal's random starting age.
-     * @param sex The animal's gender. 
+     * @param sex The animal's gender.
      */
-    public Animal(Field field, Location location, boolean randomAge, Gender sex)
+    public Animal(AnimalTraits traits, Field field, Location location, boolean randomAge, Gender sex)
     {
         super(field, location);
+        this.traits = traits;
         this.sex = sex;
         if(randomAge) {
-            this.age = rand.nextInt(MAX_AGE());
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL());
+            this.age = rand.nextInt(traits.getMaxAge());
+            foodLevel = rand.nextInt(traits.getMaxFoodLevel());
         }
         else {
             this.age = 0;
-            foodLevel = MAX_FOOD_LEVEL();
+            foodLevel = traits.getMaxFoodLevel();
         }
         randomlyContractDisease();
+    }
+
+    /**
+     * The food value an animal provides when eaten.
+     */
+    protected int getFoodValue()
+    {
+        return traits.getFoodValue();
     }
 
     /**
@@ -72,7 +78,7 @@ public abstract class Animal extends Organism implements Actor
         if(isAlive()) {
             giveBirth(newAnimals, environment);
             // Move towards a source of food if found.
-            Location newLocation = findFood();
+            Location newLocation = findFood(environment);
             if(newLocation == null) {
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -91,7 +97,7 @@ public abstract class Animal extends Organism implements Actor
                 getField().clear(getLocation());
                 setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
             }
-            else {
+            else if (diesFromOvercrowding()) {
                 // Overcrowding
                 setDead();
             }
@@ -103,6 +109,18 @@ public abstract class Animal extends Organism implements Actor
             }
 
         }
+    }
+
+    /**
+     * Look for food adjacent to the current location, taking the environment
+     * into account. By default the environment is ignored; species whose
+     * foraging depends on conditions (e.g. weather) override this.
+     * @param environment The environment that the animal resides in.
+     * @return Where food was found, or null if it wasn't.
+     */
+    protected Location findFood(Environment environment)
+    {
+        return findFood();
     }
 
     /**
@@ -126,24 +144,24 @@ public abstract class Animal extends Organism implements Actor
         }
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
-        while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
+        while(it.hasNext() && foodLevel <= traits.getMaxFoodLevel()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal != null && DIET().contains(animal.getClass())) 
+            if(animal != null && traits.getDiet().contains(animal.getClass()))
             {
                 Organism food = (Organism) animal;
-                if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
+                if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble())
                 {
                     // contracts disease from food if it has a disease and that disease is foodborne
                     setDisease(food.getDisease());
                 }
-                if(food.isAlive()) 
+                if(food.isAlive())
                 {
                     food.setDead();
-                    int newFoodLevel = foodLevel + food.FOOD_VALUE();
+                    int newFoodLevel = foodLevel + food.getFoodValue();
 
                     // caps the food level at the maximum
-                    foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
+                    foodLevel = Math.min(newFoodLevel, traits.getMaxFoodLevel());
 
                     return where;
                 }
@@ -155,7 +173,7 @@ public abstract class Animal extends Organism implements Actor
 
     /**
      * Returns true if an animal contracts a disease at birth.
-     * Returns false if otherwise. 
+     * Returns false if otherwise.
      */
     protected void randomlyContractDisease()
     {
@@ -165,19 +183,48 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
-     * Check whether this animal is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newAnimals A list to return newly born animals.
-     * @param environment The environment that the animal resides in. 
+     * Whether this animal dies when it cannot find anywhere to move (i.e. it is
+     * overcrowded). Most animals do; apex species may override this to survive.
+     * @return true if overcrowding is fatal for this species.
      */
-    protected abstract void giveBirth(List<Actor> newAnimals, Environment environment);
+    protected boolean diesFromOvercrowding()
+    {
+        return true;
+    }
+
+    /**
+     * Check whether this animal is to give birth at this step.
+     * New births are made into free adjacent locations.
+     * @param newAnimals A list to return newly born animals.
+     * @param environment The environment that the animal resides in.
+     */
+    protected void giveBirth(List<Actor> newAnimals, Environment environment)
+    {
+        // New animals are born into adjacent locations.
+        // Get a list of adjacent free locations.
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = breed();
+        for(int b = 0; b < births && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            newAnimals.add(createOffspring(field, loc));
+        }
+    }
+
+    /**
+     * Create a single newborn of this species at the given location.
+     * @param field The field the newborn is placed in.
+     * @param location The location for the newborn.
+     * @return The newly created animal.
+     */
+    protected abstract Animal createOffspring(Field field, Location location);
 
     /**
      * Returns true if the animal is awake or not.
      */
     public boolean isAwake(Environment environment)
     {
-        if(isNocturnal){
+        if(traits.isNocturnal()){
             return !environment.getTime().isDay();
         }
         return environment.getTime().isDay();
@@ -191,8 +238,8 @@ public abstract class Animal extends Organism implements Actor
     protected int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY()) {
-            births = rand.nextInt(MAX_LITTER_SIZE()) + 1;
+        if(canBreed() && rand.nextDouble() <= traits.getBreedingProbability()) {
+            births = rand.nextInt(traits.getMaxLitterSize()) + 1;
             Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
             if(mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL){
                 this.setDisease(mate.getDisease());
@@ -203,16 +250,16 @@ public abstract class Animal extends Organism implements Actor
 
     /**
      * Returns true if the animal is able to breed.
-     * Returns false if otherwise. 
+     * Returns false if otherwise.
      */
     protected boolean canBreed()
     {
-        return (age >= BREEDING_AGE() && getPotentialMates().size() > 0);
+        return (age >= traits.getBreedingAge() && getPotentialMates().size() > 0);
     }
 
     /**
      * Returns a list of potential mates. Mates have to be
-     * of a opposite gender. 
+     * of a opposite gender.
      * @return List<Organism> A list of potential mates.
      */
     protected List<Organism> getPotentialMates()
@@ -238,7 +285,7 @@ public abstract class Animal extends Organism implements Actor
     protected void incrementAge()
     {
         this.age++;
-        if(this.age > MAX_AGE()) {
+        if(this.age > traits.getMaxAge()) {
             setDead();
         }
     }

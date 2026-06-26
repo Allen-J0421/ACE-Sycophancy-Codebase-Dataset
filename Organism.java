@@ -19,7 +19,7 @@ public abstract class Organism {
     private boolean hasDisease = false;
 
 
-    protected abstract int FOOD_VALUE();
+    protected abstract int getFoodValue();
 
     /**
      * Creates a new organism. 

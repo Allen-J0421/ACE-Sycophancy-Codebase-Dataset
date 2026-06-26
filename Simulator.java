@@ -89,8 +89,16 @@ public class Simulator
     }
     
     /**
+     * Returns the per-step infection count recorded by the disease handler.
+     */
+    public java.util.TreeMap<Integer, Integer> getDiseaseCount()
+    {
+        return diseaseHandler.getCount();
+    }
+
+    /**
      * Sets the dashboard field to later updates the interface at the end of simulation steps.
-     * 
+     *
      * @param newDashboard the dashboard to be updated.
      */
     public void setDashboard(Dashboard newDashboard) {

@@ -23,7 +23,7 @@ public class DiseaseHandler
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    public static TreeMap<Integer, Integer> count;
+    private TreeMap<Integer, Integer> count;
     private int currentStep;
     
     /*///////////////////////////////////////////////////////////////
@@ -45,6 +45,14 @@ public class DiseaseHandler
                           DISEASE SIMULATION LOGIC
     //////////////////////////////////////////////////////////////*/
     
+    /**
+     * Returns the map of simulation step → infection count.
+     */
+    public TreeMap<Integer, Integer> getCount()
+    {
+        return count;
+    }
+
     /**
      * Simulates the disease by iterating through every block in the field, and computing the density of the number of ppl infected 
      * in the given block to determine the likelyhood of being infected in the block

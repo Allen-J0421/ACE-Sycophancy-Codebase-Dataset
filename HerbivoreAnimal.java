@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
 /**
@@ -9,14 +7,14 @@ import java.util.Iterator;
  */
 public abstract class HerbivoreAnimal extends Animal
 {
-    
+
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
     /**
      * Creates a Herbivore Animal.
-     * 
+     *
      * @param randomAge Boolean flag dictating whether or not the attributes will be assigned a random value
      * @param field The environment the animal can move in
      * @param location Location of the animal in the field/grid
@@ -24,18 +22,33 @@ public abstract class HerbivoreAnimal extends Animal
      * @param baseLevel the base hunger index associated with the animal
      * @param maxAge the maximum age an animal can take before he dies.
      */
-    
-    public HerbivoreAnimal(boolean randomAge,Field field, Location location, Gender gender, int baseLevel, int maxAge)
+    public HerbivoreAnimal(boolean randomAge, Field field, Location location, Gender gender, int baseLevel, int maxAge)
     {
         super(randomAge, field, location, gender, baseLevel, maxAge);
     }
-    
+
+    /*///////////////////////////////////////////////////////////////
+                        ABSTRACT BEHAVIOUR HOOKS
+    //////////////////////////////////////////////////////////////*/
+
+    protected abstract List<Class<? extends Plant>> getTargetPlants();
+
+    /*///////////////////////////////////////////////////////////////
+                            ANIMAL BEHAVIOUR LOGIC
+    //////////////////////////////////////////////////////////////*/
+
+    @Override
+    protected Location doFindFood()
+    {
+        return findFood(getTargetPlants());
+    }
+
     /**
      * Seek for the food in adjacent locations that are of type of plant
      * @param targetPlants the preferred diet of the animal (e.g eats only grass)
      * @return the location traveled to in order to access the food
      */
-    public Location findFood(List<Class<? extends Plant>> targetPlants) 
+    private Location findFood(List<Class<? extends Plant>> targetPlants)
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());

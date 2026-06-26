@@ -62,7 +62,7 @@ public class SimulatorView extends JFrame
         dashboardButton.addActionListener(new ActionListener(){
                             public void actionPerformed(ActionEvent e) {
                             
-                                simulator.setDashboard(new Dashboard(stats.getCounters(), DiseaseHandler.count));
+                                simulator.setDashboard(new Dashboard(stats.getCounters(), simulator.getDiseaseCount()));
                             }
         
                         });

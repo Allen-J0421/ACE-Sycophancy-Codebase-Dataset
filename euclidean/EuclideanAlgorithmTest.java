@@ -1,3 +1,5 @@
+package euclidean;
+
 public final class EuclideanAlgorithmTest {
 
     private EuclideanAlgorithmTest() {

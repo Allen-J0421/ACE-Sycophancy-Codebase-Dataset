@@ -1,3 +1,5 @@
+package euclidean;
+
 public final class EuclideanAlgorithm {
 
     private EuclideanAlgorithm() {
@@ -22,11 +24,6 @@ public final class EuclideanAlgorithm {
         }
 
         return toIntExact(x);
-    }
-
-    @Deprecated
-    public static int findGCD(int a, int b) {
-        return gcd(a, b);
     }
 
     private static int toIntExact(long value) {

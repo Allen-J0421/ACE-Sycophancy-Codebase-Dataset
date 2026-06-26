@@ -1,3 +1,5 @@
+package euclidean;
+
 public final class EuclideanAlgorithmApp {
 
     private static final int DEFAULT_A = 35;

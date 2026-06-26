@@ -55,9 +55,9 @@ public class Populator {
     /**
      * Constructor for the populator.
      *
-     * @param view A given SimulatorView.
+     * @param view A given SimulationView.
      */
-    public Populator(SimulatorView view) {
+    public Populator(SimulationView view) {
         // Register the display colour of each species with the view.
         for (SpawnRule rule : SPAWN_RULES) {
             view.setColor(rule.species, rule.color);

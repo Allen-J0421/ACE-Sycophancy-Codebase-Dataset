@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @version 2022.03.02
  */
-public class SimulatorView extends JFrame
+public class SimulatorView extends JFrame implements SimulationView
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -31,7 +31,7 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -77,7 +77,8 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    @Override
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -93,7 +94,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -110,6 +111,7 @@ public class SimulatorView extends JFrame
      * @param step Which iteration step it is.
      * @param field The field whose status is to be displayed.
      */
+    @Override
     public void showStatus(int step, Field field)
     {
         if(!isVisible()) {
@@ -142,15 +144,18 @@ public class SimulatorView extends JFrame
      * Determine whether the simulation should continue to run.
      * @return true If there is more than one species alive.
      */
+    @Override
     public boolean isViable(Field field)
     {
         return stats.isViable(field);
     }
 
+    @Override
     public void updateTimeLabel(int day, int hour){
         timeLabel.setText(TIME_DAY_PREFIX + (day) + " " + TIME_HOUR_PREFIX + (hour));
     }
 
+    @Override
     public void updateEnvironmentLabel(Weather weather, TimeOfDay time) {
         environmentLabel.setText(WEATHER_PREFIX + weather.getType().toString() + " " + TIME_OF_DAY_PREFIX + time);
     }

@@ -10,11 +10,10 @@ public class SimulatorClock
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    private final int INITIAL_TIME = 12;
-    private final int TIME_FACTOR = 3;
-    private final int STEPS_PER_DAY = 8;
+    private static final int INITIAL_TIME = 12;
+    private static final int TIME_FACTOR = 3;
+    private static final int STEPS_PER_DAY = 8;
     private int step;
-    private int dayCount;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR

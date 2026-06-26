@@ -1,8 +1,6 @@
-import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
 /**
  * A simple predator-prey simulator, based on a rectangular field
  * containing rabbits and foxes.
@@ -36,8 +34,6 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
-    // creates animal factories
-    private AnimalFactoryProducer producer;
     // handles the simulation of the disease
     private DiseaseHandler diseaseHandler;
     // swing component dashboard
@@ -80,7 +76,6 @@ public class Simulator
         clock = new SimulatorClock();
         weatherHandler = new WeatherHandler(clock);
         diseaseHandler = new DiseaseHandler( field);
-        producer = new AnimalFactoryProducer(field);
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width, this);
         populationGenerator = new PopulationGenerator(view, field);

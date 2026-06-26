@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -127,6 +128,55 @@ public abstract class Actor
      * @return The actors name
      */
     abstract protected String getActorName();
+
+    /**
+     * Inherit diseases from a parent when the disease can spread by birth.
+     * @param parentDiseases The parent's diseases.
+     */
+    protected static void inheritDiseases(Set<Disease> diseases, Set<Disease> parentDiseases)
+    {
+        for(Disease parentDisease : parentDiseases) {
+            if(parentDisease.isSpreadByBirth()) {
+                diseases.add(parentDisease);
+            }
+        }
+    }
+
+    /**
+     * Add diseases that can be present when this actor is first created.
+     * @param actorName The actor name to match against disease configuration.
+     * @param actorDiseases The actor's disease set.
+     * @param diseases The diseases in the simulation.
+     * @param rand The random source to use.
+     */
+    protected static void addStartingDiseases(String actorName, Set<Disease> actorDiseases,
+                                             List<Disease> diseases, Random rand)
+    {
+        for(Disease disease : diseases) {
+            if(disease.getStartingActorsMap().containsKey(actorName) &&
+                rand.nextDouble() <= disease.getStartingActorsMap().get(actorName)) {
+                actorDiseases.add(disease);
+            }
+        }
+    }
+
+    /**
+     * Generate a birth count from common breeding rules.
+     * @param currentAge The current actor age.
+     * @param breedingAge The age at which breeding can start.
+     * @param breedingProbability The probability of breeding.
+     * @param maxLitterSize The maximum litter size.
+     * @param rand The random source to use.
+     * @return The number of births.
+     */
+    protected static int breedIfAble(int currentAge, int breedingAge, double breedingProbability,
+                                     int maxLitterSize, Random rand)
+    {
+        if(currentAge >= breedingAge && rand.nextDouble() <= breedingProbability) {
+            return rand.nextInt(maxLitterSize) + 1;
+        }
+        return 0;
+    }
 
     /**
      * Increments the actors age by 1

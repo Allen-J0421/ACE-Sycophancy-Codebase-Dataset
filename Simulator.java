@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.awt.Color;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field

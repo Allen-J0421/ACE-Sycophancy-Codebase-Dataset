@@ -1,6 +1,4 @@
-import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -53,11 +51,7 @@ public class Salamander extends Animal
         
         age = 0;
         foodLevel = MAX_FOOD;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-            }
-        }
+        inheritDiseases(setDiseases, parentDiseases);
     }
 
     /**
@@ -76,11 +70,7 @@ public class Salamander extends Animal
         canGoWater = true;
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
-        for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
-                setDiseases.add(disease);
-            }
-        }
+        addStartingDiseases(name, setDiseases, Simulator.diseases, rand);
     }
 
     /**
@@ -103,20 +93,7 @@ public class Salamander extends Animal
      */
     public int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A salamander can breed if it has reached the breeding age.
-     * @return true if the salamander can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return breedIfAble(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
     }
 
     /**

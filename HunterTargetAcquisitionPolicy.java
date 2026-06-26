@@ -6,6 +6,7 @@ public final class HunterTargetAcquisitionPolicy extends AbstractTargetAcquisiti
     private static final java.util.Set<Class<?>> DIET = java.util.Set.of(
             Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class
     );
+    private static final RemovalPolicy REMOVAL_POLICY = new StandardRemovalPolicy();
 
     @Override
     public Location acquireTarget(Organism forager, Environment environment)
@@ -20,9 +21,7 @@ public final class HunterTargetAcquisitionPolicy extends AbstractTargetAcquisiti
         }
 
         Animal food = (Animal) hunter.getField().getObjectAt(preyLocation);
-        if(food.isAlive()) {
-            food.setDead();
-        }
+        REMOVAL_POLICY.remove(food);
         return preyLocation;
     }
 }

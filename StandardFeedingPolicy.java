@@ -6,6 +6,7 @@ import java.util.Random;
 public final class StandardFeedingPolicy implements FeedingPolicy
 {
     private static final Random rand = Randomizer.getRandom();
+    private static final RemovalPolicy REMOVAL_POLICY = new StandardRemovalPolicy();
 
     @Override
     public void feed(Animal consumer, Organism prey)
@@ -19,7 +20,7 @@ public final class StandardFeedingPolicy implements FeedingPolicy
 
         if(prey.isAlive())
         {
-            prey.setDead();
+            REMOVAL_POLICY.remove(prey);
             int newFoodLevel = consumer.foodLevel + ((Edible) prey).getFoodValue();
             consumer.foodLevel = Math.min(newFoodLevel, consumer.MAX_FOOD_LEVEL());
         }

@@ -35,6 +35,11 @@ public class Goat extends Prey {
     @Override
     protected double getRestActiveness() { return REST_ACTIVENESS; }
 
+    /** Creates a goat with a random age for initial population seeding. */
+    public static Goat spawn(Field field, Location location) {
+        return new Goat(DEFAULT_FOOD_VALUE, true, field, location);
+    }
+
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Goat(DEFAULT_FOOD_VALUE, true, field, location);

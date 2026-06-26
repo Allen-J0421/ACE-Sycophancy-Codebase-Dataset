@@ -48,7 +48,7 @@ public abstract class Prey extends Animal implements Consumable {
      * Dead prey linger on the field so scavengers can eat their corpses.
      */
     @Override
-    public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time) {
         incrementAge();
         setActiveness(DEFAULT_ACTIVENESS);
 
@@ -94,7 +94,7 @@ public abstract class Prey extends Animal implements Consumable {
         Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();
         while (it.hasNext()) {
             Location where = it.next();
-            Object organism = field.getObjectAt(where);
+            Organism organism = field.getObjectAt(where);
             if (organism instanceof Plant) {
                 Plant plant = (Plant) organism;
                 if (plant.isAlive()) {

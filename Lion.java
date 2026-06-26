@@ -32,6 +32,11 @@ public class Lion extends Predator {
         super(TRAITS, foodLevel, randomAge, field, location);
     }
 
+    /** Creates a lion with a random age for initial population seeding. */
+    public static Lion spawn(Field field, Location location) {
+        return new Lion(DEFAULT_FOOD_LEVEL, true, field, location);
+    }
+
     @Override
     public double getEatingProbability() { return EATING_PROBABILITY; }
 

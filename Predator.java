@@ -33,7 +33,7 @@ public abstract class Predator extends Animal {
      * The predator skips acting entirely during its rest period.
      */
     @Override
-    public void act(List<Entity> newOrganisms, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time) {
         incrementAge();
         incrementHunger();
         if (isAlive()) {
@@ -65,7 +65,7 @@ public abstract class Predator extends Animal {
     public Location findFood() {
         Field field = getField();
         for (Location where : field.adjacentLocations(getLocation())) {
-            Object obj = field.getObjectAt(where);
+            Organism obj = field.getObjectAt(where);
             if (obj instanceof Prey) {
                 Prey prey = (Prey) obj;
                 if (prey.isAlive()) {

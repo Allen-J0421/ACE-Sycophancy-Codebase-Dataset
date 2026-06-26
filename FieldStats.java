@@ -1,16 +1,16 @@
 import java.util.HashMap;
 
 /**
- * This class collects and provides some statistical data on the state 
- * of a field. It is flexible: it will create and maintain a counter 
+ * This class collects and provides some statistical data on the state
+ * of a field. It is flexible: it will create and maintain a counter
  * for any class of object that is found within the field.
  *
  * @version 2016.02.29
  */
 public class FieldStats
 {
-    // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    // Counters for each species in the simulation.
+    private HashMap<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -19,9 +19,7 @@ public class FieldStats
      */
     public FieldStats()
     {
-        // Set up a collection for counters for each type of animal that
-        // we might find
-        counters = new HashMap<>();
+        counters    = new HashMap<>();
         countsValid = true;
     }
 
@@ -35,7 +33,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
+        for(Class<?> key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -44,38 +42,34 @@ public class FieldStats
         }
         return buffer.toString();
     }
-    
+
     /**
-     * Invalidate the current set of statistics; reset all 
-     * counts to zero.
+     * Invalidate the current set of statistics; reset all counts to zero.
      */
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
-            Counter count = counters.get(key);
-            count.reset();
+        for(Class<?> key : counters.keySet()) {
+            counters.get(key).reset();
         }
     }
 
     /**
-     * Increment the count for one class of animal.
-     * @param animalClass The class of animal to increment.
+     * Increment the count for one class of organism.
+     * @param speciesClass The class of organism to increment.
      */
-    public void incrementCount(Class animalClass)
+    public void incrementCount(Class<?> speciesClass)
     {
-        Counter count = counters.get(animalClass);
+        Counter count = counters.get(speciesClass);
         if(count == null) {
-            // We do not have a counter for this species yet.
-            // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
+            count = new Counter(speciesClass.getName());
+            counters.put(speciesClass, count);
         }
         count.increment();
     }
 
     /**
-     * Indicate that an animal count has been completed.
+     * Indicate that a count has been completed.
      */
     public void countFinished()
     {
@@ -83,31 +77,25 @@ public class FieldStats
     }
 
     /**
-     * Determine whether the simulation is still viable.
-     * I.e., should it continue to run.
-     * @return true If there is more than one species alive.
+     * Determine whether the simulation is still viable (more than one species alive).
+     * @return true if there is more than one species alive.
      */
     public boolean isViable(Field field)
     {
-        // How many counts are non-zero.
         int nonZero = 0;
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) {
+        for(Class<?> key : counters.keySet()) {
+            if(counters.get(key).getCount() > 0) {
                 nonZero++;
             }
         }
         return nonZero > 1;
     }
-    
+
     /**
-     * Generate counts of the number of foxes and rabbits.
-     * These are not kept up to date as foxes and rabbits
-     * are placed in the field, but only when a request
-     * is made for the information.
+     * Generate counts of all species currently in the field.
      * @param field The field to generate the stats for.
      */
     private void generateCounts(Field field)
@@ -115,9 +103,9 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
+                Organism organism = field.getObjectAt(row, col);
+                if(organism != null) {
+                    incrementCount(organism.getClass());
                 }
             }
         }

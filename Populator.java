@@ -5,97 +5,77 @@ import java.util.Random;
 /**
  * This file is part of the Predator-Prey Simulation.
  *
- * A populator for the field in the simulation.
+ * Populates the field with an initial distribution of organisms and
+ * registers species colours with the view.
  *
  * @version 2022.03.02
  */
 public class Populator {
 
-    // define fields
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.05;
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.05;
-    // The probability that a vulture will be created in any given grid position.
-    private static final double VULTURE_CREATION_PROBABILITY = 0.05;
-    // The probability that an elephant will be created in any given grid position.
-    private static final double ELEPHANT_CREATION_PROBABILITY = 0.05;
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.05;
-    // The probability that a goat will be created in any given grid position.
-    private static final double GOAT_CREATION_PROBABILITY = 0.05;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.04;
-    // The probability that some poison berries will be created in any given grid position.
+    // Probability that a given grid cell contains each species.
+    // A single random draw per cell is compared against cumulative thresholds,
+    // so each stated probability is exact (not conditional on prior species).
+    private static final double LION_CREATION_PROBABILITY         = 0.05;
+    private static final double ZEBRA_CREATION_PROBABILITY        = 0.05;
+    private static final double VULTURE_CREATION_PROBABILITY      = 0.05;
+    private static final double GRASS_CREATION_PROBABILITY        = 0.04;
+    private static final double GOAT_CREATION_PROBABILITY         = 0.05;
+    private static final double ELEPHANT_CREATION_PROBABILITY     = 0.05;
+    private static final double CHEETAH_CREATION_PROBABILITY      = 0.05;
     private static final double POISON_BERRIES_CREATION_PROBABILITY = 0.04;
 
     /**
-     * Constructor for the populator.
+     * Constructor for the populator. Registers species colours with the view.
      *
-     * @param view A given SimulatorView.
+     * @param view The simulation view to register colours with.
      */
     public Populator(SimulatorView view) {
-        // Create a view of the state of each location in the field.
-        view.setColor(Zebra.class, Color.BLUE);
-        view.setColor(Lion.class, Color.RED);
-        view.setColor(Vulture.class, Color.ORANGE);
-        view.setColor(Grass.class, Color.GREEN);
-        view.setColor(Goat.class, Color.PINK);
-        view.setColor(Elephant.class, Color.GRAY);
-        view.setColor(Cheetah.class, Color.MAGENTA);
+        view.setColor(Lion.class,        Color.RED);
+        view.setColor(Cheetah.class,     Color.MAGENTA);
+        view.setColor(Vulture.class,     Color.ORANGE);
+        view.setColor(Zebra.class,       Color.BLUE);
+        view.setColor(Goat.class,        Color.PINK);
+        view.setColor(Elephant.class,    Color.GRAY);
+        view.setColor(Grass.class,       Color.GREEN);
         view.setColor(PoisonBerry.class, Color.BLACK);
     }
 
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Randomly populate the field with organisms.
+     * Each cell gets at most one organism, chosen by a single random draw
+     * compared against cumulative probability thresholds.
+     *
+     * @param organisms The list to add newly created organisms to.
+     * @param field     The field to populate.
      */
-    public void populate(List<Entity> organisms, Field field)
+    public void populate(List<Organism> organisms, Field field)
     {
         Random rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(19, true, field, location);
-                    organisms.add(lion);
+                Location location = new Location(row, col);
+                double r = rand.nextDouble();
+                double cumulative = 0.0;
+
+                if (r < (cumulative += LION_CREATION_PROBABILITY)) {
+                    organisms.add(Lion.spawn(field, location));
+                } else if (r < (cumulative += ZEBRA_CREATION_PROBABILITY)) {
+                    organisms.add(Zebra.spawn(field, location));
+                } else if (r < (cumulative += VULTURE_CREATION_PROBABILITY)) {
+                    organisms.add(Vulture.spawn(field, location));
+                } else if (r < (cumulative += GRASS_CREATION_PROBABILITY)) {
+                    organisms.add(Grass.spawn(field, location));
+                } else if (r < (cumulative += GOAT_CREATION_PROBABILITY)) {
+                    organisms.add(Goat.spawn(field, location));
+                } else if (r < (cumulative += ELEPHANT_CREATION_PROBABILITY)) {
+                    organisms.add(Elephant.spawn(field, location));
+                } else if (r < (cumulative += CHEETAH_CREATION_PROBABILITY)) {
+                    organisms.add(Cheetah.spawn(field, location));
+                } else if (r < (cumulative += POISON_BERRIES_CREATION_PROBABILITY)) {
+                    organisms.add(PoisonBerry.spawn(field, location));
                 }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Zebra zebra = new Zebra(5, true, field, location);
-                    organisms.add(zebra);
-                }
-                else if(rand.nextDouble() <= VULTURE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Vulture vulture = new Vulture(40, true, field, location);
-                    organisms.add(vulture);
-                }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(1, 1, true, field, location);
-                    organisms.add(grass);
-                }
-                else if(rand.nextDouble() <= GOAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Goat goat = new Goat(5, true, field, location);
-                    organisms.add(goat);
-                }
-                else if(rand.nextDouble() <= ELEPHANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Elephant elephant = new Elephant(5, true, field, location);
-                    organisms.add(elephant);
-                }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Cheetah cheetah = new Cheetah(19, true, field, location);
-                    organisms.add(cheetah);
-                }
-                else if(rand.nextDouble() <= POISON_BERRIES_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    PoisonBerry berry = new PoisonBerry(2, 1, true, field, location);
-                    organisms.add(berry);
-                }
-                // else leave the location empty.
+                // else: leave the cell empty
             }
         }
     }

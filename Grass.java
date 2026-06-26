@@ -38,6 +38,11 @@ public class Grass extends Plant {
     @Override
     protected WeatherType[] getBoostWeatherTypes() { return BOOST_WEATHER; }
 
+    /** Creates a grass patch with a random age for initial population seeding. */
+    public static Grass spawn(Field field, Location location) {
+        return new Grass(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);
+    }
+
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Grass(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);

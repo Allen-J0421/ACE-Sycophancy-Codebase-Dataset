@@ -63,7 +63,7 @@ public abstract class Animal extends Organism implements AbleToEat {
     protected boolean canBreed() {
         if (getAge() < getBreedingAge()) return false;
         for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object obj = getField().getObjectAt(loc);
+            Organism obj = getField().getObjectAt(loc);
             if (obj != null && obj.getClass() == getClass()) {
                 Animal other = (Animal) obj;
                 if (isMale() != other.isMale()) return true;
@@ -91,7 +91,7 @@ public abstract class Animal extends Organism implements AbleToEat {
     protected Location findAnimalToInfect() {
         if (!infected) return null;
         for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object organism = getField().getObjectAt(loc);
+            Organism organism = getField().getObjectAt(loc);
             if (organism instanceof Animal) {
                 Animal animal = (Animal) organism;
                 if (animal.isAlive() && !animal.isInfected()) {

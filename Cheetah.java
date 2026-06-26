@@ -32,6 +32,11 @@ public class Cheetah extends Predator {
         super(TRAITS, foodLevel, randomAge, field, location);
     }
 
+    /** Creates a cheetah with a random age for initial population seeding. */
+    public static Cheetah spawn(Field field, Location location) {
+        return new Cheetah(DEFAULT_FOOD_LEVEL, true, field, location);
+    }
+
     @Override
     public double getEatingProbability() { return EATING_PROBABILITY; }
 

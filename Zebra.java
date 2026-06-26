@@ -35,6 +35,11 @@ public class Zebra extends Prey {
     @Override
     protected double getRestActiveness() { return REST_ACTIVENESS; }
 
+    /** Creates a zebra with a random age for initial population seeding. */
+    public static Zebra spawn(Field field, Location location) {
+        return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);
+    }
+
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);

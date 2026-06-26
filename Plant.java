@@ -96,7 +96,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
      * probability whenever any of the boost weather types appear in recent history.
      */
     @Override
-    public void act(List<Entity> newPlants, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newPlants, Weather weather, TimeOfDay time) {
         if (isAlive()) {
             breedingProbability = traits.lowBreedingProbability;
             for (WeatherType boostType : getBoostWeatherTypes()) {

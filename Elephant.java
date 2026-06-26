@@ -35,6 +35,11 @@ public class Elephant extends Prey {
     @Override
     protected double getRestActiveness() { return REST_ACTIVENESS; }
 
+    /** Creates an elephant with a random age for initial population seeding. */
+    public static Elephant spawn(Field field, Location location) {
+        return new Elephant(DEFAULT_FOOD_VALUE, true, field, location);
+    }
+
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Elephant(DEFAULT_FOOD_VALUE, true, field, location);

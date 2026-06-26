@@ -31,6 +31,11 @@ public class Vulture extends Scavenger {
         super(TRAITS, foodLevel, randomAge, field, location);
     }
 
+    /** Creates a vulture with a random age for initial population seeding. */
+    public static Vulture spawn(Field field, Location location) {
+        return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
+    }
+
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);

@@ -38,6 +38,11 @@ public class PoisonBerry extends Plant {
     @Override
     protected WeatherType[] getBoostWeatherTypes() { return BOOST_WEATHER; }
 
+    /** Creates a poison berry with a random age for initial population seeding. */
+    public static PoisonBerry spawn(Field field, Location location) {
+        return new PoisonBerry(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);
+    }
+
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
         return new PoisonBerry(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);

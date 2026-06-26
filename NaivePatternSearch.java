@@ -8,13 +8,14 @@ public final class NaivePatternSearch {
         // Utility class.
     }
 
-    public static List<Integer> search(String pattern, String text) {
+    public static List<Integer> search(CharSequence pattern, CharSequence text) {
         Objects.requireNonNull(pattern, "pattern");
         Objects.requireNonNull(text, "text");
 
         int patternLength = pattern.length();
         int textLength = text.length();
-        List<Integer> matches = new ArrayList<>();
+        int expectedMatches = patternLength == 0 ? textLength + 1 : Math.max(0, textLength - patternLength + 1);
+        List<Integer> matches = new ArrayList<>(expectedMatches);
 
         if (patternLength == 0) {
             for (int index = 0; index <= textLength; index++) {
@@ -36,22 +37,12 @@ public final class NaivePatternSearch {
         return matches;
     }
 
-    private static boolean matchesAt(String pattern, String text, int start, int patternLength) {
+    private static boolean matchesAt(CharSequence pattern, CharSequence text, int start, int patternLength) {
         for (int offset = 0; offset < patternLength; offset++) {
             if (text.charAt(start + offset) != pattern.charAt(offset)) {
                 return false;
             }
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        String text = "aabaacaadaabaaba";
-        String pattern = "aaba";
-
-        List<Integer> matches = search(pattern, text);
-        for (int index : matches) {
-            System.out.print(index + " ");
-        }
     }
 }

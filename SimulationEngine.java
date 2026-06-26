@@ -1,12 +1,12 @@
 import java.util.*;
 
 /**
- * The core simulation engine: owns all simulation state and drives each step.
+ * The core simulation engine: owns simulation state and drives the step loop.
  * It is deliberately decoupled from the GUI — the only way it communicates
  * with the view layer is through the {@link SimulationObserver} passed at
  * construction time.
- * World-building (initial population and rain-driven grass growth) is delegated
- * to {@link FieldPopulator}.
+ * Actor lifecycle is delegated to {@link ActorManager}; world-building is
+ * delegated to {@link FieldPopulator}.
  *
  * @version 2022.03.02
  */
@@ -27,15 +27,14 @@ public class SimulationEngine implements SimulationControls
 
     private boolean playingSimulation = false;
     private int remainingSteps;
+    private int step;
 
     private final Map<Class<?>, Double> creationProbabilities;
     private final SimulationObserver observer;
+    private final ActorManager actorManager;
     private final FieldPopulator populator;
-
-    private List<Actor> actors;
-    private Field field;
-    private int step;
-    private Environment environment;
+    private final Field field;
+    private final Environment environment;
 
     /**
      * Create an engine with default creation probabilities.
@@ -60,10 +59,10 @@ public class SimulationEngine implements SimulationControls
     {
         this.creationProbabilities = creationProbabilities;
         this.observer = observer;
-        actors = new ArrayList<>();
         field = new Field(depth, width);
         environment = new Environment(new Time(), new Weather());
-        populator = new FieldPopulator(field, actors, creationProbabilities);
+        actorManager = new ActorManager();
+        populator = new FieldPopulator(field, actorManager, creationProbabilities);
     }
 
     // --- SimulationControls implementation ---
@@ -95,7 +94,7 @@ public class SimulationEngine implements SimulationControls
     public void reset()
     {
         step = 0;
-        actors.clear();
+        actorManager.clear();
         populator.reset();
         populator.populate();
         environment.getTime().reset();
@@ -138,8 +137,8 @@ public class SimulationEngine implements SimulationControls
     }
 
     /**
-     * Run the simulation from its current state for a single step.
-     * Iterates over the whole field, letting each actor act.
+     * Advance the simulation by one step: update environment, tick all actors,
+     * spread rain-driven grass, then notify the observer.
      */
     public void simulateOneStep()
     {
@@ -148,15 +147,7 @@ public class SimulationEngine implements SimulationControls
         environment.getTime().incrementTime();
         environment.getWeather().checkWeatherChange(step);
 
-        List<Actor> newActors = new ArrayList<>();
-        for (Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
-            Actor actor = it.next();
-            actor.act(newActors, environment);
-            if (!actor.isAlive()) {
-                it.remove();
-            }
-        }
-        actors.addAll(newActors);
+        actorManager.tick(environment);
         populator.plantGrassInPatches(environment);
 
         observer.onStep(step, environment, field);

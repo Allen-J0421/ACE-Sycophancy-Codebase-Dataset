@@ -14,19 +14,19 @@ public class FieldPopulator
     private static final Random rand = Randomizer.getRandom();
 
     private final Field field;
-    private final List<Actor> actors;
+    private final ActorManager actorManager;
     private final Map<Class<?>, Double> probabilities;
     private int hunterCount = 0;
 
     /**
      * @param field         The field to populate.
-     * @param actors        The shared actor list managed by the engine.
+     * @param actorManager  The actor manager that receives newly spawned actors.
      * @param probabilities Per-class spawn probability.
      */
-    public FieldPopulator(Field field, List<Actor> actors, Map<Class<?>, Double> probabilities)
+    public FieldPopulator(Field field, ActorManager actorManager, Map<Class<?>, Double> probabilities)
     {
         this.field = field;
-        this.actors = actors;
+        this.actorManager = actorManager;
         this.probabilities = probabilities;
     }
 
@@ -61,7 +61,7 @@ public class FieldPopulator
                     Class<?> cls = entry.getKey();
                     if (cls == Hunter.class && hunterCount >= HUNTER_LIMIT) continue;
                     if (rand.nextDouble() <= probabilities.get(cls)) {
-                        actors.add(entry.getValue().apply(location, sex));
+                        actorManager.add(entry.getValue().apply(location, sex));
                         if (cls == Hunter.class) hunterCount++;
                         break;
                     }
@@ -81,7 +81,7 @@ public class FieldPopulator
         for (Location location : field.getRandomFreePatches(grassProb)) {
             if (rand.nextDouble() <= grassProb
                     && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
-                actors.add(new Grass(field, location));
+                actorManager.add(new Grass(field, location));
             }
         }
     }

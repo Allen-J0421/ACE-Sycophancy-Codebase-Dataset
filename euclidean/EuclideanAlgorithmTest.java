@@ -7,11 +7,21 @@ public final class EuclideanAlgorithmTest {
     }
 
     public static void main(String[] args) {
-        assertGcd(35, 15, 5);
-        assertGcd(-42, 56, 14);
-        assertGcd(0, 9, 9);
-        assertGcd(9, 0, 9);
-        assertGcd(0, 0, 0);
+        GcdCase[] gcdCases = {
+            new GcdCase(35, 15, 5),
+            new GcdCase(-42, 56, 14),
+            new GcdCase(0, 9, 9),
+            new GcdCase(9, 0, 9),
+            new GcdCase(0, 0, 0)
+        };
+
+        for (GcdCase testCase : gcdCases) {
+            assertGcd(testCase.left, testCase.right, testCase.expected);
+        }
+
+        assertOperands(35, 15, ArgumentParser.parseOperands(new String[0]));
+        assertOperands(-42, 56, ArgumentParser.parseOperands(new String[] { "-42", "56" }));
+        assertIllegalArgument(() -> ArgumentParser.parseOperands(new String[] { "7" }));
         assertOverflow(Integer.MIN_VALUE, 0);
     }
 
@@ -35,4 +45,25 @@ public final class EuclideanAlgorithmTest {
             "gcd(" + a + ", " + b + ") was expected to overflow but completed normally"
         );
     }
+
+    private static void assertOperands(int expectedLeft, int expectedRight, Operands actual) {
+        if (actual.left() != expectedLeft || actual.right() != expectedRight) {
+            throw new AssertionError(
+                "Expected operands (" + expectedLeft + ", " + expectedRight + ") but was ("
+                    + actual.left() + ", " + actual.right() + ")"
+            );
+        }
+    }
+
+    private static void assertIllegalArgument(Runnable action) {
+        try {
+            action.run();
+        } catch (IllegalArgumentException expected) {
+            return;
+        }
+
+        throw new AssertionError("Expected IllegalArgumentException but call completed normally");
+    }
+
+    private record GcdCase(int left, int right, int expected) {}
 }

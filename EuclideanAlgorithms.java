@@ -1,23 +1,28 @@
 import java.io.PrintStream;
+import java.math.BigInteger;
 
 public final class EuclideanAlgorithms {
-    private static final long DEFAULT_FIRST_OPERAND = 35;
-    private static final long DEFAULT_SECOND_OPERAND = 15;
+    private static final BigInteger DEFAULT_FIRST_OPERAND = BigInteger.valueOf(35);
+    private static final BigInteger DEFAULT_SECOND_OPERAND = BigInteger.valueOf(15);
 
     private EuclideanAlgorithms() {
         // Utility class.
     }
 
-    public static long gcd(long first, long second) {
-        long left = Math.abs(first);
-        long right = Math.abs(second);
+    public static BigInteger gcd(long first, long second) {
+        return gcd(BigInteger.valueOf(first), BigInteger.valueOf(second));
+    }
 
-        if (left == 0 && right == 0) {
+    public static BigInteger gcd(BigInteger first, BigInteger second) {
+        BigInteger left = first.abs();
+        BigInteger right = second.abs();
+
+        if (left.equals(BigInteger.ZERO) && right.equals(BigInteger.ZERO)) {
             throw new IllegalArgumentException("At least one operand must be non-zero.");
         }
 
-        while (right != 0) {
-            long remainder = left % right;
+        while (!right.equals(BigInteger.ZERO)) {
+            BigInteger remainder = left.remainder(right);
             left = right;
             right = remainder;
         }
@@ -62,12 +67,12 @@ public final class EuclideanAlgorithms {
             throw new IllegalArgumentException("Expected either zero arguments or exactly two integers.");
         }
 
-        return new Operands(parseLong(args[0]), parseLong(args[1]));
+        return new Operands(parseInteger(args[0]), parseInteger(args[1]));
     }
 
-    private static long parseLong(String value) {
+    private static BigInteger parseInteger(String value) {
         try {
-            return Long.parseLong(value);
+            return new BigInteger(value);
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException("Invalid integer: " + value, exception);
         }
@@ -82,6 +87,7 @@ public final class EuclideanAlgorithms {
             + DEFAULT_SECOND_OPERAND
             + ".";
     }
-}
 
-record Operands(long first, long second) {}
+    private record Operands(BigInteger first, BigInteger second) {
+    }
+}

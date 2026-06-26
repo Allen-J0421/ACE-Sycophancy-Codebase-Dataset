@@ -1,14 +1,25 @@
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.math.BigInteger;
 
 public final class EuclideanAlgorithmsTest {
     private EuclideanAlgorithmsTest() {
     }
 
     public static void main(String[] args) {
-        assertEquals(5L, EuclideanAlgorithms.gcd(35, 15), "gcd uses the default sample values");
-        assertEquals(6L, EuclideanAlgorithms.gcd(-24, 18), "gcd normalizes negative inputs");
-        assertEquals(12L, EuclideanAlgorithms.gcd(0, 12), "gcd handles a zero operand");
+        assertEquals(BigInteger.valueOf(5), EuclideanAlgorithms.gcd(35, 15), "gcd uses the default sample values");
+        assertEquals(BigInteger.valueOf(6), EuclideanAlgorithms.gcd(-24, 18), "gcd normalizes negative inputs");
+        assertEquals(BigInteger.valueOf(12), EuclideanAlgorithms.gcd(0, 12), "gcd handles a zero operand");
+        assertEquals(
+            new BigInteger("9223372036854775808"),
+            EuclideanAlgorithms.gcd(Long.MIN_VALUE, 0),
+            "gcd handles the absolute value overflow case"
+        );
+        assertEquals(
+            BigInteger.valueOf(2),
+            EuclideanAlgorithms.gcd(new BigInteger("9223372036854775808"), BigInteger.TWO),
+            "gcd supports integers larger than long"
+        );
         assertThrows(() -> EuclideanAlgorithms.gcd(0, 0), "gcd rejects two zero operands");
 
         assertRun(new String[0], 0, "5\n", "", "run uses default operands");
@@ -26,6 +37,13 @@ public final class EuclideanAlgorithmsTest {
             "",
             "Expected either zero arguments or exactly two integers.\n" + expectedUsage() + "\n",
             "run rejects partial input"
+        );
+        assertRun(
+            new String[] {"9223372036854775808", "2"},
+            0,
+            "2\n",
+            "",
+            "run supports integers larger than long"
         );
     }
 
@@ -58,8 +76,8 @@ public final class EuclideanAlgorithmsTest {
         }
     }
 
-    private static void assertEquals(long expected, long actual, String scenario) {
-        if (expected != actual) {
+    private static void assertEquals(BigInteger expected, BigInteger actual, String scenario) {
+        if (!expected.equals(actual)) {
             throw new AssertionError(scenario + ": expected " + expected + " but was " + actual);
         }
     }

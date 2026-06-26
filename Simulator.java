@@ -95,16 +95,27 @@ public class Simulator
      */
     public Simulator(SimulationConfig config)
     {
+        this(config, new SimulationRegistry());
+    }
+
+    /**
+     * Create a simulation from a configuration object and component registry.
+     * @param config The simulation setup data.
+     * @param registry The component factory registry.
+     */
+    public Simulator(SimulationConfig config, SimulationRegistry registry)
+    {
         this.config = Objects.requireNonNull(config, "config");
+        registry = Objects.requireNonNull(registry, "registry");
         actors = new ArrayList<>();
-        field = new Field(config.getDepth(), config.getWidth());
-        environmentController = new EnvironmentController();
+        field = registry.createField(config);
+        environmentController = registry.createEnvironmentController();
         environment = environmentController.getEnvironment();
 
         actorFactories = new LinkedHashMap<>();
         registerActorFactories();
         listeners = new ArrayList<>();
-        viabilityStats = new FieldStats();
+        viabilityStats = registry.createFieldStats();
 
         // Setup a valid starting point.
         reset();

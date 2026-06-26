@@ -1,8 +1,4 @@
 final class ModularExponentiation {
-    private static final int DEMO_BASE = 3;
-    private static final int DEMO_EXPONENT = 2;
-    private static final int DEMO_MODULUS = 4;
-
     private ModularExponentiation() {
         // Utility class.
     }
@@ -39,10 +35,6 @@ final class ModularExponentiation {
     }
 
     public static void main(String[] args) {
-        System.out.println(runDemo());
-    }
-
-    private static int runDemo() {
-        return powMod(DEMO_BASE, DEMO_EXPONENT, DEMO_MODULUS);
+        ModularExponentiationApp.main(args);
     }
 }

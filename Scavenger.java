@@ -73,7 +73,6 @@ public abstract class Scavenger extends Animal {
             }
             else {
                 // Overcrowding.
-                //setDead();
                 remove();
             }
         }
@@ -95,7 +94,6 @@ public abstract class Scavenger extends Animal {
                 Prey prey = (Prey) animal;
                 // eats animal if dead only
                 if (!prey.isAlive()) {
-                    //System.out.println("EATEN DEAD");
                     eat(prey);
                     return where;
                 }
@@ -117,15 +115,6 @@ public abstract class Scavenger extends Animal {
         incrementFoodLevel(consumable.getFoodValue());
         return true;
     }
-
-    /**
-     * Checks all adjacent location for scavengers that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this scavenger can breed or not.
-     */
-    @Override
-    abstract public boolean canBreed();
 
     /**
      * Increment the food level of this scavenger by a given amount.

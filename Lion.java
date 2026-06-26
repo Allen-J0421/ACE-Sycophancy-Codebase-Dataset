@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Random;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -22,7 +19,8 @@ public class Lion extends Predator {
     private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
 
-    private static final Random rand = Randomizer.getRandom();
+    // The lion rests at night.
+    private static final TimeOfDay INACTIVE_TIME = TimeOfDay.NIGHT;
 
     /**
      * Constructor for a lion in the simulation.
@@ -108,56 +106,6 @@ public class Lion extends Predator {
     }
 
     /**
-     * Method for what the lion does, i.e. what is always run at every step.
-     *
-     * @param newLions A list of all newborn lions in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
-     */
-    @Override
-    public void act(List<Entity> newLions, Weather weather, TimeOfDay time) {
-        incrementAge();
-        incrementHunger();
-        if(isAlive()) {
-
-            giveBirth(newLions);
-
-            if (time == TimeOfDay.NIGHT){
-                return;
-            }
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
-
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                //setDead();
-                remove();
-            }
-        }
-    }
-
-    /**
      * Getter method to return this lion's probability of eating if food is found.
      *
      * @return The lion's eating probability.
@@ -168,26 +116,12 @@ public class Lion extends Predator {
     }
 
     /**
-     * Checks all adjacent location for lions that meet specific
-     * breeding conditions, and returns true if it is even possible.
+     * Getter method for the time of day at which the lion rests.
      *
-     * @return Whether this lion can breed or not.
+     * @return The TimeOfDay during which the lion is inactive.
      */
     @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Lion) {
-                Lion lion = (Lion) animal;
-                if (!(((lion.isMale() && isMale())) || ((!lion.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    protected TimeOfDay getInactiveTime() {
+        return INACTIVE_TIME;
     }
 }

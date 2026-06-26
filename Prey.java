@@ -1,4 +1,6 @@
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -11,8 +13,13 @@ public abstract class Prey extends Animal implements Consumable {
 
     // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
+    // Food value above which prey prefers to wander rather than keep eating.
+    private static final int SATIATED_FOOD_VALUE = 10;
     private int foodValue;
     private double activeness;  // denotes how likely it is for the act method to be called
+
+    // shared random generator to generate consistent results
+    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a Prey in the simulation.
@@ -30,23 +37,98 @@ public abstract class Prey extends Animal implements Consumable {
     }
 
     /**
-     * Method for what the prey does, i.e. what is always run at every step.
+     * What the prey does at every step: age and (if alive) breed, possibly die
+     * of disease, then - subject to its activeness - spread disease or forage
+     * and move. A dead prey instead decays. This behaviour is shared by all
+     * prey; species vary only in the time of day they are less active and by
+     * how much.
      *
      * @param newPrey A list of all newborn prey in this simulation step.
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPrey, Weather weather, TimeOfDay time);
+    public void act(List<Entity> newPrey, Weather weather, TimeOfDay time) {
+        incrementAge();
+        setActiveness(DEFAULT_ACTIVENESS); // reset activeness each step
+
+        if (!isAlive()) {
+            decayifDead();
+            return;
+        }
+
+        giveBirth(newPrey);
+
+        if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
+            remove();
+            return;
+        }
+
+        if (time == getLowActivityTime()) {
+            setActiveness(getLowActiveness());
+        }
+
+        if (rand.nextDouble() <= getActiveness()) {
+            // Either spread disease to a neighbour or look for food.
+            Location newLocation;
+            if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+                newLocation = findAnimalToInfect();
+            } else {
+                newLocation = findFood();
+            }
+
+            // Wander to a free location if no food was found or already satiated.
+            if (newLocation == null || getFoodValue() > SATIATED_FOOD_VALUE) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+
+            if (newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                // Overcrowding.
+                remove();
+            }
+        }
+    }
 
     /**
-     * Checks all adjacent location for prey that meet specific
-     * breeding conditions, and returns true if it is even possible.
+     * Find an adjacent living plant for this prey to eat, returning its
+     * location once eaten. All prey graze on plants.
      *
-     * @return Whether this prey can breed or not.
+     * @return The location of the food source, or null if none was eaten.
      */
     @Override
-    abstract public boolean canBreed();
+    public Location findFood() {
+        Field field = getField();
+        Iterator<Location> it = field.adjacentLocations(getLocation()).iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            Object organism = field.getObjectAt(where);
+            if (organism instanceof Plant) {
+                Plant plant = (Plant) organism;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    boolean eaten = eat(plant);
+                    return eaten ? where : null;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Getter method for the time of day at which this prey becomes less active.
+     *
+     * @return The TimeOfDay during which the prey is less active.
+     */
+    abstract protected TimeOfDay getLowActivityTime();
+
+    /**
+     * Getter method for this prey's activeness during its low-activity time.
+     *
+     * @return A double value representing the reduced activeness.
+     */
+    abstract protected double getLowActiveness();
 
     /**
      * Clear the prey from the simulation as it has been eaten.

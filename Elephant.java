@@ -1,7 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -22,8 +18,9 @@ public class Elephant extends Prey {
     private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
 
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
+    // The elephant is 15% less active at sunset.
+    private static final TimeOfDay LOW_ACTIVITY_TIME = TimeOfDay.SUNSET;
+    private static final double LOW_ACTIVENESS = 0.85;
 
     /**
      * Constructor for an Elephant in the simulation.
@@ -108,112 +105,22 @@ public class Elephant extends Prey {
     }
 
     /**
-     * Method for what the elephant does, i.e. what is always run at every step.
+     * Getter method for the time of day at which the elephant is less active.
      *
-     * @param newElephants A list of all newborn elephants in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @return The TimeOfDay during which the elephant is less active.
      */
     @Override
-    public void act(List<Entity> newElephants, Weather weather, TimeOfDay time) {
-        incrementAge();
-        setActiveness(1);
-
-        if(isAlive()) {
-            giveBirth(newElephants);
-
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            if (time == TimeOfDay.SUNSET){
-                this.setActiveness(0.85);
-            }
-
-            if (rand.nextDouble() <= getActiveness()){
-                // Try to move into a free location.
-                Location newLocation;
-
-                if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                    newLocation = findAnimalToInfect();
-                } else {
-                    newLocation = findFood();
-                }
-
-                // Random chance to do either?
-
-                if ((newLocation == null) || (getFoodValue() > 10)) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    // Overcrowding.
-                    remove();
-                }
-            }
-        } else {
-            decayifDead();
-        }
+    protected TimeOfDay getLowActivityTime() {
+        return LOW_ACTIVITY_TIME;
     }
 
     /**
-     * Checks all adjacent location for elephants that meet specific
-     * breeding conditions, and returns true if it is even possible.
+     * Getter method for the elephant's activeness during its low-activity time.
      *
-     * @return Whether this elephant can breed or not.
+     * @return A double value representing the reduced activeness.
      */
     @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Elephant) {
-                Elephant zebra = (Elephant) animal;
-                if (!(((zebra.isMale() && isMale())) || ((!zebra.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find a food source the elephant would want to eat.
-     * @return The location of the food source.
-     */
-    @Override
-    public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Object organism = field.getObjectAt(where);
-            if(organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-                // kills animal
-                //prey.setDead();
-                //eatOrLeave(prey);
-                if (plant.isAlive()) {
-                    //System.out.println("ALIVE");
-                    plant.setDead();
-                    // NOTE: ONLY RETURN WHERE IF EATEN
-                    boolean eaten = eat(plant);
-
-                    //return where;
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+    protected double getLowActiveness() {
+        return LOW_ACTIVENESS;
     }
 }

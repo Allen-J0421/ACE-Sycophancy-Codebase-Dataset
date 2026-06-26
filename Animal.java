@@ -52,13 +52,29 @@ public abstract class Animal extends Organism implements AbleToEat {
     abstract public boolean eat(Consumable consumable);
 
     /**
-     * Checks all adjacent location for animals that meet specific
-     * breeding conditions, and returns true if it is even possible.
+     * Checks all adjacent locations for an animal of the same species and
+     * opposite gender, which is the shared breeding condition for every animal.
      *
      * @return Whether this animal can breed or not.
      */
     @Override
-    abstract protected boolean canBreed();
+    protected boolean canBreed() {
+        if (getAge() < getBreedingAge()) {
+            return false;
+        }
+
+        for (Location loc : getField().adjacentLocations(getLocation())) {
+            Object occupant = getField().getObjectAt(loc);
+            // Same species (exact class) and opposite gender means breeding is possible.
+            if (occupant != null && occupant.getClass() == getClass()) {
+                Animal mate = (Animal) occupant;
+                if (mate.isMale() != isMale()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Getter method returning the gender of this animal.

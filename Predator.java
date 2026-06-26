@@ -33,14 +33,63 @@ public abstract class Predator extends Animal {
     }
 
     /**
-     * Abstract method for what the predator does, i.e. what is always run at every step.
+     * What the predator does at every step: age, get hungrier, breed, and -
+     * unless it is resting - either spread disease or hunt for food and move.
+     * This behaviour is shared by all predators; the only species-specific
+     * variation is the time of day at which the predator rests.
      *
      * @param newPredators A list of all newborn predators in this simulation step.
      * @param weather The current state of weather in the simulation.
      * @param time The current state of time in the simulation.
      */
     @Override
-    abstract public void act(List<Entity> newPredators, Weather weather, TimeOfDay time);
+    public void act(List<Entity> newPredators, Weather weather, TimeOfDay time) {
+        incrementAge();
+        incrementHunger();
+        if (!isAlive()) {
+            return;
+        }
+
+        giveBirth(newPredators);
+
+        // The predator rests (does nothing further) during its inactive time.
+        if (time == getInactiveTime()) {
+            return;
+        }
+
+        if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
+            remove();
+            return;
+        }
+
+        // Either spread disease to a neighbour or move towards a food source.
+        Location newLocation;
+        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+            newLocation = findAnimalToInfect();
+        } else {
+            newLocation = findFood();
+        }
+
+        if (newLocation == null) {
+            // No food found - try to move to a free location.
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+
+        if (newLocation != null) {
+            setLocation(newLocation);
+        } else {
+            // Overcrowding.
+            remove();
+        }
+    }
+
+    /**
+     * Getter method for the time of day at which this predator rests and
+     * performs no further actions.
+     *
+     * @return The TimeOfDay during which the predator is inactive.
+     */
+    abstract protected TimeOfDay getInactiveTime();
 
     /**
      * Finds the nearest food source and returns its location.
@@ -97,15 +146,6 @@ public abstract class Predator extends Animal {
             return false;
         }
     }
-
-    /**
-     * Checks all adjacent location for predators that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this lion can breed or not.
-     */
-    @Override
-    abstract protected boolean canBreed();
 
     /**
      * Increase the predator's food level by a given integer amount.

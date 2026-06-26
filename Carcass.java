@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 /**
  * A simple model of a carcass.
@@ -7,10 +6,12 @@ import java.util.List;
  */
 class Carcass extends Actor
 {   
-    //the carcass may be diseased if its left for too long:
+    private static final int MAX_STEPS_BEFORE_INFECTION = 15;
+
+    // The carcass may be diseased if it is left for too long.
     private boolean diseased;
-    // Number of steps before the corpse becomes infected:
-    private int STEPS_BEFORE_INFECTION;
+    // Number of steps before the carcass becomes infected:
+    private int stepsBeforeInfection;
     /**
      * Create a new carcass at a location in the field.
      * 
@@ -21,21 +22,24 @@ class Carcass extends Actor
     Carcass(Field field,Location loc,int consumptionWorth)
     {   
         super(field,loc,consumptionWorth,0,0,0,1);
-        STEPS_BEFORE_INFECTION = rand.nextInt(15);
+        stepsBeforeInfection = rand.nextInt(MAX_STEPS_BEFORE_INFECTION) + 1;
     }
     /**
      * Decrements the number of steps for the carcass to be infected every step in the simulator.
      */
     private void decrementStepsBeforeInfection()
     {
-        STEPS_BEFORE_INFECTION--;
+        if (stepsBeforeInfection > 0)
+        {
+            stepsBeforeInfection--;
+        }
     }
     /**
      * Sets the Carcass to be diseased(any consumer to eat it will be diseased as well)
      */
     private void makeDiseased()
     {
-        if(STEPS_BEFORE_INFECTION == 0)
+        if (stepsBeforeInfection == 0)
         {
             diseased = true;
         }
@@ -48,6 +52,11 @@ class Carcass extends Actor
      */
     public void act(List<Actor> newCarcasses)
     {
+        if (diseased)
+        {
+            return;
+        }
+
         decrementStepsBeforeInfection();
         makeDiseased();
     }

@@ -128,10 +128,8 @@ public class Simulator
         actors = new ArrayList<>();
         field = new Field(depth, width);
         stats = new FieldStats();
+        resetSimulationSystems();
         
-        // Set the initial weather:
-        WeatherSystem.changeToNextDay();
-
         // Create a view of the state of each location in the field:
         view = new SimulatorView(this, stats, depth, width);
         registerViewColors();
@@ -225,6 +223,7 @@ public class Simulator
     {
         step = 0;
         actors.clear();
+        resetSimulationSystems();
         populate();
         
         // Show the starting state in the view:
@@ -232,6 +231,15 @@ public class Simulator
         
         // Toggle boolean to show StatisticsView should be reset:
         resetStatisticsView = true;
+    }
+
+    /**
+     * Reset shared simulation support systems for a fresh run.
+     */
+    private void resetSimulationSystems()
+    {
+        TimeSystem.reset();
+        WeatherSystem.reset();
     }
     
     /**

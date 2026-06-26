@@ -5,6 +5,9 @@
  */
 public class TimeSystem
 {
+    private static final double NIGHT_START = 0.8;
+    private static final double NIGHT_END = 0.2;
+
     // The last recorded day:
     private static int lastRecordedDay = 0;
     
@@ -13,9 +16,7 @@ public class TimeSystem
      */
     public static int getCurrentDay()
     {
-        int currentDay = (int) (Simulator.getCurrentStep() / Simulator.NUMBER_OF_STEPS_PER_DAY);
-        
-        return currentDay;
+        return Simulator.getCurrentStep() / Simulator.NUMBER_OF_STEPS_PER_DAY;
     }
     
     /**
@@ -23,16 +24,24 @@ public class TimeSystem
      */
     public static boolean hasDayChanged()
     {
-        if (getCurrentDay() != lastRecordedDay)
+        int currentDay = getCurrentDay();
+
+        if (currentDay != lastRecordedDay)
         {
-            lastRecordedDay = getCurrentDay();
+            lastRecordedDay = currentDay;
             
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
+    }
+
+    /**
+     * Reset time tracking to the current simulation step.
+     */
+    public static void reset()
+    {
+        lastRecordedDay = getCurrentDay();
     }
     
     /**
@@ -40,15 +49,18 @@ public class TimeSystem
      */
     public static boolean isNightTime()
     {
-        // Calculate the time of day:
-        double preciseCurrentDay = ((double)Simulator.getCurrentStep() / Simulator.NUMBER_OF_STEPS_PER_DAY);
-        
-        double timeOfDay = preciseCurrentDay - getCurrentDay(); // Between 0.0 and 1.0
-        
-        // If time is between 0.8 and 1.0 or 0.0 and 0.2, it is night:
-        if ((timeOfDay > 0.8 && timeOfDay < 1.0) || (timeOfDay > 0.0 && timeOfDay < 0.2))
-            return true;
-        else
-            return false;
+        double timeOfDay = getDayProgress();
+
+        return timeOfDay >= NIGHT_START || timeOfDay < NIGHT_END;
+    }
+
+    /**
+     * @return The fraction of the current day that has elapsed.
+     */
+    private static double getDayProgress()
+    {
+        double preciseCurrentDay = (double) Simulator.getCurrentStep() / Simulator.NUMBER_OF_STEPS_PER_DAY;
+
+        return preciseCurrentDay - getCurrentDay();
     }
 }

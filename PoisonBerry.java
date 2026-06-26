@@ -45,6 +45,6 @@ public class PoisonBerry extends Plant {
 
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new PoisonBerry(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);
+        return spawn(field, location);
     }
 }

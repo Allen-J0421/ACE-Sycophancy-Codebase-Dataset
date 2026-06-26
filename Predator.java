@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -8,11 +7,9 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Predator extends Animal {
+public abstract class Predator extends HungryAnimal {
 
     private static final Random rand = Randomizer.getRandom();
-
-    private int foodLevel;
 
     /**
      * Constructor for a predator in the simulation.
@@ -24,36 +21,7 @@ public abstract class Predator extends Animal {
      * @param location  The location in which the predator spawns into.
      */
     public Predator(AnimalTraits traits, int foodLevel, boolean randomAge, Field field, Location location) {
-        super(traits, randomAge, field, location);
-        this.foodLevel = foodLevel;
-    }
-
-    /**
-     * Performs one simulation step: ages, hungers, breeds, spreads disease, hunts, and moves.
-     * The predator skips acting entirely during its rest period.
-     */
-    @Override
-    public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time) {
-        incrementAge();
-        incrementHunger();
-        if (isAlive()) {
-            giveBirth(newOrganisms);
-            if (time == getRestTime()) return;
-            if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
-                remove();
-                return;
-            }
-            Location newLocation = rand.nextDouble() <= getDiseaseSpreadProbability()
-                ? findAnimalToInfect() : findFood();
-            if (newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if (newLocation != null) {
-                setLocation(newLocation);
-            } else {
-                remove();
-            }
-        }
+        super(traits, foodLevel, randomAge, field, location);
     }
 
     /**
@@ -96,22 +64,5 @@ public abstract class Predator extends Animal {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Increase the predator's food level by a given amount.
-     */
-    public void incrementFoodLevel(int amount) {
-        this.foodLevel += amount;
-    }
-
-    /**
-     * Decrease hunger by one step; removes the predator if food level reaches zero.
-     */
-    public void incrementHunger() {
-        foodLevel--;
-        if (foodLevel <= 0) {
-            remove();
-        }
     }
 }

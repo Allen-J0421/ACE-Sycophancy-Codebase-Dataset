@@ -42,6 +42,6 @@ public class Cheetah extends Predator {
 
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Cheetah(DEFAULT_FOOD_LEVEL, true, field, location);
+        return spawn(field, location);
     }
 }

@@ -38,6 +38,6 @@ public class Vulture extends Scavenger {
 
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
+        return spawn(field, location);
     }
 }

@@ -20,14 +20,14 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
-    private final String TIME_DAY_PREFIX = "Day: ";
-    private final String TIME_HOUR_PREFIX = "Hour: ";
-    private final String TIME_OF_DAY_PREFIX = "Time: ";
-    private final String POPULATION_PREFIX = "Population: ";
-    private final String WEATHER_PREFIX = "Weather: ";
+    private static final String STEP_PREFIX        = "Step: ";
+    private static final String TIME_DAY_PREFIX    = "Day: ";
+    private static final String TIME_HOUR_PREFIX   = "Hour: ";
+    private static final String TIME_OF_DAY_PREFIX = "Time: ";
+    private static final String POPULATION_PREFIX  = "Population: ";
+    private static final String WEATHER_PREFIX     = "Weather: ";
 
-    private JLabel stepLabel, population, infoLabel, timeLabel, environmentLabel;
+    private JLabel stepLabel, population, timeLabel, environmentLabel;
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation
@@ -49,7 +49,6 @@ public class SimulatorView extends JFrame
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         timeLabel = new JLabel(" ", JLabel.CENTER);
         environmentLabel = new JLabel(" ", JLabel.CENTER);
-        infoLabel = new JLabel(" ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         
         setLocation(100, 50);
@@ -60,7 +59,6 @@ public class SimulatorView extends JFrame
         
         JPanel infoPane = new JPanel(new BorderLayout());
             infoPane.add(stepLabel, BorderLayout.WEST);
-            //infoPane.add(infoLabel, BorderLayout.CENTER);
             infoPane.add(timeLabel, BorderLayout.EAST);
             infoPane.add(environmentLabel, BorderLayout.CENTER);
 
@@ -80,14 +78,6 @@ public class SimulatorView extends JFrame
     public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
-    }
-
-    /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
     }
 
     /**

@@ -42,6 +42,6 @@ public class Zebra extends Prey {
 
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);
+        return spawn(field, location);
     }
 }

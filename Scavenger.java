@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Random;
-
 /**
  * This file is part of the Predator-Prey Simulation.
  *
@@ -8,11 +5,7 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Scavenger extends Animal {
-
-    private int foodLevel;
-
-    private static final Random rand = Randomizer.getRandom();
+public abstract class Scavenger extends HungryAnimal {
 
     /**
      * Constructor for a scavenger in the simulation.
@@ -24,36 +17,7 @@ public abstract class Scavenger extends Animal {
      * @param location  The location in which the scavenger spawns into.
      */
     public Scavenger(AnimalTraits traits, int foodLevel, boolean randomAge, Field field, Location location) {
-        super(traits, randomAge, field, location);
-        this.foodLevel = foodLevel;
-    }
-
-    /**
-     * Performs one simulation step: ages, hungers, breeds, spreads disease, scavenges, and moves.
-     * The scavenger skips acting entirely during its rest period.
-     */
-    @Override
-    public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time) {
-        incrementAge();
-        incrementHunger();
-        if (isAlive()) {
-            giveBirth(newOrganisms);
-            if (time == getRestTime()) return;
-            if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
-                remove();
-                return;
-            }
-            Location newLocation = rand.nextDouble() <= getDiseaseSpreadProbability()
-                ? findAnimalToInfect() : findFood();
-            if (newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if (newLocation != null) {
-                setLocation(newLocation);
-            } else {
-                remove();
-            }
-        }
+        super(traits, foodLevel, randomAge, field, location);
     }
 
     /**
@@ -88,22 +52,5 @@ public abstract class Scavenger extends Animal {
         consumable.setEaten();
         incrementFoodLevel(consumable.getFoodValue());
         return true;
-    }
-
-    /**
-     * Increase the scavenger's food level by a given amount.
-     */
-    public void incrementFoodLevel(int amount) {
-        this.foodLevel += amount;
-    }
-
-    /**
-     * Decrease hunger by one step; removes the scavenger if food level reaches zero.
-     */
-    public void incrementHunger() {
-        foodLevel--;
-        if (foodLevel <= 0) {
-            remove();
-        }
     }
 }

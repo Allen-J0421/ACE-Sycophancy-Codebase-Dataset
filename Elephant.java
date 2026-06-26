@@ -42,6 +42,6 @@ public class Elephant extends Prey {
 
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Elephant(DEFAULT_FOOD_VALUE, true, field, location);
+        return spawn(field, location);
     }
 }

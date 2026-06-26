@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -76,11 +79,11 @@ public class Weather {
     }
 
     /**
-     * Returns an ArrayList of the most recent weathers.
-     * @return ArrayList of most recent weathers.
+     * Returns an unmodifiable view of the most recent weathers.
+     * @return List of most recent weathers.
      */
-    public ArrayList<WeatherType> getRecentWeather() {
-        return recentWeather;
+    public List<WeatherType> getRecentWeather() {
+        return Collections.unmodifiableList(recentWeather);
     }
 
     /**

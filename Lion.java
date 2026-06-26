@@ -42,6 +42,6 @@ public class Lion extends Predator {
 
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Lion(DEFAULT_FOOD_LEVEL, true, field, location);
+        return spawn(field, location);
     }
 }

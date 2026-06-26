@@ -23,6 +23,17 @@ public class Grass extends Plant {
     }
 
     /**
+     * Constructor for Grass using the species default size and food value.
+     *
+     * @param randomAge Whether we assign this grass a random age or not.
+     * @param field The field in which this grass resides.
+     * @param location The location in which this grass is spawned into.
+     */
+    public Grass(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of Grass.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -30,7 +41,7 @@ public class Grass extends Plant {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Grass(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);
+        return new Grass(true, field, location);
     }
 
 }

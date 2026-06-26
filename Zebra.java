@@ -22,6 +22,17 @@ public class Zebra extends Herbivore {
     }
 
     /**
+     * Constructor for a Zebra using the species default food value.
+     *
+     * @param randomAge Whether we assign this zebra a random age or not.
+     * @param field The field in which this zebra resides.
+     * @param location The location in which this zebra is spawned into.
+     */
+    public Zebra(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_VALUE, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of zebra.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -29,6 +40,6 @@ public class Zebra extends Herbivore {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Zebra(DEFAULT_FOOD_VALUE, true, field, location);
+        return new Zebra(true, field, location);
     }
 }

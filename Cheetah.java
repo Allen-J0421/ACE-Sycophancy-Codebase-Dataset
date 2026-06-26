@@ -23,6 +23,17 @@ public class Cheetah extends Predator {
     }
 
     /**
+     * Constructor for a Cheetah using the species default food level.
+     *
+     * @param randomAge Whether we assign this cheetah a random age or not.
+     * @param field The field in which this cheetah resides.
+     * @param location The location in which this cheetah is spawned into.
+     */
+    public Cheetah(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_LEVEL, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of Cheetah.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -30,6 +41,6 @@ public class Cheetah extends Predator {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Cheetah(DEFAULT_FOOD_LEVEL, true, field, location);
+        return new Cheetah(true, field, location);
     }
 }

@@ -22,6 +22,17 @@ public class Goat extends Herbivore {
     }
 
     /**
+     * Constructor for a Goat using the species default food value.
+     *
+     * @param randomAge Whether we assign this goat a random age or not.
+     * @param field The field in which this goat resides.
+     * @param location The location in which this goat is spawned into.
+     */
+    public Goat(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_VALUE, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of goat.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -29,6 +40,6 @@ public class Goat extends Herbivore {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Goat(DEFAULT_FOOD_VALUE, true, field, location);
+        return new Goat(true, field, location);
     }
 }

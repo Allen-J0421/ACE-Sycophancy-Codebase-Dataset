@@ -22,6 +22,17 @@ public class Elephant extends Herbivore {
     }
 
     /**
+     * Constructor for an Elephant using the species default food value.
+     *
+     * @param randomAge Whether we assign this elephant a random age or not.
+     * @param field The field in which this elephant resides.
+     * @param location The location in which this elephant is spawned into.
+     */
+    public Elephant(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_VALUE, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of Elephant.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -29,6 +40,6 @@ public class Elephant extends Herbivore {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Elephant(DEFAULT_FOOD_VALUE, true, field, location);
+        return new Elephant(true, field, location);
     }
 }

@@ -23,6 +23,17 @@ public class Vulture extends Scavenger {
     }
 
     /**
+     * Constructor for a Vulture using the species default food level.
+     *
+     * @param randomAge Whether the vulture should have a random age or not.
+     * @param field The field in which the vulture resides.
+     * @param location The location in which the vulture spawns into.
+     */
+    public Vulture(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_LEVEL, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of Vulture.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -30,6 +41,6 @@ public class Vulture extends Scavenger {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Vulture(DEFAULT_FOOD_LEVEL, true, field, location);
+        return new Vulture(true, field, location);
     }
 }

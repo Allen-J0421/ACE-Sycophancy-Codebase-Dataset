@@ -57,35 +57,35 @@ public class Populator {
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 if (maybeAddOrganism(rand, organisms, field, row, col, LION_CREATION_PROBABILITY,
-                        (currentField, location) -> new Lion(19, true, currentField, location))) {
+                        (currentField, location) -> new Lion(true, currentField, location))) {
                     continue;
                 }
                 if (maybeAddOrganism(rand, organisms, field, row, col, ZEBRA_CREATION_PROBABILITY,
-                        (currentField, location) -> new Zebra(5, true, currentField, location))) {
+                        (currentField, location) -> new Zebra(true, currentField, location))) {
                     continue;
                 }
                 if (maybeAddOrganism(rand, organisms, field, row, col, VULTURE_CREATION_PROBABILITY,
-                        (currentField, location) -> new Vulture(40, true, currentField, location))) {
+                        (currentField, location) -> new Vulture(true, currentField, location))) {
                     continue;
                 }
                 if (maybeAddOrganism(rand, organisms, field, row, col, GRASS_CREATION_PROBABILITY,
-                        (currentField, location) -> new Grass(1, 1, true, currentField, location))) {
+                        (currentField, location) -> new Grass(true, currentField, location))) {
                     continue;
                 }
                 if (maybeAddOrganism(rand, organisms, field, row, col, GOAT_CREATION_PROBABILITY,
-                        (currentField, location) -> new Goat(5, true, currentField, location))) {
+                        (currentField, location) -> new Goat(true, currentField, location))) {
                     continue;
                 }
                 if (maybeAddOrganism(rand, organisms, field, row, col, ELEPHANT_CREATION_PROBABILITY,
-                        (currentField, location) -> new Elephant(5, true, currentField, location))) {
+                        (currentField, location) -> new Elephant(true, currentField, location))) {
                     continue;
                 }
                 if (maybeAddOrganism(rand, organisms, field, row, col, CHEETAH_CREATION_PROBABILITY,
-                        (currentField, location) -> new Cheetah(19, true, currentField, location))) {
+                        (currentField, location) -> new Cheetah(true, currentField, location))) {
                     continue;
                 }
                 maybeAddOrganism(rand, organisms, field, row, col, POISON_BERRIES_CREATION_PROBABILITY,
-                        (currentField, location) -> new PoisonBerry(2, 1, true, currentField, location));
+                        (currentField, location) -> new PoisonBerry(true, currentField, location));
                 // else leave the location empty.
             }
         }

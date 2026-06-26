@@ -23,6 +23,17 @@ public class Lion extends Predator {
     }
 
     /**
+     * Constructor for a Lion using the species default food level.
+     *
+     * @param randomAge Whether we assign this lion a random age or not.
+     * @param field The field in which this lion resides.
+     * @param location The location in which this lion is spawned into.
+     */
+    public Lion(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_LEVEL, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of Lion.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -30,6 +41,6 @@ public class Lion extends Predator {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new Lion(DEFAULT_FOOD_LEVEL, true, field, location);
+        return new Lion(true, field, location);
     }
 }

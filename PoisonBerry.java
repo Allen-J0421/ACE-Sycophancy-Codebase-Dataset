@@ -25,6 +25,17 @@ public class PoisonBerry extends Plant {
     }
 
     /**
+     * Constructor for a PoisonBerry using the species default size and food value.
+     *
+     * @param randomAge Whether the berry should have a random age or not.
+     * @param field The field in which the berry resides.
+     * @param location The location in which the berry is spawned into.
+     */
+    public PoisonBerry(boolean randomAge, Field field, Location location) {
+        this(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, randomAge, field, location);
+    }
+
+    /**
      * Create a new instance of this berry.
      * @param field The field in which the spawn will reside in.
      * @param location The location in which the spawn will occupy.
@@ -32,7 +43,7 @@ public class PoisonBerry extends Plant {
      */
     @Override
     protected Organism createNewOrganism(Field field, Location location) {
-        return new PoisonBerry(DEFAULT_FOOD_VALUE, DEFAULT_SIZE, true, field, location);
+        return new PoisonBerry(true, field, location);
     }
 
 }

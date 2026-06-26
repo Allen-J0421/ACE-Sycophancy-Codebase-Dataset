@@ -39,6 +39,15 @@ public class Deer extends Animal
         this.isNocturnal = false;
     }
 
+    /**
+     * Create a deer with a custom reproduction strategy.
+     */
+    public Deer(boolean randomAge, Field field, Location location, Gender sex, ReproductionStrategy reproductionStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, reproductionStrategy);
+        this.isNocturnal = false;
+    }
+
 
     /**
      * Makes the deer stay awake regardless of the time of the day

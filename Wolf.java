@@ -42,6 +42,15 @@ public class Wolf extends Animal
     }
 
     /**
+     * Create a wolf with a custom reproduction strategy.
+     */
+    public Wolf(boolean randomAge, Field field, Location location, Gender sex, ReproductionStrategy reproductionStrategy)
+    {
+        super(field, location, randomAge, sex, TRAITS, reproductionStrategy);
+        this.isNocturnal = true;
+    }
+
+    /**
      * Create a newborn wolf.
      */
     @Override

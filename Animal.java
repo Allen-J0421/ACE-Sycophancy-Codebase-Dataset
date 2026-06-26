@@ -15,9 +15,11 @@ public abstract class Animal extends Organism implements Actor
     protected Gender sex;
     private final AnimalTraits traits;
     private MovementStrategy movementStrategy;
+    private ReproductionStrategy reproductionStrategy;
 
     protected static final Random rand = Randomizer.getRandom();
     private static final MovementStrategy DEFAULT_MOVEMENT_STRATEGY = new PredatorTrackingMovementStrategy();
+    private static final ReproductionStrategy DEFAULT_REPRODUCTION_STRATEGY = new StandardSexualReproductionStrategy();
 
     // An animal is either male or female 
     protected enum Gender {
@@ -39,7 +41,7 @@ public abstract class Animal extends Organism implements Actor
      */
     public Animal(Field field, Location location, boolean randomAge, Gender sex, AnimalTraits traits)
     {
-        this(field, location, randomAge, sex, traits, DEFAULT_MOVEMENT_STRATEGY);
+        this(field, location, randomAge, sex, traits, DEFAULT_MOVEMENT_STRATEGY, DEFAULT_REPRODUCTION_STRATEGY);
     }
 
     /**
@@ -54,10 +56,42 @@ public abstract class Animal extends Organism implements Actor
      */
     public Animal(Field field, Location location, boolean randomAge, Gender sex, AnimalTraits traits, MovementStrategy movementStrategy)
     {
+        this(field, location, randomAge, sex, traits, movementStrategy, DEFAULT_REPRODUCTION_STRATEGY);
+    }
+
+    /**
+     * Create a new animal at location in field.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param randomAge The animal's random starting age.
+     * @param sex The animal's gender.
+     * @param traits Species-specific animal configuration.
+     * @param reproductionStrategy Reproduction behavior for this animal.
+     */
+    public Animal(Field field, Location location, boolean randomAge, Gender sex, AnimalTraits traits, ReproductionStrategy reproductionStrategy)
+    {
+        this(field, location, randomAge, sex, traits, DEFAULT_MOVEMENT_STRATEGY, reproductionStrategy);
+    }
+
+    /**
+     * Create a new animal at location in field.
+     *
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param randomAge The animal's random starting age.
+     * @param sex The animal's gender.
+     * @param traits Species-specific animal configuration.
+     * @param movementStrategy Movement behavior for this animal.
+     * @param reproductionStrategy Reproduction behavior for this animal.
+     */
+    public Animal(Field field, Location location, boolean randomAge, Gender sex, AnimalTraits traits, MovementStrategy movementStrategy, ReproductionStrategy reproductionStrategy)
+    {
         super(field, location);
         this.sex = sex;
         this.traits = traits;
         setMovementStrategy(movementStrategy);
+        setReproductionStrategy(reproductionStrategy);
         if(randomAge) {
             this.age = rand.nextInt(traits.getMaxAge());
             foodLevel = rand.nextInt(traits.getMaxFoodLevel());
@@ -84,6 +118,14 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
+     * Replace this animal's reproduction behavior.
+     */
+    public void setReproductionStrategy(ReproductionStrategy reproductionStrategy)
+    {
+        this.reproductionStrategy = Objects.requireNonNull(reproductionStrategy, "reproductionStrategy");
+    }
+
+    /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
@@ -95,7 +137,7 @@ public abstract class Animal extends Organism implements Actor
         incrementAge();
         incrementHunger();
         if(isAlive()) {
-            giveBirth(newAnimals, environment);
+            reproductionStrategy.reproduce(this, newAnimals, environment);
             movementStrategy.move(this, environment);
 
             if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
@@ -176,24 +218,6 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
-     * Check whether this animal is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newAnimals A list to return newly born animals.
-     * @param environment The environment that the animal resides in. 
-     */
-    protected void giveBirth(List<Actor> newAnimals, Environment environment)
-    {
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            newAnimals.add(createOffspring(field, loc, sex));
-        }
-    }
-
-    /**
      * Create a newborn animal of the subclass species.
      */
     protected abstract Animal createOffspring(Field field, Location location, Gender sex);
@@ -218,33 +242,6 @@ public abstract class Animal extends Organism implements Actor
     }
 
     /**
-     * Generates a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero)
-     */
-    protected int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= traits.getBreedingProbability()) {
-            births = rand.nextInt(traits.getMaxLitterSize()) + 1;
-            Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
-            if(mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL){
-                this.setDisease(mate.getDisease());
-            }
-        }
-        return births;
-    }
-
-    /**
-     * Returns true if the animal is able to breed.
-     * Returns false if otherwise. 
-     */
-    protected boolean canBreed()
-    {
-        return (age >= traits.getBreedingAge() && getPotentialMates().size() > 0);
-    }
-
-    /**
      * Returns a list of potential mates. Mates have to be
      * of a opposite gender. 
      * @return List<Organism> A list of potential mates.
@@ -263,6 +260,36 @@ public abstract class Animal extends Organism implements Actor
             // stream counts the number of Animals of the same species, as well as opposite gender
         }
         return potentialMates;
+    }
+
+    int getAge()
+    {
+        return age;
+    }
+
+    int getBreedingAge()
+    {
+        return traits.getBreedingAge();
+    }
+
+    double getBreedingProbability()
+    {
+        return traits.getBreedingProbability();
+    }
+
+    int getMaxLitterSize()
+    {
+        return traits.getMaxLitterSize();
+    }
+
+    MovementStrategy getMovementStrategy()
+    {
+        return movementStrategy;
+    }
+
+    ReproductionStrategy getReproductionStrategy()
+    {
+        return reproductionStrategy;
     }
 
 

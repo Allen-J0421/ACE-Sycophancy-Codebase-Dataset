@@ -58,4 +58,9 @@ public class SimulationSnapshot
     {
         return populationSummary;
     }
+
+    public boolean isViable()
+    {
+        return populationSummary.isViable();
+    }
 }

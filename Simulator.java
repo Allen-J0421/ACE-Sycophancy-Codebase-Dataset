@@ -32,6 +32,7 @@ public class Simulator
     private Disease disease;
     private Weather weather;
     private SpeciesDefinition[] speciesDefinitions;
+    private SimulationSnapshot currentSnapshot;
 
     // The initial level of dissolved oxygen in the water.
     private double oxygenLevel;
@@ -79,7 +80,7 @@ public class Simulator
     public void simulate(int numSteps)
     {
         for(int simulatedSteps = 0;
-            simulatedSteps < numSteps && SimulationAnalyzer.analyze(field).isViable();
+            simulatedSteps < numSteps && currentSnapshot.isViable();
             simulatedSteps++) {
             simulateOneStep();
             delay(60);
@@ -163,10 +164,16 @@ public class Simulator
 
     private void showStatus()
     {
+        currentSnapshot = createSnapshot();
+        view.showStatus(currentSnapshot);
+    }
+
+    private SimulationSnapshot createSnapshot()
+    {
         PopulationSummary populationSummary = SimulationAnalyzer.analyze(field);
-        view.showStatus(new SimulationSnapshot(step, field, timeOfDay(), weather,
-                                               oxygenLevel, disease.getDiseaseDeaths(),
-                                               populationSummary));
+        return new SimulationSnapshot(step, field, timeOfDay(), weather,
+                                      oxygenLevel, disease.getDiseaseDeaths(),
+                                      populationSummary);
     }
 
     /**

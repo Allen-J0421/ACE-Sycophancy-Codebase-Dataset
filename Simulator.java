@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,23 +23,23 @@ public class Simulator
     //////////////////////////////////////////////////////////////*/
     
     // List of animals in the field.
-    private List<Actor> animals;
-    private List<Actor> plants;
+    private final List<Actor> animals;
+    private final List<Actor> plants;
     // The current state of the field.
-    private Field field;
+    private final Field field;
     
-    private SimulatorClock clock;
-    private WeatherHandler weatherHandler;
+    private final SimulatorClock clock;
+    private final WeatherHandler weatherHandler;
     // The current step of the simulation.
     private int step;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private final SimulatorView view;
     // handles the simulation of the disease
-    private DiseaseHandler diseaseHandler;
+    private final DiseaseHandler diseaseHandler;
     // swing component dashboard
     private Dashboard dashboard;
     // generator for the initial terrain and population
-    private PopulationGenerator populationGenerator;
+    private final PopulationGenerator populationGenerator;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTORS
@@ -128,21 +127,12 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        clock.incrementStep();
-        weatherHandler.updateWeather();
-        diseaseHandler.simulateDiseaseStep();
-        
+        advanceSimulationState();
         List<Actor> newAnimals = new ArrayList<>();
         List<Actor> newPlants = new ArrayList<>();
-        
-        actorsAct(plants, newPlants);
-        actorsAct(animals, newAnimals);        
-        
-        view.showStatus(step, field, clock, weatherHandler.getWeather());
-
-        if(dashboard != null) {
-            dashboard.updateDashboard();            
-        }
+        actorsAct(plants, newPlants, weatherHandler.getWeather(), clock.getDayState());
+        actorsAct(animals, newAnimals, weatherHandler.getWeather(), clock.getDayState());
+        refreshViews();
     }
         
     /**
@@ -165,28 +155,35 @@ public class Simulator
      * @param actors List of all actors in the field.
      * @param newActors List of newborns after actors act.
      */
-    private void actorsAct(List<Actor> actors, List<Actor> newActors) {
+    private void actorsAct(List<Actor> actors, List<Actor> newActors, Weather weather, DayState dayState) {
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
-            actor.act(newActors, weatherHandler.getWeather(), clock.getDayState());
+            actor.act(newActors, weather, dayState);
             if(! actor.isAlive()) {
                 it.remove();
             }
         }
         actors.addAll(newActors);
     }
-    
+
     /**
-     * Pause for a given time.
-     * 
-     * @param millisec The time to pause for, in milliseconds.
+     * Advance the clock, weather, and disease state for the current step.
      */
-    private void delay(int millisec)
+    private void advanceSimulationState()
     {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
+        clock.incrementStep();
+        weatherHandler.updateWeather();
+        diseaseHandler.simulateDiseaseStep();
+    }
+
+    /**
+     * Repaint the view and dashboard after a simulation step.
+     */
+    private void refreshViews()
+    {
+        view.showStatus(step, field, clock, weatherHandler.getWeather());
+        if(dashboard != null) {
+            dashboard.updateDashboard();
         }
     }
 }

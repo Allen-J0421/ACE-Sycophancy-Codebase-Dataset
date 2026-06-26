@@ -31,6 +31,8 @@ public class SimulatorView extends JFrame
     
     // A map for storing colors for participants in the simulation
     private final Map<Class<?>, Color> colors;
+    // A map for storing the user-facing labels for participants in the simulation
+    private final Map<Class<?>, String> labels;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
     private final Simulator simulator;
@@ -50,6 +52,7 @@ public class SimulatorView extends JFrame
         this.simulator = simulator;
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
+        labels = new LinkedHashMap<>();
         setTitle("Fox and Rabbit Simulation");
         
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -172,6 +175,18 @@ public class SimulatorView extends JFrame
     public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
+        labels.putIfAbsent(animalClass, animalClass.getSimpleName());
+    }
+
+    /**
+     * Register a species with its display label and color.
+     *
+     * @param species the species to register.
+     */
+    public void registerSpecies(SpeciesDescriptor species)
+    {
+        colors.put(species.getActorClass(), species.getColor());
+        labels.put(species.getActorClass(), species.getDisplayName());
     }
 
     /**
@@ -188,7 +203,7 @@ public class SimulatorView extends JFrame
     public void showColors()
     {
         for (Class<?> cls : colors.keySet()) {
-            JLabel tempLabel = new JLabel(cls.getSimpleName());
+            JLabel tempLabel = new JLabel(labels.getOrDefault(cls, cls.getSimpleName()));
             tempLabel.setForeground(colors.get(cls));
             tempLabel.setAlignmentX(CENTER_ALIGNMENT);
             tempLabel.setBorder(new EmptyBorder(4,0,4,0));

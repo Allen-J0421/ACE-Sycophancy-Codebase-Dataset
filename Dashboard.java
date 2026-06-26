@@ -150,7 +150,7 @@ public class Dashboard
         barChart.setLegendVisible(false);
         
         populationSeries.setName("Population");
-        refreshPopulationSeries();
+        refreshSeries(populationSeries, AnimalType.values());
         barChart.getData().add(populationSeries);
     }
     
@@ -169,7 +169,7 @@ public class Dashboard
         plantBarChart.setLegendVisible(false);
         
         vegetationSeries.setName("Vegetation");
-        refreshVegetationSeries();
+        refreshSeries(vegetationSeries, PlantType.values());
         plantBarChart.getData().add(vegetationSeries);
     }
     
@@ -202,22 +202,6 @@ public class Dashboard
     }
 
     /**
-     * Refresh the animal population series from the registry-backed counters.
-     */
-    private void refreshPopulationSeries()
-    {
-        populateAnimalSeries(populationSeries);
-    }
-
-    /**
-     * Refresh the vegetation series from the registry-backed counters.
-     */
-    private void refreshVegetationSeries()
-    {
-        populatePlantSeries(vegetationSeries);
-    }
-
-    /**
      * Refresh the disease series from the accumulated infection map.
      */
     private void refreshDiseaseSeries()
@@ -233,7 +217,7 @@ public class Dashboard
      */
     private void updatePopulationChart()
     {
-        Platform.runLater(this::refreshPopulationSeries);
+        Platform.runLater(() -> refreshSeries(populationSeries, AnimalType.values()));
     }
     
     /**
@@ -241,7 +225,7 @@ public class Dashboard
      */
     private void updateVegetationChart()
     {
-        Platform.runLater(this::refreshVegetationSeries);
+        Platform.runLater(() -> refreshSeries(vegetationSeries, PlantType.values()));
     }
     
     /**
@@ -253,33 +237,18 @@ public class Dashboard
     }
 
     /**
-     * Populate the animal chart series in registry order.
+     * Populate a chart series in registry order.
      *
      * @param target the series to populate.
+     * @param species the ordered species descriptors.
      */
-    private void populateAnimalSeries(XYChart.Series<String, Number> target)
+    private void refreshSeries(XYChart.Series<String, Number> target, SpeciesDescriptor[] species)
     {
         target.getData().clear();
-        for (AnimalType type : AnimalType.values()) {
-            Counter info = counters.get(type.getActorClass());
+        for (SpeciesDescriptor descriptor : species) {
+            Counter info = counters.get(descriptor.getActorClass());
             if(info != null) {
-                target.getData().add(new XYChart.Data<>(type.getDisplayName(), info.getCount()));
-            }
-        }
-    }
-
-    /**
-     * Populate the plant chart series in registry order.
-     *
-     * @param target the series to populate.
-     */
-    private void populatePlantSeries(XYChart.Series<String, Number> target)
-    {
-        target.getData().clear();
-        for (PlantType type : PlantType.values()) {
-            Counter info = counters.get(type.getActorClass());
-            if(info != null) {
-                target.getData().add(new XYChart.Data<>(type.getDisplayName(), info.getCount()));
+                target.getData().add(new XYChart.Data<>(descriptor.getDisplayName(), info.getCount()));
             }
         }
     }

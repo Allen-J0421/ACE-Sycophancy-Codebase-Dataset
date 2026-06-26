@@ -4,7 +4,7 @@ import java.util.Locale;
 /**
  * Enumerates the animal species available in the simulation.
  */
-public enum AnimalType
+public enum AnimalType implements SpeciesDescriptor
 {
     FOX(true, 0.09, "Fox", new Color(227, 93, 57), CarnivoreFox.class)
     {
@@ -67,24 +67,28 @@ public enum AnimalType
         return carnivore;
     }
 
-    public double getSpawnProbability()
-    {
-        return spawnProbability;
-    }
-
+    @Override
     public String getDisplayName()
     {
         return displayName;
     }
 
+    @Override
     public Color getColor()
     {
         return color;
     }
 
+    @Override
     public Class<? extends Animal> getActorClass()
     {
         return actorClass;
+    }
+
+    @Override
+    public double getSpawnProbability()
+    {
+        return spawnProbability;
     }
 
     abstract Animal create(boolean randomAge, Field field, Location location, Gender gender);

@@ -5,6 +5,7 @@ import java.util.Locale;
  * Enumerates the plant species available in the simulation.
  */
 public enum PlantType
+        implements SpeciesDescriptor
 {
     GRASS(0.09, "Grass", new Color(50, 184, 121), Grass.class)
     {
@@ -44,21 +45,25 @@ public enum PlantType
         this.actorClass = actorClass;
     }
 
+    @Override
     public double getSpawnProbability()
     {
         return spawnProbability;
     }
 
+    @Override
     public String getDisplayName()
     {
         return displayName;
     }
 
+    @Override
     public Color getColor()
     {
         return color;
     }
 
+    @Override
     public Class<? extends Plant> getActorClass()
     {
         return actorClass;

@@ -46,13 +46,21 @@ public class PopulationGenerator
      */
     private void setUpColors()
     {
-        for(AnimalType type : AnimalType.values()) {
-            view.setColor(type.getActorClass(), type.getColor());
-        }
-        for(PlantType type : PlantType.values()) {
-            view.setColor(type.getActorClass(), type.getColor());
-        }
+        registerColors(AnimalType.values());
+        registerColors(PlantType.values());
         view.showColors();
+    }
+
+    /**
+     * Register the species colors with the view.
+     *
+     * @param species the species to register.
+     */
+    private void registerColors(SpeciesDescriptor[] species)
+    {
+        for (SpeciesDescriptor descriptor : species) {
+            view.registerSpecies(descriptor);
+        }
     }
     
     /**

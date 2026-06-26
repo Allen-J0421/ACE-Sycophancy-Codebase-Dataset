@@ -45,4 +45,14 @@ public class Zebra extends Prey
             foodLevel = (int) (0.25 * MAX_FOOD_LEVEL);
         }
     }
+
+    /**
+     * @Override
+     *
+     * Create a new-born zebra.
+     */
+    protected Animal createOffspring(Field field, Location location, boolean isInfected, boolean isImmune)
+    {
+        return new Zebra(false, field, location, isInfected, isImmune);
+    }
 }

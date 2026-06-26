@@ -52,4 +52,14 @@ public class Cheetah extends Predator
             foodLevel = (int) (percentageOfMaxFoodLevel * MAX_FOOD_LEVEL);
         }
     }
+
+    /**
+     * @Override
+     *
+     * Create a new-born cheetah.
+     */
+    protected Animal createOffspring(Field field, Location location, boolean isInfected, boolean isImmune)
+    {
+        return new Cheetah(false, field, location, isInfected, isImmune);
+    }
 }

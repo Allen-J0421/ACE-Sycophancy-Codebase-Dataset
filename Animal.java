@@ -274,34 +274,35 @@ public abstract class Animal extends LivingOrganism
         
         int births = breed();
         // New animals are born into adjacent locations.
-        
-        for(int b = 0; b < births && free.size() > 0; b++) 
+
+        for(int b = 0; b < births && free.size() > 0; b++)
         {
-            Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
+            Animal newAnimal = createNewOffspring(free, infected, immune);
             newAnimals.add(newAnimal);
         }
     }
-    
+
     /**
-     * Creates a new offspring and places it into the field at the first free location
-     * 
-     * @param classOfAnimal The class type of the new animal
-     * @param free A list of the free adjacent location
-     * @param motherIsInfected If the mother has currently the disease, so will the child
-     * 
-     * @return Returns the new animal
+     * Creates a new offspring and places it into the field at the first free location.
+     * The concrete species of the offspring is determined polymorphically by
+     * {@link #createOffspring}, so this method needs no knowledge of subtypes.
+     *
+     * @param free A list of the free adjacent locations.
+     * @param motherIsInfected If the mother currently has the disease, so will the child.
+     * @param motherIsImmune If the mother is currently immune.
+     *
+     * @return Returns the new animal.
      */
-    protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
+    protected Animal createNewOffspring(List<Location> free, boolean motherIsInfected, boolean motherIsImmune)
     {
         Location loc = free.remove(0);
-        Animal offspring = null;
-        
+
         boolean offspringIsInfected = motherIsInfected;
         boolean offspringIsImmune = motherIsImmune;
-        
+
         // If the mother is immune and the mother is infected, then there is
         // a small of the child getting immunity
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15) 
+        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15)
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
@@ -311,30 +312,23 @@ public abstract class Animal extends LivingOrganism
         {
             offspringIsImmune = false;
         }
-        
-        if (classOfAnimal.equals(Lemur.class))
-        {
-            offspring = new Lemur(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Giraffe.class)) 
-        {
-            offspring = new Giraffe(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Zebra.class)) 
-        {
-            offspring = new Zebra(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Cheetah.class)) 
-        {
-            offspring = new Cheetah(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Lion.class)) 
-        {
-            offspring = new Lion(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        
-        return offspring;
+
+        return createOffspring(field, loc, offspringIsInfected, offspringIsImmune);
     }
+
+    /**
+     * Create a new-born offspring of this animal's own species. Each concrete
+     * species supplies its own constructor call, replacing the former
+     * class-based if/else dispatch.
+     *
+     * @param field The field the offspring is born into.
+     * @param location The free location the offspring is placed at.
+     * @param isInfected Whether the offspring starts infected.
+     * @param isImmune Whether the offspring starts immune.
+     *
+     * @return The new offspring.
+     */
+    protected abstract Animal createOffspring(Field field, Location location, boolean isInfected, boolean isImmune);
     
     /**
      * Generate a number representing the number of births,

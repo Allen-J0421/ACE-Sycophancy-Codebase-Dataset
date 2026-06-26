@@ -52,4 +52,14 @@ public class Lion extends Predator
             foodLevel = (int) (percentageOfMaxFoodLevel * MAX_FOOD_LEVEL);
         }
     }
+
+    /**
+     * @Override
+     *
+     * Create a new-born lion.
+     */
+    protected Animal createOffspring(Field field, Location location, boolean isInfected, boolean isImmune)
+    {
+        return new Lion(false, field, location, isInfected, isImmune);
+    }
 }

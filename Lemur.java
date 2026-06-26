@@ -45,4 +45,14 @@ public class Lemur extends Prey
             foodLevel = (int) (0.5 * MAX_FOOD_LEVEL);
         }
     }
+
+    /**
+     * @Override
+     *
+     * Create a new-born lemur.
+     */
+    protected Animal createOffspring(Field field, Location location, boolean isInfected, boolean isImmune)
+    {
+        return new Lemur(false, field, location, isInfected, isImmune);
+    }
 }

@@ -21,10 +21,10 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
-    private final String POPULATION_PREFIX = "Population: ";
-    private final String WEATHER_PREFIX = "Weather: ";
-    private final String DAYSTATE_PREFIX = "Light: ";
+    private static final String STEP_PREFIX       = "Step: ";
+    private static final String POPULATION_PREFIX = "Population: ";
+    private static final String WEATHER_PREFIX    = "Weather: ";
+    private static final String DAYSTATE_PREFIX   = "Light: ";
     private JLabel stepLabel, population, infoLabel, dayLabel, weatherLabel;
     private JToolBar sideBar;
     private FieldView fieldView;
@@ -210,14 +210,14 @@ public class SimulatorView extends JFrame
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                 }
-                else if(field.getPlantAt(row, col) != null) {
-                    // if the cell is not occupied by an animal, attempt to occupy with plant. 
-                    Plant plant = field.getPlantAt(row, col);
-                    stats.incrementCount(plant.getClass());
-                    fieldView.drawMark(col, row, getColor(plant.getClass()));
-                }
                 else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
+                    Plant plant = field.getPlantAt(row, col);
+                    if(plant != null) {
+                        stats.incrementCount(plant.getClass());
+                        fieldView.drawMark(col, row, getColor(plant.getClass()));
+                    } else {
+                        fieldView.drawMark(col, row, EMPTY_COLOR);
+                    }
                 }
             }
         }

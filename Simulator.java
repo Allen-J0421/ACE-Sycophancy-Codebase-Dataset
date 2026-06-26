@@ -57,7 +57,7 @@ public class Simulator
         weather = new Weather(field);
         disease = new Disease();
         oxygenLevel = 1;
-        speciesDefinitions = new SpeciesCatalog().getDefinitions();
+        speciesDefinitions = SpeciesCatalog.getDefinitions();
 
         initializeView(dimensions[0], dimensions[1]);
         reset();

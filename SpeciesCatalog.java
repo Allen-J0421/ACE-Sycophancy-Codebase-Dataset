@@ -3,7 +3,7 @@ import java.awt.Color;
 /**
  * Central registry of simulator species metadata.
  */
-public class SpeciesCatalog
+public final class SpeciesCatalog
 {
     private static final SpeciesDefinition[] DEFINITIONS = new SpeciesDefinition[]{
         new SpeciesDefinition(Salmon.class, 0.08, Color.YELLOW,
@@ -18,7 +18,11 @@ public class SpeciesCatalog
             (field, location) -> new Whale(true, field, location))
     };
 
-    public SpeciesDefinition[] getDefinitions()
+    private SpeciesCatalog()
+    {
+    }
+
+    public static SpeciesDefinition[] getDefinitions()
     {
         return DEFINITIONS.clone();
     }

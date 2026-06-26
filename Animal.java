@@ -39,11 +39,10 @@ public abstract class Animal extends Organism implements AbleToEat {
      * Abstract method for what the animal does, i.e. what is always run at every step.
      *
      * @param newAnimals A list of all newborn animals in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @param context The current simulation context.
      */
     @Override
-    abstract public void act(List<Organism> newAnimals, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newAnimals, SimulationContext context);
 
     /**
      * Called when a consumable food item may be eaten.

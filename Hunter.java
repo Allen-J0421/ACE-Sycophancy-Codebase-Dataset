@@ -33,13 +33,13 @@ public abstract class Hunter extends Animal {
     }
 
     @Override
-    public void act(List<Organism> newHunters, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newHunters, SimulationContext context) {
         incrementAge();
         incrementHunger();
         if(isAlive()) {
             giveBirth(newHunters);
 
-            if (isRestingTime(time)) {
+            if (isRestingTime(context.getTimeOfDay())) {
                 return;
             }
 

@@ -20,16 +20,9 @@ public class Simulator
     private List<Organism> organisms;
     // The current state of the field.
     private Field field;
-    // The current step of the simulation.
-    private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
-    // The current hour of the simulation.
-    private int hour;
-    // Indicates current state of time in the simulation.
-    private TimeOfDay currentTime;
-
-    private Weather currentWeather;
+    private final SimulationState simulationState;
     private final SpeciesCatalog speciesCatalog;
 
     /**
@@ -59,6 +52,7 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
+        simulationState = new SimulationState(WeatherType.SUN, TimeOfDay.SUNRISE);
         speciesCatalog = new SpeciesCatalog();
         view.registerSpecies(speciesCatalog);
 
@@ -95,14 +89,14 @@ public class Simulator
      */
     public void simulateOneStep()
     {
-        step++;
+        simulationState.advanceStep();
 
         // Provide space for newborn organisms.
         List<Organism> newOrganisms = new ArrayList<>();
         // Let all rabbits act.
         for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
             Organism organism = it.next();
-            organism.act(newOrganisms, currentWeather, currentTime);
+            organism.act(newOrganisms, simulationState);
 
             if(organism.isRemoved()) {
                 it.remove();
@@ -112,27 +106,15 @@ public class Simulator
         // Add the newly born foxes and rabbits to the main lists.
         organisms.addAll(newOrganisms);
 
-        int day = step/120 +1;
-        hour = (step/5) % 24 + 1;
+        view.showStatus(simulationState.getStep(), field);
+        view.updateTimeLabel(simulationState.getDay(), simulationState.getHour());
+        view.updateEnvironmentLabel(simulationState);
 
-
-        view.showStatus(step, field);
-        view.updateTimeLabel(day,hour);
-        view.updateEnvironmentLabel(currentWeather, currentTime);
-
-        // every hour, generate new weather if we are done with current weather
-        if (step % 5 == 0) {
-            currentWeather.generate();
-        }
-
-        // update time
-        if ((hour % 4 == 0) && (step % 5 == 0)) {
-            currentTime = currentTime.next();
-        }
+        simulationState.advanceEnvironment();
     }
 
     public int getHour() {
-        return hour;
+        return simulationState.getHour();
     }
 
     /**
@@ -140,10 +122,7 @@ public class Simulator
      */
     public void reset()
     {
-        step = 0;
-
-        currentTime = TimeOfDay.SUNRISE;
-        currentWeather = new Weather(WeatherType.SUN); // make this random at start
+        simulationState.reset(WeatherType.SUN, TimeOfDay.SUNRISE);
 
         organisms.clear();
 
@@ -151,7 +130,7 @@ public class Simulator
         populator.populate(organisms, field);
         
         // Show the starting state in the view.
-        view.showStatus(step, field);
+        view.showStatus(simulationState.getStep(), field);
     }
     
     /**

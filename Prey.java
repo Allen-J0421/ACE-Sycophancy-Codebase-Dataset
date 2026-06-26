@@ -35,13 +35,12 @@ public abstract class Prey extends Animal implements Consumable {
      * Method for what the prey does, i.e. what is always run at every step.
      *
      * @param newPrey A list of all newborn prey in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @param context The current simulation context.
      */
     @Override
-    public void act(List<Organism> newPrey, Weather weather, TimeOfDay time) {
+    public void act(List<Organism> newPrey, SimulationContext context) {
         incrementAge();
-        setActiveness(getActivenessFor(time));
+        setActiveness(getActivenessFor(context.getTimeOfDay()));
 
         if(isAlive()) {
             giveBirth(newPrey);

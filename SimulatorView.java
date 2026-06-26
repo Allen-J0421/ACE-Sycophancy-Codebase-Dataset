@@ -157,8 +157,11 @@ public class SimulatorView extends JFrame
         timeLabel.setText(TIME_DAY_PREFIX + (day) + " " + TIME_HOUR_PREFIX + (hour));
     }
 
-    public void updateEnvironmentLabel(Weather weather, TimeOfDay time) {
-        environmentLabel.setText(WEATHER_PREFIX + weather.getType().toString() + " " + TIME_OF_DAY_PREFIX + time);
+    public void updateEnvironmentLabel(SimulationContext context) {
+        environmentLabel.setText(
+                WEATHER_PREFIX + context.getWeather().getType().toString() + " "
+                        + TIME_OF_DAY_PREFIX + context.getTimeOfDay()
+        );
     }
     
     /**

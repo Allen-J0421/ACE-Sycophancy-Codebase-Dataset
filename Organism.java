@@ -54,11 +54,10 @@ public abstract class Organism implements Entity {
      * Abstract method for what an organism does, i.e. what is always run at every step.
      *
      * @param newOrganisms A list of all newborn organisms in this simulation step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @param context The current simulation context.
      */
     @Override
-    abstract public void act(List<Organism> newOrganisms, Weather weather, TimeOfDay time);
+    abstract public void act(List<Organism> newOrganisms, SimulationContext context);
 
     /**
      * Check whether the organism is alive or not.

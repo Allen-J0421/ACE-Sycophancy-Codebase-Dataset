@@ -13,9 +13,8 @@ public interface Entity {
      * Method called for this entity at every step in the simulation.
      *
      * @param newEntities Newborn entities at this step.
-     * @param weather The current state of weather in the simulation.
-     * @param time The current state of time in the simulation.
+     * @param context The current simulation context.
      */
-    void act(List<Organism> newEntities, Weather weather, TimeOfDay time);
+    void act(List<Organism> newEntities, SimulationContext context);
 
 }

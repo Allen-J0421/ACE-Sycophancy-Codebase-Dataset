@@ -1,9 +1,8 @@
 package safari;
 
-import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class representing shared characteristics of animals.
@@ -12,63 +11,74 @@ import java.util.HashMap;
  */
 public abstract class Animal extends Actor
 {
+    private final SpeciesType speciesType;
+    private final SpeciesConfig speciesConfig;
+
     private double foodLevel;
     private boolean isGirl;
     private boolean isHealthy;
-    //the number of steps an animal takes when infected.
+    // The number of steps an animal takes when infected.
     private int infectedStepCounter;
-    //how many steps animal needs to wait before it can breed again.
+    // How many steps an animal needs to wait before it can breed again.
     private int timeLeftUntilBreedingAgain = 0;
+
     /**
      * Create a new animal at location in field.
-     * 
+     *
+     * @param speciesType The animal species.
+     * @param randomAge True if the animal should start with a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field field, Location location)
+    protected Animal(SpeciesType speciesType, boolean randomAge, Field field, Location location)
     {
-        super(field,location);
+        super(field, location);
+        this.speciesType = speciesType;
+        this.speciesConfig = SpeciesFactory.config(speciesType);
         setRandomGender();
         isHealthy = true;
         infectedStepCounter = 0;
-        timeLeftUntilBreedingAgain= getRandom().nextInt(getMaxTimeUntilBreedingAgain());
-        if(!isGirl){
-        timeLeftUntilBreedingAgain = 0;
+        if(randomAge) {
+            setAge(getRandom().nextInt(speciesConfig.maxAge()));
+            setFoodLevel(getRandom().nextInt(speciesConfig.randomFoodUpperBound()));
         }
+        else {
+            setAge(0);
+            setFoodLevel(speciesConfig.initialFoodLevel());
+        }
+        timeLeftUntilBreedingAgain = getRandom().nextInt(speciesConfig.maxTimeUntilBreedingAgain());
+        if(!isGirl) {
+            timeLeftUntilBreedingAgain = 0;
+        }
+        setGrowthLevel(getAge() / speciesConfig.initialGrowthScale());
     }
 
     /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
+     * Make this animal act - that is: make it do whatever it wants or needs to do.
      * @param newAnimals A list to receive newly born animals.
      * @param simulator The simulator.
      */
-    public void act(List<Actor> newAnimals, Simulator simulator){
-        Location newLocation = null;
-        switch(simulator.getWeather()){
-            case SUNNY:
-                newLocation = findFood(getSunnyFindingFoodProbability());
-                break;
-            case RAINY:
-                newLocation = findFood(getRainyFindingFoodProbability());
-                break;
-            case FOGGY:
-                newLocation = findFood(getFoggyFindingFoodProbability());
-                break;
-            default:
-                findFood(getRandom().nextDouble());
-                break;
+    public void act(List<Actor> newAnimals, Simulator simulator)
+    {
+        if(!simulator.isDay()) {
+            return;
         }
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
+
+        setGrowthLevel(speciesConfig.actGrowthIncrement());
+        incrementAge(simulator.getSteps());
+        incrementHunger();
+        if(isActive()) {
+            giveBirth(newAnimals);
+            Location newLocation = findFood(speciesConfig.foodFindingProbability(simulator.getWeather()));
+            if(newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            if(newLocation != null) {
+                setLocation(newLocation);
+            }
+            else {
+                setDead();
+            }
         }
     }
 
@@ -78,14 +88,8 @@ public abstract class Animal extends Actor
      */
     protected boolean canBreed()
     {
-        return getAge() >= getBreedingAge();
+        return getAge() >= speciesConfig.breedingAge();
     }
-
-    /**
-     * Get breeding age of an animal.
-     * @return int. Breeding age of the animal;
-     */
-    abstract protected int getBreedingAge();
 
     /**
      * Check whether or not this animal is to give birth at this step.
@@ -94,48 +98,33 @@ public abstract class Animal extends Actor
      */
     protected void giveBirth(List<Actor> newAnimals)
     {
-        // New animals are born into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        if (timeLeftUntilBreedingAgain != 0){
-            timeLeftUntilBreedingAgain --;
+        if(timeLeftUntilBreedingAgain != 0) {
+            timeLeftUntilBreedingAgain--;
         }
         int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
+        for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
-            Animal young = getAnimal();
-            Animal baby = null;
-            if(young instanceof Gazelle){
-                baby = new Gazelle(false, field, loc);
-            }else if(young instanceof Jaguar){
-                baby = new Jaguar(false, field, loc);
-            }else if(young instanceof Cheetah){
-                baby = new Cheetah(false, field, loc);
-            }else if(young instanceof Lion){
-                baby = new Lion(false, field, loc);
-            }else if(young instanceof Zebra){
-                baby = new Zebra(false, field, loc);
-            }
-            if(!getHealth()){
-                baby.setUnhealthy(); //setting the baby to be unhealthy if the parent is unhealthy.
+            Animal baby = SpeciesFactory.create(speciesType, false, field, loc);
+            if(!getHealth()) {
+                baby.setUnhealthy();
             }
             newAnimals.add(baby);
         }
     }
 
     /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * Females can mate with a male even  regardless of the males breeding time .
+     * Generate a number representing the number of births, if it can breed.
+     * Females can mate with a male even regardless of the male's breeding time.
      * @return The number of births (may be zero).
      */
     protected int breed()
     {
         int births = 0;
-        if(canBreed()  && findMate() && getRandom().nextDouble() <= getBreedingProbability() && timeLeftUntilBreedingAgain == 0) {
-            births = getRandom().nextInt(getMaxLitterSize()) + 1;
-            timeLeftUntilBreedingAgain = getMaxTimeUntilBreedingAgain();
+        if(canBreed() && findMate() && getRandom().nextDouble() <= speciesConfig.breedingProbability() && timeLeftUntilBreedingAgain == 0) {
+            births = getRandom().nextInt(speciesConfig.maxLitterSize()) + 1;
+            timeLeftUntilBreedingAgain = speciesConfig.maxTimeUntilBreedingAgain();
         }
         return births;
     }
@@ -149,15 +138,13 @@ public abstract class Animal extends Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        Animal currentAnimal = getAnimal();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal != null && animal.getClass() == currentAnimal.getClass()){
-                Animal mate = (Animal) animal;
-                if(isActive() && currentAnimal.getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
-                    if(!currentAnimal.getHealth() || !mate.getHealth()){
-                        currentAnimal.setUnhealthy();
+            Object occupant = field.getObjectAt(where);
+            if(occupant instanceof Animal mate && mate.speciesType == speciesType) {
+                if(isActive() && getIsGirl() && !mate.getIsGirl() && mate.canBreed()) {
+                    if(!getHealth() || !mate.getHealth()) {
+                        setUnhealthy();
                         mate.setUnhealthy();
                     }
                     return true;
@@ -168,37 +155,21 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Returns the breeding probability of the animal
-     * @return breeding probability of the animal.
-     */
-    abstract protected double getBreedingProbability();
-
-    /**
-     * Returns the maximum number of babies the animal can give birth to at once.
-     * @return max litter size of the animal.
-     */
-    abstract protected int getMaxLitterSize();
-
-    /**
-     * Returns the current animal occupying the location.
-     * @return the current animal.
-     */
-    abstract protected Animal getAnimal();
-
-    /**
      * Returns the animal's current food level.
      * @return the animal's food level.
      */
-    protected double getFoodLevel(){
+    protected double getFoodLevel()
+    {
         return foodLevel;
     }
 
     /**
      * Sets the animal's food level.
-     * @param food level The amount of food the animal gets.
+     * @param foodLevel The amount of food the animal gets.
      */
-    protected void setFoodLevel(double foodlevel){
-        this.foodLevel += foodlevel ; 
+    protected void setFoodLevel(double foodLevel)
+    {
+        this.foodLevel += foodLevel;
     }
 
     /**
@@ -213,37 +184,29 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Look for preys adjacent to the current location.
+     * Look for prey adjacent to the current location.
      * Only the first live prey is eaten.
      * @param probability The probability the animal finds prey.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood(double probability)
     {
-
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-       
-        if(getRandom().nextDouble() < probability && getFoodLevel() < getMaxFoodLevel()){
-            while(it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if(animal != null && animal  instanceof Actor){
-                    Actor currentAnimal = (Actor) animal;
-                    for(Actor prey: getFood().keySet())
-                    {
-                        if(prey.getClass() == currentAnimal.getClass()){
-                            if (currentAnimal instanceof Animal){
-                                Animal current = (Animal)currentAnimal;
-                                if(!current.getHealth()){
-                                    setUnhealthy();
-                                }
+
+        if(getRandom().nextDouble() < probability && getFoodLevel() < speciesConfig.maxFoodLevel()) {
+            for(Location where : adjacent) {
+                Object occupant = field.getObjectAt(where);
+                if(occupant instanceof Actor currentAnimal) {
+                    for(Map.Entry<Class<? extends Actor>, Integer> prey : speciesConfig.food().entrySet()) {
+                        if(prey.getKey() == currentAnimal.getClass()) {
+                            if(currentAnimal instanceof Animal current && !current.getHealth()) {
+                                setUnhealthy();
                             }
                             currentAnimal.setDead();
-                            setFoodLevel(getFood().get(prey)  + currentAnimal.getGrowthLevel());
-                            if(getFoodLevel() > getMaxFoodLevel()){
-                                setFoodLevel(getMaxFoodLevel() - getFoodLevel());
+                            setFoodLevel(prey.getValue() + currentAnimal.getGrowthLevel());
+                            if(getFoodLevel() > speciesConfig.maxFoodLevel()) {
+                                setFoodLevel(speciesConfig.maxFoodLevel() - getFoodLevel());
                             }
                             return where;
                         }
@@ -255,31 +218,27 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Returns the HashMap which contains what prey the animal eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    abstract protected HashMap<Actor, Integer> getFood();
-
-    /**
      * Uses a random generator to assign if the animal is female or not.
-     * @return True if the animal is a female.
      */
-    protected void setRandomGender(){
+    protected void setRandomGender()
+    {
         isGirl = getRandom().nextDouble() > 0.5;
     }
 
     /**
      * Returns true if the animal is a female.
-     * @return boolean. True if the animal is a female.
+     * @return true if the animal is a female.
      */
-    protected boolean getIsGirl(){
+    protected boolean getIsGirl()
+    {
         return isGirl;
     }
 
     /**
      * The animal has been infected.
      */
-    protected void setUnhealthy(){
+    protected void setUnhealthy()
+    {
         isHealthy = false;
     }
 
@@ -287,21 +246,23 @@ public abstract class Animal extends Actor
      * Returns whether the animal is healthy or not.
      * @return true if the animal is healthy.
      */
-    protected boolean getHealth(){
+    protected boolean getHealth()
+    {
         return isHealthy;
     }
 
     /**
      * Increase the age. This could result in the animal's death.
      * If the animal is unhealthy it also increases the infected step counter.
-     * After 5 steps inthe infectedStepCounter this may result in the animal's death.
-     * @param step. The number of steps in the simulation.
+     * After 5 steps in the infectedStepCounter this may result in the animal's death.
+     * @param step The number of steps in the simulation.
      */
     protected void incrementAge(int step)
     {
         super.incrementAge(step);
-        if(!getHealth()){
-            infectedStepCounter++;}
+        if(!getHealth()) {
+            infectedStepCounter++;
+        }
 
         if(infectedStepCounter == 5) {
             setDead();
@@ -309,32 +270,11 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Gets the max food level of an animal.
-     * @return Maximum food level of the current animal.
+     * Gets the maximum age for this animal.
+     * @return The maximum age of the current animal.
      */
-    abstract protected double getMaxFoodLevel();
-
-    /**
-     * Gets the max time an animal needs to wait before it can breed again.
-     * @return Maximum time the animal waits before it can breed again.
-     */
-    abstract protected int getMaxTimeUntilBreedingAgain();
-
-    /**
-     * Gets the probability the animal will find food when it is sunny
-     * @return The probability the animal will find food when it is sunny
-     */
-    abstract protected double getSunnyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is rainy
-     * @return The probability the animal will find food when it is rainy
-     */
-    abstract protected double getRainyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is foggy
-     * @return The probability the animal will find food when it is foggy
-     */
-    abstract protected double getFoggyFindingFoodProbability();
+    protected int getMaxAge()
+    {
+        return speciesConfig.maxAge();
+    }
 }

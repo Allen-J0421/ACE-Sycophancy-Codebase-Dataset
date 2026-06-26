@@ -190,22 +190,18 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Animal lion = new Lion(true, field, location);
-                    animals.add(lion);
+                    animals.add(SpeciesFactory.create(SpeciesType.LION, true, field, location));
                 }
                 else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Animal cheetah = new Cheetah(true, field, location);
-                    animals.add(cheetah);
+                    animals.add(SpeciesFactory.create(SpeciesType.CHEETAH, true, field, location));
                 }
                 else if(rand.nextDouble() <= GAZELLE_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Animal gazelle = new Gazelle(true, field, location);
-                    animals.add(gazelle);
+                    animals.add(SpeciesFactory.create(SpeciesType.GAZELLE, true, field, location));
                 }else if(rand.nextDouble() <= JAGUAR_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Animal jaguar = new Jaguar(true, field, location);
-                    animals.add(jaguar);
+                    animals.add(SpeciesFactory.create(SpeciesType.JAGUAR, true, field, location));
                 }else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Plants grass = new Grass(true, field, location);
@@ -213,8 +209,7 @@ public class Simulator
                 }
                 else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Animal zebra = new Zebra(true, field, location);
-                    animals.add(zebra);
+                    animals.add(SpeciesFactory.create(SpeciesType.ZEBRA, true, field, location));
                 }else if(rand.nextDouble() <= HUNTER_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
                     Hunter hunter = new Hunter(field, location);

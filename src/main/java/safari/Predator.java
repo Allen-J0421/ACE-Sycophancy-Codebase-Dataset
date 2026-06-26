@@ -1,27 +1,27 @@
 package safari;
 
 import java.util.Iterator;
-import java.util.Random;
 import java.util.List;
 
 /**
  * A class representing additional characteristics for predators.
- * Inlucdes an additional method for carnivores which allow them to step
- * on the grass without eating it.
+ * It adds a fallback behavior that lets carnivores stand on top of plants.
  *
  * @version 2022.03.01
  */
 public abstract class Predator extends Animal
 {
-
     /**
      * Create a new predator at location in field.
-     * 
+     *
+     * @param speciesType The predator species.
+     * @param randomAge True if the predator should start with a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     *
-     */public Predator(Field field, Location location){
-        super(field, location);
+     */
+    protected Predator(SpeciesType speciesType, boolean randomAge, Field field, Location location)
+    {
+        super(speciesType, randomAge, field, location);
     }
 
     /**
@@ -32,14 +32,14 @@ public abstract class Predator extends Animal
      */
     protected Location findFood(double probability)
     {
-        if (super.findFood(probability) == null){
+        if(super.findFood(probability) == null) {
             Field field = getField();
             List<Location> adjacent = field.adjacentLocations(getLocation());
             Iterator<Location> it = adjacent.iterator();
             while(it.hasNext()) {
                 Location where = it.next();
                 Object actor = field.getObjectAt(where);
-                if(actor != null && actor  instanceof Plants){
+                if(actor instanceof Plants) {
                     return where;
                 }
             }

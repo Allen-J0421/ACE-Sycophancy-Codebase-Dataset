@@ -73,7 +73,7 @@ public abstract class Animal extends Creature
         ifCanGrantImmunity(disease, step);
         incrementAge();
         incrementHunger();
-        if(isAlive() && !needSleep(atDayTime)) {
+        if(isAlive() && isAwake(atDayTime)) {
             giveBirth(newAnimals);
             Location newLocation = search(disease, step);
             if(newLocation == null) {
@@ -154,7 +154,19 @@ public abstract class Animal extends Creature
     // -----------------------------------------------------------------------
 
     /**
-     * Make an animal infected while the disease is active.
+     * Force this animal into the infected state, recording when the infection began.
+     * Used by Disease during an outbreak; bypasses the immunity probability check.
+     */
+    protected void infect(int step) {
+        setIsInfected(true);
+        if(infectionStartStep == 0) {
+            infectionStartStep = step;
+        }
+    }
+
+    /**
+     * Probabilistically infect this animal via contact with a diseased neighbour.
+     * Has no effect if the animal is already immune.
      */
     protected void makeInfected(Disease disease, int step) {
         if(!this.getIsImmuned() && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE)
@@ -202,10 +214,12 @@ public abstract class Animal extends Creature
     }
 
     /**
-     * Return true if this animal needs to sleep (i.e. it is night-time).
+     * Return true if this animal is awake and able to act.
+     * By default animals are diurnal: awake during the day, asleep at night.
+     * Subclasses can override this for nocturnal behaviour.
      */
-    public boolean needSleep(boolean atDayTime) {
-        return !atDayTime;
+    public boolean isAwake(boolean atDayTime) {
+        return atDayTime;
     }
 
     public boolean getIsInfected() { return isInfected; }

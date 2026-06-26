@@ -55,26 +55,22 @@ public class Seaweed extends Creature
      * 
      * @return the oxygen level the species produced or consumed after action.
      */
-    public double act(List<Creature> newSeaweeds, boolean atDayTime, double oxygenLevel, Disease disease,  int step)
+    public double act(List<Creature> newSeaweeds, boolean atDayTime, double oxygenLevel, Disease disease, int step)
     {
         incrementAge();
-        if(oxygenLevel < PLANT_OXYGEN_REQUIRED){
+        if(!isAlive()) return 0;
+
+        if(oxygenLevel < PLANT_OXYGEN_REQUIRED) {
             setDead();
             return 0;
-        }    
-        
-       
-        if(isAlive()){
-            if(age >= MATURE_AGE)
-                giveBirth(newSeaweeds);            
-            }
-        
-        
-        if(atDayTime)
-            return OXYGEN_GENERATED;
-        else
-            return -PLANT_OXYGEN_REQUIRED;
         }
+
+        if(age >= MATURE_AGE) {
+            giveBirth(newSeaweeds);
+        }
+
+        return atDayTime ? OXYGEN_GENERATED : -PLANT_OXYGEN_REQUIRED;
+    }
     
     /**
      * Increase the age.

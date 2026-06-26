@@ -45,8 +45,7 @@ public class Disease
             if(creature instanceof Animal) {
                 Animal animal = (Animal) creature;
                 if(Randomizer.getRandom().nextDouble() <= INFECTION_RATE) {
-                    animal.setIsInfected(true);
-                    animal.infectionStartStep = step;
+                    animal.infect(step);
                     setIsSpread(true);
                 }
             }

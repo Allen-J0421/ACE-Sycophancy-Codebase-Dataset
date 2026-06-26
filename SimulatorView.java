@@ -89,7 +89,7 @@ public class SimulatorView extends JFrame
         stepLabel.setText(STEP_PREFIX + step);
         infoLabel.setText("It is: " + (timeOfDay ? "daytime" : "night ")
                 + "        Oxygen Level: " + (int)(oxygenLevel * 100) + "%"
-                + "        Storm: " + (weather.getStormStart() ? "exists" : "subsides"));
+                + "        Storm: " + (weather.isStormActive() ? "exists" : "subsides"));
         diseaseLabel.setText(POPULATION_DIE_OF_DISEASE_PREFIX + Animal.populationDieOfDisease);
 
         stats.reset();
@@ -108,7 +108,7 @@ public class SimulatorView extends JFrame
         }
 
         // Storm overlay is applied once after all cells are drawn, not once per cell.
-        if(weather.getStormStart()) {
+        if(weather.isStormActive()) {
             drawStormOverlay(field, weather);
         }
 
@@ -151,7 +151,7 @@ public class SimulatorView extends JFrame
      */
     private void drawStormOverlay(Field field, Weather weather)
     {
-        for(Location loc : field.adjacentLocationsIncludingSelf(weather.getRandomLocation(), weather.getStormScope())) {
+        for(Location loc : field.adjacentLocationsIncludingSelf(weather.getStormCenter(), Weather.STORM_SCOPE)) {
             fieldView.drawMark(loc.getCol(), loc.getRow(), STORM_COLOR);
         }
     }

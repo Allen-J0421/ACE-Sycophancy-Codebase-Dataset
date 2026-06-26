@@ -39,7 +39,26 @@ public abstract class Plant
      * whatever it wants/needs to do.
      * @param newPlants A list to receive newly created plants.
      */
-    abstract public void act(List<Plant> newPlants);
+    public void act(List<Plant> newPlants) {
+        if(isAlive()) {
+            grow(newPlants);
+        }
+    }
+
+    /**
+     * Return the likelihood of this plant reproducing.
+     */
+    protected abstract double getReproducingProbability();
+
+    /**
+     * Return the maximum number of offspring this plant can produce.
+     */
+    protected abstract int getMaxOffspringSize();
+
+    /**
+     * Create a newborn plant of this species.
+     */
+    protected abstract Plant createYoung(Field field, Location location);
 
     /**
      * Check whether the plant is alive or not.
@@ -121,5 +140,18 @@ public abstract class Plant
             }
         }
         return offspring;
+    }
+
+    /**
+     * Produce offspring into free adjacent locations.
+     */
+    private void grow(List<Plant> newPlants) {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int offspring = breed(getReproducingProbability(), getMaxOffspringSize());
+        for(int b = 0; b < offspring && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            newPlants.add(createYoung(field, loc));
+        }
     }
 }

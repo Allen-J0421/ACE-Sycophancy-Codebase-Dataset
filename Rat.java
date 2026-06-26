@@ -1,5 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -23,6 +21,10 @@ public class Rat extends Animal
     // The food value of a single ant. In effect, this is the
     // number of steps a rat can go before it has to eat again.
     private static final int ANT_FOOD_VALUE = 100;
+    // The food sources rats eat, in search order.
+    private static final FoodSource[] FOOD_SOURCES = {
+        new FoodSource(Ant.class, ANT_FOOD_VALUE)
+    };
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -47,75 +49,31 @@ public class Rat extends Animal
         }
     }
 
-    /**
-     * This is what the rat does most of the time: it hunts for
-     * ants. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newRats A list to return newly born rats.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newRats, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-
-        if(isAlive() && ((time >= 0)&&(time <= 18)))
-        {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Rat young = new Rat(false, field, loc);
-                    young.setGender();
-                    newRats.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected int getMaxAge() {
+        return MAX_AGE;
     }
 
-    /**
-     * Look for ants adjacent to the current location.
-     * Only the first live ant is eaten.
-     * if there is a plant adjacent, it can be 'trampled'
-     * @return where food was found, or null if it wasn't.
-     */
-    private Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Ant) {
-                Ant ant = (Ant) animal;
-                if(ant.isAlive()) {
-                    ant.setDead();
-                    setFoodLevel(ANT_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (animal instanceof Plant) {
-                Plant plant = (Plant) animal;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
+    protected int getBreedingAge() {
+        return BREEDING_AGE;
+    }
+
+    protected double getBreedingProbability() {
+        return BREEDING_PROBABILITY;
+    }
+
+    protected int getMaxLitterSize() {
+        return MAX_LITTER_SIZE;
+    }
+
+    protected boolean isActive(int time) {
+        return isActiveBetween(time, 0, 18);
+    }
+
+    protected Animal createYoung(Field field, Location location) {
+        return new Rat(false, field, location);
+    }
+
+    protected FoodSource[] getFoodSources() {
+        return FOOD_SOURCES;
     }
 }

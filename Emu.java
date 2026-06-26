@@ -1,5 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -23,6 +21,10 @@ public class Emu extends Animal
     // The food value of a single grass. In effect, this is the
     // number of steps an emu can go before it has to eat again.
     private static final int GRASS_FOOD_VALUE = 60;
+    // The food sources emus eat, in search order.
+    private static final FoodSource[] FOOD_SOURCES = {
+        new FoodSource(Grass.class, GRASS_FOOD_VALUE)
+    };
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -47,75 +49,31 @@ public class Emu extends Animal
         }
     }
 
-    /**
-     * This is what the emu does most of the time: it eats grass.
-     * In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newEmus A list to return newly born emus.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newEmus,int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-
-        if(isAlive() && ((time <= 9)||(time >= 21))) {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Emu young = new Emu(false, field, loc);
-                    young.setGender();
-                    newEmus.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected int getMaxAge() {
+        return MAX_AGE;
     }
 
+    protected int getBreedingAge() {
+        return BREEDING_AGE;
+    }
 
-    /**
-     * Look for grass adjacent to the current location.
-     * Only the first grass is eaten.
-     * If acacia is adjacent, it is 'trampled'
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object searchPlant = field.getObjectAt(where);
-            if(searchPlant instanceof Grass) {
-                Grass grass = (Grass) searchPlant;
-                if (grass.isAlive()) {
-                    grass.setDead();
-                    setFoodLevel(GRASS_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (searchPlant instanceof Plant) {
-                Plant plant = (Plant) searchPlant;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
+    protected double getBreedingProbability() {
+        return BREEDING_PROBABILITY;
+    }
+
+    protected int getMaxLitterSize() {
+        return MAX_LITTER_SIZE;
+    }
+
+    protected boolean isActive(int time) {
+        return isActiveOutside(time, 9, 21);
+    }
+
+    protected Animal createYoung(Field field, Location location) {
+        return new Emu(false, field, location);
+    }
+
+    protected FoodSource[] getFoodSources() {
+        return FOOD_SOURCES;
     }
 }

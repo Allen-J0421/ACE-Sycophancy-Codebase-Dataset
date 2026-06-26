@@ -1,5 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -23,6 +21,10 @@ public class Dingo extends Animal
     // The food value of a single snake. In effect, this is the
     // number of steps a dingo can go before it has to eat again.
     private static final int SNAKE_FOOD_VALUE = 100;
+    // The food sources dingoes eat, in search order.
+    private static final FoodSource[] FOOD_SOURCES = {
+        new FoodSource(Snake.class, SNAKE_FOOD_VALUE)
+    };
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -46,103 +48,36 @@ public class Dingo extends Animal
             setFoodLevel(SNAKE_FOOD_VALUE);
         }
     }
-    
-    /**
-     * This is what the dingo does most of the time: it hunts for
-     * snakes. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newDingoes A list to return newly born dingoes.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newDingoes, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive() && ((time>=8)&&(time <=24)))
-        {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Dingo young = new Dingo(false, field, loc);
-                    young.setGender();
-                    newDingoes.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+
+    protected int getMaxAge() {
+        return MAX_AGE;
     }
 
-    /**
-     * Look for snakes adjacent to the current location.
-     * Only the first live snake is eaten.
-     * If it is a plant, then it is 'trampled'
-     * @return where food was found, or null if it wasn't.
-     */
-    private Location findFood() {
-        if (getFog()){
-            if (rand.nextInt(2) == 0) {
-                Field field = getField();
-                List<Location> adjacent = field.adjacentLocations(getLocation());
-                Iterator<Location> it = adjacent.iterator();
-                while (it.hasNext()) {
-                    Location where = it.next();
-                    Object animal = field.getObjectAt(where);
-                    if (animal instanceof Snake) {
-                        Snake snake = (Snake) animal;
-                        if (snake.isAlive()) {
-                            snake.setDead();
-                            setFoodLevel(SNAKE_FOOD_VALUE);
-                            return where;
-                        }
-                    } else if (animal instanceof Plant) {
-                        Plant plant = (Plant) animal;
-                        if (plant.isAlive()) {
-                            plant.setDead();
-                            return where;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-        else {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while (it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if (animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if (snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant){
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
-                }
-            }
-            return null;
-        }
+    protected int getBreedingAge() {
+        return BREEDING_AGE;
+    }
+
+    protected double getBreedingProbability() {
+        return BREEDING_PROBABILITY;
+    }
+
+    protected int getMaxLitterSize() {
+        return MAX_LITTER_SIZE;
+    }
+
+    protected boolean isActive(int time) {
+        return isActiveBetween(time, 8, 24);
+    }
+
+    protected Animal createYoung(Field field, Location location) {
+        return new Dingo(false, field, location);
+    }
+
+    protected FoodSource[] getFoodSources() {
+        return FOOD_SOURCES;
+    }
+
+    protected boolean canFindFood() {
+        return !getFog() || rand.nextInt(2) == 0;
     }
 }

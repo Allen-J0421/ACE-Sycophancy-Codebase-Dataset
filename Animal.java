@@ -9,6 +9,28 @@ import java.util.Random;
  */
 public abstract class Animal
 {
+    /**
+     * A food type this animal can eat, and the food level it restores.
+     */
+    protected static class FoodSource
+    {
+        private Class<?> foodClass;
+        private int foodValue;
+
+        public FoodSource(Class<?> foodClass, int foodValue) {
+            this.foodClass = foodClass;
+            this.foodValue = foodValue;
+        }
+
+        private boolean matches(Object object) {
+            return foodClass.isInstance(object);
+        }
+
+        private int getFoodValue() {
+            return foodValue;
+        }
+    }
+
     // Whether the animal is alive or not.
     private boolean alive;
     // The animal's field.
@@ -48,7 +70,53 @@ public abstract class Animal
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
      */
-    abstract public void act(List<Animal> newAnimals, int time);
+    public void act(List<Animal> newAnimals, int time) {
+        incrementAge(getMaxAge());
+        incrementHunger();
+
+        if(isAlive() && isActive(time)) {
+            if(getDisease()) {
+                spreadDisease();
+            }
+            produceOffspring(newAnimals);
+            move();
+        }
+    }
+
+    /**
+     * Return the oldest age this animal can reach.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * Return the age at which this animal can start to breed.
+     */
+    protected abstract int getBreedingAge();
+
+    /**
+     * Return the likelihood of this animal breeding.
+     */
+    protected abstract double getBreedingProbability();
+
+    /**
+     * Return the maximum number of births for this animal.
+     */
+    protected abstract int getMaxLitterSize();
+
+    /**
+     * Return whether this animal is active at the current simulation time.
+     */
+    protected abstract boolean isActive(int time);
+
+    /**
+     * Create a newborn animal of this species.
+     */
+    protected abstract Animal createYoung(Field field, Location location);
+
+    /**
+     * Return the foods this animal can eat, in search priority order.
+     */
+    protected abstract FoodSource[] getFoodSources();
 
     /**
      * Check whether the animal is alive or not.
@@ -264,6 +332,137 @@ public abstract class Animal
         age++;
         if(age > MAX_AGE) {
             setDead();
+        }
+    }
+
+    /**
+     * Check whether fog or another species-specific condition prevents finding food.
+     */
+    protected boolean canFindFood() {
+        return true;
+    }
+
+    /**
+     * Return whether this animal can trample plants it does not eat.
+     */
+    protected boolean canTramplePlants() {
+        return true;
+    }
+
+    /**
+     * Check whether this animal is active between two times, inclusive.
+     */
+    protected boolean isActiveBetween(int time, int start, int end) {
+        return time >= start && time <= end;
+    }
+
+    /**
+     * Check whether this animal is active in a time range that crosses midnight.
+     */
+    protected boolean isActiveOutside(int time, int inactiveStart, int inactiveEnd) {
+        return time <= inactiveStart || time >= inactiveEnd;
+    }
+
+    /**
+     * Add any newborn animals to the new animals list.
+     */
+    private void produceOffspring(List<Animal> newAnimals) {
+        int breedingAge = getBreedingAge();
+        if (giveBirth(breedingAge)) {
+            Field field = getField();
+            List<Location> free = field.getFreeAdjacentLocations(getLocation());
+            int births = breed(breedingAge, getBreedingProbability(), getMaxLitterSize());
+            for (int b = 0; b < births && free.size() > 0; b++) {
+                Location loc = free.remove(0);
+                newAnimals.add(createYoung(field, loc));
+            }
+        }
+    }
+
+    /**
+     * Move toward food if available, otherwise move to a free adjacent location.
+     */
+    private void move() {
+        Location newLocation = findFood();
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
+    }
+
+    /**
+     * Look for food adjacent to the current location.
+     * Only the first live food source is eaten. Other plants may be trampled.
+     * @return where food was found, or null if it wasn't.
+     */
+    private Location findFood() {
+        if(!canFindFood()) {
+            return null;
+        }
+
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object object = field.getObjectAt(where);
+            FoodSource foodSource = foodSourceFor(object);
+
+            if(foodSource != null && isAliveFood(object)) {
+                setDeadFood(object);
+                setFoodLevel(foodSource.getFoodValue());
+                return where;
+            }
+            else if(canTramplePlants() && object instanceof Plant) {
+                Plant plant = (Plant) object;
+                if(plant.isAlive()) {
+                    plant.setDead();
+                    return where;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return the food source matched by the object, if any.
+     */
+    private FoodSource foodSourceFor(Object object) {
+        for(FoodSource foodSource : getFoodSources()) {
+            if(foodSource.matches(object)) {
+                return foodSource;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check whether a matched food object is alive.
+     */
+    private boolean isAliveFood(Object object) {
+        if(object instanceof Animal) {
+            return ((Animal) object).isAlive();
+        }
+        else if(object instanceof Plant) {
+            return ((Plant) object).isAlive();
+        }
+        return false;
+    }
+
+    /**
+     * Remove a matched food object from the field.
+     */
+    private void setDeadFood(Object object) {
+        if(object instanceof Animal) {
+            ((Animal) object).setDead();
+        }
+        else if(object instanceof Plant) {
+            ((Plant) object).setDead();
         }
     }
 

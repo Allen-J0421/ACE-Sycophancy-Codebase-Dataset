@@ -3,61 +3,15 @@
  *
  * @version 1.0
  */
-public class Sage extends Plant
+public class Sage extends SpeciesPlant
 {
     
     /*///////////////////////////////////////////////////////////////
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
     
-    public static final int MAX_AGE = 20;
-    public static final double MULTIPLY_PROBABILITY = 0.15;
-    private static final double OPTIMAL_BREEDING_FACTOR = 4.0;
-    
-    /*///////////////////////////////////////////////////////////////
-                                CONSTRUCTOR
-    //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * Creates sage.
-     * 
-     * @param randomAge Boolean flag to denote whether to assign a random age or not
-     * @param field field where the plant is emplaced
-     * @param location Location of the plant within the terrain
-     */
     public Sage(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location,MAX_AGE);
-    }
-
-    /*///////////////////////////////////////////////////////////////
-                            PLANT BEHAVIOUR LOGIC
-    //////////////////////////////////////////////////////////////*/
-    /**
-     * Imitates the actions sage takes, sage grows and multiplies if the weather and daylight conditions are optimal.
-     * 
-     * @param weather Handler to get current weather
-     * @param clock Time handler to get the current day state
-     * @param newPlants the new plants to be generated
-     */
-    @Override
-    protected PlantSpecies getSpecies()
-    {
-        return PlantSpecies.SAGE;
-    }
-
-    @Override
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    @Override
-    protected double getSpreadProbability(Weather weather)
-    {
-        if (weather == Weather.RAIN || weather == Weather.SUNNY) {
-            return OPTIMAL_BREEDING_FACTOR * MULTIPLY_PROBABILITY;
-        }
-        return MULTIPLY_PROBABILITY;
+        super(PlantSpecies.SAGE, randomAge, field, location);
     }
 }

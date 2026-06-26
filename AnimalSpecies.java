@@ -5,16 +5,24 @@ import java.awt.Color;
  */
 public enum AnimalSpecies
 {
-    FOX(true, 0.09, CarnivoreFox.class, new Color(227, 93, 57), CarnivoreFox::new),
-    REINDEER(false, 0.11, Reindeer.class, new Color(217, 162, 147), Reindeer::new),
-    SHEEP(false, 0.11, Sheep.class, Color.LIGHT_GRAY, Sheep::new),
-    BEAR(true, 0.04, Bear.class, new Color(112, 62, 49), Bear::new),
-    WOLVERINE(true, 0.09, Wolverine.class, Color.BLACK, Wolverine::new);
+    FOX(true, 0.09, CarnivoreFox.class, new Color(227, 93, 57), 25, 18, 71, 12, 0.076, 3, false, 1.0, CarnivoreFox::new),
+    REINDEER(false, 0.11, Reindeer.class, new Color(217, 162, 147), 15, 18, 28, 4, 0.7, 5, true, 1.0, Reindeer::new),
+    SHEEP(false, 0.11, Sheep.class, Color.LIGHT_GRAY, 6, 18, 20, 3, 0.6, 5, true, 1.0, Sheep::new),
+    BEAR(true, 0.04, Bear.class, new Color(112, 62, 49), 18, 30, 80, 25, 0.115, 3, false, 0.5, Bear::new),
+    WOLVERINE(true, 0.09, Wolverine.class, Color.BLACK, 25, 18, 83, 8, 0.0702, 3, true, 1.0, Wolverine::new);
 
     private final boolean carnivore;
     private final double spawnProbability;
     private final Class<? extends Animal> actorClass;
     private final Color color;
+    private final int baseHungerLevel;
+    private final int feedingValue;
+    private final int maxAge;
+    private final int breedingAge;
+    private final double breedingProbability;
+    private final int maxLitterSize;
+    private final boolean activeAtNight;
+    private final double snowBreedingFactor;
     private final AnimalCreator creator;
 
     AnimalSpecies(
@@ -22,12 +30,28 @@ public enum AnimalSpecies
         double spawnProbability,
         Class<? extends Animal> actorClass,
         Color color,
+        int baseHungerLevel,
+        int feedingValue,
+        int maxAge,
+        int breedingAge,
+        double breedingProbability,
+        int maxLitterSize,
+        boolean activeAtNight,
+        double snowBreedingFactor,
         AnimalCreator creator
     ) {
         this.carnivore = carnivore;
         this.spawnProbability = spawnProbability;
         this.actorClass = actorClass;
         this.color = color;
+        this.baseHungerLevel = baseHungerLevel;
+        this.feedingValue = feedingValue;
+        this.maxAge = maxAge;
+        this.breedingAge = breedingAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.activeAtNight = activeAtNight;
+        this.snowBreedingFactor = snowBreedingFactor;
         this.creator = creator;
     }
 
@@ -49,6 +73,44 @@ public enum AnimalSpecies
     public Color getColor()
     {
         return color;
+    }
+
+    public int getBaseHungerLevel()
+    {
+        return baseHungerLevel;
+    }
+
+    public int getFeedingValue()
+    {
+        return feedingValue;
+    }
+
+    public int getMaxAge()
+    {
+        return maxAge;
+    }
+
+    public int getBreedingAge()
+    {
+        return breedingAge;
+    }
+
+    public double getBreedingProbability(Weather weather)
+    {
+        if(weather == Weather.SNOW) {
+            return snowBreedingFactor * breedingProbability;
+        }
+        return breedingProbability;
+    }
+
+    public int getMaxLitterSize()
+    {
+        return maxLitterSize;
+    }
+
+    public boolean canActDuring(DayState dayState)
+    {
+        return activeAtNight || dayState != DayState.NIGHT;
     }
 
     public Animal createRandom(Field field, Location location)

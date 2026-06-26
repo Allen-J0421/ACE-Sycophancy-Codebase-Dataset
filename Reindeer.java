@@ -6,19 +6,13 @@ import java.util.Set;
  *
  * @version 1.0
  */
-public class Reindeer extends HerbivoreAnimal
+public class Reindeer extends SpeciesHerbivoreAnimal
 {
     
     /*///////////////////////////////////////////////////////////////
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
     
-    private static final int BREEDING_AGE = 4;
-    private static final int MAX_AGE = 28;
-    private static final double BREEDING_PROBABILITY = 0.7;
-    private static final int MAX_LITTER_SIZE = 5;
-    private static final int BASE_HUNGER_LEVEL = 15;
-    private static final int FEEDING_VALUE = 18;
     private static final Set<PlantSpecies> TARGET_PLANTS =
         EnumSet.of(PlantSpecies.GRASS, PlantSpecies.SAGE, PlantSpecies.SEDGE);
     
@@ -36,7 +30,7 @@ public class Reindeer extends HerbivoreAnimal
      */
     public Reindeer(boolean randomAge, Field field, Location location, Gender gender)
     {
-        super(randomAge, field, location, gender, BASE_HUNGER_LEVEL, MAX_AGE);
+        super(AnimalSpecies.REINDEER, randomAge, field, location, gender);
     }
     
     /*///////////////////////////////////////////////////////////////
@@ -49,47 +43,8 @@ public class Reindeer extends HerbivoreAnimal
      * 
      * @param newReindeers the new reeindeers to be born in case the reindeer succesfully mates
      */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    @Override
-    protected int getBreedingAge()
-    {
-        return BREEDING_AGE;
-    }
-
-    @Override
-    protected double getBreedingProbability(Weather weather)
-    {
-        return BREEDING_PROBABILITY;
-    }
-
-    @Override
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-
-    @Override
     protected Set<PlantSpecies> getTargetPlants()
     {
         return TARGET_PLANTS;
-    }
-    
-    /**
-     * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
-     * @return the feeding value
-     */
-    public int getFeedingValue()
-    {
-        return FEEDING_VALUE;
-    }
-
-    @Override
-    protected AnimalSpecies getSpecies()
-    {
-        return AnimalSpecies.REINDEER;
     }
 }

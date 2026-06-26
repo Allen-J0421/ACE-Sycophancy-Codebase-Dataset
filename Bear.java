@@ -6,19 +6,13 @@ import java.util.Set;
  *
  * @version 1.0
  */
-public class Bear extends CarnivoreAnimal
+public class Bear extends SpeciesCarnivoreAnimal
 {
     
     /*///////////////////////////////////////////////////////////////
                                  CONSTANTS
     //////////////////////////////////////////////////////////////*/
     
-    private static final int BREEDING_AGE = 25;
-    private static final int MAX_AGE = 80;
-    private static final double BREEDING_PROBABILITY = 0.115;
-    private static final double HIBERNATION_BREEDING_FACTOR = 0.5;
-    private static final int BASE_HUNGER_LEVEL = 18;
-    private static final int FEEDING_VALUE = 30;
     private static final Set<AnimalSpecies> PREY_DIET =
         EnumSet.of(
             AnimalSpecies.FOX,
@@ -26,8 +20,6 @@ public class Bear extends CarnivoreAnimal
             AnimalSpecies.SHEEP,
             AnimalSpecies.REINDEER
         );
-    private static final int MAX_LITTER_SIZE = 3;
-    
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
@@ -43,12 +35,11 @@ public class Bear extends CarnivoreAnimal
     public Bear(boolean randomAge, Field field, Location location, Gender gender)
     {
         super(
+                AnimalSpecies.BEAR,
                 randomAge,
                 field,
                 location,
-                gender,
-                BASE_HUNGER_LEVEL,
-                MAX_AGE
+                gender
                 );
     }
     
@@ -62,57 +53,8 @@ public class Bear extends CarnivoreAnimal
      * 
      * @param newBears the new bears to be born in case the sheep succesfully mates.
      */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    @Override
-    protected int getBreedingAge()
-    {
-        return BREEDING_AGE;
-    }
-
-    @Override
-    protected double getBreedingProbability(Weather weather)
-    {
-        if(weather == Weather.SNOW) {
-            return HIBERNATION_BREEDING_FACTOR * BREEDING_PROBABILITY;
-        }
-        return BREEDING_PROBABILITY;
-    }
-
-    @Override
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-
-    @Override
     protected Set<AnimalSpecies> getPreyDiet()
     {
         return PREY_DIET;
-    }
-
-    @Override
-    protected boolean canAct(Weather weather, DayState dayState)
-    {
-        return dayState != DayState.NIGHT;
-    }
-    
-    /**
-     * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.
-     * 
-     * @return the feeding value.
-     */
-    public int getFeedingValue()
-    {
-        return FEEDING_VALUE;
-    }
-
-    @Override
-    protected AnimalSpecies getSpecies()
-    {
-        return AnimalSpecies.BEAR;
     }
  }

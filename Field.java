@@ -57,18 +57,6 @@ public class Field
      * Place an organism at the given location.
      * If there is already an organism at the location it will be lost.
      * @param organism The organism to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Organism organism, int row, int col)
-    {
-        place(organism, new Location(row, col));
-    }
-
-    /**
-     * Place an organism at the given location.
-     * If there is already an organism at the location it will be lost.
-     * @param organism The organism to be placed.
      * @param location Where to place the organism.
      */
     public void place(Organism organism, Location location)
@@ -95,18 +83,6 @@ public class Field
     public Organism getObjectAt(int row, int col)
     {
         return field[row][col];
-    }
-
-    /**
-     * Generate a random location that is adjacent to the given location.
-     * The returned location will be within the valid bounds of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location);
-        return adjacent.get(0);
     }
 
     /**

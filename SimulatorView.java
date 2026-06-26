@@ -43,7 +43,7 @@ public class SimulatorView extends JFrame
     public SimulatorView(int height, int width)
     {
         stats = new FieldStats();
-        colors = new LinkedHashMap<Class<?>, Color>();
+        colors = new LinkedHashMap<>();
 
         setTitle("Predator Prey Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -85,14 +85,7 @@ public class SimulatorView extends JFrame
      */
     private Color getColor(Class<?> animalClass)
     {
-        Color col = colors.get(animalClass);
-        if(col == null) {
-            // no color defined for this class
-            return UNKNOWN_COLOR;
-        }
-        else {
-            return col;
-        }
+        return colors.getOrDefault(animalClass, UNKNOWN_COLOR);
     }
 
     /**
@@ -138,28 +131,21 @@ public class SimulatorView extends JFrame
     }
 
     public void updateTimeLabel(int day, int hour){
-        timeLabel.setText(TIME_DAY_PREFIX + (day) + " " + TIME_HOUR_PREFIX + (hour));
+        timeLabel.setText(TIME_DAY_PREFIX + day + " " + TIME_HOUR_PREFIX + hour);
     }
 
     public void updateEnvironmentLabel(Weather weather, TimeOfDay time) {
         environmentLabel.setText(WEATHER_PREFIX + weather.getType().toString() + " " + TIME_OF_DAY_PREFIX + time);
     }
     
-    /**
-     * Provide a graphical view of a rectangular field. This is 
-     * a nested class (a class defined inside a class) which
-     * defines a custom component for the user interface. This
-     * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
-     * for your project if you like.
-     */
+    /** Custom panel that renders the simulation grid as a scaled pixel image. */
     private class FieldView extends JPanel
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
+        private static final int GRID_VIEW_SCALING_FACTOR = 6;
 
         private int gridWidth, gridHeight;
         private int xScale, yScale;
-        Dimension size;
+        private Dimension size;
         private Graphics g;
         private Image fieldImage;
 

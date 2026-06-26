@@ -148,7 +148,7 @@ public class Simulator
             Thread.sleep(millisec);
         }
         catch(InterruptedException ie) {
-            // wake up
+            Thread.currentThread().interrupt();
         }
     }
 }

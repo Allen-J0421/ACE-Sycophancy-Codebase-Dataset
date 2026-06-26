@@ -111,6 +111,22 @@ public class Field
         List<Location> adjacent = adjacentLocations(location);
         return adjacent.get(0);
     }
+
+    /**
+     * Find a random free location in the field.
+     *
+     * @return (Location) a free location.
+     */
+    public Location randomFreeLocation()
+    {
+        int randomRow = rand.nextInt(depth);
+        int randomCol = rand.nextInt(width);
+        while (! isFree(new Location(randomRow, randomCol))) {
+            randomRow = rand.nextInt(depth);
+            randomCol = rand.nextInt(width);
+        }
+        return new Location(randomRow, randomCol);
+    }
     
     /**
      * Get a shuffled list of the free adjacent locations.

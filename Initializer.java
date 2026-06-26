@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Initializing the simulation. It first launches the UI, then builds the appropriate
@@ -40,8 +39,6 @@ public class Initializer
     private final AnimalCSVReader animalReader;
     // To read plant related data.
     private final PlantCSVReader plantReader;
-    // A Random object to handle random behaviours throughout the class.
-    private static final Random rand = Randomizer.getRandom();
     // A graphical view of the simulation.
     private SimulatorView view;
     // The plant concentration in the habitat created by the user.
@@ -151,14 +148,14 @@ public class Initializer
 
                 if (animalProfile.isPredator()) {
                     for (int i = 0; i < animalsToCreate.get(animalName); i++) {
-                        freeLocationToPlaceAnimal = findAvailableLocation(field);
+                        freeLocationToPlaceAnimal = field.randomFreeLocation();
                         Predator newPredator = new Predator(field, freeLocationToPlaceAnimal, animalProfile, RANDOM_ANIMAL_AGE);
                         speciesToEvolveInSimulation.add(newPredator);
                     }
                 }
                 else {
                     for (int i = 0; i < animalsToCreate.get(animalName); i++) {
-                        freeLocationToPlaceAnimal = findAvailableLocation(field);
+                        freeLocationToPlaceAnimal = field.randomFreeLocation();
                         Animal newAnimal = new Animal(field, freeLocationToPlaceAnimal, animalProfile, RANDOM_ANIMAL_AGE);
                         speciesToEvolveInSimulation.add(newAnimal);
                     }
@@ -169,25 +166,6 @@ public class Initializer
                 idxOfColorToUseNext ++;
             }
         }
-    }
-
-    /**
-     * Find an available location for an object to be created in the simulation field.
-     * The simulation is chosen at random and is changed if the randomly selected cell
-     * already contains an object.
-     *
-     * @param field (Field) The simulation's field.
-     * @return (Location) the available location found.
-     */
-    private Location findAvailableLocation(Field field)
-    {
-        int randomWidth = rand.nextInt(DEFAULT_WIDTH);
-        int randomDepth = rand.nextInt(DEFAULT_DEPTH);
-        while (field.getObjectAt(randomDepth,randomWidth) != null) {
-            randomWidth = rand.nextInt(DEFAULT_WIDTH);
-            randomDepth = rand.nextInt(DEFAULT_DEPTH);
-        }
-        return new Location(randomDepth, randomWidth);
     }
 
     /**
@@ -211,7 +189,7 @@ public class Initializer
         plantReader.extractDataFor(DEFAULT_PLANT_NAME);
         PlantProfile plantProfile = plantReader.getPlantProfile();
         for (int i = 0; i< getNumberOfPlants(); i++) {
-            freeLocationToPlacePlant = findAvailableLocation(field);
+            freeLocationToPlacePlant = field.randomFreeLocation();
             Plant createdPlant = new Plant(field, freeLocationToPlacePlant, plantProfile);
             speciesToEvolveInSimulation.add(createdPlant);
         }

@@ -51,11 +51,9 @@ public class Shark extends Animal
             }
             if(creature instanceof Cod || creature instanceof Salmon) {
                 Animal prey = (Animal) creature;
-                if(prey.isAlive()) {
-                    prey.setDead();
-                    foodLevel = (prey instanceof Cod) ? COD_FOOD_VALUE : SALMON_FOOD_VALUE;
-                    return loc;
-                }
+                prey.setDead();
+                foodLevel = (prey instanceof Cod) ? COD_FOOD_VALUE : SALMON_FOOD_VALUE;
+                return loc;
             }
         }
         return null;

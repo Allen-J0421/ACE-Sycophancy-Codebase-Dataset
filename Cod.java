@@ -49,12 +49,9 @@ public class Cod extends Animal
                 makeInfected(disease, step);
             }
             if(creature instanceof Seaweed) {
-                Seaweed seaweed = (Seaweed) creature;
-                if(seaweed.isAlive()) {
-                    seaweed.setDead();
-                    foodLevel = SEAWEED_FOOD_VALUE;
-                    return loc;
-                }
+                ((Seaweed) creature).setDead();
+                foodLevel = SEAWEED_FOOD_VALUE;
+                return loc;
             }
         }
         return null;

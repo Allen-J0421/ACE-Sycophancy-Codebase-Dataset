@@ -23,7 +23,7 @@ public enum WeatherCond
     public static final String DAMPNESS = "dampness";
 
     private static final Random rand = Randomizer.getRandom();
-    private Map<String, Double> weatherAttributes; 
+    private final Map<String, Double> weatherAttributes; 
     private static Time timeOfDay;
 
     /**

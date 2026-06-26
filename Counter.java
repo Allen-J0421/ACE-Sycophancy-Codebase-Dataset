@@ -13,7 +13,7 @@ public class Counter implements Serializable
     private static final long serialVersionUID = 1L;
 
     // A name for this type of simulation participant
-    private String name;
+    private final String name;
     // How many of this type exist in the simulation.
     private int count;
 

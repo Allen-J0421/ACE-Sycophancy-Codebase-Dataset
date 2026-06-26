@@ -13,7 +13,7 @@ public class FieldStats implements Serializable
     private static final long serialVersionUID = 1L;
 
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private HashMap<Class<?>, Counter> counters;
+    private final HashMap<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 

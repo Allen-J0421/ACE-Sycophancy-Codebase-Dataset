@@ -18,19 +18,19 @@ public class Simulator
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 250;
     // List of actors in the field.
-    private List<Actor> actors;
+    private final List<Actor> actors;
     // The probabilities that actors will be created in any given grid position.
-    private List<ActorCreationRule> actorCreationRules; 
+    private final List<ActorCreationRule> actorCreationRules; 
     // List of diseases in the simulation.
     public static final List<Disease> diseases = createDiseases();
     // The current state of the field.
-    private Field field;
+    private final Field field;
     // The current step of the simulation.
     private int step;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private final SimulatorView view;
     // The current time in the field.
-    private Time time;
+    private final Time time;
     // The current weather condition of the field.
     private WeatherCond weatherCond;
 

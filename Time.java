@@ -8,7 +8,7 @@ public class Time
 {
     private int time;
     // How much time will increment by for each step
-    private int timeStep;
+    private final int timeStep;
 
     /**
      * Creates the time, sets it to 0 and takes how much time will increment by

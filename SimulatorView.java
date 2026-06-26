@@ -14,6 +14,7 @@ import java.util.*;
  * @version 2022.03.3
  */
 public class SimulatorView extends JFrame
+        implements SimulationObserver
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -41,9 +42,7 @@ public class SimulatorView extends JFrame
 
 
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    private Map<Class<?>, Color> colors;
 
 
     /**
@@ -53,7 +52,6 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
-        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Prey and predator simulation");
@@ -119,7 +117,7 @@ public class SimulatorView extends JFrame
                 Map.entry(Eagle.class, eagleCheckBox)
         );
 
-        for(Class cls : SimulationInfo.ALL_ACTORS){
+        for(Class<?> cls : SimulationInfo.ALL_ACTORS){
             classToCheckBox.get(cls).setForeground(SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
         }
 
@@ -151,6 +149,7 @@ public class SimulatorView extends JFrame
         pack();
         setVisible(false);
 
+        applyDefaultColors();
         setColorsByCheckBox();
 
 
@@ -190,7 +189,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -206,7 +205,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -219,7 +218,7 @@ public class SimulatorView extends JFrame
     }
 
     public void setColorsByCheckBox(){
-        for(Class c : new Class[] {Grass.class, Deer.class, Coyote.class, Wolf.class, Eagle.class, Hunter.class}){
+        for(Class<?> c : new Class[] {Grass.class, Deer.class, Coyote.class, Wolf.class, Eagle.class, Hunter.class, Mouse.class}){
             if(!classToCheckBox.get(c).isSelected()){
                 setColor(c, Color.white);
             }
@@ -229,7 +228,7 @@ public class SimulatorView extends JFrame
         }
     }
 
-    public void checkCheckBoxByColor(Class c){
+    public void checkCheckBoxByColor(Class<?> c){
         if(!classToCheckBox.get(c).isSelected()){
             setColor(c, Color.white);
         }
@@ -240,32 +239,25 @@ public class SimulatorView extends JFrame
 
     /**
      * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
      */
-    public void showStatus(int step, String weather, String time, Field field)
+    @Override
+    public void onStateChanged(SimulationState state)
     {
         if(!isVisible()) {
             setVisible(true);
         }
 
-        stepLabel.setText(STEP_PREFIX + step);
-        weatherLabel.setText(WEATHER_PREFIX + weather);
-        timeLabel.setText(TIME_PREFIX + time);
-        stats.reset();
+        stepLabel.setText(STEP_PREFIX + state.getStep());
+        weatherLabel.setText(WEATHER_PREFIX + state.getWeather());
+        timeLabel.setText(TIME_PREFIX + state.getTime());
 
         fieldView.preparePaint();
+        Field field = state.getField();
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 Object actor = field.getObjectAt(row, col);
                 if(actor != null) {
-                    stats.incrementCount(actor.getClass());
-                    if(actor instanceof Organism){
-                        if(((Organism) actor).isDiseased()){
-                            stats.incrementDiseasedCount();
-                        }
-                    }
                     fieldView.drawMark(col, row, getColor(actor.getClass()));
                 }
                 else {
@@ -273,24 +265,26 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        stats.countFinished();
-        for(Class cls : SimulationInfo.ALL_ACTORS){
-            classToCheckBox.get(cls).setText(stats.getCountDetails(cls));
+        for(Class<?> cls : SimulationInfo.ALL_ACTORS){
+            classToCheckBox.get(cls).setText(getPopulationLabel(cls, state));
         }
 
 //        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
-        diseasedPopulation.setText(stats.getDiseasedPopulation());
+        diseasedPopulation.setText(DISEASED_PREFIX + state.getDiseasedPopulation());
         setColorsByCheckBox();
         fieldView.repaint();
     }
 
-    /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
+    private void applyDefaultColors()
     {
-        return stats.isViable(field);
+        for(Map.Entry<Class<?>, Color> entry : SimulationInfo.DEFAULT_COLOR_MAP.entrySet()) {
+            setColor(entry.getKey(), entry.getValue());
+        }
+    }
+
+    private String getPopulationLabel(Class<?> actorClass, SimulationState state)
+    {
+        return actorClass.getSimpleName() + ": " + state.getPopulationCount(actorClass);
     }
 
     /**

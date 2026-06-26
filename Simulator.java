@@ -1,4 +1,3 @@
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,13 +22,14 @@ public class Simulator
     private final Field field;
     // The current step of the simulation.
     private int step;
-    // A graphical view of the simulation.
-    private final SimulatorView view;
     // Environment in the simulation.
     private final Environment environment;
     // Configuration and actor creation rules for the simulation.
     private final SimulationConfig config;
     private final ActorFactory actorFactory;
+    // Published state for observers.
+    private final List<SimulationObserver> observers;
+    private SimulationState currentState;
 
     /**
      * A simulator constructor to set the creation probability of each actor.
@@ -90,9 +90,33 @@ public class Simulator
         this.field = new Field(depth, width);
         this.environment = new Environment(new Time(), new Weather());
         this.actorFactory = new ActorFactory(config);
-        this.view = createView(depth, width);
+        this.observers = new ArrayList<>();
 
         reset();
+    }
+
+    /**
+     * Register an observer and immediately publish the current state to it.
+     */
+    public void addObserver(SimulationObserver observer)
+    {
+        observers.add(observer);
+        observer.onStateChanged(currentState);
+    }
+
+    public void removeObserver(SimulationObserver observer)
+    {
+        observers.remove(observer);
+    }
+
+    public SimulationState getCurrentState()
+    {
+        return currentState;
+    }
+
+    public boolean isPlayingSimulation()
+    {
+        return playingSimulation;
     }
 
     /**
@@ -102,6 +126,43 @@ public class Simulator
     {
         remainingSteps += SimulationConfig.LONG_SIMULATION_STEPS;
         simulate(remainingSteps);
+    }
+
+    /**
+     * Start a long simulation on a background thread.
+     */
+    public void startLongSimulation()
+    {
+        if(playingSimulation) {
+            System.out.println("Stop the simulation first");
+            return;
+        }
+
+        Thread runLongSimThread = new Thread(this::runLongSimulation, "SimulationRunThread");
+        runLongSimThread.start();
+    }
+
+    /**
+     * Run a single simulation step if the simulator is currently idle.
+     */
+    public void stepOnce()
+    {
+        if(playingSimulation) {
+            System.out.println("Stop the simulation first");
+            return;
+        }
+
+        playingSimulation = true;
+        simulateOneStep();
+        playingSimulation = false;
+    }
+
+    /**
+     * Stop the simulation loop.
+     */
+    public void stop()
+    {
+        playingSimulation = false;
     }
 
     /**
@@ -115,13 +176,15 @@ public class Simulator
         remainingSteps = numSteps;
 
         int completedSteps = 0;
-        while(playingSimulation){
-            for(int currentStep = 0; currentStep < numSteps && playingSimulation && view.isViable(field); currentStep++) {
+        while(playingSimulation) {
+            for(int currentStep = 0;
+                    currentStep < numSteps && playingSimulation && currentState.isViable();
+                    currentStep++) {
                 simulateOneStep();
                 completedSteps++;
 //                delay(60);   // uncomment this to run more slowly
             }
-            if(!view.isViable(field)){
+            if(!currentState.isViable()) {
                 updateBestSimulationResult(completedSteps);
                 playingSimulation = false;
             }
@@ -156,7 +219,7 @@ public class Simulator
 
         actors.addAll(newActors);
         actors.addAll(actorFactory.createGrassPatches(field, environment));
-        showStatus();
+        publishState();
     }
 
     /**
@@ -172,7 +235,7 @@ public class Simulator
         actors.clear();
         actors.addAll(actorFactory.populate(field));
 
-        showStatus();
+        publishState();
     }
 
     /**
@@ -187,20 +250,6 @@ public class Simulator
         catch (InterruptedException ie) {
             // wake up
         }
-    }
-
-    private SimulatorView createView(int depth, int width)
-    {
-        SimulatorView simulatorView = new SimulatorView(depth, width);
-        for(Class<?> cls : SimulationInfo.DEFAULT_COLOR_MAP.keySet()) {
-            simulatorView.setColor(cls, SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
-        }
-
-        simulatorView.addLongButtonListener(longButtonListener);
-        simulatorView.addOneStepButtonListener(startButtonListener);
-        simulatorView.addStopButtonListener(stopButtonListener);
-        simulatorView.addResetButtonListener(resetButtonListener);
-        return simulatorView;
     }
 
     private void processActor(Actor actor, List<Actor> newActors)
@@ -226,14 +275,12 @@ public class Simulator
         }
     }
 
-    private void showStatus()
+    private void publishState()
     {
-        view.showStatus(
-                step,
-                environment.getWeather().getCurrentWeather().toString(),
-                environment.getTime().getCurrentTimeString(),
-                field
-        );
+        currentState = SimulationState.capture(step, environment, field);
+        for(SimulationObserver observer : observers) {
+            observer.onStateChanged(currentState);
+        }
     }
 
     private void updateBestSimulationResult(int completedSteps)
@@ -243,42 +290,4 @@ public class Simulator
             SimulationInfo.HIGHEST_STEP_PROBS = config.getCreationProbabilities();
         }
     }
-
-    /**
-     * Whenever the start button is pressed, the simulateOneStep() method is called.
-     */
-    private final ActionListener startButtonListener = e -> {
-        if(playingSimulation) {
-            System.out.println("Stop the simulation first");
-        }
-        else {
-            playingSimulation = true;
-            simulateOneStep();
-            playingSimulation = false;
-        }
-    };
-
-    /**
-     * Whenever the stop button is pressed, the simulation is stopped.
-     */
-    private final ActionListener stopButtonListener = e -> playingSimulation = false;
-
-    /**
-     * Whenever the reset button is pressed, the simulation is reset.
-     */
-    private final ActionListener resetButtonListener = e -> reset();
-
-    /**
-     * Whenever the long button is pressed, runLongSimulation() is called.
-     */
-    private final ActionListener longButtonListener = e -> {
-        Thread runLongSimThread = new Thread(this::runLongSimulation, "SimulationRunThread");
-
-        if(!playingSimulation) {
-            runLongSimThread.start();
-        }
-        else {
-            System.out.println("Stop the simulation first");
-        }
-    };
 }

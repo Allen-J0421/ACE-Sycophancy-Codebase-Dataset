@@ -179,7 +179,7 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Actor actor = SpeciesFactory.seedActor(field, row, col, rand);
+                Actor actor = SpawnRegistry.seedActor(field, row, col, rand);
                 if(actor instanceof Plants plant) {
                     plants.add(plant);
                 }

@@ -10,7 +10,6 @@ record SpeciesConfig(
     int breedingAge,
     int maxAge,
     double breedingProbability,
-    double spawnProbability,
     int maxLitterSize,
     int maxTimeUntilBreedingAgain,
     int initialFoodLevel,

@@ -34,7 +34,7 @@ public abstract class Animal extends Actor
     {
         super(field, location);
         this.speciesType = speciesType;
-        this.speciesConfig = SpeciesFactory.config(speciesType);
+        this.speciesConfig = SpeciesRegistry.config(speciesType);
         setRandomGender();
         isHealthy = true;
         infectedStepCounter = 0;
@@ -106,7 +106,7 @@ public abstract class Animal extends Actor
         int births = breed();
         for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
-            Animal baby = SpeciesFactory.create(speciesType, false, field, loc);
+            Animal baby = SpeciesRegistry.create(speciesType, false, field, loc);
             if(!getHealth()) {
                 baby.setUnhealthy();
             }

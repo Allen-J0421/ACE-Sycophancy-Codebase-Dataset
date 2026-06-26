@@ -15,7 +15,8 @@ public class Mouse extends Animal
         40,   // maxAge
         9,    // maxFoodLevel
         2,    // foodValue
-        Set.of(Grass.class)
+        Set.of(Grass.class),
+        false // diurnal
     );
 
     @Override
@@ -31,7 +32,6 @@ public class Mouse extends Animal
     public Mouse(boolean randomAge, Field field, Location location, Gender sex)
     {
         super(field, location, randomAge, sex);
-        this.isNocturnal = false;
     }
 
     @Override

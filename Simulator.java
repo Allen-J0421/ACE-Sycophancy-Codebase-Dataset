@@ -54,7 +54,7 @@ public class Simulator implements SimulationControls
                      double WolfProbability, double EagleProbability, double HunterProbability,
                      double MouseProbability)
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        initFields(DEFAULT_DEPTH, DEFAULT_WIDTH);
         CREATION_PROBABILITIES = Map.ofEntries(
                 Map.entry(Coyote.class, CoyoteProbability),
                 Map.entry(Deer.class,   DeerProbability),
@@ -86,7 +86,13 @@ public class Simulator implements SimulationControls
             depth = DEFAULT_DEPTH;
             width = DEFAULT_WIDTH;
         }
+        initFields(depth, width);
+        reset();
+    }
 
+    /** Initialise shared infrastructure without triggering populate(). */
+    private void initFields(int depth, int width)
+    {
         actors = new ArrayList<>();
         field = new Field(depth, width);
         environment = new Environment(new Time(), new Weather());
@@ -96,8 +102,6 @@ public class Simulator implements SimulationControls
             view.setColor(cls, SimulationInfo.DEFAULT_COLOR_MAP.get(cls));
         }
         view.wireButtons(this);
-
-        reset();
     }
 
     // --- SimulationControls implementation ---
@@ -216,7 +220,7 @@ public class Simulator implements SimulationControls
      */
     private void populate()
     {
-        LinkedHashMap<Class<?>, BiFunction<Location, Animal.Gender, Actor>> factories = new LinkedHashMap<>();
+        LinkedHashMap<Class<?>, BiFunction<Location, Gender, Actor>> factories = new LinkedHashMap<>();
         factories.put(Grass.class,  (loc, sex) -> new Grass(field, loc));
         factories.put(Deer.class,   (loc, sex) -> new Deer(true, field, loc, sex));
         factories.put(Coyote.class, (loc, sex) -> new Coyote(true, field, loc, sex));
@@ -229,8 +233,8 @@ public class Simulator implements SimulationControls
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                Animal.Gender sex = Randomizer.getRandomSex();
-                for (Map.Entry<Class<?>, BiFunction<Location, Animal.Gender, Actor>> entry : factories.entrySet()) {
+                Gender sex = Randomizer.getRandomSex();
+                for (Map.Entry<Class<?>, BiFunction<Location, Gender, Actor>> entry : factories.entrySet()) {
                     Class<?> cls = entry.getKey();
                     if (cls == Hunter.class && hunterCount >= HUNTER_LIMIT) continue;
                     if (rand.nextDouble() <= CREATION_PROBABILITIES.get(cls)) {

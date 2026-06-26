@@ -14,9 +14,7 @@ public abstract class Organism {
     // The organism's position in the field.
     private Location location;
     
-    // Whether the organism has a disease 
     private Disease disease = null;
-    private boolean hasDisease = false;
 
 
     protected abstract int FOOD_VALUE();
@@ -87,11 +85,11 @@ public abstract class Organism {
     }
 
     /**
-     * Returns true if the organism is infected. 
+     * Returns true if the organism is infected.
      */
     public boolean isDiseased()
     {
-        return hasDisease;
+        return disease != null;
     }
 
     /**
@@ -110,6 +108,5 @@ public abstract class Organism {
     protected void setDisease(Disease disease)
     {
         this.disease = disease;
-        hasDisease = true;
     }
 }

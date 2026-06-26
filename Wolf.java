@@ -15,7 +15,8 @@ public class Wolf extends Animal
         150,  // maxAge
         15,   // maxFoodLevel
         6,    // foodValue
-        Set.of(Deer.class, Mouse.class, Coyote.class)
+        Set.of(Deer.class, Mouse.class, Coyote.class),
+        true  // nocturnal
     );
 
     @Override
@@ -32,7 +33,6 @@ public class Wolf extends Animal
     public Wolf(boolean randomAge, Field field, Location location, Gender sex)
     {
         super(field, location, randomAge, sex);
-        this.isNocturnal = true;
     }
 
     @Override

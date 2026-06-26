@@ -16,7 +16,8 @@ public class Eagle extends Animal
         150,  // maxAge
         14,   // maxFoodLevel
         5,    // foodValue
-        Set.of(Deer.class, Coyote.class, Mouse.class)
+        Set.of(Deer.class, Coyote.class, Mouse.class),
+        false // diurnal
     );
 
     @Override
@@ -33,7 +34,6 @@ public class Eagle extends Animal
     public Eagle(boolean randomAge, Field field, Location location, Gender sex)
     {
         super(field, location, randomAge, sex);
-        this.isNocturnal = false;
     }
 
     @Override

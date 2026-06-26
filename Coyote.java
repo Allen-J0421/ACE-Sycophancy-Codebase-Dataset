@@ -15,7 +15,8 @@ public class Coyote extends Animal
         150,  // maxAge
         15,   // maxFoodLevel
         5,    // foodValue
-        Set.of(Deer.class, Mouse.class)
+        Set.of(Deer.class, Mouse.class),
+        true  // nocturnal
     );
 
     @Override
@@ -32,7 +33,6 @@ public class Coyote extends Animal
     public Coyote(boolean randomAge, Field field, Location location, Gender sex)
     {
         super(field, location, randomAge, sex);
-        this.isNocturnal = true;
     }
 
     @Override

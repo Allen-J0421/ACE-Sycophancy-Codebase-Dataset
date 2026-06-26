@@ -15,7 +15,8 @@ public class Deer extends Animal
         40,   // maxAge
         9,    // maxFoodLevel
         4,    // foodValue
-        Set.of(Grass.class)
+        Set.of(Grass.class),
+        false // diurnal
     );
 
     @Override
@@ -31,7 +32,6 @@ public class Deer extends Animal
     public Deer(boolean randomAge, Field field, Location location, Gender sex)
     {
         super(field, location, randomAge, sex);
-        this.isNocturnal = false;
     }
 
     /** Deer are always awake regardless of time of day. */

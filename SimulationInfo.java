@@ -1,6 +1,4 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +13,7 @@ public class SimulationInfo {
     /**
      * The list of the classes of all actors in the simulation
      */
-    public static final List<Class> ALL_ACTORS = new ArrayList<>(Arrays.asList(Grass.class, Deer.class, Coyote.class, Wolf.class, Eagle.class, Hunter.class, Mouse.class));
+    public static final List<Class> ALL_ACTORS = List.of(Grass.class, Deer.class, Coyote.class, Wolf.class, Eagle.class, Hunter.class, Mouse.class);
 
     /**
      * A Map connecting each class in the simulation to a default colour

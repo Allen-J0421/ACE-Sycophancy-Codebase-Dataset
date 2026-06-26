@@ -17,13 +17,6 @@ public class Randomizer
     private static final boolean useShared = true;
 
     /**
-     * Constructor for objects of class Randomizer
-     */
-    public Randomizer()
-    {
-    }
-
-    /**
      * Provide a random generator.
      * @return A random object.
      */
@@ -38,19 +31,11 @@ public class Randomizer
     }
 
     /**
-     * @return  A random gender (of enum type Animal.Gender)
+     * @return A random gender.
      */
-    public static Animal.Gender getRandomSex()
+    public static Gender getRandomSex()
     {
-        Animal.Gender sex;
-        if (rand.nextBoolean()) { 
-            sex = Animal.Gender.MALE; 
-        }
-        else {
-            sex = Animal.Gender.FEMALE; 
-        }
-
-        return sex;
+        return rand.nextBoolean() ? Gender.MALE : Gender.FEMALE;
     }
 
     

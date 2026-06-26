@@ -9,17 +9,10 @@ import java.util.stream.Collectors;
 public abstract class Animal extends Organism implements Actor
 {
     protected int age;
-    protected boolean isNocturnal;
     protected int foodLevel;
     protected Gender sex;
 
     protected static final Random rand = Randomizer.getRandom();
-
-    // An animal is either male or female
-    protected enum Gender {
-        MALE,
-        FEMALE
-    }
 
     // An animal's chance of contracting a disease at birth
     private static final double RANDOM_CONTRACTION_RATE = 0.002;
@@ -230,7 +223,7 @@ public abstract class Animal extends Organism implements Actor
     /** Returns true if the animal is currently awake (respects nocturnal/diurnal schedule). */
     public boolean isAwake(Environment environment)
     {
-        if (isNocturnal) {
+        if (getStats().isNocturnal()) {
             return !environment.getTime().isDay();
         }
         return environment.getTime().isDay();

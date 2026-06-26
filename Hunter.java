@@ -5,9 +5,8 @@ import java.util.*;
  * Hunters hunt all of the species in the simulation.
  * @version 2022.03.02
  */
-public class Hunter extends Organism
+public class Hunter extends MobileForager
 {
-    private final Random rand = Randomizer.getRandom();
     // A hunter hunts every species. 
     private static final Set<Class<?>> DIET = Set.of(Deer.class, Mouse.class, Wolf.class, Coyote.class, Eagle.class);
 
@@ -30,23 +29,14 @@ public class Hunter extends Organism
     public void act(List<Actor> newActors, Environment environment)
     {
         if(isAlive()) {
-            Location newLocation = findPrey();
-            if(newLocation == null) {
-                // No animals found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-
+            forageAndMove();
         }
+    }
+
+    @Override
+    protected Location locateTargetLocation()
+    {
+        return findPrey();
     }
 
 
@@ -73,6 +63,12 @@ public class Hunter extends Organism
             }
         }
         return null;
+    }
+
+    @Override
+    protected void onMovementBlocked()
+    {
+        // Hunters stay put if they cannot move.
     }
 
 }

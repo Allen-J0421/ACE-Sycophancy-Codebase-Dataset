@@ -6,15 +6,13 @@ import java.util.stream.Collectors;
  *
  * @version 2022.03.02
  */
-public abstract class Animal extends Organism implements Edible
+public abstract class Animal extends MobileForager implements Edible
 {
 
     protected int age;
     protected boolean isNocturnal;
     protected int foodLevel;
     protected Gender sex;
-
-    protected static final Random rand = Randomizer.getRandom();
 
     // An animal is either male or female 
     protected enum Gender {
@@ -71,30 +69,7 @@ public abstract class Animal extends Organism implements Edible
         incrementHunger();
         if(isAlive()) {
             giveBirth(newAnimals, environment);
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // list of adjacent locations that contain an instance of Grass
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
-
-            if(newLocation != null) {
-                // See if it was possible to move.
-                setLocation(newLocation);
-            }
-            else if (adjacentGrassSpots.size() > 0) {
-                // if there is grass adjacent to the animal, clear the current location
-                // and move to a random location that contained grass
-                getField().clear(getLocation());
-                setLocation(adjacentGrassSpots.get(rand.nextInt(adjacentGrassSpots.size())));
-            }
-            else {
-                // Overcrowding
-                setDead();
-            }
+            forageAndMove();
 
             if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
                 // every step, check if the Animal is diseased
@@ -171,6 +146,12 @@ public abstract class Animal extends Organism implements Edible
      * @param environment The environment that the animal resides in. 
      */
     protected abstract void giveBirth(List<Actor> newAnimals, Environment environment);
+
+    @Override
+    protected Location locateTargetLocation()
+    {
+        return findFood();
+    }
 
     /**
      * Returns true if the animal is awake or not.

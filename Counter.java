@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.io.Serializable;
 
 /**
  * Provide a counter for a participant in the simulation.
@@ -8,8 +8,10 @@ import java.awt.Color;
  *
  * @version 2016.02.29
  */
-public class Counter
+public class Counter implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     // A name for this type of simulation participant
     private String name;
     // How many of this type exist in the simulation.

@@ -7,7 +7,7 @@ import java.util.Set;
  *
  * @version 27.02.22
  */
-public class Grass extends Plant
+public final class Grass extends Plant
 {
     // The age at which grass can start to breed.
     private static final int BREEDING_AGE = 5;
@@ -37,6 +37,7 @@ public class Grass extends Plant
         canGoWater = false;
         age = 0;
         inheritDiseases(setDiseases, parentDiseases);
+        setLocation(location);
     }
 
     /**
@@ -53,6 +54,7 @@ public class Grass extends Plant
         canGoWater = false;
         age = rand.nextInt(MAX_AGE);
         addStartingDiseases(name, setDiseases, Simulator.diseases, rand);
+        setLocation(location);
     }
 
     /**

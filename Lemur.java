@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @version 27.02.22
  */
-public class Lemur extends Animal
+public final class Lemur extends Animal
 {
     // Characteristics shared by all lemurs (class variables).
 
@@ -50,6 +50,7 @@ public class Lemur extends Animal
         age = 0;
         foodLevel = MAX_FOOD;
         inheritDiseases(setDiseases, parentDiseases);
+        setLocation(location);
     }
 
     /**
@@ -69,6 +70,7 @@ public class Lemur extends Animal
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1; 
         addStartingDiseases(name, setDiseases, Simulator.diseases, rand);
+        setLocation(location);
     }
 
     /**

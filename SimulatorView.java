@@ -1,7 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.List;
 
 /**
@@ -13,8 +12,10 @@ import java.util.List;
  *
  * @version 27.02.22
  */
-public class SimulatorView extends JFrame
+public final class SimulatorView extends JFrame
 {
+    private static final long serialVersionUID = 1L;
+
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
 
@@ -28,7 +29,7 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
 
     // A map for storing colors for participants in the simulation
-    private Map<Class<?>, Color> colors;
+    private LinkedHashMap<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -172,13 +173,15 @@ public class SimulatorView extends JFrame
      */
     private class FieldView extends JPanel
     {
+        private static final long serialVersionUID = 1L;
+
         private final int GRID_VIEW_SCALING_FACTOR = 6;
 
         private int gridWidth, gridHeight;
         private int xScale, yScale;
         Dimension size;
-        private Graphics g;
-        private Image fieldImage;
+        private transient Graphics g;
+        private transient Image fieldImage;
 
         /**
          * Create a new FieldView component.

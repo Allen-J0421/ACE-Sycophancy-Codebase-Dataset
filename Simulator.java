@@ -185,7 +185,7 @@ public class Simulator
     /**
      * Reset the simulation to a starting position.
      */
-    public void reset()
+    public final void reset()
     {
         step = 0;
         actors.clear();

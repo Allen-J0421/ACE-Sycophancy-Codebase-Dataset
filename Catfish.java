@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @version 27.02.22
  */
-public class Catfish extends Animal
+public final class Catfish extends Animal
 {
     // Characteristics shared by all catfishs (class variables).
 
@@ -51,6 +51,7 @@ public class Catfish extends Animal
         age = 0;
         foodLevel = MAX_FOOD;
         inheritDiseases(setDiseases, parentDiseases);
+        setLocation(location);
     }
     
     /**
@@ -70,6 +71,7 @@ public class Catfish extends Animal
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
         addStartingDiseases(name, setDiseases, Simulator.diseases, rand);
+        setLocation(location);
     }
 
     /**

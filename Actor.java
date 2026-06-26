@@ -39,7 +39,7 @@ public abstract class Actor
     {
         alive = true;
         this.field = field;
-        setLocation(location);
+        this.location = null;
         this.time = time;
         setDiseases = new HashSet<>();
     }
@@ -96,7 +96,7 @@ public abstract class Actor
      * Place the actor at the new location in the given field.
      * @param newLocation The actor's new location.
      */
-    protected void setLocation(Location newLocation)
+    protected final void setLocation(Location newLocation)
     {
         if(location != null) {
             field.clear(this, location);

@@ -1,5 +1,5 @@
+import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -8,10 +8,12 @@ import java.util.Map;
  *
  * @version 27.02.22
  */
-public class FieldStats
+public class FieldStats implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private Map<Class<?>, Counter> counters;
+    private HashMap<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 

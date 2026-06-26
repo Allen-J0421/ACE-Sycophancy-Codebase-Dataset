@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @version 27.02.22
  */
-public class Salamander extends Animal
+public final class Salamander extends Animal
 {
     // Characteristics shared by all salamanders (class variables).
 
@@ -52,6 +52,7 @@ public class Salamander extends Animal
         age = 0;
         foodLevel = MAX_FOOD;
         inheritDiseases(setDiseases, parentDiseases);
+        setLocation(location);
     }
 
     /**
@@ -71,6 +72,7 @@ public class Salamander extends Animal
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
         addStartingDiseases(name, setDiseases, Simulator.diseases, rand);
+        setLocation(location);
     }
 
     /**

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 /**
  * A class representing the shared characteristics between predators
  *
@@ -74,11 +73,9 @@ public abstract class Predator extends Animal
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
 
-        while(it.hasNext())
+        for(Location where : adjacent)
         {
-            Location where = it.next();
             Animal animal = field.getObjectAt(where, Animal.class);
 
             if(animal instanceof Prey)

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 /**
  * A class representing shared characteristics of animals.
  *
@@ -408,24 +407,15 @@ public abstract class Animal extends LivingOrganism
 
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
 
-        while(it.hasNext())
+        for(Location where : adjacent)
         {
-            Location where = it.next();
             Animal animal = field.getObjectAt(where, Animal.class);
-            Class<?> typeOfOtherAnimal = null;
 
-            if (animal != null)
-            {
-                typeOfOtherAnimal  = animal.getClass();
-            }
-
-            //checks to make sure they are of the same species
-            if(this.getClass().equals(typeOfOtherAnimal))
+            if(animal != null && this.getClass().equals(animal.getClass()))
             {
                 //checks to make the other animal is also a male
-                if(animal.getIsFemale() == false)
+                if(! animal.getIsFemale())
                 {
                     births = rand.nextInt(maxLitterSize) + 1;
                 }
@@ -472,19 +462,15 @@ public abstract class Animal extends LivingOrganism
 
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
 
-        while(it.hasNext() && ! surroundingsAreInfected)
+        for(Location where : adjacent)
         {
-            Location where = it.next();
             Animal animal = field.getObjectAt(where, Animal.class);
 
-            if (animal != null)
+            if (animal != null && animal.getIsInfected())
             {
-                if (animal.getIsInfected())
-                {
-                    surroundingsAreInfected = true;
-                }
+                surroundingsAreInfected = true;
+                break;
             }
         }
 

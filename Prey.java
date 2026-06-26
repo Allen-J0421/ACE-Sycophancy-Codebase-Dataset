@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A class representing the shared characteristics between Prey
@@ -58,29 +57,23 @@ public abstract class Prey extends Animal
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
 
-        while(it.hasNext())
+        for(Location where : adjacent)
         {
-            Location where = it.next();
-
             // Get the plant and animal currently at this new location.
             Plant plant = field.getObjectAt(where, Plant.class);
             Animal animal = field.getObjectAt(where, Animal.class);
 
-            if(animal == null)
+            if(animal == null && plant != null)
             {
-                if(plant != null)
+                if(plant.isAlive() && foodLevel < maxFoodLevel)
                 {
-                    if(plant.isAlive() && foodLevel < maxFoodLevel)
-                    {
-                        // Prey is hungry and plant is availiable so eat
-                        // the plant.
-                        int plantFoodValue = plant.beEaten();
-                        foodLevel += plantFoodValue;
+                    // Prey is hungry and plant is availiable so eat
+                    // the plant.
+                    int plantFoodValue = plant.beEaten();
+                    foodLevel += plantFoodValue;
 
-                        return where;
-                    }
+                    return where;
                 }
             }
         }

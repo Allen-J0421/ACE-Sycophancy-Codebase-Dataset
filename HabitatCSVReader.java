@@ -52,17 +52,21 @@ public class HabitatCSVReader extends CSVReader {
         }
 
         for(int i = 0; i < extractedData.length; i++) {
-            if(i/2 == 0) {
-                winterTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 1) {
-                springTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 2) {
-                summerTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 3){
-                autumnTemperatures[i%2] = Integer.parseInt(extractedData[i]);
+            int seasonIndex = i / 2;
+            int valueIndex = i % 2;
+            int parsedValue = Integer.parseInt(extractedData[i]);
+
+            if(seasonIndex == 0) {
+                winterTemperatures[valueIndex] = parsedValue;
+            } else if (seasonIndex == 1) {
+                springTemperatures[valueIndex] = parsedValue;
+            } else if (seasonIndex == 2) {
+                summerTemperatures[valueIndex] = parsedValue;
+            } else if (seasonIndex == 3) {
+                autumnTemperatures[valueIndex] = parsedValue;
             }
-            plantConcentration = Double.valueOf(extractedData[8]);
         }
+        plantConcentration = Double.valueOf(extractedData[8]);
     }
 
     /**

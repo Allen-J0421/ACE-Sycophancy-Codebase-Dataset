@@ -84,36 +84,52 @@ public class Simulator
             simulationHabitat.habitatStep();
             time.timeStep();
 
-            // the following variables are added here to reduce method calls:
             boolean isSpring = simulationHabitat.getIsSpring();
             boolean isNight = time.getIsNight();
             int currentTemperature = simulationHabitat.getCurrentTemperature();
             boolean yearPassed = simulationHabitat.yearPassed();
 
-            // Provide space for newborn species.
-            List<Species> newSpecies = new ArrayList<>();
-            // Let all species act.
-            for(Iterator<Species> it = species.iterator(); it.hasNext(); )
-            {
-                Species specie = it.next();
-                // Update the status of isSpring in the plants (done here to reduce coupling)
-                if (specie instanceof Plant)
-                {
-                    Plant tempPlant = (Plant) specie;
-                    if (tempPlant.getIsSpring() != isSpring) {
-                        tempPlant.toggleIsSpring();
-                    }
-                }
+            synchronizePlantsWithSeason(isSpring);
+            List<Species> newbornSpecies = new ArrayList<>();
+            advanceSpecies(newbornSpecies, isNight, currentTemperature, yearPassed);
+            species.addAll(newbornSpecies);
+            view.showStatus(simStep.getCurrentStep(), time.timeString(), simulationHabitat.getCurrentSeason(), simulationHabitat.getCurrentTemperature(), field);
+        }
+    }
 
-                specie.act(newSpecies, isNight, currentTemperature, yearPassed);
-                if(! specie.isAlive()) {
-                    it.remove();
+    /**
+     * Keep the plant season flag in sync with the habitat before the species act.
+     *
+     * @param isSpring true if the habitat is currently in spring.
+     */
+    private void synchronizePlantsWithSeason(boolean isSpring)
+    {
+        for (Species specie : species) {
+            if (specie instanceof Plant) {
+                Plant plant = (Plant) specie;
+                if (plant.getIsSpring() != isSpring) {
+                    plant.toggleIsSpring();
                 }
             }
+        }
+    }
 
-            // Add the newly born species to the main lists.
-            species.addAll(newSpecies);
-            view.showStatus(simStep.getCurrentStep(), time.timeString(), simulationHabitat.getCurrentSeason(), simulationHabitat.getCurrentTemperature(), field);
+    /**
+     * Let every species act once and remove the dead ones from the simulation.
+     *
+     * @param newbornSpecies the list receiving newly created species.
+     * @param isNight true if it is currently night.
+     * @param currentTemperature the current temperature in the habitat.
+     * @param yearPassed true if a year has passed on this step.
+     */
+    private void advanceSpecies(List<Species> newbornSpecies, boolean isNight, int currentTemperature, boolean yearPassed)
+    {
+        for (Iterator<Species> it = species.iterator(); it.hasNext(); ) {
+            Species specie = it.next();
+            specie.act(newbornSpecies, isNight, currentTemperature, yearPassed);
+            if (!specie.isAlive()) {
+                it.remove();
+            }
         }
     }
 

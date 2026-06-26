@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +28,7 @@ public abstract class CSVReader
     public void extractDataFor(String nameOfElementToLookFor)
     {
         resetParameters();
-        String[] extractedData = getDataFor(nameOfElementToLookFor);
+        String[] extractedData = findRowFor(nameOfElementToLookFor);
         if (extractedData != null) {
             populateFields(extractedData);
         } else {
@@ -43,18 +44,19 @@ public abstract class CSVReader
      * @param nameOfElementToLookFor (String) the name of the element which data must be extracted
      * @return (String[]) the extracted data
      */
-    private String[] getDataFor(String nameOfElementToLookFor)
+    private String[] findRowFor(String nameOfElementToLookFor)
     {
-        try(BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
             // Skip first line as they are headers.
-            String line = br.readLine();
-            while ((line=br.readLine()) != null) {
-                String[] attributes = line.split(",");
+            br.readLine();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] attributes = line.split(",", -1);
                 if (attributes[0].equals(nameOfElementToLookFor)) {
                     return attributes;
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Issue when parsing CSV");
         }
         return null;
@@ -91,14 +93,15 @@ public abstract class CSVReader
     public ArrayList<String> getChoicesList()
     {
         ArrayList<String> choicesList = new ArrayList<>();
-        try(BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
             // Skip first line as they are headers.
-            String line = br.readLine();
-            while ((line=br.readLine()) != null) {
-                String[] attributes = line.split(",");
+            br.readLine();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] attributes = line.split(",", -1);
                 choicesList.add(attributes[0]);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Issue when parsing CSV");
             return null;

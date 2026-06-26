@@ -23,16 +23,16 @@ public class Deer extends Animal
     // The food value of a deer. 
     private static final int FOOD_VALUE = 4;
     // A set of organisms that a deer consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Grass.class));
+    private static final Set<Class<? extends Organism>> DIET = new HashSet<>(Arrays.asList(Grass.class));
 
     // Implementing abstract methods to return fields to be used by the superclass
-    protected double BREEDING_AGE() { return BREEDING_AGE; }
-    protected int MAX_LITTER_SIZE() { return MAX_LITTER_SIZE; }
-    protected double BREEDING_PROBABILITY() { return BREEDING_PROBABILITY; }
-    protected int MAX_AGE() { return MAX_AGE; }
-    protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
-    protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxAge() { return MAX_AGE; }
+    protected int getMaxFoodLevel() { return MAX_FOOD_LEVEL; }
+    protected int getFoodValue() { return FOOD_VALUE; }
+    protected Set<Class<? extends Organism>> getDiet() { return DIET; }
 
 
 
@@ -66,18 +66,8 @@ public class Deer extends Animal
      * @param newDeers A list to return newly born deers.
      * @param environment The environment that the deer resides in. 
      */
-    protected void giveBirth(List<Actor> newDeers, Environment environment)
+    protected Animal createYoung(Field field, Location location, Gender sex)
     {
-        // New deers are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = super.breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            Deer young = new Deer(false, field, loc, sex);
-            newDeers.add(young);
-        }
+        return new Deer(false, field, location, sex);
     }
 }

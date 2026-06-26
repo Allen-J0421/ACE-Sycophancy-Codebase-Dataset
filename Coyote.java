@@ -22,17 +22,17 @@ public class Coyote extends Animal
     // The coyotes's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 15;
     // A set of organisms that a coyote consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class));
+    private static final Set<Class<? extends Organism>> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class));
 
 
     // Implementing abstract methods to return fields to be used by the superclass
-    protected double BREEDING_AGE() { return BREEDING_AGE; }
-    protected int MAX_LITTER_SIZE() { return MAX_LITTER_SIZE; }
-    protected double BREEDING_PROBABILITY() { return BREEDING_PROBABILITY; }
-    protected int MAX_AGE() { return MAX_AGE; }
-    protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
-    protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxAge() { return MAX_AGE; }
+    protected int getMaxFoodLevel() { return MAX_FOOD_LEVEL; }
+    protected int getFoodValue() { return FOOD_VALUE; }
+    protected Set<Class<? extends Organism>> getDiet() { return DIET; }
 
     /**
      * Create a coyote. A coyote can be created as a new-born (age zero
@@ -54,21 +54,8 @@ public class Coyote extends Animal
      * @param newCoyotes A list to return newly born coyotes.
      * @param environment The environment that the coyote resides in. 
      */
-    protected void giveBirth(List<Actor> newCoyotes, Environment environment)
+    protected Animal createYoung(Field field, Location location, Gender sex)
     {
-        // New coyotes are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-
-            Gender sex = Randomizer.getRandomSex();
-
-            Coyote young = new Coyote(false, field, loc, sex);
-            newCoyotes.add(young);
-        }
+        return new Coyote(false, field, location, sex);
     }
-
 }

@@ -51,8 +51,8 @@ public class Weather
     public void checkWeatherChange(int steps)
     {
         if(randomDuration){
-            duration = rand.nextInt(36);
-            if(steps % duration==0){
+            duration = rand.nextInt(36) + 1;
+            if(steps % duration == 0){
                 changeWeather();
             }
         }
@@ -80,5 +80,11 @@ public class Weather
     {
         randomInt = rand.nextInt(weatherList.size());
         currentWeather = (WeatherType) weatherList.toArray()[randomInt];
+    }
+
+    public void reset()
+    {
+        currentWeather = WeatherType.SUNNY;
+        duration = 0;
     }
 }

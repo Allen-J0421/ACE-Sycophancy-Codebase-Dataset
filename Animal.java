@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
  */
 public abstract class Animal extends Organism implements Actor
 {
+    private static final double RANDOM_CONTRACTION_RATE = 0.002;
 
     protected int age;
     protected boolean isNocturnal;
@@ -21,18 +22,17 @@ public abstract class Animal extends Organism implements Actor
         MALE,
         FEMALE
     }
-    // An animal's chance of contracting a disease at birth
-    private double RANDOM_CONTRACTION_RATE = 0.002;
 
 
     // Declaring abstract methods to obtain fields used by subclasses
     // These methods have been declared in order to use common methods in the Animal class, reducing repeatability
-    protected abstract double BREEDING_AGE();
-    protected abstract int MAX_LITTER_SIZE();
-    protected abstract double BREEDING_PROBABILITY();
-    protected abstract int MAX_AGE();
-    protected abstract int MAX_FOOD_LEVEL();
-    protected abstract Set<Class> DIET();
+    protected abstract int getBreedingAge();
+    protected abstract int getMaxLitterSize();
+    protected abstract double getBreedingProbability();
+    protected abstract int getMaxAge();
+    protected abstract int getMaxFoodLevel();
+    protected abstract Set<Class<? extends Organism>> getDiet();
+    protected abstract Animal createYoung(Field field, Location location, Gender sex);
 
 
     /**
@@ -48,12 +48,12 @@ public abstract class Animal extends Organism implements Actor
         super(field, location);
         this.sex = sex;
         if(randomAge) {
-            this.age = rand.nextInt(MAX_AGE());
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL());
+            this.age = rand.nextInt(getMaxAge());
+            foodLevel = rand.nextInt(getMaxFoodLevel());
         }
         else {
             this.age = 0;
-            foodLevel = MAX_FOOD_LEVEL();
+            foodLevel = getMaxFoodLevel();
         }
         randomlyContractDisease();
     }
@@ -72,7 +72,7 @@ public abstract class Animal extends Organism implements Actor
         if(isAlive()) {
             giveBirth(newAnimals, environment);
             // Move towards a source of food if found.
-            Location newLocation = findFood();
+            Location newLocation = findFood(environment);
             if(newLocation == null) {
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -110,6 +110,16 @@ public abstract class Animal extends Organism implements Actor
      * Only the first food is eaten.
      * @return Where food was found, or null if it wasn't.
      */
+    protected Location findFood(Environment environment)
+    {
+        return findFood();
+    }
+
+    /**
+     * Look for food adjacent to the current location.
+     * Only the first food is eaten.
+     * @return Where food was found, or null if it wasn't.
+     */
     protected Location findFood()
     {
         Field field = getField();
@@ -126,10 +136,10 @@ public abstract class Animal extends Organism implements Actor
         }
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
-        while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
+        while(it.hasNext() && foodLevel <= getMaxFoodLevel()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal != null && DIET().contains(animal.getClass())) 
+            if(animal != null && getDiet().contains(animal.getClass()))
             {
                 Organism food = (Organism) animal;
                 if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
@@ -140,10 +150,10 @@ public abstract class Animal extends Organism implements Actor
                 if(food.isAlive()) 
                 {
                     food.setDead();
-                    int newFoodLevel = foodLevel + food.FOOD_VALUE();
+                    int newFoodLevel = foodLevel + food.getFoodValue();
 
                     // caps the food level at the maximum
-                    foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
+                    foodLevel = Math.min(newFoodLevel, getMaxFoodLevel());
 
                     return where;
                 }
@@ -170,7 +180,17 @@ public abstract class Animal extends Organism implements Actor
      * @param newAnimals A list to return newly born animals.
      * @param environment The environment that the animal resides in. 
      */
-    protected abstract void giveBirth(List<Actor> newAnimals, Environment environment);
+    protected void giveBirth(List<Actor> newAnimals, Environment environment)
+    {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = breed();
+        for(int b = 0; b < births && !free.isEmpty(); b++) {
+            Location loc = free.remove(0);
+            Gender sex = Randomizer.getRandomSex();
+            newAnimals.add(createYoung(field, loc, sex));
+        }
+    }
 
     /**
      * Returns true if the animal is awake or not.
@@ -191,8 +211,8 @@ public abstract class Animal extends Organism implements Actor
     protected int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY()) {
-            births = rand.nextInt(MAX_LITTER_SIZE()) + 1;
+        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            births = rand.nextInt(getMaxLitterSize()) + 1;
             Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
             if(mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL){
                 this.setDisease(mate.getDisease());
@@ -207,7 +227,7 @@ public abstract class Animal extends Organism implements Actor
      */
     protected boolean canBreed()
     {
-        return (age >= BREEDING_AGE() && getPotentialMates().size() > 0);
+        return age >= getBreedingAge() && !getPotentialMates().isEmpty();
     }
 
     /**
@@ -238,7 +258,7 @@ public abstract class Animal extends Organism implements Actor
     protected void incrementAge()
     {
         this.age++;
-        if(this.age > MAX_AGE()) {
+        if(this.age > getMaxAge()) {
             setDead();
         }
     }

@@ -6,8 +6,8 @@
  */
 
 public class Environment {
-    private Time time;
-    private Weather weather;
+    private final Time time;
+    private final Weather weather;
 
     /**
      * Create a new instance of class Environment.
@@ -32,6 +32,18 @@ public class Environment {
     public Weather getWeather()
     {
         return weather;
+    }
+
+    public void advance(int step)
+    {
+        time.incrementTime();
+        weather.checkWeatherChange(step);
+    }
+
+    public void reset()
+    {
+        time.reset();
+        weather.reset();
     }
 
 }

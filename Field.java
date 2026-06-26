@@ -16,8 +16,6 @@ public class Field
     // Storage for the animals.
     private Object[][] field;
 
-    private Set<Location> emptyLocs = new HashSet<>();
-
     /**
      * Represent a field of the given dimensions.
      * @param depth The depth of the field.

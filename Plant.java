@@ -8,13 +8,12 @@ import java.util.Random;
 public abstract class Plant extends Organism implements Actor
 {
     // the stages of growth for  plant
-    protected int NUMBER_OF_STAGES;
-    protected int STEPS_PER_STAGE = 1;
-    protected int STAGE_OF_GROWTH;
+    protected int numberOfStages;
+    protected int stepsPerStage = 1;
+    protected int stageOfGrowth;
 
 
     // Implementing abstract methods to return fields to be used by the superclass
-    public int STEPS_PER_STAGE(){ return STEPS_PER_STAGE; }
     protected static final Random rand = Randomizer.getRandom();
     
     
@@ -29,6 +28,11 @@ public abstract class Plant extends Organism implements Actor
         super(field, location);
     }
 
+    public int getStepsPerStage()
+    {
+        return stepsPerStage;
+    }
+
     /**
      * Checks if the plant is still able to growth
      * Returns true and increments the growth of the plant 
@@ -36,8 +40,8 @@ public abstract class Plant extends Organism implements Actor
      * Returns false otherwise
      */
     public boolean incrementGrowth() {
-        if(STAGE_OF_GROWTH < NUMBER_OF_STAGES){
-            STAGE_OF_GROWTH++;
+        if(stageOfGrowth < numberOfStages){
+            stageOfGrowth++;
             return true;
         }
         return false;

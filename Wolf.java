@@ -1,5 +1,3 @@
-import java.util.Random;
-import java.util.List;
 import java.util.*;
 
 /**
@@ -10,9 +8,6 @@ import java.util.*;
  */
 public class Wolf extends Animal
 {
-    private Time time;
-    private Weather weather;
-
     // Characteristics shared by all wolves (class variables).
 
     // The age at which a wolf can start to breed.
@@ -26,20 +21,19 @@ public class Wolf extends Animal
     // The wolf's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 15;
     // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single wolf.
     private static final int FOOD_VALUE = 6;
     // A set of organisms that a wolf consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class, Coyote.class));
+    private static final Set<Class<? extends Organism>> DIET = new HashSet<>(Arrays.asList(Deer.class, Mouse.class, Coyote.class));
 
     // Implementing abstract methods to return fields to be used by the superclass
-    protected double BREEDING_AGE() { return BREEDING_AGE; }
-    protected int MAX_LITTER_SIZE() { return MAX_LITTER_SIZE; }
-    protected double BREEDING_PROBABILITY() { return BREEDING_PROBABILITY; }
-    protected int MAX_AGE() { return MAX_AGE; }
-    protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
-    protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxAge() { return MAX_AGE; }
+    protected int getMaxFoodLevel() { return MAX_FOOD_LEVEL; }
+    protected int getFoodValue() { return FOOD_VALUE; }
+    protected Set<Class<? extends Organism>> getDiet() { return DIET; }
 
     /**
      * Create a wolf. A wolf can be created as a new born (age zero
@@ -61,21 +55,8 @@ public class Wolf extends Animal
      * @param newWolves A list to return newly born wolves.
      * @param environment The environment that the wolf resides in. 
      */
-    protected void giveBirth(List<Actor> newWolves, Environment environment)
+    protected Animal createYoung(Field field, Location location, Gender sex)
     {
-        // New wolves are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
-            Wolf young = new Wolf(false, field, loc, sex);
-            newWolves.add(young);
-        }
+        return new Wolf(false, field, location, sex);
     }
-
-
-
 }

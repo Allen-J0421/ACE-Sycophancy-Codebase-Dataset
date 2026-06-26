@@ -7,16 +7,20 @@ import java.util.List;
  */
 public class Grass extends Plant
 {
-    private static int FOOD_VALUE;
-    private static double GERMINATION_RATE = 0.1;
+    private static final int MAX_GROWTH_STAGES = 3;
+    private static final int DEFAULT_STEPS_PER_STAGE = 2;
+    private static final double BASE_GERMINATION_RATE = 0.1;
+    private static final double SUNNY_GERMINATION_RATE = 0.15;
+
+    private int foodValue;
 
     /**
      * Returns the food value of the grass.
      * @return int The food value of the grass.
      */
-    protected int FOOD_VALUE()
+    protected int getFoodValue()
     {
-        return FOOD_VALUE;
+        return foodValue;
     }
 
     /**
@@ -31,10 +35,10 @@ public class Grass extends Plant
     {
         super(field, location);
 
-        NUMBER_OF_STAGES = 3;
-        STEPS_PER_STAGE = 2;
-        STAGE_OF_GROWTH = rand.nextInt(NUMBER_OF_STAGES);
-        FOOD_VALUE = STAGE_OF_GROWTH;
+        numberOfStages = MAX_GROWTH_STAGES;
+        stepsPerStage = DEFAULT_STEPS_PER_STAGE;
+        stageOfGrowth = rand.nextInt(numberOfStages);
+        foodValue = stageOfGrowth;
 
     }
 
@@ -47,15 +51,10 @@ public class Grass extends Plant
      */
     public void act(List<Actor> newGrass, Environment environment)
     {
-        if (environment.getWeather().getCurrentWeather() == WeatherType.SUNNY){
-            changeGerminationRate(0.15);
-        }
-
-        else if (environment.getWeather().getCurrentWeather() != WeatherType.SUNNY){
-            changeGerminationRate(0.1);
-        }
-
-        if(isAlive() && environment.getTime().isDay() && rand.nextDouble() <= GERMINATION_RATE && (environment.getWeather().getCurrentWeather() != (WeatherType.CLOUDY))) {
+        if(isAlive()
+                && environment.getTime().isDay()
+                && rand.nextDouble() <= getGerminationRate(environment)
+                && environment.getWeather().getCurrentWeather() != WeatherType.CLOUDY) {
             germinate(newGrass);
         }
     }
@@ -79,17 +78,6 @@ public class Grass extends Plant
     }
 
     /**
-     * Change the germination rate of grass.
-     * @param newRate The new germination rate.
-     */
-    public void changeGerminationRate(double newRate)
-    {
-        if(isAlive()) {
-            GERMINATION_RATE = newRate;
-        }
-    }
-
-    /**
      * Increment the stage of growth of grass
      * Incrementing the growth also increases the food level by 1
      * @return true If the grass grows.
@@ -98,12 +86,18 @@ public class Grass extends Plant
     public boolean incrementGrowth()
     {
         if(super.incrementGrowth()) {
-            FOOD_VALUE++;
+            foodValue++;
             return true;
         }
         return false;
     }
 
-
+    private double getGerminationRate(Environment environment)
+    {
+        if(environment.getWeather().getCurrentWeather() == WeatherType.SUNNY) {
+            return SUNNY_GERMINATION_RATE;
+        }
+        return BASE_GERMINATION_RATE;
+    }
 
 }

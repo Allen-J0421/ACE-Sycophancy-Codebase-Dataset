@@ -1,5 +1,3 @@
-import java.util.List;
-import java.util.Random;
 import java.util.*;
 
 /**
@@ -21,22 +19,20 @@ public class Mouse extends Animal
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 4;
     // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The mouse's food level which is increased by eating prey.
     private static final int MAX_FOOD_LEVEL = 9;
     // The food value of a single mouse.
     private static final int FOOD_VALUE = 2;
     // A set of organisms that a mouse consumes
-    private static final Set<Class> DIET = new HashSet<>(Arrays.asList(Grass.class));
+    private static final Set<Class<? extends Organism>> DIET = new HashSet<>(Arrays.asList(Grass.class));
 
-    protected double BREEDING_AGE() { return BREEDING_AGE; }
-    protected int MAX_LITTER_SIZE() { return MAX_LITTER_SIZE; }
-    protected double BREEDING_PROBABILITY() { return BREEDING_PROBABILITY; }
-    
-    protected int MAX_AGE() { return MAX_AGE; }
-    protected int MAX_FOOD_LEVEL() { return MAX_FOOD_LEVEL; }
-    protected int FOOD_VALUE() { return FOOD_VALUE; }
-    protected Set<Class> DIET() { return DIET; }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxAge() { return MAX_AGE; }
+    protected int getMaxFoodLevel() { return MAX_FOOD_LEVEL; }
+    protected int getFoodValue() { return FOOD_VALUE; }
+    protected Set<Class<? extends Organism>> getDiet() { return DIET; }
 
     
     /**
@@ -60,19 +56,8 @@ public class Mouse extends Animal
      * @param newMouses A list to return newly born mice.
      * @param environment The environment that mouse resides in. 
      */
-    protected void giveBirth(List<Actor> newMouses, Environment environment)
+    protected Animal createYoung(Field field, Location location, Gender sex)
     {
-        // New Mouses are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Mouse young = new Mouse(false, field, loc, sex);
-            newMouses.add(young);
-        }
+        return new Mouse(false, field, location, sex);
     }
-
-
 }

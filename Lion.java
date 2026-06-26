@@ -28,10 +28,11 @@ public class Lion extends Predator
     private static final double MAX_FOOD_LEVEL = 50;
     
     // The likelihood of a Lion finding food depending on the weather.
-
-    private static final double SUNNY_FINDING_FOOD_PROBABILITY = 1;
-    private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.9;
-    private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.8;
+    private static final Map<Weather, Double> FINDING_FOOD_PROBABILITIES =
+        Map.<Weather, Double>of(
+            Weather.SUNNY, 1.0,
+            Weather.RAINY, 0.9,
+            Weather.FOGGY, 0.8);
 
     private static final Map<Class<? extends Actor>, Integer> FOOD_VALUES =
         Map.<Class<? extends Actor>, Integer>of(
@@ -134,26 +135,11 @@ public class Lion extends Predator
     }
     
     /**
-     * Gets the probability the lion will find food when it is sunny
-     * @return The probability the lion will find food when it is sunny
+     * Gets the probability the lion will find food for the current weather.
+     * @param weather The current weather.
+     * @return The probability the lion will find food.
      */
-    protected double getSunnyFindingFoodProbability(){
-        return SUNNY_FINDING_FOOD_PROBABILITY;
-    }
-    
-    /**
-     * Gets the probability the lion will find food when it is rainy
-     * @return The probability the lion will find food when it is rainy
-     */
-    protected double getRainyFindingFoodProbability(){
-        return RAINY_FINDING_FOOD_PROBABILITY;
-    }
-    
-    /**
-     * Gets the probability the lion will find food when it is foggy
-     * @return The probability the lion will find food when it is foggy
-     */
-    protected double getFoggyFindingFoodProbability(){
-        return FOGGY_FINDING_FOOD_PROBABILITY;
+    protected double getFindingFoodProbability(Weather weather){
+        return FINDING_FOOD_PROBABILITIES.get(weather);
     }
 }

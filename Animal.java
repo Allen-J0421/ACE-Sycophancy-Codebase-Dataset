@@ -82,20 +82,7 @@ public abstract class Animal extends Actor
     private void move(Simulator simulator)
     {
         Location newLocation = null;
-        switch(simulator.getWeather()){
-            case SUNNY:
-                newLocation = findFood(getSunnyFindingFoodProbability());
-                break;
-            case RAINY:
-                newLocation = findFood(getRainyFindingFoodProbability());
-                break;
-            case FOGGY:
-                newLocation = findFood(getFoggyFindingFoodProbability());
-                break;
-            default:
-                findFood(getRandom().nextDouble());
-                break;
-        }
+        newLocation = findFood(getFindingFoodProbability(simulator.getWeather()));
         if(newLocation == null) { 
             // No food found - try to move to a free location.
             newLocation = getField().freeAdjacentLocation(getLocation());
@@ -351,20 +338,9 @@ public abstract class Animal extends Actor
     abstract protected int getMaxTimeUntilBreedingAgain();
 
     /**
-     * Gets the probability the animal will find food when it is sunny
-     * @return The probability the animal will find food when it is sunny
+     * Gets the probability the animal will find food for the current weather.
+     * @param weather The current weather.
+     * @return The probability the animal will find food.
      */
-    abstract protected double getSunnyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is rainy
-     * @return The probability the animal will find food when it is rainy
-     */
-    abstract protected double getRainyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is foggy
-     * @return The probability the animal will find food when it is foggy
-     */
-    abstract protected double getFoggyFindingFoodProbability();
+    abstract protected double getFindingFoodProbability(Weather weather);
 }

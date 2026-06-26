@@ -8,12 +8,14 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Prey extends Animal implements Consumable {
+public abstract class Prey extends Animal implements Consumable, Decaying {
 
     // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
     // Food value above which prey prefers to wander rather than keep eating.
     private static final int SATIATED_FOOD_VALUE = 10;
+    // Number of steps a dead prey's remains linger before they are removed.
+    private static final int LIFETIME_AFTER_DEATH = 40;
 
     // Tuning shared by all prey; individual species override only the values
     // that genuinely differ (see getBreedingProbability / getLowActivityTime /
@@ -28,6 +30,8 @@ public abstract class Prey extends Animal implements Consumable {
 
     private int foodValue;
     private double activeness;  // denotes how likely it is for the act method to be called
+    // Tracks how long this prey's remains have been decaying once it is dead.
+    private final DecayTimer decayTimer = new DecayTimer(LIFETIME_AFTER_DEATH);
 
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
@@ -64,7 +68,7 @@ public abstract class Prey extends Animal implements Consumable {
         setActiveness(DEFAULT_ACTIVENESS); // reset activeness each step
 
         if (!isAlive()) {
-            decayifDead();
+            decay();
             return;
         }
 
@@ -99,6 +103,17 @@ public abstract class Prey extends Animal implements Consumable {
                 // Overcrowding.
                 remove();
             }
+        }
+    }
+
+    /**
+     * Advance the decay of this dead prey's remains, removing them once they
+     * have lingered beyond their lifetime.
+     */
+    @Override
+    public void decay() {
+        if (decayTimer.tick()) {
+            remove();
         }
     }
 

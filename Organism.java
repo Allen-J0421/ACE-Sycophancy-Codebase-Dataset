@@ -11,13 +11,10 @@ import java.util.Random;
 public abstract class Organism implements Entity {
 
     // define fields
-    //number of steps an organism remains for after dying but not having been eaten
-    private static final int LIFETIME_AFTER_DEATH = 40;
     private boolean alive;
     private boolean removed;
     private Field field;
     private Location location;
-    private int howLongDead;
 
     private int age;
 
@@ -32,7 +29,6 @@ public abstract class Organism implements Entity {
      * @param location The location in which this organism is spawned into.
      */
     public Organism(boolean randomAge, Field field, Location location) {
-        this.howLongDead = 0;
         alive = true;
         removed = false;
         this.field = field;
@@ -237,17 +233,5 @@ public abstract class Organism implements Entity {
      */
     protected void setField(Field field) {
         this.field = field;
-    }
-
-    /**
-     * Prevents overcrowding of dead animals
-     * Remove the organism from the field after being dead for a s
-     * specified number of steps and not being eaten.
-     */
-    protected void decayifDead() {
-        this.howLongDead++;
-        if (this.howLongDead > LIFETIME_AFTER_DEATH){
-            remove();
-        }
     }
 }

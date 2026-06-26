@@ -148,7 +148,7 @@ public abstract class Animal extends Actor
                     Integer foodValue = getPreyFoodValuesMap().get(prey.getActorName());
                     if(foodValue != null && prey.isAlive()) {
                         for (Disease disease: prey.setDiseases){
-                            if (disease.isSpreadByEating() && disease.getActorsAffectedMap().containsKey(getActorName())){
+                            if (disease.isSpreadByEating() && disease.affectsActor(getActorName())){
                                 setDiseases.add(disease);
                             }
                         }

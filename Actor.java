@@ -153,8 +153,8 @@ public abstract class Actor
                                              List<Disease> diseases, Random rand)
     {
         for(Disease disease : diseases) {
-            if(disease.getStartingActorsMap().containsKey(actorName) &&
-                rand.nextDouble() <= disease.getStartingActorsMap().get(actorName)) {
+            if(disease.canStartInActor(actorName) &&
+                rand.nextDouble() <= disease.getStartingProbabilityFor(actorName)) {
                 actorDiseases.add(disease);
             }
         }
@@ -189,7 +189,7 @@ public abstract class Actor
         age++;
         int maxAge = getMaxAge();
         for(Disease disease : setDiseases){
-            maxAge *= disease.getActorsAffectedMap().get(getActorName());
+            maxAge = (int) (maxAge * disease.getSeverityFor(getActorName()));
         }
         if(age > maxAge) {
             setDead();

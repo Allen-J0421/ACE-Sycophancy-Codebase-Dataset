@@ -88,6 +88,54 @@ public class Disease
         startingActors.put(actorName, probability);
         return this;
     }
+
+    /**
+     * Check whether this disease affects an actor.
+     * @param actorName The actor name.
+     * @return true if the disease affects the actor.
+     */
+    public boolean affectsActor(String actorName)
+    {
+        return actorsAffected.containsKey(actorName);
+    }
+
+    /**
+     * Return the disease severity multiplier for an actor.
+     * @param actorName The actor name.
+     * @return The severity multiplier, or 1.0 if the actor is unaffected.
+     */
+    public double getSeverityFor(String actorName)
+    {
+        Double severity = actorsAffected.get(actorName);
+        if(severity == null) {
+            return 1.0;
+        }
+        return severity;
+    }
+
+    /**
+     * Check whether an actor can start the simulation with this disease.
+     * @param actorName The actor name.
+     * @return true if the actor can start with this disease.
+     */
+    public boolean canStartInActor(String actorName)
+    {
+        return startingActors.containsKey(actorName);
+    }
+
+    /**
+     * Return the probability that an actor starts with this disease.
+     * @param actorName The actor name.
+     * @return The starting probability, or 0.0 if the actor cannot start with it.
+     */
+    public double getStartingProbabilityFor(String actorName)
+    {
+        Double probability = startingActors.get(actorName);
+        if(probability == null) {
+            return 0.0;
+        }
+        return probability;
+    }
     
     /**
      * returns the map of the actors affected by the disease

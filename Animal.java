@@ -74,15 +74,32 @@ public abstract class Animal extends LivingOrganism
     {
         incrementAge();
         incrementHunger();
-        
-        // checks to see if the animal is going to die from it infection 
+
+        updateInfectionState();
+
+        if(isAlive())
+        {
+            tryToCatchDisease();
+            tryToBreed(newAnimals);
+            move();
+        }
+    }
+
+    /**
+     * Resolve the animal's current infection: an infected animal may die of the
+     * disease or develop immunity to it; an animal that is already immune may
+     * lose that immunity over time.
+     */
+    private void updateInfectionState()
+    {
+        // checks to see if the animal is going to die from it infection
         // or become immune
         // if the animal becomes immune then it no longer is infected
-        if (!getIsImmune() && getIsInfected()) 
+        if (!getIsImmune() && getIsInfected())
         {
-            if(rand.nextDouble() <= deathFromInfectionProbability) 
+            if(rand.nextDouble() <= deathFromInfectionProbability)
             {
-                setDead();            
+                setDead();
             }
             else if(rand.nextDouble() <= immuneProbability) {
                 immune = true;
@@ -97,65 +114,84 @@ public abstract class Animal extends LivingOrganism
                 immune = false;
             }
         }
-        
-        if(isAlive()) 
+    }
+
+    /**
+     * A healthy (non-immune, non-infected) animal may catch a disease from an
+     * infected neighbour, or spontaneously develop one.
+     */
+    private void tryToCatchDisease()
+    {
+        if(!getIsImmune() && !getIsInfected())
         {
-            if(!getIsImmune() && !getIsInfected())
-            {
-                // checks to see if the animal is going to catch a disease from
-                // its surroundings.
+            // checks to see if the animal is going to catch a disease from
+            // its surroundings.
 
-                if (surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
-                {
-                    infected = true;
-                }
-                
-                // checks to see if the animal is going to get a disease out 
-                // of nowhere.
-                else if (rand.nextDouble() <= diseaseProbability) 
-                {
-                    infected = true;           
-                }
-            }
-            
-            // checks to see if the animal is able to give birth
-            if(this.getIsFemale()) 
+            if (surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
             {
-                if(canBreed() && rand.nextDouble() <= breedingProbability)
-                {
-                    populate(newAnimals);
-                }
+                infected = true;
             }
 
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            
-            if(newLocation == null) 
-            { 
-                Location possibleNewLocation = getField().freeAdjacentLocation(getLocation(), Animal.class);
-                
-                if (possibleNewLocation == null) 
+            // checks to see if the animal is going to get a disease out
+            // of nowhere.
+            else if (rand.nextDouble() <= diseaseProbability)
+            {
+                infected = true;
+            }
+        }
+    }
+
+    /**
+     * A female animal that has reached breeding age may give birth this step.
+     *
+     * @param newAnimals A list to receive newly born animals.
+     */
+    private void tryToBreed(List<LivingOrganism> newAnimals)
+    {
+        // checks to see if the animal is able to give birth
+        if(this.getIsFemale())
+        {
+            if(canBreed() && rand.nextDouble() <= breedingProbability)
+            {
+                populate(newAnimals);
+            }
+        }
+    }
+
+    /**
+     * Move towards adjacent food if any is found; otherwise possibly move to a
+     * free neighbouring cell, or die from overcrowding when boxed in.
+     */
+    private void move()
+    {
+        // Move towards a source of food if found.
+        Location newLocation = findFood();
+
+        if(newLocation == null)
+        {
+            Location possibleNewLocation = getField().freeAdjacentLocation(getLocation(), Animal.class);
+
+            if (possibleNewLocation == null)
+            {
+                // no free adjacent locations therefore it is
+                // overcrowded
+                if (rand.nextDouble() < 0.3)
                 {
-                    // no free adjacent locations therefore it is 
-                    // overcrowded
-                    if (rand.nextDouble() < 0.3) 
-                    {
-                        setDead();
-                    }
-                }
-                
-                // No food found and there is a free location - move there.
-                if (rand.nextDouble() <= movementProbability) 
-                {
-                    newLocation = possibleNewLocation;
+                    setDead();
                 }
             }
-            
-            // Move to new location
-            if(newLocation != null)
-            { 
-                setLocation(newLocation);
+
+            // No food found and there is a free location - move there.
+            if (rand.nextDouble() <= movementProbability)
+            {
+                newLocation = possibleNewLocation;
             }
+        }
+
+        // Move to new location
+        if(newLocation != null)
+        {
+            setLocation(newLocation);
         }
     }
     
@@ -176,14 +212,10 @@ public abstract class Animal extends LivingOrganism
     protected void setDead()
     {
         alive = false;
-        
-        if(location != null) 
+
+        if(location != null)
         {
             field.clear(location, Animal.class);
-            location = null;
-        }
-        
-        if (this.getClass().equals(Lion.class) || this.getClass().equals(Cheetah.class)){
             location = null;
         }
     }

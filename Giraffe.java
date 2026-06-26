@@ -12,6 +12,8 @@ public class Giraffe extends Prey
     public static final int MAX_LITTER_SIZE = 2;
     public static final int MAX_FOOD_LEVEL = 20;
     public static final int FOOD_VALUE = 15;
+    // Fraction of MAX_FOOD_LEVEL a new-born starts with.
+    public static final double NEWBORN_FOOD_FRACTION = 0.25;
 
     /**
      * Create a new Giraffe. A Giraffe may be created with age
@@ -25,25 +27,9 @@ public class Giraffe extends Prey
      */
     public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
-        super(field, location, isInfected, isImmune);
-        
-        breedingAge = BREEDING_AGE; 
-        maxAge = MAX_AGE;
-        breedingProbability = BREEDING_PROBABILITY;
-        maxLitterSize = MAX_LITTER_SIZE;
-        maxFoodLevel = MAX_FOOD_LEVEL;
-        foodValue = FOOD_VALUE;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else
-        {
-            age = 0;
-            foodLevel = (int) (0.25 * MAX_FOOD_LEVEL);
-        }
+        super(randomAge, field, location, isInfected, isImmune,
+              BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
+              MAX_FOOD_LEVEL, FOOD_VALUE, NEWBORN_FOOD_FRACTION);
     }
 
     /**

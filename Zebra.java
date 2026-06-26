@@ -27,25 +27,9 @@ public class Zebra extends Prey
      */
     public Zebra(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune)
     {
-        super(field, location, isInfected, isImmune);
-        
-        breedingAge = BREEDING_AGE; 
-        maxAge = MAX_AGE;
-        breedingProbability = BREEDING_PROBABILITY;
-        maxLitterSize = MAX_LITTER_SIZE;
-        maxFoodLevel = MAX_FOOD_LEVEL;
-        foodValue = FOOD_VALUE;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL);
-        }
-        else
-        {
-            age = 0;
-            foodLevel = (int) (0.25 * MAX_FOOD_LEVEL);
-        }
+        super(randomAge, field, location, isInfected, isImmune,
+              BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
+              MAX_FOOD_LEVEL, FOOD_VALUE, NEWBORN_FOOD_FRACTION);
     }
 
     /**

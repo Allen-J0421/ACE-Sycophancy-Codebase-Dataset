@@ -66,17 +66,7 @@ public class Gazelle extends Animal
      */
     public void act(List<Actor> newGazelles, Simulator simulator)
     {
-        setGrowthLevel(0.012);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newGazelles);  
-                super.act(newGazelles,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+        performDaytimeActions(newGazelles, simulator, 0.012);
     }
 
     /**

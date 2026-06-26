@@ -68,17 +68,7 @@ public class Jaguar extends Predator
      */
     public void act(List<Actor> newJaguars, Simulator simulator)
     {
-        setGrowthLevel(0.013);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newJaguars);  
-                super.act(newJaguars,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+        performDaytimeActions(newJaguars, simulator, 0.013);
     }
 
     /**

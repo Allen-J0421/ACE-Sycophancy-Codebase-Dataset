@@ -66,17 +66,7 @@ public class Zebra extends Animal
      */
     public void act(List<Actor> newZebra, Simulator simulator)
     {
-        setGrowthLevel(0.015);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newZebra); 
-                super.act(newZebra,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+        performDaytimeActions(newZebra, simulator, 0.015);
     }
 
     /**

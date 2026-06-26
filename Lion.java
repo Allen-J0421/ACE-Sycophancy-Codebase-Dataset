@@ -71,17 +71,7 @@ public class Lion extends Predator
      */
     public void act(List<Actor> newLions,Simulator simulator)
     {
-        setGrowthLevel(0.01);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newLions);  
-                super.act(newLions,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+        performDaytimeActions(newLions, simulator, 0.01);
     }
 
     /**

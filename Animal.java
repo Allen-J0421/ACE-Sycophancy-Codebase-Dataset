@@ -42,6 +42,33 @@ public abstract class Animal extends Actor
      * @param simulator The simulator.
      */
     public void act(List<Actor> newAnimals, Simulator simulator){
+        moveAndFeed(simulator);
+    }
+
+    /**
+     * Perform the standard daytime animal lifecycle.
+     * @param newAnimals A list to receive newly born animals.
+     * @param simulator The simulator.
+     * @param growthIncrement How much the animal grows during this step.
+     */
+    protected void performDaytimeActions(List<Actor> newAnimals, Simulator simulator, double growthIncrement)
+    {
+        setGrowthLevel(growthIncrement);
+        if(simulator.isDay()){
+            incrementAge(simulator.getSteps());
+            incrementHunger();
+            if(isActive()) {
+                giveBirth(newAnimals);
+                moveAndFeed(simulator);
+            }
+        }
+    }
+
+    /**
+     * Find food or move into a free adjacent location.
+     */
+    private void moveAndFeed(Simulator simulator)
+    {
         Location newLocation = null;
         switch(simulator.getWeather()){
             case SUNNY:

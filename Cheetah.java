@@ -68,17 +68,7 @@ public class Cheetah extends Predator
      */
     public void act(List<Actor> newCheetahs, Simulator simulator)
     {
-        setGrowthLevel(0.012);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newCheetahs);  
-                super.act(newCheetahs,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+        performDaytimeActions(newCheetahs, simulator, 0.012);
     }
 
     /**

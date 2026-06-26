@@ -15,19 +15,19 @@ public abstract class Actor
     // The actor's position in the field:
     private Location location;
     // The worth of the actor if consumed:
-    protected int consumptionWorth;
+    protected final int consumptionWorth;
     // The gender of the actor:
-    protected Gender gender;
+    protected final Gender gender;
     // The probability of this actor breeding:
-    private double breedingProbability;
+    private final double breedingProbability;
     // The max number of births this actor can have in one step:
-    private int maxBirthsAtOnce;
+    private final int maxBirthsAtOnce;
     // A shared random number generator controlling breeding:
     protected static final Random rand = Randomizer.getRandom();
     // The maximum amount of food an actor can eat:
-    protected int maxSustenanceLevel;
+    protected final int maxSustenanceLevel;
     // The maximum age the actor can have:
-    protected int maxAge;
+    protected final int maxAge;
     // The current age of the actor:
     protected int currentAge;
     
@@ -40,7 +40,8 @@ public abstract class Actor
      * @param consumptionWorth The worth of the actor if consumed.
      */
     public Actor(Field field, Location location, int consumptionWorth,
-                 double breedingProbability, int maxBirthsAtOnce,int maxSustenanceLevel,int maxAge)
+                 double breedingProbability, int maxBirthsAtOnce,
+                 int maxSustenanceLevel, int maxAge)
     {
         isAlive = true;
         this.field = field;
@@ -59,7 +60,7 @@ public abstract class Actor
      * 
      * @param newActors A list to receive newly born actors.
      */
-    abstract public void act(List<Actor> newActors);
+    public abstract void act(List<Actor> newActors);
     
     /**
      * @return The probability of this actor breeding.
@@ -132,12 +133,12 @@ public abstract class Actor
     {
         currentAge++;
         
-        if (currentAge > maxAge) {
-           
+        if (currentAge > maxAge)
+        {
             setDead();
         }
-        
     }
+
     /**
      * Returns true if the actor can become a carcass and false if it can't.
      * return if the actor can become a carcass.

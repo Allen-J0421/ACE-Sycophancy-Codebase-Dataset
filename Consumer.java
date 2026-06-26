@@ -39,10 +39,10 @@ public abstract class Consumer extends Actor
                     int maxBirthsAtOnce, int maxAge, int breedingAge,
                     int maxSustenanceLevel, boolean canEatCarcass)
     {
-        super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,maxSustenanceLevel,maxAge);
+        super(field, location, consumptionWorth, breedingProbability,
+              maxBirthsAtOnce, maxSustenanceLevel, maxAge);
         this.canEatCarcass = canEatCarcass;
         this.prey = prey;
-        this.maxAge = maxAge;
         this.breedingAge = breedingAge;
         sustenanceLevel = STARTING_SUSTENANCE_LEVEL;
     }

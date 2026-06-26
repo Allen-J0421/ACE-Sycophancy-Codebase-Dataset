@@ -43,6 +43,37 @@ public abstract class Predator extends Animal {
     abstract public void act(List<Entity> newPredators, Weather weather, TimeOfDay time);
 
     /**
+     * Run the common predator lifecycle for one simulation step.
+     *
+     * @param newPredators A list of all newborn predators in this simulation step.
+     * @param time The current state of time in the simulation.
+     * @param inactiveTime The time of day when this predator does not move or eat.
+     */
+    protected void actAsPredator(List<Entity> newPredators, TimeOfDay time, TimeOfDay inactiveTime) {
+        incrementAge();
+        incrementHunger();
+        if (isAlive()) {
+            giveBirth(newPredators);
+
+            if (time == inactiveTime) {
+                return;
+            }
+
+            if (diesFromDisease()) {
+                remove();
+                return;
+            }
+
+            Location newLocation = findFoodOrInfectionTarget();
+            if (newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+
+            moveOrRemove(newLocation);
+        }
+    }
+
+    /**
      * Finds the nearest food source and returns its location.
      *
      * @return Location of food source.
@@ -105,7 +136,9 @@ public abstract class Predator extends Animal {
      * @return Whether this lion can breed or not.
      */
     @Override
-    abstract protected boolean canBreed();
+    public boolean canBreed() {
+        return hasNearbyMate(getClass());
+    }
 
     /**
      * Increase the predator's food level by a given integer amount.

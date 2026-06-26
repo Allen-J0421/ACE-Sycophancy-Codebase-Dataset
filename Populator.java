@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
@@ -11,23 +11,10 @@ import java.util.Random;
  */
 public class Populator {
 
-    // define fields
-    // The probability that a lion will be created in any given grid position.
-    private static final double LION_CREATION_PROBABILITY = 0.05;
-    // The probability that a zebra will be created in any given grid position.
-    private static final double ZEBRA_CREATION_PROBABILITY = 0.05;
-    // The probability that a vulture will be created in any given grid position.
-    private static final double VULTURE_CREATION_PROBABILITY = 0.05;
-    // The probability that an elephant will be created in any given grid position.
-    private static final double ELEPHANT_CREATION_PROBABILITY = 0.05;
-    // The probability that a cheetah will be created in any given grid position.
-    private static final double CHEETAH_CREATION_PROBABILITY = 0.05;
-    // The probability that a goat will be created in any given grid position.
-    private static final double GOAT_CREATION_PROBABILITY = 0.05;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.04;
-    // The probability that some poison berries will be created in any given grid position.
-    private static final double POISON_BERRIES_CREATION_PROBABILITY = 0.04;
+    private static final double DEFAULT_ANIMAL_CREATION_PROBABILITY = 0.05;
+    private static final double DEFAULT_PLANT_CREATION_PROBABILITY = 0.04;
+
+    private final PopulationRule[] populationRules;
 
     /**
      * Constructor for the populator.
@@ -35,15 +22,10 @@ public class Populator {
      * @param view A given SimulatorView.
      */
     public Populator(SimulatorView view) {
-        // Create a view of the state of each location in the field.
-        view.setColor(Zebra.class, Color.BLUE);
-        view.setColor(Lion.class, Color.RED);
-        view.setColor(Vulture.class, Color.ORANGE);
-        view.setColor(Grass.class, Color.GREEN);
-        view.setColor(Goat.class, Color.PINK);
-        view.setColor(Elephant.class, Color.GRAY);
-        view.setColor(Cheetah.class, Color.MAGENTA);
-        view.setColor(PoisonBerry.class, Color.BLACK);
+        populationRules = createPopulationRules();
+        for (PopulationRule rule : populationRules) {
+            view.setColor(rule.getOrganismClass(), rule.getColor());
+        }
     }
 
     /**
@@ -55,48 +37,124 @@ public class Populator {
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(19, true, field, location);
-                    organisms.add(lion);
-                }
-                else if(rand.nextDouble() <= ZEBRA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Zebra zebra = new Zebra(5, true, field, location);
-                    organisms.add(zebra);
-                }
-                else if(rand.nextDouble() <= VULTURE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Vulture vulture = new Vulture(40, true, field, location);
-                    organisms.add(vulture);
-                }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(1, 1, true, field, location);
-                    organisms.add(grass);
-                }
-                else if(rand.nextDouble() <= GOAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Goat goat = new Goat(5, true, field, location);
-                    organisms.add(goat);
-                }
-                else if(rand.nextDouble() <= ELEPHANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Elephant elephant = new Elephant(5, true, field, location);
-                    organisms.add(elephant);
-                }
-                else if(rand.nextDouble() <= CHEETAH_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Cheetah cheetah = new Cheetah(19, true, field, location);
-                    organisms.add(cheetah);
-                }
-                else if(rand.nextDouble() <= POISON_BERRIES_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    PoisonBerry berry = new PoisonBerry(2, 1, true, field, location);
-                    organisms.add(berry);
-                }
-                // else leave the location empty.
+                populateLocation(organisms, field, rand, new Location(row, col));
             }
+        }
+    }
+
+    /**
+     * Try each population rule in order for a single location.
+     *
+     * @param organisms The organisms list to add to.
+     * @param field The field to populate.
+     * @param rand The random source.
+     * @param location The location being populated.
+     */
+    private void populateLocation(List<Entity> organisms, Field field, Random rand, Location location) {
+        for (PopulationRule rule : populationRules) {
+            if (rand.nextDouble() <= rule.getCreationProbability()) {
+                organisms.add(rule.create(field, location));
+                return;
+            }
+        }
+    }
+
+    /**
+     * Build ordered population rules. The order preserves the original else-if behavior.
+     *
+     * @return The ordered population rules.
+     */
+    private PopulationRule[] createPopulationRules() {
+        return new PopulationRule[] {
+            new PopulationRule(Lion.class, Color.RED, DEFAULT_ANIMAL_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Lion(19, true, field, location);
+                        }
+                    }),
+            new PopulationRule(Zebra.class, Color.BLUE, DEFAULT_ANIMAL_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Zebra(5, true, field, location);
+                        }
+                    }),
+            new PopulationRule(Vulture.class, Color.ORANGE, DEFAULT_ANIMAL_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Vulture(40, true, field, location);
+                        }
+                    }),
+            new PopulationRule(Grass.class, Color.GREEN, DEFAULT_PLANT_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Grass(1, 1, true, field, location);
+                        }
+                    }),
+            new PopulationRule(Goat.class, Color.PINK, DEFAULT_ANIMAL_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Goat(5, true, field, location);
+                        }
+                    }),
+            new PopulationRule(Elephant.class, Color.GRAY, DEFAULT_ANIMAL_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Elephant(5, true, field, location);
+                        }
+                    }),
+            new PopulationRule(Cheetah.class, Color.MAGENTA, DEFAULT_ANIMAL_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new Cheetah(19, true, field, location);
+                        }
+                    }),
+            new PopulationRule(PoisonBerry.class, Color.BLACK, DEFAULT_PLANT_CREATION_PROBABILITY,
+                    new OrganismFactory() {
+                        public Entity create(Field field, Location location) {
+                            return new PoisonBerry(2, 1, true, field, location);
+                        }
+                    })
+        };
+    }
+
+    /**
+     * Factory for creating organisms at a specific location.
+     */
+    private interface OrganismFactory {
+        Entity create(Field field, Location location);
+    }
+
+    /**
+     * Configuration for one type of organism to place in the field.
+     */
+    private static class PopulationRule {
+        private final Class<?> organismClass;
+        private final Color color;
+        private final double creationProbability;
+        private final OrganismFactory factory;
+
+        PopulationRule(Class<?> organismClass, Color color, double creationProbability,
+                       OrganismFactory factory) {
+            this.organismClass = organismClass;
+            this.color = color;
+            this.creationProbability = creationProbability;
+            this.factory = factory;
+        }
+
+        Class<?> getOrganismClass() {
+            return organismClass;
+        }
+
+        Color getColor() {
+            return color;
+        }
+
+        double getCreationProbability() {
+            return creationProbability;
+        }
+
+        Entity create(Field field, Location location) {
+            return factory.create(field, location);
         }
     }
 }

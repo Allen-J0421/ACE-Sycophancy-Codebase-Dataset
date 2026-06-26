@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -11,6 +12,9 @@ public abstract class Prey extends Animal implements Consumable {
 
     // define fields
     private static final double DEFAULT_ACTIVENESS = 1;
+    private static final int FOOD_VALUE_TO_STOP_EATING = 10;
+    private static final Random rand = Randomizer.getRandom();
+
     private int foodValue;
     private double activeness;  // denotes how likely it is for the act method to be called
 
@@ -40,24 +44,61 @@ public abstract class Prey extends Animal implements Consumable {
     abstract public void act(List<Entity> newPrey, Weather weather, TimeOfDay time);
 
     /**
+     * Run the common prey lifecycle for one simulation step.
+     *
+     * @param newPrey A list of all newborn prey in this simulation step.
+     * @param time The current state of time in the simulation.
+     * @param reducedActivenessTime The time of day when this prey is less active.
+     * @param reducedActiveness The activeness to use during the reduced activity time.
+     */
+    protected void actAsPrey(List<Entity> newPrey, TimeOfDay time,
+                             TimeOfDay reducedActivenessTime, double reducedActiveness) {
+        incrementAge();
+        setActiveness(DEFAULT_ACTIVENESS);
+
+        if (isAlive()) {
+            giveBirth(newPrey);
+
+            if (diesFromDisease()) {
+                remove();
+                return;
+            }
+
+            if (time == reducedActivenessTime) {
+                setActiveness(reducedActiveness);
+            }
+
+            if (rand.nextDouble() <= getActiveness()) {
+                Location newLocation = findFoodOrInfectionTarget();
+
+                if ((newLocation == null) || (getFoodValue() > FOOD_VALUE_TO_STOP_EATING)) {
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+
+                moveOrRemove(newLocation);
+            }
+        } else {
+            decayifDead();
+        }
+    }
+
+    /**
      * Checks all adjacent location for prey that meet specific
      * breeding conditions, and returns true if it is even possible.
      *
      * @return Whether this prey can breed or not.
      */
     @Override
-    abstract public boolean canBreed();
+    public boolean canBreed() {
+        return hasNearbyMate(getClass());
+    }
 
     /**
      * Clear the prey from the simulation as it has been eaten.
      */
     @Override
     public void setEaten() {
-        if(getLocation() != null) {
-            getField().clear(getLocation());
-            setLocationToNull();
-            setField(null);
-        }
+        clearLocation();
     }
 
     /**
@@ -100,6 +141,28 @@ public abstract class Prey extends Animal implements Consumable {
     @Override
     public boolean isPoisonous() {
         return false;
+    }
+
+    /**
+     * Find a nearby plant this prey can eat.
+     *
+     * @return The location of the eaten plant, or null if no food was found.
+     */
+    @Override
+    public Location findFood() {
+        Field field = getField();
+        for (Location where : field.adjacentLocations(getLocation())) {
+            Object organism = field.getObjectAt(where);
+            if (organism instanceof Plant) {
+                Plant plant = (Plant) organism;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    boolean eaten = eat(plant);
+                    return eaten ? where : null;
+                }
+            }
+        }
+        return null;
     }
 
     /**

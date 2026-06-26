@@ -108,6 +108,65 @@ public abstract class Animal extends Organism implements AbleToEat {
     }
 
     /**
+     * Checks whether a nearby animal of the same species can breed with this animal.
+     *
+     * @param species The species to look for in adjacent locations.
+     * @return true if a nearby mate of the opposite sex is available.
+     */
+    protected boolean hasNearbyMate(Class<? extends Animal> species) {
+        if (getAge() < getBreedingAge()) {
+            return false;
+        }
+
+        for (Location loc : getField().adjacentLocations(getLocation())) {
+            Object organism = getField().getObjectAt(loc);
+            if (species.isInstance(organism)) {
+                Animal animal = species.cast(organism);
+                if (animal.isMale() != isMale()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine whether disease kills this animal during the current step.
+     *
+     * @return true if the animal dies from disease.
+     */
+    protected boolean diesFromDisease() {
+        return rand.nextDouble() <= getDeathByDiseaseProbability();
+    }
+
+    /**
+     * Choose between spreading disease and searching for food.
+     *
+     * @return the target location found, or null if no target was found.
+     */
+    protected Location findFoodOrInfectionTarget() {
+        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+            return findAnimalToInfect();
+        }
+        return findFood();
+    }
+
+    /**
+     * Move to the selected location, or remove this animal if overcrowded.
+     *
+     * @param newLocation The location to move to.
+     */
+    protected void moveOrRemove(Location newLocation) {
+        if (newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            remove();
+        }
+    }
+
+    /**
      * Find an animal in an adjacent location for this animal to infect.
      *
      * @return The location of a nearby animal that can be infected.

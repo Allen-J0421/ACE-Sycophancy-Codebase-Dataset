@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -13,9 +12,6 @@ public abstract class Scavenger extends Animal {
 
     // define fields
     private int foodLevel;
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a scavenger in the simulation.
@@ -48,19 +44,13 @@ public abstract class Scavenger extends Animal {
                 return;
             }
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
+            if (diesFromDisease()) {
                 remove();
                 return;
             }
 
             // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
+            Location newLocation = findFoodOrInfectionTarget();
 
             if(newLocation == null) {
                 // No food found - try to move to a free location.
@@ -68,14 +58,7 @@ public abstract class Scavenger extends Animal {
             }
 
             // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                //setDead();
-                remove();
-            }
+            moveOrRemove(newLocation);
         }
     }
 
@@ -125,7 +108,9 @@ public abstract class Scavenger extends Animal {
      * @return Whether this scavenger can breed or not.
      */
     @Override
-    abstract public boolean canBreed();
+    public boolean canBreed() {
+        return hasNearbyMate(getClass());
+    }
 
     /**
      * Increment the food level of this scavenger by a given amount.

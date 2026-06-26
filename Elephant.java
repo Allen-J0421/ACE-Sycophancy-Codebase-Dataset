@@ -1,6 +1,4 @@
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -21,9 +19,6 @@ public class Elephant extends Prey {
 
     private static final double SPREAD_DISEASE_PROBABILITY = 0.1;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.001;
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for an Elephant in the simulation.
@@ -116,104 +111,6 @@ public class Elephant extends Prey {
      */
     @Override
     public void act(List<Entity> newElephants, Weather weather, TimeOfDay time) {
-        incrementAge();
-        setActiveness(1);
-
-        if(isAlive()) {
-            giveBirth(newElephants);
-
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            if (time == TimeOfDay.SUNSET){
-                this.setActiveness(0.85);
-            }
-
-            if (rand.nextDouble() <= getActiveness()){
-                // Try to move into a free location.
-                Location newLocation;
-
-                if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                    newLocation = findAnimalToInfect();
-                } else {
-                    newLocation = findFood();
-                }
-
-                // Random chance to do either?
-
-                if ((newLocation == null) || (getFoodValue() > 10)) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    // Overcrowding.
-                    remove();
-                }
-            }
-        } else {
-            decayifDead();
-        }
-    }
-
-    /**
-     * Checks all adjacent location for elephants that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this elephant can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Elephant) {
-                Elephant zebra = (Elephant) animal;
-                if (!(((zebra.isMale() && isMale())) || ((!zebra.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find a food source the elephant would want to eat.
-     * @return The location of the food source.
-     */
-    @Override
-    public Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-
-            Object organism = field.getObjectAt(where);
-            if(organism instanceof Plant) {
-                Plant plant = (Plant) organism;
-                // kills animal
-                //prey.setDead();
-                //eatOrLeave(prey);
-                if (plant.isAlive()) {
-                    //System.out.println("ALIVE");
-                    plant.setDead();
-                    // NOTE: ONLY RETURN WHERE IF EATEN
-                    boolean eaten = eat(plant);
-
-                    //return where;
-                    return eaten ? where : null;
-                }
-            }
-        }
-        return null;
+        actAsPrey(newElephants, time, TimeOfDay.SUNSET, 0.85);
     }
 }

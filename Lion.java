@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -21,8 +20,6 @@ public class Lion extends Predator {
 
     private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
-
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a lion in the simulation.
@@ -116,45 +113,7 @@ public class Lion extends Predator {
      */
     @Override
     public void act(List<Entity> newLions, Weather weather, TimeOfDay time) {
-        incrementAge();
-        incrementHunger();
-        if(isAlive()) {
-
-            giveBirth(newLions);
-
-            if (time == TimeOfDay.NIGHT){
-                return;
-            }
-
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
-
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                //setDead();
-                remove();
-            }
-        }
+        actAsPredator(newLions, time, TimeOfDay.NIGHT);
     }
 
     /**
@@ -167,27 +126,4 @@ public class Lion extends Predator {
         return EATING_PROBABILITY;
     }
 
-    /**
-     * Checks all adjacent location for lions that meet specific
-     * breeding conditions, and returns true if it is even possible.
-     *
-     * @return Whether this lion can breed or not.
-     */
-    @Override
-    public boolean canBreed() {
-        if (getAge() < getBreedingAge()) {
-            return false;
-        }
-
-        for (Location loc : getField().adjacentLocations(getLocation())) {
-            Object animal = getField().getObjectAt(loc);
-            if (animal instanceof Lion) {
-                Lion lion = (Lion) animal;
-                if (!(((lion.isMale() && isMale())) || ((!lion.isMale() && !isMale())))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

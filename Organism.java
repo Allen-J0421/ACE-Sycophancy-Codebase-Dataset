@@ -118,10 +118,14 @@ public abstract class Organism implements Entity {
     }
 
     /**
-     * Set the organism's location to a null value directly.
+     * Clear this organism from its current field location without marking it removed.
      */
-    protected void setLocationToNull() {
-        location = null;
+    protected void clearLocation() {
+        if (location != null) {
+            field.clear(location);
+            location = null;
+            setField(null);
+        }
     }
 
     /**

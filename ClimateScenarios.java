@@ -8,6 +8,7 @@ public enum ClimateScenarios
 {
     SCENARIO1(0,0), SCENARIO2(1, 0.05), SCENARIO3(2, 0.15), SCENARIO4(3, 0.3);
     
+    private final double initialConcreteChange;
     private double concreteChange;
     private final double changePercentage;
 
@@ -19,6 +20,7 @@ public enum ClimateScenarios
      */
     ClimateScenarios(int concreteChange, double changePercentage)
     {
+        this.initialConcreteChange = concreteChange;
         this.concreteChange = concreteChange;
         this.changePercentage = changePercentage;
     }
@@ -37,5 +39,10 @@ public enum ClimateScenarios
     public void doClimateChange()
     {
         concreteChange = concreteChange + (changePercentage * concreteChange);
+    }
+
+    public void resetClimateChange()
+    {
+        concreteChange = initialConcreteChange;
     }
 }

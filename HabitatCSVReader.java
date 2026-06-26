@@ -8,6 +8,8 @@ import java.util.Arrays;
  */
 
 public class HabitatCSVReader extends CSVReader {
+    private static final int EXPECTED_ATTRIBUTE_COUNT = 9;
+    private static final int TEMPERATURE_VALUES_PER_SEASON = 2;
     // List of minimum, average, and maximum temperatures for the winter.
     private int[] winterTemperatures;
     // List of minimum, average, and maximum temperatures for the spring.
@@ -47,22 +49,15 @@ public class HabitatCSVReader extends CSVReader {
     protected void populateFields(String[] extractedData)
     {
         extractedData = removeHabitatName(extractedData);
-        if (extractedData.length != 9) {
+        if (extractedData.length != EXPECTED_ATTRIBUTE_COUNT) {
             errorThrower.throwMessage("Habitat issue, please restart.");
         }
 
-        for(int i = 0; i < extractedData.length; i++) {
-            if(i/2 == 0) {
-                winterTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 1) {
-                springTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 2) {
-                summerTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 3){
-                autumnTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            }
-            plantConcentration = Double.valueOf(extractedData[8]);
-        }
+        populateTemperaturesForSeason(winterTemperatures, extractedData, 0);
+        populateTemperaturesForSeason(springTemperatures, extractedData, TEMPERATURE_VALUES_PER_SEASON);
+        populateTemperaturesForSeason(summerTemperatures, extractedData, TEMPERATURE_VALUES_PER_SEASON * 2);
+        populateTemperaturesForSeason(autumnTemperatures, extractedData, TEMPERATURE_VALUES_PER_SEASON * 3);
+        plantConcentration = Double.parseDouble(extractedData[EXPECTED_ATTRIBUTE_COUNT - 1]);
     }
 
     /**
@@ -89,6 +84,13 @@ public class HabitatCSVReader extends CSVReader {
     {
         String[] attributesWithoutHabitatName = Arrays.copyOfRange(attributes,1,attributes.length);
         return attributesWithoutHabitatName;
+    }
+
+    private void populateTemperaturesForSeason(int[] seasonTemperatures, String[] extractedData, int startIndex)
+    {
+        for (int i = 0; i < TEMPERATURE_VALUES_PER_SEASON; i++) {
+            seasonTemperatures[i] = Integer.parseInt(extractedData[startIndex + i]);
+        }
     }
 
     /**

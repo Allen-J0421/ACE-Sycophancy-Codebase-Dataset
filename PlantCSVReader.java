@@ -7,6 +7,7 @@
 
 public class PlantCSVReader extends CSVReader
 {
+    private static final int EXPECTED_ATTRIBUTE_COUNT = 6;
     // Name of the file containing plant data.
     private static final String FILE_NAME = "plants.csv";
     // The plant's name.
@@ -46,15 +47,15 @@ public class PlantCSVReader extends CSVReader
      */
     protected void populateFields(String[] extractedData)
     {
-        if (extractedData.length != 6) {
+        if (extractedData.length != EXPECTED_ATTRIBUTE_COUNT) {
             errorThrower.throwMessage("Plant .csv issue, please restart.");
         }
         name = extractedData[0];
-        maximumTemperature = Integer.valueOf(extractedData[1]);
-        minimumTemperature = Integer.valueOf(extractedData[2]);
-        nutritionalValue = Integer.valueOf(extractedData[3]);
-        reproductionProbability = Double.valueOf(extractedData[4]);
-        maxHealth = Integer.valueOf(extractedData[5]);
+        maximumTemperature = Integer.parseInt(extractedData[1]);
+        minimumTemperature = Integer.parseInt(extractedData[2]);
+        nutritionalValue = Integer.parseInt(extractedData[3]);
+        reproductionProbability = Double.parseDouble(extractedData[4]);
+        maxHealth = Integer.parseInt(extractedData[5]);
     }
 
     /**

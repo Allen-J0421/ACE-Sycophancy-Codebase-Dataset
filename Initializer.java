@@ -168,18 +168,20 @@ public class Initializer
     private ClimateScenarios createChosenClimateChangeScenario(String scenarioName)
     {
         ClimateScenarios chosenScenario;
-        if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(3))) {
-            chosenScenario = ClimateScenarios.SCENARIO4;
+        switch (scenarioName) {
+            case "high":
+                chosenScenario = ClimateScenarios.SCENARIO4;
+                break;
+            case "medium":
+                chosenScenario = ClimateScenarios.SCENARIO3;
+                break;
+            case "low":
+                chosenScenario = ClimateScenarios.SCENARIO2;
+                break;
+            default:
+                chosenScenario = ClimateScenarios.SCENARIO1;
         }
-        else if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(2))) {
-            chosenScenario = ClimateScenarios.SCENARIO3;
-        }
-        else if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(1))) {
-            chosenScenario = ClimateScenarios.SCENARIO2;
-        }
-        else{
-            chosenScenario = ClimateScenarios.SCENARIO1;
-        }
+        chosenScenario.resetClimateChange();
         return chosenScenario;
     }
 

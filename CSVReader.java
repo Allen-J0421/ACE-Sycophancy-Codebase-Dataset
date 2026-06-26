@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class to govern behavior of the various CSV Readers (one for plants, animals, scenarios, and habitats).
@@ -10,6 +11,8 @@ import java.util.ArrayList;
  */
 public abstract class CSVReader
 {
+    private static final String CSV_SEPARATOR = ",";
+
     /**
      * Empty constructor for this class.
      */
@@ -27,7 +30,7 @@ public abstract class CSVReader
     public void extractDataFor(String nameOfElementToLookFor)
     {
         resetParameters();
-        String[] extractedData = getDataFor(nameOfElementToLookFor);
+        String[] extractedData = findRowByName(nameOfElementToLookFor);
         if (extractedData != null) {
             populateFields(extractedData);
         } else {
@@ -43,19 +46,12 @@ public abstract class CSVReader
      * @param nameOfElementToLookFor (String) the name of the element which data must be extracted
      * @return (String[]) the extracted data
      */
-    private String[] getDataFor(String nameOfElementToLookFor)
+    private String[] findRowByName(String nameOfElementToLookFor)
     {
-        try(BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
-            // Skip first line as they are headers.
-            String line = br.readLine();
-            while ((line=br.readLine()) != null) {
-                String[] attributes = line.split(",");
-                if (attributes[0].equals(nameOfElementToLookFor)) {
-                    return attributes;
-                }
+        for (String[] row : readDataRows()) {
+            if (row[0].equals(nameOfElementToLookFor)) {
+                return row;
             }
-        } catch (Exception e) {
-            System.out.println("Issue when parsing CSV");
         }
         return null;
     }
@@ -91,18 +87,23 @@ public abstract class CSVReader
     public ArrayList<String> getChoicesList()
     {
         ArrayList<String> choicesList = new ArrayList<>();
-        try(BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
-            // Skip first line as they are headers.
-            String line = br.readLine();
-            while ((line=br.readLine()) != null) {
-                String[] attributes = line.split(",");
-                choicesList.add(attributes[0]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Issue when parsing CSV");
-            return null;
+        for (String[] row : readDataRows()) {
+            choicesList.add(row[0]);
         }
         return choicesList;
+    }
+
+    private List<String[]> readDataRows()
+    {
+        List<String[]> rows = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(getFileName()))) {
+            String line = br.readLine();
+            while ((line = br.readLine()) != null) {
+                rows.add(line.split(CSV_SEPARATOR));
+            }
+        } catch (Exception e) {
+            System.out.println("Issue when parsing CSV");
+        }
+        return rows;
     }
 }

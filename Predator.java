@@ -66,7 +66,7 @@ public abstract class Predator extends Animal
                 {
                     foodLevel += prey.beEaten();
 
-                    if(prey.getIsInfected() && !immune && rand.nextDouble() <= diseaseSpreadProbability)
+                    if(prey.isInfected() && !immune && rand.nextDouble() <= diseaseSpreadProbability)
                     {
                         infected = true;
                     }

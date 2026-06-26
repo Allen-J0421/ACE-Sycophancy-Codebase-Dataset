@@ -31,6 +31,7 @@ public class Field
         this.depth = depth;
         this.width = width;
         field = new GridSpace[depth][width];
+        clear();
     }
     
     /**
@@ -98,13 +99,7 @@ public class Field
      */
     public void place(Object object, Location location)
     {
-        GridSpace gridSpace = field[location.getRow()][location.getCol()];
-        
-        if (gridSpace == null) {
-            gridSpace = new GridSpace();
-        }
-        
-        gridSpace.setObject(object);
+        field[location.getRow()][location.getCol()].setObject(object);
     }
     
     /**
@@ -130,11 +125,6 @@ public class Field
      */
     public Object getObjectAt(int row, int col, Class<?> objectType)
     {
-        if (field[row][col] == null)
-        {
-            field[row][col] = new GridSpace();
-        }
-        
         return field[row][col].getObject(objectType);
     }
     

@@ -272,11 +272,9 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * Returns the gender of the animal.
-     * 
-     * @return Returns true if female.
+     * @return True if the animal is female.
      */
-    protected boolean getIsFemale() 
+    protected boolean isFemale()
     {
         return isFemale;
     }
@@ -361,7 +359,7 @@ public abstract class Animal extends LivingOrganism
         for(Location where : field.adjacentLocations(getLocation()))
         {
             Animal neighbor = (Animal) field.getObjectAt(where, Animal.class);
-            if(neighbor != null && getClass().equals(neighbor.getClass()) && !neighbor.getIsFemale())
+            if(neighbor != null && getClass().equals(neighbor.getClass()) && !neighbor.isFemale())
             {
                 births = rand.nextInt(maxLitterSize) + 1;
                 break;
@@ -381,17 +379,17 @@ public abstract class Animal extends LivingOrganism
     }
     
     /**
-     * @return Returns the status of the animal being infected or not
+     * @return True if the animal is currently infected.
      */
-    public boolean getIsInfected() 
+    public boolean isInfected()
     {
         return infected;
     }
-    
+
     /**
-     * @return Returns the status of the animal being immune or not
+     * @return True if the animal is currently immune.
      */
-    public boolean getIsImmune() 
+    public boolean isImmune()
     {
         return immune;
     }
@@ -407,7 +405,7 @@ public abstract class Animal extends LivingOrganism
         for(Location where : field.adjacentLocations(getLocation()))
         {
             Animal neighbor = (Animal) field.getObjectAt(where, Animal.class);
-            if(neighbor != null && neighbor.getIsInfected())
+            if(neighbor != null && neighbor.isInfected())
             {
                 return true;
             }

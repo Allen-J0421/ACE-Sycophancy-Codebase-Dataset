@@ -21,14 +21,14 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "  Step: ";
-    private final String POPULATION_PREFIX = "Population: ";
-    private final String TIME_PREFIX = "Time: ";
-    private final String WEATHER_PREFIX = "Weather: ";
-    private final String INFECTED_PREFIX = "Infected: ";
-    private final String IMMUNE_PREFIX = "Immune: ";
+    private static final String STEP_PREFIX      = "  Step: ";
+    private static final String POPULATION_PREFIX = "Population: ";
+    private static final String TIME_PREFIX       = "Time: ";
+    private static final String WEATHER_PREFIX    = "Weather: ";
+    private static final String INFECTED_PREFIX   = "Infected: ";
+    private static final String IMMUNE_PREFIX     = "Immune: ";
     
-    private JLabel stepLabel, population, infoLabel, timeLabel, 
+    private JLabel stepLabel, population, timeLabel,
                    weatherLabel, infectedLabel, immuneLabel;
     
     // The view of the simulation.
@@ -239,11 +239,11 @@ public class SimulatorView extends JFrame
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
 
-                    if(animal.getIsInfected())
+                    if(animal.isInfected())
                     {
                         numberOfInfected++;
                     }
-                    if(animal.getIsImmune())
+                    if(animal.isImmune())
                     {
                         numberOfImmune++;
                     }
@@ -321,6 +321,7 @@ public class SimulatorView extends JFrame
          * 
          * @return Dimensions
          */
+        @Override
         public Dimension getPreferredSize()
         {
             return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
@@ -377,6 +378,7 @@ public class SimulatorView extends JFrame
          * 
          * @param g Graphics
          */
+        @Override
         public void paintComponent(Graphics g)
         {
             if(fieldImage != null) 

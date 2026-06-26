@@ -1,5 +1,3 @@
-import java.util.Random;
-
 /**
  * A class representing shared characteristics of plants.
  *
@@ -12,20 +10,15 @@ public abstract class Plant extends Organism implements Actor
     protected int stepsPerStage = 1;
     protected int stageOfGrowth;
 
-
-    // Implementing abstract methods to return fields to be used by the superclass
-    protected static final Random rand = Randomizer.getRandom();
-    
-    
     /**
      * Create a new plant at location in field.
      *
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Plant(Field field, Location location)
+    public Plant(RandomProvider randomProvider, Field field, Location location)
     {
-        super(field, location);
+        super(randomProvider, field, location);
     }
 
     public int getStepsPerStage()

@@ -1,4 +1,8 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -14,8 +18,6 @@ public abstract class Animal extends Organism implements Actor
     protected boolean isNocturnal;
     protected int foodLevel;
     protected Gender sex;
-
-    protected static final Random rand = Randomizer.getRandom();
 
     // An animal is either male or female 
     protected enum Gender {
@@ -43,10 +45,11 @@ public abstract class Animal extends Organism implements Actor
      * @param randomAge The animal's random starting age.
      * @param sex The animal's gender. 
      */
-    public Animal(Field field, Location location, boolean randomAge, Gender sex)
+    public Animal(RandomProvider randomProvider, Field field, Location location, boolean randomAge, Gender sex)
     {
-        super(field, location);
+        super(randomProvider, field, location);
         this.sex = sex;
+        Random rand = getRandomProvider().getRandom();
         if(randomAge) {
             this.age = rand.nextInt(getMaxAge());
             foodLevel = rand.nextInt(getMaxFoodLevel());
@@ -66,6 +69,7 @@ public abstract class Animal extends Organism implements Actor
      */
     public void act(List<Actor> newAnimals, Environment environment)
     {
+        Random rand = getRandomProvider().getRandom();
         randomlyContractDisease();
         incrementAge();
         incrementHunger();
@@ -122,6 +126,7 @@ public abstract class Animal extends Organism implements Actor
      */
     protected Location findFood()
     {
+        Random rand = getRandomProvider().getRandom();
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         for(Location loc : adjacent){
@@ -169,8 +174,9 @@ public abstract class Animal extends Organism implements Actor
      */
     protected void randomlyContractDisease()
     {
+        Random rand = getRandomProvider().getRandom();
         if(rand.nextDouble() <= RANDOM_CONTRACTION_RATE) {
-            setDisease(new Disease());
+            setDisease(new Disease(getRandomProvider()));
         }
     }
 
@@ -187,7 +193,7 @@ public abstract class Animal extends Organism implements Actor
         int births = breed();
         for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
-            Gender sex = Randomizer.getRandomSex();
+            Gender sex = getRandomProvider().getRandom().nextBoolean() ? Gender.MALE : Gender.FEMALE;
             newAnimals.add(createYoung(field, loc, sex));
         }
     }
@@ -210,6 +216,7 @@ public abstract class Animal extends Organism implements Actor
      */
     protected int breed()
     {
+        Random rand = getRandomProvider().getRandom();
         int births = 0;
         if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
             births = rand.nextInt(getMaxLitterSize()) + 1;

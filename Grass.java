@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * This class models grass.
@@ -33,11 +34,11 @@ public class Grass extends Plant
      */
     public Grass(Field field, Location location)
     {
-        super(field, location);
+        super(field.getRandomProvider(), field, location);
 
         numberOfStages = MAX_GROWTH_STAGES;
         stepsPerStage = DEFAULT_STEPS_PER_STAGE;
-        stageOfGrowth = rand.nextInt(numberOfStages);
+        stageOfGrowth = getRandomProvider().getRandom().nextInt(numberOfStages);
         foodValue = stageOfGrowth;
 
     }
@@ -51,6 +52,7 @@ public class Grass extends Plant
      */
     public void act(List<Actor> newGrass, Environment environment)
     {
+        Random rand = getRandomProvider().getRandom();
         if(isAlive()
                 && environment.getTime().isDay()
                 && rand.nextDouble() <= getGerminationRate(environment)

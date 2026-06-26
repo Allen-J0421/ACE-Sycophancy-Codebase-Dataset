@@ -8,8 +8,7 @@ import java.util.*;
  */
 public class Field
 {
-    // A random number generator for providing random locations.
-    private static final Random rand = Randomizer.getRandom();
+    private final RandomProvider randomProvider;
 
     // The depth and width of the field.
     private int depth, width;
@@ -21,8 +20,9 @@ public class Field
      * @param depth The depth of the field.
      * @param width The width of the field.
      */
-    public Field(int depth, int width)
+    public Field(RandomProvider randomProvider, int depth, int width)
     {
+        this.randomProvider = randomProvider;
         this.depth = depth;
         this.width = width;
         field = new Object[depth][width];
@@ -124,6 +124,7 @@ public class Field
      */
     public List<Location> getRandomFreePatches(double rateOfGeneration)
     {
+        Random rand = randomProvider.getRandom();
         List<Location> patches = getFreePatches();
         List<Location> randPatches = new ArrayList<>();
         for(int i=0; i<rateOfGeneration* patches.size(); i++)
@@ -255,7 +256,7 @@ public class Field
             
             // Shuffle the list. Several other methods rely on the list
             // being in a random order.
-            Collections.shuffle(locations, rand);
+            Collections.shuffle(locations, randomProvider.getRandom());
         }
         return locations;
     }
@@ -276,5 +277,10 @@ public class Field
     public int getWidth()
     {
         return width;
+    }
+
+    public RandomProvider getRandomProvider()
+    {
+        return randomProvider;
     }
 }

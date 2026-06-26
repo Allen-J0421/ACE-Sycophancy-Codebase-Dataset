@@ -7,7 +7,6 @@ import java.util.*;
  */
 public class Hunter extends Organism implements Actor
 {
-    private static final Random rand = Randomizer.getRandom();
     // A hunter hunts every species. 
     private static final Set<Class<? extends Organism>> DIET = new HashSet<>(Arrays.asList(
             Deer.class,
@@ -25,7 +24,7 @@ public class Hunter extends Organism implements Actor
      */
     public Hunter(Field field, Location location)
     {
-        super(field, location);
+        super(field.getRandomProvider(), field, location);
     }
 
     @Override
@@ -41,6 +40,7 @@ public class Hunter extends Organism implements Actor
      */
     public void act(List<Actor> newActors, Environment environment)
     {
+        Random rand = getRandomProvider().getRandom();
         if(isAlive()) {
             Location newLocation = findPrey();
             if(newLocation == null) {

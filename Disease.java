@@ -9,7 +9,6 @@ import java.util.Random;
 */
 public class Disease 
 {
-    private Random rand = Randomizer.getRandom();
     // The propagation rate of the disease
     private static double PROPAGATION_RATE = 0.0;
     // the lethality rate of the disease
@@ -22,8 +21,9 @@ public class Disease
      * double randomValue = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
      * https://stackoverflow.com/questions/3680637/generate-a-random-double-in-a-range
      */
-    public Disease() 
+    public Disease(RandomProvider randomProvider) 
     {
+        Random rand = randomProvider.getRandom();
         PROPAGATION_RATE = 0.6 * rand.nextDouble(); // max prop. rate is 60%
         LETHALITY_RATE = 0.4 * rand.nextDouble(); // max lethality rate is 40%
         PROPAGATION_MODE = DiseaseType.values()[rand.nextInt(DiseaseType.values().length)];

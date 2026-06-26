@@ -11,8 +11,6 @@ import java.util.Random;
  */
 public class Simulator
 {
-    private static final Random rand = Randomizer.getRandom();
-
     private boolean playingSimulation;
     private int remainingSteps;
 
@@ -26,6 +24,7 @@ public class Simulator
     private final Environment environment;
     // Configuration and actor creation rules for the simulation.
     private final SimulationConfig config;
+    private final RandomProvider randomProvider;
     private final ActorFactory actorFactory;
     // Published state for observers.
     private final List<SimulationObserver> observers;
@@ -44,6 +43,7 @@ public class Simulator
             double mouseProbability)
     {
         this(
+                new RandomProvider(),
                 SimulationConfig.withCreationProbabilities(
                         grassProbability,
                         deerProbability,
@@ -63,7 +63,7 @@ public class Simulator
      */
     public Simulator()
     {
-        this(SimulationConfig.defaultConfig(), SimulationConfig.DEFAULT_DEPTH, SimulationConfig.DEFAULT_WIDTH);
+        this(new RandomProvider(), SimulationConfig.defaultConfig(), SimulationConfig.DEFAULT_DEPTH, SimulationConfig.DEFAULT_WIDTH);
     }
 
     /**
@@ -73,10 +73,45 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
-        this(SimulationConfig.defaultConfig(), depth, width);
+        this(new RandomProvider(), SimulationConfig.defaultConfig(), depth, width);
     }
 
-    private Simulator(SimulationConfig config, int depth, int width)
+    public Simulator(RandomProvider randomProvider)
+    {
+        this(randomProvider, SimulationConfig.defaultConfig(), SimulationConfig.DEFAULT_DEPTH, SimulationConfig.DEFAULT_WIDTH);
+    }
+
+    public Simulator(RandomProvider randomProvider, int depth, int width)
+    {
+        this(randomProvider, SimulationConfig.defaultConfig(), depth, width);
+    }
+
+    public Simulator(RandomProvider randomProvider,
+            double grassProbability,
+            double deerProbability,
+            double coyoteProbability,
+            double wolfProbability,
+            double eagleProbability,
+            double hunterProbability,
+            double mouseProbability)
+    {
+        this(
+                randomProvider,
+                SimulationConfig.withCreationProbabilities(
+                        grassProbability,
+                        deerProbability,
+                        coyoteProbability,
+                        wolfProbability,
+                        eagleProbability,
+                        hunterProbability,
+                        mouseProbability
+                ),
+                SimulationConfig.DEFAULT_DEPTH,
+                SimulationConfig.DEFAULT_WIDTH
+        );
+    }
+
+    private Simulator(RandomProvider randomProvider, SimulationConfig config, int depth, int width)
     {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
@@ -85,11 +120,12 @@ public class Simulator
             width = SimulationConfig.DEFAULT_WIDTH;
         }
 
+        this.randomProvider = randomProvider;
         this.config = config;
         this.actors = new ArrayList<>();
-        this.field = new Field(depth, width);
-        this.environment = new Environment(new Time(), new Weather());
-        this.actorFactory = new ActorFactory(config);
+        this.field = new Field(randomProvider, depth, width);
+        this.environment = new Environment(new Time(), new Weather(randomProvider));
+        this.actorFactory = new ActorFactory(randomProvider, config);
         this.observers = new ArrayList<>();
 
         reset();
@@ -254,6 +290,7 @@ public class Simulator
 
     private void processActor(Actor actor, List<Actor> newActors)
     {
+        Random rand = randomProvider.getRandom();
         if(actor instanceof Animal animal) {
             if(!animal.isAwake(environment)) {
                 return;

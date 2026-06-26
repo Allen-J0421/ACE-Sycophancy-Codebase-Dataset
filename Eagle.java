@@ -45,7 +45,7 @@ public class Eagle extends Animal
      */
     public Eagle(boolean randomAge, Field field, Location location, Gender sex)
     {
-        super(field, location,randomAge,sex);
+        super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = false;
     }
 

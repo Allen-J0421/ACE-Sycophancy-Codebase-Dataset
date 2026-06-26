@@ -7,7 +7,6 @@ import java.util.Random;
  */
 public class ActorFactory
 {
-    private static final Random rand = Randomizer.getRandom();
     private static final List<Class<?>> CREATION_ORDER = List.of(
             Grass.class,
             Deer.class,
@@ -19,9 +18,11 @@ public class ActorFactory
     );
 
     private final SimulationConfig config;
+    private final RandomProvider randomProvider;
 
-    public ActorFactory(SimulationConfig config)
+    public ActorFactory(RandomProvider randomProvider, SimulationConfig config)
     {
+        this.randomProvider = randomProvider;
         this.config = config;
     }
 
@@ -49,6 +50,7 @@ public class ActorFactory
 
     public List<Actor> createGrassPatches(Field field, Environment environment)
     {
+        Random rand = randomProvider.getRandom();
         if(environment.getWeather().getCurrentWeather() != WeatherType.RAINING) {
             return List.of();
         }
@@ -66,6 +68,7 @@ public class ActorFactory
 
     private Actor maybeCreateActor(Field field, Location location, int hunterCount)
     {
+        Random rand = randomProvider.getRandom();
         for(Class<?> actorClass : CREATION_ORDER) {
             if(actorClass == Hunter.class && hunterCount >= config.getHunterLimit()) {
                 continue;
@@ -88,7 +91,9 @@ public class ActorFactory
             return new Hunter(field, location);
         }
 
-        Animal.Gender sex = Randomizer.getRandomSex();
+        Animal.Gender sex = randomProvider.getRandom().nextBoolean()
+                ? Animal.Gender.MALE
+                : Animal.Gender.FEMALE;
         if(actorClass == Deer.class) {
             return new Deer(true, field, location, sex);
         }

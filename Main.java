@@ -4,7 +4,8 @@
  */
 public class Main {
     public static void main(String[] args) {
-        Simulator sim = new Simulator();
+        RandomProvider randomProvider = new RandomProvider();
+        Simulator sim = new Simulator(randomProvider);
         SimulationState initialState = sim.getCurrentState();
         SimulatorView view = new SimulatorView(
                 initialState.getField().getDepth(),

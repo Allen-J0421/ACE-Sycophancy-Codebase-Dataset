@@ -20,8 +20,9 @@ public class TestingMain {
         tester();
         Integer watch = SimulationInfo.HIGHEST_STEPS;
         Simulator tempSim;
+        RandomProvider randomProvider = new RandomProvider();
         for(Double[] probs : allCombs){
-            tempSim = new Simulator(probs[0], probs[1], probs[2], probs[3], probs[4], probs[5], probs[6]);
+            tempSim = new Simulator(randomProvider, probs[0], probs[1], probs[2], probs[3], probs[4], probs[5], probs[6]);
             tempSim.runLongSimulation();
             tempSim.simulateOneStep();
             tempSim = null;

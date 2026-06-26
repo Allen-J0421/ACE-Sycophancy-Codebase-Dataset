@@ -9,7 +9,7 @@ import java.util.*;
 public class Weather
 {
     private WeatherType currentWeather;
-    private static final Random rand = Randomizer.getRandom();
+    private final RandomProvider randomProvider;
     private int randomInt;
     private int duration; // to keep track of when weather changes (every X hours)
     private boolean randomDuration = false;
@@ -19,8 +19,9 @@ public class Weather
     /**
      * Create a new instance of weather. 
      */
-    public Weather()
+    public Weather(RandomProvider randomProvider)
     {
+       this.randomProvider = randomProvider;
        weatherList = new HashSet<>();
        addWeatherList();
        currentWeather = WeatherType.SUNNY; 
@@ -50,6 +51,7 @@ public class Weather
      */
     public void checkWeatherChange(int steps)
     {
+        Random rand = randomProvider.getRandom();
         if(randomDuration){
             duration = rand.nextInt(36) + 1;
             if(steps % duration == 0){
@@ -78,6 +80,7 @@ public class Weather
      */
     public void changeWeather()
     {
+        Random rand = randomProvider.getRandom();
         randomInt = rand.nextInt(weatherList.size());
         currentWeather = (WeatherType) weatherList.toArray()[randomInt];
     }

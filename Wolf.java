@@ -45,7 +45,7 @@ public class Wolf extends Animal
      */
     public Wolf(boolean randomAge, Field field, Location location, Gender sex)
     {
-        super(field, location, randomAge, sex);
+        super(field.getRandomProvider(), field, location, randomAge, sex);
         this.isNocturnal = true;
     }
 

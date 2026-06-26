@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A class representing the characteristics of a predator.
@@ -52,34 +53,26 @@ public class Predator extends Animal
      */
     protected void makeMove(List<Species> newSpecies)
     {
-        ArrayList<Animal> neighboringAnimals = getNeighboringAnimalsList();
+        List<Animal> neighboringAnimals = getNeighboringAnimalsList();
         checkForAttack(neighboringAnimals);
 
-        if (isAlive()) {
-            if (canReproduce(neighboringAnimals)){
-                reproduce(newSpecies);
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation = null;
-            if (isNotFull()) {
-                newLocation = findFoodAndEat(neighboringAnimals);
-            } 
-
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+        if (!isAlive()) {
+            return;
         }
+
+        if (canReproduce(neighboringAnimals)) {
+            reproduce(newSpecies);
+        }
+
+        Location newLocation = null;
+        if (isNotFull()) {
+            newLocation = findFoodAndEat(neighboringAnimals);
+        }
+        if (newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+
+        moveToLocationOrDie(newLocation);
     }
 
     /**
@@ -88,13 +81,14 @@ public class Predator extends Animal
      * @param  neighboringAnimals (ArrayList<Animal>) A list of neighboring animals.
      * @return (Location) the location of the eaten prey, null if no prey was found.
      */
-    private Location findFoodAndEat(ArrayList<Animal> neighboringAnimals)
+    private Location findFoodAndEat(List<Animal> neighboringAnimals)
     {
         for (Animal animal : neighboringAnimals) {
-            if(!(animal instanceof Predator)){
+            if (!(animal instanceof Predator)) {
+                Location preyLocation = animal.getLocation();
                 animal.setDead();
                 foodLevel += animal.getNutritionalValue();
-                return animal.getLocation();
+                return preyLocation;
             }
         }
         // No food found
@@ -107,38 +101,45 @@ public class Predator extends Animal
      *
      * @param  neighboringAnimals (ArrayList<Animal>) A list of neighboring animals.
      */
-    private void checkForAttack(ArrayList<Animal> neighboringAnimals)
+    private void checkForAttack(List<Animal> neighboringAnimals)
     {
-        ArrayList<Predator> hordeMembers = new ArrayList<>();
+        HashMap<String, List<Predator>> hordesBySpecies = new HashMap<>();
 
-        for (int i =0; i < neighboringAnimals.size(); i++)
-        {
-            if (neighboringAnimals.get(i) instanceof Predator) {
-
-                Predator neighboringPredator = (Predator)neighboringAnimals.get(i);
-                String nameOfInvestigatedHorde = neighboringPredator.getName();
-                
-                if(! this.getName().equals(nameOfInvestigatedHorde))
-                {
-                    int totalHordeStrength =  neighboringPredator.getStrength();
-
-                    hordeMembers.add(neighboringPredator);
-                    for (int j =0; j < neighboringAnimals.size(); j++) {
-                        if (nameOfInvestigatedHorde.equals(neighboringAnimals.get(j).getName())) {
-                            Predator predatorObject = (Predator)neighboringAnimals.get(i);
-                            totalHordeStrength += predatorObject.getStrength();
-                            hordeMembers.add(predatorObject);
-                        }
+        for (Animal animal : neighboringAnimals) {
+            if (animal instanceof Predator) {
+                Predator predator = (Predator) animal;
+                if (!predator.getName().equals(getName())) {
+                    List<Predator> hordeMembers = hordesBySpecies.get(predator.getName());
+                    if (hordeMembers == null) {
+                        hordeMembers = new ArrayList<>();
+                        hordesBySpecies.put(predator.getName(), hordeMembers);
                     }
-                    if (totalHordeStrength > strength) {
-                        attackedByHorde(hordeMembers);
-                        break;
-                    } else {
-                        hordeMembers.clear();
-                    }
+                    hordeMembers.add(predator);
                 }
             }
         }
+
+        for (List<Predator> hordeMembers : hordesBySpecies.values()) {
+            if (calculateHordeStrength(hordeMembers) > strength) {
+                attackedByHorde(hordeMembers);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Calculate the combined strength of a horde.
+     *
+     * @param hordeMembers the predators in the horde.
+     * @return the total strength.
+     */
+    private int calculateHordeStrength(List<Predator> hordeMembers)
+    {
+        int totalStrength = 0;
+        for (Predator predator : hordeMembers) {
+            totalStrength += predator.getStrength();
+        }
+        return totalStrength;
     }
 
     /**
@@ -147,7 +148,7 @@ public class Predator extends Animal
      *
      * @param hordeMembers (ArrayList<Predator>) List of the predators constituting the horde.
      */
-    private void attackedByHorde(ArrayList<Predator> hordeMembers)
+    private void attackedByHorde(List<Predator> hordeMembers)
     {
         // Sharing predator's nutritional value amongst the various horde members.
         int foodLevelAddedToEachHordeMember = this.getNutritionalValue() / hordeMembers.size();

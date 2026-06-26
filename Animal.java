@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A class representing shared characteristics of animals,
@@ -99,49 +98,64 @@ public class Animal extends Species
      */
     public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed)
     {
-        // 1)
         if (yearPassed) {
             incrementAge();
         }
 
-        // 2)
-        if(isAlive())
-        {
-            // i)
-            checkHibernation(temperature);
-            
-            // ii)
-            if (inHibernation)
-            {
-                // a)
-                if (hiberSteps % STAY_STEPS == 0)   {
-                    makeMove(newSpecies);
-                    incrementHunger();
-                }
-                // b)
-                incrementHiberSteps();
-            }
-            // iii)
-            else if (! survivesTemperature(temperature))
-            {
-                setDead();
-            }
-            // iv)
-            else
-            {
-                // a)
-                if (isNight && isNocturnal) {
-                    makeMove(newSpecies);
-                }
-                // b)
-                else if (! isNight) {
-                    makeMove(newSpecies);
-                }
-                if  (! isNight) {
-                    incrementHunger();
-                }
-            }
+        if (!isAlive()) {
+            return;
         }
+
+        checkHibernation(temperature);
+
+        if (inHibernation) {
+            handleHibernatingStep(newSpecies);
+        }
+        else if (!survivesTemperature(temperature)) {
+            setDead();
+        }
+        else {
+            handleAwakeStep(newSpecies, isNight);
+        }
+    }
+
+    /**
+     * Handle a step while the animal is hibernating.
+     *
+     * @param newSpecies a list to receive newborn species.
+     */
+    private void handleHibernatingStep(List<Species> newSpecies)
+    {
+        if (hiberSteps % STAY_STEPS == 0) {
+            makeMove(newSpecies);
+            incrementHunger();
+        }
+        incrementHiberSteps();
+    }
+
+    /**
+     * Handle a step while the animal is awake.
+     *
+     * @param newSpecies a list to receive newborn species.
+     * @param isNight true if it is currently night.
+     */
+    private void handleAwakeStep(List<Species> newSpecies, boolean isNight)
+    {
+        if (shouldMoveThisStep(isNight)) {
+            makeMove(newSpecies);
+        }
+        if (!isNight) {
+            incrementHunger();
+        }
+    }
+
+    /**
+     * @param isNight true if it is currently night.
+     * @return true if the animal should move on this step.
+     */
+    private boolean shouldMoveThisStep(boolean isNight)
+    {
+        return !isNight || isNocturnal;
     }
 
     /**
@@ -152,7 +166,7 @@ public class Animal extends Species
      */
     protected void makeMove(List<Species> newSpecies)
     {
-        ArrayList<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
+        List<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
 
         if (canReproduce(neighboringAnimalsList)) {
             reproduce(newSpecies);
@@ -163,17 +177,7 @@ public class Animal extends Species
             findFoodAndEat();
         }
 
-        // Find a free location in adjacent cells
-        Location newLocation = getField().freeAdjacentLocation(getLocation());
-
-        // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }
+        moveToFreeAdjacentLocationOrDie();
     }
 
     /**
@@ -181,16 +185,11 @@ public class Animal extends Species
      *
      * @return (ArrayList) list of neighboring animals
      */
-    protected ArrayList<Animal> getNeighboringAnimalsList()
+    protected List<Animal> getNeighboringAnimalsList()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> locationIterator = adjacent.iterator();
-
         ArrayList<Animal> neighboringAnimals = new ArrayList<>();
-        while (locationIterator.hasNext())
-        {
-            Location where = locationIterator.next();
+        for (Location where : field.adjacentLocations(getLocation())) {
             Object species = field.getObjectAt(where);
 
             if (species instanceof Animal) {
@@ -248,15 +247,9 @@ public class Animal extends Species
     private void findFoodAndEat()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-
-        while(it.hasNext())
-        {
-            Location where = it.next();
-            Object species = field.getObjectAt(where); // change in Field
-            if(species instanceof Plant)
-            {
+        for (Location where : field.adjacentLocations(getLocation())) {
+            Object species = field.getObjectAt(where);
+            if(species instanceof Plant) {
                 Plant plantSquare = (Plant) species;
                 if(plantSquare.isAlive()) {
                     plantSquare.isEaten();
@@ -272,11 +265,10 @@ public class Animal extends Species
      *  and should go to the cel where the male is.
      *  Note: The task of reproducing is handled only by females so that the same reproduction can not happen twice in the same simulator step.
      *
-     * @param  neighboringAnimalsList (ArrayList<Animal>) Array List of the Animal objects located in neighboring cells.
-     * @return (boolean) if animal can reproduce.
-     *
+     * @param neighboringAnimalsList a list of the animals located in neighboring cells.
+     * @return true if the animal can reproduce.
      */
-    protected boolean canReproduce(ArrayList<Animal> neighboringAnimalsList)
+    protected boolean canReproduce(List<Animal> neighboringAnimalsList)
     {
         // task to reproduce is handed to women only so that the same reproduction does not happen twice
         if (this.isFemale)
@@ -309,6 +301,29 @@ public class Animal extends Species
                 Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
                 speciesInSimulation.add(young);
             }
+        }
+    }
+
+    /**
+     * Move to a free adjacent cell if one exists, otherwise die from overcrowding.
+     */
+    protected void moveToFreeAdjacentLocationOrDie()
+    {
+        moveToLocationOrDie(getField().freeAdjacentLocation(getLocation()));
+    }
+
+    /**
+     * Move to the given location if possible, otherwise die from overcrowding.
+     *
+     * @param newLocation the destination location, or null if none is available.
+     */
+    protected void moveToLocationOrDie(Location newLocation)
+    {
+        if (newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
         }
     }
 

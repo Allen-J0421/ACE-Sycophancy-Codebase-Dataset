@@ -8,9 +8,7 @@ import java.util.List;
  *
  * @version 2022.03.02
  */
-public abstract class Scavenger extends Animal {
-
-    private int foodLevel;
+public abstract class Scavenger extends FoodDependentAnimal {
 
     /**
      * Constructor for a scavenger in the simulation.
@@ -21,8 +19,7 @@ public abstract class Scavenger extends Animal {
      * @param location The location in which the scavenger spawns into.
      */
     public Scavenger(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-        this.foodLevel = foodLevel;
+        super(foodLevel, randomAge, field, location);
     }
 
     /**
@@ -110,22 +107,4 @@ public abstract class Scavenger extends Animal {
         return hasNearbyMate(getClass());
     }
 
-    /**
-     * Increment the food level of this scavenger by a given amount.
-     *
-     * @param foodLevel A given food level.
-     */
-    public void incrementFoodLevel(int foodLevel) {
-        this.foodLevel += foodLevel;
-    }
-
-    /**
-     * Make this scavenger more hungry. This could result in the scavenger's death.
-     */
-    public void incrementHunger() {
-        foodLevel--;
-        if (foodLevel <= 0) {
-            remove();
-        }
-    }
 }

@@ -9,12 +9,10 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Predator extends Animal {
+public abstract class Predator extends FoodDependentAnimal {
 
     // shared random generator to generate consistent results
     private static final Random rand = Randomizer.getRandom();
-
-    private int foodLevel;
 
     /**
      * Constructor for a predator in the simulation.
@@ -25,9 +23,7 @@ public abstract class Predator extends Animal {
      * @param location The location in which the predator spawns into.
      */
     public Predator(int foodLevel, boolean randomAge, Field field, Location location) {
-        super(randomAge, field, location);
-
-        this.foodLevel = foodLevel;
+        super(foodLevel, randomAge, field, location);
     }
 
     /**
@@ -136,22 +132,4 @@ public abstract class Predator extends Animal {
         return hasNearbyMate(getClass());
     }
 
-    /**
-     * Increase the predator's food level by a given integer amount.
-     *
-     * @param foodLevel The value to increment food level by.
-     */
-    public void incrementFoodLevel(int foodLevel) {
-        this.foodLevel += foodLevel;
-    }
-
-    /**
-     * Make this predator more hungry. This could result in the predator's death.
-     */
-    public void incrementHunger() {
-        foodLevel--;
-        if (foodLevel <= 0) {
-            remove();
-        }
-    }
 }

@@ -3,19 +3,24 @@
  *
  * @version 18.02.22 (DD:MM:YY)
  */
-public class TimeSystem
+public final class TimeSystem
 {
+    private static final double NIGHT_START = 0.8;
+    private static final double NIGHT_END = 0.2;
+
     // The last recorded day:
     private static int lastRecordedDay = 0;
+
+    private TimeSystem()
+    {
+    }
     
     /**
      * @return The current day.
      */
     public static int getCurrentDay()
     {
-        int currentDay = (int) (Simulator.getCurrentStep() / Simulator.NUMBER_OF_STEPS_PER_DAY);
-        
-        return currentDay;
+        return Simulator.getCurrentStep() / Simulator.NUMBER_OF_STEPS_PER_DAY;
     }
     
     /**
@@ -23,16 +28,16 @@ public class TimeSystem
      */
     public static boolean hasDayChanged()
     {
-        if (getCurrentDay() != lastRecordedDay)
+        int currentDay = getCurrentDay();
+
+        if (currentDay != lastRecordedDay)
         {
-            lastRecordedDay = getCurrentDay();
+            lastRecordedDay = currentDay;
             
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
     
     /**
@@ -46,9 +51,7 @@ public class TimeSystem
         double timeOfDay = preciseCurrentDay - getCurrentDay(); // Between 0.0 and 1.0
         
         // If time is between 0.8 and 1.0 or 0.0 and 0.2, it is night:
-        if ((timeOfDay > 0.8 && timeOfDay < 1.0) || (timeOfDay > 0.0 && timeOfDay < 0.2))
-            return true;
-        else
-            return false;
+        return (timeOfDay > NIGHT_START && timeOfDay < 1.0)
+               || (timeOfDay > 0.0 && timeOfDay < NIGHT_END);
     }
 }

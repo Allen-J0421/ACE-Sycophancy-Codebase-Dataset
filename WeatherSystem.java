@@ -8,12 +8,16 @@ import java.util.Random;
  *
  * @version 18.02.22 (DD:MM:YY)
  */
-public class WeatherSystem
+public final class WeatherSystem
 {
     // Whether or not it is currently raining:
     private static boolean isRaining;
     // A random number generator to select new weather properties:
     private static final Random rand = Randomizer.getRandom();
+
+    private WeatherSystem()
+    {
+    }
     
     /**
      * Change to a new day and randomly select new weather
@@ -21,8 +25,7 @@ public class WeatherSystem
      */
     public static void changeToNextDay()
     {
-        if (rand.nextInt(2) == 1) isRaining = true;
-        else                      isRaining = false;
+        isRaining = rand.nextInt(2) == 1;
     }
     
     /**
@@ -30,7 +33,3 @@ public class WeatherSystem
      */
     public static boolean getIsRaining() { return isRaining; }
 }
-
-
-// The weather should change each day.
-// When the weather changes, 

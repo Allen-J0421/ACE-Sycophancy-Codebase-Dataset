@@ -7,14 +7,18 @@ import java.util.Random;
  *
  * @version 18.02.22 (DD:MM:YY)
  */
-public class Randomizer
+public final class Randomizer
 {
     // The default seed for control of randomization:
     private static final int SEED = 10001;
     // A shared Random object, if required:
     private static final Random rand = new Random(SEED);
     // Determine whether a shared random generator is to be provided:
-    private static final boolean useShared = true;
+    private static final boolean USE_SHARED = true;
+
+    private Randomizer()
+    {
+    }
 
     /**
      * Provide a random generator.
@@ -23,7 +27,7 @@ public class Randomizer
      */
     public static Random getRandom()
     {
-        if (useShared) return rand;
+        if (USE_SHARED) return rand;
         else           return new Random();
     }
     
@@ -34,8 +38,9 @@ public class Randomizer
      */
     public static void reset()
     {
-        if (useShared) rand.setSeed(SEED);
+        if (USE_SHARED) rand.setSeed(SEED);
     }
+
     public static void setSeed(int seed)
     {
         rand.setSeed(seed);

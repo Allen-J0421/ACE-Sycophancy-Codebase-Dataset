@@ -18,7 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import savannah.config.SimulationConfig;
@@ -26,6 +26,7 @@ import savannah.model.Animal;
 import savannah.model.Field;
 import savannah.model.FieldStats;
 import savannah.model.Plant;
+import savannah.model.SpeciesType;
 import savannah.model.Time;
 import savannah.model.Weather;
 
@@ -62,8 +63,8 @@ public class SimulatorView extends JFrame
     // Stores a graph key which displays the colors of the classes.
     private JPanel classKey;
     
-    // A map for storing colors for participants in the simulation
-    private Map<Class<?>, Color> colors;
+    // A map for storing colors for participants in the simulation.
+    private Map<SpeciesType, Color> colors;
     
     // A statistics object computing and storing simulation information
     private FieldStats stats;
@@ -79,7 +80,7 @@ public class SimulatorView extends JFrame
     public SimulatorView(int height, int width, JButton[] buttons, SimulationConfig config)
     {
         stats = new FieldStats();
-        colors = new LinkedHashMap<>();
+        colors = new EnumMap<>(SpeciesType.class);
         this.config = config;
 
         setTitle("Savannah Simulation");
@@ -193,19 +194,19 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Define a color to be used for the given class.
+     * Define a color to be used for the given species.
      *
-     * @param newClass The new Class' object.
-     * @param classColor The color to be used for the given class.
+     * @param speciesType The species.
+     * @param classColor The color to be used for the given species.
      * @param textColor The color to be used for the text in the class key.
      */
-    public void setColor(Class newClass, Color classColor, Color textColor)
+    public void setColor(SpeciesType speciesType, Color classColor, Color textColor)
     {
-        colors.put(newClass, classColor);
+        colors.put(speciesType, classColor);
         
         // Creates label of the appropriate color and text to be
         // displayed by the class key.
-        JLabel newClassLabel = new JLabel(newClass.getName(), JLabel.CENTER);
+        JLabel newClassLabel = new JLabel(speciesType.getDisplayName(), JLabel.CENTER);
         
         // Adjusts color of the label's text
         newClassLabel.setForeground(textColor);
@@ -217,13 +218,13 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * @param animalClass The class to get the colour of.
+     * @param speciesType The species to get the colour of.
      * 
-     * @return The color to be used for a given class of animal.
+     * @return The color to be used for a given species.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(SpeciesType speciesType)
     {
-        Color col = colors.get(animalClass);
+        Color col = colors.get(speciesType);
         if(col == null) {
             // no color defined for this class
             return UNKNOWN_COLOR;
@@ -264,8 +265,8 @@ public class SimulatorView extends JFrame
                 
                 if(animal != null) 
                 {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
+                    stats.incrementCount(animal.getSpeciesType());
+                    fieldView.drawMark(col, row, getColor(animal.getSpeciesType()));
                     
                     // Update the infected and immune counts
                     if (animal.getIsInfected())
@@ -281,7 +282,7 @@ public class SimulatorView extends JFrame
                 // Only show the plant if an animal is not present
                 else if(plant != null) 
                 {
-                    fieldView.drawMark(col, row, getColor(plant.getClass()));
+                    fieldView.drawMark(col, row, getColor(plant.getSpeciesType()));
                 }
                 else 
                 {
@@ -292,7 +293,7 @@ public class SimulatorView extends JFrame
                 
                 if (plant != null) 
                 {
-                   stats.incrementCount(plant.getClass()); 
+                   stats.incrementCount(plant.getSpeciesType()); 
                 }
             }
         }

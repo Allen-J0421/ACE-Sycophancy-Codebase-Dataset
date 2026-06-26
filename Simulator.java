@@ -6,6 +6,7 @@ import javax.swing.JButton;
 
 import savannah.config.SimulationConfig;
 import savannah.engine.SimulationEngine;
+import savannah.model.SpeciesType;
 import savannah.model.Time;
 
 /**
@@ -76,12 +77,12 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(engine.getDepth(), engine.getWidth(), buttons, CONFIG);
-        view.setColor(savannah.model.Zebra.class, Color.BLACK, Color.WHITE);
-        view.setColor(savannah.model.Giraffe.class, Color.YELLOW, Color.BLACK);
-        view.setColor(savannah.model.Lemur.class, Color.BLUE, Color.WHITE);
-        view.setColor(savannah.model.Lion.class, Color.RED, Color.WHITE);
-        view.setColor(savannah.model.Cheetah.class, Color.ORANGE, Color.BLACK);
-        view.setColor(savannah.model.Plant.class, Color.GREEN, Color.BLACK);
+        view.setColor(SpeciesType.ZEBRA, Color.BLACK, Color.WHITE);
+        view.setColor(SpeciesType.GIRAFFE, Color.YELLOW, Color.BLACK);
+        view.setColor(SpeciesType.LEMUR, Color.BLUE, Color.WHITE);
+        view.setColor(SpeciesType.LION, Color.RED, Color.WHITE);
+        view.setColor(SpeciesType.CHEETAH, Color.ORANGE, Color.BLACK);
+        view.setColor(SpeciesType.PLANT, Color.GREEN, Color.BLACK);
         
         // Setup a valid starting point.
         reset();

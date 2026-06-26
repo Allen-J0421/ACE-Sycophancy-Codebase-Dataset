@@ -20,9 +20,9 @@ public abstract class Prey extends Animal
      * @param infected Intial state if the prey is infected or not
      * @param immmune Intial state if the prey is immune or not
      */
-    protected Prey(Field field, Location location, boolean infected, boolean immune)
+    protected Prey(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
     {
-        this(field, location, infected, immune, SimulationConfig.DEFAULT);
+        this(field, location, randomAge, infected, immune, speciesType, SimulationConfig.DEFAULT);
     }
 
     /**
@@ -34,9 +34,9 @@ public abstract class Prey extends Animal
      * @param immmune Intial state if the prey is immune or not
      * @param config Shared simulation configuration.
      */
-    protected Prey(Field field, Location location, boolean infected, boolean immune, SimulationConfig config)
+    protected Prey(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
     {
-        super(field, location, infected, immune, config);
+        super(field, location, randomAge, infected, immune, speciesType, config);
     }
 
     /**

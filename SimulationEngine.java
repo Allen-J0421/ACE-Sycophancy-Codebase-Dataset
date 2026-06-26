@@ -7,18 +7,14 @@ import java.util.Random;
 
 import savannah.config.SimulationConfig;
 import savannah.model.Animal;
-import savannah.model.Cheetah;
 import savannah.model.Field;
-import savannah.model.Giraffe;
-import savannah.model.Lemur;
-import savannah.model.Lion;
 import savannah.model.LivingOrganism;
 import savannah.model.Location;
 import savannah.model.Plant;
 import savannah.model.Randomizer;
+import savannah.model.SpeciesType;
 import savannah.model.Time;
 import savannah.model.Weather;
-import savannah.model.Zebra;
 
 /**
  * Owns the simulation state and advances the world one step at a time.
@@ -108,7 +104,7 @@ public class SimulationEngine
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                plants.add(new Plant(true, field, location, config));
+                plants.add(SpeciesType.PLANT.createPlant(true, field, location, config));
 
                 Animal animal = createInitialAnimal(location, rand);
                 if (animal != null) {
@@ -121,19 +117,19 @@ public class SimulationEngine
     private Animal createInitialAnimal(Location location, Random rand)
     {
         if (rand.nextDouble() <= config.lionCreationProbability) {
-            return new Lion(true, field, location, false, false, config);
+            return SpeciesType.LION.createAnimal(field, location, true, false, false, config);
         }
         if (rand.nextDouble() <= config.cheetahCreationProbability) {
-            return new Cheetah(true, field, location, false, false, config);
+            return SpeciesType.CHEETAH.createAnimal(field, location, true, false, false, config);
         }
         if (rand.nextDouble() <= config.zebraCreationProbability) {
-            return new Zebra(true, field, location, false, false, config);
+            return SpeciesType.ZEBRA.createAnimal(field, location, true, false, false, config);
         }
         if (rand.nextDouble() <= config.giraffeCreationProbability) {
-            return new Giraffe(true, field, location, false, false, config);
+            return SpeciesType.GIRAFFE.createAnimal(field, location, true, false, false, config);
         }
         if (rand.nextDouble() <= config.lemurCreationProbability) {
-            return new Lemur(true, field, location, false, false, config);
+            return SpeciesType.LEMUR.createAnimal(field, location, true, false, false, config);
         }
 
         return null;

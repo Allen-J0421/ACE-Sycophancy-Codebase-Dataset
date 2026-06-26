@@ -51,9 +51,9 @@ public abstract class Animal extends LivingOrganism
      * @param infected Intial state if the animal is infected or not
      * @param immmune Intial state if the animal is immune or not
      */
-    public Animal(Field field, Location location, boolean infected, boolean immune)
+    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType)
     {
-        this(field, location, infected, immune, SimulationConfig.DEFAULT);
+        this(field, location, randomAge, infected, immune, speciesType, SimulationConfig.DEFAULT);
     }
 
     /**
@@ -65,19 +65,28 @@ public abstract class Animal extends LivingOrganism
      * @param immmune Intial state if the animal is immune or not
      * @param config Shared simulation configuration.
      */
-    public Animal(Field field, Location location, boolean infected, boolean immune, SimulationConfig config)
+    public Animal(Field field, Location location, boolean randomAge, boolean infected, boolean immune, SpeciesType speciesType, SimulationConfig config)
     {
-        super(field, location, config);
-        alive = true;
+        super(field, location, speciesType, config);
         this.infected = infected;
         this.immune = immune;
-        
+
+        SimulationConfig.SpeciesConfig speciesConfig = speciesType.animalConfig(config);
+        breedingAge = speciesConfig.breedingAge;
+        maxAge = speciesConfig.maxAge;
+        breedingProbability = speciesConfig.breedingProbability;
+        maxLitterSize = speciesConfig.maxLitterSize;
+        maxFoodLevel = speciesConfig.maxFoodLevel;
+        foodValue = speciesConfig.foodValue;
+        movementProbability = speciesConfig.movementProbability;
         diseaseProbability = config.diseaseProbability;
         diseaseSpreadProbability = config.diseaseSpreadProbability;
         deathFromInfectionProbability = config.deathFromInfectionProbability;
         immuneProbability = config.immuneProbability;
-        
+
         isFemale = rand.nextBoolean();
+        age = speciesType.initialAge(randomAge, rand, config);
+        foodLevel = speciesType.initialFoodLevel(randomAge, rand, config);
     }
     
     /**
@@ -111,7 +120,7 @@ public abstract class Animal extends LivingOrganism
         // of losing immunity.
         else
         {
-        if(rand.nextDouble() <= config.immuneLossProbability) {
+            if(rand.nextDouble() <= config.immuneLossProbability) {
                 immune = false;
             }
         }
@@ -305,7 +314,11 @@ public abstract class Animal extends LivingOrganism
      *
      * @return A new animal of the same species.
      */
-    protected abstract Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity);
+    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
+    {
+        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
+        return speciesType.createAnimal(field, location, false, healthState.isInfected(), healthState.isImmune(), config);
+    }
 
     /**
      * Determine how infection and immunity are inherited by an offspring.
@@ -378,15 +391,9 @@ public abstract class Animal extends LivingOrganism
         {
             Location where = it.next();
             Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            Class typeOfOtherAnimal = null;
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
-            {
-                typeOfOtherAnimal  = field.getObjectAt(where, Animal.class).getClass();
-            }
-            
-            //checks to make sure they are of the same species
-            if(this.getClass().equals(typeOfOtherAnimal)) 
+
+            // checks to make sure they are of the same species
+            if(animal != null && speciesType == animal.getSpeciesType()) 
             {
                 //checks to make the other animal is also a male
                 if(animal.getIsFemale() == false) 

@@ -38,32 +38,6 @@ public class Zebra extends Prey
      */
     public Zebra(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
     {
-        super(field, location, isInfected, isImmune, config);
-        
-        breedingAge = config.zebra.breedingAge;
-        maxAge = config.zebra.maxAge;
-        breedingProbability = config.zebra.breedingProbability;
-        maxLitterSize = config.zebra.maxLitterSize;
-        maxFoodLevel = config.zebra.maxFoodLevel;
-        foodValue = config.zebra.foodValue;
-        movementProbability = config.zebra.movementProbability;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(config.zebra.maxAge);
-            foodLevel = rand.nextInt(config.zebra.maxFoodLevel);
-        }
-        else
-        {
-            age = 0;
-            foodLevel = (int) (config.zebra.newbornFoodLevelFraction * config.zebra.maxFoodLevel);
-        }
-    }
-
-    @Override
-    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
-    {
-        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return new Zebra(false, field, location, healthState.isInfected(), healthState.isImmune());
+        super(field, location, randomAge, isInfected, isImmune, SpeciesType.ZEBRA, config);
     }
 }

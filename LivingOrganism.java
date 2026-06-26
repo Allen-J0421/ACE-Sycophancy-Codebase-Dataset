@@ -12,6 +12,8 @@ import savannah.config.SimulationConfig;
  */
 public abstract class LivingOrganism
 {
+    // The species of this organism.
+    protected final SpeciesType speciesType;
     // Whether the organism is alive or not.
     protected boolean alive;
     // The field the organism is stored in.
@@ -32,9 +34,9 @@ public abstract class LivingOrganism
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    protected LivingOrganism(Field field, Location location) 
+    protected LivingOrganism(Field field, Location location, SpeciesType speciesType) 
     {
-        this(field, location, SimulationConfig.DEFAULT);
+        this(field, location, speciesType, SimulationConfig.DEFAULT);
     }
 
     /**
@@ -44,11 +46,12 @@ public abstract class LivingOrganism
      * @param location The location within the field.
      * @param config Shared simulation configuration.
      */
-    protected LivingOrganism(Field field, Location location, SimulationConfig config) 
+    protected LivingOrganism(Field field, Location location, SpeciesType speciesType, SimulationConfig config) 
     {
         alive = true;
         this.field = field;
         this.config = config;
+        this.speciesType = speciesType;
         setLocation(location);
     }
     
@@ -72,6 +75,16 @@ public abstract class LivingOrganism
     public boolean isAlive()
     {
         return alive;
+    }
+
+    /**
+     * Return the organism's species.
+     *
+     * @return The organism's species.
+     */
+    public SpeciesType getSpeciesType()
+    {
+        return speciesType;
     }
     
     /**
@@ -122,6 +135,5 @@ public abstract class LivingOrganism
         return field;
     }
 }
-
 
 

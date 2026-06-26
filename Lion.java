@@ -38,38 +38,6 @@ public class Lion extends Predator
      */
     public Lion(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
     {
-        super(field, location, isInfected, isImmune, config);
-        
-        preyCatchingProbability = config.lion.preyCatchingProbability;
-        breedingAge = config.lion.breedingAge;
-        maxAge = config.lion.maxAge;
-        breedingProbability = config.lion.breedingProbability;
-        maxLitterSize = config.lion.maxLitterSize;
-        maxFoodLevel = config.lion.maxFoodLevel;
-        foodValue = config.lion.foodValue;
-        movementProbability = config.lion.movementProbability;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(config.lion.maxAge);
-            foodLevel = rand.nextInt(config.lion.maxFoodLevel);
-        }
-        else
-        {
-            age = 0;
-            
-            // Chooses a random percentage between 0-18% of the max
-            // food level to start at - prevents a self-sustaining
-            // loop and add variability.
-            double percentageOfMaxFoodLevel = rand.nextDouble() * config.lion.randomNewbornFoodLevelMaxFraction;
-            foodLevel = (int) (percentageOfMaxFoodLevel * config.lion.maxFoodLevel);
-        }
-    }
-
-    @Override
-    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
-    {
-        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return new Lion(false, field, location, healthState.isInfected(), healthState.isImmune());
+        super(field, location, randomAge, isInfected, isImmune, SpeciesType.LION, config);
     }
 }

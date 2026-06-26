@@ -38,32 +38,6 @@ public class Giraffe extends Prey
      */
     public Giraffe(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
     {
-        super(field, location, isInfected, isImmune, config);
-        
-        breedingAge = config.giraffe.breedingAge;
-        maxAge = config.giraffe.maxAge;
-        breedingProbability = config.giraffe.breedingProbability;
-        maxLitterSize = config.giraffe.maxLitterSize;
-        maxFoodLevel = config.giraffe.maxFoodLevel;
-        foodValue = config.giraffe.foodValue;
-        movementProbability = config.giraffe.movementProbability;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(config.giraffe.maxAge);
-            foodLevel = rand.nextInt(config.giraffe.maxFoodLevel);
-        }
-        else
-        {
-            age = 0;
-            foodLevel = (int) (config.giraffe.newbornFoodLevelFraction * config.giraffe.maxFoodLevel);
-        }
-    }
-
-    @Override
-    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
-    {
-        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return new Giraffe(false, field, location, healthState.isInfected(), healthState.isImmune());
+        super(field, location, randomAge, isInfected, isImmune, SpeciesType.GIRAFFE, config);
     }
 }

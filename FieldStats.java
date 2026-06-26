@@ -1,6 +1,6 @@
 package savannah.model;
 
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Map;
 public class FieldStats
 {
     // Counters for each type of entity (lion, zebra, etc.) in the simulation.
-    private Map<Class<?>, Counter> counters;
+    private Map<SpeciesType, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -24,7 +24,7 @@ public class FieldStats
     {
         // Set up a collection for counters for each type of animal that
         // we might find
-        counters = new LinkedHashMap<>();
+        counters = new EnumMap<>(SpeciesType.class);
         countsValid = true;
     }
 
@@ -41,7 +41,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
+        for(SpeciesType key : counters.keySet()) {
             Counter info = counters.get(key);
             buffer.append(info.getName());
             buffer.append(": ");
@@ -58,7 +58,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
+        for(SpeciesType key : counters.keySet()) {
             Counter count = counters.get(key);
             count.reset();
         }
@@ -67,16 +67,16 @@ public class FieldStats
     /**
      * Increment the count for one object.
      * 
-     * @param objectType The class of animal to increment.
+     * @param speciesType The species to increment.
      */
-    public void incrementCount(Class<?> objectType)
+    public void incrementCount(SpeciesType speciesType)
     {
-        Counter count = counters.get(objectType);
+        Counter count = counters.get(speciesType);
         if(count == null) {
             // We do not have a counter for this species yet.
             // Create one.
-            count = new Counter(objectType.getName());
-            counters.put(objectType, count);
+            count = new Counter(speciesType.getDisplayName());
+            counters.put(speciesType, count);
         }
         count.increment();
     }
@@ -104,7 +104,7 @@ public class FieldStats
             generateCounts(field);
         }
         
-        for(Class key : counters.keySet()) 
+        for(SpeciesType key : counters.keySet()) 
         {
             Counter info = counters.get(key);
             if(info.getCount() > 0) 
@@ -131,11 +131,16 @@ public class FieldStats
         {
             for(int col = 0; col < field.getWidth(); col++) 
             {
-                Object object = field.getObjectAt(row, col, Animal.class);
-                
-                if(object != null) 
+                Animal animal = (Animal) field.getObjectAt(row, col, Animal.class);
+                Plant plant = (Plant) field.getObjectAt(row, col, Plant.class);
+
+                if(animal != null) 
                 {
-                    incrementCount(object.getClass());
+                    incrementCount(animal.getSpeciesType());
+                }
+                if (plant != null)
+                {
+                    incrementCount(plant.getSpeciesType());
                 }
             }
         }

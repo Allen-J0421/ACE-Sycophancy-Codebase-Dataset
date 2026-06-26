@@ -1,6 +1,5 @@
 package savannah.model;
 
-import java.util.Iterator;
 import java.util.List;
 
 import savannah.config.SimulationConfig;
@@ -40,20 +39,10 @@ public class Plant extends LivingOrganism
      */
     public Plant(boolean randomHealthPercentage, Field field, Location location, SimulationConfig config) 
     {
-        super(field, location, config);
-        
-        foodValue = config.plant.foodValue;
-        
-        healthPercentage = config.plant.newbornHealthFraction;
-        if (randomHealthPercentage) 
-        {
-            healthPercentage = rand.nextDouble();
-            
-            if (healthPercentage < config.plant.minimumRandomHealthFraction)
-            {
-                healthPercentage = config.plant.minimumRandomHealthFraction;
-            }
-        }
+        super(field, location, SpeciesType.PLANT, config);
+
+        foodValue = speciesType.plantConfig(config).foodValue;
+        healthPercentage = speciesType.initialPlantHealth(randomHealthPercentage, rand, config);
     }
     
     /**
@@ -71,24 +60,7 @@ public class Plant extends LivingOrganism
         {
             if(isAlive()) 
             {
-                switch (Weather.getWeather())
-                {
-                    case Sunny:
-                        spreadProbability = config.sunnyPlantSpreadProbability;
-                        break;
-                    case Rainy:
-                        spreadProbability = config.rainyPlantSpreadProbability;
-                        break;
-                    case Foggy:
-                        spreadProbability = config.foggyPlantSpreadProbability;
-                        break;
-                    case Cloudy:
-                        spreadProbability = config.cloudyPlantSpreadProbability;
-                        break;
-                    case Clear:
-                        spreadProbability = config.clearPlantSpreadProbability;
-                        break;
-                }
+                spreadProbability = speciesType.getPlantSpreadProbability(Weather.getWeather(), config);
                 
                 if (rand.nextDouble() < spreadProbability) 
                 {
@@ -104,7 +76,7 @@ public class Plant extends LivingOrganism
      */
     protected int beEaten() 
     {
-        healthPercentage -= config.plant.percentageEaten;
+        healthPercentage -= speciesType.plantConfig(config).percentageEaten;
         if (healthPercentage <= 0)
         {
             setDead();
@@ -120,7 +92,7 @@ public class Plant extends LivingOrganism
      */
     protected void incrementAge() 
     {
-        healthPercentage += config.plant.growthRate;
+        healthPercentage += speciesType.plantConfig(config).growthRate;
         if (healthPercentage > 1.0) 
         {
             healthPercentage = 1.0;
@@ -191,10 +163,6 @@ public class Plant extends LivingOrganism
     private Plant createOffspring(List<Location> free) 
     {
         Location loc = free.remove(0);
-        Plant offspring = null;
-        
-        offspring = new Plant(false, field, loc);
-        
-        return offspring;
+        return speciesType.createPlant(false, field, loc, config);
     }
 }

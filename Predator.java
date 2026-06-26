@@ -22,9 +22,9 @@ public abstract class Predator extends Animal
      * @param infected : intial state if the prey is infected or not
      * @param immmune : intial state if the prey is immune or not
      */
-    protected Predator(Field field, Location location, boolean isInfected, boolean isImmune)
+    protected Predator(Field field, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType)
     {
-        this(field, location, isInfected, isImmune, SimulationConfig.DEFAULT);
+        this(field, location, randomAge, isInfected, isImmune, speciesType, SimulationConfig.DEFAULT);
     }
 
     /**
@@ -36,9 +36,10 @@ public abstract class Predator extends Animal
      * @param immmune : intial state if the prey is immune or not
      * @param config Shared simulation configuration.
      */
-    protected Predator(Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
+    protected Predator(Field field, Location location, boolean randomAge, boolean isInfected, boolean isImmune, SpeciesType speciesType, SimulationConfig config)
     {
-        super(field, location, isInfected, isImmune, config);
+        super(field, location, randomAge, isInfected, isImmune, speciesType, config);
+        preyCatchingProbability = speciesType.animalConfig(config).preyCatchingProbability;
     }
     
     /**

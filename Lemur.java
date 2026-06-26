@@ -38,32 +38,6 @@ public class Lemur extends Prey
      */
     public Lemur(boolean randomAge, Field field, Location location, boolean isInfected, boolean isImmune, SimulationConfig config)
     {
-        super(field, location, isInfected, isImmune, config);
-        
-        breedingAge = config.lemur.breedingAge;
-        maxAge = config.lemur.maxAge;
-        breedingProbability = config.lemur.breedingProbability;
-        maxLitterSize = config.lemur.maxLitterSize;
-        maxFoodLevel = config.lemur.maxFoodLevel;
-        foodValue = config.lemur.foodValue;
-        movementProbability = config.lemur.movementProbability;
-        
-        if (randomAge) 
-        {
-            age = rand.nextInt(config.lemur.maxAge);
-            foodLevel = rand.nextInt(config.lemur.maxFoodLevel);
-        }
-        else
-        {
-            age = 0;
-            foodLevel = (int) (config.lemur.newbornFoodLevelFraction * config.lemur.maxFoodLevel);
-        }
-    }
-
-    @Override
-    protected Animal createOffspring(Location location, boolean inheritedInfection, boolean inheritedImmunity)
-    {
-        OffspringHealthState healthState = inheritHealthState(inheritedInfection, inheritedImmunity);
-        return new Lemur(false, field, location, healthState.isInfected(), healthState.isImmune());
+        super(field, location, randomAge, isInfected, isImmune, SpeciesType.LEMUR, config);
     }
 }

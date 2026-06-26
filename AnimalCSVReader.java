@@ -11,6 +11,19 @@ public class AnimalCSVReader extends CSVReader
     private static final String FILE_NAME = "animals.csv";
     // String to be recognized as a boolean value of true.
     private static final String TRUE_SYMBOL = "true";
+    private static final int EXPECTED_COLUMN_COUNT = 12;
+    private static final int NAME_COLUMN = 0;
+    private static final int PREDATOR_COLUMN = 1;
+    private static final int MAXIMUM_TEMPERATURE_COLUMN = 2;
+    private static final int MINIMUM_TEMPERATURE_COLUMN = 3;
+    private static final int MAXIMUM_AGE_COLUMN = 4;
+    private static final int BREEDING_AGE_COLUMN = 5;
+    private static final int BREEDING_PROBABILITY_COLUMN = 6;
+    private static final int MAX_LITTER_SIZE_COLUMN = 7;
+    private static final int NUTRITIONAL_VALUE_COLUMN = 8;
+    private static final int STRENGTH_COLUMN = 9;
+    private static final int HIBERNATES_COLUMN = 10;
+    private static final int NOCTURNAL_COLUMN = 11;
     // Parsed animal profile from the latest CSV extraction.
     private AnimalProfile animalProfile;
     // Tool to alert user about any potential error.
@@ -32,22 +45,22 @@ public class AnimalCSVReader extends CSVReader
      */
     protected void populateFields(String[] extractedData)
     {
-        if (extractedData.length != 12) {
+        if (extractedData.length != EXPECTED_COLUMN_COUNT) {
             errorThrower.throwMessage("Animal .csv issue, please restart.");
         }
         animalProfile = new AnimalProfile(
-            extractedData[0],
-            extractedData[1].equals(TRUE_SYMBOL),
-            Integer.valueOf(extractedData[2]),
-            Integer.valueOf(extractedData[3]),
-            Integer.valueOf(extractedData[4]),
-            Integer.valueOf(extractedData[5]),
-            Double.valueOf(extractedData[6]),
-            Integer.valueOf(extractedData[7]),
-            Integer.valueOf(extractedData[8]),
-            Integer.valueOf(extractedData[9]),
-            extractedData[10].equals(TRUE_SYMBOL),
-            extractedData[11].equals(TRUE_SYMBOL)
+            extractedData[NAME_COLUMN],
+            extractedData[PREDATOR_COLUMN].equals(TRUE_SYMBOL),
+            Integer.valueOf(extractedData[MAXIMUM_TEMPERATURE_COLUMN]),
+            Integer.valueOf(extractedData[MINIMUM_TEMPERATURE_COLUMN]),
+            Integer.valueOf(extractedData[MAXIMUM_AGE_COLUMN]),
+            Integer.valueOf(extractedData[BREEDING_AGE_COLUMN]),
+            Double.valueOf(extractedData[BREEDING_PROBABILITY_COLUMN]),
+            Integer.valueOf(extractedData[MAX_LITTER_SIZE_COLUMN]),
+            Integer.valueOf(extractedData[NUTRITIONAL_VALUE_COLUMN]),
+            Integer.valueOf(extractedData[STRENGTH_COLUMN]),
+            extractedData[HIBERNATES_COLUMN].equals(TRUE_SYMBOL),
+            extractedData[NOCTURNAL_COLUMN].equals(TRUE_SYMBOL)
         );
     }
 

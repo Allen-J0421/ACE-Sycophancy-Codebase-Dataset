@@ -9,6 +9,13 @@ public class PlantCSVReader extends CSVReader
 {
     // Name of the file containing plant data.
     private static final String FILE_NAME = "plants.csv";
+    private static final int EXPECTED_COLUMN_COUNT = 6;
+    private static final int NAME_COLUMN = 0;
+    private static final int MAXIMUM_TEMPERATURE_COLUMN = 1;
+    private static final int MINIMUM_TEMPERATURE_COLUMN = 2;
+    private static final int NUTRITIONAL_VALUE_COLUMN = 3;
+    private static final int REPRODUCTION_PROBABILITY_COLUMN = 4;
+    private static final int MAX_HEALTH_COLUMN = 5;
     // Parsed plant profile from the latest CSV extraction.
     private PlantProfile plantProfile;
     // Tool to alert user about any potential error.
@@ -31,16 +38,16 @@ public class PlantCSVReader extends CSVReader
      */
     protected void populateFields(String[] extractedData)
     {
-        if (extractedData.length != 6) {
+        if (extractedData.length != EXPECTED_COLUMN_COUNT) {
             errorThrower.throwMessage("Plant .csv issue, please restart.");
         }
         plantProfile = new PlantProfile(
-            extractedData[0],
-            Integer.valueOf(extractedData[1]),
-            Integer.valueOf(extractedData[2]),
-            Integer.valueOf(extractedData[3]),
-            Double.valueOf(extractedData[4]),
-            Integer.valueOf(extractedData[5])
+            extractedData[NAME_COLUMN],
+            Integer.valueOf(extractedData[MAXIMUM_TEMPERATURE_COLUMN]),
+            Integer.valueOf(extractedData[MINIMUM_TEMPERATURE_COLUMN]),
+            Integer.valueOf(extractedData[NUTRITIONAL_VALUE_COLUMN]),
+            Double.valueOf(extractedData[REPRODUCTION_PROBABILITY_COLUMN]),
+            Integer.valueOf(extractedData[MAX_HEALTH_COLUMN])
         );
     }
 

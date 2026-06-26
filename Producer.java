@@ -8,7 +8,8 @@ import java.util.List;
 public abstract class Producer extends Actor
 {
     // The % of the normal breeding probability when there is no rain:
-    private double noRainBreedingProbabilityPercentage = 0.2;
+    private static final double NO_RAIN_BREEDING_PROBABILITY_MULTIPLIER = 0.2;
+
     /**
      * Create a new producer at a location in the field.
      * 
@@ -17,10 +18,10 @@ public abstract class Producer extends Actor
      * @param consumptionWorth The worth of the producer if consumed.
      */
     public Producer(Field field, Location location, int consumptionWorth,
-                    double breedingProbability, int maxBirthsAtOnce,int maxAge)
+                    double breedingProbability, int maxBirthsAtOnce, int maxAge)
     {
         super(field, location, consumptionWorth, breedingProbability,
-              maxBirthsAtOnce,0,maxAge);
+              maxBirthsAtOnce, 0, maxAge);
         currentAge = 0;
     }
     
@@ -55,23 +56,27 @@ public abstract class Producer extends Actor
         int births = breed();
         
         // Add each birth into an adjacent location:
-        for (int b = 0; b < births && free.size() > 0; b++)
+        for (int b = 0; b < births && !free.isEmpty(); b++)
         {
             Location location = free.remove(0);
-            
-            try
-            {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(Field.class,
-                                                      Location.class)
-                              .newInstance(field, location);
-                
-                newProducers.add(child);
-            }
-            catch (java.lang.Exception e)
-            {
-                continue;
-            }
+            newProducers.add(createChild(field, location));
+        }
+    }
+
+    /**
+     * Create a child producer of the same species.
+     */
+    private Actor createChild(Field field, Location location)
+    {
+        try
+        {
+            return this.getClass()
+                       .getDeclaredConstructor(Field.class, Location.class)
+                       .newInstance(field, location);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException("Unable to create producer child.", e);
         }
     }
         
@@ -88,7 +93,7 @@ public abstract class Producer extends Actor
         // Decrease breeding probability if there is no rain:
         double actualBreedingProbability = getBreedingProbability();
         
-        if (!WeatherSystem.getIsRaining()) actualBreedingProbability *= noRainBreedingProbabilityPercentage;
+        if (!WeatherSystem.getIsRaining()) actualBreedingProbability *= NO_RAIN_BREEDING_PROBABILITY_MULTIPLIER;
         
         // Calculate number of births:
         if (rand.nextDouble() <= actualBreedingProbability)
@@ -96,6 +101,7 @@ public abstract class Producer extends Actor
         
         return births;
     }
+
     protected boolean becomeCarcass()
     {
         return false;

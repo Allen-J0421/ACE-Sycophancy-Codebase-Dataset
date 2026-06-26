@@ -168,7 +168,7 @@ public abstract class Consumer extends Actor
      */
     protected void setStartingAge(boolean randomAge)
     {
-        if (randomAge) currentAge = rand.nextInt(maxAge) ;
+        if (randomAge) currentAge = rand.nextInt(maxAge);
         else           currentAge = 0;
     }
     
@@ -191,26 +191,27 @@ public abstract class Consumer extends Actor
         // Work out the number of births this producer will have this step:
         int births = breed();
         // Add each birth into an adjacent location:
-        for (int b = 0; b < births && free.size() > 0; b++)
+        for (int b = 0; b < births && !free.isEmpty(); b++)
         {
             Location location = free.remove(0);
-            
-            try
-            {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(boolean.class,
-                                                      Field.class,
-                                                      Location.class)
-                              .newInstance(true, field, location);
-                
-                newConsumers.add(child);
-            }
-            catch (java.lang.Exception e)
-            {
-                System.out.println("Error!");
-                
-                continue;
-            }
+            newConsumers.add(createChild(field, location));
+        }
+    }
+
+    /**
+     * Create a child consumer of the same species.
+     */
+    private Actor createChild(Field field, Location location)
+    {
+        try
+        {
+            return this.getClass()
+                       .getDeclaredConstructor(boolean.class, Field.class, Location.class)
+                       .newInstance(true, field, location);
+        }
+        catch (ReflectiveOperationException e)
+        {
+            throw new IllegalStateException("Unable to create consumer child.", e);
         }
     }
     

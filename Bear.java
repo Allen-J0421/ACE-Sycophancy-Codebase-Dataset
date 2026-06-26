@@ -55,6 +55,7 @@ public class Bear extends CarnivoreAnimal
      * 
      * @param newBears the new bears to be born in case the sheep succesfully mates.
      */
+    @Override
     public void act(List<Actor> newBears, Weather weather, DayState dayState)
     {
         // Bear will not act at night.
@@ -72,6 +73,7 @@ public class Bear extends CarnivoreAnimal
     /**
      * Create a newborn bear.
      */
+    @Override
     protected Animal createChild(Location location, Gender gender)
     {
         return new Bear(false, getField(), location, gender);
@@ -82,6 +84,7 @@ public class Bear extends CarnivoreAnimal
      * 
      * @return the feeding value.
      */
+    @Override
     public int getFeedingValue()
     {
         return FEEDING_VALUE;

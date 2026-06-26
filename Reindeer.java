@@ -47,6 +47,7 @@ public class Reindeer extends HerbivoreAnimal
      * 
      * @param newReindeers the new reeindeers to be born in case the reindeer succesfully mates
      */
+    @Override
     public void act(List<Actor> newReindeers, Weather weather, DayState dayState) 
     {
         actAsHerbivore(newReindeers, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, TARGET_PLANTS);
@@ -55,6 +56,7 @@ public class Reindeer extends HerbivoreAnimal
     /**
      * Create a newborn reindeer.
      */
+    @Override
     protected Animal createChild(Location location, Gender gender)
     {
         return new Reindeer(false, getField(), location, gender);
@@ -64,6 +66,7 @@ public class Reindeer extends HerbivoreAnimal
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value
      */
+    @Override
     public int getFeedingValue()
     {
         return FEEDING_VALUE;

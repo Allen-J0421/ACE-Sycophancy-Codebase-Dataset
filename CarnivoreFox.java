@@ -55,6 +55,7 @@ public class CarnivoreFox extends CarnivoreAnimal
      * 
      * @param newFoxes the new sheeps to be born in case the sheep succesfully mates.
      */
+    @Override
     public void act(List<Actor> newFoxes, Weather weather, DayState dayState)
     {
         // Fox will not act at night.
@@ -70,6 +71,7 @@ public class CarnivoreFox extends CarnivoreAnimal
     /**
      * Create a newborn fox.
      */
+    @Override
     protected Animal createChild(Location location, Gender gender)
     {
         return new CarnivoreFox(false, getField(), location, gender);
@@ -79,6 +81,7 @@ public class CarnivoreFox extends CarnivoreAnimal
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value
      */
+    @Override
     public int getFeedingValue()
     {
         return FEEDING_VALUE;

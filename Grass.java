@@ -50,6 +50,7 @@ public class Grass extends Plant
     /**
      * Create new grass.
      */
+    @Override
     protected Plant createOffspring(Location location)
     {
         return new Grass(false, field, location);

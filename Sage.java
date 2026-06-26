@@ -49,6 +49,7 @@ public class Sage extends Plant
     /**
      * Create new sage.
      */
+    @Override
     protected Plant createOffspring(Location location)
     {
         return new Sage(false, field, location);

@@ -62,6 +62,7 @@ public abstract class Plant implements Actor
      * @param dayState The different state of the day
      */
     
+    @Override
     public abstract void act(List<Actor> newPlants, Weather weather, DayState dayState);
     
     /**
@@ -174,6 +175,7 @@ public abstract class Plant implements Actor
      * 
      * @return flag conveying if the plant is alive.
      */
+    @Override
     public boolean isAlive()
     {
         return alive;

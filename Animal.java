@@ -123,6 +123,7 @@ public abstract class Animal implements Actor
      * @param weather The current weather
      * @param dayState The different state of the day
      */
+    @Override
     abstract public void act(List<Actor> newAnimals, Weather weather, DayState dayState);
     
     /**
@@ -243,6 +244,7 @@ public abstract class Animal implements Actor
      * 
      * @return true if the animal is still alive.
      */
+    @Override
     public boolean isAlive()
     {
         return alive;

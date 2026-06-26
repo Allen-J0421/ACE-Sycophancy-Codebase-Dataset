@@ -47,6 +47,7 @@ public class Sheep extends HerbivoreAnimal
      * 
      * @param newSheeps the new sheeps to be born in case the sheep succesfully mates.
      */
+    @Override
     public void act(List<Actor> newSheeps, Weather weather, DayState dayState) 
     {
         actAsHerbivore(newSheeps, MAX_AGE, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE, TARGET_PLANTS);
@@ -55,6 +56,7 @@ public class Sheep extends HerbivoreAnimal
     /**
      * Create a newborn sheep.
      */
+    @Override
     protected Animal createChild(Location location, Gender gender)
     {
         return new Sheep(false, getField(), location, gender);
@@ -64,6 +66,7 @@ public class Sheep extends HerbivoreAnimal
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value
      */
+    @Override
     public int getFeedingValue()
     {
         return FEEDING_VALUE;

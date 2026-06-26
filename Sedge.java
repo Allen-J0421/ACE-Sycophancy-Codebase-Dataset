@@ -49,6 +49,7 @@ public class Sedge extends Plant
     /**
      * Create new sedge.
      */
+    @Override
     protected Plant createOffspring(Location location)
     {
         return new Sedge(false, field, location);

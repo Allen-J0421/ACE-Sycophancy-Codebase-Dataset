@@ -39,15 +39,7 @@ public class Ant extends Animal
      */
     public Ant(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ACACIA_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ACACIA_FOOD_VALUE);
-        }
+        initializeAnimal(randomAge, rand, MAX_AGE, ACACIA_FOOD_VALUE);
     }
 
     /**

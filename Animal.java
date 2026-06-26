@@ -72,6 +72,25 @@ public abstract class Animal
     abstract protected Animal createYoung(Field field, Location location);
 
     /**
+     * Apply the common initialization for a new animal instance.
+     * @param randomAge If true, use random age and food level.
+     * @param random The random source for initial state.
+     * @param maxAge The maximum age for the species.
+     * @param foodValue The initial or maximum food value for the species.
+     */
+    protected final void initializeAnimal(boolean randomAge, Random random, int maxAge, int foodValue) {
+        setGender();
+        if(randomAge) {
+            setAge(random.nextInt(maxAge));
+            setFoodLevel(random.nextInt(foodValue));
+        }
+        else {
+            setAge(0);
+            setFoodLevel(foodValue);
+        }
+    }
+
+    /**
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
      */

@@ -36,15 +36,7 @@ public class Emu extends Animal
      */
     public Emu(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(GRASS_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-           setFoodLevel(GRASS_FOOD_VALUE);
-        }
+        initializeAnimal(randomAge, rand, MAX_AGE, GRASS_FOOD_VALUE);
     }
 
     /**

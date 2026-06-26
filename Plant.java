@@ -42,6 +42,24 @@ public abstract class Plant
     abstract public void act(List<Plant> newPlants);
 
     /**
+     * Create a new plant of the current species.
+     * @param field The field in which the plant will live.
+     * @param location The plant location.
+     * @return A new plant of the current species.
+     */
+    abstract protected Plant createYoung(Field field, Location location);
+
+    /**
+     * @return The probability that this plant reproduces in one step.
+     */
+    abstract protected double getReproducingProbability();
+
+    /**
+     * @return The maximum number of offspring this plant can produce.
+     */
+    abstract protected int getMaxOffspringSize();
+
+    /**
      * Check whether the plant is alive or not.
      * @return true if the plant is still alive.
      */
@@ -121,5 +139,26 @@ public abstract class Plant
             }
         }
         return offspring;
+    }
+
+    /**
+     * Execute the common plant lifecycle for one simulation step.
+     * @param newPlants A list to receive newly created plants.
+     */
+    protected final void performAct(List<Plant> newPlants) {
+        if(isAlive()) {
+            grow(newPlants);
+        }
+    }
+
+    private void grow(List<Plant> newPlants) {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int offspring = breed(getReproducingProbability(), getMaxOffspringSize());
+        for(int b = 0; b < offspring && free.size() > 0; b++) {
+            Location location = free.remove(0);
+            Plant young = createYoung(field, location);
+            newPlants.add(young);
+        }
     }
 }

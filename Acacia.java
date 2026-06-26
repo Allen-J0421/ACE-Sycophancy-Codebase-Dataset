@@ -33,24 +33,18 @@ public class Acacia extends Plant
      * @param newAcacias A list to return newly produced acacia.
      */
     public void act(List<Plant> newAcacias) {
-        if(isAlive()) {
-            grow(newAcacias);
-        }
+        performAct(newAcacias);
     }
 
-    /**
-     * Check whether or not this acacia is to reproduce at this step.
-     * New acacias will be made into free adjacent locations.
-     * @param newAcacias A list to return newly produced acacias.
-     */
-    private void grow(List<Plant> newAcacias) {
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int offspring = breed(REPRODUCING_PROBABILITY, MAX_OFFSPRING_SIZE);
-        for(int b = 0; b < offspring && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Acacia young = new Acacia(field, loc);
-            newAcacias.add(young);
-        }
+    protected Plant createYoung(Field field, Location location) {
+        return new Acacia(field, location);
+    }
+
+    protected double getReproducingProbability() {
+        return REPRODUCING_PROBABILITY;
+    }
+
+    protected int getMaxOffspringSize() {
+        return MAX_OFFSPRING_SIZE;
     }
 }

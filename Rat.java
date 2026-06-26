@@ -36,15 +36,7 @@ public class Rat extends Animal
      */
     public Rat(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ANT_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ANT_FOOD_VALUE);
-        }
+        initializeAnimal(randomAge, rand, MAX_AGE, ANT_FOOD_VALUE);
     }
 
     /**

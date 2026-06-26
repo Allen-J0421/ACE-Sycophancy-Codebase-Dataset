@@ -32,24 +32,18 @@ public class Grass extends Plant
      * @param newGrass A list to return newly produced grasses.
      */
     public void act(List<Plant> newGrass) {
-        if(isAlive()) {
-            grow(newGrass);
-        }
+        performAct(newGrass);
     }
 
-    /**
-     * Check whether or not this grass is to reproduce at this step.
-     * New grass plants will be created into free adjacent locations.
-     * @param newGrass A list to return newly produced grass.
-     */
-    private void grow(List<Plant> newGrass) {
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int offspring = breed(REPRODUCING_PROBABILITY, MAX_OFFSPRING_SIZE);
-        for(int b = 0; b < offspring && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Grass young = new Grass(field, loc);
-            newGrass.add(young);
-        }
+    protected Plant createYoung(Field field, Location location) {
+        return new Grass(field, location);
+    }
+
+    protected double getReproducingProbability() {
+        return REPRODUCING_PROBABILITY;
+    }
+
+    protected int getMaxOffspringSize() {
+        return MAX_OFFSPRING_SIZE;
     }
 }

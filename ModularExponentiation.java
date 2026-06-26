@@ -1,8 +1,8 @@
-final class ModularExponentiation {
+public final class ModularExponentiation {
     private ModularExponentiation() {
     }
 
-    public static int powMod(int base, int exponent, int modulus) {
+    public static int modPow(int base, int exponent, int modulus) {
         validateInputs(exponent, modulus);
 
         int normalizedBase = normalizeBase(base, modulus);
@@ -19,6 +19,10 @@ final class ModularExponentiation {
         }
 
         return (int) result;
+    }
+
+    public static int powMod(int base, int exponent, int modulus) {
+        return modPow(base, exponent, modulus);
     }
 
     private static void validateInputs(int exponent, int modulus) {
@@ -48,6 +52,6 @@ final class ModularExponentiation {
         int exponent = 2;
         int modulus = 4;
 
-        System.out.println(powMod(base, exponent, modulus));
+        System.out.println(modPow(base, exponent, modulus));
     }
 }

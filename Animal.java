@@ -77,21 +77,12 @@ public abstract class Animal extends Organism implements AbleToEat {
     }
 
     /**
-     * Getter method returning the gender of this animal.
-     *
-     * @return The gender of the animal.
-     */
-    private Gender getGender() {
-        return this.gender;
-    }
-
-    /**
      * Returns if the animal is a male or not.
      *
      * @return Whether the animal's gender is male or not.
      */
     protected boolean isMale() {
-        return getGender() == Gender.MALE;
+        return gender.isMale();
     }
 
     /**

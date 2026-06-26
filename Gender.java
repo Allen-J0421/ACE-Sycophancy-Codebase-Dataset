@@ -12,6 +12,15 @@ public enum Gender {
     FEMALE;
 
     /**
+     * Returns whether this gender is male.
+     *
+     * @return true if this gender is MALE.
+     */
+    public boolean isMale() {
+        return this == MALE;
+    }
+
+    /**
      * Returns a random Gender from all possible choices.
      *
      * @return A Gender.

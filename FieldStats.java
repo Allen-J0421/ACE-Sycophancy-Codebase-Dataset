@@ -64,7 +64,7 @@ public class FieldStats
      */
     public boolean isViable(Field field)
     {
-        return field.getActivePopulationTypeCount() > 1;
+        return field.getPopulationManager().getActivePopulationTypeCount() > 1;
     }
 
     /**
@@ -74,7 +74,7 @@ public class FieldStats
     {
         reset();
 
-        Map<Class<?>, Integer> populations = field.getPopulationCounts();
+        Map<Class<?>, Integer> populations = field.getPopulationManager().getPopulationCounts();
         populations.entrySet().stream()
             .sorted(Comparator.comparing(entry -> entry.getKey().getName()))
             .forEach(entry -> {

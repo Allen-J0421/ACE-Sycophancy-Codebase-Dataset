@@ -1,9 +1,7 @@
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -25,8 +23,8 @@ public class Field
     private final Time time;
     // The weather system for this field.
     private final Weather weather;
-    // Current populations by concrete organism type.
-    private Map<Class<?>, Integer> populationCounts;
+    // Population bookkeeping for organisms stored in the field.
+    private final PopulationManager populationManager;
 
     /**
      * Represent a field of the given dimensions.
@@ -41,7 +39,7 @@ public class Field
         field = new GridSpace[depth][width];
         this.time = time;
         this.weather = weather;
-        populationCounts = new LinkedHashMap<>();
+        populationManager = new PopulationManager();
     }
     
     /**
@@ -49,7 +47,7 @@ public class Field
      */
     public void clear()
     {
-        populationCounts.clear();
+        populationManager.clear();
         for(int row = 0; row < depth; row++) 
         {
             for(int col = 0; col < width; col++) 
@@ -90,7 +88,7 @@ public class Field
 
         Object removedObject = gridSpace.removeObject(objectType);
         if (removedObject != null) {
-            decrementPopulationCount(removedObject.getClass());
+            populationManager.recordRemoval(removedObject.getClass());
         }
     }
     
@@ -122,10 +120,10 @@ public class Field
         Object replacedObject = gridSpace.setObject(object);
 
         if (replacedObject != null) {
-            decrementPopulationCount(replacedObject.getClass());
+            populationManager.recordRemoval(replacedObject.getClass());
         }
         if (object != null) {
-            incrementPopulationCount(object.getClass());
+            populationManager.recordAddition(object.getClass());
         }
     }
     
@@ -306,19 +304,11 @@ public class Field
     }
 
     /**
-     * Return a snapshot of the tracked populations by concrete type.
+     * Return the population manager associated with this field.
      */
-    public Map<Class<?>, Integer> getPopulationCounts()
+    public PopulationManager getPopulationManager()
     {
-        return new LinkedHashMap<>(populationCounts);
-    }
-
-    /**
-     * Return how many concrete species currently have a non-zero population.
-     */
-    public int getActivePopulationTypeCount()
-    {
-        return populationCounts.size();
+        return populationManager;
     }
 
     /**
@@ -350,35 +340,4 @@ public class Field
         return field[row][col];
     }
 
-    /**
-     * Increase the tracked population for a concrete type.
-     */
-    private void incrementPopulationCount(Class<?> objectType)
-    {
-        Integer count = populationCounts.get(objectType);
-        if (count == null) {
-            populationCounts.put(objectType, 1);
-        }
-        else {
-            populationCounts.put(objectType, count + 1);
-        }
-    }
-
-    /**
-     * Decrease the tracked population for a concrete type.
-     */
-    private void decrementPopulationCount(Class<?> objectType)
-    {
-        Integer count = populationCounts.get(objectType);
-        if (count == null) {
-            return;
-        }
-
-        if (count <= 1) {
-            populationCounts.remove(objectType);
-        }
-        else {
-            populationCounts.put(objectType, count - 1);
-        }
-    }
 }

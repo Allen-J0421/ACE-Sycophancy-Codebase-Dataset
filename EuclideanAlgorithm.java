@@ -7,9 +7,10 @@ public final class EuclideanAlgorithm {
     }
 
     public static int gcd(int firstNumber, int secondNumber) {
-        int a = Math.abs(firstNumber);
-        int b = Math.abs(secondNumber);
+        return gcdOfNonNegativeNumbers(Math.abs(firstNumber), Math.abs(secondNumber));
+    }
 
+    private static int gcdOfNonNegativeNumbers(int a, int b) {
         while (a != 0) {
             final int remainder = b % a;
             b = a;

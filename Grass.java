@@ -47,15 +47,18 @@ public class Grass extends Plant
      */
     public void act(List<Actor> newGrass, Environment environment)
     {
-        if (environment.getWeather().getCurrentWeather() == WeatherType.SUNNY){
+        if (environment.getWeather().getCurrentWeather() == WeatherType.SUNNY) {
             changeGerminationRate(0.15);
-        }
-
-        else if (environment.getWeather().getCurrentWeather() != WeatherType.SUNNY){
+        } else {
             changeGerminationRate(0.1);
         }
 
-        if(isAlive() && environment.getTime().isDay() && rand.nextDouble() <= GERMINATION_RATE && (environment.getWeather().getCurrentWeather() != (WeatherType.CLOUDY))) {
+        if (environment.getTime().getStep() % STEPS_PER_STAGE == 0) {
+            incrementGrowth();
+        }
+
+        if (isAlive() && environment.getTime().isDay() && rand.nextDouble() <= GERMINATION_RATE
+                && environment.getWeather().getCurrentWeather() != WeatherType.CLOUDY) {
             germinate(newGrass);
         }
     }

@@ -66,6 +66,13 @@ public abstract class Animal extends Organism implements Actor
      */
     public void act(List<Actor> newAnimals, Environment environment)
     {
+        if (!isAwake(environment)) {
+            return;
+        }
+        if (isDiseased() && getDisease().getPropagationRate() <= rand.nextDouble()) {
+            setDead();
+            return;
+        }
         randomlyContractDisease();
         incrementAge();
         incrementHunger();

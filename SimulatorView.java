@@ -241,17 +241,18 @@ public class SimulatorView extends JFrame
     /**
      * Show the current status of the field.
      * @param step Which iteration step it is.
+     * @param environment The current simulation environment (weather and time).
      * @param field The field whose status is to be displayed.
      */
-    public void showStatus(int step, String weather, String time, Field field)
+    public void showStatus(int step, Environment environment, Field field)
     {
         if(!isVisible()) {
             setVisible(true);
         }
 
         stepLabel.setText(STEP_PREFIX + step);
-        weatherLabel.setText(WEATHER_PREFIX + weather);
-        timeLabel.setText(TIME_PREFIX + time);
+        weatherLabel.setText(WEATHER_PREFIX + environment.getWeather().getCurrentWeather());
+        timeLabel.setText(TIME_PREFIX + environment.getTime().getCurrentTimeString());
         stats.reset();
 
         fieldView.preparePaint();

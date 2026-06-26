@@ -1,5 +1,6 @@
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -9,8 +10,8 @@ import java.util.*;
  */
 public class Simulator
 {
-    private static boolean playingSimulation = false;
-    private static int remainingSteps;
+    private boolean playingSimulation = false;
+    private int remainingSteps;
 
     private static final Random rand = Randomizer.getRandom();
 
@@ -34,7 +35,7 @@ public class Simulator
 
     // Maximum number of hunters in the simulation
     private static final int HUNTER_LIMIT = 5;
-    private static int HUNTER_COUNT = 0;
+    private int HUNTER_COUNT = 0;
 
 
     // List of actors in the field.
@@ -233,35 +234,15 @@ public class Simulator
         // Let all actors act.
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
-            if(actor instanceof Animal){
-               if(((Animal) actor).isAwake(environment)) {
-                   if(((Animal) actor).isDiseased() && ((Animal) actor).getDisease().getPropagationRate() <= rand.nextDouble()) {
-                       ((Animal) actor).setDead();
-                   }
-                   actor.act(newActors, environment);
-               }
-            }
-            else {
-                actor.act(newActors, environment);
-            }
-
-            if(actor instanceof Plant){
-                if(step % ((Plant) actor).STEPS_PER_STAGE()==0){
-                    ((Plant) actor).incrementGrowth();
-                }
-            }
-
-            if(! actor.isAlive()) {
+            actor.act(newActors, environment);
+            if(!actor.isAlive()) {
                 it.remove();
             }
-
-
-
         }
         actors.addAll(newActors);
         plantGrassInPatches();
 
-        view.showStatus(step, environment.getWeather().getCurrentWeather().toString(), environment.getTime().getCurrentTimeString(), field);
+        view.showStatus(step, environment, field);
     }
 
     /**
@@ -283,61 +264,46 @@ public class Simulator
     public void reset()
     {
         step = 0;
+        HUNTER_COUNT = 0;
         actors.clear();
         populate();
         environment.getTime().reset();
 
         // Show the starting state in the view.
-        view.showStatus(step,environment.getWeather().getCurrentWeather().toString(), environment.getTime().getCurrentTimeString().toString(), field);
+        view.showStatus(step, environment, field);
     }
 
     /**
      * Randomly populate the field with organisms.
+     * The factory map determines which actor is spawned at each cell; entries
+     * are tried in insertion order and only the first match is placed per cell.
      */
     private void populate()
     {
-        Random rand = Randomizer.getRandom();
+        LinkedHashMap<Class<?>, BiFunction<Location, Animal.Gender, Actor>> factories = new LinkedHashMap<>();
+        factories.put(Grass.class,  (loc, sex) -> new Grass(field, loc));
+        factories.put(Deer.class,   (loc, sex) -> new Deer(true, field, loc, sex));
+        factories.put(Coyote.class, (loc, sex) -> new Coyote(true, field, loc, sex));
+        factories.put(Wolf.class,   (loc, sex) -> new Wolf(true, field, loc, sex));
+        factories.put(Eagle.class,  (loc, sex) -> new Eagle(true, field, loc, sex));
+        factories.put(Mouse.class,  (loc, sex) -> new Mouse(true, field, loc, sex));
+        factories.put(Hunter.class, (loc, sex) -> new Hunter(field, loc, environment));
+
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Animal.Gender sex = Randomizer.getRandomSex();
                 Location location = new Location(row, col);
-
-                if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Grass.class)) {
-                    Grass grass = new Grass(field, location);
-                    actors.add(grass);
-                }
-
-                else if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Deer.class)) {
-                    Deer deer = new Deer(true, field, location, sex);
-                    actors.add(deer);
-                }
-                else if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Coyote.class)) {
-                    Coyote coyote = new Coyote(true, field, location, sex);
-                    actors.add(coyote);
-                }
-
-                else if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Wolf.class)) {
-                    Wolf wolf = new Wolf(true, field, location, sex);
-                    actors.add(wolf);
-                }
-                else if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Eagle.class)) {
-                    Eagle eagle = new Eagle(true, field, location, sex);
-                    actors.add(eagle);
-                }
-                else if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Mouse.class)) {
-                    Mouse mouse = new Mouse(true, field, location, sex);
-                    actors.add(mouse);
-                }
-
-                else if(rand.nextDouble() <= CREATION_PROBABILITIES.get(Hunter.class)) {
-                    if(!(HUNTER_COUNT >= HUNTER_LIMIT)){
-                        Hunter hunter = new Hunter(field, location, environment);
-                        actors.add(hunter);
-                        HUNTER_COUNT++;
+                Animal.Gender sex = Randomizer.getRandomSex();
+                for(Map.Entry<Class<?>, BiFunction<Location, Animal.Gender, Actor>> entry : factories.entrySet()) {
+                    Class<?> cls = entry.getKey();
+                    if(cls == Hunter.class && HUNTER_COUNT >= HUNTER_LIMIT) continue;
+                    if(rand.nextDouble() <= CREATION_PROBABILITIES.get(cls)) {
+                        actors.add(entry.getValue().apply(location, sex));
+                        if(cls == Hunter.class) HUNTER_COUNT++;
+                        break;
                     }
                 }
-                // else leave the location empty.
+                // else leave the location empty
             }
         }
     }

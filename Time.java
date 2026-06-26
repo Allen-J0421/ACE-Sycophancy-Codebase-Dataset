@@ -99,11 +99,19 @@ public class Time
     }
 
     /**
-     * Returns the day count number. 
+     * Returns the current simulation step count.
+     */
+    public int getStep()
+    {
+        return stepCount;
+    }
+
+    /**
+     * Returns the day count number.
      */
     private int getDayCount()
-    { 
-        return dayCount; 
+    {
+        return dayCount;
     }
 
     /**

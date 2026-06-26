@@ -1,5 +1,5 @@
-import java.awt.Color;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -11,9 +11,9 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of actor in the simulation:
-    private static HashMap<Class, Counter> counters;
+    private final Map<Class<? extends Actor>, Counter> counters;
     // Whether the counters are currently up to date:
-    private static boolean areCountsValid;
+    private boolean areCountsValid;
 
     /**
      * Construct a FieldStats object.
@@ -22,7 +22,7 @@ public class FieldStats
     {
         // Set up a collection for counters for each type of actor that
         // we might find:
-        counters = new HashMap<>();
+        counters = new LinkedHashMap<>();
         areCountsValid = true;
     }
 
@@ -37,9 +37,9 @@ public class FieldStats
         
         String prefix = "";
         
-        for (Class key : counters.keySet())
+        for (Map.Entry<Class<? extends Actor>, Counter> entry : counters.entrySet())
         {
-            Counter info = counters.get(key);
+            Counter info = entry.getValue();
             
             buffer.append(prefix);
             buffer.append(info.getName());
@@ -57,7 +57,7 @@ public class FieldStats
     /**
      * @return The counters representing population numbers.
      */
-    public static HashMap<Class, Counter> getCounters(Field field)
+    public Map<Class<? extends Actor>, Counter> getCounters(Field field)
     {
         if (!areCountsValid) generateCounts(field);
         return counters;
@@ -67,14 +67,12 @@ public class FieldStats
      * Invalidate the current set of statistics; reset all 
      * counts to zero.
      */
-    public static void reset()
+    public void reset()
     {
         areCountsValid = false;
         
-        for (Class key : counters.keySet())
+        for (Counter count : counters.values())
         {
-            Counter count = counters.get(key);
-            
             count.reset();
         }
     }
@@ -84,7 +82,7 @@ public class FieldStats
      * 
      * @param actorClass The class of actor to increment.
      */
-    public static void incrementCount(Class actorClass)
+    public void incrementCount(Class<? extends Actor> actorClass)
     {
         Counter count = counters.get(actorClass);
         
@@ -118,10 +116,8 @@ public class FieldStats
         
         if (!areCountsValid) generateCounts(field);
         
-        for (Class key : counters.keySet())
+        for (Counter info : counters.values())
         {
-            Counter info = counters.get(key);
-            
             if (info.getCount() > 0) nonZero++;
         }
         
@@ -135,7 +131,7 @@ public class FieldStats
      * 
      * @param field The field to generate the stats for.
      */
-    private static void generateCounts(Field field)
+    private void generateCounts(Field field)
     {
         reset();
         
@@ -143,7 +139,7 @@ public class FieldStats
         {
             for (int col = 0; col < field.getWidth(); col++)
             {
-                Object actor = field.getObjectAt(row, col);
+                Actor actor = field.getActorAt(row, col);
                 
                 if (actor != null) incrementCount(actor.getClass());
             }

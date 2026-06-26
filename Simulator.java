@@ -91,6 +91,8 @@ public class Simulator
     private static Field field;
     // The current step of the simulation.
     private static int step = 0;
+    // Statistics for the current field state.
+    private static FieldStats stats;
     // A graphical view of the simulation:
     private static SimulatorView view;
     // A Boolean indicating whether or not to reset the StatisticsView:
@@ -125,12 +127,13 @@ public class Simulator
         
         actors = new ArrayList<>();
         field = new Field(depth, width);
+        stats = new FieldStats();
         
         // Set the initial weather:
         WeatherSystem.changeToNextDay();
 
         // Create a view of the state of each location in the field:
-        view = new SimulatorView(this,depth, width);
+        view = new SimulatorView(this, stats, depth, width);
         registerViewColors();
         
         // Show the statistics window:
@@ -151,6 +154,11 @@ public class Simulator
      * @return The current field in the simulation.
      */
     public static Field getCurrentField() { return field; }
+
+    /**
+     * @return The field statistics collector used by the simulation views.
+     */
+    public static FieldStats getFieldStats() { return stats; }
     
     /**
      * Run the simulation from its current state for a reasonably long period,

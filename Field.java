@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -15,9 +14,10 @@ public class Field
     // A random number generator for providing random locations:
     private static final Random rand = Randomizer.getRandom();
     // The depth and width of the field:
-    private int depth, width;
+    private final int depth;
+    private final int width;
     // Storage for the actors:
-    private Object[][] field;
+    private final Object[][] field;
     private Field producerField;
     
     /**
@@ -71,6 +71,18 @@ public class Field
     {
         place(actor, new Location(row, col));
     }
+
+    /**
+     * Place an actor at the given location.
+     *
+     * @param actor The actor to be placed.
+     * @param row   Row coordinate of the location.
+     * @param col   Column coordinate of the location.
+     */
+    public void place(Actor actor, int row, int col)
+    {
+        place(actor, new Location(row, col));
+    }
     
     /**
      * Place an actor at the given location.
@@ -80,6 +92,17 @@ public class Field
      * @param location Where to place the actor.
      */
     public void place(Object actor, Location location)
+    {
+        field[location.getRow()][location.getCol()] = actor;
+    }
+
+    /**
+     * Place an actor at the given location.
+     *
+     * @param actor The actor to be placed.
+     * @param location Where to place the actor.
+     */
+    public void place(Actor actor, Location location)
     {
         field[location.getRow()][location.getCol()] = actor;
     }
@@ -105,6 +128,38 @@ public class Field
     public Object getObjectAt(int row, int col)
     {
         return field[row][col];
+    }
+
+    /**
+     * Return the actor at the given location, if any.
+     *
+     * @param location Where in the field.
+     * @return The actor at the given location, or null if the location is empty
+     *         or contains a legacy non-actor simulation object.
+     */
+    public Actor getActorAt(Location location)
+    {
+        return getActorAt(location.getRow(), location.getCol());
+    }
+
+    /**
+     * Return the actor at the given location, if any.
+     *
+     * @param row The desired row.
+     * @param col The desired column.
+     * @return The actor at the given location, or null if the location is empty
+     *         or contains a legacy non-actor simulation object.
+     */
+    public Actor getActorAt(int row, int col)
+    {
+        Object occupant = getObjectAt(row, col);
+
+        if (occupant instanceof Actor)
+        {
+            return (Actor) occupant;
+        }
+
+        return null;
     }
     
     /**
@@ -214,9 +269,10 @@ public class Field
      * @return The width of the field.
      */
     public int getWidth() { return width; }
+
     public Field createProducerField()
     {
-         producerField = new Field(width,depth);
+         producerField = new Field(depth, width);
          return producerField;
     }
     public Field getProducerField()

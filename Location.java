@@ -6,8 +6,8 @@
 public class Location
 {
     // Row and column positions:
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
     /**
      * Represent a row and column.
@@ -26,6 +26,7 @@ public class Location
      * 
      * @param object The object this object is being compared to.
      */
+    @Override
     public boolean equals(Object object)
     {
         // Check that the other object is also of type Location:
@@ -45,6 +46,7 @@ public class Location
     /**
      * @return A string representation of the location in the form row, column.
      */
+    @Override
     public String toString() { return row + "," + col; }
     
     /**
@@ -54,6 +56,7 @@ public class Location
      * 
      * @return A hashcode for the location.
      */
+    @Override
     public int hashCode() { return (row << 16) + col; }
     
     /**

@@ -128,7 +128,7 @@ public abstract class Consumer extends Actor
 
         for (Location loc : adjacent)
         {
-            Object neighbor = field.getObjectAt(loc);
+            Actor neighbor = field.getActorAt(loc);
 
             if (neighbor != null && neighbor.getClass() == getClass() && hasDisease())
             {
@@ -208,12 +208,12 @@ public abstract class Consumer extends Actor
         
         for (Location location : field.adjacentLocations(getLocation()))
         {
-            Object object = field.getObjectAt(location);
+            Actor actor = field.getActorAt(location);
             
-            if (object instanceof Consumer                 // Is there a consumer in that location?
-                && object.getClass() == this.getClass()    // Is the consumer of the same type as this one?
-                && ((Consumer) object).canBreed()          // Can that consumer breed?
-                && ((Actor) object).getGender() != gender) // Is that consumer of the opposite sex?
+            if (actor instanceof Consumer              // Is there a consumer in that location?
+                && actor.getClass() == this.getClass() // Is the consumer of the same type as this one?
+                && ((Consumer) actor).canBreed()       // Can that consumer breed?
+                && actor.getGender() != gender)        // Is that consumer of the opposite sex?
             {
                 return true; // We have found a valid mate.
             }
@@ -275,14 +275,12 @@ public abstract class Consumer extends Actor
         while (it.hasNext())
         {
             Location where = it.next();
-            Object object = field.getObjectAt(where);
+            Actor actor = field.getActorAt(where);
             
             for (Class<? extends Actor> preyClass : prey)
             {   
-                if (preyClass.isInstance(object))
+                if (preyClass.isInstance(actor))
                 {   
-                    Actor actor = (Actor) object;
-                    
                     if (actor.getIsAlive())
                     {   
                         // If it's night, there is a probability of missing the prey:
@@ -302,11 +300,11 @@ public abstract class Consumer extends Actor
                     }
                 }
             }
-            if (Carcass.class.isInstance(object))
+            if (actor instanceof Carcass)
             {   
                 if (canEatCarcass)
                 {
-                    Carcass carcass = (Carcass) object;
+                    Carcass carcass = (Carcass) actor;
                     if (carcass.isDiseased())
                     {
                         this.disease = giveDisease();

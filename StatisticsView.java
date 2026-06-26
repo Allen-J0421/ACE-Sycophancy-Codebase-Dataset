@@ -10,9 +10,11 @@ import javafx.geometry.Insets;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
+import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A graphical view of the population of each species over time as the
@@ -35,14 +37,14 @@ public class StatisticsView extends Application
     //   An informational label explaining the window:
     private static Label infoLabel;
     //   The line chart showing populations:
-    private static LineChart lineChart;
+    private static LineChart<Number, Number> lineChart;
     //   The axes of the population line chart:
     private static NumberAxis xAxis, yAxis;
     //   The XYSeries representing each population over time:
-    private static HashMap<Class, Series> actorXYSeries = new HashMap();
+    private static final Map<Class<? extends Actor>, Series<Number, Number>> actorXYSeries = new HashMap<>();
     
     // The time between updates for the stats:
-    private static double updateTimeInSeconds = 0.1;
+    private static final double UPDATE_TIME_IN_SECONDS = 0.1;
     // The last day recorded:
     private static int lastDayRecorded = -1; // Set to -1 so we record day 0
     // The highest recorded population:
@@ -79,7 +81,7 @@ public class StatisticsView extends Application
         stage.show();
         
         // Create a timeline to update the population line chart at a fixed rate:
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(updateTimeInSeconds * 1000), e -> updatePopulationLineChart());
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(UPDATE_TIME_IN_SECONDS * 1000), e -> updatePopulationLineChart());
         Timeline timeline = new Timeline(keyFrame);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -90,7 +92,7 @@ public class StatisticsView extends Application
      * 
      * @return A line chart representing population.
      */
-    private static LineChart getPopulationLineChart()
+    private static LineChart<Number, Number> getPopulationLineChart()
     {
         // Create the axes:
         final int xAxisStep = 5;
@@ -101,7 +103,7 @@ public class StatisticsView extends Application
         yAxis.setLabel("Population");
         
         // Create the line chart itself:
-        return new LineChart(xAxis, yAxis);
+        return new LineChart<>(xAxis, yAxis);
     }
     
     /**
@@ -123,28 +125,29 @@ public class StatisticsView extends Application
         
         // Iterate through each counter in FieldStats:
         Field field = Simulator.getCurrentField();
-        HashMap<Class, Counter> counters = FieldStats.getCounters(field);
+        Map<Class<? extends Actor>, Counter> counters = Simulator.getFieldStats().getCounters(field);
         
-        for (Class key : counters.keySet())
+        for (Map.Entry<Class<? extends Actor>, Counter> entry : counters.entrySet())
         {
-            Counter counter = counters.get(key);
+            Class<? extends Actor> actorType = entry.getKey();
+            Counter counter = entry.getValue();
             
             // Get the new data to add to the XYSeries:
-            Data newData = new Data(TimeSystem.getCurrentDay(), counter.getCount());
+            Data<Number, Number> newData = new XYChart.Data<>(TimeSystem.getCurrentDay(), counter.getCount());
             
             // Create a new XYSeries for this actor if there is none already:
-            if (!actorXYSeries.containsKey(key))
+            if (!actorXYSeries.containsKey(actorType))
             {
-                Series series = new Series();
+                Series<Number, Number> series = new XYChart.Series<>();
                 series.setName(counter.getName());
                 
                 lineChart.getData().add(series);
                 
-                actorXYSeries.put(key, series);
+                actorXYSeries.put(actorType, series);
             }
             
             // Update the XYSeries for this Actor:
-            Series series = actorXYSeries.get(key);
+            Series<Number, Number> series = actorXYSeries.get(actorType);
             series.getData().add(newData); 
             
             // Update the highest population if necessary:

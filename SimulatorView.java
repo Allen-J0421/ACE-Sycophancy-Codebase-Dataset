@@ -25,10 +25,10 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
     
     // A map for storing colors for participants in the simulation:
-    private Map<Class, Color> colors;
+    private final Map<Class<? extends Actor>, Color> colors;
     // A statistics object computing and storing simulation information:
-    private static FieldStats stats;
-    private Simulator simulator;
+    private final FieldStats stats;
+    private final Simulator simulator;
     
     // Threads for each method called by the buttons:
     private Thread runLongSimulationThread;
@@ -41,9 +41,9 @@ public class SimulatorView extends JFrame
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(Simulator simulator, int height, int width)
+    public SimulatorView(Simulator simulator, FieldStats stats, int height, int width)
     {
-        stats = new FieldStats();
+        this.stats = stats;
         colors = new LinkedHashMap<>();
         this.simulator = simulator;
         setTitle("Australian Savannah Simulation");
@@ -138,7 +138,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<? extends Actor> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -154,7 +154,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<? extends Actor> animalClass)
     {
         Color col = colors.get(animalClass);
         
@@ -182,12 +182,12 @@ public class SimulatorView extends JFrame
         {
             for (int col = 0; col < field.getWidth(); col++)
             {
-                Object animal = field.getObjectAt(row, col);
+                Actor actor = field.getActorAt(row, col);
                 
-                if(animal != null)
+                if(actor != null)
                 {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
+                    stats.incrementCount(actor.getClass());
+                    fieldView.drawMark(col, row, getColor(actor.getClass()));
                 }
                 else
                 {
@@ -210,7 +210,7 @@ public class SimulatorView extends JFrame
      * 
      * @return true If there is more than one species alive.
      */
-    public static boolean isViable(Field field)
+    public boolean isViable(Field field)
     {
         return stats.isViable(field);
     }

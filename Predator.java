@@ -164,6 +164,7 @@ public class Predator extends Animal
      * @param location the location at which the newborn should appear.
      * @return the newborn predator.
      */
+    @Override
     protected Species createOffspring(Location location)
     {
         return new Predator(strength, getField(), location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(), false, getHibernates(), getIsNocturnal());

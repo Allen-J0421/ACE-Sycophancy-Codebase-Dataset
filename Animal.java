@@ -293,22 +293,7 @@ public class Animal extends Species
     {
         Field field = getField();
         if (field != null) {
-            reproduceAtFreeLocations(speciesInSimulation, field.getFreeAdjacentLocations(getLocation()));
-        }
-    }
-
-    /**
-     * Create newborn species in the provided free locations.
-     *
-     * @param speciesInSimulation the list receiving newborn species.
-     * @param freeLocations the available locations for newborns.
-     */
-    protected final void reproduceAtFreeLocations(List<Species> speciesInSimulation, List<Location> freeLocations)
-    {
-        int births = numberOfBirths();
-        for (int birth = 0; birth < births && !freeLocations.isEmpty(); birth++) {
-            Location loc = freeLocations.remove(0);
-            speciesInSimulation.add(createOffspring(loc));
+            reproduceAtFreeLocations(speciesInSimulation, field.getFreeAdjacentLocations(getLocation()), numberOfBirths());
         }
     }
 
@@ -318,6 +303,7 @@ public class Animal extends Species
      * @param location the location at which the newborn should appear.
      * @return the newborn species.
      */
+    @Override
     protected Species createOffspring(Location location)
     {
         return new Animal(getField(), location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize, false, hibernates, isNocturnal);

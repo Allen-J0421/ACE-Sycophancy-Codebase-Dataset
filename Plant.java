@@ -95,21 +95,24 @@ public class Plant extends Species
      */
     protected void reproduce(List<Species> newPlants)
     {
-        if (rand.nextDouble() <= getReproductionProbability())
-        {
-            Field field = getField();
-            if (field != null)
-            {
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-
-                if (free.size() > 0) {
-                    Location loc = free.remove(0);
-                    Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
-                    newPlant.setIsSpring(isSpring);
-                    newPlants.add(newPlant);
-                }
-            }
+        Field field = getField();
+        if (field != null && rand.nextDouble() <= getReproductionProbability()) {
+            reproduceAtFreeLocations(newPlants, field.getFreeAdjacentLocations(getLocation()), 1);
         }
+    }
+
+    /**
+     * Create a newborn plant of the current species.
+     *
+     * @param location the location at which the newborn should appear.
+     * @return the newborn plant.
+     */
+    @Override
+    protected Species createOffspring(Location location)
+    {
+        Plant newPlant = new Plant(getField(), location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
+        newPlant.setIsSpring(isSpring);
+        return newPlant;
     }
 
     /**

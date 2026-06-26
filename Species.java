@@ -71,6 +71,29 @@ public abstract class Species
     abstract void reproduce(List<Species> newOfThisKind);
 
     /**
+     * Create a newborn species of the current kind.
+     *
+     * @param location the location at which the newborn should appear.
+     * @return the newborn species.
+     */
+    protected abstract Species createOffspring(Location location);
+
+    /**
+     * Create newborn species in the provided free locations.
+     *
+     * @param speciesInSimulation the list receiving newborn species.
+     * @param freeLocations the available locations for newborns.
+     * @param births the number of newborns to create.
+     */
+    protected final void reproduceAtFreeLocations(List<Species> speciesInSimulation, List<Location> freeLocations, int births)
+    {
+        for (int birth = 0; birth < births && !freeLocations.isEmpty(); birth++) {
+            Location loc = freeLocations.remove(0);
+            speciesInSimulation.add(createOffspring(loc));
+        }
+    }
+
+    /**
      * Check whether the animal is alive or not.
      *
      * @return (boolean) true if the animal is still alive.

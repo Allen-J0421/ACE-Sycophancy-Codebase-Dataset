@@ -13,7 +13,6 @@ public class Grass extends Plant
     
     public static final int MAX_AGE = 25;
     public static final double MULTIPLY_PROBABILITY = 0.2;
-    private static final double OPTIMAL_BREEDING_FACTOR = 4.0;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -44,18 +43,12 @@ public class Grass extends Plant
      */
     @Override
     public void act(List<Actor> newPlants, Weather weather, DayState dayState) {
-        if(dayState == DayState.NIGHT) {
-            return;
-        }
-        grow(MAX_AGE);
-        if(!isAlive()) {
-            return;
-        }
-        // Change behaviour of grass depending on the weather.
-        if (weather == Weather.RAIN || weather == Weather.SUNNY) {
-            multiply((double)OPTIMAL_BREEDING_FACTOR * MULTIPLY_PROBABILITY, newPlants);
-            return;
-        }
-        multiply(MULTIPLY_PROBABILITY, newPlants);
+        actWithGrowthCycle(newPlants, weather, dayState, MAX_AGE, MULTIPLY_PROBABILITY);
+    }
+
+    @Override
+    protected Plant createOffspring(Field field, Location location)
+    {
+        return new Grass(false, field, location);
     }
 }

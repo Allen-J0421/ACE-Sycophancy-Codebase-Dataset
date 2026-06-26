@@ -78,4 +78,10 @@ public class Reindeer extends HerbivoreAnimal
     {
         return FEEDING_VALUE;
     }
+
+    @Override
+    protected Animal createOffspring(boolean randomAge, Field field, Location location, Gender gender)
+    {
+        return new Reindeer(randomAge, field, location, gender);
+    }
 }

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.HashMap;
 /**
  * A minimalist implementation of a Fox, a fox can only eat other animals and not plants,
  * only the act method is unique to the bear.
@@ -92,5 +91,11 @@ public class CarnivoreFox extends CarnivoreAnimal
     public int getFeedingValue()
     {
         return FEEDING_VALUE;
+    }
+
+    @Override
+    protected Animal createOffspring(boolean randomAge, Field field, Location location, Gender gender)
+    {
+        return new CarnivoreFox(randomAge, field, location, gender);
     }
 }

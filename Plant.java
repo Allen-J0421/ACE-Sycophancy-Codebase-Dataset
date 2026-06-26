@@ -1,6 +1,5 @@
 import java.util.Random;
 import java.util.List;
-import java.lang.reflect.*;
 /**
  * A blueprint for how a typical plant behaves. A plant grows according to the weather 
  * conditions and daylight, and feeds more as it grows.
@@ -15,6 +14,7 @@ public abstract class Plant implements Actor
     //////////////////////////////////////////////////////////////*/
     
     private static final int FEEDING_FACTOR = 2;
+    private static final double OPTIMAL_BREEDING_FACTOR = 4.0;
     protected boolean alive;
     protected Location location;
     protected int age;
@@ -64,6 +64,15 @@ public abstract class Plant implements Actor
      */
     
     public abstract void act(List<Actor> newPlants, Weather weather, DayState dayState);
+
+    /**
+     * Create a new offspring of the current concrete plant type.
+     *
+     * @param field the field the offspring will inhabit
+     * @param location the location for the offspring
+     * @return a new plant of the same concrete type
+     */
+    protected abstract Plant createOffspring(Field field, Location location);
     
     /**
      * Increments the age of the plant.
@@ -107,43 +116,45 @@ public abstract class Plant implements Actor
         List<Location> freeLocs = field.getFreeAdjacentTerrain(location);
         for ( Location loc : freeLocs) {
             if(rand.nextDouble() < spreadProbability) {
-                try {
-                    Constructor cons = getConstructor();
-                    Plant plant = (Plant)cons.newInstance(false, field, loc);
-                    newPlants.add(plant);
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                Plant plant = createOffspring(field, loc);
+                newPlants.add(plant);
             }
         }
+    }
+
+    /**
+     * Apply the common plant growth cycle for daytime plants.
+     *
+     * @param newPlants the newly generated plants.
+     * @param weather the current weather.
+     * @param dayState the current day state.
+     * @param maxAge the maximum age of the plant.
+     * @param spreadProbability the base probability of spreading.
+     */
+    protected void actWithGrowthCycle(List<Actor> newPlants,
+                                      Weather weather,
+                                      DayState dayState,
+                                      int maxAge,
+                                      double spreadProbability)
+    {
+        if(dayState == DayState.NIGHT) {
+            return;
+        }
+        grow(maxAge);
+        if(!isAlive()) {
+            return;
+        }
+
+        double effectiveProbability = spreadProbability;
+        if(weather == Weather.RAIN || weather == Weather.SUNNY) {
+            effectiveProbability *= OPTIMAL_BREEDING_FACTOR;
+        }
+        multiply(effectiveProbability, newPlants);
     }
     
     /*///////////////////////////////////////////////////////////////
                           ACCESSOR AND MUTATORS
     //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * Accesor method for the constructor of the plant.
-     * 
-     * @return the constructor of the plant.
-     */
-    protected Constructor getConstructor() {
-        try {
-                Class[] cls = new Class[] {boolean.class, Field.class, Location.class};
-                Constructor cons = this.getClass().getConstructor(cls);
-                return cons;
-        }
-        catch (NoSuchMethodException nsme) {
-                nsme.printStackTrace();
-        }
-        return null;
-    }
     
     /**
      * Accessor method to denote whether or not the plant is alive.

@@ -1,7 +1,6 @@
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
-import java.lang.reflect.*;
 /**
  * A class representing shared characteristics of animals.
  *
@@ -21,9 +20,8 @@ public abstract class Animal implements Actor
     protected final Gender gender;
     protected int foodLevel;
     protected Integer infectionTimestamp;
-    
+
     private static final Random rand = Randomizer.getRandom();
-    private static final Class[] ANIMAL_CONSTRUCTOR_SIGNATURE = new Class[] {boolean.class, Field.class, Location.class, Gender.class};
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -99,6 +97,17 @@ public abstract class Animal implements Actor
      * @return the feeding value
      */
     abstract public int getFeedingValue();
+
+    /**
+     * Create a new offspring of the current concrete animal type.
+     *
+     * @param randomAge whether the new animal should start with random age and hunger values
+     * @param field the field the offspring will inhabit
+     * @param location the location for the offspring
+     * @param gender the offspring's gender
+     * @return a new animal of the same concrete type
+     */
+    protected abstract Animal createOffspring(boolean randomAge, Field field, Location location, Gender gender);
     
     /**
      * Imitates the meeting of the animal by breeding new born animals.
@@ -122,16 +131,8 @@ public abstract class Animal implements Actor
             if(animal.getGender() == this.getGender()) {
                 continue;
             }
-            try
-            {
-                Constructor cons = this.getClass().getConstructor(ANIMAL_CONSTRUCTOR_SIGNATURE);
-                int births = breed(maxLitter, breedingProbability, breedingAge);
-                giveBirth(newAnimals, births, cons);
-            }
-            catch (NoSuchMethodException nsme)
-            {
-                nsme.printStackTrace();
-            }
+            int births = breed(maxLitter, breedingProbability, breedingAge);
+            giveBirth(newAnimals, births);
         }
     }
     
@@ -160,27 +161,15 @@ public abstract class Animal implements Actor
      * 
      * @param newAnimals list of the new born animals.
      * @param births number of animals to give birth.
-     * @param consutructor of the animals to give birth.
      */
-    private void giveBirth(List<Actor> newAnimals, int births, Constructor cons)
+    private void giveBirth(List<Actor> newAnimals, int births)
     {
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         for (int i = 0; i < births && free.size() > 0; i++) {
             Location loc = free.remove(0);
             Gender randomGender = Utils.getRandomEnumValue(Gender.class);
-            try {
-                Object newObj = cons.newInstance(false, field, loc, randomGender);
-                Animal newBorn = (Animal) newObj;
-                newAnimals.add(newBorn);        
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
+            Animal newBorn = createOffspring(false, field, loc, randomGender);
+            newAnimals.add(newBorn);
         }
     }
     

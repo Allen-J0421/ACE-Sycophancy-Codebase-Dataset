@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.HashMap;
 /**
  * A minimalist implementation of a Bear, a bear can only eat other animals and not plants,
  * only the act method is unique to the bear.
@@ -94,5 +93,11 @@ public class Bear extends CarnivoreAnimal
     public int getFeedingValue()
     {
         return FEEDING_VALUE;
+    }
+
+    @Override
+    protected Animal createOffspring(boolean randomAge, Field field, Location location, Gender gender)
+    {
+        return new Bear(randomAge, field, location, gender);
     }
  }

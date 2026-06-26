@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.HashMap;
 /**
  * A minimalist implementation of a Wolverine, a bear can only eat other animals and not plants,
  * only the act method is unique to the Wolverine.
@@ -85,5 +84,11 @@ public class Wolverine extends CarnivoreAnimal
     public int getFeedingValue()
     {
         return FEEDING_VALUE;
+    }
+
+    @Override
+    protected Animal createOffspring(boolean randomAge, Field field, Location location, Gender gender)
+    {
+        return new Wolverine(randomAge, field, location, gender);
     }
 }

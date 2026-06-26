@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Arrays;
 /**
  * A minimalist implementation of a Sheep, a sheep can only eat plants and not animals,
  * only the act method is unique to the sheep.
@@ -78,5 +77,11 @@ public class Sheep extends HerbivoreAnimal
     public int getFeedingValue()
     {
         return FEEDING_VALUE;
+    }
+
+    @Override
+    protected Animal createOffspring(boolean randomAge, Field field, Location location, Gender gender)
+    {
+        return new Sheep(randomAge, field, location, gender);
     }
 }

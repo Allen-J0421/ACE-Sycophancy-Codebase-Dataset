@@ -1,8 +1,7 @@
 
 import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple model of a Zebra.
@@ -34,7 +33,7 @@ public class Zebra extends Animal
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
 
     // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private Map<Class<? extends Actor>, Integer> food;
     /**
      * Create a new Zebra. A Zebra may be created with age
      * zero (a new born) or with a random age.
@@ -54,7 +53,7 @@ public class Zebra extends Animal
         }
         food = new HashMap<>();
         setGrowthLevel(getAge()/67.0);
-        addFood( field);
+        addFood();
     }
 
     /**
@@ -121,21 +120,17 @@ public class Zebra extends Animal
     }
 
     /**
-     * Adds the food the zebra eats & the corresponding food value to a hashMap.
-     * @param field The field the zebra is in.
+     * Adds the food the zebra eats and the corresponding food value to a map.
      */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Plants grass = new Grass(true,field,tempLocation );
-        food.put(grass, GRASS_FOOD_VALUE);
-        grass.setDead();
+    private void addFood(){
+        food.put(Grass.class, GRASS_FOOD_VALUE);
     }
 
     /**
-     * Returns the HashMap which contains what food the zebra eats and the amount of food each plant gives.
-     * @return The HashMap which contains the Actor and an Integer.
+     * Returns the food values keyed by prey type.
+     * @return The food values for the zebra's prey types.
      */
-    protected HashMap<Actor, Integer> getFood(){
+    protected Map<Class<? extends Actor>, Integer> getFood(){
         return food;
     }
 

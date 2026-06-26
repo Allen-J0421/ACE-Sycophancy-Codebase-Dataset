@@ -1,7 +1,7 @@
 
-import java.util.Random;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple model of a Jaguar.
@@ -33,7 +33,7 @@ public class Jaguar extends Predator
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.4;
 
     // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private Map<Class<? extends Actor>, Integer> food;
     /**
      * Create a Jaguar. A Jaguar can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -55,7 +55,7 @@ public class Jaguar extends Predator
         }
         food = new HashMap<>();
         setGrowthLevel(getAge()/89.0);
-        addFood(field);
+        addFood();
     }
 
     /**
@@ -122,21 +122,17 @@ public class Jaguar extends Predator
     }
 
     /**
-     * Adds the food the jaguar eats & the corresponding food value to a hashMap.
-     * @param field The field the jaguar is in.
+     * Adds the food the jaguar eats and the corresponding food value to a map.
      */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
+    private void addFood(){
+        food.put(Gazelle.class, GAZELLE_FOOD_VALUE);
     }
 
     /**
-     * Returns the HashMap which contains what food the jaguar eats and the amount of food each gazelle gives.
-     * @return The HashMap which contains the Actor and an Integer.
+     * Returns the food values keyed by prey type.
+     * @return The food values for the jaguar's prey types.
      */
-    protected HashMap<Actor, Integer> getFood(){
+    protected Map<Class<? extends Actor>, Integer> getFood(){
         return food;
     }
 

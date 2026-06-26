@@ -1,8 +1,7 @@
 
 import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class representing shared characteristics of animals.
@@ -230,22 +229,20 @@ public abstract class Animal extends Actor
                 Object animal = field.getObjectAt(where);
                 if(animal != null && animal  instanceof Actor){
                     Actor currentAnimal = (Actor) animal;
-                    for(Actor prey: getFood().keySet())
-                    {
-                        if(prey.getClass() == currentAnimal.getClass()){
-                            if (currentAnimal instanceof Animal){
-                                Animal current = (Animal)currentAnimal;
-                                if(!current.getHealth()){
-                                    setUnhealthy();
-                                }
+                    Integer foodValue = getFood().get(currentAnimal.getClass());
+                    if(foodValue != null) {
+                        if (currentAnimal instanceof Animal){
+                            Animal current = (Animal)currentAnimal;
+                            if(!current.getHealth()){
+                                setUnhealthy();
                             }
-                            currentAnimal.setDead();
-                            setFoodLevel(getFood().get(prey)  + currentAnimal.getGrowthLevel());
-                            if(getFoodLevel() > getMaxFoodLevel()){
-                                setFoodLevel(getMaxFoodLevel() - getFoodLevel());
-                            }
-                            return where;
                         }
+                        currentAnimal.setDead();
+                        setFoodLevel(foodValue + currentAnimal.getGrowthLevel());
+                        if(getFoodLevel() > getMaxFoodLevel()){
+                            setFoodLevel(getMaxFoodLevel() - getFoodLevel());
+                        }
+                        return where;
                     }
                 }
             }
@@ -254,10 +251,10 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Returns the HashMap which contains what prey the animal eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
+     * Returns the food values keyed by prey type.
+     * @return The food values for the animal's prey types.
      */
-    abstract protected HashMap<Actor, Integer> getFood();
+    abstract protected Map<Class<? extends Actor>, Integer> getFood();
 
     /**
      * Uses a random generator to assign if the animal is female or not.

@@ -1,5 +1,4 @@
 import java.util.Iterator;
-import java.util.Random;
 import java.util.List;
 
 /**
@@ -30,7 +29,8 @@ public abstract class Predator extends Animal
      */
     protected Location findFood(double probability)
     {
-        if (super.findFood(probability) == null){
+        Location foodLocation = super.findFood(probability);
+        if (foodLocation == null){
             Field field = getField();
             List<Location> adjacent = field.adjacentLocations(getLocation());
             Iterator<Location> it = adjacent.iterator();
@@ -42,6 +42,6 @@ public abstract class Predator extends Animal
                 }
             }
         }
-        return null;
+        return foodLocation;
     }
 }

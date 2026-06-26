@@ -1,7 +1,6 @@
 import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.HashMap;
+import java.util.Map;
 /**
  * A simple model of a Cheetah.
  * Cheetahs age, move, eat zebras, breed and die.
@@ -34,7 +33,7 @@ public class Cheetah extends Predator
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.7;
 
     // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
+    private Map<Class<? extends Actor>, Integer> food;
     /**
      * Create a Cheetah. A Cheetah can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -56,7 +55,7 @@ public class Cheetah extends Predator
         }
         food = new HashMap<>();
         setGrowthLevel(getAge()/102.0);
-        addFood(field);
+        addFood();
     }
 
     /**
@@ -123,25 +122,18 @@ public class Cheetah extends Predator
     }
 
     /**
-     * Adds the food the cheetah eats & the corresponding food value to a hashMap.
-     * @param field The field the cheetah is in.
+     * Adds the food the cheetah eats and the corresponding food value to a map.
      */
-    private void addFood(Field field){
-        Location tempLocation = new Location(0,0);
-        Zebra zebra = new Zebra(true,field,tempLocation );
-        food.put(zebra, ZEBRA_FOOD_VALUE);
-        zebra.setDead();
-        //Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
+    private void addFood(){
+        food.put(Zebra.class, ZEBRA_FOOD_VALUE);
+        food.put(Gazelle.class, GAZELLE_FOOD_VALUE);
     }
 
     /**
-     * Returns the HashMap which contains what food the cheetah eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
+     * Returns the food values keyed by prey type.
+     * @return The food values for the cheetah's prey types.
      */   
-    protected HashMap<Actor, Integer> getFood(){
+    protected Map<Class<? extends Actor>, Integer> getFood(){
         return food;
     }
 

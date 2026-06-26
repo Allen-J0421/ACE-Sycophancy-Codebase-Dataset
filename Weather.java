@@ -46,16 +46,16 @@ public class Weather {
             weatherLastsForSteps--;
         }
         
-        // Sunny can only occur during daytime; clear can only occur at 
+        // Sunny can only occur during daytime; clear can only occur at
         // night.
-        if (Time.isNight() && currentWeather.equals(WeatherType.Sunny)) 
+        if (Time.isNight() && currentWeather.equals(WeatherType.Sunny))
         {
-            currentWeather = currentWeather.Clear;
+            currentWeather = WeatherType.Clear;
         }
-        
-        if (!Time.isNight() && currentWeather.equals(WeatherType.Clear)) 
+
+        if (!Time.isNight() && currentWeather.equals(WeatherType.Clear))
         {
-            currentWeather = currentWeather.Sunny;
+            currentWeather = WeatherType.Sunny;
         }
     }
     

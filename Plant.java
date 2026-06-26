@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Plants can grow, be can be partially eaten, they can be completely eaten and die, plants
@@ -165,25 +164,21 @@ public class Plant extends LivingOrganism
         List<Location> free = field.getFreeAdjacentLocations(getLocation(), Plant.class);
         
         // New plants are spread into adjacent locations.
-        for(int b = 0; free.size() > 0; b++) 
+        while(!free.isEmpty())
         {
             newPlants.add(createOffspring(free));
         }
     }
-    
+
     /**
      * Used to instantiate baby plantlets
-     * 
+     *
      * @param free List of free locations to spawn
      * @return Returns a new plant object.
      */
-    private Plant createOffspring(List<Location> free) 
+    private Plant createOffspring(List<Location> free)
     {
         Location loc = free.remove(0);
-        Plant offspring = null;
-        
-        offspring = new Plant(false, field, loc);
-        
-        return offspring;
+        return new Plant(false, field, loc);
     }
 }

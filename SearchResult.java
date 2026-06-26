@@ -14,24 +14,10 @@ public record SearchResult(SearchRequest request, List<Integer> matchIndexes) {
     }
 
     public String joinMatchIndexes() {
-        return joinMatchIndexes(matchIndexes);
+        return SearchResultFormatter.format(this);
     }
 
     public static String joinMatchIndexes(List<Integer> matchIndexes) {
-        Objects.requireNonNull(matchIndexes, "matchIndexes must not be null");
-
-        if (matchIndexes.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder formattedMatches = new StringBuilder();
-        for (int index = 0; index < matchIndexes.size(); index++) {
-            if (index > 0) {
-                formattedMatches.append(' ');
-            }
-            formattedMatches.append(matchIndexes.get(index));
-        }
-
-        return formattedMatches.toString();
+        return SearchResultFormatter.formatMatchIndexes(matchIndexes);
     }
 }

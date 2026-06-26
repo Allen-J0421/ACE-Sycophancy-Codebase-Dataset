@@ -3,6 +3,7 @@ import java.util.List;
 public final class NaivePatternSearchTest {
 
     private static final SearchApplication APPLICATION = SearchApplication.createDefault();
+    private static final SearchRequestParser REQUEST_PARSER = SearchRequestParser.createDefault();
 
     private NaivePatternSearchTest() {
     }
@@ -26,14 +27,14 @@ public final class NaivePatternSearchTest {
                 new SearchRequest("banana", "ana"), "1 3");
         assertApplicationSearch("application returns the same search result contract",
                 new SearchRequest("banana", "ana"), List.of(1, 3));
+        assertFormatterOutput("formatter renders a search result",
+                new SearchRequest("banana", "ana"), "1 3");
         assertSearchInput("uses CLI defaults when no arguments are provided",
                 new String[0], "aabaacaadaabaaba", "aaba");
         assertSearchInput("allows overriding the text only",
                 new String[] {"banana"}, "banana", "aaba");
         assertSearchInput("allows overriding both text and pattern",
                 new String[] {"banana", "ana"}, "banana", "ana");
-        assertApplicationRunFromArgs("application can execute directly from CLI args",
-                new String[] {"banana", "ana"}, "1 3");
     }
 
     private static void assertMatches(
@@ -61,7 +62,7 @@ public final class NaivePatternSearchTest {
 
     private static void assertApplicationOutput(
             String scenario, SearchRequest request, String expectedOutput) {
-        assertEquals(scenario, expectedOutput, APPLICATION.run(request));
+        assertEquals(scenario, expectedOutput, APPLICATION.render(request));
     }
 
     private static void assertApplicationSearch(
@@ -71,14 +72,15 @@ public final class NaivePatternSearchTest {
         assertEquals(scenario + " (matches)", expectedMatches, result.matchIndexes());
     }
 
-    private static void assertApplicationRunFromArgs(
-            String scenario, String[] args, String expectedOutput) {
-        assertEquals(scenario, expectedOutput, APPLICATION.run(args));
+    private static void assertFormatterOutput(
+            String scenario, SearchRequest request, String expectedOutput) {
+        SearchResult result = APPLICATION.search(request);
+        assertEquals(scenario, expectedOutput, SearchResultFormatter.format(result));
     }
 
     private static void assertSearchInput(
             String scenario, String[] args, String expectedText, String expectedPattern) {
-        SearchRequest input = NaivePatternSearchCli.parseArguments(args);
+        SearchRequest input = REQUEST_PARSER.parse(args);
         assertEquals(scenario + " (text)", expectedText, input.text());
         assertEquals(scenario + " (pattern)", expectedPattern, input.pattern());
     }

@@ -6,8 +6,8 @@ public final class ModularExponentiation {
     public static int powMod(int base, int exponent, int modulus) {
         validateInputs(exponent, modulus);
 
-        int result = 1;
-        int currentBase = base;
+        int result = 1 % modulus;
+        int currentBase = normalizeMod(base, modulus);
         int currentExponent = exponent;
 
         while (currentExponent > 0) {
@@ -32,6 +32,11 @@ public final class ModularExponentiation {
 
     private static int multiplyMod(int left, int right, int modulus) {
         return (int) ((1L * left * right) % modulus);
+    }
+
+    private static int normalizeMod(int value, int modulus) {
+        int normalized = value % modulus;
+        return normalized < 0 ? normalized + modulus : normalized;
     }
 
     public static void main(String[] args) {

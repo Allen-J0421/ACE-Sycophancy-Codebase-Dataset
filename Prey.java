@@ -19,7 +19,7 @@ public abstract class Prey extends Animal
     protected Prey(Field field, Location location, boolean infected, boolean immune)
     {
         super(field, location, infected, immune);
-        movementProbability = 0.75;
+        getMovementState().setMovementProbability(0.75);
     }
 
     /**
@@ -68,12 +68,12 @@ public abstract class Prey extends Animal
             {
                 if(plant != null)
                 {
-                    if(plant.isAlive() && foodLevel < maxFoodLevel)
+                    if(plant.isAlive() && isHungry())
                     { 
                         // Prey is hungry and plant is availiable so eat
                         // the plant.
                         int plantFoodValue = plant.beEaten();
-                        foodLevel += plantFoodValue;
+                        eatFood(plantFoodValue);
                         
                         return where;
                     }

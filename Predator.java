@@ -21,7 +21,7 @@ public abstract class Predator extends Animal
     protected Predator(Field field, Location location, boolean isInfected, boolean isImmune)
     {
         super(field, location, isInfected, isImmune);
-        movementProbability = 0.8;
+        getMovementState().setMovementProbability(0.8);
     }
 
     /**
@@ -41,7 +41,7 @@ public abstract class Predator extends Animal
     protected final int getNewbornFoodLevel()
     {
         double percentageOfMaxFoodLevel = rand.nextDouble() / 5.5;
-        return (int) (percentageOfMaxFoodLevel * maxFoodLevel);
+        return (int) (percentageOfMaxFoodLevel * getHungerState().getMaxFoodLevel());
     }
     
     /**
@@ -99,18 +99,19 @@ public abstract class Predator extends Animal
             if(animal instanceof Prey) 
             {
                 Prey prey = (Prey) animal;
-                if(prey.isAlive() && foodLevel < maxFoodLevel && rand.nextDouble() < preyCatchingProbability) 
+                if(prey.isAlive() && isHungry() && rand.nextDouble() < preyCatchingProbability) 
                 { 
                     // Predator is hungry and prey is availiable so eat
                     // the prey.
                     int preyFoodValue = prey.beEaten();
-                    foodLevel += preyFoodValue;
+                    eatFood(preyFoodValue);
                     
                     // if the prey being eaten is infected then the predator most likely
                     // gets infected
-                    if (prey.getIsInfected() && !getIsImmune() && rand.nextDouble() <= diseaseSpreadProbability)
+                    if (prey.getIsInfected() && !getIsImmune() &&
+                        rand.nextDouble() <= getDiseaseState().getDiseaseSpreadProbability())
                     {
-                        this.infected = true; 
+                        getDiseaseState().setInfected(true); 
                     }
                     
                     return where;

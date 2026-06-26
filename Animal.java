@@ -1,43 +1,17 @@
 import java.util.List;
-import java.util.Iterator;
 /**
  * A class representing shared characteristics of animals.
  *
  * @version 25/02/2022
  */
 public abstract class Animal extends LivingOrganism
+    implements Ageable, HungerBased, DiseaseProne, Breedable, Movable
 {
-    // Indicates whether an animal is a female or not;
-    protected boolean isFemale;    
-    // The age at which an animal can start to breed.
-    protected int breedingAge;
-    // The age to which an animal can live.
-    protected int maxAge;
-    // The likelihood of an animal breeding.
-    protected double breedingProbability;
-    // whther the animal is infected or not
-    protected boolean infected;
-    // The likelihood of an animal having a disease.
-    protected double diseaseProbability;
-    // The likelihood of an animal catching a disease from another animal
-    protected double diseaseSpreadProbability;
-    // The likelihood of an animal dying from catching the disease
-    protected double deathFromInfectionProbability;
-    // The likelihood of an animal becomming immune to the disease
-    protected double immuneProbability;
-    // whether the animal is immune or not
-    protected boolean immune;
-    // The maximum number of births.
-    protected int maxLitterSize;
-    // The animals's age.
-    protected int age;
-    // The animals's food level, which is increased by eating prey.
-    protected int foodLevel;
-    // The maximum food level that an animal will eat at. The food level they will stop
-    // being hungry at
-    protected int maxFoodLevel;
-    // Probability that an animal will move at a given step.
-    protected double movementProbability;
+    private final BreedingState breedingState;
+    private final AgeState ageState;
+    private final HungerState hungerState;
+    private final DiseaseState diseaseState;
+    private final MovementState movementState;
     
     /**
      * Create a new animal at location in field.
@@ -51,15 +25,20 @@ public abstract class Animal extends LivingOrganism
     {
         super(field, location);
         alive = true;
-        this.infected = infected;
-        this.immune = immune;
-        
-        diseaseProbability = 0.00000015;
-        diseaseSpreadProbability = 0.80;
-        deathFromInfectionProbability = 0.13;
-        immuneProbability = 0.05;
-        
-        isFemale = rand.nextBoolean();
+        breedingState = new BreedingState();
+        ageState = new AgeState();
+        hungerState = new HungerState();
+        diseaseState = new DiseaseState();
+        movementState = new MovementState();
+
+        diseaseState.setInfected(infected);
+        diseaseState.setImmune(immune);
+        diseaseState.setDiseaseProbability(0.00000015);
+        diseaseState.setDiseaseSpreadProbability(0.80);
+        diseaseState.setDeathFromInfectionProbability(0.13);
+        diseaseState.setImmuneProbability(0.05);
+
+        breedingState.setFemale(rand.nextBoolean());
     }
     
     /**
@@ -72,90 +51,23 @@ public abstract class Animal extends LivingOrganism
      */
     public void act(List<LivingOrganism> newAnimals)
     {
-        incrementAge();
-        incrementHunger();
-        
-        // checks to see if the animal is going to die from it infection 
-        // or become immune
-        // if the animal becomes immune then it no longer is infected
-        if (!getIsImmune() && getIsInfected()) 
-        {
-            if(rand.nextDouble() <= deathFromInfectionProbability) 
-            {
-                setDead();            
-            }
-            else if(rand.nextDouble() <= immuneProbability) {
-                immune = true;
-                infected = false;
-            }
-        }
-        // If the animal is immune and not infected, there is a chance
-        // of losing immunity.
-        else
-        {
-            if(rand.nextDouble() <= (immuneProbability / 15)) {
-                immune = false;
-            }
-        }
+        ageOneStep();
+        digestOneStep();
+        updateDiseaseState();
         
         if(isAlive()) 
         {
-            if(!getIsImmune() && !getIsInfected())
-            {
-                // checks to see if the animal is going to catch a disease from
-                // its surroundings.
-
-                if (surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
-                {
-                    infected = true;
-                }
-                
-                // checks to see if the animal is going to get a disease out 
-                // of nowhere.
-                else if (rand.nextDouble() <= diseaseProbability) 
-                {
-                    infected = true;           
-                }
-            }
+            exposeToDisease();
             
-            // checks to see if the animal is able to give birth
             if(this.getIsFemale()) 
             {
-                if(canBreed() && rand.nextDouble() <= breedingProbability)
+                if(canBreed() && rand.nextDouble() <= breedingState.getBreedingProbability())
                 {
                     populate(newAnimals);
                 }
             }
 
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            
-            if(newLocation == null) 
-            { 
-                Location possibleNewLocation = getField().freeAdjacentLocation(getLocation(), Animal.class);
-                
-                if (possibleNewLocation == null) 
-                {
-                    // no free adjacent locations therefore it is 
-                    // overcrowded
-                    if (rand.nextDouble() < 0.3) 
-                    {
-                        setDead();
-                    }
-                }
-                
-                // No food found and there is a free location - move there.
-                if (rand.nextDouble() <= movementProbability) 
-                {
-                    newLocation = possibleNewLocation;
-                }
-            }
-            
-            // Move to new location
-            if(newLocation != null)
-            { 
-                setLocation(newLocation);
-            }
+            moveOneStep();
         }
     }
     
@@ -241,7 +153,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected boolean getIsFemale() 
     {
-        return isFemale;
+        return breedingState.isFemale();
     }
     
     /**
@@ -252,10 +164,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected void incrementAge()
     {
-        age++;
-        if(age > maxAge) {
-            setDead();
-        }
+        ageOneStep();
     }
     
     /**
@@ -263,10 +172,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected void incrementHunger()
     {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
+        digestOneStep();
     }
     
     /**
@@ -277,35 +183,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected void populate(List<LivingOrganism> newAnimals)
     {
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation(), Animal.class);
-        //determines the number of offspring the animal will produce
-        
-        int births = breed();
-        // New animals are born into adjacent locations.
-        
-        for(int b = 0; b < births && free.size() > 0; b++) 
-        {
-            Location loc = free.remove(0);
-            boolean offspringIsInfected = infected;
-            boolean offspringIsImmune = immune;
-            
-            // If the mother is infected, the child has a small chance of starting immune instead.
-            if (!immune && infected && rand.nextDouble() < 0.15) 
-            {
-                offspringIsImmune = true;
-                offspringIsInfected = false;
-            }
-            // Immune mothers usually have children that are not immune.
-            else if (immune && rand.nextDouble() < 0.9)
-            {
-                offspringIsImmune = false;
-            }
-            
-            Animal newAnimal = createOffspring(loc, offspringIsInfected, offspringIsImmune);
-            newAnimals.add(newAnimal);
-        }
+        populateOffspring(newAnimals);
     }
     
     /**
@@ -316,35 +194,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected int breed()
     {
-        int births = 0;
-        
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()) 
-        {
-            Location where = it.next();
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            Class typeOfOtherAnimal = null;
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
-            {
-                typeOfOtherAnimal  = field.getObjectAt(where, Animal.class).getClass();
-            }
-            
-            //checks to make sure they are of the same species
-            if(this.getClass().equals(typeOfOtherAnimal)) 
-            {
-                //checks to make the other animal is also a male
-                if(animal.getIsFemale() == false) 
-                {
-                    births = rand.nextInt(maxLitterSize) + 1;
-                }
-            }
-        }
-        
-        return births;
+        return calculateBirths();
     }
 
     /**
@@ -354,7 +204,7 @@ public abstract class Animal extends LivingOrganism
      */
     protected boolean canBreed()
     {
-        return age >= breedingAge;
+        return canBreedNow();
     }
 
     /**
@@ -363,11 +213,11 @@ public abstract class Animal extends LivingOrganism
     protected final void configureAnimal(int breedingAge, int maxAge, double breedingProbability,
                                          int maxLitterSize, int maxFoodLevel, int foodValue)
     {
-        this.breedingAge = breedingAge;
-        this.maxAge = maxAge;
-        this.breedingProbability = breedingProbability;
-        this.maxLitterSize = maxLitterSize;
-        this.maxFoodLevel = maxFoodLevel;
+        breedingState.setBreedingAge(breedingAge);
+        breedingState.setBreedingProbability(breedingProbability);
+        breedingState.setMaxLitterSize(maxLitterSize);
+        ageState.setMaxAge(maxAge);
+        hungerState.setMaxFoodLevel(maxFoodLevel);
         this.foodValue = foodValue;
     }
 
@@ -378,13 +228,13 @@ public abstract class Animal extends LivingOrganism
     {
         if (randomAge) 
         {
-            age = rand.nextInt(maxAge);
-            foodLevel = rand.nextInt(maxFoodLevel);
+            ageState.setAge(rand.nextInt(ageState.getMaxAge()));
+            hungerState.setFoodLevel(rand.nextInt(hungerState.getMaxFoodLevel()));
         }
         else
         {
-            age = 0;
-            foodLevel = newbornFoodLevel;
+            ageState.setAge(0);
+            hungerState.setFoodLevel(newbornFoodLevel);
         }
     }
     
@@ -393,7 +243,7 @@ public abstract class Animal extends LivingOrganism
      */
     public boolean getIsInfected() 
     {
-        return infected;
+        return diseaseState.isInfected();
     }
     
     /**
@@ -401,7 +251,7 @@ public abstract class Animal extends LivingOrganism
      */
     public boolean getIsImmune() 
     {
-        return immune;
+        return diseaseState.isImmune();
     }
     
     /**
@@ -409,28 +259,68 @@ public abstract class Animal extends LivingOrganism
      * 
      * @return Returns true if there is a surrounding animal which is infected.
      */
-    protected boolean surroundingsInfected()
+    public boolean surroundingsInfected()
     {
-        boolean surroundingsAreInfected = false;
-        
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext() && ! surroundingsAreInfected) 
-        {
-            Location where = it.next();
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
-            {
-                if (animal.getIsInfected())
-                {
-                    surroundingsAreInfected = true;
-                }
-            }
-        }
-        
-        return surroundingsAreInfected;
+        return DiseaseProne.super.surroundingsInfected();
+    }
+
+    public BreedingState getBreedingState()
+    {
+        return breedingState;
+    }
+
+    public AgeState getAgeState()
+    {
+        return ageState;
+    }
+
+    public HungerState getHungerState()
+    {
+        return hungerState;
+    }
+
+    public DiseaseState getDiseaseState()
+    {
+        return diseaseState;
+    }
+
+    public MovementState getMovementState()
+    {
+        return movementState;
+    }
+
+    public Field currentField()
+    {
+        return getField();
+    }
+
+    public Location currentLocation()
+    {
+        return getLocation();
+    }
+
+    public boolean organismIsAlive()
+    {
+        return isAlive();
+    }
+
+    public void markDead()
+    {
+        setDead();
+    }
+
+    public Animal spawnOffspring(Location location, boolean isInfected, boolean isImmune)
+    {
+        return createOffspring(location, isInfected, isImmune);
+    }
+
+    public Location locateFoodSource()
+    {
+        return findFood();
+    }
+
+    public void relocate(Location newLocation)
+    {
+        setLocation(newLocation);
     }
 }

@@ -8,6 +8,10 @@
 */
 public class Time 
 {
+    private static final int HOURS_PER_DAY = 24;
+    private static final int DAY_START_HOUR = 6;
+    private static final int DAY_END_HOUR = 19;
+
     // to keep track of the flow of time
     private int stepCount;
     private int dayCount;
@@ -31,8 +35,16 @@ public class Time
      */
     public void incrementTime()
     {
+        advanceOneStep();
+    }
+
+    /**
+     * Advances time by one simulation step.
+     */
+    public void advanceOneStep()
+    {
         stepCount++;
-        if(stepCount % 24 == 0){
+        if(stepCount % HOURS_PER_DAY == 0){
             dayCount++;
         }
         checkDayOrNight();
@@ -44,7 +56,7 @@ public class Time
      */
     public void checkDayOrNight()
     {
-        if (getHour() >= 6 && getHour() <= 19) {
+        if (getHour() >= DAY_START_HOUR && getHour() <= DAY_END_HOUR) {
             dayOrNight = TimesOfDay.DAY;
         }
         else {
@@ -57,7 +69,7 @@ public class Time
      */
     private int getHour() 
     {
-        return stepCount % 24; 
+        return stepCount % HOURS_PER_DAY; 
     }
 
     /**

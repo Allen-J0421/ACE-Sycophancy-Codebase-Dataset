@@ -1,5 +1,6 @@
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
-import java.util.*;
 /**
  * This class models weather in the simulation. 
  * It stores information about the current weather. 
@@ -8,12 +9,13 @@ import java.util.*;
  */
 public class Weather
 {
+    private static final int STATIC_WEATHER_DURATION = 12;
+    private static final int MAX_RANDOM_WEATHER_DURATION = 36;
+
     private WeatherType currentWeather;
     private static final Random rand = Randomizer.getRandom();
-    private int randomInt;
-    private int duration; // to keep track of when weather changes (every X hours)
     private boolean randomDuration = false;
-    private Set<WeatherType> weatherList;
+    private final List<WeatherType> weatherList = Arrays.asList(WeatherType.RAINING, WeatherType.SUNNY, WeatherType.CLOUDY);
     
     
     /**
@@ -21,18 +23,7 @@ public class Weather
      */
     public Weather()
     {
-       weatherList = new HashSet<>();
-       addWeatherList();
-       currentWeather = WeatherType.SUNNY; 
-       duration = 0;
-    }
-
-    /**
-     * Add the types of weather conditions to a HashSet.
-     */
-    public void addWeatherList()
-    {
-        weatherList = new HashSet<>(Arrays.asList(WeatherType.RAINING, WeatherType.SUNNY, WeatherType.CLOUDY));
+       reset();
     }
     
     /**
@@ -50,16 +41,17 @@ public class Weather
      */
     public void checkWeatherChange(int steps)
     {
-        if(randomDuration){
-            duration = rand.nextInt(36);
-            if(steps % duration==0){
-                changeWeather();
-            }
-        }
-        else{
-            if (steps % 12 == 0){
-                changeWeather();
-            }
+        updateForStep(steps);
+    }
+
+    /**
+     * Updates the weather for the given simulation step.
+     */
+    public void updateForStep(int steps)
+    {
+        int duration = getCurrentDuration();
+        if(steps % duration == 0) {
+            changeWeather();
         }
     }
 
@@ -78,7 +70,22 @@ public class Weather
      */
     public void changeWeather()
     {
-        randomInt = rand.nextInt(weatherList.size());
-        currentWeather = (WeatherType) weatherList.toArray()[randomInt];
+        currentWeather = weatherList.get(rand.nextInt(weatherList.size()));
+    }
+
+    /**
+     * Reset the weather to the default state.
+     */
+    public void reset()
+    {
+        currentWeather = WeatherType.SUNNY;
+    }
+
+    private int getCurrentDuration()
+    {
+        if(randomDuration) {
+            return rand.nextInt(MAX_RANDOM_WEATHER_DURATION) + 1;
+        }
+        return STATIC_WEATHER_DURATION;
     }
 }

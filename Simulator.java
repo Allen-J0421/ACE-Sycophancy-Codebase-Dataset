@@ -25,6 +25,8 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private final SimulatorView view;
+    // Controls time progression and weather updates.
+    private final EnvironmentController environmentController;
     // Environment in the simulation.
     private final Environment environment;
     // Factories used to create initial actors in population order.
@@ -95,7 +97,8 @@ public class Simulator
         this.config = Objects.requireNonNull(config, "config");
         actors = new ArrayList<>();
         field = new Field(config.getDepth(), config.getWidth());
-        environment = new Environment(new Time(), new Weather());
+        environmentController = new EnvironmentController();
+        environment = environmentController.getEnvironment();
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(config.getDepth(), config.getWidth());
@@ -217,8 +220,7 @@ public class Simulator
     {
         if(!playingSimulation){ return; }
         step++;
-        environment.getTime().incrementTime();
-        environment.getWeather().checkWeatherChange(step);
+        environmentController.advance(step);
 
 
         // Provide space for newborn animals.
@@ -254,7 +256,7 @@ public class Simulator
         actors.addAll(newActors);
         plantGrassInPatches();
 
-        view.showStatus(step, environment.getWeather().getCurrentWeather().toString(), environment.getTime().getCurrentTimeString(), field);
+        view.showStatus(step, environmentController.getCurrentWeather().toString(), environmentController.getCurrentTimeString(), field);
     }
 
     /**
@@ -264,7 +266,7 @@ public class Simulator
         // new grass is randomly added in patches
         double grassRate = config.getPopulationRate(Grass.class);
         for(Location location:field.getRandomFreePatches(grassRate)){
-            if(rand.nextDouble() <= grassRate && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
+            if(rand.nextDouble() <= grassRate && environmentController.isRaining()) {
                 Grass grass = new Grass(field, location);
                 actors.add(grass);
             }
@@ -279,10 +281,10 @@ public class Simulator
         step = 0;
         actors.clear();
         populate();
-        environment.getTime().reset();
+        environmentController.reset();
 
         // Show the starting state in the view.
-        view.showStatus(step,environment.getWeather().getCurrentWeather().toString(), environment.getTime().getCurrentTimeString().toString(), field);
+        view.showStatus(step, environmentController.getCurrentWeather().toString(), environmentController.getCurrentTimeString(), field);
     }
 
     /**

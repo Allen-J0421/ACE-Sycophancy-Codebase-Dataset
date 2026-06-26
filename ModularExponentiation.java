@@ -2,14 +2,12 @@ public final class ModularExponentiation {
     private ModularExponentiation() {
     }
 
-    public static int modPow(ModularExponentiationInput input) {
-        int modulus = input.modulus();
-        int normalizedBase = normalizeBase(input.base(), modulus);
-        return compute(normalizedBase, input.exponent(), modulus);
-    }
-
     public static int modPow(int base, int exponent, int modulus) {
-        return modPow(new ModularExponentiationInput(base, exponent, modulus));
+        validateExponent(exponent);
+        validateModulus(modulus);
+
+        int normalizedBase = normalizeBase(base, modulus);
+        return compute(normalizedBase, exponent, modulus);
     }
 
     private static int compute(int base, int exponent, int modulus) {
@@ -28,16 +26,6 @@ public final class ModularExponentiation {
         return (int) result;
     }
 
-    @Deprecated
-    public static int powMod(int base, int exponent, int modulus) {
-        return modPow(base, exponent, modulus);
-    }
-
-    @Deprecated
-    public static int powMod(ModularExponentiationInput input) {
-        return modPow(input);
-    }
-
     private static int normalizeBase(int base, int modulus) {
         int normalizedBase = base % modulus;
         if (normalizedBase < 0) {
@@ -48,5 +36,17 @@ public final class ModularExponentiation {
 
     private static int multiplyMod(long left, long right, int modulus) {
         return (int) ((left * right) % modulus);
+    }
+
+    private static void validateExponent(int exponent) {
+        if (exponent < 0) {
+            throw new IllegalArgumentException("Exponent must be non-negative.");
+        }
+    }
+
+    private static void validateModulus(int modulus) {
+        if (modulus <= 0) {
+            throw new IllegalArgumentException("Modulus must be positive.");
+        }
     }
 }

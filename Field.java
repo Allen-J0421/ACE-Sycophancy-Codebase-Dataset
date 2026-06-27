@@ -3,8 +3,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -180,14 +178,41 @@ public class Field
         List<Location> adjacent = adjacentLocations(location);
 
         for(Location next : adjacent) {
-
-            if (getObjectAt(next) == null|| (actor instanceof Animal && getObjectAt(next) instanceof Plant)){
-                if ((actor.canMoveOnLand() && actor.canMoveOnWater()) || (isUnderWater(next.getRow(), next.getCol()) && actor.canMoveOnWater()) || (!isUnderWater(next.getRow(), next.getCol()) && actor.canMoveOnLand())){
-                    free.add(next);
-                }
+            if ((getObjectAt(next) == null || (actor instanceof Animal && getObjectAt(next) instanceof Plant))
+                    && canTraverse(actor, next)) {
+                free.add(next);
             }
         }
         return free;
+    }
+
+    /**
+     * Check whether the given actor can move onto the location's terrain.
+     * @param actor The actor moving.
+     * @param location The target location.
+     * @return True if the terrain is suitable for the actor.
+     */
+    public boolean canTraverse(Actor actor, Location location)
+    {
+        return canTraverse(actor, location.getRow(), location.getCol());
+    }
+
+    /**
+     * Check whether the given actor can move onto the terrain at the given coordinates.
+     * @param actor The actor moving.
+     * @param row The target row.
+     * @param col The target column.
+     * @return True if the terrain is suitable for the actor.
+     */
+    public boolean canTraverse(Actor actor, int row, int col)
+    {
+        if(actor.canMoveOnLand() && actor.canMoveOnWater()) {
+            return true;
+        }
+        if(isUnderWater(row, col)) {
+            return actor.canMoveOnWater();
+        }
+        return actor.canMoveOnLand();
     }
 
     /**

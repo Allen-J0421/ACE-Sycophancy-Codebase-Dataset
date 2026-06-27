@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * A class representing shared characteristics of actors.
@@ -40,7 +41,7 @@ public abstract class Actor
         this.field = field;
         setLocation(location);
         this.time = time;
-        setDiseases = new HashSet();
+        setDiseases = new HashSet<>();
     }
 
     /**
@@ -54,7 +55,7 @@ public abstract class Actor
     public void act(List<Actor> newActors, WeatherCond weather)
     {
         incrementAge();
-        if(isAlive() && ((!field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnLand()) || (field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnWater()))) {
+        if(isAlive() && !field.canTraverse(this, location)) {
             setDead();
         }
     }
@@ -167,9 +168,53 @@ public abstract class Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Actor young = birth(loc,setDiseases);
+            Actor young = birth(loc, setDiseases);
             newActors.add(young);
         }
+    }
+
+    /**
+     * Copy birth-spread diseases from a parent into this actor.
+     * @param parentDiseases The parent's diseases.
+     */
+    protected void inheritBirthDiseases(Set<Disease> parentDiseases)
+    {
+        for(Disease disease : parentDiseases) {
+            if(disease.isSpreadByBirth()) {
+                setDiseases.add(disease);
+            }
+        }
+    }
+
+    /**
+     * Seed this actor with any diseases it can start with.
+     * @param actorName The actor name used for disease lookup.
+     */
+    protected void seedStartingDiseases(String actorName)
+    {
+        Random random = Randomizer.getRandom();
+        for(Disease disease : Simulator.diseases) {
+            Double startingProbability = disease.getStartingActorsMap().get(actorName);
+            if(startingProbability != null && random.nextDouble() <= startingProbability) {
+                setDiseases.add(disease);
+            }
+        }
+    }
+
+    /**
+     * Determine how many offspring this actor can produce.
+     * @param breedingAge The minimum age required to breed.
+     * @param breedingProbability The chance of a successful breeding attempt.
+     * @param maxLitterSize The largest number of offspring produced.
+     * @param random The random source for breeding.
+     * @return The number of offspring.
+     */
+    protected int breedOffspringCount(int breedingAge, double breedingProbability, int maxLitterSize, Random random)
+    {
+        if(age >= breedingAge && random.nextDouble() <= breedingProbability) {
+            return random.nextInt(maxLitterSize) + 1;
+        }
+        return 0;
     }
 
     /**
@@ -219,5 +264,5 @@ public abstract class Actor
      * @param Set<Disease> The diseases that the parent had is passed down
      * @return The new actor created
      */
-    abstract protected Actor birth(Location loc, Set<Disease>... parentDiseases);
+    abstract protected Actor birth(Location loc, Set<Disease> parentDiseases);
 }

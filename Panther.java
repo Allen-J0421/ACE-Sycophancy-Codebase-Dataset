@@ -51,20 +51,9 @@ public class Panther extends Animal
         canGoWater = false;
         age = 0;
         foodLevel = MAX_FOOD;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-            }
-        }
+        inheritBirthDiseases(parentDiseases);
     }
 
-    /**
-     * Create a panther. The panther is created with a random age and food level.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
     public Panther(Time time, Field field, Location location)
     {
         super(time, field, location);
@@ -73,12 +62,8 @@ public class Panther extends Animal
         canGoLand = true;
         canGoWater = false;
         age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD)+1;
-        for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
-                setDiseases.add(disease);
-            }
-        }
+        foodLevel = rand.nextInt(MAX_FOOD) + 1;
+        seedStartingDiseases(name);
     }
 
     /**
@@ -88,8 +73,8 @@ public class Panther extends Animal
      */
     private static Map<String, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
-        mapTemp.put("Lemurs", 10);
+        Map<String,Integer> mapTemp = new HashMap<>();
+        mapTemp.put("Lemur", 10);
         return mapTemp;
     }
 
@@ -100,20 +85,7 @@ public class Panther extends Animal
      */
     public int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A panther can breed if it has reached the breeding age.
-     * @return true if the panther can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return breedOffspringCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
     }
 
     /**
@@ -158,11 +130,8 @@ public class Panther extends Animal
      * @param Set<Disease> The diseases that the parent had is passed down
      * @return The new panther created
      */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Panther(getTime(), getField(), loc, parentDiseases[0]);
-        }
-        return new Panther(getTime(), getField(), loc);
+        return new Panther(getTime(), getField(), loc, parentDiseases);
     }
 }

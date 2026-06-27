@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Collections;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -89,7 +88,7 @@ public class Simulator
      */
     private Map<Actor,Double> createActorCreationProb()
     {
-        Map<Actor,Double> tempMap = new HashMap<>();
+        Map<Actor,Double> tempMap = new LinkedHashMap<>();
         Location location = new Location(0, 0);
         tempMap.put(new Grass(time, field, location),0.8);
         tempMap.put(new Water_Fern(time, field, location),0.9);
@@ -210,8 +209,8 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 for (Actor actor : actorCreationProb.keySet()){
                     Location location = new Location(row, col);
-                    if((rand.nextDouble() <= actorCreationProb.get(actor)) && ((actor.canMoveOnLand() && actor.canMoveOnWater()) || (field.isUnderWater(location.getRow(), location.getCol()) && actor.canMoveOnWater()) || (!field.isUnderWater(location.getRow(), location.getCol()) && actor.canMoveOnLand()))) {
-                        Actor newActor = actor.birth(new Location(row, col));
+                    if((rand.nextDouble() <= actorCreationProb.get(actor)) && field.canTraverse(actor, location)) {
+                        Actor newActor = actor.birth(new Location(row, col), Collections.emptySet());
                         actors.add(newActor);
                         break;
                     }

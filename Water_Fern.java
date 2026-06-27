@@ -40,31 +40,16 @@ public class Water_Fern extends Plant
         canGoLand = false;
         canGoWater = true;
         age = 0;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-            }
-        }
+        inheritBirthDiseases(parentDiseases);
     }
 
-    /**
-     * Create Water fern. The Water fern are created with a random age.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
     public Water_Fern(Time time, Field field, Location location)
     {
-        super(time, field, location);     
+        super(time, field, location);
         canGoLand = false;
         canGoWater = true;
         age = rand.nextInt(MAX_AGE);
-        for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
-                setDiseases.add(disease);
-            }
-        }
+        seedStartingDiseases(name);
     }
 
     /**
@@ -74,20 +59,7 @@ public class Water_Fern extends Plant
      */
     public int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * Water_Fern can breed if it has reached the breeding age.
-     * @return true if the Water fern can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return breedOffspringCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
     }
 
     /**
@@ -114,11 +86,8 @@ public class Water_Fern extends Plant
      * @param Set<Disease> The diseases that the parent had is passed down
      * @return The new Water fern created
      */
-    public Plant birth(Location loc, Set<Disease>... parentDiseases)
+    public Plant birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Water_Fern(getTime(), getField(), loc,parentDiseases[0]);
-        }
-        return new Water_Fern(getTime(), getField(), loc);
+        return new Water_Fern(getTime(), getField(), loc, parentDiseases);
     }
 }

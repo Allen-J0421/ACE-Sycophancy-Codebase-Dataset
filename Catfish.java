@@ -52,38 +52,21 @@ public class Catfish extends Animal
         
         age = 0;
         foodLevel = MAX_FOOD;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-                //System.out.println("Spread by parent disease");
-            }
-        }
+        inheritBirthDiseases(parentDiseases);
     }
-    
-    /**
-     * Create a catfish. The catfish is created with a random age and food level.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
-    public Catfish(Time time, Field field, Location location){
+
+    public Catfish(Time time, Field field, Location location)
+    {
         super(time, field, location);
         female = rand.nextBoolean();
         nocturnal = true;
         canGoLand = false;
         canGoWater = true;
-        
         age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD)+1;
-        for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
-                setDiseases.add(disease);
-                //System.out.println("Got disease");
-            }
-        }
+        foodLevel = rand.nextInt(MAX_FOOD) + 1;
+        seedStartingDiseases(name);
     }
-
+    
     /**
      * Create a Map with a key of the prey String name
      * and a value of the food level is given when eaten.
@@ -91,7 +74,7 @@ public class Catfish extends Animal
      */
     private static Map<String, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
+        Map<String,Integer> mapTemp = new HashMap<>();
         mapTemp.put("Water_Fern", 3);
         return mapTemp;
     }
@@ -103,20 +86,7 @@ public class Catfish extends Animal
      */
     public int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A catfish can breed if it has reached the breeding age.
-     * @return true if the catfish can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return breedOffspringCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
     }
 
     /**
@@ -161,12 +131,8 @@ public class Catfish extends Animal
      * @param Set<Disease> The diseases that the parent had is passed down
      * @return The new catfish created
      */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal birth(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Catfish(getTime(), getField(), loc,parentDiseases[0]);
-        }
-        return new Catfish(getTime(), getField(), loc);
+        return new Catfish(getTime(), getField(), loc, parentDiseases);
     }
 }
-

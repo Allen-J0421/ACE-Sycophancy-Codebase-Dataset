@@ -1,8 +1,4 @@
-import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -13,18 +9,21 @@ import java.util.Set;
  */
 public class Grass extends Plant
 {
-    // The age at which grass can start to breed.
-    private static final int BREEDING_AGE = 5;
-    // The age to which grass can live.
-    private static final int MAX_AGE = 250;
-    // The likelihood of grass breeding.
-    private static final double BREEDING_PROBABILITY = 0.8;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 12;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // String name for the grass
     public static final String name = "Grass";
+    private static final PlantProfile PROFILE = new PlantProfile(
+        name, 5, 250, 0.8, 12, true, false,
+        new PlantFactory() {
+            public Plant create(Time time, Field field, Location location, Set<Disease> parentDiseases)
+            {
+                if(parentDiseases != null) {
+                    return new Grass(time, field, location, parentDiseases);
+                }
+                return new Grass(time, field, location);
+            }
+        });
 
     /**
      * Create grass. Grass are created as age zero.
@@ -36,11 +35,7 @@ public class Grass extends Plant
      */
     public Grass(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
-        super(time, field, location);
-        canGoLand = true;
-        canGoWater = false;
-        age = 0;
-        inheritBirthDiseases(setDiseases, parentDiseases);
+        super(time, field, location, PROFILE, rand, parentDiseases);
     }
 
     /**
@@ -52,52 +47,7 @@ public class Grass extends Plant
      */
     public Grass(Time time, Field field, Location location)
     {
-        super(time, field, location);     
-        canGoLand = true;
-        canGoWater = false;
-        age = rand.nextInt(MAX_AGE);
-        addStartingDiseases(name, setDiseases, rand);
+        super(time, field, location, PROFILE, rand);
     }
 
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    public int breed()
-    {
-        return calculateBreedingCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
-    }
-
-    /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
-    }
-
-    /**
-     * Returns the max age that the grass can have before dying.
-     * @return The max age that the grass can have before dying.
-     */
-    public int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    /**
-     * Creates new grass 
-     * If the grass are created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new grass created
-     */
-    public Plant birth(Location loc, Set<Disease> parentDiseases)
-    {
-        if (parentDiseases != null) {
-            return new Grass(getTime(), getField(), loc, parentDiseases);
-        }
-        return new Grass(getTime(), getField(), loc);
-    }
 }

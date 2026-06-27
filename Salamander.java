@@ -1,6 +1,4 @@
-import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -13,25 +11,22 @@ import java.util.Set;
  */
 public class Salamander extends Animal
 {
-    // Characteristics shared by all salamanders (class variables).
-
-    // The age at which a salamander can start to breed.
-    private static final int BREEDING_AGE = 5;
-    // The age to which a salamander can live.
-    private static final int MAX_AGE = 20;
-    // The likelihood of a salamander breeding.
-    private static final double BREEDING_PROBABILITY = 0.4;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
-    // The food value of all prey.
-    private static final Map<String, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    // The max food value of the salamander. In effect, this is the
-    // number of steps a salamander can go before it has to eat again.
-    private static final int MAX_FOOD = 7;
     // String name for the salamander
     public static final String name = "Salamander";
+    private static final AnimalProfile PROFILE = new AnimalProfile(
+        name, 5, 20, 0.4, 4, 7, createPreyFoodValueMap(),
+        false, true, true,
+        new AnimalFactory() {
+            public Animal create(Time time, Field field, Location location, Set<Disease> parentDiseases)
+            {
+                if(parentDiseases != null) {
+                    return new Salamander(time, field, location, parentDiseases);
+                }
+                return new Salamander(time, field, location);
+            }
+        });
 
     /**
      * Create a salamander. The salamander is created as a new born (age zero
@@ -44,16 +39,7 @@ public class Salamander extends Animal
      */
     public Salamander(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
-        super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = false;
-        
-        canGoLand = true;
-        canGoWater = true;
-        
-        age = 0;
-        foodLevel = MAX_FOOD;
-        inheritBirthDiseases(setDiseases, parentDiseases);
+        super(time, field, location, PROFILE, rand, parentDiseases);
     }
 
     /**
@@ -65,14 +51,7 @@ public class Salamander extends Animal
      */
     public Salamander(Time time, Field field, Location location)
     {
-        super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = false;
-        canGoLand = true;
-        canGoWater = true;
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD)+1;
-        addStartingDiseases(name, setDiseases, rand);
+        super(time, field, location, PROFILE, rand);
     }
 
     /**
@@ -88,63 +67,4 @@ public class Salamander extends Animal
         return mapTemp;
     }
 
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    public int breed()
-    {
-        return calculateBreedingCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
-    }
-
-    /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
-    }
-
-    /**
-     * Returns the max food level that the salamander can have.
-     * @return The max food level that the salamander can have.
-     */
-    public int getMaxFood()
-    {
-        return MAX_FOOD;
-    }
-
-    /**
-     * Returns the max age that the salamander can have before dying.
-     * @return The max age that the salamander can have before dying.
-     */
-    public int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    /**
-     * Returns the prey food values Map.
-     * @return The prey food values Map.
-     */
-    public Map<String, Integer> getPreyFoodValuesMap()
-    {
-        return PREY_FOOD_VALUES;
-    }
-
-    /**
-     * Creates a new salamander 
-     * If the salamander is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new salamander created
-     */
-    public Animal birth(Location loc, Set<Disease> parentDiseases)
-    {
-        if (parentDiseases != null) {
-            return new Salamander(getTime(), getField(), loc, parentDiseases);
-        }
-        return new Salamander(getTime(), getField(), loc);
-    }
 }

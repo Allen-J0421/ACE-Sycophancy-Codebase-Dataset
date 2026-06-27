@@ -1,6 +1,9 @@
 import java.util.List;
 import java.util.Iterator;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -10,9 +13,49 @@ import java.util.Set;
  */
 public abstract class Animal extends Actor
 {
+    protected interface AnimalFactory
+    {
+        Animal create(Time time, Field field, Location location, Set<Disease> parentDiseases);
+    }
+
+    protected static class AnimalProfile
+    {
+        private final String name;
+        private final int breedingAge;
+        private final int maxAge;
+        private final double breedingProbability;
+        private final int maxLitterSize;
+        private final int maxFood;
+        private final Map<String, Integer> preyFoodValues;
+        private final boolean nocturnal;
+        private final boolean canGoLand;
+        private final boolean canGoWater;
+        private final AnimalFactory factory;
+
+        protected AnimalProfile(String name, int breedingAge, int maxAge,
+                                double breedingProbability, int maxLitterSize, int maxFood,
+                                Map<String, Integer> preyFoodValues, boolean nocturnal,
+                                boolean canGoLand, boolean canGoWater, AnimalFactory factory)
+        {
+            this.name = name;
+            this.breedingAge = breedingAge;
+            this.maxAge = maxAge;
+            this.breedingProbability = breedingProbability;
+            this.maxLitterSize = maxLitterSize;
+            this.maxFood = maxFood;
+            this.preyFoodValues = Collections.unmodifiableMap(new HashMap<>(preyFoodValues));
+            this.nocturnal = nocturnal;
+            this.canGoLand = canGoLand;
+            this.canGoWater = canGoWater;
+            this.factory = factory;
+        }
+    }
+
     protected int foodLevel;
     protected boolean female;
     protected boolean nocturnal;
+    private final AnimalProfile profile;
+    private final Random rand;
 
     /**
      * Create a new animal at location in field with time as well.
@@ -22,10 +65,42 @@ public abstract class Animal extends Actor
      * @param location The location within the field.
      * @param time The time in the simulation
      */
-    public Animal(Time time, Field field, Location location)
+    protected Animal(Time time, Field field, Location location, AnimalProfile profile, Random rand)
+    {
+        this(time, field, location, profile, rand, null);
+    }
+
+    /**
+     * Create a new born animal with inherited diseases.
+     *
+     * @param time The time in the simulation.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param profile The species profile for this animal.
+     * @param rand The shared random generator for this species.
+     * @param parentDiseases The diseases inherited from the parent.
+     */
+    protected Animal(Time time, Field field, Location location, AnimalProfile profile,
+                     Random rand, Set<Disease> parentDiseases)
     {
         super(time, field, location);
+        this.profile = profile;
+        this.rand = rand;
+        female = rand.nextBoolean();
+        nocturnal = profile.nocturnal;
+        canGoLand = profile.canGoLand;
+        canGoWater = profile.canGoWater;
 
+        if(parentDiseases == null) {
+            age = rand.nextInt(profile.maxAge);
+            foodLevel = rand.nextInt(profile.maxFood) + 1;
+            addStartingDiseases(profile.name, setDiseases, rand);
+        }
+        else {
+            age = 0;
+            foodLevel = profile.maxFood;
+            inheritBirthDiseases(setDiseases, parentDiseases);
+        }
     }
 
     /**
@@ -166,7 +241,11 @@ public abstract class Animal extends Actor
      * Returns how many animals are produced during birth
      * @return The number of animals birthed
      */
-    abstract protected int breed();
+    protected final int breed()
+    {
+        return calculateBreedingCount(profile.breedingAge, profile.breedingProbability,
+                                      profile.maxLitterSize, rand);
+    }
 
     /**
      * Creates a new animal 
@@ -174,17 +253,44 @@ public abstract class Animal extends Actor
      * @param Set<Disease> The diseases that the parent had is passed down
      * @return The new animal created
      */
-    abstract protected Animal birth(Location loc, Set<Disease> parentDiseases);
+    protected final Animal birth(Location loc, Set<Disease> parentDiseases)
+    {
+        return profile.factory.create(getTime(), getField(), loc, parentDiseases);
+    }
 
     /**
      * Returns the Map of the prey of the animal and how much food they provide it
      * @return The Map of the prey of the animal and how much food they provide it
      */
-    abstract protected Map<String, Integer> getPreyFoodValuesMap();
+    protected final Map<String, Integer> getPreyFoodValuesMap()
+    {
+        return profile.preyFoodValues;
+    }
 
     /**
      * Returns the max food value that the animal can have
      * @return The max food value that the animal can have
      */
-    abstract protected int getMaxFood();
+    protected final int getMaxFood()
+    {
+        return profile.maxFood;
+    }
+
+    /**
+     * Returns the actors Name.
+     * @return The actor name.
+     */
+    protected final String getActorName()
+    {
+        return profile.name;
+    }
+
+    /**
+     * Returns the actors max age.
+     * @return The max age.
+     */
+    protected final int getMaxAge()
+    {
+        return profile.maxAge;
+    }
 }

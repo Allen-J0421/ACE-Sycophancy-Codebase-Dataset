@@ -1,6 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A simple model of a rat.
  * Rats age, move, eat ants, breed, and die.
@@ -46,35 +43,14 @@ public class Rat extends Animal
         return new Rat(false, field, location);
     }
 
-    /**
-     * Look for ants adjacent to the current location.
-     * Only the first live ant is eaten.
-     * If there is a plant adjacent, it can be 'trampled'.
-     * @return where food was found, or null if it wasn't.
-     */
-    protected Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Ant) {
-                Ant ant = (Ant) animal;
-                if(ant.isAlive()) {
-                    ant.setDead();
-                    setFoodLevel(ANT_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (animal instanceof Plant) {
-                Plant plant = (Plant) animal;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
+    // Eater: rats eat ants and trample plants.
+    public int eatAnt(Ant ant)   { return ANT_FOOD_VALUE; }
+    public boolean tramplesPlants() { return true; }
+
+    // Interactable: rats can be eaten (by snakes and eagles).
+    public int acceptInteraction(Eater eater) {
+        int foodValue = eater.eatRat(this);
+        if (foodValue >= 0) setDead();
+        return foodValue;
     }
 }

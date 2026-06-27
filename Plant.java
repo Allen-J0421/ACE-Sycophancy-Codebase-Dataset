@@ -7,7 +7,7 @@ import java.util.Random;
  * @version 01.03.22
  */
 
-public abstract class Plant
+public abstract class Plant implements Interactable
 {
     //whether the plant is alive or not
     private boolean alive;
@@ -60,10 +60,30 @@ public abstract class Plant
     protected abstract Plant createOffspring(Field field, Location location);
 
     /**
+     * Dispatches to the appropriate eatXxx method on the eater.
+     * Subclasses implement this to call eater.eatGrass(this), eater.eatAcacia(this), etc.
+     */
+    protected abstract int eatMe(Eater eater);
+
+    /**
+     * Handles interaction with a predator. Asks the eater if it eats this plant
+     * type; if not, checks whether the eater tramples plants instead.
+     * Kills this plant on any non-negative result.
+     */
+    public int acceptInteraction(Eater eater) {
+        int foodValue = eatMe(eater);
+        if (foodValue < 0) {
+            foodValue = eater.tramplesPlants() ? 0 : -1;
+        }
+        if (foodValue >= 0) setDead();
+        return foodValue;
+    }
+
+    /**
      * Check whether the plant is alive or not.
      * @return true if the plant is still alive.
      */
-    protected boolean isAlive()
+    public boolean isAlive()
     {
         return alive;
     }

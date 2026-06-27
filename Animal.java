@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @version 01.03.22
  */
-public abstract class Animal
+public abstract class Animal implements Eater, Interactable
 {
     // Whether the animal is alive or not.
     private boolean alive;
@@ -106,13 +106,44 @@ public abstract class Animal
     protected abstract int getMaxLitterSize();
     protected abstract boolean isActiveAt(int time);
     protected abstract Animal createOffspring(Field field, Location location);
-    protected abstract Location findFood();
+
+    /**
+     * Default: this animal cannot be consumed. Prey subclasses override this
+     * to dispatch to the appropriate eater.eatXxx() method.
+     */
+    public int acceptInteraction(Eater eater) { return -1; }
+
+    /**
+     * Scan adjacent locations for food. Delegates all type-specific decisions
+     * to the Eater and Interactable interfaces — no instanceof checks needed.
+     * @return the location where food was found, or null.
+     */
+    protected Location findFood() {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            Object obj = field.getObjectAt(where);
+            if (obj instanceof Interactable) {
+                Interactable target = (Interactable) obj;
+                if (target.isAlive()) {
+                    int result = target.acceptInteraction(this);
+                    if (result >= 0) {
+                        if (result > 0) setFoodLevel(result);
+                        return where;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
      */
-    protected boolean isAlive()
+    public boolean isAlive()
     {
         return alive;
     }

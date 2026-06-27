@@ -1,6 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A simple model of an emu.
  * Emu age, move, eat grass, and die.
@@ -46,35 +43,9 @@ public class Emu extends Animal
         return new Emu(false, field, location);
     }
 
-    /**
-     * Look for grass adjacent to the current location.
-     * Only the first grass is eaten.
-     * If acacia is adjacent, it is 'trampled'.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object searchPlant = field.getObjectAt(where);
-            if(searchPlant instanceof Grass) {
-                Grass grass = (Grass) searchPlant;
-                if (grass.isAlive()) {
-                    grass.setDead();
-                    setFoodLevel(GRASS_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (searchPlant instanceof Plant) {
-                Plant plant = (Plant) searchPlant;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
-    }
+    // Eater: emus eat grass and trample other plants (e.g. acacia).
+    public int eatGrass(Grass grass) { return GRASS_FOOD_VALUE; }
+    public boolean tramplesPlants()  { return true; }
+
+    // Emus cannot be eaten; acceptInteraction() inherits the default -1 from Animal.
 }

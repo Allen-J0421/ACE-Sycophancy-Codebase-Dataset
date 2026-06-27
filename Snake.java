@@ -1,6 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A simple model of a snake.
  * Snakes age, move, eat rats, breed, and die.
@@ -46,37 +43,14 @@ public class Snake extends Animal
         return new Snake(false, field, location);
     }
 
-    /**
-     * Look for rats adjacent to the current location.
-     * Only the first live rat is eaten.
-     * If it is a plant, it can be 'trampled'.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood()
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Rat) {
-                Rat rat = (Rat) animal;
-                if(rat.isAlive()) {
-                    rat.setDead();
-                    setFoodLevel(RAT_FOOD_VALUE);
-                    return where;
-                }
-            }
-            else if (animal instanceof Plant){
-                Plant plant = (Plant) animal;
-                if(plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
-    }
+    // Eater: snakes eat rats and trample plants.
+    public int eatRat(Rat rat)      { return RAT_FOOD_VALUE; }
+    public boolean tramplesPlants() { return true; }
 
+    // Interactable: snakes can be eaten (by eagles and dingoes).
+    public int acceptInteraction(Eater eater) {
+        int foodValue = eater.eatSnake(this);
+        if (foodValue >= 0) setDead();
+        return foodValue;
+    }
 }

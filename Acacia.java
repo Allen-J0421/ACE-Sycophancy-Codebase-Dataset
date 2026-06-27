@@ -33,4 +33,6 @@ public class Acacia extends Plant
     protected Plant createOffspring(Field field, Location location) {
         return new Acacia(field, location);
     }
+
+    protected int eatMe(Eater eater) { return eater.eatAcacia(this); }
 }

@@ -1,6 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A simple model of an eagle.
  * Eagles age, move, eat snakes and rats, and die.
@@ -50,48 +47,17 @@ public class Eagle extends Animal
         return new Eagle(false, field, location);
     }
 
-    /**
-     * Look for rats and snakes adjacent to the current location.
-     * Only the first live rat or snake is eaten.
-     * If it is a plant, then it is 'trampled'.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood() {
-        if (getFog() && rand.nextInt(2) == 0) {
-            return doFindFood();
-        }
-        return doFindFood();
-    }
+    // Eater: eagles eat snakes and rats and trample plants.
+    public int eatSnake(Snake snake) { return SNAKE_FOOD_VALUE; }
+    public int eatRat(Rat rat)       { return RAT_FOOD_VALUE; }
+    public boolean tramplesPlants()  { return true; }
 
-    private Location doFindFood() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while (it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal instanceof Snake) {
-                Snake snake = (Snake) animal;
-                if (snake.isAlive()) {
-                    snake.setDead();
-                    setFoodLevel(SNAKE_FOOD_VALUE);
-                    return where;
-                }
-            } else if (animal instanceof Rat) {
-                Rat rat = (Rat) animal;
-                if (rat.isAlive()) {
-                    rat.setDead();
-                    setFoodLevel(RAT_FOOD_VALUE);
-                    return where;
-                }
-            } else if (animal instanceof Plant) {
-                Plant plant = (Plant) animal;
-                if (plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
+    // Eagles cannot be eaten; acceptInteraction() inherits the default -1 from Animal.
+
+    // Preserves the original RNG call that occurs when fog is active.
+    @Override
+    protected Location findFood() {
+        if (getFog()) rand.nextInt(2);
+        return super.findFood();
     }
 }

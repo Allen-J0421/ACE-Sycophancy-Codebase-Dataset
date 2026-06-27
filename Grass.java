@@ -32,4 +32,6 @@ public class Grass extends Plant
     protected Plant createOffspring(Field field, Location location) {
         return new Grass(field, location);
     }
+
+    protected int eatMe(Eater eater) { return eater.eatGrass(this); }
 }

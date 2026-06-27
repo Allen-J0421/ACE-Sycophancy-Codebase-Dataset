@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-
 /**
  * A simple model of a dingo.
  * Dingoes age, move, eat snakes, and die.
@@ -46,38 +43,18 @@ public class Dingo extends Animal
         return new Dingo(false, field, location);
     }
 
-    /**
-     * Look for snakes adjacent to the current location.
-     * Only the first live snake is eaten.
-     * If it is a plant, then it is 'trampled'.
-     * In fog, there is a 50% chance of finding nothing.
-     * @return where food was found, or null if it wasn't.
-     */
+    // Eater: dingoes eat snakes and trample plants.
+    public int eatSnake(Snake snake) { return SNAKE_FOOD_VALUE; }
+    public boolean tramplesPlants()  { return true; }
+
+    // Dingoes cannot be eaten; acceptInteraction() inherits the default -1 from Animal.
+
+    // In fog, there is a 50% chance the dingo finds nothing.
+    @Override
     protected Location findFood() {
         if (getFog() && rand.nextInt(2) != 0) {
             return null;
         }
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while (it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal instanceof Snake) {
-                Snake snake = (Snake) animal;
-                if (snake.isAlive()) {
-                    snake.setDead();
-                    setFoodLevel(SNAKE_FOOD_VALUE);
-                    return where;
-                }
-            } else if (animal instanceof Plant) {
-                Plant plant = (Plant) animal;
-                if (plant.isAlive()) {
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
+        return super.findFood();
     }
 }

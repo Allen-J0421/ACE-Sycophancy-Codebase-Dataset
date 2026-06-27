@@ -1,6 +1,5 @@
 import java.util.Random;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -22,7 +21,10 @@ public class Alligator extends Animal
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 5;
     // The food value of all prey.
-    private static final Map<String, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
+    private static final Map<String, Integer> PREY_FOOD_VALUES = Map.of(
+        "Lemur", 8,
+        "Catfish", 4
+    );
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // The max food value of the alligator. In effect, this is the
@@ -50,19 +52,6 @@ public class Alligator extends Animal
     {
         super(time, field, location);
         initializeRandomStartState(false, true, true, MAX_AGE, MAX_FOOD, name);
-    }
-
-    /**
-     * Create a Map with a key of the prey String name
-     * and a value of the food level is given when eaten.
-     * @return The prey food value Map.
-     */
-    private static Map<String, Integer> createPreyFoodValueMap()
-    {
-        Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Lemur", 8);
-        mapTemp.put("Catfish", 4);
-        return mapTemp;
     }
 
     /**

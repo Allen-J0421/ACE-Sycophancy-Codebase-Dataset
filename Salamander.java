@@ -1,6 +1,5 @@
 import java.util.Random;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -22,7 +21,10 @@ public class Salamander extends Animal
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 4;
     // The food value of all prey.
-    private static final Map<String, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
+    private static final Map<String, Integer> PREY_FOOD_VALUES = Map.of(
+        "Grass", 4,
+        "Water_Fern", 5
+    );
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // The max food value of the salamander. In effect, this is the
@@ -50,19 +52,6 @@ public class Salamander extends Animal
     {
         super(time, field, location);
         initializeRandomStartState(false, true, true, MAX_AGE, MAX_FOOD, name);
-    }
-
-    /**
-     * Create a Map with a key of the prey String name
-     * and a value of the food level is given when eaten.
-     * @return The prey food value Map.
-     */
-    private static Map<String, Integer> createPreyFoodValueMap()
-    {
-        Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Grass", 4);
-        mapTemp.put("Water_Fern", 5);
-        return mapTemp;
     }
 
     /**

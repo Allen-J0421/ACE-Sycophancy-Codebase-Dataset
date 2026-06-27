@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 
 /**
  * Plants do not move around but they do grow and produce more plants. 
@@ -13,12 +12,6 @@ import java.util.Iterator;
  */
 public class Plant extends LivingBeing
 {
-    // instance variables
-    private boolean alive;
-    // The plant's field.
-    private Field field;
-    // The plant's position in the field.
-    private Location location;
     // The plant's age
     private int age;
     //The probability that the plant can grow

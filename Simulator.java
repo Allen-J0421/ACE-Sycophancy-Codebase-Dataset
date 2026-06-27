@@ -3,8 +3,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
-import java.util.TimerTask;
-import java.util.Timer;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -20,6 +18,8 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 150;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 100;
+    // The number of simulation steps between day/night transitions.
+    private static final int DAY_NIGHT_CYCLE_LENGTH = 35;
 
     // The probability that a hedgehog will be created in any given grid position.
     private static final double HEDGEHOG_CREATION_PROBABILITY = 0.115;
@@ -41,7 +41,7 @@ public class Simulator
     // The current step of the simulation.
     private int step;
 
-    private static boolean night;
+    private boolean night;
     // A graphical view of the simulation.
     private SimulatorView view;
     
@@ -56,7 +56,6 @@ public class Simulator
     public Simulator()
     {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-        night = false;
     }
 
     /**
@@ -131,8 +130,10 @@ public class Simulator
     /**
      * Switches between night time and day time
      */
-    protected void switchNight() {
+    private void switchNight() {
         night = !night;
+        LivingBeing.setNight(night);
+        view.setNight(night);
     }
 
     /**
@@ -143,24 +144,21 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
+        if(step % DAY_NIGHT_CYCLE_LENGTH == 0) {
+            switchNight();
+        }
 
         // Provide space for newborn animals.
         List<LivingBeing> newAnimals = new ArrayList<>();        
         // Let all animals act.
-        int counter = 0;
         for(Iterator<LivingBeing> it = animals.iterator(); it.hasNext(); ) {
 
             LivingBeing animal = it.next();
             animal.act(newAnimals);
 
-            if(counter % 35 == 0) {
-                animal.switchNight();
-            }
-
             if(! animal.isAlive()) {
                 it.remove();
             }
-            counter++;
         }
 
         // Add the newly born animals to the main lists.
@@ -175,6 +173,9 @@ public class Simulator
     public void reset()
     {
         step = 0;
+        night = false;
+        LivingBeing.setNight(night);
+        view.setNight(night);
         animals.clear();
         populate();
 
@@ -193,33 +194,28 @@ public class Simulator
         //goes through each cell and populates based on given probabilty 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
+                Location location = new Location(row, col);
                 if(rand.nextDouble() <= HEDGEHOG_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
                     Hedgehog hedgehog = new Hedgehog(true, field, location);
                     animals.add(hedgehog);
                 }
                 else if(rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-                    Location location = new Location(row,col);
                     Bear bear = new Bear(true, field, location);
                     animals.add(bear);
                 }
                 else if(rand.nextDouble() <= BADGER_CREATION_PROBABILITY) {
-                    Location location = new Location(row,col);
                     Badger badger = new Badger(true, field, location);
                     animals.add(badger);
                 }
                 else if(rand.nextDouble() <= FROG_CREATION_PROBABILITY) {
-                    Location location = new Location(row,col);
                     Frog frog = new Frog(true,field,location);
                     animals.add(frog);
                 }
                 else if(rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-                    Location location = new Location(row,col);
                     Wolf wolfie = new Wolf(true,field,location);
                     animals.add(wolfie);
                 }
                 else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row,col);
                     Plant plant = new Plant(true,field,location);
                     animals.add(plant);
                 }
@@ -242,4 +238,3 @@ public class Simulator
         }
     }
 }
-

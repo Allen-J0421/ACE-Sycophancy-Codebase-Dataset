@@ -1,6 +1,4 @@
 import java.util.List;
-import java.util.TimerTask;
-import java.util.Timer;
 
 /**
  * A class representing shared characteristics of all living beings, animals and plants
@@ -15,8 +13,8 @@ public abstract class LivingBeing
     private Field field;
     // The being's position in the field.
     private Location location;
-    //Checks to see if it is night time or not
-    protected static boolean nightTime;
+    // Shared day/night state for all living beings in the simulation.
+    private static boolean nightTime;
 
     /**
      * Constructor for objects of class LivingBeing
@@ -29,8 +27,6 @@ public abstract class LivingBeing
         this.field = field;
         setLocation(location);
 
-        nightTime = false;
-
     }
 
     /**
@@ -42,10 +38,11 @@ public abstract class LivingBeing
     }
 
     /**
-     * Switches between night time and day time
+     * Set the shared day/night state.
+     * @param night true if the simulation is currently at night.
      */
-    protected void switchNight() {
-        nightTime = !nightTime;
+    protected static void setNight(boolean night) {
+        nightTime = night;
     }
 
     /**

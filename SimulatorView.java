@@ -21,16 +21,15 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
-    private final String POPULATION_PREFIX = "Population: ";
+    private static final String STEP_PREFIX = "Step: ";
+    private static final String POPULATION_PREFIX = "Population: ";
     private JLabel stepLabel, population, infoLabel;
     private FieldView fieldView;
     
     private boolean night;
-    private int counter;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -51,10 +50,6 @@ public class SimulatorView extends JFrame
         
         setLocation(100, 50);
         
-        //test
-        //night = false;
-        //counter = 0;
-        
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
@@ -74,9 +69,17 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
+    }
+
+    /**
+     * Set whether the simulation is currently showing night-time conditions.
+     */
+    public void setNight(boolean night)
+    {
+        this.night = night;
     }
 
     /**
@@ -90,7 +93,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -101,15 +104,6 @@ public class SimulatorView extends JFrame
             return col;
         }
     }
-    
-    /*private boolean Night() {
-        if(counter % 5 == 0) {
-            night = !night;
-        }
-        return night;
-    }*/
-
-
     /**
      * Show the current status of the field.
      * @param step Which iteration step it is.
@@ -134,15 +128,9 @@ public class SimulatorView extends JFrame
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                 }
                 else {
-                    //Animal a = (Animal) animal;
-                    if(!night) {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                    } else {
-                    fieldView.drawMark(col, row, Color.GRAY);
-                    }
+                    fieldView.drawMark(col, row, night ? Color.GRAY : EMPTY_COLOR);
                 }
             }
-            //counter++;
         }
         stats.countFinished();
 

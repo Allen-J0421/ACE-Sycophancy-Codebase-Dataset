@@ -9,7 +9,5 @@ public interface SimulationDisplay
 
     void setInfoText(String text);
 
-    void showStatus(int step, FieldSnapshot snapshot);
-
-    boolean isViable(FieldSnapshot snapshot);
+    void showStatus(SimulationState state);
 }

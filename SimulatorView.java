@@ -34,13 +34,8 @@ public class SimulatorView implements SimulationDisplay
         delegate.setInfoText(text);
     }
 
-    public void showStatus(int step, FieldSnapshot snapshot)
+    public void showStatus(SimulationState state)
     {
-        delegate.showStatus(step, snapshot);
-    }
-
-    public boolean isViable(FieldSnapshot snapshot)
-    {
-        return delegate.isViable(snapshot);
+        delegate.showStatus(state);
     }
 }

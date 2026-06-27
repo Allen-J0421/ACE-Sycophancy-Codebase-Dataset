@@ -37,7 +37,7 @@ public class SwingSimulationView extends JFrame implements SimulationDisplay
     public SwingSimulationView(int height, int width, SimulationRulesEngine rules)
     {
         this.rules = rules;
-        stats = new FieldStats(rules);
+        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Animal Simulation");
@@ -91,13 +91,15 @@ public class SwingSimulationView extends JFrame implements SimulationDisplay
         infoLabel.setText(text);
     }
 
-    public void showStatus(int step, FieldSnapshot snapshot)
+    public void showStatus(SimulationState state)
     {
         if(!isVisible()) {
             setVisible(true);
         }
 
-        stepLabel.setText(STEP_PREFIX + step);
+        FieldSnapshot snapshot = state.getFieldSnapshot();
+
+        stepLabel.setText(STEP_PREFIX + state.getStep());
         fieldView.preparePaint();
 
         for(int row = 0; row < snapshot.getDepth(); row++) {
@@ -112,13 +114,8 @@ public class SwingSimulationView extends JFrame implements SimulationDisplay
             }
         }
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(snapshot, step));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(state));
         fieldView.repaint();
-    }
-
-    public boolean isViable(FieldSnapshot snapshot)
-    {
-        return stats.isViable(snapshot);
     }
 
     private void setSunny()

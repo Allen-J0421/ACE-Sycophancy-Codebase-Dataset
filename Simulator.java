@@ -132,6 +132,40 @@ public class Simulator
     {
         return step;
     }
+
+    /**
+     * Return an immutable view of the current simulation state.
+     *
+     * @return The current simulation state.
+     */
+    public SimulationState getState()
+    {
+        FieldSnapshot snapshot = field.createSnapshot();
+        return new SimulationState(step, snapshot,
+                                   rules.getCurrentWeather(),
+                                   rules.getTimeOfDay(step),
+                                   snapshot.getActiveSpeciesCount() > 1);
+    }
+
+    /**
+     * Return a snapshot of the field without updating the display.
+     *
+     * @return The current field snapshot.
+     */
+    public FieldSnapshot getFieldSnapshot()
+    {
+        return getState().getFieldSnapshot();
+    }
+
+    /**
+     * Determine whether the simulation is still viable.
+     *
+     * @return True if more than one species is alive.
+     */
+    public boolean isViable()
+    {
+        return getState().isViable();
+    }
     
     // Functional methods
     
@@ -151,7 +185,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field.createSnapshot()); step++) {
+        for(int step = 1; step <= numSteps && isViable(); step++) {
             simulateOneStep();
             //delay(60);   // uncomment this to run more slowly
         }
@@ -182,7 +216,7 @@ public class Simulator
                    
         // Add the newly born organisms to the main lists.
         organisms.addAll(newOrganisms);
-        view.showStatus(step, field.createSnapshot());
+        view.showStatus(getState());
     }
         
     /**
@@ -196,7 +230,7 @@ public class Simulator
         rules.reset();
         
         // Show the starting state in the view.
-        view.showStatus(step, field.createSnapshot());
+        view.showStatus(getState());
     }
     
     /**

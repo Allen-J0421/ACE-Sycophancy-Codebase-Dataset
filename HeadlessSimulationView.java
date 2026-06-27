@@ -17,7 +17,7 @@ public class HeadlessSimulationView implements SimulationDisplay
     public HeadlessSimulationView(SimulationRulesEngine rules)
     {
         colors = new LinkedHashMap<>();
-        stats = new FieldStats(rules);
+        stats = new FieldStats();
         infoText = "";
         populationText = "";
     }
@@ -32,15 +32,10 @@ public class HeadlessSimulationView implements SimulationDisplay
         infoText = text;
     }
 
-    public void showStatus(int step, FieldSnapshot snapshot)
+    public void showStatus(SimulationState state)
     {
-        this.step = step;
-        populationText = stats.getPopulationDetails(snapshot, step);
-    }
-
-    public boolean isViable(FieldSnapshot snapshot)
-    {
-        return stats.isViable(snapshot);
+        step = state.getStep();
+        populationText = stats.getPopulationDetails(state);
     }
 
     public String getInfoText()

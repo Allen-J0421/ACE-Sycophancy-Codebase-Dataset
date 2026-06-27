@@ -1,8 +1,8 @@
-import java.util.Random;
-import java.util.List;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
+import java.util.List;
+import java.util.Random;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -10,7 +10,7 @@ import java.awt.Color;
  *
  * @version 2022.02.24 (2)
  */
-public class Simulator
+public final class Simulator
 {
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
@@ -88,7 +88,8 @@ public class Simulator
     // A graphical view of the simulation.
     private final SimulatorView view;
     
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         Simulator sim = new Simulator();
         sim.runMediumSimulation();
     }
@@ -138,7 +139,8 @@ public class Simulator
     /**
      * Run the simulation from its current state for a medium period, 1000 steps
      */
-    public void runMediumSimulation() {
+    public void runMediumSimulation()
+    {
         simulate(1000);
     }
 
@@ -150,7 +152,7 @@ public class Simulator
     public void simulate(int numSteps)
     {
 
-        for(int step = 1; step <= numSteps && FieldStats.isViable(field); step++) {
+        for(int stepsRun = 0; stepsRun < numSteps && FieldStats.isViable(field); stepsRun++) {
             simulateOneStep();
         }
     }
@@ -165,7 +167,8 @@ public class Simulator
     /**
      * Switches between night time and day time
      */
-    private void switchNight() {
+    private void toggleNight()
+    {
         setNight(!night);
     }
 
@@ -178,7 +181,7 @@ public class Simulator
     {
         step++;
         if(step % DAY_NIGHT_CYCLE_LENGTH == 0) {
-            switchNight();
+            toggleNight();
         }
 
         // Provide space for newborn living beings.

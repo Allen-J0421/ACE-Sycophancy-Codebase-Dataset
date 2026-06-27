@@ -201,10 +201,7 @@ public class Simulator
         field.clear();
         
         // Creates default actors (diseases and weather)
-        diseases = new ArrayList<>();
-        Disease covid = new Covid(field);
-        Disease leptospirosis = new Leptospirosis(field);
-        diseases.addAll(Arrays.asList(covid, leptospirosis));
+        diseases = createDiseases();
         
         Weather weather = new Weather(this);
         
@@ -256,6 +253,16 @@ public class Simulator
                 // else leave the location empty.
             }
         }
+    }
+
+    /**
+     * Create and configure the diseases that are present in the simulation.
+     */
+    private List<Disease> createDiseases()
+    {
+        Disease covid = new Covid(field);
+        Disease leptospirosis = new Leptospirosis(field);
+        return new ArrayList<>(Arrays.asList(covid, leptospirosis));
     }
     
     /**

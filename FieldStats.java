@@ -1,4 +1,3 @@
-import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -61,18 +60,70 @@ public class FieldStats
     }
 
     /**
-     * @return Whether the current counts are in sync with the field.
+     * Get details of what is in the field.
+     * @param field The field to get details for.
+     * @return A string describing what is in the field.
      */
-    public boolean isValid()
+    public String getPopulationDetails(Field field)
     {
-        return countsValid;
+        StringBuffer buffer = new StringBuffer();
+        ensureCounts(field);
+
+        int totalCount = 0;
+        for(Counter info : counters.values()) {
+            totalCount += info.getCount();
+            buffer.append(info.getName());
+            buffer.append(": ");
+            buffer.append(info.getCount());
+            buffer.append(' ');
+        }
+        buffer.append(" Total: " + totalCount);
+        return buffer.toString();
     }
 
     /**
-     * @return All currently known counters.
+     * Determine whether the simulation is still viable.
+     * I.e., should it continue to run.
+     * @param field The field to generate the stats for.
+     * @return true If there is more than one species alive.
      */
-    public Collection<Counter> getCounters()
+    public boolean isViable(Field field)
     {
-        return counters.values();
+        int nonZero = 0;
+        ensureCounts(field);
+
+        for(Counter info : counters.values()) {
+            if(info.getCount() > 0) {
+                nonZero++;
+            }
+        }
+        return nonZero > 1;
+    }
+
+    /**
+     * Regenerate counts when the cached values are stale.
+     */
+    private void ensureCounts(Field field)
+    {
+        if(!countsValid) {
+            generateCounts(field);
+        }
+    }
+
+    /**
+     * Generate counts of the number of populated field locations.
+     */
+    private void generateCounts(Field field)
+    {
+        reset();
+        for(int row = 0; row < field.getDepth(); row++) {
+            for(int col = 0; col < field.getWidth(); col++) {
+                Object occupant = field.getObjectAt(row, col);
+                if(occupant != null) {
+                    incrementCount(occupant.getClass());
+                }
+            }
+        }
+        countFinished();
     }
 }

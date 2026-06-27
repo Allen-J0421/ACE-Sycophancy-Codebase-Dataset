@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
@@ -46,6 +47,7 @@ public class Deer extends Animal
     @Override protected double getBreedingProbability()      { return BREEDING_PROBABILITY; }
     @Override protected int getMaxLitterSize()               { return MAX_LITTER_SIZE; }
     @Override public    int foodValue()                      { return FOOD_VALUE; }
+    @Override public    Color getDisplayColor()              { return Color.BLUE; }
 
     /**
      * This is what the Deer does most of the time - it runs

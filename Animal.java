@@ -136,4 +136,11 @@ public abstract class Animal extends Entity
     {
         return gender;
     }
+
+    /** Animals count toward the viability check. */
+    @Override
+    public boolean countsTowardViability()
+    {
+        return true;
+    }
 }

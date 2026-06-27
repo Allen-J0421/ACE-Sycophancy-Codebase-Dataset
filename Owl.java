@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
@@ -46,6 +47,7 @@ public class Owl extends Animal
     @Override protected double getBreedingProbability()      { return BREEDING_PROBABILITY; }
     @Override protected int getMaxLitterSize()               { return MAX_LITTER_SIZE; }
     @Override public    int foodValue()                      { return FOOD_VALUE; }
+    @Override public    Color getDisplayColor()              { return Color.ORANGE; }
 
     /**
      * This is what the Owl does most of the time: it hunts for mice.

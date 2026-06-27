@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
@@ -51,6 +52,7 @@ public class Mouse extends Animal
     @Override protected double getBreedingProbability()      { return BREEDING_PROBABILITY; }
     @Override protected int getMaxLitterSize()               { return MAX_LITTER_SIZE; }
     @Override public    int foodValue()                      { return FOOD_VALUE; }
+    @Override public    Color getDisplayColor()              { return Color.YELLOW; }
 
     /**
      * This is what the mouse does most of the time - it runs

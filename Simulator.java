@@ -2,7 +2,6 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -55,9 +54,6 @@ public class Simulator
         weatherManager = new WeatherManager();
 
         view = new SimulatorView(depth, width);
-        for (EntityRegistry.Registration reg : EntityRegistry.getAll()) {
-            view.setColor(reg.type, reg.color);
-        }
 
         // Setup a valid starting point.
         reset();

@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
@@ -39,7 +40,7 @@ public class Grass extends Plant
     public Grass(boolean randomSize, Field<Entity> field, Location location)
     {
         super(field, location);
-        
+
         if(randomSize) {
             size = rand.nextInt(MAX_SIZE);
         }
@@ -48,6 +49,8 @@ public class Grass extends Plant
         }
         steppeFired = false;
     }
+
+    @Override public Color getDisplayColor() { return Color.GREEN; }
     
     /**
      * This is what the Grass does most of the time - it grows 

@@ -29,4 +29,11 @@ public abstract class Plant extends Entity
      */
     @Override
     public abstract void act(List<Entity> newEntities, int step, String weather);
+
+    /** Plants do not count toward the viability check. */
+    @Override
+    public boolean countsTowardViability()
+    {
+        return false;
+    }
 }

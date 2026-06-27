@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 
 /**
@@ -5,7 +6,7 @@ import java.util.List;
  * Centralises the lifecycle state that Animal and Plant previously each carried
  * their own copy of: alive/dead status, field reference, and grid position.
  */
-public abstract class Entity
+public abstract class Entity implements Viewable
 {
     // Whether the entity is alive or not.
     private boolean alive;
@@ -100,4 +101,29 @@ public abstract class Entity
     {
         return navigator;
     }
+
+    // --- Viewable ---
+
+    /**
+     * @return the color used to render this entity in the simulation view.
+     */
+    @Override
+    public abstract Color getDisplayColor();
+
+    /**
+     * @return a short human-readable name for this entity type.
+     * Defaults to the simple class name (e.g. "Cat"); override for a custom label.
+     */
+    @Override
+    public String getDisplayName()
+    {
+        return getClass().getSimpleName();
+    }
+
+    /**
+     * Whether this entity type counts toward the viability check.
+     * Implemented by {@link Animal} (true) and {@link Plant} (false).
+     */
+    @Override
+    public abstract boolean countsTowardViability();
 }

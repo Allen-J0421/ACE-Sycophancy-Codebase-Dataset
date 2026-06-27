@@ -236,7 +236,7 @@ public class SimulatorView extends JFrame
      * @param actorClass The actor's Class object, 
      * @param field The field in the simulator view.
      */
-    private void toggleColor(Class actorClass, Field field)
+    private void toggleColor(Class actorClass, Field<Actor> field)
     {
         if(EMPTY_COLOR.equals(colors.get(actorClass))){
             colors.replace(actorClass, baseColors.get(actorClass));
@@ -253,7 +253,7 @@ public class SimulatorView extends JFrame
      * 
      * @param field The field in the simulator view.
      */
-    private void resetViewColor(Field field){
+    private void resetViewColor(Field<Actor> field){
         baseColors.forEach((key,entry) -> colors.replace(key,entry)); 
         updatePanel(field, false);
     }
@@ -295,7 +295,7 @@ public class SimulatorView extends JFrame
      * @param weather The current weather of the board.
      * @param virusCount The number of currently infected animals.
      */
-    public void showStatus(int step, int totalSteps, Field field, Weather weather, int virusCount)
+    public void showStatus(int step, int totalSteps, Field<Actor> field, Weather weather, int virusCount)
     {
         if(!isVisible()) {
             setVisible(true);
@@ -320,7 +320,7 @@ public class SimulatorView extends JFrame
      * @param field The field the viewer is currently representing.
      * @param newStep Defines whether a new step has occured or not.
      */
-    private void updatePanel(Field field, boolean newStep)
+    private void updatePanel(Field<Actor> field, boolean newStep)
     {
         fieldView.preparePaint();
 
@@ -350,7 +350,7 @@ public class SimulatorView extends JFrame
      * @param field The field the viewer is displaying.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field)
+    public boolean isViable(Field<Actor> field)
     {
         return stats.isViable(field);
     }

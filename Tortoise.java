@@ -41,7 +41,7 @@ public class Tortoise extends Animal
      * @param overlap   Whether or not an actor is allowed to overlap with other actors
      * @param infected  Boolean value determining if the animal is infected or not
      */
-    protected Tortoise(boolean randomAge, Field field, Location location, boolean infected)
+    protected Tortoise(boolean randomAge, Field<Actor> field, Location location, boolean infected)
     {
         super(field, location, infected);
 
@@ -57,7 +57,7 @@ public class Tortoise extends Animal
      * @param location The location the offspring is born at.
      * @return A new born tortoise.
      */
-    protected Animal createOffspring(Field field, Location location)
+    protected Animal createOffspring(Field<Actor> field, Location location)
     {
         return new Tortoise(false, field, location, false);
     }

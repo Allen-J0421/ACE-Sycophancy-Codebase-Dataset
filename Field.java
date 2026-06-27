@@ -10,8 +10,8 @@ import java.util.Random;
  *
  * @version (28/02/2022)
  */
-public class Field
-{   
+public class Field<T extends Actor>
+{
     // A random number generator for providing random locations.
     private static final Random rand = Randomizer.getRandom();
 
@@ -26,19 +26,22 @@ public class Field
     // The depth and width of the field.
     private int depth, width;
     // Storage for the actors.
-    private Object[][] field;
+    private T[][] field;
 
     /**
      * Represent a field of the given dimensions.
-     * 
+     *
      * @param depth The depth of the field.
      * @param width The width of the field.
      */
+    @SuppressWarnings("unchecked")
     public Field(int depth, int width)
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        // The backing array is created as Actor[][] (the type-parameter bound)
+        // and viewed as T[][]; only values of type T are ever stored in it.
+        field = (T[][]) new Actor[depth][width];
     }
 
     /**
@@ -46,7 +49,7 @@ public class Field
      */
     public void clear()
     {
-        for(Object[] row : field) {
+        for(T[] row : field) {
             Arrays.fill(row, null);
         }
     }
@@ -70,7 +73,7 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object actor, int row, int col)
+    public void place(T actor, int row, int col)
     {
         place(actor, new Location(row, col));
     }
@@ -83,9 +86,14 @@ public class Field
      * @param actor The actor to be placed.
      * @param location Where to place the actor.
      */
-    public void place(Object actor, Location location)
+    public void place(T actor, Location location)
     {
-        if((actor instanceof Animal) || (getObjectAt(location) == null)){
+        // An actor that "can overwrite" (e.g. an animal) may replace whatever is
+        // already there; otherwise (e.g. a plant) it may only occupy an empty
+        // cell. canOverwrite is a polymorphic per-type constant, so this keeps
+        // Field independent of concrete actor types (it previously checked
+        // `actor instanceof Animal`).
+        if((actor != null && actor.canOverwrite()) || (getObjectAt(location) == null)){
             field[location.getRow()][location.getCol()] = actor;
         }
     }
@@ -96,7 +104,7 @@ public class Field
      * @param location Where in the field.
      * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public T getObjectAt(Location location)
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
@@ -108,7 +116,7 @@ public class Field
      * @param col The desired column.
      * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public T getObjectAt(int row, int col)
     {
         return field[row][col];
     }
@@ -139,13 +147,14 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         // if actor at current location allows for overlap (for weather, disease, etc.)
-        if (((Actor) getObjectAt(location)).getOverlap() ){
+        if (getObjectAt(location).getOverlap()){
             return adjacent;
         }
         else{
             for(Location next : adjacent) {
                 // if no actor at next location or actor at next location allows for overlap
-                if ((getObjectAt(next) == null) || (((Actor)getObjectAt(next)).getOverlap() ) ) {
+                T occupant = getObjectAt(next);
+                if ((occupant == null) || (occupant.getOverlap())) {
                     free.add(next);
                 }
             }

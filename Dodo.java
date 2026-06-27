@@ -43,7 +43,7 @@ public class Dodo extends Animal
      * @param location  The location within the field.
      * @param infected  Boolean value determining if the animal is infected or not
      */
-    protected Dodo(boolean randomAge, Field field, Location location, boolean infected)
+    protected Dodo(boolean randomAge, Field<Actor> field, Location location, boolean infected)
     {
         super(field, location, infected);
 
@@ -59,7 +59,7 @@ public class Dodo extends Animal
      * @param location The location the offspring is born at.
      * @return A new born dodo.
      */
-    protected Animal createOffspring(Field field, Location location)
+    protected Animal createOffspring(Field<Actor> field, Location location)
     {
         return new Dodo(false, field, location, false);
     }
@@ -115,7 +115,7 @@ public class Dodo extends Animal
      */
     private Location chargePredator()
     {
-        Field field = getField();
+        Field<Actor> field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         List<Location> charge = new ArrayList<>();
 

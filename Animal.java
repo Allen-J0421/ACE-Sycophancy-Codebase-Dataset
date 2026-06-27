@@ -52,7 +52,7 @@ public abstract class Animal extends Actor
      * @param infected Boolean value determining if the animal is infected or not.
      * 
      */
-    protected Animal(Field field, Location location, boolean infected)
+    protected Animal(Field<Actor> field, Location location, boolean infected)
     {
         super(field, location);
         // infects animal if infected.
@@ -106,6 +106,18 @@ public abstract class Animal extends Actor
         if(!MAP_OF_PREDATORS.containsKey(this.getClass())){
             MAP_OF_PREDATORS.put(this.getClass(), new HashSet<Class>());
         }
+    }
+
+    /**
+     * Animals overwrite whatever occupies a cell when they are placed (the
+     * previous behaviour of the {@code instanceof Animal} check in Field).
+     *
+     * @return true; animals may overwrite an existing occupant when placed.
+     */
+    @Override
+    protected boolean canOverwrite()
+    {
+        return true;
     }
 
     /**
@@ -201,7 +213,7 @@ public abstract class Animal extends Actor
      * @param field The field the object is in.
      * @return Boolean value, true if mate is found and is of age, false otherwise.
      */
-    private boolean canBreed(Field field) 
+    private boolean canBreed(Field<Actor> field) 
     {
         // Find all adjacent locations.
         List<Location> adjacentLocations = field.adjacentLocations(getLocation()); 
@@ -273,7 +285,7 @@ public abstract class Animal extends Actor
      */
     protected Location findFood(List<Class> listOfPrey)
     {
-        Field field = getField();
+        Field<Actor> field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         List<Location> availablePrey = new ArrayList<>();
 
@@ -336,7 +348,7 @@ public abstract class Animal extends Actor
      * @param field The field the object is currently in.
      * @return The number of births (may be zero).
      */
-    private int breed(Field field) 
+    private int breed(Field<Actor> field) 
     {
         int births = 0;
         if (canBreed(field) && rand.nextDouble() <= BREEDING_PROBABILITY * effectBreedingProbability()) {
@@ -355,7 +367,7 @@ public abstract class Animal extends Actor
     {
         // New animals are born into adjacent locations.
         // Get a list of adjacent free locations.
-        Field field = getField();
+        Field<Actor> field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed(field);
         for (int b = 0; b < births && !free.isEmpty(); b++) {
@@ -373,7 +385,7 @@ public abstract class Animal extends Actor
      * @param location The location the offspring is born at.
      * @return A newly born animal of the same species as this one.
      */
-    protected abstract Animal createOffspring(Field field, Location location);
+    protected abstract Animal createOffspring(Field<Actor> field, Location location);
 
     /**
      * If infected, checks for adjacent animals, providing the chance for them to be infected.

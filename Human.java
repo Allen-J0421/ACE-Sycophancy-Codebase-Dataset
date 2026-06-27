@@ -41,7 +41,7 @@ public class Human extends Animal
      * @param location  The location within the field.
      * @param infected  Boolean value determining if the animal is infected or not.
      */
-    protected Human(boolean randomAge, Field field, Location location, boolean infected)
+    protected Human(boolean randomAge, Field<Actor> field, Location location, boolean infected)
     {
         super(field, location, infected);
 
@@ -57,7 +57,7 @@ public class Human extends Animal
      * @param location The location the offspring is born at.
      * @return A new born human.
      */
-    protected Animal createOffspring(Field field, Location location)
+    protected Animal createOffspring(Field<Actor> field, Location location)
     {
         return new Human(false, field, location, false);
     }

@@ -35,7 +35,7 @@ public class FieldStats
      * 
      * @return A string describing what is in the field.
      */
-    public String getPopulationDetails(Field field)
+    public String getPopulationDetails(Field<Actor> field)
     {
         StringBuffer buffer = new StringBuffer();
         if(!countsValid) {
@@ -95,7 +95,7 @@ public class FieldStats
      * 
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field)
+    public boolean isViable(Field<Actor> field)
     {
         // How many counts are non-zero.
         int nonZero = 0;
@@ -123,7 +123,7 @@ public class FieldStats
      * 
      * @param field The field to generate the stats for.
      */
-    private void generateCounts(Field field)
+    private void generateCounts(Field<Actor> field)
     {
         reset();
         for(int row = 0; row < field.getDepth(); row++) {

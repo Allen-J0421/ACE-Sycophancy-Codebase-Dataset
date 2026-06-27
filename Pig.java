@@ -40,7 +40,7 @@ public class Pig extends Animal
      * @param location  The location within the field.
      * @param infected  Boolean value determining if the animal is infected or not
      */
-    protected Pig(boolean randomAge, Field field, Location location, boolean infected)
+    protected Pig(boolean randomAge, Field<Actor> field, Location location, boolean infected)
     {
         super(field, location, infected);
 
@@ -56,7 +56,7 @@ public class Pig extends Animal
      * @param location The location the offspring is born at.
      * @return A new born pig.
      */
-    protected Animal createOffspring(Field field, Location location)
+    protected Animal createOffspring(Field<Actor> field, Location location)
     {
         return new Pig(false, field, location, false);
     }

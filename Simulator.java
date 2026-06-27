@@ -46,7 +46,7 @@ public class Simulator
     // List of actors in the field.
     private List<Actor> actors;
     // The current state of the field.
-    private Field field;
+    private Field<Actor> field;
     // The current step of the simulation.
     private int step;
     // The number of steps the simulation will make
@@ -98,7 +98,7 @@ public class Simulator
 
         executorService = new Executor(Runtime.getRuntime().availableProcessors());
         actors = new ArrayList<>();
-        field = new Field(depth, width);
+        field = new Field<>(depth, width);
         this.numSteps = 0;
         // 1000 milliseconds
         timeDelayIndex = 2;
@@ -452,7 +452,7 @@ public class Simulator
      * 
      * @return The field used in the current simulation
      */
-    public Field getField()
+    public Field<Actor> getField()
     {
         return field;
     }

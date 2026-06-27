@@ -23,7 +23,7 @@ public enum Species
     @FunctionalInterface
     private interface Spawner
     {
-        Animal spawn(Field field, Location location, boolean infected);
+        Animal spawn(Field<Actor> field, Location location, boolean infected);
     }
 
     // The probability this species is created at any given grid position.
@@ -53,7 +53,7 @@ public enum Species
      * @param infected Whether the new animal starts infected.
      * @return The newly created animal.
      */
-    public Animal create(Field field, Location location, boolean infected)
+    public Animal create(Field<Actor> field, Location location, boolean infected)
     {
         return spawner.spawn(field, location, infected);
     }

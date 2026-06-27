@@ -38,7 +38,7 @@ public class Plant extends Actor
      * @param location  The location within the field.
      * @param overlap   Whether or not an actor is allowed to overlap with other actors.
      */
-    public Plant(boolean randomAge, Field field, Location location)
+    public Plant(boolean randomAge, Field<Actor> field, Location location)
     {
         super(field, location);
         setOverlap(true);
@@ -102,7 +102,7 @@ public class Plant extends Actor
     {
         // New plants are born into adjacent locations.
         // Get a list of adjacent free locations.
-        Field field = getField();
+        Field<Actor> field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {

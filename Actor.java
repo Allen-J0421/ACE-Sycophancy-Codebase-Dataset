@@ -14,7 +14,7 @@ public abstract class Actor
     // Whether the actor is alive or not.
     protected boolean alive;
     // The actor's field.
-    protected Field field;
+    protected Field<Actor> field;
     // The actor's position in the field.
     protected Location location;
     // Whether the actor can overlap with other actors in a particular field
@@ -34,7 +34,7 @@ public abstract class Actor
      * @param field The field the actor is currently in
      * @param location The actors location on the field
      */
-    protected Actor(Field field, Location location)
+    protected Actor(Field<Actor> field, Location location)
     {
         alive = true;
         this.field = field;
@@ -222,7 +222,7 @@ public abstract class Actor
      * 
      * @return The actor's field.
      */
-    protected Field getField()
+    protected Field<Actor> getField()
     {
         return field;
     }
@@ -235,5 +235,19 @@ public abstract class Actor
     public boolean getOverlap()
     {
         return overlap;
+    }
+
+    /**
+     * Whether this actor overwrites whatever already occupies a cell when it is
+     * placed onto the field. Returns a constant per actor type (it reads no
+     * instance state), so it is safe for Field to consult even while the actor
+     * is still being constructed. This lets Field decide placement without
+     * referring to concrete actor classes. By default actors do not overwrite.
+     *
+     * @return true if this actor may overwrite an existing occupant when placed.
+     */
+    protected boolean canOverwrite()
+    {
+        return false;
     }
 }

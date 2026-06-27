@@ -15,8 +15,8 @@ public abstract class Organism
 {
     // The organism's age
     private int age;
-    // Whether the organism is alive or not.
-    private boolean alive;
+    // The organism's life-cycle status (alive or dead).
+    private OrganismStatus status;
     // The organism's field.
     private Field field;
     // The organism's position in the field.
@@ -39,7 +39,7 @@ public abstract class Organism
         if (randomAge) {
             age = rand.nextInt(getMaxAge());
         }
-        alive = true;
+        status = OrganismStatus.ALIVE;
         this.field = field;
         setLocation(location);
     }
@@ -229,7 +229,7 @@ public abstract class Organism
      */
     public boolean isAlive()
     {
-        return alive;
+        return status.isAlive();
     }
     
     // Functional methods
@@ -284,7 +284,7 @@ public abstract class Organism
      */
     protected void setDead()
     {
-        alive = false;
+        status = OrganismStatus.DEAD;
         if(location != null) {
             clearCurrentLocation();
             location = null;

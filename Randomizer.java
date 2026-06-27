@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @version 2016.02.29
  */
-public class Randomizer
+public final class Randomizer
 {
     // The default seed for control of randomization.
     private static final int SEED = 1112;
@@ -19,7 +19,7 @@ public class Randomizer
     /**
      * Constructor for objects of class Randomizer
      */
-    public Randomizer()
+    private Randomizer()
     {
     }
 

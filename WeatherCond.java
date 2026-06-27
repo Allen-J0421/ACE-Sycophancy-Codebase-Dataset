@@ -1,7 +1,4 @@
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.HashMap;
 import java.util.EnumMap;
 import java.util.Map;
 /**
@@ -20,7 +17,9 @@ public enum WeatherCond
     Storm (0.4,0.5,1);
 
     private static final Random rand = Randomizer.getRandom();
-    private Map<WeatherAttribute, Double> weatherAttributes; 
+    private static final Map<WeatherCond, WeatherCond[]> NIGHT_TRANSITIONS = createNightTransitions();
+    private static final Map<WeatherCond, WeatherCond[]> DAY_TRANSITIONS = createDayTransitions();
+    private final Map<WeatherAttribute, Double> weatherAttributes; 
     private static Time timeOfDay;
 
     /**
@@ -38,47 +37,54 @@ public enum WeatherCond
     }
 
     /**
+     * Build the daytime transition table.
+     * @return The daytime transition table.
+     */
+    private static Map<WeatherCond, WeatherCond[]> createDayTransitions()
+    {
+        Map<WeatherCond, WeatherCond[]> transitions = createSharedTransitions();
+        transitions.put(Fog, new WeatherCond[] {Sunny, Fog, Rain});
+        transitions.put(Cloudy, new WeatherCond[] {Sunny, Fog, Rain});
+        transitions.put(Windy, new WeatherCond[] {Sunny, Fog, Rain});
+        transitions.put(Storm, new WeatherCond[] {Sunny, Fog, Rain});
+        return transitions;
+    }
+
+    /**
+     * Build the nighttime transition table.
+     * @return The nighttime transition table.
+     */
+    private static Map<WeatherCond, WeatherCond[]> createNightTransitions()
+    {
+        Map<WeatherCond, WeatherCond[]> transitions = createSharedTransitions();
+        transitions.put(Fog, new WeatherCond[] {Fog, Rain});
+        transitions.put(Cloudy, new WeatherCond[] {Fog, Rain});
+        transitions.put(Windy, new WeatherCond[] {Fog, Rain});
+        transitions.put(Storm, new WeatherCond[] {Fog, Rain});
+        return transitions;
+    }
+
+    /**
+     * Build the transitions that are shared by day and night.
+     * @return The shared transition table.
+     */
+    private static Map<WeatherCond, WeatherCond[]> createSharedTransitions()
+    {
+        Map<WeatherCond, WeatherCond[]> transitions = new EnumMap<>(WeatherCond.class);
+        transitions.put(Sunny, new WeatherCond[] {Cloudy, Windy});
+        transitions.put(Rain, new WeatherCond[] {Storm, Cloudy});
+        return transitions;
+    }
+
+    /**
      * Returns the next weather condition based on the current
      * weather condition and a random generator.
      * @return The next weather condition.
      */
     public WeatherCond nextCondition()
     {
-        List<WeatherCond> tempList = new ArrayList<>();
-        if (!timeOfDay.isDay()) {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
-        }
-        else {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Sunny);
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
-        }
-        return tempList.get(rand.nextInt((tempList.size())));
+        WeatherCond[] transitions = timeOfDay.isDay() ? DAY_TRANSITIONS.get(this) : NIGHT_TRANSITIONS.get(this);
+        return transitions[rand.nextInt(transitions.length)];
     }
 
     /**

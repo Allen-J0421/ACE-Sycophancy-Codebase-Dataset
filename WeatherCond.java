@@ -44,38 +44,20 @@ public enum WeatherCond
     public WeatherCond nextCondition()
     {
         List<WeatherCond> tempList = new ArrayList<>();
-        if (!timeOfDay.isDay()) {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
-        }
-        else {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Sunny);
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
+        switch(this) {
+            case Sunny:
+                tempList.add(Cloudy);
+                tempList.add(Windy);
+                break;
+            case Rain:
+                tempList.add(Storm);
+                tempList.add(Cloudy);
+                break;
+            default:
+                if(timeOfDay.isDay()) { tempList.add(Sunny); }
+                tempList.add(Fog);
+                tempList.add(Rain);
+                break;
         }
         return tempList.get(rand.nextInt((tempList.size())));
     }

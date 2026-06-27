@@ -12,8 +12,8 @@ public class FieldStats
 {
     // A shared weather object between the organisms and the simulator
     public static final Weather weather = Weather.getWeather();
-    // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private Map<Class<?>, Counter> counters;
+    // Counters for each type of entity in the simulation.
+    private final Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
     // The step of the simulation
@@ -48,8 +48,10 @@ public class FieldStats
             buffer.append(info.getCount());
             buffer.append(' ');
         }
-        buffer.append("Weather: " + weather.getCurrentWeather());
-        buffer.append(" Time: " + getTimeOfDay());
+        buffer.append("Weather: ");
+        buffer.append(weather.getCurrentWeather());
+        buffer.append(" Time: ");
+        buffer.append(getTimeOfDay());
         return buffer.toString();
     }
     
@@ -76,13 +78,7 @@ public class FieldStats
      */
     public void incrementCount(Class<?> animalClass)
     {
-        Counter count = counters.get(animalClass);
-        if(count == null) {
-            // We do not have a counter for this species yet.
-            // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
-        }
+        Counter count = counters.computeIfAbsent(animalClass, key -> new Counter(key.getName()));
         count.increment();
     }
 
@@ -101,24 +97,29 @@ public class FieldStats
      */
     public boolean isViable(Field field)
     {
-        // How many counts are non-zero.
-        int nonZero = 0;
         if(!countsValid) {
             generateCounts(field);
         }
+        return countNonZeroCounters() > 1;
+    }
+
+    /**
+     * Count how many organism types are currently present.
+     */
+    private int countNonZeroCounters()
+    {
+        int nonZero = 0;
         for(Counter info : counters.values()) {
             if(info.getCount() > 0) {
                 nonZero++;
             }
         }
-        return nonZero > 1;
+        return nonZero;
     }
     
     /**
-     * Generate counts of the number of foxes and rabbits.
-     * These are not kept up to date as foxes and rabbits
-     * are placed in the field, but only when a request
-     * is made for the information.
+     * Generate counts of the organisms in the field.
+     * These are counted on demand rather than updated as organisms move.
      * @param field The field to generate the stats for.
      */
     private void generateCounts(Field field)

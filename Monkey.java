@@ -8,15 +8,13 @@
 public class Monkey extends Animal
 {
     private static final AnimalAttributes ATTRIBUTES =
-        new AnimalAttributes(Species.MONKEY, true, 4, 40, 0.17, 5, 10,
-                             Monkey::new,
-                             AnimalAttributes.speciesSet(Species.PLANT),
-                             OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                             OrganismBehaviors.FORAGE_OR_WANDER,
-                             OrganismBehaviors.INCREMENT_AGE,
-                             OrganismBehaviors.DECAY_HEALTH,
-                             OrganismBehaviors.GIVE_BIRTH,
-                             OrganismBehaviors.RELOCATE);
+        ConfiguredAttributes.animal(Species.MONKEY, Monkey::new,
+                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
+                                    OrganismBehaviors.FORAGE_OR_WANDER,
+                                    OrganismBehaviors.INCREMENT_AGE,
+                                    OrganismBehaviors.DECAY_HEALTH,
+                                    OrganismBehaviors.GIVE_BIRTH,
+                                    OrganismBehaviors.RELOCATE);
 
     /**
      * Create a new monkey. A monkey may be created with age

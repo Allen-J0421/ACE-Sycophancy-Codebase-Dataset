@@ -1,6 +1,3 @@
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -36,10 +33,5 @@ public class AnimalAttributes extends OrganismAttributes
     public Set<Species> getFoodSources()
     {
         return foodSources;
-    }
-
-    public static Set<Species> speciesSet(Species... species)
-    {
-        return Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(species)));
     }
 }

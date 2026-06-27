@@ -9,15 +9,13 @@
 public class Hippopotamus extends Animal
 {
     private static final AnimalAttributes ATTRIBUTES =
-        new AnimalAttributes(Species.HIPPOPOTAMUS, true, 25, 120, 0.12, 3, 100,
-                             Hippopotamus::new,
-                             AnimalAttributes.speciesSet(Species.MONKEY, Species.PLANT),
-                             OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                             OrganismBehaviors.FORAGE_OR_WANDER,
-                             OrganismBehaviors.INCREMENT_AGE,
-                             OrganismBehaviors.DECAY_HEALTH,
-                             OrganismBehaviors.GIVE_BIRTH,
-                             OrganismBehaviors.RELOCATE);
+        ConfiguredAttributes.animal(Species.HIPPOPOTAMUS, Hippopotamus::new,
+                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
+                                    OrganismBehaviors.FORAGE_OR_WANDER,
+                                    OrganismBehaviors.INCREMENT_AGE,
+                                    OrganismBehaviors.DECAY_HEALTH,
+                                    OrganismBehaviors.GIVE_BIRTH,
+                                    OrganismBehaviors.RELOCATE);
 
     /**
      * Create a fox. A fox can be created as a new born (age zero

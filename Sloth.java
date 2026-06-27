@@ -8,17 +8,15 @@
 public class Sloth extends InfectiousAnimal
 {
     private static final AnimalAttributes ATTRIBUTES =
-        new AnimalAttributes(Species.SLOTH, true, 5, 30, 0.17, 4, 8,
-                             Sloth::new,
-                             AnimalAttributes.speciesSet(Species.PLANT),
-                             OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                             OrganismBehaviors.FORAGE_OR_WANDER,
-                             OrganismBehaviors.INCREMENT_AGE,
-                             OrganismBehaviors.DECAY_HEALTH,
-                             OrganismBehaviors.APPLY_ILLNESS,
-                             OrganismBehaviors.SPREAD_DISEASE,
-                             OrganismBehaviors.GIVE_BIRTH,
-                             OrganismBehaviors.RELOCATE);
+        ConfiguredAttributes.animal(Species.SLOTH, Sloth::new,
+                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
+                                    OrganismBehaviors.FORAGE_OR_WANDER,
+                                    OrganismBehaviors.INCREMENT_AGE,
+                                    OrganismBehaviors.DECAY_HEALTH,
+                                    OrganismBehaviors.APPLY_ILLNESS,
+                                    OrganismBehaviors.SPREAD_DISEASE,
+                                    OrganismBehaviors.GIVE_BIRTH,
+                                    OrganismBehaviors.RELOCATE);
 
     /**
      * Create a new sloth. A sloth may be created with age

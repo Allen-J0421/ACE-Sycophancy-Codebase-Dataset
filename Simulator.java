@@ -16,34 +16,34 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double HIPPOPOTAMUS_CREATION_PROBABILITY = 0.01;
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double LEOPARD_CREATION_PROBABILITY = 0.03; 
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double BEAR_CREATION_PROBABILITY = 0.03; 
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double MONKEY_CREATION_PROBABILITY = 0.08; 
-    // The probability that a rabbit will be created in any given grid position.
-    private static final double SLOTH_CREATION_PROBABILITY = 0.08; 
-    // The probability that a plant will be created in any given grid position.
-    private static final double PLANT_CREATION_PROBABILITY = 0.13;
     // Rules describing the main animal population.
     private static final PopulationRule[] PRIMARY_POPULATION_RULES = {
-        new PopulationRule(HIPPOPOTAMUS_CREATION_PROBABILITY, Hippopotamus::new,
+        new PopulationRule(
+            SpeciesConfigurationLoader.getConfig(Species.HIPPOPOTAMUS).getCreationProbability(),
+            Hippopotamus::new,
                            Species.HIPPOPOTAMUS, DisplayColor.DARK_GRAY),
-        new PopulationRule(LEOPARD_CREATION_PROBABILITY, Leopard::new,
+        new PopulationRule(
+            SpeciesConfigurationLoader.getConfig(Species.LEOPARD).getCreationProbability(),
+            Leopard::new,
                            Species.LEOPARD, DisplayColor.MAGENTA),
-        new PopulationRule(BEAR_CREATION_PROBABILITY, Bear::new,
+        new PopulationRule(
+            SpeciesConfigurationLoader.getConfig(Species.BEAR).getCreationProbability(),
+            Bear::new,
                            Species.BEAR, DisplayColor.RED),
-        new PopulationRule(MONKEY_CREATION_PROBABILITY, Monkey::new,
+        new PopulationRule(
+            SpeciesConfigurationLoader.getConfig(Species.MONKEY).getCreationProbability(),
+            Monkey::new,
                            Species.MONKEY, DisplayColor.ORANGE)
     };
     // Rules describing slower secondary occupants when no primary animal appears.
     private static final PopulationRule[] SECONDARY_POPULATION_RULES = {
-        new PopulationRule(SLOTH_CREATION_PROBABILITY, Sloth::new,
+        new PopulationRule(
+            SpeciesConfigurationLoader.getConfig(Species.SLOTH).getCreationProbability(),
+            Sloth::new,
                            Species.SLOTH, DisplayColor.YELLOW),
-        new PopulationRule(PLANT_CREATION_PROBABILITY, Plant::new,
+        new PopulationRule(
+            SpeciesConfigurationLoader.getConfig(Species.PLANT).getCreationProbability(),
+            Plant::new,
                            Species.PLANT, DisplayColor.GREEN)
     };
 

@@ -23,4 +23,9 @@ public enum Species
     {
         return displayName;
     }
+
+    public String getConfigKey()
+    {
+        return name().toLowerCase();
+    }
 }

@@ -9,17 +9,15 @@
 public class Bear extends InfectiousAnimal
 {
     private static final AnimalAttributes ATTRIBUTES =
-        new AnimalAttributes(Species.BEAR, true, 15, 70, 0.125, 4, 40,
-                             Bear::new,
-                             AnimalAttributes.speciesSet(Species.MONKEY),
-                             OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                             OrganismBehaviors.FORAGE_OR_WANDER,
-                             OrganismBehaviors.INCREMENT_AGE,
-                             OrganismBehaviors.DECAY_HEALTH,
-                             OrganismBehaviors.APPLY_ILLNESS,
-                             OrganismBehaviors.SPREAD_DISEASE,
-                             OrganismBehaviors.GIVE_BIRTH,
-                             OrganismBehaviors.RELOCATE);
+        ConfiguredAttributes.animal(Species.BEAR, Bear::new,
+                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
+                                    OrganismBehaviors.FORAGE_OR_WANDER,
+                                    OrganismBehaviors.INCREMENT_AGE,
+                                    OrganismBehaviors.DECAY_HEALTH,
+                                    OrganismBehaviors.APPLY_ILLNESS,
+                                    OrganismBehaviors.SPREAD_DISEASE,
+                                    OrganismBehaviors.GIVE_BIRTH,
+                                    OrganismBehaviors.RELOCATE);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero

@@ -62,7 +62,7 @@ public class Panther extends Animal
     private static Map<String, Integer> createPreyFoodValueMap()
     {
         Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Lemurs", 10);
+        mapTemp.put(Lemur.name, 10);
         return mapTemp;
     }
 

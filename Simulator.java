@@ -100,49 +100,35 @@ public class Simulator
     private List<ActorCreationRule> createActorCreationRules()
     {
         List<ActorCreationRule> rules = new ArrayList<>();
-        rules.add(new ActorCreationRule(0.8, true, false, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Grass(time, field, location);
-            }
-        }));
-        rules.add(new ActorCreationRule(0.9, false, true, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Water_Fern(time, field, location);
-            }
-        }));
-        rules.add(new ActorCreationRule(0.5, true, true, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Salamander(time, field, location);
-            }
-        }));
-        rules.add(new ActorCreationRule(0.7, false, true, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Catfish(time, field, location);
-            }
-        }));
-        rules.add(new ActorCreationRule(0.45, true, false, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Lemur(time, field, location);
-            }
-        }));
-        rules.add(new ActorCreationRule(0.3, true, false, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Panther(time, field, location);
-            }
-        }));
-        rules.add(new ActorCreationRule(0.25, true, true, new ActorCreator() {
-            public Actor create(Location location)
-            {
-                return new Alligator(time, field, location);
-            }
-        }));
+        rules.add(actorCreationRule(0.8, true, false,
+            location -> new Grass(time, field, location)));
+        rules.add(actorCreationRule(0.9, false, true,
+            location -> new Water_Fern(time, field, location)));
+        rules.add(actorCreationRule(0.5, true, true,
+            location -> new Salamander(time, field, location)));
+        rules.add(actorCreationRule(0.7, false, true,
+            location -> new Catfish(time, field, location)));
+        rules.add(actorCreationRule(0.45, true, false,
+            location -> new Lemur(time, field, location)));
+        rules.add(actorCreationRule(0.3, true, false,
+            location -> new Panther(time, field, location)));
+        rules.add(actorCreationRule(0.25, true, true,
+            location -> new Alligator(time, field, location)));
         return rules;
+    }
+
+    /**
+     * Build one actor creation rule.
+     * @param probability The spawn probability.
+     * @param canGoLand Whether the actor survives on land.
+     * @param canGoWater Whether the actor survives in water.
+     * @param creator The actor creator.
+     * @return The constructed creation rule.
+     */
+    private ActorCreationRule actorCreationRule(double probability, boolean canGoLand,
+                                                boolean canGoWater, ActorCreator creator)
+    {
+        return new ActorCreationRule(probability, canGoLand, canGoWater, creator);
     }
 
     /**
@@ -170,17 +156,17 @@ public class Simulator
     {
         List<Disease> list = new ArrayList<>();
         Disease dengue = new Disease("dengue", true, true)
-            .affects("Lemur", 0.9)
-            .affects("Panther", 0.6)
-            .affects("Alligator", 0.6)
-            .startsWith("Lemur", 0.4);
+            .affects(Lemur.name, 0.9)
+            .affects(Panther.name, 0.6)
+            .affects(Alligator.name, 0.6)
+            .startsWith(Lemur.name, 0.4);
         list.add(dengue);
         
         Disease river_fever = new Disease("river_fever", true, false)
-            .affects("Water_Fern", 1.0)
-            .affects("Catfish", 0.7)
-            .affects("Salamander", 0.8)
-            .startsWith("Water_Fern", 0.4);
+            .affects(Water_Fern.name, 1.0)
+            .affects(Catfish.name, 0.7)
+            .affects(Salamander.name, 0.8)
+            .startsWith(Water_Fern.name, 0.4);
         list.add(river_fever);
         
         return list;

@@ -62,8 +62,8 @@ public class Alligator extends Animal
     private static Map<String, Integer> createPreyFoodValueMap()
     {
         Map<String,Integer> mapTemp = new HashMap<>();
-        mapTemp.put("Lemurs", 8);
-        mapTemp.put("Catfish", 4);
+        mapTemp.put(Lemur.name, 8);
+        mapTemp.put(Catfish.name, 4);
         return mapTemp;
     }
 

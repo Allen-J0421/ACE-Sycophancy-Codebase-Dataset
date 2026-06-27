@@ -97,7 +97,7 @@ public class FieldStats
         }
         for(Class key : counters.keySet()) {
             Counter info = counters.get(key);
-            if(info.getCount() > 0 && info.getName() != "Grass") {
+            if(info.getCount() > 0 && !info.getName().equals("Grass")) {
                 nonZero++;
             }
         }

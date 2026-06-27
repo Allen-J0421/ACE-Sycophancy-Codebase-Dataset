@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -205,7 +206,12 @@ public abstract class Actor
      */
     public Set<Disease> getActorDiseaseSet()
     {
-        return setDiseases;
+        return Collections.unmodifiableSet(setDiseases);
+    }
+
+    public void contractDisease(Disease disease)
+    {
+        setDiseases.add(disease);
     }
 
     /**

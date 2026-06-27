@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.awt.Color;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -88,7 +89,7 @@ public class Simulator
      */
     private Map<Actor,Double> createActorCreationProb()
     {
-        Map<Actor,Double> tempMap = new HashMap<>();
+        Map<Actor,Double> tempMap = new LinkedHashMap<>();
         Location location = new Location(0, 0);
         tempMap.put(new Grass(time, field, location),0.8);
         tempMap.put(new Water_Fern(time, field, location),0.9);

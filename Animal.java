@@ -117,14 +117,14 @@ public abstract class Animal extends Actor
     protected void giveDiseases(Animal mate)
     {
         Set<Disease> ownDiseasesSnapshot = new HashSet<>(setDiseases);
-        for (Disease disease: mate.setDiseases){
+        for (Disease disease: mate.getActorDiseaseSet()){
             if (disease.isSpreadByBirth()){
-                setDiseases.add(disease);
+                contractDisease(disease);
             }
         }
         for (Disease disease: ownDiseasesSnapshot){
             if (disease.isSpreadByBirth()){
-                mate.getActorDiseaseSet().add(disease);
+                mate.contractDisease(disease);
             }
         }
     }
@@ -144,9 +144,9 @@ public abstract class Animal extends Actor
                     Actor prey = (Actor) actor;
                     Integer foodValue = getPreyFoodValuesMap().get(prey.getClass());
                     if(foodValue != null && prey.isAlive()) {
-                        for (Disease disease: prey.setDiseases){
+                        for (Disease disease: prey.getActorDiseaseSet()){
                             if (disease.isSpreadByEating() && disease.getActorsAffectedMap().containsKey(getClass())){
-                                setDiseases.add(disease);
+                                contractDisease(disease);
                             }
                         }
                         prey.setDead();

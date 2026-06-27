@@ -58,10 +58,26 @@ public abstract class Plant extends Actor
     }
 
     /**
-     * Returns how many plants are produced during birth
-     * @return The number of plants birthed
+     * Returns how many plants are produced during birth.
+     * Uses the abstract breeding parameters defined by each subclass.
+     * @return The number of births (may be zero).
      */
-    abstract public int breed();
+    public int breed()
+    {
+        if(canBreed() && Randomizer.getRandom().nextDouble() <= getBreedingProbability()) {
+            return Randomizer.getRandom().nextInt(getMaxLitterSize()) + 1;
+        }
+        return 0;
+    }
+
+    private boolean canBreed()
+    {
+        return age >= getBreedingAge();
+    }
+
+    abstract protected int getBreedingAge();
+    abstract protected double getBreedingProbability();
+    abstract protected int getMaxLitterSize();
 
     /**
      * Creates a new plant

@@ -1,6 +1,4 @@
-import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -93,28 +91,9 @@ public class Catfish extends Animal
         return mapTemp;
     }
 
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    public int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A catfish can breed if it has reached the breeding age.
-     * @return true if the catfish can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
-    }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
 
     /**
      * Returns the max food level that the catfish can have.

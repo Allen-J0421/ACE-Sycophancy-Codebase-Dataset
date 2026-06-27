@@ -40,7 +40,7 @@ public abstract class Actor
         this.field = field;
         setLocation(location);
         this.time = time;
-        setDiseases = new HashSet();
+        setDiseases = new HashSet<>();
     }
 
     /**
@@ -161,7 +161,7 @@ public abstract class Actor
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(this, getLocation());
         int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
+        for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
             Actor young = birth(loc,setDiseases);
             newActors.add(young);

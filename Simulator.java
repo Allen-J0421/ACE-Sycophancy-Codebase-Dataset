@@ -1,12 +1,11 @@
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.awt.Color;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -131,7 +130,7 @@ public class Simulator
         river_fever.getStartingActorsMap().put(Water_Fern.class, 0.4);
         list.add(river_fever);
         
-        return list;
+        return Collections.unmodifiableList(list);
     }
 
     /**
@@ -152,7 +151,7 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            delay(60);   // uncomment this to run more slowly
+            delay(60);
         }
     }
 

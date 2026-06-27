@@ -1,5 +1,5 @@
 import java.util.List;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,10 +95,7 @@ public abstract class Animal extends Actor
     protected boolean findMate()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()){
-            Location where = it.next();
+        for(Location where : field.adjacentLocations(getLocation())) {
             Object actor = field.getObjectAt(where);
             if (actor instanceof Animal) {
                 Animal animal = (Animal) actor;
@@ -112,17 +109,19 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Transfer diseases from the male mate to the female and vice versa.
+     * Transfer diseases between mates. Snapshot own diseases first to avoid
+     * re-sending diseases that were just received from the mate.
      * @param mate The male mate that the female breeds with.
      */
     protected void giveDiseases(Animal mate)
     {
+        Set<Disease> ownDiseasesSnapshot = new HashSet<>(setDiseases);
         for (Disease disease: mate.setDiseases){
             if (disease.isSpreadByBirth()){
                 setDiseases.add(disease);
             }
         }
-        for (Disease disease: setDiseases){
+        for (Disease disease: ownDiseasesSnapshot){
             if (disease.isSpreadByBirth()){
                 mate.getActorDiseaseSet().add(disease);
             }
@@ -130,17 +129,14 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Look for rabbits adjacent to the current location.
-     * Only the first live rabbit is eaten.
+     * Look for prey adjacent to the current location.
+     * Only the first live prey is eaten.
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
+        for(Location where : field.adjacentLocations(getLocation())) {
             if ((canMoveOnLand() && canMoveOnWater()) || (field.isUnderWater(where.getRow(), where.getCol()) && canMoveOnWater()) || (!field.isUnderWater(where.getRow(), where.getCol()) && canMoveOnLand())) {
                 Object actor = field.getObjectAt(where);
                 if (actor instanceof Actor) {
@@ -163,10 +159,26 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Returns how many animals are produced during birth
-     * @return The number of animals birthed
+     * Returns how many animals are produced during birth.
+     * Uses the abstract breeding parameters defined by each subclass.
+     * @return The number of births (may be zero).
      */
-    abstract protected int breed();
+    public int breed()
+    {
+        if(canBreed() && Randomizer.getRandom().nextDouble() <= getBreedingProbability()) {
+            return Randomizer.getRandom().nextInt(getMaxLitterSize()) + 1;
+        }
+        return 0;
+    }
+
+    private boolean canBreed()
+    {
+        return age >= getBreedingAge();
+    }
+
+    abstract protected int getBreedingAge();
+    abstract protected double getBreedingProbability();
+    abstract protected int getMaxLitterSize();
 
     /**
      * Creates a new animal 

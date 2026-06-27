@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * Represents all aspects of the simulator that perform some functionality
@@ -48,4 +49,28 @@ interface Actor
      * @return true if the actor should be removed.
      */
     default boolean isExpired() { return false; }
+
+    /**
+     * Expose this actor to the simulation's diseases, giving it a chance to
+     * randomly contract one this step. Most actors are not susceptible and
+     * ignore the exposure; organisms override this to roll against each
+     * disease they belong to.
+     * @param diseases The diseases currently present in the simulation.
+     * @param rand The shared random source.
+     */
+    default void exposeToDiseases(List<Disease> diseases, Random rand) { }
+
+    /**
+     * Choose which list this actor should be given when it acts this step.
+     * Environmental actors operate on the live population; organisms instead
+     * breed into the separate nursery so their newborns are not visited again
+     * during the same step.
+     * @param population The live actor list.
+     * @param nursery The collector for newly produced actors.
+     * @return The list this actor should act with.
+     */
+    default List<Actor> stepTarget(List<Actor> population, List<Actor> nursery)
+    {
+        return population;
+    }
 }

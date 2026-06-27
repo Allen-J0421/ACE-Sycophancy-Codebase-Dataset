@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * A class to represent all living creatures in the simulation
@@ -42,7 +43,36 @@ public abstract class Organism extends FieldOccupant implements Actor
         incrementAge();
         decreaseWaterLevel();
     }
-    
+
+    /**
+     * Organisms can randomly contract any disease whose species list includes
+     * their own: each disease is rolled against its occurrence probability.
+     * @param diseases The diseases currently present in the simulation.
+     * @param rand The shared random source.
+     */
+    public void exposeToDiseases(List<Disease> diseases, Random rand)
+    {
+        for (Disease disease : diseases) {
+            // random low chance of developing each disease in turn
+            if (rand.nextDouble() <= disease.getProbability()) {
+                // only contract a disease that affects this species
+                if (disease.getSpecies().contains(getClass().getName())) {
+                    disease.addIndividual(this);
+                    setInfected();
+                }
+            }
+        }
+    }
+
+    /**
+     * Organisms breed into the separate nursery so their newborns are not
+     * visited again during the same step.
+     */
+    public List<Actor> stepTarget(List<Actor> population, List<Actor> nursery)
+    {
+        return nursery;
+    }
+
     /**
      * Check whether the organism is alive or not.
      * @return true if the organism is still alive.

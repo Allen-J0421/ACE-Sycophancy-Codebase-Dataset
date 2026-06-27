@@ -126,26 +126,18 @@ public class Simulator
         
         // Provide space for newborn organisms
         List<Actor> newOrganisms = new ArrayList<>();
+        Random rand = Randomizer.getRandom();
 
-        // Let all actors act
+        // Let all actors act. Each actor decides, polymorphically, whether it
+        // can catch a disease, whether it may act at this time of day, which
+        // list it acts into, and whether it has left the simulation.
         Iterator<Actor> it = actors.iterator();
         while(it.hasNext()) {
             Actor actor = it.next();
-            if (actor instanceof Organism) {
-                // Organisms may catch a disease, only act when the time of
-                // day suits them, and breed into the newborn collector so
-                // their young are not visited this same step.
-                generateDisease(actor);
-                if (actor.canActNow(nightTime)) {
-                    actor.act(newOrganisms);
-                }
+            actor.exposeToDiseases(diseases, rand);
+            if (actor.canActNow(nightTime)) {
+                actor.act(actor.stepTarget(actors, newOrganisms));
             }
-            else {
-                // Environmental actors (weather, disease) operate on the
-                // live actor list.
-                actor.act(actors);
-            }
-
             // Remove anything that has left the simulation: a dead organism
             // or an emptied water source.
             if (actor.isExpired()) {
@@ -245,27 +237,6 @@ public class Simulator
     }
     
     /**
-     * Random chance of a disease being generated in the population
-     * @param actor An individual which could be infected
-     */
-    private void generateDisease(Actor actor)
-    {
-        Random rand = Randomizer.getRandom();
-        for (Disease disease: diseases) {
-            // random low chance of an individual developing a disease
-            if(rand.nextDouble() <= disease.getProbability()) {
-                // only infects certain species (must be organisms)
-                if (disease.getSpecies().contains(actor.getClass().getName())) {
-                    // adds infected individual to diseased list and sets infected to true
-                    disease.addIndividual(actor);
-                    Organism organism = (Organism) actor;
-                    organism.setInfected();
-                }
-            }
-        }
-    }
-    
-    /** 
      * Creates random water spaces in free locations in field
      * Used when it rains to create new water sources
      */

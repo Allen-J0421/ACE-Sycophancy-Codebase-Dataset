@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +17,6 @@ public class Field
     private int depth, width;
     // Storage for the actors:
     private Object[][] field;
-    private Field producerField;
     
     /**
      * Represent a field of the given dimensions.
@@ -62,20 +60,6 @@ public class Field
      * Place an actor at the given location.
      * If there is already an actor at the location it will
      * be lost.
-     * 
-     * @param actor The actor to be placed.
-     * @param row   Row coordinate of the location.
-     * @param col   Column coordinate of the location.
-     */
-    public void place(Object actor, int row, int col)
-    {
-        place(actor, new Location(row, col));
-    }
-    
-    /**
-     * Place an actor at the given location.
-     * If there is already an actor at the location it will
-     * be lost.
      * @param actor The actor to be placed.
      * @param location Where to place the actor.
      */
@@ -105,20 +89,6 @@ public class Field
     public Object getObjectAt(int row, int col)
     {
         return field[row][col];
-    }
-    
-    /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location);
-        return adjacent.get(0);
     }
     
     /**
@@ -214,13 +184,4 @@ public class Field
      * @return The width of the field.
      */
     public int getWidth() { return width; }
-    public Field createProducerField()
-    {
-         producerField = new Field(width,depth);
-         return producerField;
-    }
-    public Field getProducerField()
-    {
-        return producerField;
-    }
 }

@@ -6,6 +6,10 @@
  */
 public class Time
 {
+    private static final int HOURS_IN_DAY = 24;
+    private static final int DAY_START = 6;
+    private static final int DAY_END = 18;
+
     private int time;
     // How much time will increment by for each step
     private int timeStep;
@@ -26,19 +30,15 @@ public class Time
      */
     public void incrementTime()
     {
-        time = (time + timeStep) % 24;
+        time = (time + timeStep) % HOURS_IN_DAY;
     }
 
     /**
      * Used to check if it is day which is true or if its night
      * @return true if day, false if it is night
      */
-    public boolean isDay(){
-        if (time < 18 && time > 6){
-            return true;
-        }
-        else {
-            return false;
-        }
+    public boolean isDay()
+    {
+        return time > DAY_START && time < DAY_END;
     }
 }

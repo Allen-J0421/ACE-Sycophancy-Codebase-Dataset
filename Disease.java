@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class Disease
      */
     public Map<Class<? extends Actor>, Double> getActorsAffectedMap()
     {
-        return actorsAffected;
+        return Collections.unmodifiableMap(actorsAffected);
     }
 
     /**
@@ -80,6 +81,6 @@ public class Disease
      */
     public Map<Class<? extends Actor>, Double> getStartingActorsMap()
     {
-        return startingActors;
+        return Collections.unmodifiableMap(startingActors);
     }
 }

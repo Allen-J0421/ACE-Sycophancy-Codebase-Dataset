@@ -29,7 +29,7 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
 
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
 
@@ -69,7 +69,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -85,7 +85,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -114,7 +114,7 @@ public class SimulatorView extends JFrame
         fieldView.preparePaint();
         
         int[] diseaseCount = new int[diseases.size()];
-        String diseaseDisplay = "";
+        StringBuilder diseaseDisplay = new StringBuilder();
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
@@ -144,7 +144,7 @@ public class SimulatorView extends JFrame
         stats.countFinished();
         
         for (int x = 0; x < diseases.size(); x++) {
-            diseaseDisplay = diseaseDisplay + diseases.get(x).getName() + ": " + diseaseCount[x] + " ";
+            diseaseDisplay.append(diseases.get(x).getName()).append(": ").append(diseaseCount[x]).append(' ');
         }
 
         population.setText(DISEASE_PREFIX + diseaseDisplay + POPULATION_PREFIX + stats.getPopulationDetails(field));

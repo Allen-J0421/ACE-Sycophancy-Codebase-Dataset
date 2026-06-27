@@ -28,10 +28,10 @@ public enum WeatherCond
      * @param brightness The brightness that the weather condition has.
      * @param dampness The dampness that the weather condition has.
      */
-    WeatherCond(double visibilty,double brightness,double dampness)
+    WeatherCond(double visibility, double brightness, double dampness)
     {
         weatherAttributes = new HashMap<>();
-        weatherAttributes.put("visibility", visibilty);
+        weatherAttributes.put("visibility", visibility);
         weatherAttributes.put("brightness", brightness);
         weatherAttributes.put("dampness", dampness);
     }
@@ -84,7 +84,7 @@ public enum WeatherCond
      * Returns visibility.
      * @return visibility.
      */
-    public double getVisibilty()
+    public double getVisibility()
     {
         return weatherAttributes.get("visibility");
     }

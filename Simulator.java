@@ -1,5 +1,4 @@
 import java.util.*;
-import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -14,22 +13,6 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a dingo will be created in any given grid position.
-    private static final double DINGO_CREATION_PROBABILITY = 0.09;
-    // The probability that an ant will be created in any given grid position.
-    private static final double ANT_CREATION_PROBABILITY = 0.13;
-    // The probability that a rat will be created in any given grid position.
-    private static final double RAT_CREATION_PROBABILITY = 0.11;
-    // The probability that an eagle will be created in any given grid position.
-    private static final double EAGLE_CREATION_PROBABILITY = 0.12;
-    // The probability that a snake will be created in any given grid position.
-    private static final double SNAKE_CREATION_PROBABILITY = 0.12;
-    // The probability that an emu will be created in any given grid position.
-    private static final double EMU_CREATION_PROBABILITY = 0.08;
-    // The probability that acacia will be created in any given grid position.
-    private static final double ACACIA_CREATION_PROBABILITY = 0.34;
-    // The probability that grass will be created in any given grid position.
-    private static final double GRASS_CREATION_PROBABILITY = 0.36;
 
     // Unified list of all living entities (animals and plants) in the simulation.
     private List<LivingEntity> entities;
@@ -43,6 +26,8 @@ public class Simulator
     private int time;
     // A graphical view of the simulation.
     private SimulatorView view;
+    // Factory that owns per-species configuration and population logic.
+    private EntityFactory factory;
 
     /**
      * Construct a simulation field with default size.
@@ -68,16 +53,10 @@ public class Simulator
         entities = new ArrayList<>();
         weather = "none";
         field = new Field(depth, width);
+        factory = new EntityFactory();
 
         view = new SimulatorView(depth, width);
-        view.setColor(Ant.class, Color.GRAY);
-        view.setColor(Dingo.class, Color.ORANGE);
-        view.setColor(Eagle.class, Color.RED);
-        view.setColor(Snake.class, Color.BLACK);
-        view.setColor(Rat.class, Color.PINK);
-        view.setColor(Emu.class, Color.YELLOW);
-        view.setColor(Acacia.class, Color.GREEN);
-        view.setColor(Grass.class, Color.CYAN);
+        factory.registerColors(view);
 
         // Setup a valid starting point.
         reset();
@@ -173,38 +152,7 @@ public class Simulator
      * Randomly populate the field with animals and plants.
      */
     private void populate() {
-        Random rand = Randomizer.getRandom();
-        field.clear();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Location location = new Location(row, col);
-                if(rand.nextDouble() <= DINGO_CREATION_PROBABILITY) {
-                    entities.add(new Dingo(true, field, location));
-                }
-                else if(rand.nextDouble() <= ANT_CREATION_PROBABILITY) {
-                    entities.add(new Ant(true, field, location));
-                }
-                else if(rand.nextDouble() <= SNAKE_CREATION_PROBABILITY) {
-                    entities.add(new Snake(true, field, location));
-                }
-                else if(rand.nextDouble() <= RAT_CREATION_PROBABILITY) {
-                    entities.add(new Rat(true, field, location));
-                }
-                else if(rand.nextDouble() <= EAGLE_CREATION_PROBABILITY) {
-                    entities.add(new Eagle(true, field, location));
-                }
-                else if(rand.nextDouble() <= EMU_CREATION_PROBABILITY) {
-                    entities.add(new Emu(true, field, location));
-                }
-                else if(rand.nextDouble() <= ACACIA_CREATION_PROBABILITY) {
-                    entities.add(new Acacia(field, location));
-                }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    entities.add(new Grass(field, location));
-                }
-                // else leave the location empty.
-            }
-        }
+        factory.populate(field, entities);
     }
 
     /**

@@ -1,5 +1,3 @@
-import java.util.Set;
-
 /**
  * A model of a bear. Bears will eat monkeys,
  * but will kill monkeys and plants.
@@ -10,27 +8,10 @@ import java.util.Set;
  */
 public class Bear extends InfectiousAnimal
 {
-    // Characteristics shared by all bears (class variables).
-    
-    // The age at which a bear can start to breed.
-    private static final int BREEDING_AGE = 15;
-    // The age to which a bear can live.
-    private static final int MAX_AGE = 70;
-    // The likelihood of a bear breeding.
-    private static final double BREEDING_PROBABILITY = 0.125;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
-    // The max health of a bear
-    private static final int MAX_HEALTH = 40;
-    // Whether the animal is diurnal or nocturnal
-    private static final boolean IS_DIURNAL = true;
-    
-    // Individual characteristics (instance fields).
-    
-    // The food a bear will eat.
-    private static final Set<Class<?>> FOOD_SOURCES = classSet(Monkey.class);
-    // The classes a bear will kill
-    private static final Set<Class<?>> KILLABLE = classSet(Monkey.class, Plant.class);
+    private static final AnimalAttributes ATTRIBUTES =
+        new AnimalAttributes(Species.BEAR, true, 15, 70, 0.125, 4, 40,
+                             Bear::new,
+                             AnimalAttributes.speciesSet(Species.MONKEY));
 
     /**
      * Create a bear. A bear can be created as a new born (age zero
@@ -42,78 +23,6 @@ public class Bear extends InfectiousAnimal
      */
     public Bear(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, Bear.class, FOOD_SOURCES, KILLABLE);
-    }
-    
-    // Accessor and mutator methods
-    
-    // Accessor and mutator methods
-    /**
-     * Return whether the bear is diurnal
-     * 
-     * @return boolean True if the bea is diurnal, false if nocturnal
-     */
-    protected boolean getIsDiurnal() {
-        return IS_DIURNAL;
-    }
-    
-    /**
-     * Returns breeding age of a bear
-     * 
-     * @return int of the bear's breeding age.
-     */
-    protected int getBreedingAge()
-    {
-        return BREEDING_AGE;
-    }
-    
-    /**
-     * Returns max age of a bear
-     * 
-     * @return int of the bear's max age.
-     */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-    
-    /**
-     * Returns breeding probability of a bear
-     * 
-     * @return double of the bear's breeding probability
-     */
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    
-    /**
-     * Returns max litter size of a bear
-     * 
-     * @return int of the bear's max litter size
-     */
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-    
-    /**
-     * Return the max health of the animal
-     * 
-     * @return the animal's max health
-     */
-    protected int getMaxHealth()
-    {
-        return MAX_HEALTH;
-    }
-    
-    /**
-     * Creates and returns a new bear object
-     * 
-     * @return Organism object of subclass bear
-     */
-    protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
-    {
-        return new Bear(randomAge, field, location);
+        super(randomAge, field, location, ATTRIBUTES);
     }
 }

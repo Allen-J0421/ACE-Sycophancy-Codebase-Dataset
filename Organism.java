@@ -10,6 +10,8 @@ import java.util.Random;
  */
 public abstract class Organism
 {
+    // Shared lifecycle settings for this organism's species.
+    private final OrganismAttributes attributes;
     // The organism's age
     private int age;
     // Whether the organism is alive or not.
@@ -25,76 +27,40 @@ public abstract class Organism
     /**
      * Constructor for objects of class Organism
      */
-    public Organism(boolean randomAge, Field field, Location location)
+    public Organism(boolean randomAge, Field field, Location location,
+                    OrganismAttributes attributes)
     {
+        this.attributes = attributes;
         age = 0;
         if (randomAge) {
-            age = rand.nextInt(getMaxAge());
+            age = rand.nextInt(attributes.getMaxAge());
         }
         alive = true;
         this.field = field;
         setLocation(location);
     }
     
-    // Abstract methods
-    
-    /**
-     * Abstract method that returns whether the animal is diurnal or nocturnal
-     * 
-     * @return boolean True if the animal is diurnal, false if nocturnal
-     */
-    abstract protected boolean getIsDiurnal();
-    
-    /**
-    * Make this organism act - that is: make it do
-    * whatever it wants/needs to do.
-    * @param newOrganisms A list to receive newly born organisms.
-    */
-    abstract public void act(List<Organism> newOrganisms);
-    
-    /**
-     * Abstract method that returns the max age of the organism
-     * 
-     * @return the organism's max age
-     */
-    abstract protected int getMaxAge();
-    
-    /**
-     * Abstract method that returns whether the organism can breed
-     * 
-     * @return boolean True if the organism can breed
-     */
-    abstract protected boolean canBreed();
-    
-    /**
-     * Abstract method that returns the breeding age for the animal
-     * 
-     * @return the animal's breeding age
-     */
-    abstract protected int getBreedingAge();
-    
-    /**
-     * Abstract methohd that returns the litter size of the animal
-     * 
-     * @return the animal's max litter size
-     */
-    abstract protected int getMaxLitterSize();
-    
-    /**
-     * Abstract method that returns the breeding probability of the animal
-     * 
-     * @return the animal's breeding probability
-     */
-    abstract protected double getBreedingProbability();
-    
-    /**
-     * Abstract method that returns an organism object of a specific subclass of organism
-     * 
-     * @return Organism object of a specified subclass
-     */
-    abstract protected Organism createNewOrganism(boolean randomAge, Field field, Location location);
-    
     // Accessor and mutator methods
+
+    /**
+     * Return this organism's species.
+     *
+     * @return The organism species.
+     */
+    public Species getSpecies()
+    {
+        return attributes.getSpecies();
+    }
+
+    /**
+     * Return whether the organism is diurnal or nocturnal.
+     *
+     * @return True if the organism is diurnal.
+     */
+    public boolean isDiurnal()
+    {
+        return attributes.isDiurnal();
+    }
     
     /**
      * Return the organism's location.
@@ -134,14 +100,6 @@ public abstract class Organism
     }
     
     /**
-     * Sets the organism's age
-     */
-    protected void setAge(int age)
-    {
-        this.age = age;
-    }
-    
-    /**
      * Check whether the organism is alive or not.
      * @return true if the organism is still alive.
      */
@@ -151,6 +109,23 @@ public abstract class Organism
     }
     
     // Functional methods
+
+    /**
+     * Make this organism act for a single simulation step.
+     *
+     * @param newOrganisms A list to receive newly born organisms.
+     */
+    public final void act(List<Organism> newOrganisms)
+    {
+        incrementAge();
+        if(isAlive()) {
+            applyStepEffects();
+        }
+        if(isAlive()) {
+            giveBirth(newOrganisms);
+            relocate();
+        }
+    }
     
     /**
      * Determines the amount of newborn a specific organism will produce
@@ -160,8 +135,8 @@ public abstract class Organism
     protected int breed()
     {
         int births = 0;
-        if(canBreed() && getRand().nextDouble() <= getBreedingProbability()) {
-            births = getRand().nextInt(getMaxLitterSize()) + 1;
+        if(canBreed() && getRand().nextDouble() <= attributes.getBreedingProbability()) {
+            births = getRand().nextInt(attributes.getMaxLitterSize()) + 1;
         }
         return births;
     }
@@ -178,7 +153,7 @@ public abstract class Organism
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Organism young = createNewOrganism(false, field, loc);
+            Organism young = attributes.create(false, field, loc);
             newOrganisms.add(young);
         }
     }
@@ -189,7 +164,7 @@ public abstract class Organism
     protected void incrementAge()
     {
         age++;
-        if (age > getMaxAge())
+        if (age > attributes.getMaxAge())
         {
             setDead();
         }
@@ -220,5 +195,56 @@ public abstract class Organism
         }
         location = newLocation;
         field.place(this, newLocation);
+    }
+
+    /**
+     * Default breeding rule for organisms that reproduce without a mate.
+     *
+     * @return True when the organism is old enough to breed.
+     */
+    protected boolean canBreed()
+    {
+        return getAge() >= attributes.getBreedingAge();
+    }
+
+    /**
+     * Hook for species-specific per-step work before breeding and movement.
+     */
+    protected void applyStepEffects()
+    {
+    }
+
+    /**
+     * Hook for organisms that may move during a simulation step.
+     *
+     * @return The next location, or null to stay in place.
+     */
+    protected Location findNextLocation()
+    {
+        return null;
+    }
+
+    /**
+     * Hook for species that die when they cannot move.
+     *
+     * @return True if the organism dies when no destination is available.
+     */
+    protected boolean diesWhenBlocked()
+    {
+        return false;
+    }
+
+    /**
+     * Move the organism if its species requires relocation this step.
+     */
+    private void relocate()
+    {
+        Location newLocation = findNextLocation();
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else if(diesWhenBlocked()) {
+            setDead();
+        }
     }
 }

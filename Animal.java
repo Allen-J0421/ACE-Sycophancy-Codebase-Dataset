@@ -1,9 +1,5 @@
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * A class representing shared characteristics of all animals within the simultion.
@@ -15,12 +11,8 @@ public abstract class Animal extends Organism
 {
     // A singleton shared weather object between all organisms and the simulator
     private static final Weather weather = Weather.getWeather();
-    // The runtime class used to identify animals of the same species.
-    private final Class<? extends Animal> speciesClass;
-    // The kinds of organisms this animal can eat.
-    private final Set<Class<?>> foodSources;
-    // The kinds of organisms this animal can kill.
-    private final Set<Class<?>> killable;
+    // Shared lifecycle and diet settings for this animal's species.
+    private final AnimalAttributes attributes;
     // Gender of the animal
     private boolean isMale;
     // Current health of the animal
@@ -35,17 +27,13 @@ public abstract class Animal extends Organism
      * @param location The location within the field.
      */
     public Animal(boolean randomAge, Field field, Location location,
-                  Class<? extends Animal> speciesClass,
-                  Set<Class<?>> foodSources,
-                  Set<Class<?>> killable)
+                  AnimalAttributes attributes)
     {
-        super(randomAge, field, location);
-        this.speciesClass = speciesClass;
-        this.foodSources = foodSources;
-        this.killable = killable;
+        super(randomAge, field, location, attributes);
+        this.attributes = attributes;
         
         if (randomAge) {
-            currentHealth = getRand().nextInt(getMaxHealth());
+            currentHealth = getRand().nextInt(attributes.getMaxHealth());
         }
         if (getRand().nextInt(2) == 0) {
             isMale = true;
@@ -57,27 +45,7 @@ public abstract class Animal extends Organism
         isInfected = false;
     }
     
-    // Abstract methods
-    
-    /**
-     * Abstract method that returns the max health of the animal
-     * 
-     * @return the animal's max health
-     */
-    abstract protected int getMaxHealth();
-
     // Accessor and mutator methods
-
-    /**
-     * Create an immutable set of organism classes for species configuration.
-     *
-     * @param classes The organism classes in the set.
-     * @return An immutable set containing the given classes.
-     */
-    protected static Set<Class<?>> classSet(Class<?>... classes)
-    {
-        return Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(classes)));
-    }
     
     /**
      * Returns whether the animal is male
@@ -87,15 +55,6 @@ public abstract class Animal extends Organism
     protected boolean getGender()
     {
         return isMale;
-    }
-    
-    /**
-     * Return the current health of the animal
-     * 
-     * @return int of the animal's current health
-     */
-    protected int getCurrentHealth() {
-        return currentHealth;
     }
     
     /**
@@ -115,45 +74,6 @@ public abstract class Animal extends Organism
     }
 
     /**
-     * Return the list of food sources of this animal.
-     *
-     * @return The set of classes this animal can eat.
-     */
-    protected Set<Class<?>> getFoodSources()
-    {
-        return foodSources;
-    }
-
-    /**
-     * Return the list of classes this animal can kill.
-     *
-     * @return The set of classes this animal can kill.
-     */
-    protected Set<Class<?>> getKillable()
-    {
-        return killable;
-    }
-    
-    // Functional methods
-
-    /**
-     * Animals share the same life-cycle: age, lose health, apply any
-     * species-specific effects, give birth, and then try to move.
-     *
-     * @param newOrganisms A list to receive newborn organisms.
-     */
-    public void act(List<Organism> newOrganisms)
-    {
-        incrementAge();
-        incrementHealth();
-        applyStepEffects();
-        if(isAlive()) {
-            giveBirth(newOrganisms);
-            moveToNextLocation();
-        }
-    }
-    
-    /**
      * Checks if the animal can breed
      * 
      * @return true if the animal can breed
@@ -168,10 +88,10 @@ public abstract class Animal extends Organism
             while (it.hasNext())
             {
                 Location where = it.next();
-                Object thing = field.getObjectAt(where);
-                if (speciesClass.isInstance(thing))
+                Organism organism = field.getObjectAt(where);
+                if (organism != null && organism.getSpecies() == getSpecies())
                 {
-                    Animal animal = (Animal) thing;
+                    Animal animal = (Animal) organism;
                     return animal.getGender() == true && getAge() >= getBreedingAge();
                 }
             }
@@ -180,31 +100,23 @@ public abstract class Animal extends Organism
     }
 
     /**
-     * Hook for subclasses that need additional work before breeding and moving.
-     */
-    protected void applyStepEffects()
-    {
-    }
-    
-    /**
      * A method that will make the animal object search the adjacent squares around it,
      * then find and eat an eligible food source.
      */
-    protected Location findFood() {
+    protected Location findFood()
+    {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal != null) {                       // makes sure to filter out empty squares
-                Organism target = (Organism) animal;
-                if (this.getFoodSources().contains(target.getClass()) && target.isAlive() && getRand().nextDouble() <= weather.getWeatherModifier()) {
+            Organism target = field.getObjectAt(where);
+            if (target != null) {
+                if (attributes.getFoodSources().contains(target.getSpecies())
+                    && target.isAlive()
+                    && getRand().nextDouble() <= weather.getWeatherModifier()) {
                     target.setDead();
-                    //currentHealth = this.getMaxHealth();
-                    if (this.getFoodSources().contains(target.getClass())) {
-                        currentHealth = this.getMaxHealth();
-                    }
+                    currentHealth = attributes.getMaxHealth();
                 }
             }
         }
@@ -223,21 +135,44 @@ public abstract class Animal extends Organism
     }
 
     /**
-     * Move towards food if possible, otherwise move into any adjacent free cell.
-     * If no move is possible, the animal dies from overcrowding.
+     * Animals lose health every step before any movement or disease effects.
      */
-    private void moveToNextLocation()
+    protected void applyStepEffects()
+    {
+        incrementHealth();
+    }
+
+    /**
+     * Animals either move towards food or into a free neighbouring cell.
+     *
+     * @return The next destination for the animal.
+     */
+    protected Location findNextLocation()
     {
         Location newLocation = findFood();
         if(newLocation == null) {
             newLocation = getField().freeAdjacentLocation(getLocation());
         }
+        return newLocation;
+    }
 
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            setDead();
-        }
+    /**
+     * Animals die if they cannot move because of overcrowding.
+     *
+     * @return Always true for animals.
+     */
+    protected boolean diesWhenBlocked()
+    {
+        return true;
+    }
+
+    /**
+     * Return this species' breeding age.
+     *
+     * @return The breeding age for the animal.
+     */
+    private int getBreedingAge()
+    {
+        return attributes.getBreedingAge();
     }
 }

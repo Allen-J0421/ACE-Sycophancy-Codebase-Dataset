@@ -1,7 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 /**
  * Shared disease behaviour for animals that can both catch and spread infection.
  *
@@ -10,11 +8,9 @@ import java.util.Set;
 public abstract class InfectiousAnimal extends Animal implements Infectable
 {
     public InfectiousAnimal(boolean randomAge, Field field, Location location,
-                            Class<? extends Animal> speciesClass,
-                            Set<Class<?>> foodSources,
-                            Set<Class<?>> killable)
+                            AnimalAttributes attributes)
     {
-        super(randomAge, field, location, speciesClass, foodSources, killable);
+        super(randomAge, field, location, attributes);
     }
 
     /**
@@ -39,9 +35,8 @@ public abstract class InfectiousAnimal extends Animal implements Infectable
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object object = field.getObjectAt(where);
-            if (object != null) {
-                Organism organism = (Organism) object;
+            Organism organism = field.getObjectAt(where);
+            if (organism != null) {
                 if (organism instanceof Infectable && organism.isAlive()
                     && getRand().nextDouble() <= SPREAD_PROBABILITY) {
                     Animal target = (Animal) organism;

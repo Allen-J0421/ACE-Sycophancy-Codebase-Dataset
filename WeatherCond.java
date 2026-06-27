@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
@@ -95,7 +96,7 @@ public enum WeatherCond
      */
     public Map<String,Double> getWeatherAttributesMap()
     {
-        return weatherAttributes;
+        return Collections.unmodifiableMap(weatherAttributes);
     }
 
     /**

@@ -54,10 +54,7 @@ public class Simulator
     public Simulator(int depth, int width)
     {
         if(width <= 0 || depth <= 0) {
-            System.out.println("The dimensions must be greater than zero.");
-            System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
+            throw new IllegalArgumentException("Field dimensions must be greater than zero.");
         }
 
         actors = new ArrayList<>();

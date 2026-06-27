@@ -44,8 +44,8 @@ public abstract class Plant extends Actor
         if (isAlive()){
             waterLevel -= WATER_DECAY;
             sunLightLevel -= SUNLIGHT_DECAY;
-            sunLightLevel += getField().getWeatherAttributeValueAt("brightness", getLocation());
-            double dampness = getField().getWeatherAttributeValueAt("dampness", getLocation());
+            sunLightLevel += getField().getBrightnessAt(getLocation());
+            double dampness = getField().getDampnessAt(getLocation());
             waterLevel = Math.min(waterLevel + dampness, MAX_WATER_LEVEL);
             if (waterLevel < 0 || sunLightLevel <= 0){
                 setDead();

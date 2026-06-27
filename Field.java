@@ -291,15 +291,19 @@ public class Field
         }
     }
 
-    /**
-     * Returns the weather attribute value at a specified location.
-     * @param weatherAttribute The String name of the weather attribute.
-     * @param loc The location.
-     * @return The weather attribute value at the specified location.
-     */
-    public double getWeatherAttributeValueAt(String weatherAttribute, Location loc)
+    public double getVisibilityAt(Location loc)
     {
-        return weatherField.get(weatherAttribute)[loc.getRow()][loc.getCol()];
+        return weatherField.get("visibility")[loc.getRow()][loc.getCol()];
+    }
+
+    public double getBrightnessAt(Location loc)
+    {
+        return weatherField.get("brightness")[loc.getRow()][loc.getCol()];
+    }
+
+    public double getDampnessAt(Location loc)
+    {
+        return weatherField.get("dampness")[loc.getRow()][loc.getCol()];
     }
 
     /**

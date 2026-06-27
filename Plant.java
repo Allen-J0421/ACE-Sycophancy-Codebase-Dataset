@@ -28,15 +28,15 @@ public abstract class Plant extends Organism
     }
 
     /**
-     * Make this plant act - that is: make it do whatever it needs to do.
-     * @param newPlants A list to receive newly grown plants.
+     * Advance the plant by one lifecycle tick.
+     * @param context Shared lifecycle state for the current step.
      */
     @Override
-    public void act(List<Actor> newPlants)
+    public void tick(SimulationContext context)
     {
-        super.act(newPlants);
+        super.tick(context);
         if (isAlive()) {
-            giveBirth(newPlants);
+            giveBirth(context.getSpawnedActors());
             findWater();
         }
     }

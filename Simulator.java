@@ -1,7 +1,6 @@
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.awt.Color;
 
@@ -34,8 +33,6 @@ public class Simulator
     private static final double LAKE_CREATION_PROBABILITY = 0.005;
     // List of all actors in simulation
     private List<Actor> actors;
-    // List of potential diseases that could occur in simulation
-    private List<Disease> diseases;
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -123,54 +120,23 @@ public class Simulator
         }
         
         // Provide space for newborn organisms
-        List<Actor> newOrganisms = new ArrayList<>();   
+        List<Actor> newOrganisms = new ArrayList<>();
+        SimulationContext context = new SimulationContext(actors, newOrganisms, nightTime);
 
-        Weather weather = null;
-        
-        // Let all actors act
+        // Let all actors advance by one tick.
         Iterator<Actor> it = actors.iterator();
         while(it.hasNext()) {
-            boolean canAct = true;
             Actor actor = it.next();
-            if (actor instanceof Weather) {
-                weather = (Weather) actor;
-            }
-            if (actor instanceof Organism) {
-                // low chance of each animal being infected wiht a disease
-                generateDisease(actor);
-                Organism organism = (Organism) actor;
-                if (organism instanceof Animal) {
-                    Animal animal = (Animal) organism;   
-                    // animals only act during certain times of day (i.e. if day but nocturnal, won't act)
-                    if (nightTime != animal.isNocturnal()) {
-                        canAct = false;
-                    }
-                }
-                if (canAct) {
-                    actor.act(newOrganisms);
-                }
-                if(!(organism.isAlive())) {
-                    it.remove();
-                }
-            }
-            else {
-                actor.act(actors);  
-            }
-            
-            // Removes any empty water sources from the field
-            if (actor instanceof WaterSources) {
-                WaterSources water = (WaterSources) actor;
-                // if a water source is empty, remove it from simulation
-                if (water.isEmpty()) {
-                    it.remove();
-                }
+            actor.tick(context);
+            if (actor.isExpired()) {
+                it.remove();
             }
         }
-        // Add the newly born animals to the main lists.
-        actors.addAll(newOrganisms);      
+        // Add the newly born actors to the main list.
+        actors.addAll(newOrganisms);
         
         // If it has rained, create new water
-        if (weather != null && weather.generateNewWater()) {
+        if (context.shouldGenerateWater()) {
             generateWater();
         }
         
@@ -201,39 +167,12 @@ public class Simulator
         field.clear();
         
         // Creates default actors (diseases and weather)
-        diseases = new ArrayList<>();
-        Disease covid = new Covid(field);
-        Disease leptospirosis = new Leptospirosis(field);
-        diseases.addAll(Arrays.asList(covid, leptospirosis));
-        
-        Weather weather = new Weather();
-        
-        actors.addAll(diseases);
-        actors.add(weather);
+        actors.add(new Covid(field));
+        actors.add(new Leptospirosis(field));
+        actors.add(new Weather());
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 populateCell(rand, row, col);
-            }
-        }
-    }
-    
-    /**
-     * Random chance of a disease being generated in the population
-     * @param actor An individual which could be infected
-     */
-    private void generateDisease(Actor actor) 
-    {
-        Random rand = Randomizer.getRandom();
-        for (Disease disease: diseases) {
-            // random low chance of an individual developing a disease
-            if(rand.nextDouble() <= disease.getProbability()) {
-                // only infects certain species (must be organisms)
-                if (disease.getSpecies().contains(actor.getClass().getName())) {
-                    // adds infected individual to diseased list and sets infected to true
-                    disease.addIndividual(actor);
-                    Organism organism = (Organism) actor;
-                    organism.setInfected();
-                }
             }
         }
     }

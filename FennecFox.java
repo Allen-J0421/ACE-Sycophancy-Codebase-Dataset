@@ -28,9 +28,9 @@ public class FennecFox extends Animal
     }
 
     @Override
-    public void act(List<Actor> newFoxes)
+    public void tick(SimulationContext context)
     {
-        super.act(newFoxes);
+        super.tick(context);
     }
 
     @Override

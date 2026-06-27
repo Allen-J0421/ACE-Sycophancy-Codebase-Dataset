@@ -1,17 +1,33 @@
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents all aspects of the simulator that perform some functionality
- * with each step (organisms, water, weather, diseases)
+ * Represents all simulation entities that participate in a lifecycle step.
  *
- * @version 2022.02.25
+ * @version 2022.06.27
  */
 interface Actor
 {
     /**
-     * Make this actor act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newActors A list to receive any actors relevant to action
+     * Advance this actor by one simulation tick.
+     * @param context Shared lifecycle state for the current step.
      */
-    abstract public void act(List<Actor> actorsList);
+    void tick(SimulationContext context);
+
+    /**
+     * Legacy adapter for the older act-based contract.
+     * @param actorsList Actors available to the step.
+     */
+    default void act(List<Actor> actorsList)
+    {
+        tick(new SimulationContext(actorsList, new ArrayList<>(), false));
+    }
+
+    /**
+     * @return true if this actor should be removed from the simulation.
+     */
+    default boolean isExpired()
+    {
+        return false;
+    }
 }

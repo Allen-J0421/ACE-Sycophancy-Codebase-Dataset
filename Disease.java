@@ -26,7 +26,7 @@ public abstract class Disease implements Actor
     // How long the disease affects an infected organism for
     private int duration;
     // Randomiser to control random spread of disease
-    private Random rand = new Random();
+    private static final Random rand = Randomizer.getRandom();
     
     /**
      * Constructor for a disease
@@ -42,40 +42,39 @@ public abstract class Disease implements Actor
     }
 
     /**
-     * Make this actor act - that is: disease spreads and kills any 
-     * infected individuals after a certain number of days
-     * @param newActors A list to receive any actors relevant to action
+     * Advance the disease by one lifecycle tick.
+     * Disease can infect susceptible actors, spread through the field, and resolve infections.
+     * @param context Shared lifecycle state for the current step.
      */
-    public void act(List<Actor> actorsList)
+    @Override
+    public void tick(SimulationContext context)
     {
-        // Loops through every infected animal
-        Iterator<Actor> it = affected.keySet().iterator();
-        // List to hold individuals who are newly infected by disease
+        infectSusceptibleActors(context.getActors());
+
+        List<Actor> infectedActors = new ArrayList<>(affected.keySet());
+        // Loops through every infected actor that was already active this tick.
+        Iterator<Actor> it = infectedActors.iterator();
         List<Actor> newInfections = new ArrayList<>();
         while (it.hasNext()) {
             Actor infected = it.next();
             newInfections.addAll(spread(infected));
             if (affected.get(infected) == duration) {
-                // After certain number of days, infected individual 
-                // dies (animal)/ is cured (water)
-                it.remove();
+                affected.remove(infected);
                 if (infected instanceof Organism) {
                     Organism organism = (Organism) infected;
                     organism.setDead();
-                    }
+                }
                 else {
                     WaterSources water = (WaterSources) infected;
                     water.notInfected();
                 }
             }
             else {
-                // Increases the number of days an individual has been infected by 1
                 int days = affected.get(infected) + 1;
                 affected.put(infected, days);
             }
         }
         for (Actor infectee: newInfections) {
-            // adds any newly infected individuals to the list and sets days infected to 0
             if (infectee instanceof Organism) {
                 Organism organism = (Organism) infectee;
                 organism.setInfected();
@@ -131,6 +130,45 @@ public abstract class Disease implements Actor
             }
         }
         return newlyInfected;
+    }
+
+    /**
+     * Infect susceptible actors with the disease's random occurrence probability.
+     * @param actors The actors available in the current simulation step.
+     */
+    private void infectSusceptibleActors(List<Actor> actors)
+    {
+        for (Actor actor : actors) {
+            if (!affectedSpecies.contains(actor.getClass().getName())) {
+                continue;
+            }
+            if (affected.containsKey(actor)) {
+                continue;
+            }
+            if (actor instanceof Organism) {
+                Organism organism = (Organism) actor;
+                if (!organism.isAlive()) {
+                    continue;
+                }
+            }
+            else if (actor instanceof WaterSources) {
+                WaterSources water = (WaterSources) actor;
+                if (water.isEmpty()) {
+                    continue;
+                }
+            }
+            if (rand.nextDouble() <= probability) {
+                addIndividual(actor);
+                if (actor instanceof Organism) {
+                    Organism organism = (Organism) actor;
+                    organism.setInfected();
+                }
+                else if (actor instanceof WaterSources) {
+                    WaterSources water = (WaterSources) actor;
+                    water.setInfected();
+                }
+            }
+        }
     }
     
     /**

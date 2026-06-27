@@ -35,11 +35,12 @@ public abstract class WaterSources implements Actor
     }
 
     /**
-     * Make this actor act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newActors A list to receive any actors relevant to action
+     * Advance the water source by one lifecycle tick.
+     * Water sources do not perform autonomous actions.
+     * @param context Shared lifecycle state for the current step.
      */
-    public void act(List<Actor> actorsList) {}
+    @Override
+    public void tick(SimulationContext context) {}
 
     /**
      * Return the water source's location.
@@ -151,5 +152,11 @@ public abstract class WaterSources implements Actor
             volumeLevel = 0;
             setDead();
         }
+    }
+
+    @Override
+    public boolean isExpired()
+    {
+        return isEmpty;
     }
 }

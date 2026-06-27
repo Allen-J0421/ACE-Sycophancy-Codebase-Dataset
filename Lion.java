@@ -27,9 +27,9 @@ public class Lion extends Animal
     }
 
     @Override
-    public void act(List<Actor> newLions)
+    public void tick(SimulationContext context)
     {
-        super.act(newLions);
+        super.tick(context);
     }
 
     @Override

@@ -24,23 +24,24 @@ public class Weather implements Actor
     public Weather() {}
 
     /**
-     * Make the weather act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newActors A list to receive any species affected by the weather event
+     * Advance the weather by one lifecycle tick.
+     * @param context Shared lifecycle state for the current step.
      */
-    public void act(List<Actor> actorsList) {
+    @Override
+    public void tick(SimulationContext context) {
         generateWater = false;
         // Generate one weather event per step using shared randomness.
         Random rand = Randomizer.getRandom();
         if (rand.nextDouble() <= RAIN_PROB) {
-            makeRain(actorsList);
+            makeRain(context.getActors());
             generateWater = true;
+            context.requestWaterGeneration();
         }
         else if (rand.nextDouble() <= FOG_PROB){
-            makeFog(actorsList);
+            makeFog(context.getActors());
         }
         else if (rand.nextDouble() <= HEATWAVE_PROB) {
-            makeHeatWave(actorsList);
+            makeHeatWave(context.getActors());
         }
     }
 

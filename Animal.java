@@ -41,17 +41,20 @@ public abstract class Animal extends Organism
     }
     
     /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
+     * Advance the animal by one lifecycle tick.
+     * @param context Shared lifecycle state for the current step.
      */
-    public void act(List<Actor> newOrganisms) {
-        // All animals eat; all organisms also increment age and water level
-        super.act(newOrganisms);
+    @Override
+    public void tick(SimulationContext context) {
+        if (context.isNightTime() != isNocturnal()) {
+            return;
+        }
+
+        super.tick(context);
         incrementHunger();
         if(isAlive() && !sleeping) {        
             // Move towards a source of food if found
-            giveBirth(newOrganisms);  
+            giveBirth(context.getSpawnedActors());  
             Location newLocation = null;
             newLocation = findWater();
             if (newLocation == null && getFoodLevel() < 8 && rand.nextDouble() <= getHuntProbability()) {

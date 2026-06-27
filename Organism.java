@@ -40,14 +40,14 @@ public abstract class Organism implements Actor
         age = 0;
     }
     
-     /**
-     * Make this organism act - that is: make it do
-     * whatever it wants/needs to do.
-     * All organisms will age and lose water with each step that they act
+    /**
+     * Advance the organism by one lifecycle tick.
+     * All organisms age and lose water at each tick.
      *
-     * @param newOrganisms A list to receive newly born organisms
+     * @param context Shared lifecycle state for the current step.
      */
-    public void act(List<Actor> newOrganisms)
+    @Override
+    public void tick(SimulationContext context)
     {
         incrementAge();
         decreaseWaterLevel();
@@ -245,5 +245,11 @@ public abstract class Organism implements Actor
      */
     protected boolean isInfected(){
         return infected;
+    }
+
+    @Override
+    public boolean isExpired()
+    {
+        return !alive;
     }
 }

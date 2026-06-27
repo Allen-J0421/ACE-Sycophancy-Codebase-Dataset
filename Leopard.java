@@ -1,4 +1,4 @@
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a leopard. Leopards will eat sloths,
@@ -17,9 +17,9 @@ public class Leopard extends Animal
     // Individual characteristics (instance fields).
     
     // The food a leopard will eat.
-    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Sloth.class);
+    private static final Set<Class<?>> FOOD_SOURCES = createClassSet(Sloth.class);
     // The classes a leopard will kill
-    private static final HashSet<Class<?>> KILLABLE = createClassSet(Sloth.class, Plant.class);
+    private static final Set<Class<?>> KILLABLE = createClassSet(Sloth.class, Plant.class);
 
     /**
      * Create a leopard. A leopard can be created as a new born (age zero
@@ -43,20 +43,20 @@ public class Leopard extends Animal
     /**
      * Returns the HashSet of allowed food for a leopard to eat
      * 
-     * @return HashSet<Class<?>> of subclasses that a leopard can eat
+     * @return Set<Class<?>> of subclasses that a leopard can eat
      */
     @Override
-    protected HashSet<Class<?>> getFoodSources() {
+    protected Set<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
     
     /**
      * Returns the HashSet of allowed classes for a leopard to kill
      * 
-     * @return HashSet<Class<?>> of subclasses that a leopard can kill
+     * @return Set<Class<?>> of subclasses that a leopard can kill
      */
     @Override
-    protected HashSet<Class<?>> getKillable() {
+    protected Set<Class<?>> getKillable() {
         return KILLABLE;
     }
     

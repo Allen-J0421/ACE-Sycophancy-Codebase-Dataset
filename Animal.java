@@ -1,5 +1,7 @@
+import java.util.Collections;
 import java.util.List;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class representing shared characteristics of all animals within the simultion.
@@ -92,16 +94,16 @@ public abstract class Animal extends Organism
     /**
      * Abstract method to return the list of food sources of a specific subclass of animal
      *
-     * @return HashSet<Class<?>> of class types that a subclass of animal is allowed to eat.
+     * @return Set<Class<?>> of class types that a subclass of animal is allowed to eat.
      */
-    abstract protected HashSet<Class<?>> getFoodSources();
+    abstract protected Set<Class<?>> getFoodSources();
 
     /**
      * Abstract method to return the list of killable classes of a specific subclass of animal
      *
-     * @return HashSet<Class<?>> of class types that a subclass of animal is allowed to kill.
+     * @return Set<Class<?>> of class types that a subclass of animal is allowed to kill.
      */
-    abstract protected HashSet<Class<?>> getKillable();
+    abstract protected Set<Class<?>> getKillable();
     // Accessor and mutator methods
 
     /**
@@ -144,13 +146,13 @@ public abstract class Animal extends Organism
     /**
      * Create a set of classes for species-specific diet and attack rules.
      */
-    protected static HashSet<Class<?>> createClassSet(Class<?>... classes)
+    protected static Set<Class<?>> createClassSet(Class<?>... classes)
     {
         HashSet<Class<?>> classSet = new HashSet<>();
         for (Class<?> clazz : classes) {
             classSet.add(clazz);
         }
-        return classSet;
+        return Collections.unmodifiableSet(classSet);
     }
 
     /**

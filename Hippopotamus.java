@@ -1,4 +1,4 @@
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a hippopotamus. Hippopotamus will eat monkeys and plants,
@@ -17,9 +17,9 @@ public class Hippopotamus extends Animal
     // Individual characteristics (instance fields).
     
     // The food a hippopotamus will eat.
-    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Monkey.class, Plant.class);
+    private static final Set<Class<?>> FOOD_SOURCES = createClassSet(Monkey.class, Plant.class);
     // The classes a hippopotamus will kill
-    private static final HashSet<Class<?>> KILLABLE = createClassSet(Monkey.class, Plant.class, Bear.class);
+    private static final Set<Class<?>> KILLABLE = createClassSet(Monkey.class, Plant.class, Bear.class);
 
     /**
      * Create a hippopotamus. A hippopotamus can be created as a new born (age zero
@@ -43,20 +43,20 @@ public class Hippopotamus extends Animal
     /**
      * Returns the HashSet of allowed food for a hippopotamus to eat
      * 
-     * @return HashSet<Class<?>> of subclasses that a hippopotamus can eat
+     * @return Set<Class<?>> of subclasses that a hippopotamus can eat
      */
     @Override
-    protected HashSet<Class<?>> getFoodSources() {
+    protected Set<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
     
     /**
      * Returns the HashSet of allowed classes for a hippo to kill
      * 
-     * @return HashSet<Class<?>> of subclasses that a hippopotamus can kill
+     * @return Set<Class<?>> of subclasses that a hippopotamus can kill
      */
     @Override
-    protected HashSet<Class<?>> getKillable() {
+    protected Set<Class<?>> getKillable() {
         return KILLABLE;
     }
     

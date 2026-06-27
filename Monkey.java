@@ -1,4 +1,4 @@
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a monkey. Monkeys will eat plants.
@@ -15,9 +15,9 @@ public class Monkey extends Animal
     
     // Individual characteristics (instance fields).
     // The food a monkey will eat.
-    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
+    private static final Set<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
     // The classes a monkey will kill
-    private static final HashSet<Class<?>> KILLABLE = createClassSet(Plant.class);
+    private static final Set<Class<?>> KILLABLE = createClassSet(Plant.class);
 
     /**
      * Create a new monkey. A monkey may be created with age
@@ -41,20 +41,20 @@ public class Monkey extends Animal
     /**
      * Returns the HashSet of allowed food for a monkey to eat
      * 
-     * @return HashSet<Class<?>> of subclasses that a Monkey can eat
+     * @return Set<Class<?>> of subclasses that a Monkey can eat
      */
     @Override
-    protected HashSet<Class<?>> getFoodSources() {
+    protected Set<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
     
     /**
      * Returns the HashSet of allowed classes for a monkey to kill
      * 
-     * @return HashSet<Class<?>> of subclasses that a Monkey can kill
+     * @return Set<Class<?>> of subclasses that a Monkey can kill
      */
     @Override
-    protected HashSet<Class<?>> getKillable() {
+    protected Set<Class<?>> getKillable() {
         return KILLABLE;
     }
     

@@ -1,4 +1,4 @@
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a Sloth. Sloths will eat plants.
@@ -15,9 +15,9 @@ public class Sloth extends Animal implements Infectable
     
     // Individual characteristics (instance fields).
     // The food a sloth will eat.
-    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
+    private static final Set<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
     // The classes a sloth will kill
-    private static final HashSet<Class<?>> KILLABLE = createClassSet(Plant.class);
+    private static final Set<Class<?>> KILLABLE = createClassSet(Plant.class);
 
     /**
      * Create a new sloth. A sloth may be created with age
@@ -41,20 +41,20 @@ public class Sloth extends Animal implements Infectable
     /**
      * Returns the HashSet of allowed food for a sloth to eat
      * 
-     * @return HashSet<Class<?>> of subclasses that a Sloth can eat
+     * @return Set<Class<?>> of subclasses that a Sloth can eat
      */
     @Override
-    protected HashSet<Class<?>> getFoodSources() {
+    protected Set<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
     
     /**
      * Returns the HashSet of allowed classes for a sloth to eat
      * 
-     * @return HashSet<Class<?>> of subclasses that a sloth can kill
+     * @return Set<Class<?>> of subclasses that a sloth can kill
      */
     @Override
-    protected HashSet<Class<?>> getKillable() {
+    protected Set<Class<?>> getKillable() {
         return KILLABLE;
     }
     

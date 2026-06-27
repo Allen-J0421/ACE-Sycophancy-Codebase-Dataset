@@ -1,4 +1,4 @@
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a bear. Bears will eat monkeys,
@@ -17,9 +17,9 @@ public class Bear extends Animal implements Infectable
     // Individual characteristics (instance fields).
     
     // The food a bear will eat.
-    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Monkey.class);
+    private static final Set<Class<?>> FOOD_SOURCES = createClassSet(Monkey.class);
     // The classes a bear will kill
-    private static final HashSet<Class<?>> KILLABLE = createClassSet(Monkey.class, Plant.class);
+    private static final Set<Class<?>> KILLABLE = createClassSet(Monkey.class, Plant.class);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero
@@ -43,20 +43,20 @@ public class Bear extends Animal implements Infectable
     /**
      * Returns the allowed food for a bear to eat
      * 
-     * @return HashSet<Class<?>> of subclasses that a bear can eat
+     * @return Set<Class<?>> of subclasses that a bear can eat
      */
     @Override
-    protected HashSet<Class<?>> getFoodSources() {
+    protected Set<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
     
     /**
      * Returns the HashSet of allowed classes for a bear to kill
      * 
-     * @return HashSet<Class<?>> of subclasses that a bear can kill
+     * @return Set<Class<?>> of subclasses that a bear can kill
      */
     @Override
-    protected HashSet<Class<?>> getKillable() {
+    protected Set<Class<?>> getKillable() {
         return KILLABLE;
     }
     

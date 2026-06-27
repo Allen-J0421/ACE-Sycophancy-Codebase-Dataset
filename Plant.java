@@ -39,13 +39,6 @@ public class Plant extends Organism
         return IS_DIURNAL;
     }
     
-    public void act(Nursery nursery) {
-        incrementAge();
-        if(isAlive()) {
-            giveBirth(nursery);
-        }
-    }
-    
     /**
      * Returns breeding age of a plant
      * 

@@ -168,32 +168,23 @@ public abstract class Animal extends Organism
     // Functional methods
 
     /**
-     * Make this animal act for one step of the simulation: it ages, gets hungrier,
-     * possibly suffers from and spreads any infection, breeds and then moves towards
-     * food (dying of overcrowding if it cannot move). The infection hooks are no-ops
-     * by default and are overridden by infectable animals.
-     *
-     * @param nursery Collects any animals born during this step.
+     * Animals realise the shared {@link Organism#act} lifecycle by getting hungrier
+     * each step. The aging, infection, breeding and movement steps are supplied by
+     * the base lifecycle and the other hooks below.
      */
-    public void act(Nursery nursery)
+    @Override
+    protected void updateHealth()
     {
-        incrementAge();
         incrementHealth();
-        if (isAlive()) {
-            applyIllness();
-        }
-        if (isAlive()) {
-            attemptSpreadDisease();
-            giveBirth(nursery);
-            moveOrDie();
-        }
     }
 
     /**
-     * Move towards a source of food if one is adjacent, otherwise move to any free
-     * adjacent location. If the animal cannot move at all it dies of overcrowding.
+     * Animals move after breeding: towards a source of food if one is adjacent,
+     * otherwise to any free adjacent location, dying of overcrowding if they cannot
+     * move at all.
      */
-    protected void moveOrDie()
+    @Override
+    protected void move()
     {
         Location newLocation = findFood();
         if (newLocation == null) {
@@ -208,19 +199,6 @@ public abstract class Animal extends Organism
             setDead();
         }
     }
-
-    /**
-     * Hook applied while the animal is alive, before it acts, allowing infected
-     * animals to suffer the effects of illness. Does nothing for healthy species.
-     */
-    protected void applyIllness() { }
-
-    /**
-     * Hook applied while the animal is alive, before it breeds, allowing infectious
-     * animals to spread disease to their neighbours. Does nothing for non-infectious
-     * species.
-     */
-    protected void attemptSpreadDisease() { }
 
     /**
      * Checks if the animal can breed

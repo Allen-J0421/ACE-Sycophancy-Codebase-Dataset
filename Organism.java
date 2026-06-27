@@ -46,12 +46,53 @@ public abstract class Organism
     abstract protected boolean getIsDiurnal();
     
     /**
-    * Make this organism act - that is: make it do
-    * whatever it wants/needs to do.
-    * @param nursery Collects any organisms born during this step.
-    */
-    abstract public void act(Nursery nursery);
-    
+     * Make this organism act for one step of the simulation. This defines the
+     * lifecycle skeleton shared by every organism: it ages, updates its health,
+     * possibly suffers from and spreads any infection, breeds, and finally moves.
+     * The individual steps after aging are overridable hooks that default to doing
+     * nothing, so a plain organism (e.g. a plant) only ages and breeds, while
+     * animals layer in health, infection and movement.
+     *
+     * @param nursery Collects any organisms born during this step.
+     */
+    public void act(Nursery nursery)
+    {
+        incrementAge();
+        updateHealth();
+        if (isAlive()) {
+            applyIllness();
+        }
+        if (isAlive()) {
+            attemptSpreadDisease();
+            giveBirth(nursery);
+            move();
+        }
+    }
+
+    /**
+     * Lifecycle hook: update the organism's health for this step. Does nothing by
+     * default; animals override this to apply hunger.
+     */
+    protected void updateHealth() { }
+
+    /**
+     * Lifecycle hook applied while the organism is alive, before it acts. Does
+     * nothing by default; infectable animals override this to suffer illness.
+     */
+    protected void applyIllness() { }
+
+    /**
+     * Lifecycle hook applied while the organism is alive, before it breeds. Does
+     * nothing by default; infectious animals override this to spread disease.
+     */
+    protected void attemptSpreadDisease() { }
+
+    /**
+     * Lifecycle hook: move the organism after it has bred. Does nothing by default
+     * (e.g. plants are stationary); animals override this to hunt and relocate.
+     */
+    protected void move() { }
+
     /**
      * Abstract method that returns the max age of the organism
      * 

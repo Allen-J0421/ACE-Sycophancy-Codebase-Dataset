@@ -2,9 +2,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * A class representing shared movement, feeding, and breeding behavior for animals.
- *
- * @version 2022/03/02
+ * Shared movement, feeding, and breeding behavior for foraging animals.
  */
 public abstract class ForagingAnimal extends Animal
 {
@@ -13,33 +11,32 @@ public abstract class ForagingAnimal extends Animal
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
 
+    private final ForagingBehavior behavior;
     // The age of the animal.
     private int age;
     // The animal's food level.
     private int foodLevel;
 
-    public ForagingAnimal(Field field, Location location)
+    protected ForagingAnimal(ForagingBehavior behavior, boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        age = 0;
-        foodLevel = 0;
+        this.behavior = behavior;
+        initializeLife(randomAge);
     }
 
     /**
      * Initialize the shared age and hunger state for a concrete species.
      * @param randomAge Whether the animal should start at a random age.
-     * @param maxAge The exclusive upper bound for random age generation.
-     * @param foodValue The default food value for a newborn animal.
      */
-    protected final void initializeLife(boolean randomAge, int maxAge, int foodValue)
+    protected final void initializeLife(boolean randomAge)
     {
         if(randomAge) {
-            age = rand.nextInt(maxAge);
-            foodLevel = rand.nextInt(foodValue);
+            age = rand.nextInt(behavior.getMaxAge());
+            foodLevel = rand.nextInt(behavior.getFoodValue());
         }
         else {
             age = 0;
-            foodLevel = foodValue;
+            foodLevel = behavior.getFoodValue();
         }
     }
 
@@ -70,12 +67,11 @@ public abstract class ForagingAnimal extends Animal
 
     /**
      * Increase age and kill the animal if it has exceeded its maximum age.
-     * @param maxAge The maximum allowed age.
      */
-    protected final void incrementAge(int maxAge)
+    protected final void incrementAge()
     {
         age++;
-        if(age > maxAge) {
+        if(age > behavior.getMaxAge()) {
             setDead();
         }
     }
@@ -93,18 +89,15 @@ public abstract class ForagingAnimal extends Animal
 
     /**
      * Determine whether the animal is old enough to breed.
-     * @param breedingAge The minimum breeding age.
      * @return true if the animal is old enough to breed.
      */
-    protected final boolean isOldEnoughToBreed(int breedingAge)
+    protected final boolean isOldEnoughToBreed()
     {
-        return age >= breedingAge;
+        return age >= behavior.getBreedingAge();
     }
 
     /**
-     * Determine whether there is an opposite-sex animal of the given species nearby.
-     * @param species The animal type to search for.
-     * @param adjacentDistance The search radius.
+     * Determine whether there is an opposite-sex animal of the configured species nearby.
      * @return true if a mate is nearby.
      */
     protected final boolean hasOppositeSexMate(Class<? extends Animal> species, int adjacentDistance)
@@ -124,18 +117,25 @@ public abstract class ForagingAnimal extends Animal
     }
 
     /**
+     * Determine whether there is an opposite-sex animal of the configured species nearby.
+     * @return true if a mate is nearby.
+     */
+    public final boolean encounterWithDiffSex()
+    {
+        Class<? extends Animal> mateSpecies = behavior.getMateSpecies();
+        return hasOppositeSexMate(mateSpecies, behavior.getMateDistance());
+    }
+
+    /**
      * Search for prey, spread disease from infected nearby animals, and consume prey.
      * @param disease The disease model.
      * @param step The current simulation step.
-     * @param adjacentDistance Search radius.
-     * @param foodValue Food value to restore after eating.
-     * @param preyTypes The allowed prey classes.
      * @return The location of the prey if found, otherwise null.
      */
-    protected final Location searchForPrey(Disease disease, int step, int adjacentDistance, int foodValue, Class<?>... preyTypes)
+    public final Location search(Disease disease, int step)
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), adjacentDistance);
+        List<Location> adjacent = field.adjacentLocations(getLocation(), behavior.getSearchDistance());
         for(Location loc : adjacent) {
             Object creature = field.getObjectAt(loc);
             if(creature instanceof Animal) {
@@ -144,11 +144,11 @@ public abstract class ForagingAnimal extends Animal
                     makeInfected(disease, step);
                 }
             }
-            if(isOneOf(creature, preyTypes)) {
+            if(isOneOf(creature, behavior.getPreyTypes())) {
                 Creature prey = (Creature)creature;
                 if(prey.isAlive()) {
                     prey.setDead();
-                    setFoodLevel(foodValue);
+                    setFoodLevel(behavior.getFoodValue());
                     return loc;
                 }
             }
@@ -157,16 +157,15 @@ public abstract class ForagingAnimal extends Animal
     }
 
     /**
-     * Run the standard animal life-cycle shared by Cod, Salmon, Shark, and Whale.
+     * Run the standard animal life-cycle shared by foraging animals.
      * @param newCreatures A list to receive newborn creatures.
      * @param atDayTime true if current step is daytime false otherwise.
      * @param oxygenLevel The current oxygen level.
      * @param disease The disease model.
      * @param step The current simulation step.
-     * @param maxAge The maximum age for this species.
      * @return The oxygen delta for this action.
      */
-    protected final double standardAct(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step, int maxAge)
+    public final double act(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step)
     {
         if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED) {
             setDead();
@@ -178,7 +177,7 @@ public abstract class ForagingAnimal extends Animal
         }
 
         ifCanGrantImmunity(disease, step);
-        incrementAge(maxAge);
+        incrementAge();
         incrementHunger();
 
         if(isAlive() && !needSleep(atDayTime)) {
@@ -199,57 +198,6 @@ public abstract class ForagingAnimal extends Animal
     }
 
     /**
-     * Run the common animal act implementation.
-     */
-    public final double act(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {
-        return standardAct(newCreatures, atDayTime, oxygenLevel, disease, step, getMaxAge());
-    }
-
-    /**
-     * Create a new offspring at the given location.
-     * @param field The field where the offspring will live.
-     * @param location The offspring's location.
-     * @return The new creature.
-     */
-    protected abstract Creature createOffspring(Field field, Location location);
-
-    /**
-     * Determine whether this animal can currently breed.
-     * @return true if breeding is allowed.
-     */
-    protected abstract boolean canBreed();
-
-    /**
-     * @return The probability that breeding succeeds.
-     */
-    protected abstract double getBreedingProbability();
-
-    /**
-     * @return The maximum litter size.
-     */
-    protected abstract int getMaxLitterSize();
-
-    /**
-     * @return The maximum age for this species.
-     */
-    protected abstract int getMaxAge();
-
-    /**
-     * Subclasses must provide their prey search implementation through this hook.
-     * @param disease The disease model.
-     * @param step The current simulation step.
-     * @return The location of prey if found.
-     */
-    public abstract Location search(Disease disease, int step);
-
-    /**
-     * Every animal have different gender. and the implementation of this method is at its subclass.
-     *
-     */
-    public abstract boolean encounterWithDiffSex();
-
-    /**
      * identify whether a creature need to sleep
      *
      * @param atDayTime true if it is at day time false if it is at night time.
@@ -261,14 +209,22 @@ public abstract class ForagingAnimal extends Animal
     }
 
     /**
+     * Create a new offspring at the given location.
+     * @param field The field where the offspring will live.
+     * @param location The offspring's location.
+     * @return The new creature.
+     */
+    protected abstract Creature createOffspring(Field field, Location location);
+
+    /**
      * Create a birth if breeding conditions are met.
      * @return Number of offspring to create.
      */
     protected final int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-            births = rand.nextInt(getMaxLitterSize()) + 1;
+        if(canBreed() && rand.nextDouble() <= behavior.getBreedingProbability()) {
+            births = rand.nextInt(behavior.getMaxLitterSize()) + 1;
         }
         return births;
     }
@@ -285,6 +241,15 @@ public abstract class ForagingAnimal extends Animal
         for(int b = 0; b < births && free.size() > 0; b++) {
             newCreatures.add(createOffspring(field, free.remove(0)));
         }
+    }
+
+    /**
+     * Determine whether this animal can currently breed.
+     * @return true if breeding is allowed.
+     */
+    protected final boolean canBreed()
+    {
+        return isOldEnoughToBreed() && (!behavior.breedingRequiresMate() || encounterWithDiffSex());
     }
 
     /**

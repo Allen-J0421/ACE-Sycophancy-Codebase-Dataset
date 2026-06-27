@@ -8,68 +8,17 @@
  */
 public class Shark extends ForagingAnimal
 {
-    private static final int BREEDING_AGE = 6;
-    private static final int MAX_AGE = 150;
-    private static final double BREEDING_PROBABILITY = 0.4;
-    private static final int MAX_LITTER_SIZE = 8;
-    private static final int COD_FOOD_VALUE = 8;
+    private static final ForagingBehavior BEHAVIOR = new ForagingBehavior(
+        6, 150, 0.4, 8, 8, 1, Cod.class, 2, false, Cod.class, Salmon.class);
 
-    /**
-     * Create a shark.
-     *
-     * @param randomAge If true, the shark will have random age and hunger level.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
     public Shark(boolean randomAge, Field field, Location location)
     {
-        super(field, location);
-        initializeLife(randomAge, MAX_AGE, COD_FOOD_VALUE);
-    }
-
-    /**
-     * Look for Cod and Salmon adjacent to the current location.
-     */
-    public Location search(Disease disease, int step)
-    {
-        return searchForPrey(disease, step, 1, COD_FOOD_VALUE, Cod.class, Salmon.class);
-    }
-
-    /**
-     * Decide whether two sharks have different sex.
-     */
-    public boolean encounterWithDiffSex()
-    {
-        return hasOppositeSexMate(Cod.class, 2);
+        super(BEHAVIOR, randomAge, field, location);
     }
 
     @Override
     protected Creature createOffspring(Field field, Location location)
     {
         return new Shark(false, field, location);
-    }
-
-    @Override
-    protected boolean canBreed()
-    {
-        return isOldEnoughToBreed(BREEDING_AGE);
-    }
-
-    @Override
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-
-    @Override
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-
-    @Override
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
     }
 }

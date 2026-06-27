@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.List;
 import java.util.Iterator;
 
@@ -10,6 +11,8 @@ import java.util.Iterator;
  */
 public abstract class Organism implements Actor
 {
+    // Shared random source for organism breeding decisions.
+    private static final Random rand = Randomizer.getRandom();
     // Whether the organism is alive or not
     private boolean alive;
     // The organism's field
@@ -153,6 +156,39 @@ public abstract class Organism implements Actor
     protected void initializeOffspring(Organism offspring)
     {
         // Default is intentionally empty.
+    }
+
+    /**
+     * Determine whether this organism can breed during the current step.
+     * Subclasses define their own breeding condition.
+     *
+     * @return true if the organism can breed.
+     */
+    protected final boolean canBreed()
+    {
+        return meetsBreedingCondition();
+    }
+
+    /**
+     * Check the species-specific breeding condition.
+     *
+     * @return true if the organism satisfies its breeding condition.
+     */
+    protected abstract boolean meetsBreedingCondition();
+
+    /**
+     * Shared breeding helper used by subclasses.
+     *
+     * @param breedingProbability The chance of successful breeding when allowed.
+     * @param maxLitterSize The maximum number of offspring produced at once.
+     * @return The number of offspring to create.
+     */
+    protected final int breed(double breedingProbability, int maxLitterSize)
+    {
+        if (canBreed() && rand.nextDouble() <= breedingProbability) {
+            return rand.nextInt(maxLitterSize) + 1;
+        }
+        return 0;
     }
 
     /**

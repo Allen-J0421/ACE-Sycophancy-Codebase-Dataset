@@ -54,9 +54,10 @@ public abstract class Plant extends Organism
     }
 
     /**
-     * Determine whether this plant can currently breed.
+     * Determine whether this plant currently meets the breeding condition.
      */
-    private boolean canBreed()
+    @Override
+    protected boolean meetsBreedingCondition()
     {
         return getWaterLevel() >= getBreedingWaterThreshold();
     }
@@ -67,10 +68,7 @@ public abstract class Plant extends Organism
     @Override
     protected int breed()
     {
-        if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-            return rand.nextInt(getMaxLitterSize()) + 1;
-        }
-        return 0;
+        return breed(getBreedingProbability(), getMaxLitterSize());
     }
 
     /**

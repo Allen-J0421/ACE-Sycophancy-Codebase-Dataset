@@ -35,7 +35,7 @@ public abstract class InfectiousAnimal extends Animal implements Infectable
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Organism organism = field.getObjectAt(where);
+            Organism organism = (Organism) field.getOccupantAt(where);
             if (organism != null) {
                 if (organism instanceof Infectable && organism.isAlive()
                     && getRand().nextDouble() <= SPREAD_PROBABILITY) {

@@ -107,9 +107,9 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Define a color to be used for a given class of animal.
-     * @param animalClass The animal's Class object.
-     * @param color The color to be used for the given class.
+     * Define a color to be used for a given species.
+     * @param species The species to color.
+     * @param color The color to be used for the given species.
      */
     public void setColor(Species species, Color color)
     {
@@ -125,7 +125,7 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * @return The color to be used for a given class of animal.
+     * @return The color to be used for a given species.
      */
     private Color getColor(Species species)
     {
@@ -142,34 +142,30 @@ public class SimulatorView extends JFrame
     /**
      * Show the current status of the field.
      * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
+     * @param snapshot The field snapshot whose status is to be displayed.
      */
-    public void showStatus(int step, Field field)
+    public void showStatus(int step, FieldSnapshot snapshot)
     {
         if(!isVisible()) {
             setVisible(true);
         }
             
         stepLabel.setText(STEP_PREFIX + step);
-        stats.reset();
-        
         fieldView.preparePaint();
 
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Organism organism = field.getObjectAt(row, col);
-                if(organism != null) {
-                    stats.incrementCount(organism.getSpecies());
-                    fieldView.drawMark(col, row, getColor(organism.getSpecies()));
+        for(int row = 0; row < snapshot.getDepth(); row++) {
+            for(int col = 0; col < snapshot.getWidth(); col++) {
+                Species species = snapshot.getSpeciesAt(row, col);
+                if(species != null) {
+                    fieldView.drawMark(col, row, getColor(species));
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);
                 }
             }
         }
-        stats.countFinished();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(snapshot));
         fieldView.repaint();
     }
 
@@ -177,9 +173,9 @@ public class SimulatorView extends JFrame
      * Determine whether the simulation should continue to run.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field)
+    public boolean isViable(FieldSnapshot snapshot)
     {
-        return stats.isViable(field);
+        return stats.isViable(snapshot);
     }
     
     /**

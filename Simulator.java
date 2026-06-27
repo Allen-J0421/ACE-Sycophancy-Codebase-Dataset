@@ -128,7 +128,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && view.isViable(field.createSnapshot()); step++) {
             simulateOneStep();
             //delay(60);   // uncomment this to run more slowly
         }
@@ -162,7 +162,7 @@ public class Simulator
                    
         // Add the newly born organisms to the main lists.
         organisms.addAll(newOrganisms);
-        view.showStatus(step, field);
+        view.showStatus(step, field.createSnapshot());
     }
         
     /**
@@ -176,7 +176,7 @@ public class Simulator
         weather.resetWeather();
         
         // Show the starting state in the view.
-        view.showStatus(step, field);
+        view.showStatus(step, field.createSnapshot());
     }
     
     /**

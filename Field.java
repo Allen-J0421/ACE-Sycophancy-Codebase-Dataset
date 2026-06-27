@@ -1,4 +1,5 @@
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,8 +18,8 @@ public class Field
     
     // The depth and width of the field.
     private int depth, width;
-    // Storage for the organisms.
-    private Organism[][] field;
+    // Storage for the field occupants.
+    private FieldOccupant[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -29,7 +30,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Organism[depth][width];
+        field = new FieldOccupant[depth][width];
     }
     
     /**
@@ -61,9 +62,9 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Organism organism, int row, int col)
+    public void place(FieldOccupant occupant, int row, int col)
     {
-        place(organism, new Location(row, col));
+        place(occupant, new Location(row, col));
     }
     
     /**
@@ -73,28 +74,28 @@ public class Field
      * @param animal The animal to be placed.
      * @param location Where to place the animal.
      */
-    public void place(Organism organism, Location location)
+    public void place(FieldOccupant occupant, Location location)
     {
-        field[location.getRow()][location.getCol()] = organism;
+        field[location.getRow()][location.getCol()] = occupant;
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the occupant at the given location, if any.
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The occupant at the given location, or null if there is none.
      */
-    public Organism getObjectAt(Location location)
+    public FieldOccupant getOccupantAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getOccupantAt(location.getRow(), location.getCol());
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the occupant at the given location, if any.
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The occupant at the given location, or null if there is none.
      */
-    public Organism getObjectAt(int row, int col)
+    public FieldOccupant getOccupantAt(int row, int col)
     {
         return field[row][col];
     }
@@ -123,7 +124,7 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(getOccupantAt(next) == null) {
                 free.add(next);
             }
         }
@@ -201,5 +202,35 @@ public class Field
     public int getWidth()
     {
         return width;
+    }
+
+    /**
+     * Create an immutable snapshot of the current field state.
+     *
+     * @return A snapshot suitable for rendering and statistics.
+     */
+    public FieldSnapshot createSnapshot()
+    {
+        Species[][] occupantSpecies = new Species[depth][width];
+        EnumMap<Species, Integer> populationCounts = new EnumMap<>(Species.class);
+
+        for(int row = 0; row < depth; row++) {
+            for(int col = 0; col < width; col++) {
+                FieldOccupant occupant = field[row][col];
+                if(occupant != null) {
+                    Species species = occupant.getSpecies();
+                    occupantSpecies[row][col] = species;
+                    Integer currentCount = populationCounts.get(species);
+                    if(currentCount == null) {
+                        populationCounts.put(species, 1);
+                    }
+                    else {
+                        populationCounts.put(species, currentCount + 1);
+                    }
+                }
+            }
+        }
+
+        return new FieldSnapshot(depth, width, occupantSpecies, populationCounts);
     }
 }

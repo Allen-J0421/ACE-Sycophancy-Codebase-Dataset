@@ -88,7 +88,7 @@ public abstract class Animal extends Organism
             while (it.hasNext())
             {
                 Location where = it.next();
-                Organism organism = field.getObjectAt(where);
+                Organism organism = (Organism) field.getOccupantAt(where);
                 if (organism != null && organism.getSpecies() == getSpecies())
                 {
                     Animal animal = (Animal) organism;
@@ -110,7 +110,7 @@ public abstract class Animal extends Organism
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Organism target = field.getObjectAt(where);
+            Organism target = (Organism) field.getOccupantAt(where);
             if (target != null) {
                 if (attributes.getFoodSources().contains(target.getSpecies())
                     && target.isAlive()

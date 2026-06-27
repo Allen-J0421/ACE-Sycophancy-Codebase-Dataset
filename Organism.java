@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Organism
+public abstract class Organism implements FieldOccupant
 {
     // Shared lifecycle settings for this organism's species.
     private final OrganismAttributes attributes;

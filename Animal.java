@@ -20,6 +20,8 @@ public abstract class Animal extends Organism
     private double age;
     // Indicates whether the animal is sleeping or not
     private boolean sleeping;
+    // Determines where the animal moves each step; swappable per-species or at runtime.
+    private MovementStrategy movementStrategy;
     // Shared random number generator
     private static final Random rand = Randomizer.getRandom();
 
@@ -37,10 +39,21 @@ public abstract class Animal extends Organism
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
+        movementStrategy = new StandardMovementStrategy();
         if(!randomAge) {
             setAge(0);
             foodLevel = rand.nextInt(10) + 8;
         }
+    }
+
+    /**
+     * Replace the movement strategy used by this animal.
+     * Call from a subclass constructor to give a species a custom strategy.
+     * @param strategy The new movement strategy.
+     */
+    protected void setMovementStrategy(MovementStrategy strategy)
+    {
+        movementStrategy = strategy;
     }
 
     // --- Abstract methods each subclass must define ---
@@ -79,20 +92,7 @@ public abstract class Animal extends Organism
         incrementHunger();
         if(isAlive() && !sleeping) {
             giveBirth(newOrganisms);
-            Location newLocation = null;
-            if(getWaterLevel() < 3) {
-                newLocation = findWater();
-            }
-            if (newLocation == null && getFoodLevel() < 8) {
-                newLocation = findFood(getPrey());
-            }
-            if (newLocation == null) {
-                newLocation = findMate();
-            }
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
+            Location newLocation = movementStrategy.selectDestination(this);
             if(newLocation != null) {
                 setLocation(newLocation);
             }

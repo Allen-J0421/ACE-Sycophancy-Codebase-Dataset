@@ -142,25 +142,25 @@ public class Simulator
     {
         step++;
         randomWeather();
-        // Provide space for newborn animals.
-        List<Organism> newOrganisms = new ArrayList<>();        
-        // Let all rabbits act.
+        // Collect newborn organisms produced this step in a shared nursery.
+        Nursery nursery = new Nursery();
+        // Let all organisms act.
         for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
             Organism organism = it.next();
-            
+
             if (organism.getIsDiurnal() && step % 80 <= 55) {
-                organism.act(newOrganisms);
+                organism.act(nursery);
             }
             else if (!organism.getIsDiurnal() && step % 80 > 55) {
-                organism.act(newOrganisms);
+                organism.act(nursery);
             }
             if(! organism.isAlive()) {
                 it.remove();
             }
         }
-                   
-        // Add the newly born organisms to the main lists.
-        organisms.addAll(newOrganisms);
+
+        // Add the newly born organisms to the main population.
+        organisms.addAll(nursery.getNewborns());
         view.showStatus(step, field);
     }
         

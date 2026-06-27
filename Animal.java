@@ -173,9 +173,9 @@ public abstract class Animal extends Organism
      * food (dying of overcrowding if it cannot move). The infection hooks are no-ops
      * by default and are overridden by infectable animals.
      *
-     * @param newAnimals A list to receive newly born animals.
+     * @param nursery Collects any animals born during this step.
      */
-    public void act(List<Organism> newAnimals)
+    public void act(Nursery nursery)
     {
         incrementAge();
         incrementHealth();
@@ -184,7 +184,7 @@ public abstract class Animal extends Organism
         }
         if (isAlive()) {
             attemptSpreadDisease();
-            giveBirth(newAnimals);
+            giveBirth(nursery);
             moveOrDie();
         }
     }

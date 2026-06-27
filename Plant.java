@@ -39,10 +39,10 @@ public class Plant extends Organism
         return IS_DIURNAL;
     }
     
-    public void act(List<Organism> newOrganisms) {
+    public void act(Nursery nursery) {
         incrementAge();
         if(isAlive()) {
-            giveBirth(newOrganisms);
+            giveBirth(nursery);
         }
     }
     

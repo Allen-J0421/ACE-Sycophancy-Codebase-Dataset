@@ -48,9 +48,9 @@ public abstract class Organism
     /**
     * Make this organism act - that is: make it do
     * whatever it wants/needs to do.
-    * @param newOrganisms A list to receive newly born organisms.
+    * @param nursery Collects any organisms born during this step.
     */
-    abstract public void act(List<Organism> newOrganisms);
+    abstract public void act(Nursery nursery);
     
     /**
      * Abstract method that returns the max age of the organism
@@ -167,11 +167,12 @@ public abstract class Organism
     }
     
     /**
-     * Adds newborn organisms to a list
+     * Breeds this organism and registers any newborns with the shared nursery.
+     * @param nursery Collects the organisms born during this step.
      */
-    protected void giveBirth(List<Organism> newOrganisms)
+    protected void giveBirth(Nursery nursery)
     {
-        // New rabbits are born into adjacent locations.
+        // New organisms are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
@@ -179,7 +180,7 @@ public abstract class Organism
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             Organism young = createNewOrganism(false, field, loc);
-            newOrganisms.add(young);
+            nursery.register(young);
         }
     }
     

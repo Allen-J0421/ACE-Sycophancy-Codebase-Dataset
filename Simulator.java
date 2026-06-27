@@ -150,7 +150,7 @@ public class Simulator
     public void simulate(int numSteps)
     {
 
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && FieldStats.isViable(field); step++) {
             simulateOneStep();
         }
     }

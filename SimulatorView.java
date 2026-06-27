@@ -39,8 +39,6 @@ public class SimulatorView extends JFrame
     
     // A map for storing colors for participants in the simulation
     private final Map<Class<?>, Color> colors;
-    // A statistics object computing and storing simulation information
-    private final FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -49,7 +47,6 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
-        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Animal Ecosystem Simulation");
@@ -112,15 +109,12 @@ public class SimulatorView extends JFrame
         }
             
         stepLabel.setText(STEP_PREFIX + step);
-        stats.clear();
-        
         fieldView.preparePaint();
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 LivingBeing being = field.getLivingBeingAt(row, col);
                 if(being != null) {
-                    stats.record(being);
                     fieldView.drawMark(col, row, getColor(being.getClass()));
                 }
                 else {
@@ -128,19 +122,9 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        stats.markCurrent();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails());
+        population.setText(POPULATION_PREFIX + FieldStats.getPopulationDetails(field));
         fieldView.repaint();
-    }
-
-    /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
     }
     
     /**

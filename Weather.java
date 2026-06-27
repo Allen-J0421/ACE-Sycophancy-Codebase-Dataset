@@ -1,19 +1,20 @@
 import java.util.Random;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
- * Models behaviour of simple weather conditions in the simulation.
- * It can rain, be very hot or foggy, which in return affects how species behave.
+ * Models weather in the simulation.
+ * Each step, one weather condition may activate probabilistically.
+ * The per-actor effect is delegated entirely to the active WeatherCondition,
+ * eliminating the conditional logic that previously lived here.
  *
- * @version 2022.02.27
+ * @version 2022.03.01
  */
 public class Weather implements Actor
 {
     // Indicates whether new water sources need to be generated
     private boolean generateWater = false;
-    // The simulator
+    // The simulator (used to obtain the current step for duration loops)
     private Simulator simulator;
 
     /**
@@ -25,116 +26,61 @@ public class Weather implements Actor
     }
 
     /**
-     * Make the weather act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newActors A list to receive any species affected by the weather event
+     * Probabilistically select a weather condition and apply it to all actors.
+     * @param actorsList The current list of actors in the simulation.
      */
-    public void act(List<Actor> actorsList) {
-        Random rand = new Random();
+    public void act(List<Actor> actorsList)
+    {
+        WeatherCondition condition = selectCondition(new Random());
+        if(condition != null) {
+            applyCondition(condition, actorsList);
+            if(condition.generatesWater()) {
+                generateWater = true;
+            }
+        }
+    }
+
+    /**
+     * @return Whether or not the simulator should generate new water sources
+     * (set to true the first time rain occurs).
+     */
+    public boolean generateNewWater()
+    {
+        return generateWater;
+    }
+
+    /**
+     * Choose a WeatherCondition based on configured probabilities.
+     * Returns null when no condition triggers this step.
+     */
+    private WeatherCondition selectCondition(Random rand)
+    {
         if(rand.nextDouble() <= SimulationConfiguration.RAIN_PROBABILITY) {
-            generateWater = makeRain(actorsList);
+            return new RainCondition();
         }
         else if(rand.nextDouble() <= SimulationConfiguration.FOG_PROBABILITY) {
-            makeFog(actorsList);
+            return new FogCondition();
         }
         else if(rand.nextDouble() <= SimulationConfiguration.HEATWAVE_PROBABILITY) {
-            makeHeatWave(actorsList);
+            return new HeatwaveCondition();
         }
+        return null;
     }
 
     /**
-     * What happens when rain occurs.
-     * Water value for all objects are increased, which is the water value of rain.
-     * @param actorsList A list to receive any species affected by the weather event
+     * Apply a condition to every actor for its configured duration.
+     * Preserves the original iteration structure exactly.
      */
-    protected boolean makeRain(List<Actor> actorsList) {
+    private void applyCondition(WeatherCondition condition, List<Actor> actorsList)
+    {
         int current = simulator.getStep();
-        int stop = current + SimulationConfiguration.RAIN_DURATION;
+        int stop = current + condition.getDuration();
         while(current <= stop) {
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
-                Actor actor = it.next();
-                if(actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    plant.setWaterLevel(plant.getWaterLevel() + SimulationConfiguration.RAIN_WATER_BONUS);
-                }
-                else if(actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    animal.setWaterLevel(animal.getWaterLevel() + SimulationConfiguration.RAIN_WATER_BONUS);
-                }
-                else if(actor instanceof WaterSources) {
-                    WaterSources source = (WaterSources) actor;
-                    source.setVolume(source.getVolume() + SimulationConfiguration.RAIN_VOLUME_BONUS);
-                }
+                condition.applyEffect(it.next());
                 current++;
             }
         }
-        return true;
-    }
-
-    /**
-     * What happens when fog occurs.
-     * Water value for some objects are increased and animals cannot act normally.
-     * @param actorsList A list to receive any species affected by the weather event
-     */
-    protected void makeFog(List<Actor> actorsList) {
-        int current = simulator.getStep();
-        int stop = current + SimulationConfiguration.FOG_DURATION;
-        while(current <= stop) {
-            Iterator<Actor> it = actorsList.iterator();
-            while(it.hasNext()) {
-                Actor actor = it.next();
-                if(actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    plant.setWaterLevel(plant.getWaterLevel() + SimulationConfiguration.FOG_WATER_BONUS);
-                }
-                else if(actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    animal.setSleepStatus();
-                }
-                else if(actor instanceof WaterSources) {
-                    WaterSources source = (WaterSources) actor;
-                    source.setVolume(source.getVolume() + SimulationConfiguration.FOG_VOLUME_BONUS);
-                }
-                current++;
-            }
-        }
-    }
-
-    /**
-     * What happens when a heatwave occurs.
-     * Water value for all objects is divided to show impact of extreme heat.
-     * @param actorsList A list to receive any species affected by the weather event
-     */
-    protected void makeHeatWave(List<Actor> actorsList) {
-        int current = simulator.getStep();
-        int stop = current + SimulationConfiguration.HEATWAVE_DURATION;
-        while(current <= stop) {
-            Iterator<Actor> it = actorsList.iterator();
-            while(it.hasNext()) {
-                Actor actor = it.next();
-                if(actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    plant.setWaterLevel(plant.getWaterLevel() / SimulationConfiguration.HEATWAVE_WATER_DIVISOR);
-                }
-                else if(actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    animal.setWaterLevel(animal.getWaterLevel() / SimulationConfiguration.HEATWAVE_WATER_DIVISOR);
-                }
-                else if(actor instanceof WaterSources) {
-                    WaterSources source = (WaterSources) actor;
-                    source.setVolume(source.getVolume() / SimulationConfiguration.HEATWAVE_WATER_DIVISOR);
-                }
-                current++;
-            }
-        }
-    }
-
-    /**
-     * @return Whether or not the simulator should generate new water space
-     * (if it has just rained)
-     */
-    public boolean generateNewWater() {
-        return generateWater;
     }
 }

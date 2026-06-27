@@ -212,48 +212,7 @@ public class Simulator
         actors.add(weather);
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LAKE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lake lake = new Lake(true, field, location);
-                    actors.add(lake);
-                    // creates lakes over an area of 9 grid spaces
-                    List<Location> adjacent = field.adjacentLocations(location);
-                    for (int i = 0; i<adjacent.size(); i++) {
-                        Lake lake2 = new Lake(true, field, adjacent.get(i));
-                        actors.add(lake2);
-                    }
-                }
-                else if(rand.nextDouble() <= HYENA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Hyena hyena = new Hyena(true, field, location);
-                    actors.add(hyena);
-                }
-                else if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(true, field, location);
-                    actors.add(lion);
-                }
-                else if(rand.nextDouble() <= GAZELLE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Gazelle gazelle= new Gazelle(true, field, location);
-                    actors.add(gazelle);
-                }
-                else if(rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Mouse mouse= new Mouse(true, field, location);
-                    actors.add(mouse);
-                }
-                else if(rand.nextDouble() <= FENNECFOX_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    FennecFox fennecFox= new FennecFox(true, field, location);
-                    actors.add(fennecFox);
-                }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(true, field, location);
-                    actors.add(grass);
-                }
-                // else leave the location empty.
+                populateCell(rand, row, col);
             }
         }
     }
@@ -290,17 +249,57 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 // if there is an empty space, chance of creating a new water source
                 if (rand.nextDouble() < LAKE_CREATION_PROBABILITY/120) {
-                    Location location = new Location(row, col);
-                    Lake lake = new Lake(true, field, location);
-                    actors.add(lake);
-                    List<Location> adjacent = field.adjacentLocations(location);
-                    for (int i = 0; i<adjacent.size(); i++) {
-                        if (rand.nextBoolean()) {
-                            Lake lake2 = new Lake(true, field, adjacent.get(i));
-                            actors.add(lake2);
-                        }
-                    }
+                    addLakeCluster(new Location(row, col), rand, true);
                 }
+            }
+        }
+    }
+
+    /**
+     * Populate one field cell according to the configured probabilities.
+     * @param rand Shared random source.
+     * @param row The row to populate.
+     * @param col The column to populate.
+     */
+    private void populateCell(Random rand, int row, int col)
+    {
+        Location location = new Location(row, col);
+        if(rand.nextDouble() <= LAKE_CREATION_PROBABILITY) {
+            addLakeCluster(location, rand, false);
+        }
+        else if(rand.nextDouble() <= HYENA_CREATION_PROBABILITY) {
+            actors.add(new Hyena(true, field, location));
+        }
+        else if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
+            actors.add(new Lion(true, field, location));
+        }
+        else if(rand.nextDouble() <= GAZELLE_CREATION_PROBABILITY) {
+            actors.add(new Gazelle(true, field, location));
+        }
+        else if(rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
+            actors.add(new Mouse(true, field, location));
+        }
+        else if(rand.nextDouble() <= FENNECFOX_CREATION_PROBABILITY) {
+            actors.add(new FennecFox(true, field, location));
+        }
+        else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
+            actors.add(new Grass(true, field, location));
+        }
+    }
+
+    /**
+     * Create a lake and optionally extend it to adjacent locations.
+     * @param location The origin location.
+     * @param rand Shared random source.
+     * @param sparse Whether adjacent lake tiles should be created probabilistically.
+     */
+    private void addLakeCluster(Location location, Random rand, boolean sparse)
+    {
+        actors.add(new Lake(true, field, location));
+        List<Location> adjacent = field.adjacentLocations(location);
+        for (Location adjacentLocation : adjacent) {
+            if (!sparse || rand.nextBoolean()) {
+                actors.add(new Lake(true, field, adjacentLocation));
             }
         }
     }

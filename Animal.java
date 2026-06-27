@@ -9,6 +9,8 @@ import java.util.Random;
  */
 public abstract class Animal extends Organism
 {
+    // Shared random source for animal lifecycle decisions.
+    private static final Random rand = Randomizer.getRandom();
     // The level of food an animal has consumed, increases when it eats
     private int foodLevel;
     // Indicates whether an animal can give birth or not
@@ -31,7 +33,6 @@ public abstract class Animal extends Organism
     {
         super(randomAge, field, location);
         nocturnal = false;
-        Random rand = Randomizer.getRandom();
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
@@ -57,7 +58,7 @@ public abstract class Animal extends Organism
             if(getWaterLevel() < 3) {
                 newLocation = findWater();
             }
-            if (newLocation == null && getFoodLevel() < 8 && Randomizer.getRandom().nextDouble() <= getHuntProbability()) {
+            if (newLocation == null && getFoodLevel() < 8 && rand.nextDouble() <= getHuntProbability()) {
                 newLocation = findFood(getPrey());
             }
             if (newLocation == null) {
@@ -88,25 +89,24 @@ public abstract class Animal extends Organism
      * 
      * @return The location of a potential mate if found, null if not
      */
-    public Location findMate() 
+    protected Location findMate() 
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal != null && animal.getClass().equals(this.getClass())) {
-                Animal mate = (Animal) animal;
-                if (isFemale() != mate.isFemale()) {
-                    Location freeLocation = field.freeAdjacentLocation(where);
-                    if (freeLocation != null) {
-                        return freeLocation;
-                    }
-                }
-            }
+        if (hasCompatibleMateAdjacent()) {
+            return getField().freeAdjacentLocation(getLocation());
         }
         return null;
+    }
+
+    /**
+     * Increase the age and kill the animal when it exceeds its lifespan.
+     */
+    @Override
+    public void incrementAge()
+    {
+        super.incrementAge();
+        if (getAge() > getMaxAge()) {
+            setDead();
+        }
     }
     
     /**
@@ -142,7 +142,7 @@ public abstract class Animal extends Organism
     /**
      * Make the animal more hungry. This could result in the animal's death.
      */
-    public void incrementHunger()
+    private void incrementHunger()
     {
         foodLevel--;
         if(foodLevel <= 0) {
@@ -158,23 +158,37 @@ public abstract class Animal extends Organism
      */
     protected List<Location> giveBirth(List<Actor> newAnimals)
     {
-        // New animals are born into adjacent locations.
-        // Get a list of adjacent free locations.
+        int births = breed();
+        if (births <= 0) {
+            return null;
+        }
+
+        List<Location> free = getBirthLocations();
+        if (free == null) {
+            return null;
+        }
+
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            // can only breed if next to an animal of opposite sex
-            if(animal != null && this.getClass().equals(animal.getClass())) {
-                Animal mate = (Animal) animal;
-                if (isFemale() != mate.isFemale()) {
-                    return free;
-                }
+        for(int b = 0; b < births && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            Animal young = createOffspring(field, loc);
+            if (this.isInfected()) {
+                young.setInfected();
             }
-        }    
+            newAnimals.add(young);
+        }
+        return null;
+    }
+
+    /**
+     * Find free adjacent locations for births if a compatible mate is nearby.
+     * @return The free locations available for offspring, or null if breeding is not possible.
+     */
+    protected List<Location> getBirthLocations()
+    {
+        if (hasCompatibleMateAdjacent()) {
+            return getField().getFreeAdjacentLocations(getLocation());
+        }
         return null;
     }
     
@@ -205,7 +219,7 @@ public abstract class Animal extends Organism
     /** 
      * @return True if this animal is a female, capable of breeding
      */
-    public void setNocturnal()
+    protected void setNocturnal()
     {
         nocturnal = true;
     }
@@ -221,7 +235,7 @@ public abstract class Animal extends Organism
     /**
      * Sets the sleeping boolean variable to the opposite state it currently has.
      */
-    public void setSleepStatus(){
+    protected void setSleepStatus(){
         sleeping = ! sleeping;
     }
     
@@ -236,5 +250,73 @@ public abstract class Animal extends Organism
     protected double getHuntProbability()
     {
         return 1.0;
+    }
+
+    /**
+     * @return The age at which this animal can breed.
+     */
+    protected abstract int getBreedingAge();
+
+    /**
+     * @return The maximum age this animal can reach.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * @return The chance this animal successfully breeds when it can breed.
+     */
+    protected abstract double getBreedingProbability();
+
+    /**
+     * @return The maximum litter size for this animal.
+     */
+    protected abstract int getMaxLitterSize();
+
+    /**
+     * Create a new offspring of the current species.
+     * @param field The field the offspring should occupy.
+     * @param location The offspring's location.
+     * @return A new instance of the same species.
+     */
+    protected abstract Animal createOffspring(Field field, Location location);
+
+    /**
+     * Determine whether this animal can currently breed.
+     */
+    private boolean canBreed()
+    {
+        return isFemale() && getAge() >= getBreedingAge();
+    }
+
+    /**
+     * Generate the number of offspring produced by this animal.
+     */
+    private int breed()
+    {
+        if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            return rand.nextInt(getMaxLitterSize()) + 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Determine whether there is a compatible mate adjacent to this animal.
+     */
+    private boolean hasCompatibleMateAdjacent()
+    {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if(animal != null && animal.getClass().equals(this.getClass())) {
+                Animal mate = (Animal) animal;
+                if (isFemale() != mate.isFemale()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

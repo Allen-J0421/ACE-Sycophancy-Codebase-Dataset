@@ -47,9 +47,6 @@ public class Simulator
         new PopulationRule(PLANT_CREATION_PROBABILITY, Plant::new,
                            Species.PLANT, Color.GREEN)
     };
-    // A shared Weather object between organisms and the simulator
-    public static final Weather weather = Weather.getWeather();
-
 
     // List of animals in the field.
     private List<Organism> organisms;
@@ -59,6 +56,8 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulatorView view;
+    // Centralized engine for weather and time-of-day event rules.
+    private SimulationRulesEngine rules;
     
     /**
      * Construct a simulation field with default size.
@@ -84,9 +83,10 @@ public class Simulator
         
         organisms = new ArrayList<>();
         field = new Field(depth, width);
+        rules = new SimulationRulesEngine();
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, step);
+        view = new SimulatorView(depth, width, rules);
         for(PopulationRule rule : PRIMARY_POPULATION_RULES) {
             view.setColor(rule.getSpecies(), rule.getColor());
         }
@@ -142,17 +142,14 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        randomWeather();
+        rules.applyStepEvents(step);
         // Provide space for newborn animals.
         List<Organism> newOrganisms = new ArrayList<>();        
         // Let all rabbits act.
         for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
             Organism organism = it.next();
             
-            if (organism.isDiurnal() && step % 80 <= 55) {
-                organism.act(newOrganisms);
-            }
-            else if (!organism.isDiurnal() && step % 80 > 55) {
+            if (rules.canAct(organism, step)) {
                 organism.act(newOrganisms);
             }
             if(! organism.isAlive()) {
@@ -173,7 +170,7 @@ public class Simulator
         step = 0;
         organisms.clear();
         populate();
-        weather.resetWeather();
+        rules.reset();
         
         // Show the starting state in the view.
         view.showStatus(step, field.createSnapshot());
@@ -207,15 +204,6 @@ public class Simulator
         }
     }
     
-    /**
-     * Randomises the weather
-     */
-    public void randomWeather() {
-        if (step % 450 == 0) {
-            weather.changeWeather();
-        }
-    }
-
     /**
      * Populate one location by selecting the first species whose creation
      * probability passes. Each cell can contain at most one organism.

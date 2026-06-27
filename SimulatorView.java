@@ -27,27 +27,24 @@ public class SimulatorView extends JFrame
     private final String POPULATION_PREFIX = "Population: ";
     private JLabel stepLabel, population, infoLabel;
     private FieldView fieldView;
-    private int step;
     
     // A map for storing colors for participants in the simulation
     private Map<Species, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
-    
-    public static final Weather weather = Weather.getWeather();
+    private final SimulationRulesEngine rules;
 
     /**
      * Create a view of the given width and height.
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width, int steps)
+    public SimulatorView(int height, int width, SimulationRulesEngine rules)
     {
-        stats = new FieldStats(steps);
+        this.rules = rules;
+        stats = new FieldStats(rules);
         colors = new LinkedHashMap<>();
-        
-        step = steps;
-        
+
         setTitle("Animal Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
@@ -93,17 +90,17 @@ public class SimulatorView extends JFrame
     
     private void SunnyButton()
     {
-        weather.setWeather("Sunny");
+        rules.setWeather("Sunny");
     }
     
     private void RainyButton()
     {
-        weather.setWeather("Rainy");
+        rules.setWeather("Rainy");
     }
     
     private void FoggyButton()
     {
-        weather.setWeather("Foggy");
+        rules.setWeather("Foggy");
     }
     
     /**
@@ -165,7 +162,7 @@ public class SimulatorView extends JFrame
             }
         }
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(snapshot));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(snapshot, step));
         fieldView.repaint();
     }
 

@@ -5,26 +5,22 @@
  */
 public class FieldStats
 {
-    // A shared weather object between the organisms and the simulator
-    public static final Weather weather = Weather.getWeather();
-    // The step of the simulation
-    private int step;
+    private final SimulationRulesEngine rules;
 
     /**
      * Construct a FieldStats object.
      */
-    public FieldStats(int steps)
+    public FieldStats(SimulationRulesEngine rules)
     {
-        step = steps;
+        this.rules = rules;
     }
 
     /**
      * Get details of what is in the current snapshot.
      * @return A string describing the visible field state.
      */
-    public String getPopulationDetails(FieldSnapshot snapshot)
+    public String getPopulationDetails(FieldSnapshot snapshot, int step)
     {
-        ++step;
         StringBuffer buffer = new StringBuffer();
         for(Species species : snapshot.getPresentSpecies()) {
             buffer.append(species.getDisplayName());
@@ -32,18 +28,9 @@ public class FieldStats
             buffer.append(snapshot.getPopulationCount(species));
             buffer.append(' ');
         }
-        buffer.append("Weather: " + weather.getCurrentWeather());
-        buffer.append(" Time: " + getTimeOfDay());
+        buffer.append("Weather: " + rules.getCurrentWeather());
+        buffer.append(" Time: " + rules.getTimeOfDay(step).getDisplayName());
         return buffer.toString();
-    }
-    
-    private String getTimeOfDay()
-    {
-        if(step % 80<=55)
-        {
-            return "Day";
-        }
-        return "Night";
     }
     
     /**

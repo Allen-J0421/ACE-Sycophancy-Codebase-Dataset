@@ -2,7 +2,6 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -78,13 +77,6 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-
-        view.setColor(Cod.class, Color.ORANGE);
-        view.setColor(Salmon.class, Color.YELLOW);
-        view.setColor(Seaweed.class, Color.RED);
-        view.setColor(Shark.class, Color.BLACK);
-        view.setColor(Whale.class, Color.PINK);
-        view.setColor(Weather.class, Color.BLUE);
 
         // Setup a valid starting point.
         reset();

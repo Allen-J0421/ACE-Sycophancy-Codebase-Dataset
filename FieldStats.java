@@ -1,9 +1,9 @@
-import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This class collects and provides some statistical data on the state 
- * of a field. It is flexible: it will create and maintain a counter 
+ * This class collects and provides some statistical data on the state
+ * of a field. It is flexible: it will create and maintain a counter
  * for any class of object that is found within the field.
  *
  * @version 27.02.22
@@ -11,10 +11,9 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private HashMap<Class<?>, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
-    private Time time; 
 
     /**
      * Construct a FieldStats object.
@@ -37,8 +36,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             buffer.append(info.getName());
             buffer.append(": ");
             buffer.append(info.getCount());
@@ -54,8 +52,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -97,8 +94,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             if(info.getCount() > 0) {
                 nonZero++;
             }

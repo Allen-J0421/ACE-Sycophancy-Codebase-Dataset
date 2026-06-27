@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public class Disease
 {
-    private String name;
-    private boolean spreadByBirth;
-    private boolean spreadByEating;
+    private final String name;
+    private final boolean spreadByBirth;
+    private final boolean spreadByEating;
     // actor class mapped to disease severity multiplier (0.0 = fatal, 1.0 = carrier only)
     private Map<Class<? extends Actor>, Double> actorsAffected;
     // actor class mapped to probability of starting with this disease

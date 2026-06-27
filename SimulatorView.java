@@ -89,14 +89,7 @@ public class SimulatorView extends JFrame
     public void setNight(boolean night)
     {
         this.night = night;
-    }
-
-    /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
+        infoLabel.setText(night ? "Night" : "Day");
     }
 
     /**
@@ -119,7 +112,7 @@ public class SimulatorView extends JFrame
         }
             
         stepLabel.setText(STEP_PREFIX + step);
-        stats.reset();
+        stats.clear();
         
         fieldView.preparePaint();
 
@@ -135,7 +128,7 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        stats.countFinished();
+        stats.markCurrent();
 
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails());
         fieldView.repaint();

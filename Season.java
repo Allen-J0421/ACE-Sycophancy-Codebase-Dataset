@@ -4,13 +4,13 @@
  *
  * @version 2022.02.16
  */
-public class  Season
+public class Season
 {
     private final String name;
     private int aveTemperature;
     private final int tempChange;
-    // store the current temperature of this season
-    private Thermometer currentTemp;
+    // current temperature drifts around aveTemperature each step within ±tempChange
+    private int currentTemp;
 
     /**
      * Initialise the Season object
@@ -24,8 +24,7 @@ public class  Season
         this.name = name;
         this.aveTemperature = aveTemperature;
         this.tempChange = tempChange;
-
-        currentTemp = new Thermometer(aveTemperature);
+        this.currentTemp = aveTemperature;
     }
 
     /**
@@ -79,11 +78,20 @@ public class  Season
     }
 
     /**
-     * @return (Thermometer) A reference to the Thermometer object of this season
+     * @return (int) The current temperature for this season
      */
-    public Thermometer getCurrentTemp()
+    public int getCurrentTemperature()
     {
         return currentTemp;
     }
 
+    /**
+     * Shift the current temperature by the given amount.
+     *
+     * @param inc (int) degrees to add (negative to decrease)
+     */
+    public void incrementCurrentTemperature(int inc)
+    {
+        currentTemp += inc;
+    }
 }

@@ -21,13 +21,13 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
     // Prefix preceding the step count.
-    private final String STEP_PREFIX = "Step: ";
+    private static final String STEP_PREFIX = "Step: ";
     // Prefix preceding the current time display.
-    private final String TIME_PREFIX = "Time: ";
+    private static final String TIME_PREFIX = "Time: ";
     // Prefix preceding the current temperature display.
-    private final String TEMPERATURE_PREFIX = "Temperature: ";
+    private static final String TEMPERATURE_PREFIX = "Temperature: ";
     // Prefix preceding the current season display.
-    private final String SEASON_PREFIX = "Season: ";
+    private static final String SEASON_PREFIX = "Season: ";
     // JLabels for all the previously mentioned information displays.
     private JLabel stepLabel, infoLabel, timeLabel, temperatureLabel, seasonLabel;
     // Container to show population data.
@@ -72,8 +72,8 @@ public class SimulatorView extends JFrame
         fieldView = new FieldView(height, width);
 
         // BUILDS THE VIEW
-        JFrame frame = new JFrame("Ultimate Simulator 3000");
-        frame.setMinimumSize(new Dimension(800, 600));
+        setTitle("Ultimate Simulator 3000");
+        setMinimumSize(new Dimension(800, 600));
 
         // Information display on habitat conditions and step counter.
         FlowLayout simInfo = new FlowLayout();
@@ -194,11 +194,10 @@ public class SimulatorView extends JFrame
         {
             for(int col = 0; col < field.getWidth(); col++)
             {
-                Object specie = field.getObjectAt(row, col);
+                Species specie = field.getObjectAt(row, col);
                 if(specie != null) {
-                    Species speciesObjects = (Species) specie;
-                    stats.incrementCount(speciesObjects.getName());
-                    fieldView.drawMark(col, row, getColor(speciesObjects.getName()));
+                    stats.incrementCount(specie.getName());
+                    fieldView.drawMark(col, row, getColor(specie.getName()));
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);
@@ -225,17 +224,13 @@ public class SimulatorView extends JFrame
             int count = stats.getCount(speciesName);
             
             Box speciesDetails = Box.createHorizontalBox();
-            population.add(speciesDetails);
             JPanel colorDisplay = new JPanel();
             colorDisplay.setMaximumSize(new Dimension(10, 10));
             colorDisplay.setBorder(LineBorder.createGrayLineBorder());
             colorDisplay.setBackground(colors.get(speciesName));
-            // The pre-leading space should be improved as it is just a way to add a
-            // natural looking padding between the colored square and text.
             JLabel nameAndCount = new JLabel(" " + speciesName + ": " + count);
             speciesDetails.add(colorDisplay);
             speciesDetails.add(nameAndCount);
-
             population.add(speciesDetails);
         }
     }

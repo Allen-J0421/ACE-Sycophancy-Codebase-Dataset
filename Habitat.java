@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
 /**
  * Represent a habitat of the simulation.
  * Keep track of its seasons and temperature.
@@ -61,7 +62,7 @@ public class Habitat
      */
     public int getCurrentTemperature()
     {
-        return currentSeason.getCurrentTemp().getTemperature();
+        return currentSeason.getCurrentTemperature();
     }
 
     /**
@@ -175,15 +176,14 @@ public class Habitat
     {
         int randomize = rand.nextInt(2);
         int change = rand.nextInt(currentSeason.getTempChange() + 1);
-        Thermometer currentTemp = currentSeason.getCurrentTemp();
 
         // make sure that the temperature doesn't go beyond the temperature upper limit
         if (randomize == 0 && (getCurrentTemperature() + change) <= currentSeason.getUpperLimitTemp()) {
-            currentTemp.incrementTemperature(change);
+            currentSeason.incrementCurrentTemperature(change);
         }
         // make sure that the temperature doesn't go below the temperature lower limit
-        else if(randomize == 1 && (getCurrentTemperature() - change) >= currentSeason.getLowerLimitTemp()) {
-            currentTemp.incrementTemperature(- change);
+        else if (randomize == 1 && (getCurrentTemperature() - change) >= currentSeason.getLowerLimitTemp()) {
+            currentSeason.incrementCurrentTemperature(-change);
         }
     }
 

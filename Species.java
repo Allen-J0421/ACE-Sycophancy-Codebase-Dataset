@@ -134,7 +134,7 @@ public abstract class Species
     protected boolean survivesTemperature(int temperature)
     {
         if (temperature > maximumTemperature || temperature < minimumTemperature) {
-            return rand.nextDouble() <= DYING_OF_COLD_OR_HEAT_PROBABILITY;
+            return rand.nextDouble() > DYING_OF_COLD_OR_HEAT_PROBABILITY;
         }
         return true;
     }

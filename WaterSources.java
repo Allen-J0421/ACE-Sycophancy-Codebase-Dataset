@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  *  A class representing shared characteristics of water sources.
@@ -12,10 +11,6 @@ public abstract class WaterSources extends FieldOccupant implements Actor
     private boolean isEmpty;
     // The volume of the water source, increases whenever it rains and decreases when water is drunk or taken from it.
     private int volumeLevel;
-    // Whether the water source is infected with a disease or not.
-    private boolean infected;
-    // A list of what diseases the water is infected by.
-    private List diseases;
 
     /**
      * Create a new water source at location in field.
@@ -30,7 +25,6 @@ public abstract class WaterSources extends FieldOccupant implements Actor
             setVolume(10);
         }
         isEmpty = false;
-        diseases = new ArrayList<>();
     }
 
     /**
@@ -44,34 +38,27 @@ public abstract class WaterSources extends FieldOccupant implements Actor
     }
 
     /**
-     * Infects the water source with a disease
-     * (to spread to animals that drink from it)
+     * When a water source's infection runs its course it is cured, since
+     * infection does not last forever in water.
      */
-    protected void setInfected() {
-        infected = true;
-    }
-
-    /** 
-     * Infection does not last forever in water, removes disease after
-     * a certain duration
-     */
-    protected void notInfected() {
-        infected = false;
+    protected void expireInfection() {
+        notInfected();
     }
 
     /**
-     * @return Whether the water source is infected with a disease or not.
+     * @return Whether this water source still holds water, and so can carry
+     *         and spread a disease.
      */
-    protected boolean isInfected(){
-        return infected;
+    protected boolean isActive() {
+        return !isEmpty();
     }
 
-    /** 
+    /**
      * @return Whether there is water in the water source or not
      */
-    public boolean isEmpty() 
+    public boolean isEmpty()
     {
-        return isEmpty;    
+        return isEmpty;
     }
 
     /**

@@ -117,16 +117,10 @@ public class SimulatorView extends JFrame
                 // If there is something in the grid space, draw it with correct colour
                 if(thing!= null) {
                     fieldView.drawMark(col, row, getColor(thing.getClass()));
-                    // Check whether it is an organism and if it is infected
-                    if (thing instanceof Organism) {
-                        Organism organism = (Organism) thing;
-                        if (organism.isInfected()) {
-                            fieldView.markDisease(col, row, Color.black);
-                        }
-                    }
-                    else if (thing instanceof WaterSources) {
-                        WaterSources water = (WaterSources) thing;
-                        if (water.isInfected()) {
+                    // Anything on the grid is a FieldOccupant; mark it if infected.
+                    if (thing instanceof FieldOccupant) {
+                        FieldOccupant occupant = (FieldOccupant) thing;
+                        if (occupant.isInfected()) {
                             fieldView.markDisease(col, row, Color.black);
                         }
                     }

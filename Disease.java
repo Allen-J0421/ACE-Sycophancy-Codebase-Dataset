@@ -57,17 +57,10 @@ public abstract class Disease implements Actor
             Actor infected = it.next();
             newInfections.addAll(spread(infected));
             if (affected.get(infected) == duration) {
-                // After certain number of days, infected individual 
-                // dies (animal)/ is cured (water)
+                // After the full duration the infection runs its course:
+                // organisms die, water sources are cured (handled per type).
                 it.remove();
-                if (infected instanceof Organism) {
-                    Organism organism = (Organism) infected;
-                    organism.setDead();
-                    }
-                else {
-                    WaterSources water = (WaterSources) infected;
-                    water.notInfected();
-                }
+                ((FieldOccupant) infected).expireInfection();
             }
             else {
                 // Increases the number of days an individual has been infected by 1
@@ -76,17 +69,9 @@ public abstract class Disease implements Actor
             }
         }
         for (Actor infectee: newInfections) {
-            // adds any newly infected individuals to the list and sets days infected to 0
-            if (infectee instanceof Organism) {
-                Organism organism = (Organism) infectee;
-                organism.setInfected();
-                affected.put(organism, 0);  
-            }
-            else if (infectee instanceof WaterSources)  {
-                WaterSources water = (WaterSources) infectee;
-                water.setInfected();
-                affected.put(water, 0);  
-            }
+            // mark each newly infected occupant and start its infection clock
+            ((FieldOccupant) infectee).setInfected();
+            affected.put(infectee, 0);
         }
     }
     
@@ -99,17 +84,11 @@ public abstract class Disease implements Actor
     public ArrayList<Actor> spread(Actor actor) {
         ArrayList<Actor> newlyInfected = new ArrayList<>();
         List<Location> adjacent = null;
-        // looks at surrounding individuals and chance of infecting them if possible
-        try {
-            Organism organism = (Organism) actor;
-            if (organism.isAlive()) {
-                adjacent = field.adjacentLocations(organism.getLocation());
-            }
-        } catch (Exception e) {
-            WaterSources water = (WaterSources) actor;
-            if (!water.isEmpty()) {
-                adjacent = field.adjacentLocations(water.getLocation());
-            }
+        // Only an active carrier (a living organism / a non-empty water
+        // source) can spread the disease to its neighbours.
+        FieldOccupant carrier = (FieldOccupant) actor;
+        if (carrier.isActive()) {
+            adjacent = field.adjacentLocations(carrier.getLocation());
         }
         if(adjacent != null) {
             Iterator<Location> it = adjacent.iterator();
@@ -118,14 +97,7 @@ public abstract class Disease implements Actor
                 Object thing = field.getObjectAt(where);
                 if (thing != null && affectedSpecies.contains(thing.getClass().getName())) {
                     if (rand.nextDouble() < infectiousness) {
-                        if (thing instanceof Organism) {
-                            Organism infectee = (Organism) thing;
-                            newlyInfected.add(infectee);
-                        }
-                        else if (thing instanceof WaterSources) {
-                            WaterSources infectee = (WaterSources) thing;
-                            newlyInfected.add(infectee);
-                        }
+                        newlyInfected.add((Actor) thing);
                     }
                 }
             }

@@ -2,8 +2,8 @@
  * Base class for anything that occupies a single cell of a Field.
  *
  * Centralises the field + location bookkeeping - placing, moving and
- * clearing - that was previously duplicated, verbatim, by both Organism
- * and WaterSources.
+ * clearing - and the disease-infection state that were previously
+ * duplicated, verbatim, by both Organism and WaterSources.
  *
  * @version 2022.03.01
  */
@@ -13,6 +13,8 @@ public abstract class FieldOccupant
     private Field field;
     // This occupant's position within the field.
     private Location location;
+    // Whether this occupant is currently infected with a disease.
+    private boolean infected;
 
     /**
      * Place a new occupant into the given field at the given location.
@@ -73,4 +75,41 @@ public abstract class FieldOccupant
         }
         return false;
     }
+
+    /**
+     * Mark this occupant as infected with a disease.
+     */
+    protected void setInfected()
+    {
+        infected = true;
+    }
+
+    /**
+     * Clear this occupant's infection.
+     */
+    protected void notInfected()
+    {
+        infected = false;
+    }
+
+    /**
+     * @return Whether this occupant is currently infected with a disease.
+     */
+    protected boolean isInfected()
+    {
+        return infected;
+    }
+
+    /**
+     * React to an infection that has run its full course. The behaviour is
+     * type-specific: an organism dies, whereas a water source is cured.
+     */
+    protected abstract void expireInfection();
+
+    /**
+     * @return Whether this occupant is still an active participant in the
+     *         simulation (a living organism / a non-empty water source) and
+     *         can therefore still carry and spread a disease.
+     */
+    protected abstract boolean isActive();
 }

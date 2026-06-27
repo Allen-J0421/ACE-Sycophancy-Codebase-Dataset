@@ -16,8 +16,6 @@ public abstract class Organism extends FieldOccupant implements Actor
     private boolean alive;
     // The water level of the organism
     private int waterLevel;
-    // Whether the organism is infected with a disease or not.
-    private boolean infected;
     // The organism's age
     private int age;
 
@@ -163,23 +161,17 @@ public abstract class Organism extends FieldOccupant implements Actor
     }
     
     /**
-     * Infects the organism with a disease
+     * When an organism's infection runs its course, the organism dies.
      */
-    protected void setInfected() {
-        infected = true;
+    protected void expireInfection() {
+        setDead();
     }
-    
-    /** 
-     * Infection does not last forever in water, removes disease
-     */
-    protected void notInfected() {
-        infected = false;
-    }
-    
+
     /**
-     * @return Whether the organism is infected with a disease
+     * @return Whether this organism is still alive, and so can carry and
+     *         spread a disease.
      */
-    protected boolean isInfected(){
-        return infected;
+    protected boolean isActive() {
+        return isAlive();
     }
 }

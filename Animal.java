@@ -6,21 +6,15 @@ import java.util.Random;
  *
  * @version 2016.02.29 (2)
  */
-public abstract class Animal
+public abstract class Animal extends Organism
 {
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
-    // Whether the animal is alive or not.
-    private boolean alive;
-    // The animal's field.
-    private Field field;
-    // The animal's position in the field.
-    private Location location;
     // The animal's hurt level, when > 3 die
     private int burn;
-    // The Deer's gender.
-    private String gender;
+    // The animal's gender.
+    private final Gender gender;
 
     
     /**
@@ -31,16 +25,9 @@ public abstract class Animal
      */
     public Animal(Field field, Location location)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
         burn = 0;
-        if (rand.nextBoolean()) {
-            gender = "M";
-        }
-        else {
-            gender = "F";
-        }
+        gender = Gender.random(rand);
     }
     
     /**
@@ -50,70 +37,16 @@ public abstract class Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    abstract public void act(List<Animal> newAnimals, int step, String weather);
-
-    /**
-     * Check whether the animal is alive or not.
-     * @return true if the animal is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
-
-    /**
-     * Indicate that the animal is no longer alive.
-     * It is removed from the field.
-     */
-    protected void setDead()
-    {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-
-    /**
-     * Return the animal's location.
-     * @return The animal's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-    
-    /**
-     * Place the animal at the new location in the given field.
-     * @param newLocation The animal's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-    
-    /**
-     * Return the animal's field.
-     * @return The animal's field.
-     */
-    protected Field getField()
-    {
-        return field;
-    }
+    abstract public void act(List<Animal> newAnimals, int step, Weather weather);
     
     /**
      * update the animal's burn status.
      * @param weather The current weather.
      */
-    protected void updateBurnStatus(String weather)
+    protected void updateBurnStatus(Weather weather)
     {
         if (burn > 0) {
-            if (weather != "Rainy") {
+            if (weather != Weather.RAINY) {
                 burn();
             }
             else {
@@ -144,7 +77,7 @@ public abstract class Animal
     /**
      * @return the animal's gender
      */
-    protected String Gender()
+    protected final Gender getGender()
     {
         return gender;
     }

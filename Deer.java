@@ -62,7 +62,7 @@ public class Deer extends Animal
      * @param step The current step
      * @param weather The current weather.
      */
-    public void act(List<Animal> newDeers, int step, String weather)
+    public void act(List<Animal> newDeers, int step, Weather weather)
     {
         incrementAge();
         incrementHunger();
@@ -72,7 +72,7 @@ public class Deer extends Animal
            
             // Move towards a source of food if found.
             Location newLocation;
-            if (weather == "RAINY") {
+            if (weather == Weather.RAINY) {
                 newLocation = null;
             }
             else {
@@ -124,7 +124,7 @@ public class Deer extends Animal
             Object animal = field.getObjectAt(where);
             if(animal instanceof Deer) {
                 Deer deer = (Deer) animal;
-                if(deer.Gender() != Gender()) { 
+                if(deer.getGender() != getGender()) {
                     breedingPair = true;
                     break;
                 }

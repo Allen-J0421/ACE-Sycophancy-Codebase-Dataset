@@ -56,10 +56,10 @@ public class Grass extends Plant
      * @param step The current step
      * @param weather The current weather.
      */
-    public void act( int step, String weather)
+    public void act(int step, Weather weather)
     {
         if(isAlive()) {
-            if(weather == "Rainy") {
+            if(weather == Weather.RAINY) {
                 incrementSize();
                 steppeFired = false;
             }

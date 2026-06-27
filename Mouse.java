@@ -69,11 +69,11 @@ public class Mouse extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newMice, int step, String weather)
+    public void act(List<Animal> newMice, int step, Weather weather)
     {
         incrementAge();
         updateBurnStatus(weather);
-        CheckInfectLevel();
+        checkInfectLevel();
         if(isAlive()) {
             // Infected mouse will spread the disease to other mouse.
             if (getInfected() != 0){
@@ -214,7 +214,7 @@ public class Mouse extends Animal
     /**
      * mouse will die from disease when the infect indicator reach 3.
      */
-    private void CheckInfectLevel()
+    private void checkInfectLevel()
     {
         if (infect==3){
                 setDead();

@@ -39,7 +39,7 @@ public class Simulator
     // The current step of the simulation.
     private int step;
     // The current weather of the simulation.
-    private String weather;
+    private Weather weather;
     // A graphical view of the simulation.
     private SimulatorView view;
     
@@ -112,7 +112,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        sim_weather();
+        updateWeather();
         
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();        
@@ -149,7 +149,7 @@ public class Simulator
         animals.clear();
         plants.clear();
         populate();
-        sim_weather();
+        updateWeather();
         
         // Show the starting state in the view.
         view.showStatus(step, field, weather);
@@ -217,26 +217,8 @@ public class Simulator
      * 
      * 
      */
-    private void sim_weather()
+    private void updateWeather()
     {
-        Random rand = Randomizer.getRandom();
-        if(rand.nextDouble() <= 0.33) {
-            weather = "Foggy";
-        }
-        else if (rand.nextDouble() <= 0.33) {
-            weather = "Rainy";
-        }
-        else {
-            weather = "Sunny";
-        }
-    }
-
-    /**
-     * 
-     * 
-     */
-    private String get_weather()
-    {
-        return weather;
+        weather = Weather.random(Randomizer.getRandom());
     }
 }

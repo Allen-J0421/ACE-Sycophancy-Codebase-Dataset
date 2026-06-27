@@ -64,7 +64,7 @@ public class Lion extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newLions, int step, String weather)
+    public void act(List<Animal> newLions, int step, Weather weather)
     {
         incrementAge();
         incrementHunger();
@@ -74,7 +74,7 @@ public class Lion extends Animal
             giveBirth(newLions);            
             // Move towards a source of food if found.
             Location newLocation;
-            if (weather == "Foggy") {
+            if (weather == Weather.FOGGY) {
                 newLocation = null;
             }
             else {
@@ -185,7 +185,7 @@ public class Lion extends Animal
             Object animal = field.getObjectAt(where);
             if(animal instanceof Lion) {
                 Lion lion = (Lion) animal;
-                if(lion.Gender() != Gender()) { 
+                if(lion.getGender() != getGender()) {
                     breedingPair = true;
                     break;
                 }

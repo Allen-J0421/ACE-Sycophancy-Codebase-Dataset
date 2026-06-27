@@ -63,7 +63,7 @@ public class Cat extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newCats, int step, String weather)
+    public void act(List<Animal> newCats, int step, Weather weather)
     {
         incrementAge();
         incrementHunger();

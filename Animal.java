@@ -20,25 +20,34 @@ public abstract class Animal extends Organism
     private double age;
     // Indicates whether the animal is sleeping or not
     private boolean sleeping;
-    // The shared, seeded random number generator used by all animals. Going
-    // through Randomizer keeps the whole simulation reproducible from one seed.
-    protected static final Random rand = Randomizer.getRandom();
+    // This animal's species characteristics (instance-based configuration).
+    private final AnimalConfig config;
+    // The seeded random number generator, obtained per instance from the
+    // shared Randomizer so the whole simulation stays reproducible.
+    private final Random rand;
 
     /**
      * Create a new animal at location in field.
      *
+     * @param config The species characteristics for this animal.
      * @param randomAge If true, the animal will have a random age
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(boolean randomAge, Field field, Location location)
+    public Animal(AnimalConfig config, boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        nocturnal = false;
+        this.config = config;
+        this.rand = Randomizer.getRandom();
+        nocturnal = config.isNocturnal();
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
-        if(!randomAge) {
+        if(randomAge) {
+            setAge(rand.nextInt(config.getMaxAge()));
+            setFoodLevel(config.getStartingFoodLevel());
+        }
+        else {
             setAge(0);
             foodLevel = rand.nextInt(10) + 8;
         }
@@ -226,7 +235,7 @@ public abstract class Animal extends Organism
     public void incrementAge()
     {
         super.incrementAge();
-        if(getAge() > getMaxAge()) {
+        if(getAge() > config.getMaxAge()) {
             setDead();
         }
     }
@@ -239,8 +248,8 @@ public abstract class Animal extends Organism
     private int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-            births = rand.nextInt(getMaxLitterSize()) + 1;
+        if(canBreed() && rand.nextDouble() <= config.getBreedingProbability()) {
+            births = rand.nextInt(config.getMaxLitterSize()) + 1;
         }
         return births;
     }
@@ -251,28 +260,34 @@ public abstract class Animal extends Organism
      */
     private boolean canBreed()
     {
-        return (isFemale() && getAge() >= getBreedingAge());
+        return (isFemale() && getAge() >= config.getBreedingAge());
     }
 
     /**
-     * @return The age at which this species can start to breed.
+     * Roll against this species' hunt probability. Hunters that gate their
+     * eating use this so the chance lives in configuration, not in code.
+     * @return true if a hunt attempt succeeds this step.
      */
-    protected abstract int getBreedingAge();
+    protected boolean huntSucceeds()
+    {
+        return rand.nextDouble() < config.getHuntProbability();
+    }
 
     /**
-     * @return The age to which this species can live.
+     * @return The food value gained by a predator that eats this animal.
      */
-    protected abstract int getMaxAge();
+    public int getFoodValue()
+    {
+        return config.getFoodValue();
+    }
 
     /**
-     * @return The likelihood of this species breeding when eligible.
+     * @return The list of prey (class names) which this animal eats.
      */
-    protected abstract double getBreedingProbability();
-
-    /**
-     * @return The maximum number of young produced in a single birth.
-     */
-    protected abstract int getMaxLitterSize();
+    public ArrayList<String> getPrey()
+    {
+        return config.getPrey();
+    }
 
     /**
      * Create a new-born of this species at the given location.
@@ -305,16 +320,8 @@ public abstract class Animal extends Organism
     {
         return female;
     }
-    
-    /** 
-     * @return True if this animal is a female, capable of breeding
-     */
-    public void setNocturnal()
-    {
-        nocturnal = true;
-    }
-    
-    /** 
+
+    /**
      * @return True if this animal is nocturnal, false if not
      */
     public boolean isNocturnal()
@@ -346,9 +353,4 @@ public abstract class Animal extends Organism
     public boolean canActNow(boolean isNight) {
         return isNight == isNocturnal();
     }
-
-    /**
-     * @return Returns list of prey for each animal
-     */
-    abstract public ArrayList<String> getPrey();
 }

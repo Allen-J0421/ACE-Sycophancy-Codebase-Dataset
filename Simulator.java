@@ -19,16 +19,7 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 150;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 100;
-    // The probability that a human will be created in any given grid position.
-    private static final double HUMAN_CREATION_PROBABILITY = 0.001;
-    // The probability that a monkey will be created in any given grid position.
-    private static final double MONKEY_CREATION_PROBABILITY = 0.04;
-    // The probability that a pig will be created in any given grid position.
-    private static final double PIG_CREATION_PROBABILITY = 0.06;
-    // The probability that a tortoise will be created in any given grid position.
-    private static final double TORTOISE_CREATION_PROBABILITY = 0.008;
-    // The probability that a dodo will be created in any given grid position.
-    private static final double DODO_CREATION_PROBABILITY = 0.5;    
+    // Per-species creation probabilities are encapsulated in the Species enum.
     // The probability that a plant will be created in any given grid position.
     private static final double PLANT_CREATION_PROBABILITY = 0.9;
     // The probability that it is sunny.
@@ -278,16 +269,18 @@ public class Simulator
         Random rand = Randomizer.getRandom();
         field.clear();
 
-        //Gathers running probability for use in creation
-        double[] totalProbabilities = {DODO_CREATION_PROBABILITY, HUMAN_CREATION_PROBABILITY, PIG_CREATION_PROBABILITY, MONKEY_CREATION_PROBABILITY, TORTOISE_CREATION_PROBABILITY};
-        totalProbabilities =  getTotalProbability(totalProbabilities);
+        // Each species contributes its own creation probability and factory.
+        WeightedSelector<Species> speciesSelector = new WeightedSelector<>();
+        for (Species species : Species.values()) {
+            speciesSelector.add(species, species.getCreationProbability());
+        }
 
         //number of infected actors
         int infected = 0;
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                // Populate with animals and plants as per their probabilities    
+                // Populate with animals and plants as per their probabilities
                 Location location = new Location(row, col);
                 boolean virus = false;
 
@@ -301,50 +294,19 @@ public class Simulator
                     actors.add(plant);
                 }
 
-                if (rand.nextDouble() <= totalProbabilities[0]){
-                    Dodo dodo = new Dodo(true, field, location, virus);
-                    actors.add(dodo);
-                }
-                else if(rand.nextDouble() <= totalProbabilities[1]){
-                    Human human = new Human(true, field, location, virus);
-                    actors.add(human);
-                }
-                else if(rand.nextDouble() <= totalProbabilities[2]){
-                    Pig pig = new Pig(true, field, location, virus);
-                    actors.add(pig);
-                }
-                else if (rand.nextDouble() <= totalProbabilities[3]){
-                    Monkey monkey = new Monkey(true, field, location, virus);
-                    actors.add(monkey);
-                }
-                else if (rand.nextDouble() <= totalProbabilities[4]){
-                    Tortoise tortoise = new Tortoise( true, field, location, virus);
-                    actors.add(tortoise);
+                Species species = speciesSelector.select(rand);
+                if (species != null) {
+                    actors.add(species.create(field, location, virus));
                 }
             }
         }
 
         // Gives warning if spawn probability is above 1
-        if(totalProbabilities[totalProbabilities.length-1] > 1){
+        if(speciesSelector.totalProbability() > 1){
             System.out.println("Your total spawn probability is above 1, there may be some unexpected errors in simulation as a result");
         }
 
         return infected;
-    }
-
-    /**
-     * Generates running total probability list based on input
-     * 
-     * @param total Probability list
-     * @return Running total probability list
-     */
-    private double[] getTotalProbability(double[] total)
-    {
-        for(int i=0; i < total.length-1; i++){
-            total[i+1]+=total[i];
-        }
-
-        return total;
     }
 
     /**
@@ -453,23 +415,18 @@ public class Simulator
     {
         Random rand = Randomizer.getRandom();
 
-        double[] totalProbabilities = {SNOWY_PROBABILITY, FOGGY_PROBABILITY, RAINY_PROBABILITY, SUNNY_PROBABILITY};
-        totalProbabilities =  getTotalProbability(totalProbabilities);
+        WeightedSelector<Weather> weatherSelector = new WeightedSelector<Weather>()
+            .add(Weather.SNOWY, SNOWY_PROBABILITY)
+            .add(Weather.FOGGY, FOGGY_PROBABILITY)
+            .add(Weather.RAINY, RAINY_PROBABILITY)
+            .add(Weather.SUNNY, SUNNY_PROBABILITY);
 
-        if (rand.nextDouble() <= totalProbabilities[0]){
-            return Weather.SNOWY;
-        }
-        else if (rand.nextDouble() <= totalProbabilities[1]){
-            return Weather.FOGGY;
-        }
-        else if (rand.nextDouble() <= totalProbabilities[2]){
-            return Weather.RAINY;
-        }
-        else if (rand.nextDouble() <= totalProbabilities[3]){
-            return Weather.SUNNY;
+        Weather weather = weatherSelector.select(rand);
+        if (weather != null) {
+            return weather;
         }
 
-        if (totalProbabilities[totalProbabilities.length-1] != 1) {
+        if (weatherSelector.totalProbability() != 1) {
             System.out.println("Your total weather probability is not equal to 1, there may be some unexpected errors in simulation as a result");
         }
 

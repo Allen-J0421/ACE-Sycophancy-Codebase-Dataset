@@ -105,6 +105,8 @@ public class SimulatorView extends JFrame
         }
         
         stepLabel.setText(STEP_PREFIX + step + time);
+        // Invalidate cached counts so the population is recomputed by
+        // FieldStats for the field's current state.
         stats.reset();
 
         fieldView.preparePaint();
@@ -114,7 +116,6 @@ public class SimulatorView extends JFrame
                 Object thing = field.getObjectAt(row, col);
                 // If there is something in the grid space, draw it with correct colour
                 if(thing!= null) {
-                    stats.incrementCount(thing.getClass());
                     fieldView.drawMark(col, row, getColor(thing.getClass()));
                     // Check whether it is an organism and if it is infected
                     if (thing instanceof Organism) {
@@ -137,8 +138,8 @@ public class SimulatorView extends JFrame
 
             }
         }
-        stats.countFinished();
 
+        // FieldStats owns the population counting; just ask it for the result.
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
         fieldView.repaint();
     }

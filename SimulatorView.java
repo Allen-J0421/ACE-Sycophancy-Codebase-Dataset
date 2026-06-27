@@ -20,6 +20,7 @@ public class SimulatorView extends JFrame
 
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
+    private static final Color WATER_COLOR = Color.cyan;
 
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
@@ -121,45 +122,73 @@ public class SimulatorView extends JFrame
 
         stepLabel.setText(STEP_PREFIX + step + "   Weather : " + weather);
         stats.reset();
-
         fieldView.preparePaint();
-        
         int[] diseaseCount = new int[diseases.size()];
-        String diseaseDisplay = "";
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object actor = field.getObjectAt(row, col);
-                if(actor != null) {
-                    
-                    Actor mainActor = (Actor) actor;
-                    
-                    for (int x = 0; x < diseases.size(); x++) {
-                        if (mainActor.getActorDiseaseSet().contains(diseases.get(x))) {
-                            diseaseCount[x]++;
-                        }
-                    }
-                        
-                    stats.incrementCount(actor.getClass());
-                    fieldView.drawMark(col, row, getColor(actor.getClass()));
-                }
-                // If the field is underwater at that location, draw in blue
-                else if (field.isUnderWater(row, col)){ 
-                    fieldView.drawMark(col, row, Color.cyan);
-                }
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                }
+                drawLocation(field, diseases, diseaseCount, row, col);
             }
         }
         stats.countFinished();
-        
-        for (int x = 0; x < diseases.size(); x++) {
-            diseaseDisplay = diseaseDisplay + diseases.get(x).getName() + ": " + diseaseCount[x] + " ";
+
+        population.setText(DISEASE_PREFIX + buildDiseaseDisplay(diseases, diseaseCount)
+            + POPULATION_PREFIX + stats.getPopulationDetails(field));
+        fieldView.repaint();
+    }
+
+    /**
+     * Draw one field location and update statistics for any actor present.
+     */
+    private void drawLocation(Field field, List<Disease> diseases, int[] diseaseCount, int row, int col)
+    {
+        Actor actor = field.getActorAt(row, col);
+        if(actor != null) {
+            incrementDiseaseCounts(actor, diseases, diseaseCount);
+            stats.incrementCount(actor.getClass());
+            fieldView.drawMark(col, row, getColor(actor.getClass()));
+            return;
         }
 
-        population.setText(DISEASE_PREFIX + diseaseDisplay + POPULATION_PREFIX + stats.getPopulationDetails(field));
-        fieldView.repaint();
+        fieldView.drawMark(col, row, getBackgroundColor(field, row, col));
+    }
+
+    /**
+     * Increment disease counters for all diseases affecting the given actor.
+     */
+    private void incrementDiseaseCounts(Actor actor, List<Disease> diseases, int[] diseaseCount)
+    {
+        for(int index = 0; index < diseases.size(); index++) {
+            if(actor.getActorDiseaseSet().contains(diseases.get(index))) {
+                diseaseCount[index]++;
+            }
+        }
+    }
+
+    /**
+     * Build the disease summary text shown in the footer.
+     */
+    private String buildDiseaseDisplay(List<Disease> diseases, int[] diseaseCount)
+    {
+        StringBuilder display = new StringBuilder();
+        for(int index = 0; index < diseases.size(); index++) {
+            display.append(diseases.get(index).getName());
+            display.append(": ");
+            display.append(diseaseCount[index]);
+            display.append(' ');
+        }
+        return display.toString();
+    }
+
+    /**
+     * Return the background color for an empty location.
+     */
+    private Color getBackgroundColor(Field field, int row, int col)
+    {
+        if(field.isUnderWater(row, col)) {
+            return WATER_COLOR;
+        }
+        return EMPTY_COLOR;
     }
 
     /**

@@ -24,8 +24,8 @@ public class Field
     // The depth and width of the field.
     private int depth, width;
     // Storage for the animals, plants, weather and altitude.
-    private Object[][] animalField;
-    private Object[][] plantField;
+    private Actor[][] animalField;
+    private Actor[][] plantField;
     private Map<WeatherAttribute, double[][]> weatherField;
     private int[][] altitudeField;
     private  int waterLevel;
@@ -41,8 +41,8 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        animalField = new Object[depth][width];
-        plantField = new Object[depth][width];
+        animalField = new Actor[depth][width];
+        plantField = new Actor[depth][width];
         weatherField = createWeatherFieldMap(depth, width);
         altitudeField = new int[depth][width];
         waterLevel = 3;
@@ -106,7 +106,7 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object actor, int row, int col)
+    public void place(Actor actor, int row, int col)
     {
         place(actor, new Location(row, col));
     }
@@ -118,7 +118,7 @@ public class Field
      * @param actor The actor to be placed.
      * @param location Where to place the animal.
      */
-    public void place(Object actor, Location location)
+    public void place(Actor actor, Location location)
     {
         if (actor instanceof Animal) {
             animalField[location.getRow()][location.getCol()] = actor;
@@ -133,9 +133,9 @@ public class Field
      * @param location Where in the field.
      * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Actor getActorAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getActorAt(location.getRow(), location.getCol());
     }
 
     /**
@@ -146,7 +146,7 @@ public class Field
      * @param col The desired column.
      * @return The actor at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Actor getActorAt(int row, int col)
     {
         if (animalField[row][col] != null) {
             return animalField[row][col];
@@ -180,7 +180,7 @@ public class Field
         List<Location> adjacent = adjacentLocations(location);
 
         for(Location next : adjacent) {
-            Object occupant = getObjectAt(next);
+            Actor occupant = getActorAt(next);
             if((occupant == null || (actor instanceof Animal && occupant instanceof Plant))
                && canOccupy(actor, next)) {
                 free.add(next);

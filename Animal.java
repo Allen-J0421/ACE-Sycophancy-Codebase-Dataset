@@ -174,7 +174,7 @@ public abstract class Animal extends Actor
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()){
             Location where = it.next();
-            Object actor = field.getObjectAt(where);
+            Actor actor = field.getActorAt(where);
             if (actor instanceof Animal) {
                 Animal animal = (Animal) actor;
                 if (animal.getActorName().equals(getActorName())&& !animal.female){
@@ -217,9 +217,8 @@ public abstract class Animal extends Actor
         while(it.hasNext()) {
             Location where = it.next();
             if(canOccupy(where)) {
-                Object actor = field.getObjectAt(where);
-                if (actor instanceof Actor) {
-                    Actor prey = (Actor) actor;
+                Actor prey = field.getActorAt(where);
+                if (prey != null) {
                     Integer foodValue = getPreyFoodValuesMap().get(prey.getActorName());
                     if(foodValue != null && prey.isAlive()) {
                         for (Disease disease: prey.setDiseases){

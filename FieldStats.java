@@ -117,7 +117,7 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object actor = field.getObjectAt(row, col);
+                Actor actor = field.getActorAt(row, col);
                 if(actor != null) {
                     incrementCount(actor.getClass());
                 }

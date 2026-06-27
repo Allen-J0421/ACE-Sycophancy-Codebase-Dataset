@@ -67,36 +67,10 @@ public class Racoon extends Animal
         }
     }
     
-    /**
-     * This is what the Racoon does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newRacoones A list to return newly born Racoones.
-     * @param currentState is the current state of the world around the Racoon (the weather, time etc)
-     */
-    public void act(List<Simulatable> newRacoones, SimulatorState currentState)
-    {
-        incrementAge(POPULATION_CONTROLS.getMaxAge());
-        Field f = getField();
-        if (rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
-            incrementHunger();     
-            if(isAlive() ) {
-
-                Counter numberOfAnimal = currentState.getCurrentStats(Racoon.class);
-                giveBirth(numberOfAnimal, Racoon.class, newRacoones, (Location loc) -> new Racoon(false, f, loc));
-
-                giveNearbyAnimalsDisease();
-
-                Disease currentDisease = getDisease();
-                if (currentDisease != null) {
-                    foodLevel -= currentDisease.getHungerEffect();
-                    age -= currentDisease.getAgeEffect();
-                }
-                    
-                moveToNewLocation(EATS, POPULATION_CONTROLS.getMaxHunger());
-            }
-        }
-    }
+    protected int getMaxAge() { return POPULATION_CONTROLS.getMaxAge(); }
+    protected int getMaxHunger() { return POPULATION_CONTROLS.getMaxHunger(); }
+    protected List<Class> getEats() { return EATS; }
+    protected Simulatable createOffspring(Location loc) { return new Racoon(false, getField(), loc); }
 
     public Color getColor() {
         return Color.ORANGE;

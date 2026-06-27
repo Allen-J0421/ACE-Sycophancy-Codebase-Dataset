@@ -59,34 +59,10 @@ public class Squirrel extends Animal implements Eatable
     }
 
 
-    /**
-     * This is what the squirrel does most of the time. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param field The field currently occupied.
-     * @param newAnimals A list to return newly born foxes.
-     */
-    public void act(List<Simulatable> newAnimals, SimulatorState currentState)
-    {
-        incrementAge(POPULATION_CONTROLS.getMaxAge());
-        Field f = getField();
-        if(rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
-            incrementHunger();
-            if (isAlive()) {
-                giveNearbyAnimalsDisease();
-
-                Counter numberOfAnimal = currentState.getCurrentStats(Squirrel.class);
-                giveBirth(numberOfAnimal, Squirrel.class, newAnimals, (Location loc) -> new Squirrel(false, f, loc));
-
-                Disease currentDisease = getDisease();
-                if (currentDisease != null) {
-                    foodLevel -= currentDisease.getHungerEffect();
-                    age -= currentDisease.getAgeEffect();
-                }
-
-                moveToNewLocation(EATS, POPULATION_CONTROLS.getMaxHunger());
-            }
-        }
-    }
+    protected int getMaxAge() { return POPULATION_CONTROLS.getMaxAge(); }
+    protected int getMaxHunger() { return POPULATION_CONTROLS.getMaxHunger(); }
+    protected List<Class> getEats() { return EATS; }
+    protected Simulatable createOffspring(Location loc) { return new Squirrel(false, getField(), loc); }
 
 
     /**

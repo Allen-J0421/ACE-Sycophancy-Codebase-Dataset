@@ -65,39 +65,10 @@ public class Mouse extends Animal implements Eatable
 
 	}
 	
-	/**
-	 * This is what the mouse does most of the time - it runs 
-	 * around. Sometimes it will breed or die of old age.
-	 * @param newMouses A list to return newly born mouses.
-	 * @param currentState is the current state of the world around the fox (the weather, time etc)
-	 */
-	public void act(List<Simulatable> newMouses, SimulatorState currentState)
-	{
-		incrementAge(POPULATION_CONTROLS.getMaxAge());//Increment the age of the mouse (potentially killing it )
-		Field f = getField();//Get the field that the mouse is in 
-
-		//Probability reduction. If the generated probability is lower then the reductions then the mouse will act
-		if(rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
-			incrementHunger();//Only if it acts will it reduce hunger
-			if (isAlive()) {
-
-				giveNearbyAnimalsDisease();
-
-				Counter numberOfAnimal = currentState.getCurrentStats(Mouse.class);
-				giveBirth(numberOfAnimal, Mouse.class, newMouses, (Location loc) -> new Mouse(false, f, loc));
-
-				//Implement the effects of the disease 
-				Disease currentDisease = getDisease();
-				if (currentDisease != null) {
-					foodLevel -= currentDisease.getHungerEffect();
-					age -= currentDisease.getAgeEffect();
-				}
-
-				moveToNewLocation(EATS, POPULATION_CONTROLS.getMaxHunger());
-
-			}
-		}
-	}
+	protected int getMaxAge() { return POPULATION_CONTROLS.getMaxAge(); }
+	protected int getMaxHunger() { return POPULATION_CONTROLS.getMaxHunger(); }
+	protected List<Class> getEats() { return EATS; }
+	protected Simulatable createOffspring(Location loc) { return new Mouse(false, getField(), loc); }
 
 
 	/**

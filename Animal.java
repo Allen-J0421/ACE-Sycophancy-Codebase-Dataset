@@ -265,7 +265,7 @@ public abstract class Animal extends Locatable implements Simulatable, Breedable
 
 
     /**
-     * Expose all nearby animals to the disease this current animal has. 
+     * Expose all nearby animals to the disease this current animal has.
     */
     protected void giveNearbyAnimalsDisease(){
         List<Object> nearAnimals = getField().getItemOfTypeNear(Animal.class, getLocation());
@@ -274,6 +274,50 @@ public abstract class Animal extends Locatable implements Simulatable, Breedable
                 Animal otherAnimal = (Animal)i;
                 otherAnimal.giveDisease(getDisease());
             }
+        }
+    }
+
+    // --- Template-method hooks ---
+
+    /** @return the maximum age for this species */
+    protected abstract int getMaxAge();
+
+    /** @return the food level at which this animal will seek food */
+    protected abstract int getMaxHunger();
+
+    /** @return the list of prey/food classes this animal eats */
+    protected abstract List<Class> getEats();
+
+    /**
+     * Create a new (non-random-age) offspring of this species at the given location.
+     * @param loc the location for the newborn
+     */
+    protected abstract Simulatable createOffspring(Location loc);
+
+    /**
+     * Shared act logic for all animals: age, hunger, disease, breeding, and movement.
+     * Subclasses supply species-specific behaviour via the abstract hooks above.
+     */
+    public void act(List<Simulatable> newAnimals, SimulatorState currentState) {
+        incrementAge(getMaxAge());
+        Field f = getField();
+        if (rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
+            incrementHunger();
+            if (isAlive()) {
+                giveNearbyAnimalsDisease();
+                Counter numberOfAnimal = currentState.getCurrentStats(getClass());
+                giveBirth(numberOfAnimal, getClass(), newAnimals, loc -> createOffspring(loc));
+                applyDiseaseEffects();
+                moveToNewLocation(getEats(), getMaxHunger());
+            }
+        }
+    }
+
+    private void applyDiseaseEffects() {
+        Disease disease = getDisease();
+        if (disease != null) {
+            foodLevel -= disease.getHungerEffect();
+            age -= disease.getAgeEffect();
         }
     }
 }

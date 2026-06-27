@@ -58,36 +58,10 @@ public class Rat extends Animal implements Eatable
 	}
 
 
-	/**
-	 * This is what the rabbit does most of the time - it runs 
-	 * around. Sometimes it will breed or die of old age.
-	 * @param newRabbits A list to return newly born rabbits.
-	 * @param currentState is the current state of the world around the rat (the weather, time etc)
-	 */
-	public void act(List<Simulatable> newAnimals, SimulatorState currentState)
-	{
-		incrementAge(POPULATION_CONTROLS.getMaxAge());
-		Field f = getField();//Get the field the rat is in
-		if(rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
-			incrementHunger();
-			if (isAlive()) {
-				giveNearbyAnimalsDisease();
-
-				Counter numberOfAnimal = currentState.getCurrentStats(Rat.class);
-				giveBirth(numberOfAnimal, Rat.class, newAnimals, (Location loc) -> new Rat(false, f, loc));
-
-				//Implement the effects of the disease
-				Disease currentDisease = getDisease();
-				if (currentDisease != null) {
-					foodLevel -= currentDisease.getHungerEffect();
-					age -= currentDisease.getAgeEffect();
-				}
-
-				//Move to a new location based on if there is grass there
-				moveToNewLocation(EATS, POPULATION_CONTROLS.getMaxHunger());
-			}
-		}
-	}
+	protected int getMaxAge() { return POPULATION_CONTROLS.getMaxAge(); }
+	protected int getMaxHunger() { return POPULATION_CONTROLS.getMaxHunger(); }
+	protected List<Class> getEats() { return EATS; }
+	protected Simulatable createOffspring(Location loc) { return new Rat(false, getField(), loc); }
 	
 	/**
 	 * Implementation of eatable 

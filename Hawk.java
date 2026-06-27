@@ -55,36 +55,10 @@ public class Hawk extends Animal
         }
     }
     
-    /**
-     * This is what the hawk does most of the time: it hunts for
-     * prey. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param field The field currently occupied.
-     * @param newAnimals A list to return newly born foxes.
-     */
-    public void act(List<Simulatable> newAnimals, SimulatorState currentState)
-    {
-        incrementAge(POPULATION_CONTROLS.getMaxAge());
-        Field f = getField();
-        if (rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
-            incrementHunger();     
-            if(isAlive() ) {
-
-                Counter numberOfAnimal = currentState.getCurrentStats(Hawk.class);
-                giveBirth(numberOfAnimal, Hawk.class, newAnimals, (Location loc) -> new Hawk(false, f, loc));
-
-                giveNearbyAnimalsDisease();
-
-                Disease currentDisease = getDisease();
-                if (currentDisease != null) {
-                    foodLevel -= currentDisease.getHungerEffect();
-                    age -= currentDisease.getAgeEffect();
-                }
-                    
-                moveToNewLocation(EATS, POPULATION_CONTROLS.getMaxHunger());
-            }
-        }
-    }
+    protected int getMaxAge() { return POPULATION_CONTROLS.getMaxAge(); }
+    protected int getMaxHunger() { return POPULATION_CONTROLS.getMaxHunger(); }
+    protected List<Class> getEats() { return EATS; }
+    protected Simulatable createOffspring(Location loc) { return new Hawk(false, getField(), loc); }
 
 
     /**

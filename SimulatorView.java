@@ -1,23 +1,23 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 /**
  * A graphical view of the simulation grid.
- * This class is responsible solely for rendering — statistical data is
- * computed externally (by {@link FieldStats}) and passed in as a string.
+ * This class is responsible solely for component layout and label updates.
+ * Coordinate scaling is handled by {@link GridScaler}; off-screen rendering
+ * is handled by the {@link FieldView} inner class.
  *
  * @version 2016.02.29
  */
 public class SimulatorView extends JFrame
 {
-    // Colors used for empty locations.
     private Color emptyColor = Color.white;
 
-    private final String STEP_PREFIX = "Step: ";
+    private final String STEP_PREFIX       = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
-    private final String WEATHER_PREFIX = "Weather: ";
-    private final String TIME_PREFIX = "Time: ";
+    private final String WEATHER_PREFIX    = "Weather: ";
+    private final String TIME_PREFIX       = "Time: ";
+
     private JLabel stepLabel, populationLabel, infoLabel, timeLabel, weatherLabel;
     private FieldView fieldView;
 
@@ -29,29 +29,28 @@ public class SimulatorView extends JFrame
     public SimulatorView(int height, int width)
     {
         setTitle("Fox and Rabbit Simulation");
-        stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
-        infoLabel = new JLabel("  ", JLabel.CENTER);
-        timeLabel = new JLabel("", JLabel.CENTER);
+        stepLabel      = new JLabel(STEP_PREFIX,       JLabel.CENTER);
+        infoLabel      = new JLabel("  ",              JLabel.CENTER);
+        timeLabel      = new JLabel("",                JLabel.CENTER);
         populationLabel = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        weatherLabel = new JLabel(WEATHER_PREFIX, JLabel.CENTER);
+        weatherLabel   = new JLabel(WEATHER_PREFIX,    JLabel.CENTER);
 
         setLocation(100, 50);
-
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
 
         JPanel topInfoPane = new JPanel(new BorderLayout());
-            topInfoPane.add(stepLabel, BorderLayout.WEST);
-            topInfoPane.add(timeLabel, BorderLayout.EAST);
-            topInfoPane.add(infoLabel, BorderLayout.CENTER);
+        topInfoPane.add(stepLabel,  BorderLayout.WEST);
+        topInfoPane.add(timeLabel,  BorderLayout.EAST);
+        topInfoPane.add(infoLabel,  BorderLayout.CENTER);
 
         JPanel bottomInfoPane = new JPanel(new BorderLayout());
-            bottomInfoPane.add(populationLabel, BorderLayout.WEST);
-            bottomInfoPane.add(weatherLabel, BorderLayout.EAST);
+        bottomInfoPane.add(populationLabel, BorderLayout.WEST);
+        bottomInfoPane.add(weatherLabel,    BorderLayout.EAST);
 
-        contents.add(topInfoPane, BorderLayout.NORTH);
-        contents.add(fieldView, BorderLayout.CENTER);
+        contents.add(topInfoPane,    BorderLayout.NORTH);
+        contents.add(fieldView,      BorderLayout.CENTER);
         contents.add(bottomInfoPane, BorderLayout.SOUTH);
         pack();
         setVisible(true);
@@ -67,10 +66,10 @@ public class SimulatorView extends JFrame
 
     /**
      * Show the current status of the field.
-     * @param step             Which iteration step it is.
-     * @param field            The field whose contents are to be drawn.
-     * @param timeOfDay        The current time tracker.
-     * @param weather          The current weather.
+     * @param step              Which iteration step it is.
+     * @param field             The field whose contents are to be drawn.
+     * @param timeOfDay         The current time tracker.
+     * @param weather           The current weather.
      * @param populationSummary Pre-computed population summary string from FieldStats.
      */
     public void showStatus(int step, Field field, TimeTracker timeOfDay, Weather weather,
@@ -101,98 +100,79 @@ public class SimulatorView extends JFrame
         timeLabel.setText(TIME_PREFIX + timeOfDay.getPrettyTime());
         weatherLabel.setText(WEATHER_PREFIX + weather.name());
 
-        int smallTime = (int) Math.round(timeOfDay.normalisedTime() * 255);
-        emptyColor = new Color(smallTime, smallTime, smallTime);
+        int brightness = (int) Math.round(timeOfDay.normalisedTime() * 255);
+        emptyColor = new Color(brightness, brightness, brightness);
     }
 
+    // -------------------------------------------------------------------------
+
     /**
-     * Provide a graphical view of a rectangular field. This is
-     * a nested class (a class defined inside a class) which
-     * defines a custom component for the user interface. This
-     * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this
-     * for your project if you like.
+     * A Swing panel that maintains an off-screen image buffer and paints
+     * individual grid cells onto it. Coordinate mapping (grid → pixels) is
+     * fully delegated to {@link GridScaler}.
      */
     private class FieldView extends JPanel
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
+        private final GridScaler scaler;
+        private Dimension        lastSize = new Dimension(0, 0);
+        private Image            offscreenImage;
+        private Graphics         offscreenGraphics;
 
-        private int gridWidth, gridHeight;
-        private int xScale, yScale;
-        Dimension size;
-        private Graphics g;
-        private Image fieldImage;
-
-        /**
-         * Create a new FieldView component.
-         */
-        public FieldView(int height, int width)
+        FieldView(int height, int width)
         {
-            gridHeight = height;
-            gridWidth = width;
-            size = new Dimension(0, 0);
+            scaler = new GridScaler(width, height);
             super.setBackground(new Color(0, 0, 0));
         }
 
-        /**
-         * Tell the GUI manager how big we would like to be.
-         */
+        @Override
         public Dimension getPreferredSize()
         {
-            return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
-                                 gridHeight * GRID_VIEW_SCALING_FACTOR);
+            return scaler.getPreferredSize();
         }
 
         /**
-         * Prepare for a new round of painting. Since the component
-         * may be resized, compute the scaling factor again.
+         * Prepare for a new round of painting. Recreates the off-screen
+         * buffer and refreshes the scale factors if the component has been
+         * resized since the last call.
          */
-        public void preparePaint()
+        void preparePaint()
         {
-            if (!size.equals(getSize())) {
-                size = getSize();
-                fieldImage = fieldView.createImage(size.width, size.height);
-                g = fieldImage.getGraphics();
-
-                xScale = size.width / gridWidth;
-                if (xScale < 1) {
-                    xScale = GRID_VIEW_SCALING_FACTOR;
-                }
-                yScale = size.height / gridHeight;
-                if (yScale < 1) {
-                    yScale = GRID_VIEW_SCALING_FACTOR;
-                }
+            Dimension current = getSize();
+            if (!lastSize.equals(current)) {
+                lastSize      = current;
+                offscreenImage    = createImage(current.width, current.height);
+                offscreenGraphics = offscreenImage.getGraphics();
+                scaler.update(current);
             }
         }
 
         /**
-         * Paint one grid location on this field in a given color.
+         * Paint one grid cell in the given fill and border colors.
+         * @param gridCol     column index of the cell
+         * @param gridRow     row index of the cell
+         * @param color       fill color
+         * @param borderColor border color, or {@code null} for the default gray
          */
-        public void drawMark(int x, int y, Color color, Color borderColor)
+        void drawMark(int gridCol, int gridRow, Color color, Color borderColor)
         {
-            if (borderColor != null) {
-                g.setColor(borderColor);
-            } else {
-                g.setColor(Color.GRAY);
-            }
-            g.drawRect(x * xScale, y * yScale, xScale - 1, yScale - 1);
+            Rectangle bounds = scaler.toCellBounds(gridCol, gridRow);
 
-            g.setColor(color);
-            g.fillRect(x * xScale, y * yScale, xScale - 1, yScale - 1);
+            offscreenGraphics.setColor(borderColor != null ? borderColor : Color.GRAY);
+            offscreenGraphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+            offscreenGraphics.setColor(color);
+            offscreenGraphics.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
         }
 
-        /**
-         * The field view component needs to be redisplayed. Copy the
-         * internal image to screen.
-         */
+        @Override
         public void paintComponent(Graphics g)
         {
-            if (fieldImage != null) {
-                Dimension currentSize = getSize();
-                if (size.equals(currentSize)) {
-                    g.drawImage(fieldImage, 0, 0, null);
+            if (offscreenImage != null) {
+                Dimension current = getSize();
+                if (lastSize.equals(current)) {
+                    g.drawImage(offscreenImage, 0, 0, null);
                 } else {
-                    g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);
+                    g.drawImage(offscreenImage, 0, 0, current.width, current.height, null);
                 }
             }
         }

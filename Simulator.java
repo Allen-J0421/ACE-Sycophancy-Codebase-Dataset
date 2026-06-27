@@ -23,8 +23,8 @@ public class Simulator
     private Field<Entity> field;
     // The current step of the simulation.
     private int step;
-    // The current weather of the simulation.
-    private String weather;
+    // Manages weather state and step-to-step transitions.
+    private WeatherManager weatherManager;
     // A graphical view of the simulation.
     private SimulatorView view;
 
@@ -50,8 +50,9 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
 
-        entities = new ArrayList<>();
-        field    = new Field<>(depth, width);
+        entities       = new ArrayList<>();
+        field          = new Field<>(depth, width);
+        weatherManager = new WeatherManager();
 
         view = new SimulatorView(depth, width);
         for (EntityRegistry.Registration reg : EntityRegistry.getAll()) {
@@ -91,12 +92,12 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        updateWeather();
+        weatherManager.update();
 
         List<Entity> newEntities = new ArrayList<>();
         for (Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
             Entity entity = it.next();
-            entity.act(newEntities, step, weather);
+            entity.act(newEntities, step, weatherManager.getCurrent());
             if (!entity.isAlive()) {
                 it.remove();
             }
@@ -104,7 +105,7 @@ public class Simulator
         // Add offspring (animals only; plants never populate newEntities).
         entities.addAll(newEntities);
 
-        view.showStatus(step, field, weather);
+        view.showStatus(step, field, weatherManager.getCurrent());
     }
 
     /**
@@ -115,8 +116,8 @@ public class Simulator
         step = 0;
         entities.clear();
         populate();
-        updateWeather();
-        view.showStatus(step, field, weather);
+        weatherManager.update();
+        view.showStatus(step, field, weatherManager.getCurrent());
     }
 
     /**
@@ -139,29 +140,6 @@ public class Simulator
                 }
             }
         }
-    }
-
-    /**
-     * Randomly select the weather for this step.
-     */
-    private void updateWeather()
-    {
-        Random rand = Randomizer.getRandom();
-        if (rand.nextDouble() <= 0.33) {
-            weather = "Foggy";
-        } else if (rand.nextDouble() <= 0.33) {
-            weather = "Rainy";
-        } else {
-            weather = "Sunny";
-        }
-    }
-
-    /**
-     * @return the current weather.
-     */
-    private String getWeather()
-    {
-        return weather;
     }
 
     /**

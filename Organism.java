@@ -161,6 +161,28 @@ public abstract class Organism extends FieldOccupant implements Actor
     }
     
     /**
+     * Rain raises every organism's water level.
+     */
+    public void onRain() {
+        setWaterLevel(getWaterLevel() + 5);
+    }
+
+    /**
+     * A heatwave halves every organism's water level.
+     */
+    public void onHeatwave() {
+        setWaterLevel(getWaterLevel() / 2);
+    }
+
+    /**
+     * An organism leaves the simulation once it is no longer alive.
+     * @return true if this organism is dead.
+     */
+    public boolean isExpired() {
+        return !isAlive();
+    }
+
+    /**
      * When an organism's infection runs its course, the organism dies.
      */
     protected void expireInfection() {

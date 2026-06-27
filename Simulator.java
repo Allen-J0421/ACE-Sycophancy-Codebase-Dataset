@@ -44,6 +44,8 @@ public class Simulator
     private SimulatorView view;
     // Whether it is currently day or night - determines each animal's behaviour
     private boolean nightTime;
+    // The weather actor driving the simulation's weather events.
+    private Weather weather;
     
     /**
      * Construct a simulation field with default size.
@@ -123,52 +125,36 @@ public class Simulator
         }
         
         // Provide space for newborn organisms
-        List<Actor> newOrganisms = new ArrayList<>();   
+        List<Actor> newOrganisms = new ArrayList<>();
 
-        Weather weather = null;
-        
         // Let all actors act
         Iterator<Actor> it = actors.iterator();
         while(it.hasNext()) {
-            boolean canAct = true;
             Actor actor = it.next();
-            if (actor instanceof Weather) {
-                weather = (Weather) actor;
-            }
             if (actor instanceof Organism) {
-                // low chance of each animal being infected wiht a disease
+                // Organisms may catch a disease, only act when the time of
+                // day suits them, and breed into the newborn collector so
+                // their young are not visited this same step.
                 generateDisease(actor);
-                Organism organism = (Organism) actor;
-                if (organism instanceof Animal) {
-                    Animal animal = (Animal) organism;   
-                    // animals only act during certain times of day (i.e. if day but nocturnal, won't act)
-                    if (nightTime != animal.isNocturnal()) {
-                        canAct = false;
-                    }
-                }
-                if (canAct) {
+                if (actor.canActNow(nightTime)) {
                     actor.act(newOrganisms);
-                }
-                if(!(organism.isAlive())) {
-                    it.remove();
                 }
             }
             else {
-                actor.act(actors);  
+                // Environmental actors (weather, disease) operate on the
+                // live actor list.
+                actor.act(actors);
             }
-            
-            // Removes any empty water sources from the field
-            if (actor instanceof WaterSources) {
-                WaterSources water = (WaterSources) actor;
-                // if a water source is empty, remove it from simulation
-                if (water.isEmpty()) {
-                    it.remove();
-                }
+
+            // Remove anything that has left the simulation: a dead organism
+            // or an emptied water source.
+            if (actor.isExpired()) {
+                it.remove();
             }
         }
         // Add the newly born animals to the main lists.
-        actors.addAll(newOrganisms);      
-        
+        actors.addAll(newOrganisms);
+
         // If it has rained, create new water
         if (weather != null && weather.generateNewWater()) {
             generateWater();
@@ -206,8 +192,8 @@ public class Simulator
         Disease leptospirosis = new Leptospirosis(field);
         diseases.addAll(Arrays.asList(covid, leptospirosis));
         
-        Weather weather = new Weather(this);
-        
+        weather = new Weather(this);
+
         actors.addAll(diseases);
         actors.add(weather);
         for(int row = 0; row < field.getDepth(); row++) {

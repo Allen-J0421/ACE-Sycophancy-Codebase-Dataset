@@ -38,6 +38,35 @@ public abstract class WaterSources extends FieldOccupant implements Actor
     }
 
     /**
+     * Rain increases a water source's volume.
+     */
+    public void onRain() {
+        setVolume(getVolume() + 10);
+    }
+
+    /**
+     * Fog increases a water source's volume slightly.
+     */
+    public void onFog() {
+        setVolume(getVolume() + 2);
+    }
+
+    /**
+     * A heatwave halves a water source's volume.
+     */
+    public void onHeatwave() {
+        setVolume(getVolume() / 2);
+    }
+
+    /**
+     * A water source leaves the simulation once it has run dry.
+     * @return true if this water source is empty.
+     */
+    public boolean isExpired() {
+        return isEmpty();
+    }
+
+    /**
      * When a water source's infection runs its course it is cured, since
      * infection does not last forever in water.
      */

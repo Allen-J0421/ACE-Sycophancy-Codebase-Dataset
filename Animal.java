@@ -328,7 +328,25 @@ public abstract class Animal extends Organism
     public void setSleepStatus(){
         sleeping = ! sleeping;
     }
-    
+
+    /**
+     * Fog stops an animal behaving normally: instead of gaining water it
+     * is sent to sleep.
+     */
+    public void onFog() {
+        setSleepStatus();
+    }
+
+    /**
+     * An animal can only act when the time of day matches its habits:
+     * nocturnal animals act at night, others act during the day.
+     * @param isNight Whether it is currently night time.
+     * @return true if this animal may act this step.
+     */
+    public boolean canActNow(boolean isNight) {
+        return isNight == isNocturnal();
+    }
+
     /**
      * @return Returns list of prey for each animal
      */

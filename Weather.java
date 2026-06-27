@@ -1,7 +1,6 @@
 import java.util.Random;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * Models behaviour of simple weather conditions in the simulation.
@@ -59,28 +58,13 @@ public class Weather implements Actor
         //it will now rain for 3 steps
         int current = simulator.getStep();
         int stop = current + 3;
-        ArrayList<WaterSources> newWater = new ArrayList<>();
         while (current <= stop) {
             //iterate over all actors in the simulation
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
                 Actor actor = it.next();
-                //add rain water value to each actor's water level
-                if (actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() + 5;
-                    plant.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    int newWaterLevel = animal.getWaterLevel() + 5;
-                    animal.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof WaterSources){
-                    WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() + 10;
-                    source.setVolume(newVolume);
-                }
+                //each actor responds to the rain in its own way
+                actor.onRain();
                 current++;
             }
         }
@@ -103,22 +87,8 @@ public class Weather implements Actor
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
                 Actor actor = it.next();
-                //plant's & water sources' water levels increase a bit
-                if (actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() + 2;
-                    plant.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof Animal) {
-                    //animals can't do anything
-                    Animal animal = (Animal) actor;
-                    animal.setSleepStatus();
-                }
-                else if (actor instanceof WaterSources){
-                    WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() + 2;
-                    source.setVolume(newVolume);
-                }
+                //each actor responds to the fog in its own way
+                actor.onFog();
                 current++;
             }
         }
@@ -139,22 +109,8 @@ public class Weather implements Actor
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
                 Actor actor = it.next();
-                //water value halved by 2 for all actors
-                if (actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() / 2;
-                    plant.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    int newWaterLevel = animal.getWaterLevel() / 2;
-                    animal.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof WaterSources){
-                    WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() / 2;
-                    source.setVolume(newVolume);
-                }
+                //each actor responds to the heatwave in its own way
+                actor.onHeatwave();
                 current++;
             }
         }

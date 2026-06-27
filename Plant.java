@@ -37,6 +37,13 @@ public abstract class Plant extends Organism
     }
     
     /**
+     * Fog raises a plant's water level slightly.
+     */
+    public void onFog() {
+        setWaterLevel(getWaterLevel() + 2);
+    }
+
+    /**
      * Reduces the current water level of the plant by 1 and updates it.
      * Checks if water level is 0. If it does, the plant dies.
      */

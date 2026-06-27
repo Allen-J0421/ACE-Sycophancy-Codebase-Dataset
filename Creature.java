@@ -6,13 +6,10 @@ import java.util.List;
  * @version 2022/03/02
  */
 public abstract class Creature
+extends Entity
 {
-    // Whether the creature is alive or not.
-    private boolean alive;
-    // The creature's field.
-    private Field field;
-    // The creature's position in the field.
-    private Location location;
+    private final SpatialComponent spatial;
+    private final LifeComponent life;
     
     
     /**
@@ -23,9 +20,10 @@ public abstract class Creature
      */
     public Creature(Field field, Location location)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super();
+        spatial = registerComponent(new SpatialComponent(field, location));
+        life = registerComponent(new LifeComponent());
+        spatial.place(this);
     }
     
     /**
@@ -47,7 +45,7 @@ public abstract class Creature
      */
     protected boolean isAlive()
     {
-        return alive;
+        return life.isAlive();
     }
     
       /**
@@ -56,11 +54,8 @@ public abstract class Creature
      */
     protected void setDead()
     {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
+        if(life.kill()) {
+            spatial.clear();
         }
     }
 
@@ -70,7 +65,7 @@ public abstract class Creature
      */
     protected Location getLocation()
     {
-        return location;
+        return spatial.getLocation();
     }
     
     /**
@@ -79,11 +74,7 @@ public abstract class Creature
      */
     protected void setLocation(Location newLocation)
     {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
+        spatial.move(this, newLocation);
     }
     
      /**
@@ -92,7 +83,7 @@ public abstract class Creature
      */
     protected Field getField()
     {
-        return field;
+        return spatial.getField();
     }
     
 

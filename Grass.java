@@ -11,15 +11,7 @@ import java.util.Random;
  */
 public class Grass extends Plant
 {
-    // Characteristics shared by all Grass (class variables).
-
-    // The age to which a Grass can live.
-    private static final int MAX_SIZE = 50;
-    // The maximum grow rate.
-    private static final int MAX_GROW_RATE = 20;
-    // The likelihood of grass get steppe fire.
-    private static final double STEPPE_FIRE_PROBABILITY = 0.02;
-    // A shared random number generator to control breeding.
+    // (All species parameters are defined in SpeciesConfig.GRASS.)
     private static final Random rand = Randomizer.getRandom();
     
     // Individual characteristics (instance fields).
@@ -42,10 +34,10 @@ public class Grass extends Plant
         super(field, location);
 
         if(randomSize) {
-            size = rand.nextInt(MAX_SIZE);
+            size = rand.nextInt(SpeciesConfig.GRASS.maxSize);
         }
         else {
-            size = 50;
+            size = SpeciesConfig.GRASS.maxSize;
         }
         steppeFired = false;
     }
@@ -96,9 +88,9 @@ public class Grass extends Plant
      */
     private void incrementSize()
     {
-        size = size + rand.nextInt(MAX_GROW_RATE)+20;
-        if(size > MAX_SIZE) {
-            size = MAX_SIZE;
+        size = size + rand.nextInt(SpeciesConfig.GRASS.maxGrowRate) + SpeciesConfig.GRASS.maxGrowRate;
+        if(size > SpeciesConfig.GRASS.maxSize) {
+            size = SpeciesConfig.GRASS.maxSize;
         }
     }
     
@@ -118,7 +110,7 @@ public class Grass extends Plant
      */
     private void getSteppeFire()
     {
-        if(rand.nextDouble() <= STEPPE_FIRE_PROBABILITY) {
+        if(rand.nextDouble() <= SpeciesConfig.GRASS.steppFireProbability) {
             steppeFired = true;
         }        
     }

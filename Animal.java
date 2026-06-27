@@ -4,6 +4,15 @@ import java.util.Random;
 /**
  * A class representing shared characteristics of animals.
  *
+ * <p>Species-specific parameters (max age, breeding rates, food value, etc.)
+ * are no longer declared as constants in each subclass. Instead, every animal
+ * receives a {@link SpeciesConfig.AnimalParams} object at construction time,
+ * and {@code Animal} provides concrete getter methods that read from it. This
+ * keeps all tuneable values in {@link SpeciesConfig} and out of the species files.
+ *
+ * <p>The shared {@code rand} field is {@code protected} so subclass constructors
+ * can use it for random-age initialisation without declaring their own instance.
+ *
  * @version 2016.02.29 (2)
  */
 public abstract class Animal extends Entity
@@ -11,8 +20,11 @@ public abstract class Animal extends Entity
     /** Gender of an animal. */
     public enum Gender { M, F }
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    // Shared RNG — protected so species constructors can use it directly.
+    protected static final Random rand = Randomizer.getRandom();
+
+    // Tunable species parameters supplied at construction time.
+    private final SpeciesConfig.AnimalParams config;
 
     // The animal's burn level; when > 3 the animal dies.
     private int burn;
@@ -24,12 +36,14 @@ public abstract class Animal extends Entity
     /**
      * Create a new animal at location in field.
      *
+     * @param config The species parameters for this animal type.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field<Entity> field, Location location)
+    public Animal(SpeciesConfig.AnimalParams config, Field<Entity> field, Location location)
     {
         super(field, location);
+        this.config = config;
         burn = 0;
         gender = rand.nextBoolean() ? Gender.M : Gender.F;
         age = 0;
@@ -44,22 +58,17 @@ public abstract class Animal extends Entity
     @Override
     public abstract void act(List<Entity> newEntities, int step, String weather);
 
-    // --- Species configuration: each subclass provides these ---
+    // --- Species configuration (read from SpeciesConfig, not overridden per class) ---
 
-    /** @return this species' maximum lifespan. */
-    protected abstract int getMaxAge();
-
-    /** @return the minimum age at which this species can breed. */
-    protected abstract int getBreedingAge();
-
-    /** @return the per-step probability of breeding when eligible. */
-    protected abstract double getBreedingProbability();
-
-    /** @return the maximum litter size. */
-    protected abstract int getMaxLitterSize();
-
-    /** @return the food value this animal provides when eaten. */
-    public abstract int foodValue();
+    protected int    getMaxAge()              { return config.maxAge; }
+    protected int    getBreedingAge()         { return config.breedingAge; }
+    protected double getBreedingProbability() { return config.breedingProbability; }
+    protected int    getMaxLitterSize()       { return config.maxLitterSize; }
+    public    int    foodValue()              { return config.foodValue; }
+    /** Upper bound on food level used when spawning at a random age. */
+    protected int    getMaxFoodLevel()        { return config.maxFoodLevel; }
+    /** Starting food level for a newly born (age 0) animal. */
+    protected int    getInitialFoodLevel()    { return config.initialFoodLevel; }
 
     // --- Shared lifecycle logic ---
 

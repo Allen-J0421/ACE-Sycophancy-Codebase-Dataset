@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple model of a mouse.
@@ -11,19 +10,8 @@ import java.util.Random;
  */
 public class Mouse extends Animal
 {
-    // Characteristics shared by all mice (class variables).
-    private static final int BREEDING_AGE = 5;
-    private static final int MAX_AGE = 125;
-    private static final double BREEDING_PROBABILITY = 0.25;
-    private static final double INFECT_PROBABILITY = 0.01;
-    private static final int MAX_LITTER_SIZE = 10;
-    private static final int DEFAULT_FOOD_LEVEL = 5;
-    private static final Random rand = Randomizer.getRandom();
-    private static final int FOOD_VALUE = 5;
-    private static final double RECOVER_PROBABILITY = 0.3;
-    private static final double DETERIORATE_PROBABILITY = 0.15;
-
     // Individual characteristics (instance fields).
+    // (All species parameters are defined in SpeciesConfig.MOUSE.)
     private int foodLevel;
     // Infection level: 0 = healthy, 1-3 = infected (dies at 3).
     private int infect;
@@ -38,21 +26,16 @@ public class Mouse extends Animal
      */
     public Mouse(boolean randomAge, Field<Entity> field, Location location)
     {
-        super(field, location);
+        super(SpeciesConfig.MOUSE, field, location);
         if (randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
+            age = rand.nextInt(getMaxAge());
+            foodLevel = rand.nextInt(getMaxFoodLevel());
         } else {
-            foodLevel = DEFAULT_FOOD_LEVEL;
+            foodLevel = getInitialFoodLevel();
         }
     }
 
-    @Override protected int getMaxAge()                      { return MAX_AGE; }
-    @Override protected int getBreedingAge()                 { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability()      { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize()               { return MAX_LITTER_SIZE; }
-    @Override public    int foodValue()                      { return FOOD_VALUE; }
-    @Override public    Color getDisplayColor()              { return Color.YELLOW; }
+    @Override public Color getDisplayColor() { return Color.YELLOW; }
 
     /**
      * This is what the mouse does most of the time - it runs
@@ -139,7 +122,7 @@ public class Mouse extends Animal
      */
     private void tryInfect()
     {
-        if (rand.nextDouble() <= INFECT_PROBABILITY) {
+        if (rand.nextDouble() <= SpeciesConfig.MOUSE.infectProbability) {
             infect = 1;
         }
     }
@@ -179,9 +162,9 @@ public class Mouse extends Animal
      */
     private void diseaseRecover()
     {
-        if (rand.nextDouble() <= DETERIORATE_PROBABILITY) {
+        if (rand.nextDouble() <= SpeciesConfig.MOUSE.deteriorateProbability) {
             infect++;
-        } else if (rand.nextDouble() <= RECOVER_PROBABILITY) {
+        } else if (rand.nextDouble() <= SpeciesConfig.MOUSE.recoverProbability) {
             infect--;
         }
     }

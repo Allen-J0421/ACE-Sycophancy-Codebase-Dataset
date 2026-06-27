@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple model of a Deer.
@@ -11,16 +10,8 @@ import java.util.Random;
  */
 public class Deer extends Animal
 {
-    // Characteristics shared by all deer (class variables).
-    private static final int BREEDING_AGE = 10;
-    private static final int MAX_AGE = 175;
-    private static final double BREEDING_PROBABILITY = 0.10;
-    private static final int MAX_LITTER_SIZE = 5;
-    private static final Random rand = Randomizer.getRandom();
-    private static final int FOOD_VALUE = 50;
-    private static final int DEFAULT_FOOD_LEVEL = 250;
-
     // Individual characteristics (instance fields).
+    // (All species parameters are defined in SpeciesConfig.DEER.)
     private int foodLevel;
 
     /**
@@ -33,21 +24,16 @@ public class Deer extends Animal
      */
     public Deer(boolean randomAge, Field<Entity> field, Location location)
     {
-        super(field, location);
+        super(SpeciesConfig.DEER, field, location);
         if (randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
+            age = rand.nextInt(getMaxAge());
+            foodLevel = rand.nextInt(getMaxFoodLevel());
         } else {
-            foodLevel = DEFAULT_FOOD_LEVEL;
+            foodLevel = getInitialFoodLevel();
         }
     }
 
-    @Override protected int getMaxAge()                      { return MAX_AGE; }
-    @Override protected int getBreedingAge()                 { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability()      { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize()               { return MAX_LITTER_SIZE; }
-    @Override public    int foodValue()                      { return FOOD_VALUE; }
-    @Override public    Color getDisplayColor()              { return Color.BLUE; }
+    @Override public Color getDisplayColor() { return Color.BLUE; }
 
     /**
      * This is what the Deer does most of the time - it runs

@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple model of an Owl.
@@ -11,16 +10,8 @@ import java.util.Random;
  */
 public class Owl extends Animal
 {
-    // Characteristics shared by all owls (class variables).
-    private static final int BREEDING_AGE = 5;
-    private static final int MAX_AGE = 75;
-    private static final double BREEDING_PROBABILITY = 0.10;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int DEFAULT_FOOD_LEVEL = 25;
-    private static final Random rand = Randomizer.getRandom();
-    private static final int FOOD_VALUE = 10;
-
     // Individual characteristics (instance fields).
+    // (All species parameters are defined in SpeciesConfig.OWL.)
     private int foodLevel;
 
     /**
@@ -33,21 +24,16 @@ public class Owl extends Animal
      */
     public Owl(boolean randomAge, Field<Entity> field, Location location)
     {
-        super(field, location);
+        super(SpeciesConfig.OWL, field, location);
         if (randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
+            age = rand.nextInt(getMaxAge());
+            foodLevel = rand.nextInt(getMaxFoodLevel());
         } else {
-            foodLevel = DEFAULT_FOOD_LEVEL;
+            foodLevel = getInitialFoodLevel();
         }
     }
 
-    @Override protected int getMaxAge()                      { return MAX_AGE; }
-    @Override protected int getBreedingAge()                 { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability()      { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize()               { return MAX_LITTER_SIZE; }
-    @Override public    int foodValue()                      { return FOOD_VALUE; }
-    @Override public    Color getDisplayColor()              { return Color.ORANGE; }
+    @Override public Color getDisplayColor() { return Color.ORANGE; }
 
     /**
      * This is what the Owl does most of the time: it hunts for mice.

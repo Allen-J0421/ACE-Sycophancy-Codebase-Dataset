@@ -29,6 +29,45 @@ public abstract class Animal extends Actor
     }
 
     /**
+     * Initialize the shared state for a newborn animal.
+     * @param nocturnal Whether the animal is nocturnal.
+     * @param canGoLand Whether the animal can move on land.
+     * @param canGoWater Whether the animal can move on water.
+     * @param foodLevel The starting food level.
+     * @param parentDiseases The diseases inherited from the parent.
+     */
+    protected void initializeNewbornState(boolean nocturnal, boolean canGoLand, boolean canGoWater, int foodLevel, Set<Disease> parentDiseases)
+    {
+        female = Randomizer.getRandom().nextBoolean();
+        this.nocturnal = nocturnal;
+        this.canGoLand = canGoLand;
+        this.canGoWater = canGoWater;
+        age = 0;
+        this.foodLevel = foodLevel;
+        inheritBirthDiseases(parentDiseases);
+    }
+
+    /**
+     * Initialize the shared state for an animal that starts with a random age and food level.
+     * @param nocturnal Whether the animal is nocturnal.
+     * @param canGoLand Whether the animal can move on land.
+     * @param canGoWater Whether the animal can move on water.
+     * @param maxAge The exclusive upper bound for the initial age.
+     * @param maxFood The exclusive upper bound for the initial food level.
+     * @param actorName The actor name used for startup disease seeding.
+     */
+    protected void initializeRandomStartState(boolean nocturnal, boolean canGoLand, boolean canGoWater, int maxAge, int maxFood, String actorName)
+    {
+        female = Randomizer.getRandom().nextBoolean();
+        this.nocturnal = nocturnal;
+        this.canGoLand = canGoLand;
+        this.canGoWater = canGoWater;
+        age = Randomizer.getRandom().nextInt(maxAge);
+        foodLevel = Randomizer.getRandom().nextInt(maxFood) + 1;
+        seedStartingDiseases(actorName);
+    }
+
+    /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * Checks if the time of day matches if the animal is nocturnal or not,

@@ -1,5 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
@@ -37,19 +35,13 @@ public class Grass extends Plant
     public Grass(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
         super(time, field, location);
-        canGoLand = true;
-        canGoWater = false;
-        age = 0;
-        inheritBirthDiseases(parentDiseases);
+        initializeNewbornState(true, false, parentDiseases);
     }
 
     public Grass(Time time, Field field, Location location)
     {
         super(time, field, location);
-        canGoLand = true;
-        canGoWater = false;
-        age = rand.nextInt(MAX_AGE);
-        seedStartingDiseases(name);
+        initializeRandomStartState(true, false, MAX_AGE, name);
     }
 
     /**

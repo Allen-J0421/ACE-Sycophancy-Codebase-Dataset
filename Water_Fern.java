@@ -1,5 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
@@ -37,19 +35,13 @@ public class Water_Fern extends Plant
     public Water_Fern(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
         super(time, field, location);
-        canGoLand = false;
-        canGoWater = true;
-        age = 0;
-        inheritBirthDiseases(parentDiseases);
+        initializeNewbornState(false, true, parentDiseases);
     }
 
     public Water_Fern(Time time, Field field, Location location)
     {
         super(time, field, location);
-        canGoLand = false;
-        canGoWater = true;
-        age = rand.nextInt(MAX_AGE);
-        seedStartingDiseases(name);
+        initializeRandomStartState(false, true, MAX_AGE, name);
     }
 
     /**

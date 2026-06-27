@@ -1,5 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
@@ -45,25 +43,13 @@ public class Panther extends Animal
     public Panther(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
         super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = true;
-        canGoLand = true;
-        canGoWater = false;
-        age = 0;
-        foodLevel = MAX_FOOD;
-        inheritBirthDiseases(parentDiseases);
+        initializeNewbornState(true, true, false, MAX_FOOD, parentDiseases);
     }
 
     public Panther(Time time, Field field, Location location)
     {
         super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = true;
-        canGoLand = true;
-        canGoWater = false;
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD) + 1;
-        seedStartingDiseases(name);
+        initializeRandomStartState(true, true, false, MAX_AGE, MAX_FOOD, name);
     }
 
     /**

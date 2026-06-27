@@ -1,6 +1,4 @@
-import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -44,27 +42,13 @@ public class Catfish extends Animal
      */
     public Catfish(Time time, Field field, Location location, Set<Disease> parentDiseases){
         super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = true;
-        
-        canGoLand = false;
-        canGoWater = true;
-        
-        age = 0;
-        foodLevel = MAX_FOOD;
-        inheritBirthDiseases(parentDiseases);
+        initializeNewbornState(true, false, true, MAX_FOOD, parentDiseases);
     }
 
     public Catfish(Time time, Field field, Location location)
     {
         super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = true;
-        canGoLand = false;
-        canGoWater = true;
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD) + 1;
-        seedStartingDiseases(name);
+        initializeRandomStartState(true, false, true, MAX_AGE, MAX_FOOD, name);
     }
     
     /**

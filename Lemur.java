@@ -1,6 +1,4 @@
-import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -45,25 +43,13 @@ public class Lemur extends Animal
     public Lemur(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
         super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = false;
-        canGoLand = true;
-        canGoWater = false;
-        age = 0;
-        foodLevel = MAX_FOOD;
-        inheritBirthDiseases(parentDiseases);
+        initializeNewbornState(false, true, false, MAX_FOOD, parentDiseases);
     }
 
     public Lemur(Time time, Field field, Location location)
     {
         super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = false;
-        canGoLand = true;
-        canGoWater = false;
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD) + 1;
-        seedStartingDiseases(name);
+        initializeRandomStartState(false, true, false, MAX_AGE, MAX_FOOD, name);
     }
 
     /**

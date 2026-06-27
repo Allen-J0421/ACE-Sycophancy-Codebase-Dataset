@@ -29,6 +29,35 @@ public abstract class Plant extends Actor
     }
 
     /**
+     * Initialize the shared state for a newborn plant.
+     * @param canGoLand Whether the plant can move on land.
+     * @param canGoWater Whether the plant can move on water.
+     * @param parentDiseases The diseases inherited from the parent.
+     */
+    protected void initializeNewbornState(boolean canGoLand, boolean canGoWater, Set<Disease> parentDiseases)
+    {
+        this.canGoLand = canGoLand;
+        this.canGoWater = canGoWater;
+        age = 0;
+        inheritBirthDiseases(parentDiseases);
+    }
+
+    /**
+     * Initialize the shared state for a plant that starts with a random age.
+     * @param canGoLand Whether the plant can move on land.
+     * @param canGoWater Whether the plant can move on water.
+     * @param maxAge The exclusive upper bound for the initial age.
+     * @param actorName The actor name used for startup disease seeding.
+     */
+    protected void initializeRandomStartState(boolean canGoLand, boolean canGoWater, int maxAge, String actorName)
+    {
+        this.canGoLand = canGoLand;
+        this.canGoWater = canGoWater;
+        age = Randomizer.getRandom().nextInt(maxAge);
+        seedStartingDiseases(actorName);
+    }
+
+    /**
      * Make this plant act - that is: make it do
      * whatever it wants/needs to do.
      * Checks weather and updates water and sunlight levels accordingly.

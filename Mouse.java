@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @version 2022.03.02 
  */
-public class Mouse extends Animal
+public class Mouse extends BreedingAnimal
 {
     // Characteristics shared by all mouses (class variables).
 
@@ -57,6 +57,30 @@ public class Mouse extends Animal
     }
 
     @Override
+    protected int getBreedingAge()
+    {
+        return BREEDING_AGE;
+    }
+
+    @Override
+    protected double getBreedingProbability()
+    {
+        return BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected int getMaxLitterSize()
+    {
+        return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected Animal createYoung(Field field, Location location)
+    {
+        return new Mouse(false, field, location);
+    }
+
+    @Override
     protected void updateStatusAfterBurn(SimulationStep step)
     {
         checkInfectLevel();
@@ -74,7 +98,7 @@ public class Mouse extends Animal
             diseaseRecover();
         }
         else {
-            addOffspring(newMice, breed(), (field, location) -> new Mouse(false, field, location));
+            breed(newMice);
             infect();
         }
     }
@@ -99,16 +123,6 @@ public class Mouse extends Animal
             }
             return false;
         });
-    }
-    
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        return calculateBirths(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
     
     /**

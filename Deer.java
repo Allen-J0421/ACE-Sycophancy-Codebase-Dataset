@@ -6,7 +6,7 @@ import java.util.List;
  *
  * @version 2022.03.02 
  */
-public class Deer extends Animal
+public class Deer extends BreedingAnimal
 {
     // Characteristics shared by all Deers (class variables).
 
@@ -52,21 +52,45 @@ public class Deer extends Animal
     }
 
     @Override
+    protected int getBreedingAge()
+    {
+        return BREEDING_AGE;
+    }
+
+    @Override
+    protected double getBreedingProbability()
+    {
+        return BREEDING_PROBABILITY;
+    }
+
+    @Override
+    protected int getMaxLitterSize()
+    {
+        return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected boolean requiresMate()
+    {
+        return true;
+    }
+
+    @Override
+    protected int getMateSearchRadius()
+    {
+        return 2;
+    }
+
+    @Override
+    protected Animal createYoung(Field field, Location location)
+    {
+        return new Deer(false, field, location);
+    }
+
+    @Override
     protected void handleAliveStep(List<Organism> newDeers, SimulationStep step)
     {
-        if(hasAdjacentMate(Deer.class, 2)) {
-            addOffspring(newDeers, breed(), (field, location) -> new Deer(false, field, location));
-        }
-    }
-        
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        return calculateBirths(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        breed(newDeers);
     }
     
     /**

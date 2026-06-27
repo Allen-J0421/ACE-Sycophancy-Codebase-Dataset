@@ -3,7 +3,7 @@ import java.util.List;
 /**
  * Shared behavior for predators that hunt mice.
  */
-public abstract class MouseHunter extends Animal
+public abstract class MouseHunter extends BreedingAnimal
 {
     private final int breedingAge;
     private final int maxAge;
@@ -39,10 +39,31 @@ public abstract class MouseHunter extends Animal
      */
     protected abstract Animal createYoung(Field field, Location location);
 
+    /**
+     * @return The maximum age for this species.
+     */
     @Override
     protected final int getMaxAge()
     {
         return maxAge;
+    }
+
+    @Override
+    protected final int getBreedingAge()
+    {
+        return breedingAge;
+    }
+
+    @Override
+    protected final double getBreedingProbability()
+    {
+        return breedingProbability;
+    }
+
+    @Override
+    protected final int getMaxLitterSize()
+    {
+        return maxLitterSize;
     }
 
     @Override
@@ -54,8 +75,7 @@ public abstract class MouseHunter extends Animal
     @Override
     protected final void handleAliveStep(List<Organism> newOrganisms, SimulationStep step)
     {
-        addOffspring(newOrganisms, calculateBirths(breedingAge, breedingProbability, maxLitterSize),
-                     (field, location) -> createYoung(field, location));
+        breed(newOrganisms);
     }
 
     @Override

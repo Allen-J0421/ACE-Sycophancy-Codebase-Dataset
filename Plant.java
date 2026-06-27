@@ -12,32 +12,25 @@ import java.util.Random;
  */
 public class Plant extends LivingBeing
 {
-    // The plant's age
-    private int age;
-    //The probability that the plant can grow
     private static final double GROWING_PROBABILITY = 0.35;
-    //The probability that it will rain, affects growth
     private static final double RAIN_PROBABILITY = 0.25;
-
-    //The plant can only produce new plants if it is ripe
     private static final int RIPE_AGE = 3;
-    //Maximum age of a plant
     private static final int MAX_AGE = 10000;
-    //Maximum number of plants a plant can create
     private static final int MAX_NEW_PLANTS = 10;
 
     private static final Random rand = Randomizer.getRandom();
 
+    private int age;
+
     /**
      * Constructor for objects of class Plant
-     * @param randomAge If true, the plant will have random age and hunger level.
+     * @param randomAge If true, the plant will have random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
     public Plant(boolean randomAge, Field field, Location location)
     {
-        // initialise instance variables
-        super(field,location);
+        super(field, location);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
         }
@@ -52,10 +45,11 @@ public class Plant extends LivingBeing
      * @param newPlants A list to return newly born plants
      */
     @Override
-    public void act(List<LivingBeing> newPlants) {
+    public void act(List<LivingBeing> newPlants)
+    {
         incrementAge();
         if(isAlive()) {
-            makeNewPlants(newPlants);
+            spreadSeeds(newPlants);
         }
     }
 
@@ -63,15 +57,14 @@ public class Plant extends LivingBeing
      * Check if new plants will be created
      * @param newPlants A list to return newly made plants
      */
-    private void makeNewPlants(List<LivingBeing> newPlants) {
-        //gets adjacent locations and populates it if it can give birth
+    private void spreadSeeds(List<LivingBeing> newPlants)
+    {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = grow();
+        int births = getSeedlingCount();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Plant p = new Plant(false, field, loc);
-            newPlants.add(p);
+            newPlants.add(new Plant(false, field, loc));
         }
     }
 
@@ -80,26 +73,24 @@ public class Plant extends LivingBeing
      * and the probability that it is raining
      * @return The number of new plants made (may be zero)
      */
-    private int grow() {
-        int numOfNewPlants = 0;
-        if(rand.nextDouble() <= GROWING_PROBABILITY) {
-            if(canDisperseSeeds() && rand.nextDouble() <= RAIN_PROBABILITY) {
-                if(isNight()) {
-                    numOfNewPlants = rand.nextInt(MAX_NEW_PLANTS) + 1; //Plants will only grow if it rains
-                } else{
-                    numOfNewPlants = rand.nextInt(MAX_NEW_PLANTS) + 2; //More new plants created in day time
-                }
-            } else {
-                numOfNewPlants = 0; 
-            }
+    private int getSeedlingCount()
+    {
+        if(rand.nextDouble() > GROWING_PROBABILITY) {
+            return 0;
         }
-        return numOfNewPlants;
+        if(!canDisperseSeeds() || rand.nextDouble() > RAIN_PROBABILITY) {
+            return 0;
+        }
+
+        int minimumSeedlings = isNight() ? 1 : 2;
+        return rand.nextInt(MAX_NEW_PLANTS) + minimumSeedlings;
     }
 
     /**
      * A Plant can only disperse if it is ripe
      */
-    private boolean canDisperseSeeds() {
+    private boolean canDisperseSeeds()
+    {
         return age >= RIPE_AGE;
     }
 

@@ -129,7 +129,7 @@ public abstract class Animal extends LivingBeing
 
         Location newLocation = findFood();
         if(newLocation == null && getLocation() != null) {
-            newLocation = getField().freeAdjacentLocation(getLocation());
+            newLocation = getField().getFreeAdjacentLocation(getLocation());
         }
 
         if(newLocation != null) {
@@ -160,7 +160,7 @@ public abstract class Animal extends LivingBeing
             return null;
         }
 
-        for(Location where : field.adjacentLocations(getLocation())) {
+        for(Location where : field.getAdjacentLocations(getLocation())) {
             LivingBeing occupant = field.getLivingBeingAt(where);
             for(Map.Entry<Class<? extends LivingBeing>, Integer> food :
                     profile.foodValues.entrySet()) {
@@ -183,7 +183,7 @@ public abstract class Animal extends LivingBeing
             return;
         }
 
-        for(Location where : field.adjacentLocations(getLocation())) {
+        for(Location where : field.getAdjacentLocations(getLocation())) {
             LivingBeing occupant = field.getLivingBeingAt(where);
             if(getClass().isInstance(occupant) && hasOppositeSex((Animal) occupant)) {
                 List<Location> free = field.getFreeAdjacentLocations(getLocation());

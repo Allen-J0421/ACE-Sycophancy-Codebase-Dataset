@@ -19,6 +19,7 @@ import java.util.Map;
  *
  * @version 2016.02.29
  */
+@SuppressWarnings({"serial", "this-escape"})
 public class SimulatorView extends JFrame
 {
     // Colors used for empty locations.
@@ -29,15 +30,17 @@ public class SimulatorView extends JFrame
 
     private static final String STEP_PREFIX = "Step: ";
     private static final String POPULATION_PREFIX = "Population: ";
-    private JLabel stepLabel, population, infoLabel;
-    private FieldView fieldView;
+    private final JLabel stepLabel;
+    private final JLabel population;
+    private final JLabel infoLabel;
+    private final FieldView fieldView;
     
     private boolean night;
     
     // A map for storing colors for participants in the simulation
-    private Map<Class<?>, Color> colors;
+    private final Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    private final FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -61,8 +64,8 @@ public class SimulatorView extends JFrame
         Container contents = getContentPane();
         
         JPanel infoPane = new JPanel(new BorderLayout());
-            infoPane.add(stepLabel, BorderLayout.WEST);
-            infoPane.add(infoLabel, BorderLayout.CENTER);
+        infoPane.add(stepLabel, BorderLayout.WEST);
+        infoPane.add(infoLabel, BorderLayout.CENTER);
         contents.add(infoPane, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
@@ -101,15 +104,9 @@ public class SimulatorView extends JFrame
      */
     private Color getColor(Class<?> beingClass)
     {
-        Color col = colors.get(beingClass);
-        if(col == null) {
-            // no color defined for this class
-            return UNKNOWN_COLOR;
-        }
-        else {
-            return col;
-        }
+        return colors.getOrDefault(beingClass, UNKNOWN_COLOR);
     }
+
     /**
      * Show the current status of the field.
      * @param step Which iteration step it is.
@@ -163,11 +160,12 @@ public class SimulatorView extends JFrame
      */
     private class FieldView extends JPanel
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
+        private static final int GRID_VIEW_SCALING_FACTOR = 6;
 
-        private int gridWidth, gridHeight;
+        private final int gridWidth;
+        private final int gridHeight;
         private int xScale, yScale;
-        Dimension size;
+        private Dimension size;
         private Graphics g;
         private Image fieldImage;
 
@@ -184,6 +182,7 @@ public class SimulatorView extends JFrame
         /**
          * Tell the GUI manager how big we would like to be.
          */
+        @Override
         public Dimension getPreferredSize()
         {
             return new Dimension(gridWidth * GRID_VIEW_SCALING_FACTOR,
@@ -198,7 +197,7 @@ public class SimulatorView extends JFrame
         {
             if(! size.equals(getSize())) {  // if the size has changed...
                 size = getSize();
-                fieldImage = fieldView.createImage(size.width, size.height);
+                fieldImage = createImage(size.width, size.height);
                 g = fieldImage.getGraphics();
 
                 xScale = size.width / gridWidth;
@@ -225,6 +224,7 @@ public class SimulatorView extends JFrame
          * The field view component needs to be redisplayed. Copy the
          * internal image to screen.
          */
+        @Override
         public void paintComponent(Graphics g)
         {
             if(fieldImage != null) {

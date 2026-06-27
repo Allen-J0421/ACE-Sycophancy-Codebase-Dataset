@@ -17,7 +17,7 @@ public class Field
     private final int depth;
     private final int width;
     // Storage for living beings.
-    private final LivingBeing[][] field;
+    private final LivingBeing[][] occupants;
 
     /**
      * Represent a field of the given dimensions.
@@ -28,7 +28,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new LivingBeing[depth][width];
+        occupants = new LivingBeing[depth][width];
     }
     
     /**
@@ -38,7 +38,7 @@ public class Field
     {
         for(int row = 0; row < depth; row++) {
             for(int col = 0; col < width; col++) {
-                field[row][col] = null;
+                occupants[row][col] = null;
             }
         }
     }
@@ -49,7 +49,7 @@ public class Field
      */
     public void clear(Location location)
     {
-        field[location.getRow()][location.getCol()] = null;
+        occupants[location.getRow()][location.getCol()] = null;
     }
     
     /**
@@ -74,7 +74,7 @@ public class Field
      */
     public void place(LivingBeing being, Location location)
     {
-        field[location.getRow()][location.getCol()] = being;
+        occupants[location.getRow()][location.getCol()] = being;
     }
     
     /**
@@ -95,7 +95,7 @@ public class Field
      */
     public LivingBeing getLivingBeingAt(int row, int col)
     {
-        return field[row][col];
+        return occupants[row][col];
     }
     
     /**
@@ -108,7 +108,7 @@ public class Field
      */
     public Location randomAdjacentLocation(Location location)
     {
-        List<Location> adjacent = adjacentLocations(location);
+        List<Location> adjacent = getAdjacentLocations(location);
         return adjacent.get(0);
     }
     
@@ -120,7 +120,7 @@ public class Field
     public List<Location> getFreeAdjacentLocations(Location location)
     {
         List<Location> free = new LinkedList<>();
-        List<Location> adjacent = adjacentLocations(location);
+        List<Location> adjacent = getAdjacentLocations(location);
         for(Location next : adjacent) {
             if(getLivingBeingAt(next) == null) {
                 free.add(next);
@@ -137,7 +137,7 @@ public class Field
      * @param location The location from which to generate an adjacency.
      * @return A valid location within the grid area.
      */
-    public Location freeAdjacentLocation(Location location)
+    public Location getFreeAdjacentLocation(Location location)
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);
@@ -156,9 +156,9 @@ public class Field
      * @param location The location from which to generate adjacencies.
      * @return A list of locations adjacent to that given.
      */
-    public List<Location> adjacentLocations(Location location)
+    public List<Location> getAdjacentLocations(Location location)
     {
-        assert location != null : "Null location passed to adjacentLocations";
+        assert location != null : "Null location passed to getAdjacentLocations";
         // The list of locations to be returned.
         List<Location> locations = new LinkedList<>();
         if(location != null) {

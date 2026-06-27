@@ -21,6 +21,7 @@ public abstract class LivingBeing
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
+    @SuppressWarnings("this-escape")
     public LivingBeing(Field field, Location location)
     {
         alive = true;

@@ -105,6 +105,7 @@ public class Simulator
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
      */
+    @SuppressWarnings("this-escape")
     public Simulator(int depth, int width)
     {
         if(width <= 0 || depth <= 0) {

@@ -12,15 +12,6 @@ import java.util.Arrays;
  */
 public class PopulationManager
 {
-    // Creation probabilities for each entity type.
-    private static final double HYENA_CREATION_PROBABILITY     = 0.02;
-    private static final double LION_CREATION_PROBABILITY      = 0.02;
-    private static final double GAZELLE_CREATION_PROBABILITY   = 0.02;
-    private static final double MOUSE_CREATION_PROBABILITY     = 0.02;
-    private static final double FENNECFOX_CREATION_PROBABILITY = 0.02;
-    private static final double GRASS_CREATION_PROBABILITY     = 0.2;
-    private static final double LAKE_CREATION_PROBABILITY      = 0.005;
-
     private final Field field;
     private final Simulator simulator;
     // Diseases are held here because they are created during populate() and
@@ -60,7 +51,7 @@ public class PopulationManager
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                if(rand.nextDouble() <= LAKE_CREATION_PROBABILITY) {
+                if(rand.nextDouble() <= SimulationConfiguration.LAKE_CREATION_PROBABILITY) {
                     Lake lake = new Lake(true, field, location);
                     actors.add(lake);
                     // Spread lake over adjacent cells to create realistic water bodies.
@@ -68,22 +59,22 @@ public class PopulationManager
                         actors.add(new Lake(true, field, adj));
                     }
                 }
-                else if(rand.nextDouble() <= HYENA_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SimulationConfiguration.HYENA_CREATION_PROBABILITY) {
                     actors.add(new Hyena(true, field, location));
                 }
-                else if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SimulationConfiguration.LION_CREATION_PROBABILITY) {
                     actors.add(new Lion(true, field, location));
                 }
-                else if(rand.nextDouble() <= GAZELLE_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SimulationConfiguration.GAZELLE_CREATION_PROBABILITY) {
                     actors.add(new Gazelle(true, field, location));
                 }
-                else if(rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SimulationConfiguration.MOUSE_CREATION_PROBABILITY) {
                     actors.add(new Mouse(true, field, location));
                 }
-                else if(rand.nextDouble() <= FENNECFOX_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SimulationConfiguration.FENNECFOX_CREATION_PROBABILITY) {
                     actors.add(new FennecFox(true, field, location));
                 }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= SimulationConfiguration.GRASS_CREATION_PROBABILITY) {
                     actors.add(new Grass(true, field, location));
                 }
             }
@@ -99,9 +90,11 @@ public class PopulationManager
     {
         Random rand = Randomizer.getRandom();
         List<Actor> newWater = new ArrayList<>();
+        double rainLakeProbability = SimulationConfiguration.LAKE_CREATION_PROBABILITY
+                                     / SimulationConfiguration.GRID_DEPTH;
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() < LAKE_CREATION_PROBABILITY / 120) {
+                if(rand.nextDouble() < rainLakeProbability) {
                     Location location = new Location(row, col);
                     newWater.add(new Lake(true, field, location));
                     for(Location adj : field.adjacentLocations(location)) {

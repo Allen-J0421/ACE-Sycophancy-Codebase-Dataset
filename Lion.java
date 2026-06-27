@@ -11,23 +11,7 @@ import java.util.Arrays;
  */
 public class Lion extends Animal
 {
-    // Characteristics shared by all lions (class variables).
-
-    // The age at which a lion can start to breed.
-    private static final int BREEDING_AGE = 15;
-    // The age to which a lion can live.
-    private static final int MAX_AGE = 200;
-    // The likelihood of a lion breeding.
-    private static final double BREEDING_PROBABILITY = 0.5;
-    // The maximum number of births a lion can give.
-    private static final int MAX_LITTER_SIZE = 4;
-    // The probability of the animal successfully hunting their food
-    private static final double SUCCESSFUL_HUNT_PROB = 0.65;
-    // The food value of a lion
-    private static final int LION_FOOD_VALUE = 15;
-    // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    // A list of the prey that the lion eats
     private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Gazelle"));
 
     /**
@@ -42,22 +26,22 @@ public class Lion extends Animal
     {
         super(randomAge, field, location);
         if(randomAge) {
-            this.setAge(rand.nextInt(MAX_AGE));
-            this.setFoodLevel(LION_FOOD_VALUE + 5);
+            this.setAge(rand.nextInt(SimulationConfiguration.LION_MAX_AGE));
+            this.setFoodLevel(SimulationConfiguration.LION_FOOD_VALUE + 5);
         }
     }
 
     @Override
-    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected int getBreedingAge() { return SimulationConfiguration.LION_BREEDING_AGE; }
 
     @Override
-    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected double getBreedingProbability() { return SimulationConfiguration.LION_BREEDING_PROBABILITY; }
 
     @Override
-    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected int getMaxLitterSize() { return SimulationConfiguration.LION_MAX_LITTER_SIZE; }
 
     @Override
-    public int getMaxAge() { return MAX_AGE; }
+    public int getMaxAge() { return SimulationConfiguration.LION_MAX_AGE; }
 
     @Override
     protected Animal createOffspring(Field field, Location loc) {
@@ -65,28 +49,11 @@ public class Lion extends Animal
     }
 
     @Override
-    protected double getHuntProbability() { return SUCCESSFUL_HUNT_PROB; }
+    protected double getHuntProbability() { return SimulationConfiguration.LION_HUNT_PROBABILITY; }
 
-    /**
-     * @return The food value of a lion
-     */
-    public int getFoodValue()
-    {
-        return LION_FOOD_VALUE;
-    }
+    public int getFoodValue() { return SimulationConfiguration.LION_FOOD_VALUE; }
 
-    /**
-     * @return The probability of a lion successfully hunting its prey
-     */
-    public double getHuntProb() {
-        return SUCCESSFUL_HUNT_PROB;
-    }
+    public double getHuntProb() { return SimulationConfiguration.LION_HUNT_PROBABILITY; }
 
-    /**
-     * @return The list of prey which it eats
-     */
-    public ArrayList<String> getPrey()
-    {
-        return prey;
-    }
+    public ArrayList<String> getPrey() { return prey; }
 }

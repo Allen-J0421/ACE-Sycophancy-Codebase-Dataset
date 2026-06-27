@@ -11,11 +11,6 @@ import java.awt.Color;
  */
 public class Simulator
 {
-    // The default width for the grid.
-    private static final int DEFAULT_WIDTH = 150;
-    // The default depth of the grid.
-    private static final int DEFAULT_DEPTH = 120;
-
     // List of all actors in the simulation.
     private List<Actor> actors;
     // The current state of the field.
@@ -34,7 +29,7 @@ public class Simulator
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(SimulationConfiguration.GRID_DEPTH, SimulationConfiguration.GRID_WIDTH);
     }
 
     /**
@@ -47,8 +42,8 @@ public class Simulator
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
+            depth = SimulationConfiguration.GRID_DEPTH;
+            width = SimulationConfiguration.GRID_WIDTH;
         }
         nightTime = false;
         actors = new ArrayList<>();

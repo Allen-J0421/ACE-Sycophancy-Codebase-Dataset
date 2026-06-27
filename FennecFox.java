@@ -11,23 +11,7 @@ import java.util.Arrays;
  */
 public class FennecFox extends Animal
 {
-    // Characteristics shared by all fennec foxes (class variables).
-
-    // The age at which a fennec fox can start to breed.
-    private static final int BREEDING_AGE = 12;
-    // The age to which a fennec fox can live.
-    private static final int MAX_AGE = 100;
-    // The likelihood of a fennec fox breeding.
-    private static final double BREEDING_PROBABILITY = 0.5;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 2;
-    // The probability of the animal successfully hunting their food.
-    private static final double SUCCESSFUL_HUNT_PROB = 0.6;
-    // The food value of a single fennec fox.
-    private static final int FENNECFOX_FOOD_VALUE = 12;
-    // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    // A list of the prey that the fennec fox eats.
     private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Grass", "Mouse"));
 
     /**
@@ -43,22 +27,22 @@ public class FennecFox extends Animal
         super(randomAge, field, location);
         setNocturnal();
         if(randomAge) {
-            this.setAge(rand.nextInt(MAX_AGE));
-            this.setFoodLevel(FENNECFOX_FOOD_VALUE);
+            this.setAge(rand.nextInt(SimulationConfiguration.FENNECFOX_MAX_AGE));
+            this.setFoodLevel(SimulationConfiguration.FENNECFOX_FOOD_VALUE);
         }
     }
 
     @Override
-    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected int getBreedingAge() { return SimulationConfiguration.FENNECFOX_BREEDING_AGE; }
 
     @Override
-    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected double getBreedingProbability() { return SimulationConfiguration.FENNECFOX_BREEDING_PROBABILITY; }
 
     @Override
-    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected int getMaxLitterSize() { return SimulationConfiguration.FENNECFOX_MAX_LITTER_SIZE; }
 
     @Override
-    public int getMaxAge() { return MAX_AGE; }
+    public int getMaxAge() { return SimulationConfiguration.FENNECFOX_MAX_AGE; }
 
     @Override
     protected Animal createOffspring(Field field, Location loc) {
@@ -66,22 +50,9 @@ public class FennecFox extends Animal
     }
 
     @Override
-    protected double getHuntProbability() { return SUCCESSFUL_HUNT_PROB; }
+    protected double getHuntProbability() { return SimulationConfiguration.FENNECFOX_HUNT_PROBABILITY; }
 
-    /**
-     * @return the food value of a fennec fox, which a predator gains if
-     * the fennec fox is eaten
-     */
-    public int getFoodValue()
-    {
-        return FENNECFOX_FOOD_VALUE;
-    }
+    public int getFoodValue() { return SimulationConfiguration.FENNECFOX_FOOD_VALUE; }
 
-    /**
-     * @return The list of prey which it eats
-     */
-    public ArrayList<String> getPrey()
-    {
-        return prey;
-    }
+    public ArrayList<String> getPrey() { return prey; }
 }

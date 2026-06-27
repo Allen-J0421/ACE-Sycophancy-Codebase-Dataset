@@ -8,16 +8,15 @@ public class Leptospirosis extends Disease
 {
     /**
      * Constructor for Leptospirosis disease
-     * 
+     *
      * @param field The field currently occupied
      */
     public Leptospirosis(Field field)
     {
         super(field);
-        addSpecies("Lion", "Hyena", "Mouse", "Gazelle", "Lake");
-        setProbability(0.0000008);
-        setInfectiousness(0.001);
-        setDuration(10);
+        addSpecies(SimulationConfiguration.LEPTOSPIROSIS_AFFECTED_SPECIES);
+        setProbability(SimulationConfiguration.LEPTOSPIROSIS_PROBABILITY);
+        setInfectiousness(SimulationConfiguration.LEPTOSPIROSIS_INFECTIOUSNESS);
+        setDuration(SimulationConfiguration.LEPTOSPIROSIS_DURATION);
     }
-
 }

@@ -8,16 +8,16 @@ import java.util.ArrayList;
 public class Covid extends Disease
 {
     /**
-     * Constructor for Covid disease 
-     * 
+     * Constructor for Covid disease
+     *
      * @param field The field currently occupied
      */
     public Covid(Field field)
     {
         super(field);
-        addSpecies("Gazelle", "Lion", "Hyena");
-        setProbability(0.000001);
-        setInfectiousness(0.005);
-        setDuration(8);
+        addSpecies(SimulationConfiguration.COVID_AFFECTED_SPECIES);
+        setProbability(SimulationConfiguration.COVID_PROBABILITY);
+        setInfectiousness(SimulationConfiguration.COVID_INFECTIOUSNESS);
+        setDuration(SimulationConfiguration.COVID_DURATION);
     }
 }

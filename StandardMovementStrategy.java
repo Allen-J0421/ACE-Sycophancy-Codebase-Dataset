@@ -14,19 +14,14 @@
  */
 public class StandardMovementStrategy implements MovementStrategy
 {
-    // Water level below which water becomes the top priority.
-    private static final int WATER_URGENCY_THRESHOLD = 3;
-    // Food level below which food becomes higher priority than finding a mate.
-    private static final int FOOD_URGENCY_THRESHOLD  = 8;
-
     @Override
     public Location selectDestination(Animal animal)
     {
-        if(animal.getWaterLevel() < WATER_URGENCY_THRESHOLD) {
+        if(animal.getWaterLevel() < SimulationConfiguration.WATER_URGENCY_THRESHOLD) {
             Location loc = animal.findWater();
             if(loc != null) return loc;
         }
-        if(animal.getFoodLevel() < FOOD_URGENCY_THRESHOLD) {
+        if(animal.getFoodLevel() < SimulationConfiguration.FOOD_URGENCY_THRESHOLD) {
             Location loc = animal.findFood(animal.getPrey());
             if(loc != null) return loc;
         }

@@ -11,16 +11,11 @@ import java.util.ArrayList;
  */
 public class Weather implements Actor
 {
-    // Probability of rain occurring
-    private static final double RAIN_PROB = 0.12;
-    // Probability of fog occurring
-    private static final double FOG_PROB = 0.005;
-    // Probability of a heatwave occurring 
-    private static final double HEATWAVE_PROB = 0.0001;
     // Indicates whether new water sources need to be generated
     private boolean generateWater = false;
     // The simulator
     private Simulator simulator;
+
     /**
      * Constructor for objects of class Weather
      */
@@ -35,51 +30,41 @@ public class Weather implements Actor
      * @param newActors A list to receive any species affected by the weather event
      */
     public void act(List<Actor> actorsList) {
-        //generate a random value and compare it with the probability of
-        //different types of weather occurring.
         Random rand = new Random();
-        if (rand.nextDouble() <= RAIN_PROB) {
+        if(rand.nextDouble() <= SimulationConfiguration.RAIN_PROBABILITY) {
             generateWater = makeRain(actorsList);
         }
-        else if (rand.nextDouble() <= FOG_PROB){
+        else if(rand.nextDouble() <= SimulationConfiguration.FOG_PROBABILITY) {
             makeFog(actorsList);
         }
-        else if (rand.nextDouble() <= HEATWAVE_PROB) {
+        else if(rand.nextDouble() <= SimulationConfiguration.HEATWAVE_PROBABILITY) {
             makeHeatWave(actorsList);
         }
     }
 
     /**
-     * What happens when rain occurs. 
-     * Water value for all objects are increased by 5, which is the water value of rain.
-     * This in turn affects each object's behaviour.
-     * @param newActors A list to receive any species affected by the weather event
+     * What happens when rain occurs.
+     * Water value for all objects are increased, which is the water value of rain.
+     * @param actorsList A list to receive any species affected by the weather event
      */
-    protected boolean makeRain(List<Actor> actorsList){
-        //it will now rain for 3 steps
+    protected boolean makeRain(List<Actor> actorsList) {
         int current = simulator.getStep();
-        int stop = current + 3;
-        ArrayList<WaterSources> newWater = new ArrayList<>();
-        while (current <= stop) {
-            //iterate over all actors in the simulation
+        int stop = current + SimulationConfiguration.RAIN_DURATION;
+        while(current <= stop) {
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
                 Actor actor = it.next();
-                //add rain water value to each actor's water level
-                if (actor instanceof Plant) {
+                if(actor instanceof Plant) {
                     Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() + 5;
-                    plant.setWaterLevel(newWaterLevel);
+                    plant.setWaterLevel(plant.getWaterLevel() + SimulationConfiguration.RAIN_WATER_BONUS);
                 }
-                else if (actor instanceof Animal) {
+                else if(actor instanceof Animal) {
                     Animal animal = (Animal) actor;
-                    int newWaterLevel = animal.getWaterLevel() + 5;
-                    animal.setWaterLevel(newWaterLevel);
+                    animal.setWaterLevel(animal.getWaterLevel() + SimulationConfiguration.RAIN_WATER_BONUS);
                 }
-                else if (actor instanceof WaterSources){
+                else if(actor instanceof WaterSources) {
                     WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() + 10;
-                    source.setVolume(newVolume);
+                    source.setVolume(source.getVolume() + SimulationConfiguration.RAIN_VOLUME_BONUS);
                 }
                 current++;
             }
@@ -88,36 +73,28 @@ public class Weather implements Actor
     }
 
     /**
-     * What happens when fog occurs. 
-     * Water value for some objects are increased by 2 
-     * and causes animals to not be able to conduct normal behaviour when there is gof.
-     * This in turn affects each object's behaviour.
-     * @param newActors A list to receive any species affected by the weather event
+     * What happens when fog occurs.
+     * Water value for some objects are increased and animals cannot act normally.
+     * @param actorsList A list to receive any species affected by the weather event
      */
     protected void makeFog(List<Actor> actorsList) {
-        //fog occurs for 1 step
         int current = simulator.getStep();
-        int stop = current + 1;
-        while (current <= stop) {
-            //iterate over all actors in the simulation
+        int stop = current + SimulationConfiguration.FOG_DURATION;
+        while(current <= stop) {
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
                 Actor actor = it.next();
-                //plant's & water sources' water levels increase a bit
-                if (actor instanceof Plant) {
+                if(actor instanceof Plant) {
                     Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() + 2;
-                    plant.setWaterLevel(newWaterLevel);
+                    plant.setWaterLevel(plant.getWaterLevel() + SimulationConfiguration.FOG_WATER_BONUS);
                 }
-                else if (actor instanceof Animal) {
-                    //animals can't do anything
+                else if(actor instanceof Animal) {
                     Animal animal = (Animal) actor;
                     animal.setSleepStatus();
                 }
-                else if (actor instanceof WaterSources){
+                else if(actor instanceof WaterSources) {
                     WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() + 2;
-                    source.setVolume(newVolume);
+                    source.setVolume(source.getVolume() + SimulationConfiguration.FOG_VOLUME_BONUS);
                 }
                 current++;
             }
@@ -125,35 +102,28 @@ public class Weather implements Actor
     }
 
     /**
-     * What happens when a heatwave occurs. 
-     * Water value for all objects is halved by 2 to show impact of extreme exposure to heat.
-     * This in turn affects each object's behaviour.
-     * @param newActors A list to receive any species affected by the weather event
+     * What happens when a heatwave occurs.
+     * Water value for all objects is divided to show impact of extreme heat.
+     * @param actorsList A list to receive any species affected by the weather event
      */
-    protected void makeHeatWave(List<Actor> actorsList){
-        //heatwave occurs for one step
+    protected void makeHeatWave(List<Actor> actorsList) {
         int current = simulator.getStep();
-        int stop = current + 1;
-        while (current <= stop) {
-            //iterate over all actors in the simulation
+        int stop = current + SimulationConfiguration.HEATWAVE_DURATION;
+        while(current <= stop) {
             Iterator<Actor> it = actorsList.iterator();
             while(it.hasNext()) {
                 Actor actor = it.next();
-                //water value halved by 2 for all actors
-                if (actor instanceof Plant) {
+                if(actor instanceof Plant) {
                     Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() / 2;
-                    plant.setWaterLevel(newWaterLevel);
+                    plant.setWaterLevel(plant.getWaterLevel() / SimulationConfiguration.HEATWAVE_WATER_DIVISOR);
                 }
-                else if (actor instanceof Animal) {
+                else if(actor instanceof Animal) {
                     Animal animal = (Animal) actor;
-                    int newWaterLevel = animal.getWaterLevel() / 2;
-                    animal.setWaterLevel(newWaterLevel);
+                    animal.setWaterLevel(animal.getWaterLevel() / SimulationConfiguration.HEATWAVE_WATER_DIVISOR);
                 }
-                else if (actor instanceof WaterSources){
+                else if(actor instanceof WaterSources) {
                     WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() / 2;
-                    source.setVolume(newVolume);
+                    source.setVolume(source.getVolume() / SimulationConfiguration.HEATWAVE_WATER_DIVISOR);
                 }
                 current++;
             }

@@ -8,17 +8,6 @@ import java.util.List;
  */
 public class Grass extends Plant
 {
-    // Characteristics shared by all grass (class variables).
-
-    // The age to which a grass can live.
-    private static final int MAX_AGE = 20;
-    // The likelihood of a grass reproducing.
-    private static final double REPRODUCTION_PROBABILITY = 0.44;
-    // The maximum number of times it can reproduce.
-    private static final int MAX_LITTER_SIZE = 6;
-    // The food value of a single grass.
-    private static final int GRASS_FOOD_VALUE = 10;
-    // A shared random number generator to control reproduction of grass.
     private static final Random rand = Randomizer.getRandom();
 
     /**
@@ -34,7 +23,7 @@ public class Grass extends Plant
         super(randomAge, field, location);
         this.setAge(0);
         if(randomAge) {
-            this.setAge(rand.nextInt(MAX_AGE));
+            this.setAge(rand.nextInt(SimulationConfiguration.GRASS_MAX_AGE));
             setWaterLevel(rand.nextInt(15));
         }
     }
@@ -55,28 +44,23 @@ public class Grass extends Plant
     }
 
     @Override
-    protected int getMaxAge() { return MAX_AGE; }
+    protected int getMaxAge() { return SimulationConfiguration.GRASS_MAX_AGE; }
 
     @Override
-    protected double getReproductionProbability() { return REPRODUCTION_PROBABILITY; }
+    protected double getReproductionProbability() { return SimulationConfiguration.GRASS_REPRODUCTION_PROBABILITY; }
 
     @Override
-    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    protected int getMaxLitterSize() { return SimulationConfiguration.GRASS_MAX_LITTER_SIZE; }
 
-    /** Grass can reproduce when its water level is sufficient. */
     @Override
-    protected boolean canReproduce() { return getWaterLevel() >= 9; }
+    protected boolean canReproduce() {
+        return getWaterLevel() >= SimulationConfiguration.GRASS_WATER_REPRODUCTION_THRESHOLD;
+    }
 
     @Override
     protected Plant createOffspring(Field field, Location loc) {
         return new Grass(false, field, loc);
     }
 
-    /**
-     * @return GRASS_FOOD_VALUE The food value of grass.
-     */
-    public int getFoodValue()
-    {
-        return GRASS_FOOD_VALUE;
-    }
+    public int getFoodValue() { return SimulationConfiguration.GRASS_FOOD_VALUE; }
 }

@@ -56,14 +56,18 @@ public abstract class Actor
         this.weather = weather;
         setWeatherEffects();
 
-        // sets time of day and determines which time function to run
+        // Sets the time of day and runs only the corresponding action.
+        // The break statements are essential: without them case 0 falls
+        // through into case 1, running nightAct on every day step.
         switch (timeOfDay) {
             case 0:
                 day = true;
                 dayAct(newActors);
+                break;
             case 1:
                 day = false;
                 nightAct(newActors);
+                break;
         }
     }
 

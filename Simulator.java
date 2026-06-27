@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
 import java.util.Map;
-import java.util.Collections;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -85,14 +84,13 @@ public class Simulator
     private List<SpawnRule> createSpawnRules()
     {
         List<SpawnRule> rules = new ArrayList<>();
-        Location location = new Location(0, 0);
-        rules.add(new SpawnRule(new Grass(time, field, location), 0.8));
-        rules.add(new SpawnRule(new Water_Fern(time, field, location), 0.9));
-        rules.add(new SpawnRule(new Salamander(time, field, location), 0.5));
-        rules.add(new SpawnRule(new Catfish(time, field, location), 0.7));
-        rules.add(new SpawnRule(new Lemur(time, field, location), 0.45));
-        rules.add(new SpawnRule(new Panther(time, field, location), 0.3));
-        rules.add(new SpawnRule(new Alligator(time, field, location), 0.25));
+        rules.add(new SpawnRule(0.8, true, false, location -> new Grass(time, field, location)));
+        rules.add(new SpawnRule(0.9, false, true, location -> new Water_Fern(time, field, location)));
+        rules.add(new SpawnRule(0.5, true, true, location -> new Salamander(time, field, location)));
+        rules.add(new SpawnRule(0.7, true, true, location -> new Catfish(time, field, location)));
+        rules.add(new SpawnRule(0.45, true, false, location -> new Lemur(time, field, location)));
+        rules.add(new SpawnRule(0.3, true, false, location -> new Panther(time, field, location)));
+        rules.add(new SpawnRule(0.25, true, true, location -> new Alligator(time, field, location)));
         return rules;
     }
 
@@ -101,14 +99,26 @@ public class Simulator
      */
     private static final class SpawnRule
     {
-        private final Actor prototype;
         private final double probability;
+        private final boolean canGoLand;
+        private final boolean canGoWater;
+        private final ActorFactory factory;
 
-        private SpawnRule(Actor prototype, double probability)
+        private SpawnRule(double probability, boolean canGoLand, boolean canGoWater, ActorFactory factory)
         {
-            this.prototype = prototype;
             this.probability = probability;
+            this.canGoLand = canGoLand;
+            this.canGoWater = canGoWater;
+            this.factory = factory;
         }
+    }
+
+    /**
+     * Factory for building actors during population.
+     */
+    private interface ActorFactory
+    {
+        Actor create(Location location);
     }
 
     /**
@@ -243,8 +253,8 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 for (SpawnRule rule : spawnRules){
                     Location location = new Location(row, col);
-                    if(rand.nextDouble() <= rule.probability && field.canTraverse(rule.prototype, location)) {
-                        Actor newActor = rule.prototype.birth(new Location(row, col), Collections.emptySet());
+                    if(rand.nextDouble() <= rule.probability && field.canTraverse(rule.canGoLand, rule.canGoWater, location)) {
+                        Actor newActor = rule.factory.create(location);
                         actors.add(newActor);
                         break;
                     }

@@ -198,6 +198,37 @@ public class Field
     }
 
     /**
+     * Check whether an actor with the given movement traits can move onto a location.
+     * @param canGoLand Whether the actor can move on land.
+     * @param canGoWater Whether the actor can move on water.
+     * @param location The target location.
+     * @return True if the terrain is suitable.
+     */
+    public boolean canTraverse(boolean canGoLand, boolean canGoWater, Location location)
+    {
+        return canTraverse(canGoLand, canGoWater, location.getRow(), location.getCol());
+    }
+
+    /**
+     * Check whether an actor with the given movement traits can move onto terrain.
+     * @param canGoLand Whether the actor can move on land.
+     * @param canGoWater Whether the actor can move on water.
+     * @param row The target row.
+     * @param col The target column.
+     * @return True if the terrain is suitable.
+     */
+    public boolean canTraverse(boolean canGoLand, boolean canGoWater, int row, int col)
+    {
+        if(canGoLand && canGoWater) {
+            return true;
+        }
+        if(isUnderWater(row, col)) {
+            return canGoWater;
+        }
+        return canGoLand;
+    }
+
+    /**
      * Check whether the given actor can move onto the terrain at the given coordinates.
      * @param actor The actor moving.
      * @param row The target row.
@@ -206,13 +237,7 @@ public class Field
      */
     public boolean canTraverse(Actor actor, int row, int col)
     {
-        if(actor.canMoveOnLand() && actor.canMoveOnWater()) {
-            return true;
-        }
-        if(isUnderWater(row, col)) {
-            return actor.canMoveOnWater();
-        }
-        return actor.canMoveOnLand();
+        return canTraverse(actor.canMoveOnLand(), actor.canMoveOnWater(), row, col);
     }
 
     /**

@@ -98,7 +98,34 @@ public class Field
     {
         return field[row][col];
     }
-    
+
+    /**
+     * A callback invoked once for every cell of the field during
+     * {@link #forEachCell}. The occupant is the object at the cell, or null
+     * if the cell is empty.
+     */
+    @FunctionalInterface
+    public interface CellVisitor
+    {
+        void visit(int row, int col, Object occupant);
+    }
+
+    /**
+     * Visit every cell of the field in row-major order, passing each cell's
+     * coordinates and occupant (possibly null) to the given visitor. This is the
+     * single shared traversal used by all callers that need to scan the whole
+     * field, e.g. to gather population statistics or render the grid.
+     * @param visitor The callback to invoke for each cell.
+     */
+    public void forEachCell(CellVisitor visitor)
+    {
+        for(int row = 0; row < depth; row++) {
+            for(int col = 0; col < width; col++) {
+                visitor.visit(row, col, field[row][col]);
+            }
+        }
+    }
+
     /**
      * Generate a random location that is adjacent to the
      * given location, or is the same location.

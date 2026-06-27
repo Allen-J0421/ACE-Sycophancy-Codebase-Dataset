@@ -155,18 +155,15 @@ public class SimulatorView extends JFrame
         
         fieldView.preparePaint();
 
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
-                }
-                else {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                }
+        field.forEachCell((row, col, animal) -> {
+            if(animal != null) {
+                stats.incrementCount(animal.getClass());
+                fieldView.drawMark(col, row, getColor(animal.getClass()));
             }
-        }
+            else {
+                fieldView.drawMark(col, row, EMPTY_COLOR);
+            }
+        });
         stats.countFinished();
 
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));

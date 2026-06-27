@@ -1,10 +1,11 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
+
 /**
  * A singleton Weather object that will hold different types
  * of weather. Each different weather has their own modifier
- * that will affect how animal's behave, notably whether
+ * that will affect how animals behave, notably whether
  * they are successful in finding food.
  *
  * @version 2022.03.02
@@ -14,21 +15,19 @@ public class Weather
     private static final String SUNNY = "Sunny";
     private static final String RAINY = "Rainy";
     private static final String FOGGY = "Foggy";
+    private static final String[] WEATHER_TYPES = { SUNNY, RAINY, FOGGY };
     // A shared random object
-    private static final Random rand = Randomizer.getRandom();
+    private static final Random RAND = Randomizer.getRandom();
 
-    // Hashmap that contain the weather and the hunting modifier for that weather
-    private final Map<String, Double> weatherAndModifier;
+    // Weather names and their hunting modifiers.
+    private final Map<String, Double> weatherModifiers;
     // The current weather of the Weather object
     private String currentWeather;
     // Singleton instance of the Weather object
     private static Weather instance;
 
     public Weather() {
-        weatherAndModifier = new LinkedHashMap<>();
-        weatherAndModifier.put(SUNNY, 1.0);
-        weatherAndModifier.put(RAINY, 0.7);
-        weatherAndModifier.put(FOGGY, 0.5);
+        weatherModifiers = createWeatherModifiers();
         resetWeather();
     }
 
@@ -56,7 +55,7 @@ public class Weather
      * @return double representing the hunting modifier
      */
     public double getWeatherModifier() {
-        return weatherAndModifier.get(currentWeather);
+        return weatherModifiers.get(currentWeather);
     }
 
     /**
@@ -81,8 +80,19 @@ public class Weather
      * Changes the weather of the Weather object to a random state
      */
     public void changeWeather() {
-        String[] weatherKeys = weatherAndModifier.keySet().toArray(new String[0]);
-        int randomNumber = rand.nextInt(weatherKeys.length);
-        currentWeather = weatherKeys[randomNumber];
+        int randomNumber = RAND.nextInt(WEATHER_TYPES.length);
+        currentWeather = WEATHER_TYPES[randomNumber];
+    }
+
+    /**
+     * Create the fixed lookup table for weather hunting modifiers.
+     */
+    private static Map<String, Double> createWeatherModifiers()
+    {
+        Map<String, Double> modifiers = new LinkedHashMap<>();
+        modifiers.put(SUNNY, 1.0);
+        modifiers.put(RAINY, 0.7);
+        modifiers.put(FOGGY, 0.5);
+        return modifiers;
     }
 }

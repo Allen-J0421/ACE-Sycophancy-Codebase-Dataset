@@ -8,7 +8,7 @@
 public interface Infectable
 {
     // Probability of spreading disease
-    public double SPREAD_PROBABILITY = 0.1;
+    double SPREAD_PROBABILITY = 0.1;
     
     /**
      * Decides whether the animal will spread their disease to another animal.

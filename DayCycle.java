@@ -7,6 +7,8 @@ public final class DayCycle
 {
     private static final int CYCLE_LENGTH = 80;
     private static final int DAY_END = 55;
+    private static final String DAY_LABEL = "Day";
+    private static final String NIGHT_LABEL = "Night";
 
     private DayCycle()
     {
@@ -33,9 +35,6 @@ public final class DayCycle
      */
     public static String getTimeOfDay(int step)
     {
-        if (isDay(step)) {
-            return "Day";
-        }
-        return "Night";
+        return isDay(step) ? DAY_LABEL : NIGHT_LABEL;
     }
 }

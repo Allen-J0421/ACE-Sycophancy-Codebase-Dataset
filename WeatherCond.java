@@ -20,7 +20,6 @@ public enum WeatherCond
     private static final Map<WeatherCond, WeatherCond[]> NIGHT_TRANSITIONS = createNightTransitions();
     private static final Map<WeatherCond, WeatherCond[]> DAY_TRANSITIONS = createDayTransitions();
     private final Map<WeatherAttribute, Double> weatherAttributes; 
-    private static Time timeOfDay;
 
     /**
      * Puts attributes of each weather condition in a Map.
@@ -79,11 +78,12 @@ public enum WeatherCond
     /**
      * Returns the next weather condition based on the current
      * weather condition and a random generator.
+     * @param time The current simulation time.
      * @return The next weather condition.
      */
-    public WeatherCond nextCondition()
+    public WeatherCond nextCondition(Time time)
     {
-        WeatherCond[] transitions = timeOfDay.isDay() ? DAY_TRANSITIONS.get(this) : NIGHT_TRANSITIONS.get(this);
+        WeatherCond[] transitions = time.isDay() ? DAY_TRANSITIONS.get(this) : NIGHT_TRANSITIONS.get(this);
         return transitions[rand.nextInt(transitions.length)];
     }
 
@@ -122,15 +122,5 @@ public enum WeatherCond
     public double getDampness()
     {
         return getAttribute(WeatherAttribute.DAMPNESS);
-    }
-
-    /**
-     * Sets the timeOfDay field of the weather condition to reference 
-     * another Time object
-     * @param time The time object referencesd
-     */
-    public void setTime(Time time)
-    {
-        timeOfDay = time;
     }
 }

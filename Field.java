@@ -271,26 +271,69 @@ public class Field
     public void setWeatherField(WeatherCond weather) 
     {
         for (WeatherAttribute weatherAttribute : weatherField.keySet()) {
-            double avgWeather = weather.getAttribute(weatherAttribute);
-            for(int row = 0; row < depth; row++) {
-                for(int col = 0; col < width; col++) {
-                    weatherField.get(weatherAttribute)[row][col] = avgWeather + (rand.nextDouble() - 0.5) * 2 / 5;
-                }
+            fillWeatherAttribute(weatherAttribute, weather.getAttribute(weatherAttribute));
+        }
+        updateWaterLevel(weather);
+    }
+
+    /**
+     * Fill a weather attribute field with values centered around an average.
+     * @param weatherAttribute The attribute field to fill.
+     * @param averageValue The average attribute value.
+     */
+    private void fillWeatherAttribute(WeatherAttribute weatherAttribute, double averageValue)
+    {
+        for(int row = 0; row < depth; row++) {
+            for(int col = 0; col < width; col++) {
+                weatherField.get(weatherAttribute)[row][col] = averageValue + (rand.nextDouble() - 0.5) * 2 / 5;
             }
         }
+    }
 
-        if(weather.getDampness() > 0.7 && waterLevel < maxWaterLevel){
+    /**
+     * Update the field water level based on the current weather.
+     * @param weather The current weather condition.
+     */
+    private void updateWaterLevel(WeatherCond weather)
+    {
+        if(shouldIncreaseWaterLevel(weather)) {
             waterLevel += 1;
         }
-
-        else if (waterLevel> minWaterLevel){
-            if(weather.getBrightness() > 0.9 && waterLevel > minWaterLevel + 1){
-                waterLevel -=2;
-            }
-            else {
-                waterLevel -= 1;
-            }
+        else if(shouldDecreaseWaterLevel()) {
+            waterLevel -= getWaterLevelDecrease(weather);
         }
+    }
+
+    /**
+     * Return whether the current weather should raise the water level.
+     * @param weather The current weather condition.
+     * @return true if the water level should increase.
+     */
+    private boolean shouldIncreaseWaterLevel(WeatherCond weather)
+    {
+        return weather.getDampness() > 0.7 && waterLevel < maxWaterLevel;
+    }
+
+    /**
+     * Return whether the current water level may decrease.
+     * @return true if the water level may decrease.
+     */
+    private boolean shouldDecreaseWaterLevel()
+    {
+        return waterLevel > minWaterLevel;
+    }
+
+    /**
+     * Return how much the water level should drop for the current weather.
+     * @param weather The current weather condition.
+     * @return The water level decrease.
+     */
+    private int getWaterLevelDecrease(WeatherCond weather)
+    {
+        if(weather.getBrightness() > 0.9 && waterLevel > minWaterLevel + 1) {
+            return 2;
+        }
+        return 1;
     }
 
     /**

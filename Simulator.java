@@ -89,8 +89,6 @@ public class Simulator
         configureViewColors();
         view.display();
 
-        
-        weatherCond.setTime(time);
         initializeSimulation();
     }
 
@@ -218,7 +216,7 @@ public class Simulator
     {
         step++;
         time.incrementTime(); 
-        weatherCond = weatherCond.nextCondition();
+        weatherCond = weatherCond.nextCondition(time);
         // Provide space for newborn actors.
 
         List<Actor> newActors = new ArrayList<>();        

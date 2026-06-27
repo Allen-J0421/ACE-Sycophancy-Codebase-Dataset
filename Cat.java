@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a Cat.
@@ -22,16 +21,8 @@ public class Cat extends Animal
     // The food value of a single cat. In effect, this is the
     // number of steps a cat can go.
     private static final int DEFAULT_FOOD_LEVEL = 15;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single cat.,
     private static final int FOOD_VALUE = 10;
-    
-    // Individual characteristics (instance fields).
-    // The Cat's age.
-    private int age;
-    // The Cat's food level, which is increased by eating mouse.
-    private int foodLevel;
 
     /**
      * Create a Cat. A Cat can be created as a new born (age zero
@@ -44,14 +35,8 @@ public class Cat extends Animal
     public Cat(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        initializeAge(randomAge, MAX_AGE);
+        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
     }
     
     /**
@@ -64,8 +49,8 @@ public class Cat extends Animal
      */
     public void act(List<Animal> newCats, int step, Weather weather)
     {
-        incrementAge();
-        incrementHunger();
+        incrementAge(MAX_AGE);
+        decrementFoodLevel();
         updateBurnStatus(weather);
         if(isAlive()) {
             giveBirth(newCats);            
@@ -80,28 +65,6 @@ public class Cat extends Animal
     }
 
     /**
-     * Increase the age. This could result in the Cat's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
-     * Make this cat more hungry. This could result in the Cat's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
-    }
-    
-    /**
      * Look for mouses adjacent to the current location.
      * Only the first live mice is eaten.
      * @return Where food was found, or null if it wasn't.
@@ -111,7 +74,7 @@ public class Cat extends Animal
         return findAdjacentLocation(Mouse.class, 1, mouse -> {
             if(mouse.isAlive()) {
                 mouse.setDead();
-                foodLevel = foodLevel + mouse.foodValue();
+                changeFoodLevel(mouse.foodValue());
                 return true;
             }
             return false;
@@ -135,7 +98,7 @@ public class Cat extends Animal
      */
     private int breed()
     {
-        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        return calculateBirths(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
 
     /**

@@ -104,28 +104,12 @@ public class SimulatorView extends JFrame
      */
     public void showStatus(int step, Field field, Weather weather)
     {
-        String dayzone = "";
-        
         if(!isVisible()) {
             setVisible(true);
         }
-        
-        switch (step % 4) {
-            case 1:
-                dayzone = "Morning ";
-                break;
-            case 2:
-                dayzone = "Afternoon ";
-                break;
-            case 3:
-                dayzone = "Evening ";
-                break;
-            case 0:
-                dayzone = "Night ";
-                break;                
-        }
 
-        stepLabel.setText(STEP_PREFIX + step + DAYZONE_PREFIX + dayzone + WEATHER_PREFIX + weather);
+        stepLabel.setText(STEP_PREFIX + step + DAYZONE_PREFIX + TimeOfDay.fromStep(step)
+                          + WEATHER_PREFIX + weather);
         stats.reset();
         
         fieldView.preparePaint();

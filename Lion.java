@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a Lion.
@@ -19,19 +18,12 @@ public class Lion extends Animal
     private static final double BREEDING_PROBABILITY = 0.10;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 5;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single lion.
     private static final int FOOD_VALUE = 20;
     // number of steps a lion can go before it has to eat again.
     private static final int DEFAULT_FOOD_LEVEL = 275;
-    
-    // Individual characteristics (instance fields).
-    
-    // The Lion's age.
-    private int age;
-    // The Lion's food level, which is increased by eating other animals.
-    private int foodLevel;
+    // The starting food level for newborn lions.
+    private static final int NEWBORN_FOOD_LEVEL = 40;
 
     /**
      * Create a Lion. A Lion can be created as a new born (age zero
@@ -44,14 +36,8 @@ public class Lion extends Animal
     public Lion(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = 40;
-        }
+        initializeAge(randomAge, MAX_AGE);
+        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, NEWBORN_FOOD_LEVEL);
     }
     
     /**
@@ -65,8 +51,8 @@ public class Lion extends Animal
      */
     public void act(List<Animal> newLions, int step, Weather weather)
     {
-        incrementAge();
-        incrementHunger();
+        incrementAge(MAX_AGE);
+        decrementFoodLevel();
         updateBurnStatus(weather);
 
         if(isAlive()) {
@@ -84,31 +70,9 @@ public class Lion extends Animal
                 newLocation = freeAdjacentLocation();
             }
             // See if it was possible to move.
-            if (step % 4 != 0) {
+            if (!TimeOfDay.fromStep(step).isNight()) {
                 moveToOrDie(newLocation);
             } 
-        }
-    }
-
-    /**
-     * Increase the age. This could result in the Lion's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
-     * Make this Lion more hungry. This could result in the Lion's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
         }
     }
     
@@ -157,7 +121,7 @@ public class Lion extends Animal
      */
     private int breed()
     {
-        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        return calculateBirths(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
 
     /**
@@ -168,7 +132,7 @@ public class Lion extends Animal
         return findAdjacentLocation(preyClass, 1, prey -> {
             if(prey.isAlive()) {
                 prey.setDead();
-                foodLevel = foodLevel + prey.foodValue();
+                changeFoodLevel(prey.foodValue());
                 return true;
             }
             return false;

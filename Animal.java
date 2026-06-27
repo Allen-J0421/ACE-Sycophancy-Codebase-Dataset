@@ -17,6 +17,10 @@ public abstract class Animal extends Organism
     private int burn;
     // The animal's gender.
     private final Gender gender;
+    // The animal's age.
+    private int age;
+    // The animal's food level.
+    private int foodLevel;
 
     
     /**
@@ -136,10 +140,83 @@ public abstract class Animal extends Organism
     }
 
     /**
+     * Initialize the animal's age.
+     */
+    protected final void initializeAge(boolean randomAge, int maxAge)
+    {
+        if(randomAge) {
+            age = rand.nextInt(maxAge);
+        }
+        else {
+            age = 0;
+        }
+    }
+
+    /**
+     * Initialize the animal's food level.
+     */
+    protected final void initializeFoodLevel(boolean randomFoodLevel, int randomUpperBound,
+                                             int initialFoodLevel)
+    {
+        if(randomFoodLevel) {
+            foodLevel = rand.nextInt(randomUpperBound);
+        }
+        else {
+            foodLevel = initialFoodLevel;
+        }
+    }
+
+    /**
+     * Increase the animal's age and kill it if it exceeds the limit.
+     */
+    protected final void incrementAge(int maxAge)
+    {
+        age++;
+        if(age > maxAge) {
+            setDead();
+        }
+    }
+
+    /**
+     * Decrease the animal's food level and kill it if depleted.
+     */
+    protected final void decrementFoodLevel()
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
+            setDead();
+        }
+    }
+
+    /**
+     * Adjust the animal's food level by the given amount.
+     */
+    protected final void changeFoodLevel(int delta)
+    {
+        foodLevel = foodLevel + delta;
+    }
+
+    /**
+     * Return the animal's age.
+     */
+    protected final int getAge()
+    {
+        return age;
+    }
+
+    /**
+     * Return the animal's food level.
+     */
+    protected final int getFoodLevel()
+    {
+        return foodLevel;
+    }
+
+    /**
      * Determine how many offspring are produced this step.
      */
-    protected final int calculateBirths(int age, int breedingAge,
-                                        double breedingProbability, int maxLitterSize)
+    protected final int calculateBirths(int breedingAge, double breedingProbability,
+                                        int maxLitterSize)
     {
         if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
             return rand.nextInt(maxLitterSize) + 1;

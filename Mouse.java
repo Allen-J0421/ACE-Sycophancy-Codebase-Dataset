@@ -29,11 +29,6 @@ public class Mouse extends Animal
     // The food value of a single mouse. 
     private static final int FOOD_VALUE = 5;
     
-    // Individual characteristics (instance fields).    
-    // The mouse's age.
-    private int age;
-    // The mouse's food level, which is increased by eating seed.
-    private int foodLevel;
     // The mouse infected by deisease.
     // 0 - not infect, 1-3 degree of infection.
     private int infect;
@@ -51,14 +46,8 @@ public class Mouse extends Animal
     public Mouse(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        initializeAge(randomAge, MAX_AGE);
+        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
     }
     
     /**
@@ -70,7 +59,7 @@ public class Mouse extends Animal
      */
     public void act(List<Animal> newMice, int step, Weather weather)
     {
-        incrementAge();
+        incrementAge(MAX_AGE);
         updateBurnStatus(weather);
         checkInfectLevel();
         if(isAlive()) {
@@ -101,18 +90,6 @@ public class Mouse extends Animal
     }
 
     /**
-     * Increase the age.
-     * This could result in the mouse's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Check whether or not this mouse is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newMice A list to return newly born mouse.
@@ -131,7 +108,7 @@ public class Mouse extends Animal
     {
         return findAdjacentLocation(Grass.class, 1, grass -> {
             if(grass.isAlive()) {
-                foodLevel += 2;
+                changeFoodLevel(2);
                 return true;
             }
             return false;
@@ -145,7 +122,7 @@ public class Mouse extends Animal
      */
     private int breed()
     {
-        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
+        return calculateBirths(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
     
     /**

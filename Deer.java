@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a Deer.
@@ -19,19 +18,11 @@ public class Deer extends Animal
     private static final double BREEDING_PROBABILITY = 0.10;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 5;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // The food value of a single dear. In effect, this is the
     // number of steps it can go.
     private static final int FOOD_VALUE = 50;
     // The default food value of a single deer.
     private static final int DEFAULT_FOOD_LEVEL = 250;
-    
-    // Individual characteristics (instance fields).    
-    // The Deer's age.
-    private int age;
-    // The Deer's food level, which is increased by eating grass.
-    private int foodLevel;
 
     /**
      * Create a new Deer. A Deer may be created with age
@@ -44,14 +35,8 @@ public class Deer extends Animal
     public Deer(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(DEFAULT_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = DEFAULT_FOOD_LEVEL;
-        }
+        initializeAge(randomAge, MAX_AGE);
+        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
     }
     
     /**
@@ -63,8 +48,8 @@ public class Deer extends Animal
      */
     public void act(List<Animal> newDeers, int step, Weather weather)
     {
-        incrementAge();
-        incrementHunger();
+        incrementAge(MAX_AGE);
+        decrementFoodLevel();
         updateBurnStatus(weather);
         if(isAlive()) {
             giveBirth(newDeers);  
@@ -88,18 +73,6 @@ public class Deer extends Animal
     }
 
     /**
-     * Increase the age.
-     * This could result in the Deer's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Check whether or not this Deer is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newDeers A list to return newly born Deers.
@@ -118,18 +91,7 @@ public class Deer extends Animal
      */
     private int breed()
     {
-        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-    }
-
-    /**
-     * Make this deer more hungry. This could result in the deer's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
+        return calculateBirths(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
     
     /**
@@ -141,9 +103,9 @@ public class Deer extends Animal
     {
         return findAdjacentLocation(Grass.class, 1, grass -> {
             if(grass.isAlive()) {
-                if(grass.getSize() > 12 && foodLevel < 30) {
+                if(grass.getSize() > 12 && getFoodLevel() < 30) {
                     grass.decrementSize();
-                    foodLevel += 20;
+                    changeFoodLevel(20);
                 }
                 return true;
             }

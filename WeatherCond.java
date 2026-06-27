@@ -18,7 +18,6 @@ public enum WeatherCond
 
     private static final Random rand = Randomizer.getRandom();
     private final Map<String, Double> weatherAttributes; 
-    private static Time timeOfDay;
 
     /**
      * Puts attributes of each weather condition in a Map.
@@ -38,11 +37,12 @@ public enum WeatherCond
     /**
      * Returns the next weather condition based on the current
      * weather condition and a random generator.
+     * @param time The current simulation time.
      * @return The next weather condition.
      */
-    public WeatherCond nextCondition()
+    public WeatherCond nextCondition(Time time)
     {
-        List<WeatherCond> options = nextConditionsFor(timeOfDay.isDay());
+        List<WeatherCond> options = nextConditionsFor(time.isDay());
         return options.get(rand.nextInt(options.size()));
     }
 
@@ -108,13 +108,4 @@ public enum WeatherCond
         return weatherAttributes;
     }
 
-    /**
-     * Sets the timeOfDay field of the weather condition to reference 
-     * another Time object
-     * @param time The time object referencesd
-     */
-    public void setTime(Time time)
-    {
-        timeOfDay = time;
-    }
 }

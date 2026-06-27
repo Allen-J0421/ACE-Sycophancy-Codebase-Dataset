@@ -74,8 +74,6 @@ public class Simulator
         view.setColor(Salamander.class, Color.MAGENTA);
         view.setColor(Catfish.class, Color.BLACK);
 
-        
-        weatherCond.setTime(time);
         // Setup a valid starting point.
         reset();
     }
@@ -199,7 +197,7 @@ public class Simulator
     {
         step++;
         time.incrementTime(); 
-        weatherCond = weatherCond.nextCondition();
+        weatherCond = weatherCond.nextCondition(time);
         // Provide space for newborn actors.
 
         List<Actor> newActors = new ArrayList<>();        

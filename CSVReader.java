@@ -99,7 +99,6 @@ public abstract class CSVReader
                 choicesList.add(attributes[0]);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Issue when parsing CSV");
         }
         return choicesList;

@@ -14,6 +14,8 @@ public class Time
     private int currentHour;
     // the number of steps before the type of day changes
     private static final int DAY_CHANGE = 1;
+    // hours in a full day cycle
+    private static final int HOURS_IN_DAY = 24;
 
     /**
      * Construct a Time object with the given parameters.
@@ -49,18 +51,8 @@ public class Time
      */
     public String timeString()
     {
-        String tString = "";
-
-        if(isNight) {
-            tString += "Night \t";
-        }
-        else {
-            tString += "Day \t";
-        }
-
-        tString += "(" + getHourDisplay() + ")";
-
-        return tString;
+        String period = isNight ? "Night" : "Day";
+        return period + " \t(" + getHourDisplay() + ")";
     }
 
     /**
@@ -90,7 +82,7 @@ public class Time
      */
     private void incHour()
     {
-        currentHour = (currentHour + (24 / (DAY_CHANGE * 2))) % 24;
+        currentHour = (currentHour + (HOURS_IN_DAY / (DAY_CHANGE * 2))) % HOURS_IN_DAY;
     }
 
     /**

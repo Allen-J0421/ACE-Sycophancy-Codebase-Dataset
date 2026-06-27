@@ -166,9 +166,9 @@ public class Predator extends Animal
         {
             List<Location> free = field.getFreeAdjacentLocations(getLocation());
             int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
+            for(int b = 0; b < births && !free.isEmpty(); b++) {
                 Location loc = free.remove(0);
-                Predator young = new Predator(strength, field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(),false, getHibernates(), getIsNocturnal());
+                Predator young = new Predator(strength, field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(), NEWBORN_RANDOM_AGE, getHibernates(), getIsNocturnal());
                 newOfThisKind.add(young);
             }
         }

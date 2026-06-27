@@ -36,14 +36,6 @@ public class Season
     }
 
     /**
-     * @return (int) average Temperature
-     */
-    public int getAveTemperature()
-    {
-        return aveTemperature;
-    }
-
-    /**
      * Increment the season's average temperature by the given parameter
      *
      * @param inc (int) the increment

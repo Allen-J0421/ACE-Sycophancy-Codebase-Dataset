@@ -16,8 +16,8 @@ public class Plant extends Species
     private int currentHealth;
     // true if the plant can regrow; reset each season change, cleared on wilt to prevent same-season re-emergence
     private boolean canRegrow;
-    // true if plant appears dead due to temperature circumstances
-    private boolean deadDueTemperature;
+    // true if plant is temporarily wilted due to temperature (not permanently dead)
+    private boolean wiltedDueToTemperature;
 
     /**
      * Create an instance of Plant
@@ -37,7 +37,7 @@ public class Plant extends Species
         this.maxHealth = maxHealth;
         currentHealth = maxHealth;
         canRegrow = true;
-        deadDueTemperature = false;
+        wiltedDueToTemperature = false;
     }
 
     /**
@@ -63,7 +63,7 @@ public class Plant extends Species
             canRegrow = true;
         }
         // 1)
-        if (! deadDueTemperature && ! survivesTemperature(temperature))
+        if (! wiltedDueToTemperature && ! survivesTemperature(temperature))
         {
             wilt();
         }
@@ -71,11 +71,11 @@ public class Plant extends Species
         else if (! isNight)
         {
             // i)
-            if (deadDueTemperature && survivesTemperature(temperature) && isSpring) {
+            if (wiltedDueToTemperature && survivesTemperature(temperature) && isSpring) {
                 regrow();
             }
             // ii)
-            else if (! deadDueTemperature) {
+            else if (! wiltedDueToTemperature) {
                 // a)
                 if (yearPassed) {
                     maxHealth++;
@@ -104,7 +104,7 @@ public class Plant extends Species
             {
                 List<Location> free = field.getFreeAdjacentLocations(getLocation());
 
-                if (free.size() > 0) {
+                if (!free.isEmpty()) {
                     Location loc = free.remove(0);
                     Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
                     newPlants.add(newPlant);
@@ -121,7 +121,7 @@ public class Plant extends Species
     private void wilt()
     {
         if(getLocation() != null) {
-            deadDueTemperature = true;
+            wiltedDueToTemperature = true;
             canRegrow = false; // prevent immediate regrowth next step
             getField().clear(getLocation());
         }
@@ -134,7 +134,7 @@ public class Plant extends Species
     private void regrow()
     {
         if(getField().getObjectAt(getLocation()) == null && canRegrow)   {
-            deadDueTemperature = false;
+            wiltedDueToTemperature = false;
             getField().place(this, getLocation());
             currentHealth = maxHealth;
         }

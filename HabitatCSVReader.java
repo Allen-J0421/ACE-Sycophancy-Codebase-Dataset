@@ -110,28 +110,28 @@ public class HabitatCSVReader extends CSVReader {
      */
     public int[] getWinterTemperatures()
     {
-        return winterTemperatures;
+        return winterTemperatures.clone();
     }
 
     /**
      * @return (int[]) Minimum, average, and maximum temperatures for the autumn.
      */
     public int[] getAutumnTemperatures() {
-        return autumnTemperatures;
+        return autumnTemperatures.clone();
     }
 
     /**
      * @return (int[]) Minimum, average, and maximum temperatures for the spring.
      */
     public int[] getSpringTemperatures() {
-        return springTemperatures;
+        return springTemperatures.clone();
     }
 
     /**
      * @return (int[]) Minimum, average, and maximum temperatures for the summer.
      */
     public int[] getSummerTemperatures() {
-        return summerTemperatures;
+        return summerTemperatures.clone();
     }
 
     /**

@@ -32,6 +32,8 @@ public class Animal extends Species
     private static final int HIBERNATION_TEMPERATURE_OFFSET = 5;
     // Divisor used to compute the lower bound of a newborn's initial food level
     private static final int INITIAL_FOOD_LEVEL_MIN_DIVISOR = 2;
+    // Newborns always start at age 0, not a random age
+    protected static final boolean NEWBORN_RANDOM_AGE = false;
 
     // Fields prone to change during the animal's life
 
@@ -291,9 +293,9 @@ public class Animal extends Species
         {
             List<Location> free = field.getFreeAdjacentLocations(getLocation());
             int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
+            for(int b = 0; b < births && !free.isEmpty(); b++) {
                 Location loc = free.remove(0);
-                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
+                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize, NEWBORN_RANDOM_AGE, hibernates, isNocturnal);
                 speciesInSimulation.add(young);
             }
         }

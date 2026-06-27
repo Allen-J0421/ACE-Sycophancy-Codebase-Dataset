@@ -57,19 +57,6 @@ public class Grass extends Plant
     }
 
     /**
-     * Increase the age.
-     * This could result in the plant's death if they have reached their
-     * maximum age.
-     */
-    public void incrementAge()
-    {
-        super.incrementAge();
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Check whether or not this plant is to reproduce at this step.
      * New growths will be made into free adjacent locations.
      * @param newGrass A list to return newly grown grass
@@ -118,5 +105,12 @@ public class Grass extends Plant
     { 
         return GRASS_FOOD_VALUE;
     }
-}
 
+    /**
+     * @return The maximum age of grass.
+     */
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
+    }
+}

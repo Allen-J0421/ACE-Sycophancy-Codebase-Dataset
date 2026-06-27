@@ -62,16 +62,6 @@ public class Lion extends Animal
     }
 
     /**
-     * Increase the age. This could result in the lion's death.
-     */
-    public void incrementAge() {
-        super.incrementAge();    
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-
-    /**
      * Look for gazelles adjacent to the current location.
      * Only the first live gazelle is eaten.
      * @return Where food was found, or null if it wasn't.
@@ -150,5 +140,13 @@ public class Lion extends Animal
     public ArrayList<String> getPrey()
     {
         return prey;
+    }
+
+    /**
+     * @return The maximum age of a lion.
+     */
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
     }
 }

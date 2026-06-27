@@ -113,6 +113,9 @@ public abstract class Organism implements Actor
     public void incrementAge()
     {
         age = age + 1;
+        if(age > getMaxAge()) {
+            setDead();
+        }
     }
     
     /**
@@ -222,4 +225,9 @@ public abstract class Organism implements Actor
     protected boolean isInfected(){
         return infected;
     }
+
+    /**
+     * @return The maximum age this organism can reach.
+     */
+    protected abstract int getMaxAge();
 }

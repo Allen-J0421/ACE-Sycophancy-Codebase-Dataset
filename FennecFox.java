@@ -63,16 +63,6 @@ public class FennecFox extends Animal
     }
     
     /**
-     * Increase the age. This could result in the fennec fox's death.
-     */
-    public void incrementAge() {
-        super.incrementAge();    
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Look for prey adjacent to the current location.
      * Only the first prey is eaten.
      * @return Where food was found, or null if it wasn't.
@@ -145,5 +135,13 @@ public class FennecFox extends Animal
     public ArrayList<String> getPrey()
     {
         return prey;
+    }
+
+    /**
+     * @return The maximum age of a fennec fox.
+     */
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
     }
 }

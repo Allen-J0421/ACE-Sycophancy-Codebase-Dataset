@@ -70,18 +70,6 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Increase the age.
-     * This could result in the gazelle's death.
-     */
-    public void incrementAge()
-    {
-        super.incrementAge();
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Check whether or not this gazelle is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newGazelles A list to return newly born Gazelles.
@@ -143,5 +131,13 @@ public class Gazelle extends Animal
     public ArrayList<String> getPrey()
     {
         return prey;
+    }
+
+    /**
+     * @return The maximum age of a gazelle.
+     */
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
     }
 }

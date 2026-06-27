@@ -112,7 +112,7 @@ public class Weather implements Actor
                 else if (actor instanceof Animal) {
                     //animals can't do anything
                     Animal animal = (Animal) actor;
-                    animal.setSleepStatus();
+                    animal.toggleSleeping();
                 }
                 else if (actor instanceof WaterSources){
                     WaterSources source = (WaterSources) actor;

@@ -222,7 +222,7 @@ public abstract class Animal extends Organism
     /**
      * Sets the sleeping boolean variable to the opposite state it currently has.
      */
-    public void setSleepStatus(){
+    public void toggleSleeping(){
         status.toggleSleeping();
     }
     

@@ -16,12 +16,7 @@ public class FennecFox extends Animal
      */
     public FennecFox(boolean randomAge, Field field, Location location)
     {
-        super(AnimalConfig.builder()
-                  .breedingAge(12).maxAge(100).breedingProbability(0.5)
-                  .maxLitterSize(2).foodValue(12).startingFoodLevel(12)
-                  .huntProbability(0.6).nocturnal(true)
-                  .prey("Grass", "Mouse").build(),
-              randomAge, field, location);
+        super(SpeciesRegistry.get("FennecFox"), randomAge, field, location);
     }
 
     /**

@@ -16,12 +16,7 @@ public class Hyena extends Animal
      */
     public Hyena(boolean randomAge, Field field, Location location)
     {
-        super(AnimalConfig.builder()
-                  .breedingAge(10).maxAge(150).breedingProbability(0.60)
-                  .maxLitterSize(2).foodValue(15).startingFoodLevel(15)
-                  .huntProbability(0.63).nocturnal(true)
-                  .prey("Fennec Fox", "Gazelle").build(),
-              randomAge, field, location);
+        super(SpeciesRegistry.get("Hyena"), randomAge, field, location);
     }
 
     /**

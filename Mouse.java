@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple model of a mouse.
@@ -18,12 +18,7 @@ public class Mouse extends Animal
      */
     public Mouse(boolean randomAge, Field field, Location location)
     {
-        super(AnimalConfig.builder()
-                  .breedingAge(4).maxAge(40).breedingProbability(0.2)
-                  .maxLitterSize(4).foodValue(10).startingFoodLevel(10)
-                  .huntProbability(0.7).nocturnal(false)
-                  .prey("Grass").build(),
-              randomAge, field, location);
+        super(SpeciesRegistry.get("Mouse"), randomAge, field, location);
     }
 
     /**
@@ -31,7 +26,7 @@ public class Mouse extends Animal
      * hunt succeeds.
      * @return Where food was found, or null if it wasn't.
      */
-    protected Location findFood(ArrayList<String> preyList)
+    protected Location findFood(List<String> preyList)
     {
         if (huntSucceeds()) {
             super.findFood(getPrey());

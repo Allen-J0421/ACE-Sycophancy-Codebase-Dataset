@@ -16,12 +16,7 @@ public class Lion extends Animal
      */
     public Lion(boolean randomAge, Field field, Location location)
     {
-        super(AnimalConfig.builder()
-                  .breedingAge(15).maxAge(200).breedingProbability(0.5)
-                  .maxLitterSize(4).foodValue(15).startingFoodLevel(20)
-                  .huntProbability(0.65).nocturnal(false)
-                  .prey("Gazelle").build(),
-              randomAge, field, location);
+        super(SpeciesRegistry.get("Lion"), randomAge, field, location);
     }
 
     /**

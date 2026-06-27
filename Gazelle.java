@@ -16,12 +16,7 @@ public class Gazelle extends Animal
      */
     public Gazelle(boolean randomAge, Field field, Location location)
     {
-        super(AnimalConfig.builder()
-                  .breedingAge(10).maxAge(45).breedingProbability(0.5)
-                  .maxLitterSize(4).foodValue(20).startingFoodLevel(20)
-                  .nocturnal(false)
-                  .prey("Grass").build(),
-              randomAge, field, location);
+        super(SpeciesRegistry.get("Gazelle"), randomAge, field, location);
     }
 
     /**

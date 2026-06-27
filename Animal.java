@@ -1,7 +1,6 @@
 import java.util.List;
 import java.util.Random;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * A class representing shared characteristics of animals.
@@ -21,7 +20,7 @@ public abstract class Animal extends Organism
     // Indicates whether the animal is sleeping or not
     private boolean sleeping;
     // This animal's species characteristics (instance-based configuration).
-    private final AnimalConfig config;
+    private final SpeciesConfig config;
     // The seeded random number generator, obtained per instance from the
     // shared Randomizer so the whole simulation stays reproducible.
     private final Random rand;
@@ -34,18 +33,18 @@ public abstract class Animal extends Organism
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(AnimalConfig config, boolean randomAge, Field field, Location location)
+    public Animal(SpeciesConfig config, boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
         this.config = config;
         this.rand = Randomizer.getRandom();
-        nocturnal = config.isNocturnal();
+        nocturnal = config.nocturnal();
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
         if(randomAge) {
-            setAge(rand.nextInt(config.getMaxAge()));
-            setFoodLevel(config.getStartingFoodLevel());
+            setAge(rand.nextInt(config.maxAge()));
+            setFoodLevel(config.startingFoodLevel());
         }
         else {
             setAge(0);
@@ -126,7 +125,7 @@ public abstract class Animal extends Organism
      * Only the first live prey is eaten.
      * @return Where food was found, or null if it wasn't.
      */
-    protected Location findFood(ArrayList<String> preyList)
+    protected Location findFood(List<String> preyList)
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
@@ -235,7 +234,7 @@ public abstract class Animal extends Organism
     public void incrementAge()
     {
         super.incrementAge();
-        if(getAge() > config.getMaxAge()) {
+        if(getAge() > config.maxAge()) {
             setDead();
         }
     }
@@ -248,8 +247,8 @@ public abstract class Animal extends Organism
     private int breed()
     {
         int births = 0;
-        if(canBreed() && rand.nextDouble() <= config.getBreedingProbability()) {
-            births = rand.nextInt(config.getMaxLitterSize()) + 1;
+        if(canBreed() && rand.nextDouble() <= config.breedingProbability()) {
+            births = rand.nextInt(config.maxLitterSize()) + 1;
         }
         return births;
     }
@@ -260,7 +259,7 @@ public abstract class Animal extends Organism
      */
     private boolean canBreed()
     {
-        return (isFemale() && getAge() >= config.getBreedingAge());
+        return (isFemale() && getAge() >= config.breedingAge());
     }
 
     /**
@@ -270,7 +269,7 @@ public abstract class Animal extends Organism
      */
     protected boolean huntSucceeds()
     {
-        return rand.nextDouble() < config.getHuntProbability();
+        return rand.nextDouble() < config.huntProbability();
     }
 
     /**
@@ -278,15 +277,15 @@ public abstract class Animal extends Organism
      */
     public int getFoodValue()
     {
-        return config.getFoodValue();
+        return config.foodValue();
     }
 
     /**
      * @return The list of prey (class names) which this animal eats.
      */
-    public ArrayList<String> getPrey()
+    public List<String> getPrey()
     {
-        return config.getPrey();
+        return config.prey();
     }
 
     /**

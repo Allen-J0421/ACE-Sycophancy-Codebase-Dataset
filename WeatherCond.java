@@ -1,7 +1,5 @@
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.HashMap;
 import java.util.Map;
 /**
  * The different weather that can occur randomly in the simulator, they all have different attributes which
@@ -19,7 +17,7 @@ public enum WeatherCond
     Storm (0.4,0.5,1);
 
     private static final Random rand = Randomizer.getRandom();
-    private Map<String, Double> weatherAttributes; 
+    private final Map<String, Double> weatherAttributes; 
     private static Time timeOfDay;
 
     /**
@@ -30,10 +28,11 @@ public enum WeatherCond
      */
     WeatherCond(double visibilty,double brightness,double dampness)
     {
-        weatherAttributes = new HashMap<>();
-        weatherAttributes.put("visibility", visibilty);
-        weatherAttributes.put("brightness", brightness);
-        weatherAttributes.put("dampness", dampness);
+        weatherAttributes = Map.of(
+            "visibility", visibilty,
+            "brightness", brightness,
+            "dampness", dampness
+        );
     }
 
     /**
@@ -43,50 +42,43 @@ public enum WeatherCond
      */
     public WeatherCond nextCondition()
     {
-        List<WeatherCond> tempList = new ArrayList<>();
-        if (!timeOfDay.isDay()) {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
+        List<WeatherCond> options = nextConditionsFor(timeOfDay.isDay());
+        return options.get(rand.nextInt(options.size()));
+    }
+
+    /**
+     * Get the possible next weather states for the current state.
+     * @param isDay Whether the simulation is currently in daytime.
+     * @return The next-state candidates.
+     */
+    private List<WeatherCond> nextConditionsFor(boolean isDay)
+    {
+        switch(this) {
+            case Sunny:
+                return List.of(Cloudy, Windy);
+            case Rain:
+                return List.of(Storm, Cloudy);
+            default:
+                return isDay ? List.of(Sunny, Fog, Rain) : List.of(Fog, Rain);
         }
-        else {
-            switch(this) {
-                case Sunny:
-                    tempList.add(Cloudy);
-                    tempList.add(Windy);
-                    break;
-                case Rain:
-                    tempList.add(Storm);
-                    tempList.add(Cloudy);
-                    break;
-                default:
-                    tempList.add(Sunny);
-                    tempList.add(Fog);
-                    tempList.add(Rain);
-                    break;
-            }
-        }
-        return tempList.get(rand.nextInt((tempList.size())));
     }
 
     /**
      * Returns visibility.
      * @return visibility.
      */
-    public double getVisibilty()
+    public double getVisibility()
     {
         return weatherAttributes.get("visibility");
+    }
+
+    /**
+     * Backward-compatible typo-preserving alias for visibility.
+     * @return visibility.
+     */
+    public double getVisibilty()
+    {
+        return getVisibility();
     }
 
     /**
@@ -126,4 +118,3 @@ public enum WeatherCond
         timeOfDay = time;
     }
 }
-

@@ -11,13 +11,13 @@ import java.util.Map;
  */
 public class Disease
 {
-    private String name;
-    private boolean spreadByBirth;
-    private boolean spreadByEating; 
+    private final String name;
+    private final boolean spreadByBirth;
+    private final boolean spreadByEating; 
     //actors name as the string, and the disease multiplier as the double
-    private Map<String, Double> actorsAffected;
+    private final Map<String, Double> actorsAffected;
     //actors name as string, the probability of the animal starting with the disease as the double
-    private Map<String, Double> startingActors;
+    private final Map<String, Double> startingActors;
     
     /**
      * Creates the disease and sets it name, and how it spreads, who it can spread to and

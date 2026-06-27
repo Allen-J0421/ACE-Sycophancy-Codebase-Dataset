@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
+import java.util.Map;
 import java.util.Collections;
 
 /**
@@ -122,25 +123,50 @@ public class Simulator
     private static List<Disease> createDiseases()
     {
         List<Disease> list = new ArrayList<>();
-        Disease dengue = new Disease("dengue", true, true);
-
-        dengue.getActorsAffectedMap().put("Lemur",0.9);
-        dengue.getActorsAffectedMap().put("Panther",0.6);
-        dengue.getActorsAffectedMap().put("Alligator",0.6);
-
-        dengue.getStartingActorsMap().put("Lemur",0.4);
-        list.add(dengue);
-        
-        Disease river_fever = new Disease("river_fever", true, false);
-
-        river_fever.getActorsAffectedMap().put("Water_Fern",1.0);
-        river_fever.getActorsAffectedMap().put("Catfish",0.7);
-        river_fever.getActorsAffectedMap().put("Salamander",0.8);
-
-        river_fever.getStartingActorsMap().put("Water_Fern",0.4);
-        list.add(river_fever);
-        
+        list.add(createDisease(
+            "dengue",
+            true,
+            true,
+            Map.of(
+                "Lemur", 0.9,
+                "Panther", 0.6,
+                "Alligator", 0.6
+            ),
+            Map.of(
+                "Lemur", 0.4
+            )
+        ));
+        list.add(createDisease(
+            "river_fever",
+            true,
+            false,
+            Map.of(
+                "Water_Fern", 1.0,
+                "Catfish", 0.7,
+                "Salamander", 0.8
+            ),
+            Map.of(
+                "Water_Fern", 0.4
+            )
+        ));
         return list;
+    }
+
+    /**
+     * Build a disease from immutable map inputs.
+     * @param name The disease name.
+     * @param spreadByBirth Whether it spreads by birth.
+     * @param spreadByEating Whether it spreads by eating.
+     * @param affectedActors The species affected by the disease.
+     * @param startingActors The species that can start with the disease.
+     * @return The configured disease.
+     */
+    private static Disease createDisease(String name, boolean spreadByBirth, boolean spreadByEating, Map<String, Double> affectedActors, Map<String, Double> startingActors)
+    {
+        Disease disease = new Disease(name, spreadByBirth, spreadByEating);
+        disease.getActorsAffectedMap().putAll(affectedActors);
+        disease.getStartingActorsMap().putAll(startingActors);
+        return disease;
     }
 
     /**

@@ -52,9 +52,7 @@ public abstract class FieldOccupant
      */
     protected void setLocation(Location newLocation)
     {
-        if(location != null) {
-            field.clear(location);
-        }
+        clearCurrentCell();
         location = newLocation;
         field.place(this, newLocation);
     }
@@ -67,13 +65,25 @@ public abstract class FieldOccupant
      */
     protected boolean clearFromField()
     {
+        if(location == null) {
+            return false;
+        }
+        clearCurrentCell();
+        location = null;
+        field = null;
+        return true;
+    }
+
+    /**
+     * Clear this occupant's current cell in the field, if it holds one. The
+     * single point at which the occupant releases its grid position; the
+     * coordinate work itself is left to {@link Field}.
+     */
+    private void clearCurrentCell()
+    {
         if(location != null) {
             field.clear(location);
-            location = null;
-            field = null;
-            return true;
         }
-        return false;
     }
 
     /**

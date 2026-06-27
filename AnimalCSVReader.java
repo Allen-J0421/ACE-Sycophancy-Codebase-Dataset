@@ -11,7 +11,7 @@ public class AnimalCSVReader extends CSVReader
     private static final String FILE_NAME = "animals.csv";
     // String to be recognized as a boolean value of true.
     private static final String TRUE_SYMBOL = "true";
-    // tru if the animal is a predator.
+    // true if the animal is a predator.
     private boolean isPredator;
     // Animal's name.
     private String name;

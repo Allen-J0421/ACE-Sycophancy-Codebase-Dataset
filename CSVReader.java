@@ -101,7 +101,6 @@ public abstract class CSVReader
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Issue when parsing CSV");
-            return null;
         }
         return choicesList;
     }

@@ -64,7 +64,7 @@ public class Time
     }
 
     /**
-     * Change the day status if 'CHANGE_STEPS' steps have passed, and increment the hours.
+     * Change the day status if 'DAY_CHANGE' steps have passed, and increment the hours.
      */
     public void timeStep()
     {

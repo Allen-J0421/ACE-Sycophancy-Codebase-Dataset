@@ -123,8 +123,6 @@ public class SimulatorView extends JFrame
         bottomComponents.add(population);
         bottomComponents.add(buttons);
         
-        JPanel centeredFieldView = new JPanel(new BorderLayout());
-        centeredFieldView.add(fieldView, BorderLayout.CENTER);
         add(infoPane, BorderLayout.NORTH);
         add(fieldView, BorderLayout.CENTER);
         add(bottomComponents, BorderLayout.SOUTH);

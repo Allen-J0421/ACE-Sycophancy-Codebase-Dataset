@@ -50,18 +50,19 @@ public class Weather implements Actor
     }
 
     /**
-     * Choose a WeatherCondition based on configured probabilities.
+     * Choose a WeatherCondition based on the simulator's runtime configuration.
      * Returns null when no condition triggers this step.
      */
     private WeatherCondition selectCondition(Random rand)
     {
-        if(rand.nextDouble() <= SimulationConfiguration.RAIN_PROBABILITY) {
+        SimulatorConfig config = simulator.getConfig();
+        if(rand.nextDouble() <= config.getRainProbability()) {
             return new RainCondition();
         }
-        else if(rand.nextDouble() <= SimulationConfiguration.FOG_PROBABILITY) {
+        else if(rand.nextDouble() <= config.getFogProbability()) {
             return new FogCondition();
         }
-        else if(rand.nextDouble() <= SimulationConfiguration.HEATWAVE_PROBABILITY) {
+        else if(rand.nextDouble() <= config.getHeatwaveProbability()) {
             return new HeatwaveCondition();
         }
         return null;

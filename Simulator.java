@@ -7,6 +7,17 @@ import java.awt.Color;
  * A simple predator-prey simulator, based on a rectangular field
  * containing rabbits and foxes.
  *
+ * Preferred construction via the fluent Builder API:
+ *
+ *   Simulator sim = new Simulator.Builder()
+ *       .gridDepth(80)
+ *       .gridWidth(100)
+ *       .lionCreationProbability(0.03)
+ *       .rainProbability(0.08)
+ *       .build();
+ *
+ * The no-arg and (depth, width) constructors remain for convenience.
+ *
  * @version 2022.03.01
  */
 public class Simulator
@@ -23,34 +34,116 @@ public class Simulator
     private PopulationManager populationManager;
     // Observers notified after each simulation step.
     private final List<SimulationObserver> observers = new ArrayList<>();
+    // Runtime configuration built by Builder.
+    private final SimulatorConfig config;
+
+    // -------------------------------------------------------------------------
+    // Builder
+    // -------------------------------------------------------------------------
 
     /**
-     * Construct a simulation field with default size.
+     * Fluent builder for Simulator.  All parameters default to the values
+     * defined in SimulationConfiguration so callers only need to override
+     * what they want to change.
+     */
+    public static class Builder
+    {
+        // Grid
+        int gridDepth = SimulationConfiguration.GRID_DEPTH;
+        int gridWidth = SimulationConfiguration.GRID_WIDTH;
+
+        // Simulation pace
+        int stepDelayMs = 60;
+
+        // Creation probabilities
+        double hyenaCreationProbability     = SimulationConfiguration.HYENA_CREATION_PROBABILITY;
+        double lionCreationProbability      = SimulationConfiguration.LION_CREATION_PROBABILITY;
+        double gazelleCreationProbability   = SimulationConfiguration.GAZELLE_CREATION_PROBABILITY;
+        double mouseCreationProbability     = SimulationConfiguration.MOUSE_CREATION_PROBABILITY;
+        double fennecFoxCreationProbability = SimulationConfiguration.FENNECFOX_CREATION_PROBABILITY;
+        double grassCreationProbability     = SimulationConfiguration.GRASS_CREATION_PROBABILITY;
+        double lakeCreationProbability      = SimulationConfiguration.LAKE_CREATION_PROBABILITY;
+
+        // Weather probabilities
+        double rainProbability     = SimulationConfiguration.RAIN_PROBABILITY;
+        double fogProbability      = SimulationConfiguration.FOG_PROBABILITY;
+        double heatwaveProbability = SimulationConfiguration.HEATWAVE_PROBABILITY;
+
+        public Builder gridDepth(int depth)   { this.gridDepth = depth;   return this; }
+        public Builder gridWidth(int width)   { this.gridWidth = width;   return this; }
+        public Builder stepDelayMs(int ms)    { this.stepDelayMs = ms;    return this; }
+
+        public Builder hyenaCreationProbability(double p)     { this.hyenaCreationProbability = p;     return this; }
+        public Builder lionCreationProbability(double p)      { this.lionCreationProbability = p;      return this; }
+        public Builder gazelleCreationProbability(double p)   { this.gazelleCreationProbability = p;   return this; }
+        public Builder mouseCreationProbability(double p)     { this.mouseCreationProbability = p;     return this; }
+        public Builder fennecFoxCreationProbability(double p) { this.fennecFoxCreationProbability = p; return this; }
+        public Builder grassCreationProbability(double p)     { this.grassCreationProbability = p;     return this; }
+        public Builder lakeCreationProbability(double p)      { this.lakeCreationProbability = p;      return this; }
+
+        public Builder rainProbability(double p)     { this.rainProbability = p;     return this; }
+        public Builder fogProbability(double p)      { this.fogProbability = p;      return this; }
+        public Builder heatwaveProbability(double p) { this.heatwaveProbability = p; return this; }
+
+        /**
+         * Validate, freeze into a SimulatorConfig, and construct the Simulator.
+         */
+        public Simulator build()
+        {
+            return new Simulator(buildConfig());
+        }
+
+        /** Package-private: also used by the convenience constructors below. */
+        SimulatorConfig buildConfig()
+        {
+            if(gridDepth <= 0) {
+                System.out.println("Depth must be greater than zero. Using default.");
+                gridDepth = SimulationConfiguration.GRID_DEPTH;
+            }
+            if(gridWidth <= 0) {
+                System.out.println("Width must be greater than zero. Using default.");
+                gridWidth = SimulationConfiguration.GRID_WIDTH;
+            }
+            return new SimulatorConfig(this);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Construct a simulation with all default parameters.
      */
     public Simulator()
     {
-        this(SimulationConfiguration.GRID_DEPTH, SimulationConfiguration.GRID_WIDTH);
+        this(new Builder().buildConfig());
     }
 
     /**
-     * Create a simulation field with the given size.
+     * Construct a simulation with custom grid dimensions and all other
+     * parameters at their defaults.
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
      */
     public Simulator(int depth, int width)
     {
-        if(width <= 0 || depth <= 0) {
-            System.out.println("The dimensions must be greater than zero.");
-            System.out.println("Using default values.");
-            depth = SimulationConfiguration.GRID_DEPTH;
-            width = SimulationConfiguration.GRID_WIDTH;
-        }
+        this(new Builder().gridDepth(depth).gridWidth(width).buildConfig());
+    }
+
+    /**
+     * Primary constructor — all initialisation flows through here.
+     * @param config Immutable configuration produced by Builder.
+     */
+    private Simulator(SimulatorConfig config)
+    {
+        this.config = config;
         nightTime = false;
         actors = new ArrayList<>();
-        field = new Field(depth, width);
+        field = new Field(config.getGridDepth(), config.getGridWidth());
         populationManager = new PopulationManager(field, this);
 
-        SimulatorView view = new SimulatorView(depth, width);
+        SimulatorView view = new SimulatorView(config.getGridDepth(), config.getGridWidth());
         view.setColor(Gazelle.class, Color.ORANGE);
         view.setColor(Lion.class, Color.YELLOW);
         view.setColor(Hyena.class, Color.RED);
@@ -61,6 +154,18 @@ public class Simulator
         addObserver(view);
 
         reset();
+    }
+
+    // -------------------------------------------------------------------------
+    // Public API
+    // -------------------------------------------------------------------------
+
+    /**
+     * @return The runtime configuration this Simulator was built with.
+     */
+    public SimulatorConfig getConfig()
+    {
+        return config;
     }
 
     /**
@@ -90,7 +195,7 @@ public class Simulator
     {
         for(int step = 1; step <= numSteps && checkViable(field); step++) {
             simulateOneStep();
-            delay(60);
+            delay(config.getStepDelayMs());
         }
     }
 
@@ -169,20 +274,6 @@ public class Simulator
     }
 
     /**
-     * Pause for a given time.
-     * @param millisec The time to pause for, in milliseconds.
-     */
-    private void delay(int millisec)
-    {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch(InterruptedException ie) {
-            // wake up
-        }
-    }
-
-    /**
      * @return The current step of the simulator.
      */
     public int getStep()
@@ -198,9 +289,20 @@ public class Simulator
         return nightTime;
     }
 
-    /**
-     * Notify all registered observers that a step has completed.
-     */
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    private void delay(int millisec)
+    {
+        try {
+            Thread.sleep(millisec);
+        }
+        catch(InterruptedException ie) {
+            // wake up
+        }
+    }
+
     private void notifyObservers(SimulationEvent event)
     {
         for(SimulationObserver obs : observers) {
@@ -208,9 +310,6 @@ public class Simulator
         }
     }
 
-    /**
-     * @return true if all registered observers consider the simulation viable.
-     */
     private boolean checkViable(Field field)
     {
         if(observers.isEmpty()) return false;

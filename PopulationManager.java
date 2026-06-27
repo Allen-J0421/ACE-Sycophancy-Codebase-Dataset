@@ -20,7 +20,7 @@ public class PopulationManager
 
     /**
      * @param field     The simulation field to populate.
-     * @param simulator The owning simulator (required by Weather).
+     * @param simulator The owning simulator (required by Weather and for config access).
      */
     public PopulationManager(Field field, Simulator simulator)
     {
@@ -31,12 +31,15 @@ public class PopulationManager
 
     /**
      * Clear the field and populate it from scratch with all entity types.
+     * Creation probabilities are read from the simulator's runtime config.
      * @return A list of all actors to be added to the simulation.
      */
     public List<Actor> populate()
     {
         Random rand = Randomizer.getRandom();
         field.clear();
+
+        SimulatorConfig config = simulator.getConfig();
 
         List<Actor> actors = new ArrayList<>();
 
@@ -51,7 +54,7 @@ public class PopulationManager
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                if(rand.nextDouble() <= SimulationConfiguration.LAKE_CREATION_PROBABILITY) {
+                if(rand.nextDouble() <= config.getLakeCreationProbability()) {
                     Lake lake = new Lake(true, field, location);
                     actors.add(lake);
                     // Spread lake over adjacent cells to create realistic water bodies.
@@ -59,22 +62,22 @@ public class PopulationManager
                         actors.add(new Lake(true, field, adj));
                     }
                 }
-                else if(rand.nextDouble() <= SimulationConfiguration.HYENA_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= config.getHyenaCreationProbability()) {
                     actors.add(new Hyena(true, field, location));
                 }
-                else if(rand.nextDouble() <= SimulationConfiguration.LION_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= config.getLionCreationProbability()) {
                     actors.add(new Lion(true, field, location));
                 }
-                else if(rand.nextDouble() <= SimulationConfiguration.GAZELLE_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= config.getGazelleCreationProbability()) {
                     actors.add(new Gazelle(true, field, location));
                 }
-                else if(rand.nextDouble() <= SimulationConfiguration.MOUSE_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= config.getMouseCreationProbability()) {
                     actors.add(new Mouse(true, field, location));
                 }
-                else if(rand.nextDouble() <= SimulationConfiguration.FENNECFOX_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= config.getFennecFoxCreationProbability()) {
                     actors.add(new FennecFox(true, field, location));
                 }
-                else if(rand.nextDouble() <= SimulationConfiguration.GRASS_CREATION_PROBABILITY) {
+                else if(rand.nextDouble() <= config.getGrassCreationProbability()) {
                     actors.add(new Grass(true, field, location));
                 }
             }
@@ -89,9 +92,9 @@ public class PopulationManager
     public List<Actor> generateWater()
     {
         Random rand = Randomizer.getRandom();
+        SimulatorConfig config = simulator.getConfig();
         List<Actor> newWater = new ArrayList<>();
-        double rainLakeProbability = SimulationConfiguration.LAKE_CREATION_PROBABILITY
-                                     / SimulationConfiguration.GRID_DEPTH;
+        double rainLakeProbability = config.getLakeCreationProbability() / config.getGridDepth();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 if(rand.nextDouble() < rainLakeProbability) {

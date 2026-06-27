@@ -69,7 +69,6 @@ public class Simulator
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             delay(DEFAULT_DELAY);
             simulateOneStep();
-            // delay(200);   // uncomment this to run more slowly
         }
     }
 

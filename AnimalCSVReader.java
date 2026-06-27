@@ -56,6 +56,7 @@ public class AnimalCSVReader extends CSVReader
     {
         if (extractedData.length != 12) {
             errorThrower.throwMessage("Animal .csv issue, please restart.");
+            return;
         }
         name               = extractedData[0];
         isPredator         = TRUE_SYMBOL.equals(extractedData[1]);

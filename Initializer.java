@@ -101,7 +101,7 @@ public class Initializer
     {
         SimulationStep simulatorStepCounter = new SimulationStep();
         Field field = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
-        ClimateScenarios chosenClimateChangeScenario = createChosenClimateChangeScenario(scenarioName);
+        ClimateScenarios chosenClimateChangeScenario = ClimateScenarios.fromLabel(scenarioName);
         Habitat simulationHabitat = createHabitat(chosenHabitat, simulatorStepCounter, chosenClimateChangeScenario);
         if (getNumberOfPlants() + getNumberOfAnimals(animalsToCreate) > calculateFieldArea()) {
             errorThrower.throwMessage("Too many animals were added for this habitat, please reduce the number of animals and try again");
@@ -122,18 +122,16 @@ public class Initializer
      * @param climateChangeScenario (ClimateScenarios) The created ClimateScenarios enum to be handed to the Habitat object.
      * @return (Habitat) the created Habitat object.
      */
-    private Habitat createHabitat (String habitatName, SimulationStep simulatorStepCounter, ClimateScenarios climateChangeScenario)
+    private Habitat createHabitat(String habitatName, SimulationStep simulatorStepCounter, ClimateScenarios climateChangeScenario)
     {
-        if (habitatName != null) {
-            habitatReader.extractDataFor(habitatName);
-            Habitat chosenHabitat = new Habitat(simulatorStepCounter, climateChangeScenario ,habitatReader.getSpringTemperatures(), habitatReader.getSummerTemperatures(), habitatReader.getAutumnTemperatures(), habitatReader.getWinterTemperatures());
-            habitatPlantConcentration = habitatReader.getPlantConcentration();
-            return chosenHabitat;
-        }
-        else {
+        if (habitatName == null) {
             errorThrower.throwMessage("Habitat name was not specified successfully.");
             return null;
         }
+        habitatReader.extractDataFor(habitatName);
+        Habitat chosenHabitat = new Habitat(simulatorStepCounter, climateChangeScenario, habitatReader.getSpringTemperatures(), habitatReader.getSummerTemperatures(), habitatReader.getAutumnTemperatures(), habitatReader.getWinterTemperatures());
+        habitatPlantConcentration = habitatReader.getPlantConcentration();
+        return chosenHabitat;
     }
 
     /**
@@ -191,18 +189,6 @@ public class Initializer
                 idxOfColorToUseNext ++;
             }
         }
-    }
-
-    /**
-     * Create the chosen climate change scenario. Scenarios are pre-defined in the enum ClimateScenarios
-     * as their functions can be changed to better approximate the real scenarios projected by the GIEC.
-     *
-     * @param scenarioName (String) The name of the scenario chosen by the user.
-     * @return (ClimateScenarios) The created ClimateScenarios enum.
-     */
-    private ClimateScenarios createChosenClimateChangeScenario(String scenarioName)
-    {
-        return ClimateScenarios.fromLabel(scenarioName);
     }
 
     /**

@@ -43,6 +43,7 @@ public class PlantCSVReader extends CSVReader
     {
         if (extractedData.length != 6) {
             errorThrower.throwMessage("Plant .csv issue, please restart.");
+            return;
         }
         name                    = extractedData[0];
         maximumTemperature      = Integer.parseInt(extractedData[1]);

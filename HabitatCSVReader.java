@@ -62,6 +62,7 @@ public class HabitatCSVReader extends CSVReader {
         extractedData = removeHabitatName(extractedData);
         if (extractedData.length != EXPECTED_FIELD_COUNT) {
             errorThrower.throwMessage("Habitat issue, please restart.");
+            return;
         }
 
         winterTemperatures[0] = Integer.parseInt(extractedData[WINTER_AVG_TEMP_IDX]);

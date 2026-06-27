@@ -117,7 +117,8 @@ public class Predator extends Animal
             if (!(neighbor instanceof Predator)) continue;
             String hordeName = neighbor.getName();
             // Skip own species and any horde species already evaluated.
-            if (this.getName().equals(hordeName) || !checkedSpecies.add(hordeName)) continue;
+            if (this.getName().equals(hordeName)) continue;
+            if (!checkedSpecies.add(hordeName)) continue;
 
             ArrayList<Predator> hordeMembers = new ArrayList<>();
             int totalHordeStrength = 0;

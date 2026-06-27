@@ -20,10 +20,12 @@ public abstract class Animal extends Organism
     private double age;
     // Indicates whether the animal is sleeping or not
     private boolean sleeping;
-    
+    // Shared random number generator
+    private static final Random rand = Randomizer.getRandom();
+
     /**
      * Create a new animal at location in field.
-     * 
+     *
      * @param randomAge If true, the animal will have a random age
      * @param field The field currently occupied.
      * @param location The location within the field.
@@ -32,7 +34,6 @@ public abstract class Animal extends Organism
     {
         super(randomAge, field, location);
         nocturnal = false;
-        Random rand = new Random();
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
@@ -41,19 +42,43 @@ public abstract class Animal extends Organism
             foodLevel = rand.nextInt(10) + 8;
         }
     }
-    
+
+    // --- Abstract methods each subclass must define ---
+
+    /** @return The minimum age at which this animal can breed. */
+    abstract protected int getBreedingAge();
+
+    /** @return The probability of breeding when conditions are met. */
+    abstract protected double getBreedingProbability();
+
+    /** @return The maximum number of offspring per birth event. */
+    abstract protected int getMaxLitterSize();
+
+    /** @return The maximum age before this animal dies. */
+    abstract public int getMaxAge();
+
+    /** @return A new instance of this animal type placed at loc. */
+    abstract protected Animal createOffspring(Field field, Location loc);
+
+    /** @return Returns list of prey for each animal */
+    abstract public ArrayList<String> getPrey();
+
+    /**
+     * @return The probability of a successful hunt (default 1.0 — always succeeds).
+     *         Override in subclasses that have a hunt success rate.
+     */
+    protected double getHuntProbability() { return 1.0; }
+
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
      */
     public void act(List<Actor> newOrganisms) {
-        // All animals eat; all organisms also increment age and water level
         super.act(newOrganisms);
         incrementHunger();
-        if(isAlive() && !sleeping) {        
-            // Move towards a source of food if found
-            giveBirth(newOrganisms);  
+        if(isAlive() && !sleeping) {
+            giveBirth(newOrganisms);
             Location newLocation = null;
             if(getWaterLevel() < 3) {
                 newLocation = findWater();
@@ -64,39 +89,45 @@ public abstract class Animal extends Organism
             if (newLocation == null) {
                 newLocation = findMate();
             }
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
+            if(newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
-            
-            // See if it was possible to move.
+
             if(newLocation != null) {
                 setLocation(newLocation);
             }
             else {
-                // Overcrowding.
                 setDead();
             }
         }
         else if (sleeping) {
-            // code for what to do when sleeping
             sleeping = false;
         }
     }
-    
+
     /**
-     * Move towards another animal of the same species to find a mate to breed with
-     * 
+     * Increase the age. This could result in the animal's death.
+     */
+    @Override
+    public void incrementAge() {
+        super.incrementAge();
+        if(getAge() > getMaxAge()) {
+            setDead();
+        }
+    }
+
+    /**
+     * Move towards another animal of the same species to find a mate to breed with.
+     *
      * @return The location of a potential mate if found, null if not
      */
-    public Location findMate() 
+    public Location findMate()
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            // Checks nearby location (adjacent to adjacent locations)
             List<Location> adjacent2 = field.adjacentLocations(where);
             Iterator<Location> it2 = adjacent2.iterator();
             while (it2.hasNext()) {
@@ -109,46 +140,47 @@ public abstract class Animal extends Organism
         }
         return null;
     }
-    
+
     /**
      * Look for prey adjacent to the current location.
-     * Only the first live prey is eaten.
+     * Hunt success is gated by getHuntProbability().
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood(ArrayList<String> preyList)
     {
+        if(rand.nextDouble() >= getHuntProbability()) {
+            return null;
+        }
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
             Object food = field.getObjectAt(where);
-            if(food!= null) {
+            if(food != null) {
                 if(preyList.contains(food.getClass().getName())) {
                     Organism prey = (Organism) food;
-                    if(prey.isAlive()) { 
+                    if(prey.isAlive()) {
                         prey.setDead();
-                        int increment = prey.getFoodValue() + this.getFoodLevel();
-                        this.setFoodLevel(increment);
-                        int newWaterLevel = getWaterLevel() + 5;
-                        this.setWaterLevel(newWaterLevel);
-                        return where;  
+                        setFoodLevel(prey.getFoodValue() + getFoodLevel());
+                        setWaterLevel(getWaterLevel() + 5);
+                        return where;
                     }
                 }
             }
         }
         return null;
     }
-    
+
     /**
      * Look for water adjacent to the animal's current location
-     * @return Where water was found, or null if it wasn't 
+     * @return Where water was found, or null if it wasn't
      */
     protected Location findWater() {
         super.findWater();
         return null;
     }
-    
+
     /**
      * Make the animal more hungry. This could result in the animal's death.
      */
@@ -159,38 +191,62 @@ public abstract class Animal extends Organism
             setDead();
         }
     }
-    
+
     /**
      * Check whether or not this animal is to give birth at this step.
-     * New births will be made into free adjacent locations.
+     * Finds an adjacent mate of opposite sex, then spawns offspring into free locations.
      * @param newAnimals A list to return newly born animals.
-     * @return A list of the free adjacent locations for new young to be born into
      */
-    protected List<Location> giveBirth(List<Actor> newAnimals)
+    protected void giveBirth(List<Actor> newAnimals)
     {
-        // New animals are born into adjacent locations.
-        // Get a list of adjacent free locations.
+        int births = breed();
+        if(births == 0) return;
+
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            // can only breed if next to an animal of opposite sex
-            if(animal != null && this.getClass().equals(animal.getClass())) {
-                Animal mate = (Animal) animal;
-                if (isFemale() != mate.isFemale()) {
-                    return free;
+            Object other = field.getObjectAt(where);
+            if(other != null && this.getClass().equals(other.getClass())) {
+                Animal mate = (Animal) other;
+                if(isFemale() != mate.isFemale()) {
+                    for(int b = 0; b < births && !free.isEmpty(); b++) {
+                        Location loc = free.remove(0);
+                        Animal young = createOffspring(field, loc);
+                        if(isInfected()) {
+                            young.setInfected();
+                        }
+                        newAnimals.add(young);
+                    }
                 }
-                else {
-                    return null;
-                }
+                return;
             }
-        }    
-        return null;
+        }
     }
-    
+
+    /**
+     * A animal can breed if it is female and has reached the breeding age.
+     */
+    private boolean canBreed()
+    {
+        return isFemale() && getAge() >= getBreedingAge();
+    }
+
+    /**
+     * Generate a number representing the number of births, if it can breed.
+     * @return The number of births (may be zero).
+     */
+    private int breed()
+    {
+        int births = 0;
+        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            births = rand.nextInt(getMaxLitterSize()) + 1;
+        }
+        return births;
+    }
+
     /**
      * @param foodValue The level of food an animal has eaten
      */
@@ -198,48 +254,43 @@ public abstract class Animal extends Organism
     {
         foodLevel = foodValue;
     }
-    
-    /** 
+
+    /**
      * @return The level of food an animal has eaten
      */
     protected int getFoodLevel()
     {
         return foodLevel;
     }
-    
-    /** 
+
+    /**
      * @return True if this animal is a female, capable of breeding
      */
     public boolean isFemale()
     {
         return female;
     }
-    
-    /** 
-     * @return True if this animal is a female, capable of breeding
+
+    /**
+     * Mark this animal as nocturnal.
      */
     public void setNocturnal()
     {
         nocturnal = true;
     }
-    
-    /** 
+
+    /**
      * @return True if this animal is nocturnal, false if not
      */
     public boolean isNocturnal()
     {
         return nocturnal;
     }
-    
+
     /**
      * Sets the sleeping boolean variable to the opposite state it currently has.
      */
     public void setSleepStatus(){
-        sleeping = ! sleeping;
+        sleeping = !sleeping;
     }
-    
-    /**
-     * @return Returns list of prey for each animal
-     */
-    abstract public ArrayList<String> getPrey();
 }

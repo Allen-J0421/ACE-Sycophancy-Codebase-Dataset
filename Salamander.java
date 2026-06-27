@@ -24,14 +24,12 @@ public class Salamander extends Animal
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 4;
     // The food value of all prey.
-    private static final Map<String, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
+    private static final Map<Class<? extends Actor>, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // The max food value of the salamander. In effect, this is the
     // number of steps a salamander can go before it has to eat again.
     private static final int MAX_FOOD = 7;
-    // String name for the salamander
-    public static final String name = "Salamander";
 
     /**
      * Create a salamander. The salamander is created as a new born (age zero
@@ -77,22 +75,23 @@ public class Salamander extends Animal
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
         for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
+            Double prob = disease.getStartingActorsMap().get(Salamander.class);
+            if(prob != null && rand.nextDouble() <= prob){
                 setDiseases.add(disease);
             }
         }
     }
 
     /**
-     * Create a Map with a key of the prey String name
+     * Create a Map with a key of the prey class
      * and a value of the food level is given when eaten.
      * @return The prey food value Map.
      */
-    private static Map<String, Integer> createPreyFoodValueMap()
+    private static Map<Class<? extends Actor>, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
-        mapTemp.put("Grass", 4);
-        mapTemp.put("Water_Fern", 5);
+        Map<Class<? extends Actor>, Integer> mapTemp = new HashMap<>();
+        mapTemp.put(Grass.class, 4);
+        mapTemp.put(Water_Fern.class, 5);
         return mapTemp;
     }
 
@@ -120,14 +119,6 @@ public class Salamander extends Animal
     }
 
     /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
-    }
-
-    /**
      * Returns the max food level that the salamander can have.
      * @return The max food level that the salamander can have.
      */
@@ -149,7 +140,7 @@ public class Salamander extends Animal
      * Returns the prey food values Map.
      * @return The prey food values Map.
      */
-    public Map<String, Integer> getPreyFoodValuesMap()
+    public Map<Class<? extends Actor>, Integer> getPreyFoodValuesMap()
     {
         return PREY_FOOD_VALUES;
     }

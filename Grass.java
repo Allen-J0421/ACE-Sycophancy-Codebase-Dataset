@@ -23,8 +23,6 @@ public class Grass extends Plant
     private static final int MAX_LITTER_SIZE = 12;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    // String name for the grass
-    public static final String name = "Grass";
 
     /**
      * Create grass. Grass are created as age zero.
@@ -61,7 +59,8 @@ public class Grass extends Plant
         canGoWater = false;
         age = rand.nextInt(MAX_AGE);
         for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
+            Double prob = disease.getStartingActorsMap().get(Grass.class);
+            if(prob != null && rand.nextDouble() <= prob){
                 setDiseases.add(disease);
             }
         }
@@ -88,14 +87,6 @@ public class Grass extends Plant
     private boolean canBreed()
     {
         return age >= BREEDING_AGE;
-    }
-
-    /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
     }
 
     /**

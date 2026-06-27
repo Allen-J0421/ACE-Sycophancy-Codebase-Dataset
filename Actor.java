@@ -123,12 +123,6 @@ public abstract class Actor
     }
 
     /**
-     * Returns the actors Name
-     * @return The actors name
-     */
-    abstract protected String getActorName();
-
-    /**
      * Increments the actors age by 1
      * If the actor has a disease then the max age will decrease and if the current age
      * is greater than the maxAge then they will die.
@@ -139,12 +133,14 @@ public abstract class Actor
         age++;
         int maxAge = getMaxAge();
         for(Disease disease : setDiseases){
-            maxAge *= disease.getActorsAffectedMap().get(getActorName());
+            Double severity = disease.getActorsAffectedMap().get(getClass());
+            if(severity != null){
+                maxAge *= severity;
+            }
         }
         if(age > maxAge) {
             setDead();
         }
-
     }
 
     /**

@@ -13,12 +13,12 @@ public class Disease
 {
     private String name;
     private boolean spreadByBirth;
-    private boolean spreadByEating; 
-    //actors name as the string, and the disease multiplier as the double
-    private Map<String, Double> actorsAffected;
-    //actors name as string, the probability of the animal starting with the disease as the double
-    private Map<String, Double> startingActors;
-    
+    private boolean spreadByEating;
+    // actor class mapped to disease severity multiplier (0.0 = fatal, 1.0 = carrier only)
+    private Map<Class<? extends Actor>, Double> actorsAffected;
+    // actor class mapped to probability of starting with this disease
+    private Map<Class<? extends Actor>, Double> startingActors;
+
     /**
      * Creates the disease and sets it name, and how it spreads, who it can spread to and
      * which actor it starts with.
@@ -31,10 +31,10 @@ public class Disease
         this.name = name;
         this.spreadByBirth = spreadByBirth;
         this.spreadByEating = spreadByEating;
-        actorsAffected = new HashMap();
-        startingActors = new HashMap();
+        actorsAffected = new HashMap<>();
+        startingActors = new HashMap<>();
     }
-    
+
     /**
      * Returns the String name of the disease.
      * @return The String name of the disease.
@@ -43,10 +43,10 @@ public class Disease
     {
         return name;
     }
-    
+
     /**
      * Used to return if the disease is spread by birth,
-     * the child gets their parents disease and the mate also gets the disease during 
+     * the child gets their parents disease and the mate also gets the disease during
      * birth
      * @return true if it does spread by birth
      */
@@ -54,7 +54,7 @@ public class Disease
     {
         return spreadByBirth;
     }
-    
+
     /**
      * Used to return if the disease is spread by eating,
      * predators can be infected by eating an infected actor
@@ -64,21 +64,21 @@ public class Disease
     {
         return spreadByEating;
     }
-    
+
     /**
      * returns the map of the actors affected by the disease
-     * @return Map<String,Double> of the actors affected
+     * @return Map of actor class to severity multiplier
      */
-    public Map<String, Double> getActorsAffectedMap()
+    public Map<Class<? extends Actor>, Double> getActorsAffectedMap()
     {
         return actorsAffected;
     }
-    
-     /**
+
+    /**
      * returns the map of the actors that start with the disease
-     * @return Map<String,Double> of the actors that start with it
+     * @return Map of actor class to starting probability
      */
-    public Map<String, Double> getStartingActorsMap()
+    public Map<Class<? extends Actor>, Double> getStartingActorsMap()
     {
         return startingActors;
     }

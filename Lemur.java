@@ -24,14 +24,12 @@ public class Lemur extends Animal
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE =5;
     // The food value of all prey.
-    private static final Map<String, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
+    private static final Map<Class<? extends Actor>, Integer> PREY_FOOD_VALUES = createPreyFoodValueMap();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // The max food value of the lemur. In effect, this is the
     // number of steps a lemur can go before it has to eat again.
     private static final int MAX_FOOD = 9;
-    // String name for the lemur
-    public static final String name = "Lemur";
 
     /**
      * Create a lemur. The lemur is created as a new born (age zero
@@ -75,22 +73,23 @@ public class Lemur extends Animal
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1; 
         for(Disease disease : Simulator.diseases){
-            if(disease.getStartingActorsMap().containsKey(name) && rand.nextDouble()<=disease.getStartingActorsMap().get(name)){
+            Double prob = disease.getStartingActorsMap().get(Lemur.class);
+            if(prob != null && rand.nextDouble() <= prob){
                 setDiseases.add(disease);
             }
         }
     }
 
     /**
-     * Create a Map with a key of the prey String name
+     * Create a Map with a key of the prey class
      * and a value of the food level is given when eaten.
      * @return The prey food value Map.
      */
-    private static Map<String, Integer> createPreyFoodValueMap()
+    private static Map<Class<? extends Actor>, Integer> createPreyFoodValueMap()
     {
-        Map<String,Integer> mapTemp = new HashMap();
-        mapTemp.put("Grass", 3);
-        mapTemp.put("Salamander",4);
+        Map<Class<? extends Actor>, Integer> mapTemp = new HashMap<>();
+        mapTemp.put(Grass.class, 3);
+        mapTemp.put(Salamander.class, 4);
         return mapTemp;
     }
 
@@ -118,14 +117,6 @@ public class Lemur extends Animal
     }
 
     /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
-    }
-
-    /**
      * Returns the max food level that the lemur can have.
      * @return The max food level that the lemur can have.
      */
@@ -147,13 +138,13 @@ public class Lemur extends Animal
      * Returns the prey food values Map.
      * @return The prey food values Map.
      */
-    public Map<String, Integer> getPreyFoodValuesMap()
+    public Map<Class<? extends Actor>, Integer> getPreyFoodValuesMap()
     {
         return PREY_FOOD_VALUES;
     }
 
     /**
-     * Creates a new lemur 
+     * Creates a new lemur
      * If the lemur is created at the start of the simulation no parentDiseases Set is given as there is no parent.
      * @param location The new location of the child
      * @param Set<Disease> The diseases that the parent had is passed down

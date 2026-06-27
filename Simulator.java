@@ -26,7 +26,7 @@ public class Simulator
     // The probabilities that actors will be created in any given grid position.
     private Map<Actor,Double> actorCreationProb; 
     // List of diseases in the simulation.
-    public static final List<Disease> diseases = createDiseases();
+    static final List<Disease> diseases = createDiseases();
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -115,20 +115,20 @@ public class Simulator
         List<Disease> list = new ArrayList<>();
         Disease dengue = new Disease("dengue", true, true);
 
-        dengue.getActorsAffectedMap().put("Lemur",0.9);
-        dengue.getActorsAffectedMap().put("Panther",0.6);
-        dengue.getActorsAffectedMap().put("Alligator",0.6);
+        dengue.getActorsAffectedMap().put(Lemur.class, 0.9);
+        dengue.getActorsAffectedMap().put(Panther.class, 0.6);
+        dengue.getActorsAffectedMap().put(Alligator.class, 0.6);
 
-        dengue.getStartingActorsMap().put("Lemur",0.4);
+        dengue.getStartingActorsMap().put(Lemur.class, 0.4);
         list.add(dengue);
-        
+
         Disease river_fever = new Disease("river_fever", true, false);
 
-        river_fever.getActorsAffectedMap().put("Water_Fern",1.0);
-        river_fever.getActorsAffectedMap().put("Catfish",0.7);
-        river_fever.getActorsAffectedMap().put("Salamander",0.8);
+        river_fever.getActorsAffectedMap().put(Water_Fern.class, 1.0);
+        river_fever.getActorsAffectedMap().put(Catfish.class, 0.7);
+        river_fever.getActorsAffectedMap().put(Salamander.class, 0.8);
 
-        river_fever.getStartingActorsMap().put("Water_Fern",0.4);
+        river_fever.getStartingActorsMap().put(Water_Fern.class, 0.4);
         list.add(river_fever);
         
         return list;

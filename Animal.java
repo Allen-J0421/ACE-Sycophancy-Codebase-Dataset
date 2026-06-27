@@ -27,6 +27,8 @@ public class Animal extends Species
     private final boolean isNocturnal;
     // the number of steps that should pass until an animal in hibernation moves
     private static final int STAY_STEPS = 10;
+    // foodLevel cap as a multiple of nutritional value — above this threshold the animal stops eating
+    private static final double FOOD_LEVEL_FULL_MULTIPLIER = 1.5;
 
     // Fields prone to change during the animal's life
 
@@ -97,7 +99,7 @@ public class Animal extends Species
      * @param temperature (int) the current temperature of the simulation
      * @param yearPassed true if a year has passed in the simulation
      */
-    public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed)
+    public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed, boolean isSpring, boolean seasonChanged)
     {
         // 1)
         if (yearPassed) {
@@ -230,7 +232,7 @@ public class Animal extends Species
      */
     protected boolean isNotFull()
     {
-        return foodLevel < getNutritionalValue()*1.5;
+        return foodLevel < getNutritionalValue() * FOOD_LEVEL_FULL_MULTIPLIER;
     }
     
     /**

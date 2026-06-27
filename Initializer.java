@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -25,8 +24,14 @@ public class Initializer
     private static final String DEFAULT_PLANT_NAME = "plant";
     // The default value of if animals' ages must be randomized when thy are created.
     private static final boolean RANDOM_ANIMAL_AGE = true;
-    // The names of available climate change scenarios.
-    private static final ArrayList<String> CLIMATE_CHANGE_SCENARIO_NAMES = new ArrayList<>(Arrays.asList("none", "low", "medium", "high"));
+    // The names of available climate change scenarios, derived from the enum to stay in sync.
+    private static final ArrayList<String> CLIMATE_CHANGE_SCENARIO_NAMES;
+    static {
+        CLIMATE_CHANGE_SCENARIO_NAMES = new ArrayList<>();
+        for (ClimateScenarios s : ClimateScenarios.values()) {
+            CLIMATE_CHANGE_SCENARIO_NAMES.add(s.getLabel());
+        }
+    }
     // False of the simulation starts during the day, true if it starts during the night.
     private static final boolean DEFAULT_START_TIME = false;
     // The list of colors available for animal objects.
@@ -197,20 +202,7 @@ public class Initializer
      */
     private ClimateScenarios createChosenClimateChangeScenario(String scenarioName)
     {
-        ClimateScenarios chosenScenario;
-        if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(3))) {
-            chosenScenario = ClimateScenarios.SCENARIO4;
-        }
-        else if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(2))) {
-            chosenScenario = ClimateScenarios.SCENARIO3;
-        }
-        else if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(1))) {
-            chosenScenario = ClimateScenarios.SCENARIO2;
-        }
-        else{
-            chosenScenario = ClimateScenarios.SCENARIO1;
-        }
-        return chosenScenario;
+        return ClimateScenarios.fromLabel(scenarioName);
     }
 
     /**

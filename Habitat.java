@@ -83,6 +83,15 @@ public class Habitat
     }
 
     /**
+     * @return (boolean) true if the season changed on this simulation step, false otherwise
+     */
+    public boolean seasonJustChanged()
+    {
+        int step = simStep.getCurrentStep();
+        return step != 0 && step % SEASON_CHANGE == 0;
+    }
+
+    /**
      * Method to be called on every step of the simulation for habitat conditions to be updated.
      *
      * 1) Increase the climate change effect if a year has passed

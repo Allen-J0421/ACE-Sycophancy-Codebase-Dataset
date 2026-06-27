@@ -14,9 +14,7 @@ public class Plant extends Species
     private static final double GROWING_PROBABILITY = 0.1;
     // Keep track of the plant's health
     private int currentHealth;
-    // true if the current season is Spring
-    private boolean isSpring;
-    // true if the plant can regrow, needs at least one season till it is true again
+    // true if the plant can regrow; reset each season change, cleared on wilt to prevent same-season re-emergence
     private boolean canRegrow;
     // true if plant appears dead due to temperature circumstances
     private boolean deadDueTemperature;
@@ -38,7 +36,6 @@ public class Plant extends Species
         super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability);
         this.maxHealth = maxHealth;
         currentHealth = maxHealth;
-        isSpring = true;
         canRegrow = true;
         deadDueTemperature = false;
     }
@@ -57,9 +54,14 @@ public class Plant extends Species
      * @param isNight (boolean) true if it is night in the simulation
      * @param temperature (int) The current temperature of the simulation
      * @param yearPassed (boolean) True if a year has passed in the simulation
+     * @param isSpring (boolean) True if the current season is spring
+     * @param seasonChanged (boolean) True if the season just changed this step
      */
-    public void act(List<Species> newPlants, boolean isNight, int temperature, boolean yearPassed)
+    public void act(List<Species> newPlants, boolean isNight, int temperature, boolean yearPassed, boolean isSpring, boolean seasonChanged)
     {
+        if (seasonChanged) {
+            canRegrow = true;
+        }
         // 1)
         if (! deadDueTemperature && ! survivesTemperature(temperature))
         {
@@ -105,7 +107,6 @@ public class Plant extends Species
                 if (free.size() > 0) {
                     Location loc = free.remove(0);
                     Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
-                    newPlant.setIsSpring(isSpring);
                     newPlants.add(newPlant);
                 }
             }
@@ -162,31 +163,4 @@ public class Plant extends Species
         }
     }
 
-    /**
-     * If isSpring is true, then change it to false, vice versa.
-     *Also, set canRegrow as true because at least a season has passed since the plant died.
-     */
-    public void toggleIsSpring()
-    {
-        isSpring = ! isSpring;
-        canRegrow = true;
-    }
-
-    /**
-     * @return (boolean) true if the current season is spring, false otherwise.
-     */
-    public boolean getIsSpring()
-    {
-        return isSpring;
-    }
-
-    /**
-     * Set the isSpring value to the given parameter
-     *
-     * @param spring (boolean) true if it is spring, false otherwise.
-     */
-    private void setIsSpring(boolean spring)
-    {
-        isSpring = spring;
-    }
 }

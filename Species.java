@@ -61,7 +61,7 @@ public abstract class Species
      * @param isNight (boolean) If it is currently night.
      * @param yearPassed (boolean) If a year is passing on this step (next step is the first of a nw year).
      */
-    abstract public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed);
+    abstract public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed, boolean isSpring, boolean seasonChanged);
 
     /**
      * An abstract class to enforce all subclasses to make their elements reproduce

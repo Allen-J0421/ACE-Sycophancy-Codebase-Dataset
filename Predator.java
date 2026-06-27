@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * A class representing the characteristics of a predator.
@@ -110,34 +111,27 @@ public class Predator extends Animal
      */
     private void checkForAttack(ArrayList<Animal> neighboringAnimals)
     {
-        ArrayList<Predator> hordeMembers = new ArrayList<>();
+        HashSet<String> checkedSpecies = new HashSet<>();
 
-        for (int i =0; i < neighboringAnimals.size(); i++)
-        {
-            if (neighboringAnimals.get(i) instanceof Predator) {
+        for (Animal neighbor : neighboringAnimals) {
+            if (!(neighbor instanceof Predator)) continue;
+            String hordeName = neighbor.getName();
+            // Skip own species and any horde species already evaluated.
+            if (this.getName().equals(hordeName) || !checkedSpecies.add(hordeName)) continue;
 
-                Predator neighboringPredator = (Predator)neighboringAnimals.get(i);
-                String nameOfInvestigatedHorde = neighboringPredator.getName();
-                
-                if(! this.getName().equals(nameOfInvestigatedHorde))
-                {
-                    int totalHordeStrength =  neighboringPredator.getStrength();
-
-                    hordeMembers.add(neighboringPredator);
-                    for (int j =0; j < neighboringAnimals.size(); j++) {
-                        if (nameOfInvestigatedHorde.equals(neighboringAnimals.get(j).getName())) {
-                            Predator predatorObject = (Predator)neighboringAnimals.get(j);
-                            totalHordeStrength += predatorObject.getStrength();
-                            hordeMembers.add(predatorObject);
-                        }
-                    }
-                    if (totalHordeStrength > strength) {
-                        attackedByHorde(hordeMembers);
-                        break;
-                    } else {
-                        hordeMembers.clear();
-                    }
+            ArrayList<Predator> hordeMembers = new ArrayList<>();
+            int totalHordeStrength = 0;
+            for (Animal candidate : neighboringAnimals) {
+                if (candidate instanceof Predator && hordeName.equals(candidate.getName())) {
+                    Predator hordeMember = (Predator) candidate;
+                    totalHordeStrength += hordeMember.getStrength();
+                    hordeMembers.add(hordeMember);
                 }
+            }
+
+            if (totalHordeStrength > strength) {
+                attackedByHorde(hordeMembers);
+                return;
             }
         }
     }

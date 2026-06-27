@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -74,16 +73,9 @@ public class Cat extends Animal
             Location newLocation = findFood();
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = freeAdjacentLocation();
             }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            moveToOrDie(newLocation);
         }
     }
 
@@ -116,22 +108,14 @@ public class Cat extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Mouse) {
-                Mouse mouse = (Mouse) animal;
-                if(mouse.isAlive()) { 
-                    mouse.setDead();
-                    foodLevel = foodLevel + mouse.foodValue();
-                    return where;
-                }
+        return findAdjacentLocation(Mouse.class, 1, mouse -> {
+            if(mouse.isAlive()) {
+                mouse.setDead();
+                foodLevel = foodLevel + mouse.foodValue();
+                return true;
             }
-        }
-        return null;
+            return false;
+        });
     }
     
     /**
@@ -141,16 +125,7 @@ public class Cat extends Animal
      */
     private void giveBirth(List<Animal> newCats)
     {
-        // New Cats are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Cat young = new Cat(false, field, loc);
-            newCats.add(young);
-        }
+        addOffspring(newCats, breed(), (field, location) -> new Cat(false, field, location));
     }
         
     /**
@@ -160,20 +135,7 @@ public class Cat extends Animal
      */
     private int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A Cat can breed if it has reached the breeding age.
-     * @return true if the cat can breed.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
 
     /**

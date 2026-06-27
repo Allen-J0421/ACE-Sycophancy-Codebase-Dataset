@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -81,17 +80,10 @@ public class Deer extends Animal
 
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = freeAdjacentLocation();
             }
 
-            // See if it was possible to move.            
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            moveToOrDie(newLocation);
         }
     }
 
@@ -114,31 +106,8 @@ public class Deer extends Animal
      */
     private void giveBirth(List<Animal> newDeers)
     {
-
-        boolean breedingPair = false;
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 2);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Deer) {
-                Deer deer = (Deer) animal;
-                if(deer.getGender() != getGender()) {
-                    breedingPair = true;
-                    break;
-                }
-            }
-        }
-
-        // New Deers are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0 && breedingPair; b++) {
-            Location loc = free.remove(0);
-            Deer young = new Deer(false, field, loc);
-            newDeers.add(young);
+        if(hasAdjacentMate(Deer.class, 2)) {
+            addOffspring(newDeers, breed(), (field, location) -> new Deer(false, field, location));
         }
     }
         
@@ -149,11 +118,7 @@ public class Deer extends Animal
      */
     private int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
 
     /**
@@ -174,33 +139,16 @@ public class Deer extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object plant = field.getObjectAt(where);
-            if(plant instanceof Grass) {
-                Grass grass = (Grass) plant;
-                if(grass.isAlive()) { 
-                    if (grass.getSize()>12 && foodLevel<30){
-                        grass.decrementSize();
-                        foodLevel+=20;
-                    }
-                    return where;
+        return findAdjacentLocation(Grass.class, 1, grass -> {
+            if(grass.isAlive()) {
+                if(grass.getSize() > 12 && foodLevel < 30) {
+                    grass.decrementSize();
+                    foodLevel += 20;
                 }
+                return true;
             }
-        }
-        return null;
-    }
-    
-    /**
-     * A Deer can breed if it has reached the breeding age.
-     * @return true if the Deer can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+            return false;
+        });
     }
 
 

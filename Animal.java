@@ -1,5 +1,7 @@
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * A class representing shared characteristics of animals.
@@ -38,6 +40,20 @@ public abstract class Animal extends Organism
      * @param weather The current weather.
      */
     abstract public void act(List<Animal> newAnimals, int step, Weather weather);
+
+    /**
+     * Return the food value this animal provides when eaten.
+     */
+    abstract public int foodValue();
+
+    /**
+     * A factory for creating offspring at a specific location.
+     */
+    @FunctionalInterface
+    protected interface OffspringFactory
+    {
+        Animal create(Field field, Location location);
+    }
     
     /**
      * update the animal's burn status.
@@ -80,5 +96,117 @@ public abstract class Animal extends Organism
     protected final Gender getGender()
     {
         return gender;
+    }
+
+    /**
+     * Return adjacent locations around this animal.
+     */
+    protected final List<Location> adjacentLocations(int radius)
+    {
+        return getField().adjacentLocations(getLocation(), radius);
+    }
+
+    /**
+     * Return free adjacent locations around this animal.
+     */
+    protected final List<Location> freeAdjacentLocations()
+    {
+        return getField().getFreeAdjacentLocations(getLocation());
+    }
+
+    /**
+     * Find a free adjacent location around this animal.
+     */
+    protected final Location freeAdjacentLocation()
+    {
+        return getField().freeAdjacentLocation(getLocation());
+    }
+
+    /**
+     * Move to the new location or die if there is nowhere to go.
+     */
+    protected final void moveToOrDie(Location newLocation)
+    {
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
+    }
+
+    /**
+     * Determine how many offspring are produced this step.
+     */
+    protected final int calculateBirths(int age, int breedingAge,
+                                        double breedingProbability, int maxLitterSize)
+    {
+        if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
+            return rand.nextInt(maxLitterSize) + 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Add offspring into available adjacent locations.
+     */
+    protected final void addOffspring(List<Animal> newAnimals, int births,
+                                      OffspringFactory offspringFactory)
+    {
+        Field field = getField();
+        List<Location> free = freeAdjacentLocations();
+        for(int b = 0; b < births && free.size() > 0; b++) {
+            Location location = free.remove(0);
+            newAnimals.add(offspringFactory.create(field, location));
+        }
+    }
+
+    /**
+     * Check whether a mate of the same species is nearby.
+     */
+    protected final boolean hasAdjacentMate(Class<? extends Animal> animalClass, int radius)
+    {
+        for(Location where : adjacentLocations(radius)) {
+            Object animal = getField().getObjectAt(where);
+            if(animalClass.isInstance(animal)) {
+                Animal mate = (Animal) animal;
+                if(mate.getGender() != getGender()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Find the first adjacent location containing a matching target.
+     */
+    protected final <T> Location findAdjacentLocation(Class<T> targetClass, int radius,
+                                                      Predicate<T> predicate)
+    {
+        for(Location where : adjacentLocations(radius)) {
+            Object target = getField().getObjectAt(where);
+            if(targetClass.isInstance(target)) {
+                T candidate = targetClass.cast(target);
+                if(predicate.test(candidate)) {
+                    return where;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Apply an action to each adjacent matching target.
+     */
+    protected final <T> void forEachAdjacent(Class<T> targetClass, int radius,
+                                             Consumer<T> action)
+    {
+        for(Location where : adjacentLocations(radius)) {
+            Object target = getField().getObjectAt(where);
+            if(targetClass.isInstance(target)) {
+                action.accept(targetClass.cast(target));
+            }
+        }
     }
 }

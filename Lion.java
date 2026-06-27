@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -82,17 +81,11 @@ public class Lion extends Animal
             }
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = freeAdjacentLocation();
             }
             // See if it was possible to move.
             if (step % 4 != 0) {
-                if(newLocation != null) {
-                    setLocation(newLocation);
-                }
-                else {
-                    // Overcrowding.
-                    setDead(); 
-                }
+                moveToOrDie(newLocation);
             } 
         }
     }
@@ -126,46 +119,22 @@ public class Lion extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Deer) {
-                Deer deer = (Deer) animal;
-                if(deer.isAlive()) { 
-                    deer.setDead();
-                    foodLevel = foodLevel + deer.foodValue();
-                    return where;
-                }
-            }
-            else if(animal instanceof Cat) {
-                Cat cat = (Cat) animal;
-                if(cat.isAlive()) { 
-                    cat.setDead();
-                    foodLevel = foodLevel + cat.foodValue();
-                    return where;
-                }
-            }
-            else if(animal instanceof Owl) {
-                Owl owl = (Owl) animal;
-                if(owl.isAlive()) { 
-                    owl.setDead();
-                    foodLevel = foodLevel + owl.foodValue();
-                    return where;
-                }
-            }
-            else if(animal instanceof Mouse) {
-                Mouse mouse = (Mouse) animal;
-                if(mouse.isAlive()) { 
-                        mouse.setDead();
-                    foodLevel = foodLevel + mouse.foodValue();
-                    return where;
-                }
-            }             
+        Location preyLocation = eat(Deer.class);
+        if(preyLocation != null) {
+            return preyLocation;
         }
-        return null;
+
+        preyLocation = eat(Cat.class);
+        if(preyLocation != null) {
+            return preyLocation;
+        }
+
+        preyLocation = eat(Owl.class);
+        if(preyLocation != null) {
+            return preyLocation;
+        }
+
+        return eat(Mouse.class);
     }
     
     /**
@@ -175,32 +144,9 @@ public class Lion extends Animal
      * @param newLions A list to return newly born Lions.
      */
     private void giveBirth(List<Animal> newLions)
-    {        
-        boolean breedingPair = false;
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 2);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Lion) {
-                Lion lion = (Lion) animal;
-                if(lion.getGender() != getGender()) {
-                    breedingPair = true;
-                    break;
-                }
-            }
-        }
-        
-        // New Lions are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        //Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0 && breedingPair; b++) {
-            Location loc = free.remove(0);
-            Lion young = new Lion(false, field, loc);
-            newLions.add(young);
+    {
+        if(hasAdjacentMate(Lion.class, 2)) {
+            addOffspring(newLions, breed(), (field, location) -> new Lion(false, field, location));
         }
     }
         
@@ -211,19 +157,29 @@ public class Lion extends Animal
      */
     private int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
 
     /**
-     * A Lion can breed if it has reached the breeding age.
-     * @return true if the Lion can breed.
+     * Hunt a specific prey species adjacent to this lion.
      */
-    private boolean canBreed()
+    private <T extends Animal> Location eat(Class<T> preyClass)
     {
-        return age >= BREEDING_AGE;
+        return findAdjacentLocation(preyClass, 1, prey -> {
+            if(prey.isAlive()) {
+                prey.setDead();
+                foodLevel = foodLevel + prey.foodValue();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @return lion's food value.
+     */
+    public int foodValue()
+    {
+        return FOOD_VALUE;
     }
 }

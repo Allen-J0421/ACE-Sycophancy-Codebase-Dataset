@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
+import java.util.function.Function;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -71,12 +72,7 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Deer.class, Color.BLUE);
-        view.setColor(Lion.class, Color.RED);
-        view.setColor(Mouse.class, Color.YELLOW);
-        view.setColor(Owl.class, Color.ORANGE);
-        view.setColor(Cat.class, Color.PINK);
-        view.setColor(Grass.class, Color.GREEN);
+        configureViewColors();
         
         // Setup a valid starting point.
         reset();
@@ -164,37 +160,28 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(rand.nextDouble() <= LION_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Lion lion = new Lion(true, field, location);
-                    animals.add(lion);
+                if(tryPopulateAnimal(rand, LION_CREATION_PROBABILITY,
+                                     location -> new Lion(true, field, location), row, col)) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= DEER_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Deer deer = new Deer(true, field, location);
-                    animals.add(deer);
+                if(tryPopulateAnimal(rand, DEER_CREATION_PROBABILITY,
+                                     location -> new Deer(true, field, location), row, col)) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= OWL_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Owl owl = new Owl(true, field, location);
-                    animals.add(owl);
+                if(tryPopulateAnimal(rand, OWL_CREATION_PROBABILITY,
+                                     location -> new Owl(true, field, location), row, col)) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Mouse mouse = new Mouse(true, field, location);
-                    animals.add(mouse);
+                if(tryPopulateAnimal(rand, MOUSE_CREATION_PROBABILITY,
+                                     location -> new Mouse(true, field, location), row, col)) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= CAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Cat cat = new Cat(true, field, location);
-                    animals.add(cat);
+                if(tryPopulateAnimal(rand, CAT_CREATION_PROBABILITY,
+                                     location -> new Cat(true, field, location), row, col)) {
+                    continue;
                 }
-                else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(true, field, location);
-                    plants.add(grass);
-                }
-                // else leave the location empty.
+                tryPopulatePlant(rand, GRASS_CREATION_PROBABILITY,
+                                 location -> new Grass(true, field, location), row, col);
             }
         }
     }
@@ -220,5 +207,46 @@ public class Simulator
     private void updateWeather()
     {
         weather = Weather.random(Randomizer.getRandom());
+    }
+
+    /**
+     * Configure display colors for each species.
+     */
+    private void configureViewColors()
+    {
+        view.setColor(Deer.class, Color.BLUE);
+        view.setColor(Lion.class, Color.RED);
+        view.setColor(Mouse.class, Color.YELLOW);
+        view.setColor(Owl.class, Color.ORANGE);
+        view.setColor(Cat.class, Color.PINK);
+        view.setColor(Grass.class, Color.GREEN);
+    }
+
+    /**
+     * Try to populate an animal into the given field location.
+     */
+    private boolean tryPopulateAnimal(Random rand, double probability,
+                                      Function<Location, Animal> factory,
+                                      int row, int col)
+    {
+        if(rand.nextDouble() <= probability) {
+            animals.add(factory.apply(new Location(row, col)));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Try to populate a plant into the given field location.
+     */
+    private boolean tryPopulatePlant(Random rand, double probability,
+                                     Function<Location, Plant> factory,
+                                     int row, int col)
+    {
+        if(rand.nextDouble() <= probability) {
+            plants.add(factory.apply(new Location(row, col)));
+            return true;
+        }
+        return false;
     }
 }

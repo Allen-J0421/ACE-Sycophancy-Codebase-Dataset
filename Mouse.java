@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -77,20 +76,11 @@ public class Mouse extends Animal
         if(isAlive()) {
             // Infected mouse will spread the disease to other mouse.
             if (getInfected() != 0){
-                Field field = getField();
-                List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-                Iterator<Location> it = adjacent.iterator();
-                while(it.hasNext()) {
-                    Location where = it.next();
-                    Object animal = field.getObjectAt(where);
-                    if(animal instanceof Mouse) {
-                        Mouse mouse = (Mouse) animal;
-                        if(mouse.getInfected() == 0) { 
-                            mouse.infect();
-                            //break;
-                        }
+                forEachAdjacent(Mouse.class, 1, mouse -> {
+                    if(mouse.getInfected() == 0) {
+                        mouse.infect();
                     }
-                }
+                });
                 diseaseRecover();
             }
             else {
@@ -103,16 +93,10 @@ public class Mouse extends Animal
 
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = freeAdjacentLocation();
             }
 
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }       
+            moveToOrDie(newLocation);
         }                    
     }
 
@@ -135,16 +119,7 @@ public class Mouse extends Animal
      */
     private void giveBirth(List<Animal> newMice)
     {
-        // New rabbits are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Mouse young = new Mouse(false, field, loc);
-            newMice.add(young);
-        }
+        addOffspring(newMice, breed(), (field, location) -> new Mouse(false, field, location));
     }
 
     /**
@@ -154,21 +129,13 @@ public class Mouse extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object plant = field.getObjectAt(where);
-            if(plant instanceof Grass) {
-                Grass grass = (Grass) plant;
-                if(grass.isAlive()) { 
-                    foodLevel+=2;
-                }
-                return where;                
+        return findAdjacentLocation(Grass.class, 1, grass -> {
+            if(grass.isAlive()) {
+                foodLevel += 2;
+                return true;
             }
-        }
-        return null;
+            return false;
+        });
     }
     
     /**
@@ -178,20 +145,7 @@ public class Mouse extends Animal
      */
     private int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A mouse can breed if it has reached the breeding age.
-     * @return true if the mouse can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
     
     /**

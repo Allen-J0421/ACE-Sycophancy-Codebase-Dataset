@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -74,16 +73,9 @@ public class Owl extends Animal
             Location newLocation = findFood();
             if(newLocation == null) { 
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = freeAdjacentLocation();
             }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            moveToOrDie(newLocation);
         }
     }
 
@@ -116,22 +108,14 @@ public class Owl extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Mouse) {
-                Mouse mouse = (Mouse) animal;
-                if(mouse.isAlive()) { 
-                    mouse.setDead();
-                    foodLevel = foodLevel + mouse.foodValue();
-                    return where;
-                }
+        return findAdjacentLocation(Mouse.class, 1, mouse -> {
+            if(mouse.isAlive()) {
+                mouse.setDead();
+                foodLevel = foodLevel + mouse.foodValue();
+                return true;
             }
-        }
-        return null;
+            return false;
+        });
     }
     
     /**
@@ -141,16 +125,7 @@ public class Owl extends Animal
      */
     private void giveBirth(List<Animal> newOwls)
     {
-        // New Owls are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Owl young = new Owl(false, field, loc);
-            newOwls.add(young);
-        }
+        addOffspring(newOwls, breed(), (field, location) -> new Owl(false, field, location));
     }
         
     /**
@@ -160,20 +135,7 @@ public class Owl extends Animal
      */
     private int breed()
     {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A Owl can breed if it has reached the breeding age.
-     * @return true if the owl can breed.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE;
+        return calculateBirths(age, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
     }
 
     /**

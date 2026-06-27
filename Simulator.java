@@ -3,10 +3,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -16,6 +12,28 @@ import java.util.HashSet;
  */
 public class Simulator
 {
+    private interface ActorCreator
+    {
+        Actor create(Location location);
+    }
+
+    private static class ActorCreationRule
+    {
+        private final double probability;
+        private final boolean canGoLand;
+        private final boolean canGoWater;
+        private final ActorCreator creator;
+
+        private ActorCreationRule(double probability, boolean canGoLand, boolean canGoWater,
+                                  ActorCreator creator)
+        {
+            this.probability = probability;
+            this.canGoLand = canGoLand;
+            this.canGoWater = canGoWater;
+            this.creator = creator;
+        }
+    }
+
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
     private static final int DEFAULT_WIDTH = 250;
@@ -23,8 +41,8 @@ public class Simulator
     private static final int DEFAULT_DEPTH = 250;
     // List of actors in the field.
     private List<Actor> actors;
-    // The probabilities that actors will be created in any given grid position.
-    private Map<Actor,Double> actorCreationProb; 
+    // The creation rules for actors in any given grid position.
+    private List<ActorCreationRule> actorCreationRules; 
     // List of diseases in the simulation.
     public static final List<Disease> diseases = createDiseases();
     // The current state of the field.
@@ -63,7 +81,7 @@ public class Simulator
         actors = new ArrayList<>();
         field = new Field(depth, width);
         time = new Time(3);
-        actorCreationProb = createActorCreationProb();
+        actorCreationRules = createActorCreationRules();
         weatherCond = WeatherCond.Sunny; //Sunny weather is default 
 
         // Create a view of the state of each location in the field.
@@ -75,6 +93,7 @@ public class Simulator
         view.setColor(Alligator.class, Color.LIGHT_GRAY);
         view.setColor(Salamander.class, Color.MAGENTA);
         view.setColor(Catfish.class, Color.BLACK);
+        view.display();
 
         
         weatherCond.setTime(time);
@@ -90,20 +109,52 @@ public class Simulator
      * and a value of the creation proability.
      * @return The actor creation prbability Map.
      */
-    private Map<Actor,Double> createActorCreationProb()
+    private List<ActorCreationRule> createActorCreationRules()
     {
-        Map<Actor,Double> tempMap = new HashMap<>();
-        Location location = new Location(0, 0);
-        tempMap.put(new Grass(time, field, location),0.8);
-        tempMap.put(new Water_Fern(time, field, location),0.9);
-        tempMap.put(new Salamander(time, field, location),0.5);
-        tempMap.put(new Catfish(time, field, location),0.7);
-        tempMap.put(new Lemur(time, field, location),0.45);
-        tempMap.put(new Panther(time, field, location),0.3);
-        tempMap.put(new Alligator(time, field, location),0.25);
-        
-        
-        return tempMap;
+        List<ActorCreationRule> rules = new ArrayList<>();
+        rules.add(new ActorCreationRule(0.8, true, false, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Grass(time, field, location);
+            }
+        }));
+        rules.add(new ActorCreationRule(0.9, false, true, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Water_Fern(time, field, location);
+            }
+        }));
+        rules.add(new ActorCreationRule(0.5, true, true, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Salamander(time, field, location);
+            }
+        }));
+        rules.add(new ActorCreationRule(0.7, false, true, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Catfish(time, field, location);
+            }
+        }));
+        rules.add(new ActorCreationRule(0.45, true, false, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Lemur(time, field, location);
+            }
+        }));
+        rules.add(new ActorCreationRule(0.3, true, false, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Panther(time, field, location);
+            }
+        }));
+        rules.add(new ActorCreationRule(0.25, true, true, new ActorCreator() {
+            public Actor create(Location location)
+            {
+                return new Alligator(time, field, location);
+            }
+        }));
+        return rules;
     }
 
     /**
@@ -211,10 +262,12 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                for (Actor actor : actorCreationProb.keySet()){
+                for (ActorCreationRule rule : actorCreationRules){
                     Location location = new Location(row, col);
-                    if(rand.nextDouble() <= actorCreationProb.get(actor) && field.canOccupy(actor, location)) {
-                        Actor newActor = actor.birth(new Location(row, col));
+                    if(rand.nextDouble() <= rule.probability
+                       && field.canOccupy(rule.canGoLand, rule.canGoWater, location)) {
+                        Actor newActor = rule.creator.create(location);
+                        newActor.placeInField();
                         actors.add(newActor);
                         break;
                     }

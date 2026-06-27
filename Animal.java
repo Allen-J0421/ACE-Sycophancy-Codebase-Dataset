@@ -255,7 +255,9 @@ public abstract class Animal extends Actor
      */
     protected final Animal birth(Location loc, Set<Disease> parentDiseases)
     {
-        return profile.factory.create(getTime(), getField(), loc, parentDiseases);
+        Animal young = profile.factory.create(getTime(), getField(), loc, parentDiseases);
+        young.placeInField();
+        return young;
     }
 
     /**

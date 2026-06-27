@@ -328,13 +328,30 @@ public class Field
             return false;
         }
 
-        if(actor.canMoveOnLand() && actor.canMoveOnWater()) {
+        return canOccupy(actor.canMoveOnLand(), actor.canMoveOnWater(), location);
+    }
+
+    /**
+     * Returns whether an actor with the given movement capabilities can occupy
+     * the specified location.
+     * @param canGoLand Whether the actor can survive on land.
+     * @param canGoWater Whether the actor can survive in water.
+     * @param location The location being checked.
+     * @return true if the actor can survive at the location.
+     */
+    public boolean canOccupy(boolean canGoLand, boolean canGoWater, Location location)
+    {
+        if(location == null) {
+            return false;
+        }
+
+        if(canGoLand && canGoWater) {
             return true;
         }
 
         boolean underWater = isUnderWater(location.getRow(), location.getCol());
-        return (underWater && actor.canMoveOnWater())
-            || (!underWater && actor.canMoveOnLand());
+        return (underWater && canGoWater)
+            || (!underWater && canGoLand);
     }
 
     /**

@@ -137,7 +137,9 @@ public abstract class Plant extends Actor
      */
     protected final Plant birth(Location loc, Set<Disease> parentDiseases)
     {
-        return profile.factory.create(getTime(), getField(), loc, parentDiseases);
+        Plant young = profile.factory.create(getTime(), getField(), loc, parentDiseases);
+        young.placeInField();
+        return young;
     }
 
     /**

@@ -40,7 +40,6 @@ public abstract class Actor
         alive = true;
         this.field = field;
         this.location = location;
-        field.place(this, location);
         this.time = time;
         setDiseases = new HashSet<>();
     }
@@ -104,6 +103,16 @@ public abstract class Actor
         }
         location = newLocation;
         field.place(this, newLocation);
+    }
+
+    /**
+     * Register this actor in its current field location.
+     */
+    protected final void placeInField()
+    {
+        if(field != null && location != null) {
+            field.place(this, location);
+        }
     }
 
     /**

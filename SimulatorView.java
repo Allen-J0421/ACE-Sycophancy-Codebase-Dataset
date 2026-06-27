@@ -27,6 +27,7 @@ public class SimulatorView extends JFrame
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
     private final String DISEASE_PREFIX = "Infected Actors: ";
+    private boolean initialized;
     private JLabel stepLabel, population, infoLabel;
     private FieldView fieldView;
 
@@ -45,23 +46,31 @@ public class SimulatorView extends JFrame
         super("Fox and Rabbit Simulation");
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
+        initialized = false;
 
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
 
-        setLocation(100, 50);
-
         fieldView = new FieldView(height, width);
+    }
 
-        Container contents = getContentPane();
-
-        JPanel infoPane = new JPanel(new BorderLayout());
-        infoPane.add(stepLabel, BorderLayout.WEST);
-        infoPane.add(infoLabel, BorderLayout.CENTER);
-        contents.add(infoPane, BorderLayout.NORTH);
-        contents.add(fieldView, BorderLayout.CENTER);
-        contents.add(population, BorderLayout.SOUTH);
+    /**
+     * Display the simulation window.
+     */
+    public void display()
+    {
+        if(!initialized) {
+            Container contents = getContentPane();
+            JPanel infoPane = new JPanel(new BorderLayout());
+            infoPane.add(stepLabel, BorderLayout.WEST);
+            infoPane.add(infoLabel, BorderLayout.CENTER);
+            contents.add(infoPane, BorderLayout.NORTH);
+            contents.add(fieldView, BorderLayout.CENTER);
+            contents.add(population, BorderLayout.SOUTH);
+            initialized = true;
+        }
+        setLocation(100, 50);
         pack();
         setVisible(true);
     }

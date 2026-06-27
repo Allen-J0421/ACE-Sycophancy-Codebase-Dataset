@@ -46,6 +46,8 @@ public class Ant extends Animal
         return new Ant(false, field, location);
     }
 
+    public boolean isFloodVulnerable() { return true; }
+
     // Eater: ants eat acacia and grass but do not trample.
     public int eatAcacia(Acacia acacia) { return ACACIA_FOOD_VALUE; }
     public int eatGrass(Grass grass)    { return GRASS_FOOD_VALUE; }

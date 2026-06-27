@@ -220,6 +220,12 @@ public abstract class Animal implements Eater, Interactable, LivingEntity
      */
     protected void resetFog(){ fog = false; }
 
+    public void applyWeatherEffect(String weather) {
+        if("fog".equals(weather)) setFog();
+    }
+
+    public void resetWeatherEffects() { resetFog(); }
+
     /**
      * returns the fog field
      * @return true if the weather is fog, false if it is not
@@ -241,7 +247,7 @@ public abstract class Animal implements Eater, Interactable, LivingEntity
      * gives an animal a disease
      * 1 in 100 chance of assigning true to disease
      */
-    protected void giveDisease() {
+    public void giveDisease() {
         Random rand = Randomizer.getRandom();
         if (rand.nextInt(101) == 1) {
             disease = true;
@@ -257,7 +263,7 @@ public abstract class Animal implements Eater, Interactable, LivingEntity
     /**
      * assigns false to disease
      */
-    protected void resetDisease() { disease = false; }
+    public void resetDisease() { disease = false; }
 
     /**
      * if an animal has a disease, this method spreads it to animals

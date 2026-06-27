@@ -43,6 +43,8 @@ public class Rat extends Animal
         return new Rat(false, field, location);
     }
 
+    public boolean isFloodVulnerable() { return true; }
+
     // Eater: rats eat ants and trample plants.
     public int eatAnt(Ant ant)   { return ANT_FOOD_VALUE; }
     public boolean tramplesPlants() { return true; }

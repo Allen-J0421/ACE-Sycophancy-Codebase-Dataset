@@ -130,39 +130,17 @@ public class Simulator
     public void simulateOneStep() {
         step++;
 
-        if(weather.equals("rain")) {
+        if(weather.equals("rain") || weather.equals("fog")) {
             resetWeather();
-            for(LivingEntity e : entities) {
-                if(e instanceof Plant) ((Plant) e).setRain();
-            }
+            for(LivingEntity e : entities) e.applyWeatherEffect(weather);
         }
         else if(weather.equals("flood")) {
             resetWeather();
-            List<LivingEntity> ratsAndAnts = new ArrayList<>();
-            for(LivingEntity e : entities) {
-                if(e instanceof Ant || e instanceof Rat) ratsAndAnts.add(e);
-            }
-            Collections.shuffle(ratsAndAnts);
-            for(int i = 0; i < ratsAndAnts.size() / 5; i++) {
-                ratsAndAnts.get(i).setDead();
-            }
+            killFractionOf(collectVulnerable(e -> e.isFloodVulnerable()));
         }
         else if(weather.equals("drought")) {
             resetWeather();
-            List<LivingEntity> allPlants = new ArrayList<>();
-            for(LivingEntity e : entities) {
-                if(e instanceof Plant) allPlants.add(e);
-            }
-            Collections.shuffle(allPlants);
-            for(int i = 0; i < allPlants.size() / 5; i++) {
-                allPlants.get(i).setDead();
-            }
-        }
-        else if(weather.equals("fog")) {
-            resetWeather();
-            for(LivingEntity e : entities) {
-                if(e instanceof Animal) ((Animal) e).setFog();
-            }
+            killFractionOf(collectVulnerable(e -> e.isDroughtVulnerable()));
         }
 
         // Simulate all entities — animals and plants — in a single pass.
@@ -265,30 +243,45 @@ public class Simulator
     }
 
     /**
-     * Reset the weather conditions across all entities.
+     * Reset weather state on every entity.
      */
     private void resetWeather() {
+        for(LivingEntity e : entities) e.resetWeatherEffects();
+    }
+
+    /**
+     * Collect all entities that satisfy the given vulnerability predicate.
+     */
+    private List<LivingEntity> collectVulnerable(java.util.function.Predicate<LivingEntity> test) {
+        List<LivingEntity> result = new ArrayList<>();
         for(LivingEntity e : entities) {
-            if(e instanceof Animal) ((Animal) e).resetFog();
-            else if(e instanceof Plant) ((Plant) e).resetRain();
+            if(test.test(e)) result.add(e);
+        }
+        return result;
+    }
+
+    /**
+     * Shuffle the given list and kill the first fifth of it.
+     */
+    private void killFractionOf(List<LivingEntity> pool) {
+        Collections.shuffle(pool);
+        for(int i = 0; i < pool.size() / 5; i++) {
+            pool.get(i).setDead();
         }
     }
 
     /**
-     * Simulate disease by calling giveDisease on every animal in the simulation.
+     * Simulate disease by calling giveDisease on every entity in the simulation.
+     * Animals respond; plants use the no-op default.
      */
     public void simulateDisease() {
-        for(LivingEntity e : entities) {
-            if(e instanceof Animal) ((Animal) e).giveDisease();
-        }
+        for(LivingEntity e : entities) e.giveDisease();
     }
 
     /**
-     * Reset the disease for all the animals in the simulation.
+     * Reset the disease state for all entities in the simulation.
      */
     private void resetDisease() {
-        for(LivingEntity e : entities) {
-            if(e instanceof Animal) ((Animal) e).resetDisease();
-        }
+        for(LivingEntity e : entities) e.resetDisease();
     }
 }

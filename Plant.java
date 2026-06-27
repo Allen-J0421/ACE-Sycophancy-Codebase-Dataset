@@ -141,6 +141,14 @@ public abstract class Plant implements Interactable, LivingEntity
      */
     protected void resetRain(){ rain = false; }
 
+    public void applyWeatherEffect(String weather) {
+        if("rain".equals(weather)) setRain();
+    }
+
+    public void resetWeatherEffects() { resetRain(); }
+
+    public boolean isDroughtVulnerable() { return true; }
+
     /**
      * Generate a number representing the number of plants to produce,
      * if it can reproduce.

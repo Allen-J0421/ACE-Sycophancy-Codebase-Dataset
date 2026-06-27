@@ -13,11 +13,11 @@ public class Field
 {
     // A random number generator for providing random locations.
     private static final Random rand = Randomizer.getRandom();
-    
+
     // The depth and width of the field.
-    private int depth, width;
+    private final int depth, width;
     // Storage for the animals.
-    private Object[][] field;
+    private final Object[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -30,7 +30,7 @@ public class Field
         this.width = width;
         field = new Object[depth][width];
     }
-    
+
     /**
      * Empty the field.
      */
@@ -42,7 +42,7 @@ public class Field
             }
         }
     }
-    
+
     /**
      * Clear the given location.
      * @param location The location to clear.
@@ -51,7 +51,7 @@ public class Field
     {
         field[location.getRow()][location.getCol()] = null;
     }
-    
+
     /**
      * Place an animal at the given location.
      * If there is already an animal at the location it will
@@ -64,7 +64,7 @@ public class Field
     {
         place(animal, new Location(row, col));
     }
-    
+
     /**
      * Place an animal at the given location.
      * If there is already an animal at the location it will
@@ -76,7 +76,7 @@ public class Field
     {
         field[location.getRow()][location.getCol()] = animal;
     }
-    
+
     /**
      * Return the animal at the given location, if any.
      * @param location Where in the field.
@@ -86,7 +86,7 @@ public class Field
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
-    
+
     /**
      * Return the animal at the given location, if any.
      * @param row The desired row.
@@ -97,7 +97,7 @@ public class Field
     {
         return field[row][col];
     }
-    
+
     /**
      * Generate a random location that is adjacent to the
      * given location, or is the same location.
@@ -111,7 +111,7 @@ public class Field
         List<Location> adjacent = adjacentLocations(location);
         return adjacent.get(0);
     }
-    
+
     /**
      * Get a shuffled list of the free adjacent locations.
      * @param location Get locations adjacent to this.
@@ -128,7 +128,7 @@ public class Field
         }
         return free;
     }
-    
+
     /**
      * Try to find a free location that is adjacent to the
      * given location. If there is none, return null.
@@ -141,12 +141,10 @@ public class Field
     {
         // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);
-        if(free.size() > 0) {
+        if(!free.isEmpty()) {
             return free.get(0);
         }
-        else {
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -166,22 +164,43 @@ public class Field
             int col = location.getCol();
             for(int roffset = -1; roffset <= 1; roffset++) {
                 int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -1; coffset <= 1; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
+                for(int coffset = -1; coffset <= 1; coffset++) {
+                    int nextCol = col + coffset;
+                    if(isAdjacentLocation(roffset, coffset, nextRow, nextCol)) {
+                        locations.add(new Location(nextRow, nextCol));
                     }
                 }
             }
-            
+
             // Shuffle the list. Several other methods rely on the list
             // being in a random order.
             Collections.shuffle(locations, rand);
         }
         return locations;
+    }
+
+    /**
+     * Return whether a coordinate offset points to a valid adjacent field location.
+     */
+    private boolean isAdjacentLocation(int rowOffset, int colOffset, int row, int col)
+    {
+        return isInside(row, col) && !isSameLocation(rowOffset, colOffset);
+    }
+
+    /**
+     * Return whether a row and column are inside the field.
+     */
+    private boolean isInside(int row, int col)
+    {
+        return row >= 0 && row < depth && col >= 0 && col < width;
+    }
+
+    /**
+     * Return whether an offset identifies the original location.
+     */
+    private boolean isSameLocation(int rowOffset, int colOffset)
+    {
+        return rowOffset == 0 && colOffset == 0;
     }
 
     /**
@@ -192,7 +211,7 @@ public class Field
     {
         return depth;
     }
-    
+
     /**
      * Return the width of the field.
      * @return The width of the field.

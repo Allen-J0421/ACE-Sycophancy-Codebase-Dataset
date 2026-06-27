@@ -19,7 +19,7 @@ public abstract class Plant
     private boolean rain;
 
     // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    protected static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a new plant at a location in field.
@@ -39,7 +39,25 @@ public abstract class Plant
      * whatever it wants/needs to do.
      * @param newPlants A list to receive newly created plants.
      */
-    abstract public void act(List<Plant> newPlants);
+    public void act(List<Plant> newPlants) {
+        if (isAlive()) {
+            grow(newPlants);
+        }
+    }
+
+    private void grow(List<Plant> newPlants) {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int offspring = breed(getReproducingProbability(), getMaxOffspringSize());
+        for (int b = 0; b < offspring && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            newPlants.add(createOffspring(field, loc));
+        }
+    }
+
+    protected abstract double getReproducingProbability();
+    protected abstract int getMaxOffspringSize();
+    protected abstract Plant createOffspring(Field field, Location location);
 
     /**
      * Check whether the plant is alive or not.

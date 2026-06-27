@@ -10,7 +10,7 @@ import java.util.List;
 public class Acacia extends Plant
 {
     // Characteristics shared by all acacias (class variables).
-    
+
     // The likelihood of an acacia reproducing.
     private static final double REPRODUCING_PROBABILITY = 0.71;
     // The maximum number of offspring that can be produced.
@@ -27,30 +27,10 @@ public class Acacia extends Plant
         super(field, location);
     }
 
-    /**
-     * This is what the acacia does most of the time:
-     * it grows and reproduces offspring into adjacent locations
-     * @param newAcacias A list to return newly produced acacia.
-     */
-    public void act(List<Plant> newAcacias) {
-        if(isAlive()) {
-            grow(newAcacias);
-        }
-    }
+    protected double getReproducingProbability() { return REPRODUCING_PROBABILITY; }
+    protected int getMaxOffspringSize() { return MAX_OFFSPRING_SIZE; }
 
-    /**
-     * Check whether or not this acacia is to reproduce at this step.
-     * New acacias will be made into free adjacent locations.
-     * @param newAcacias A list to return newly produced acacias.
-     */
-    private void grow(List<Plant> newAcacias) {
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int offspring = breed(REPRODUCING_PROBABILITY, MAX_OFFSPRING_SIZE);
-        for(int b = 0; b < offspring && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Acacia young = new Acacia(field, loc);
-            newAcacias.add(young);
-        }
+    protected Plant createOffspring(Field field, Location location) {
+        return new Acacia(field, location);
     }
 }

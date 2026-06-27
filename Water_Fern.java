@@ -28,28 +28,23 @@ public class Water_Fern extends Plant
      * @param location The location within the field.
      * @param parentDiseases The diseases the parent of this Water fern had.
      */
-    public Water_Fern(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    private Water_Fern(Time time, Field field, Location location, int age)
     {
         super(time, field, location);
         canGoLand = false;
         canGoWater = true;
-        age = 0;
+        this.age = age;
+    }
+
+    public Water_Fern(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    {
+        this(time, field, location, 0);
         inheritDiseases(parentDiseases);
     }
 
-    /**
-     * Create Water fern. The Water fern are created with a random age.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
     public Water_Fern(Time time, Field field, Location location)
     {
-        super(time, field, location);     
-        canGoLand = false;
-        canGoWater = true;
-        age = rand.nextInt(MAX_AGE);
+        this(time, field, location, rand.nextInt(MAX_AGE));
         initStartingDiseases(Simulator.diseases);
     }
 
@@ -66,18 +61,13 @@ public class Water_Fern extends Plant
         return MAX_AGE;
     }
 
-    /**
-     * Creates new Water fern 
-     * If the Water fern are created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new Water fern created
-     */
-    public Plant birth(Location loc, Set<Disease>... parentDiseases)
+    public Plant spawnOffspring(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Water_Fern(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Water_Fern(getTime(), getField(), loc, parentDiseases);
+    }
+
+    public Plant spawnRandom(Location loc)
+    {
         return new Water_Fern(getTime(), getField(), loc);
     }
 }

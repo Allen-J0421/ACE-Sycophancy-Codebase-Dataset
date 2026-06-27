@@ -182,13 +182,8 @@ public abstract class Animal extends Actor
     abstract protected double getBreedingProbability();
     abstract protected int getMaxLitterSize();
 
-    /**
-     * Creates a new animal 
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new animal created
-     */
-    abstract protected Animal birth(Location loc, Set<Disease>... parentDiseases);
+    abstract protected Animal spawnOffspring(Location loc, Set<Disease> parentDiseases);
+    abstract protected Animal spawnRandom(Location loc);
 
     /**
      * Returns the Map of the prey of the animal and how much food they provide it

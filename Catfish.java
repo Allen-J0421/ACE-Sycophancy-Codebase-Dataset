@@ -37,35 +37,26 @@ public class Catfish extends Animal
      * @param location The location within the field.
      * @param parentDiseases The diseases the parent of this catfish had.
      */
-    public Catfish(Time time, Field field, Location location, Set<Disease> parentDiseases){
+    private Catfish(Time time, Field field, Location location, int age, int foodLevel)
+    {
         super(time, field, location);
         female = rand.nextBoolean();
         nocturnal = true;
-        
         canGoLand = false;
         canGoWater = true;
-        
-        age = 0;
-        foodLevel = MAX_FOOD;
+        this.age = age;
+        this.foodLevel = foodLevel;
+    }
+
+    public Catfish(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    {
+        this(time, field, location, 0, MAX_FOOD);
         inheritDiseases(parentDiseases);
     }
-    
-    /**
-     * Create a catfish. The catfish is created with a random age and food level.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
-    public Catfish(Time time, Field field, Location location){
-        super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = true;
-        canGoLand = false;
-        canGoWater = true;
-        
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD)+1;
+
+    public Catfish(Time time, Field field, Location location)
+    {
+        this(time, field, location, rand.nextInt(MAX_AGE), rand.nextInt(MAX_FOOD) + 1);
         initStartingDiseases(Simulator.diseases);
     }
 
@@ -112,18 +103,13 @@ public class Catfish extends Animal
         return PREY_FOOD_VALUES;
     }
 
-    /**
-     * Creates a new catfish 
-     * If the catfish is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new catfish created
-     */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal spawnOffspring(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Catfish(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Catfish(getTime(), getField(), loc, parentDiseases);
+    }
+
+    public Animal spawnRandom(Location loc)
+    {
         return new Catfish(getTime(), getField(), loc);
     }
 }

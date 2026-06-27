@@ -81,11 +81,6 @@ public abstract class Plant extends Actor
     abstract protected double getBreedingProbability();
     abstract protected int getMaxLitterSize();
 
-    /**
-     * Creates a new plant
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new plant created
-     */
-    abstract protected Plant birth(Location loc,Set<Disease>... parentDiseases);
+    abstract protected Plant spawnOffspring(Location loc, Set<Disease> parentDiseases);
+    abstract protected Plant spawnRandom(Location loc);
 }

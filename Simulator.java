@@ -209,7 +209,7 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 for(Actor actor : actorCreationProb.keySet()) {
                     if(rand.nextDouble() <= actorCreationProb.get(actor) && terrainCompatible(actor, row, col)) {
-                        actors.add(actor.birth(new Location(row, col)));
+                        actors.add(actor.spawnRandom(new Location(row, col)));
                         break;
                     }
                 }

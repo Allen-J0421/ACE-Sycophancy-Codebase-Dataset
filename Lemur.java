@@ -29,43 +29,26 @@ public class Lemur extends Animal
     // number of steps a lemur can go before it has to eat again.
     private static final int MAX_FOOD = 9;
 
-    /**
-     * Create a lemur. The lemur is created as a new born (age zero
-     * and not hungry).
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param parentDiseases The diseases the parent of this lemur had.
-     */
-    public Lemur(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    private Lemur(Time time, Field field, Location location, int age, int foodLevel)
     {
         super(time, field, location);
         female = rand.nextBoolean();
         nocturnal = false;
         canGoLand = true;
         canGoWater = false;
-        age = 0;
-        foodLevel = MAX_FOOD;
+        this.age = age;
+        this.foodLevel = foodLevel;
+    }
+
+    public Lemur(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    {
+        this(time, field, location, 0, MAX_FOOD);
         inheritDiseases(parentDiseases);
     }
 
-    /**
-     * Create a lemur. The lemur is created with a random age and food level.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
     public Lemur(Time time, Field field, Location location)
     {
-        super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = false;
-        canGoLand = true;
-        canGoWater = false;
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD)+1; 
+        this(time, field, location, rand.nextInt(MAX_AGE), rand.nextInt(MAX_FOOD) + 1);
         initStartingDiseases(Simulator.diseases);
     }
 
@@ -113,18 +96,13 @@ public class Lemur extends Animal
         return PREY_FOOD_VALUES;
     }
 
-    /**
-     * Creates a new lemur
-     * If the lemur is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new lemur created
-     */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal spawnOffspring(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Lemur(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Lemur(getTime(), getField(), loc, parentDiseases);
+    }
+
+    public Animal spawnRandom(Location loc)
+    {
         return new Lemur(getTime(), getField(), loc);
     }
 }

@@ -157,15 +157,12 @@ public abstract class Actor
      */
     protected void giveBirth(List<Actor> newActors)
     {
-        // New animals are born into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(this, getLocation());
         int births = breed();
         for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
-            Actor young = birth(loc,setDiseases);
-            newActors.add(young);
+            newActors.add(spawnOffspring(loc, setDiseases));
         }
     }
 
@@ -229,17 +226,11 @@ public abstract class Actor
         }
     }
 
-    /**
-     * Returns how many actors are produced during birth
-     * @return The number of actors birthed
-     */
     abstract protected int breed();
 
-    /**
-     * Creates a new actor 
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new actor created
-     */
-    abstract protected Actor birth(Location loc, Set<Disease>... parentDiseases);
+    /** Create a newborn at loc, inheriting diseases from this actor's parent set. */
+    abstract protected Actor spawnOffspring(Location loc, Set<Disease> parentDiseases);
+
+    /** Create a random-age instance at loc, used during field initialization. */
+    abstract protected Actor spawnRandom(Location loc);
 }

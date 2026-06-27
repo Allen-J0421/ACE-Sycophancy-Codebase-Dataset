@@ -38,36 +38,26 @@ public class Salamander extends Animal
      * @param location The location within the field.
      * @param parentDiseases The diseases the parent of this salamander had.
      */
-    public Salamander(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    private Salamander(Time time, Field field, Location location, int age, int foodLevel)
     {
         super(time, field, location);
         female = rand.nextBoolean();
         nocturnal = false;
-        
         canGoLand = true;
         canGoWater = true;
-        
-        age = 0;
-        foodLevel = MAX_FOOD;
+        this.age = age;
+        this.foodLevel = foodLevel;
+    }
+
+    public Salamander(Time time, Field field, Location location, Set<Disease> parentDiseases)
+    {
+        this(time, field, location, 0, MAX_FOOD);
         inheritDiseases(parentDiseases);
     }
 
-    /**
-     * Create a salamander. The salamander is created with a random age and food level.
-     * 
-     * @param time The time in the simulation.
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     */
     public Salamander(Time time, Field field, Location location)
     {
-        super(time, field, location);
-        female = rand.nextBoolean();
-        nocturnal = false;
-        canGoLand = true;
-        canGoWater = true;
-        age = rand.nextInt(MAX_AGE);
-        foodLevel = rand.nextInt(MAX_FOOD)+1;
+        this(time, field, location, rand.nextInt(MAX_AGE), rand.nextInt(MAX_FOOD) + 1);
         initStartingDiseases(Simulator.diseases);
     }
 
@@ -115,18 +105,13 @@ public class Salamander extends Animal
         return PREY_FOOD_VALUES;
     }
 
-    /**
-     * Creates a new salamander 
-     * If the salamander is created at the start of the simulation no parentDiseases Set is given as there is no parent.
-     * @param location The new location of the child
-     * @param Set<Disease> The diseases that the parent had is passed down
-     * @return The new salamander created
-     */
-    public Animal birth(Location loc, Set<Disease>... parentDiseases)
+    public Animal spawnOffspring(Location loc, Set<Disease> parentDiseases)
     {
-        if (parentDiseases.length > 0) {
-            return new Salamander(getTime(), getField(), loc,parentDiseases[0]);
-        }
+        return new Salamander(getTime(), getField(), loc, parentDiseases);
+    }
+
+    public Animal spawnRandom(Location loc)
+    {
         return new Salamander(getTime(), getField(), loc);
     }
 }

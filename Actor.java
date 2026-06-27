@@ -21,6 +21,8 @@ public abstract class Actor
     protected boolean overlap;
     // The current phase (time of day) of the simulation step.
     private Phase phase;
+    // The strategy mapping each phase to the behaviour run during it.
+    private Schedule schedule;
     // The current weather conditions in the field
     protected Weather weather;
     // A shared random number generator to control breeding and disease infection effects.
@@ -37,6 +39,13 @@ public abstract class Actor
         alive = true;
         this.field = field;
         setLocation(location);
+
+        // Default strategy: run each phase's own action. Subclasses provide
+        // dayAct/nightAct; callers can swap in a different Schedule to change
+        // the day/night behaviour without modifying Actor.act.
+        schedule = new Schedule()
+            .on(Phase.DAY, this::dayAct)
+            .on(Phase.NIGHT, this::nightAct);
     }
 
     /**
@@ -57,18 +66,34 @@ public abstract class Actor
         this.weather = weather;
         setWeatherEffects();
 
-        // Records the phase and runs only the action for that phase.
-        // The break statements prevent the day case from falling through
-        // into the night case (which would run nightAct on every day step).
+        // Records the phase and delegates to the schedule strategy, which
+        // decides what behaviour runs for this phase. Swapping the schedule
+        // changes the day/night behaviour without changing this method.
         this.phase = phase;
-        switch (phase) {
-            case DAY:
-                dayAct(newActors);
-                break;
-            case NIGHT:
-                nightAct(newActors);
-                break;
-        }
+        schedule.run(phase, newActors);
+    }
+
+    /**
+     * Replace this actor's phase behaviour strategy. Lets the simulation swap
+     * day/night schedules (or install entirely new ones) without modifying how
+     * act works.
+     *
+     * @param schedule The new schedule to use.
+     */
+    public void setSchedule(Schedule schedule)
+    {
+        this.schedule = schedule;
+    }
+
+    /**
+     * Return this actor's current phase behaviour strategy. Useful for deriving
+     * a variant, e.g. {@code actor.setSchedule(actor.getSchedule().swapped(Phase.DAY, Phase.NIGHT))}.
+     *
+     * @return The current schedule.
+     */
+    public Schedule getSchedule()
+    {
+        return schedule;
     }
 
     /**

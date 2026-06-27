@@ -53,36 +53,22 @@ public class SimulatorView extends JFrame
         dayLabel = new JLabel("Day : 0",JLabel.CENTER);
         JPanel buttonGrid = new JPanel();
         buttonGrid.setLayout(new GridLayout(3,0));
+        // Each button starts its operation on its own thread, but only if no
+        // conflicting operation is already running (see anyAlive/startThread).
         JButton longSimButton = new JButton("4000 Steps");
-        longSimButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
-                if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
-                
-                runLongSimulationThread = new Thread(simulator::runLongSimulation);
-                runLongSimulationThread.start();
-            }
+        longSimButton.addActionListener(e -> {
+            if (anyAlive(runLongSimulationThread, simulateOneStepThread)) return;
+            runLongSimulationThread = startThread(simulator::runLongSimulation);
         });
         JButton resetButton = new JButton("Reset");
-        resetButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (resetThread != null && resetThread.isAlive()) return;
-                if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
-                if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
-                
-                resetThread = new Thread(simulator::reset);
-                resetThread.start();
-            }
+        resetButton.addActionListener(e -> {
+            if (anyAlive(resetThread, runLongSimulationThread, simulateOneStepThread)) return;
+            resetThread = startThread(simulator::reset);
         });
         JButton oneSimButton = new JButton("One Step");
-        oneSimButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
-                if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
-                
-                simulateOneStepThread = new Thread(simulator::simulateOneStep);
-                simulateOneStepThread.start();
-            }
+        oneSimButton.addActionListener(e -> {
+            if (anyAlive(simulateOneStepThread, runLongSimulationThread)) return;
+            simulateOneStepThread = startThread(simulator::simulateOneStep);
         });
 
         buttonGrid.add(longSimButton);
@@ -113,6 +99,31 @@ public class SimulatorView extends JFrame
     }
     
     /**
+     * @param threads The threads to check.
+     * @return True if any of the given threads exists and is still running.
+     */
+    private static boolean anyAlive(Thread... threads)
+    {
+        for (Thread thread : threads)
+            if (thread != null && thread.isAlive()) return true;
+
+        return false;
+    }
+
+    /**
+     * Run the given task on a new thread.
+     *
+     * @param task The task to run.
+     * @return The started thread.
+     */
+    private static Thread startThread(Runnable task)
+    {
+        Thread thread = new Thread(task);
+        thread.start();
+        return thread;
+    }
+
+    /**
      * Update the text displayed in the weather properties
      * label to reflect the actual weather properties.
      */
@@ -141,14 +152,6 @@ public class SimulatorView extends JFrame
     public void setColor(Class animalClass, Color color)
     {
         colors.put(animalClass, color);
-    }
-
-    /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
     }
 
     /**

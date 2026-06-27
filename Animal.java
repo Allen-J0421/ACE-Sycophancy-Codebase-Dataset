@@ -7,7 +7,12 @@ import java.util.HashSet;
 /**
  * A class representing shared characteristics of all animals within the simultion.
  * Animals will find food, have a gender and be able to become infected.
- * 
+ *
+ * Concrete subclasses supply their fixed species characteristics through a single
+ * {@link AnimalTraits} instance (see {@link #getTraits()}); the common life cycle,
+ * accessors, breeding, feeding and infection behavior all live here so they are
+ * defined exactly once.
+ *
  * @version 2022.03.02
  */
 public abstract class Animal extends Organism
@@ -20,17 +25,17 @@ public abstract class Animal extends Organism
     private int currentHealth;
     // Whether the animal is infected
     private boolean isInfected;
-    
+
     /**
      * Create a new animal at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
     public Animal(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        
+
         if (randomAge) {
             currentHealth = getRand().nextInt(getMaxHealth());
         }
@@ -40,82 +45,186 @@ public abstract class Animal extends Organism
         else {
             isMale = false;
         }
-        
+
         isInfected = false;
     }
-    
+
     // Abstract methods
-    
+
     /**
-     * Abstract method that returns the max health of the animal
-     * 
+     * Return the fixed, species-level characteristics for this animal. Each
+     * concrete subclass returns its own shared (static) AnimalTraits instance.
+     *
+     * @return the traits describing this animal's species.
+     */
+    abstract protected AnimalTraits getTraits();
+
+    // Trait-backed accessors (shared by every subclass)
+
+    /**
+     * Return whether the animal is diurnal.
+     *
+     * @return boolean True if the animal is diurnal, false if nocturnal
+     */
+    protected boolean getIsDiurnal() { return getTraits().isDiurnal(); }
+
+    /**
+     * Return the breeding age of the animal.
+     *
+     * @return the animal's breeding age
+     */
+    protected int getBreedingAge() { return getTraits().getBreedingAge(); }
+
+    /**
+     * Return the max age of the animal.
+     *
+     * @return the animal's max age
+     */
+    protected int getMaxAge() { return getTraits().getMaxAge(); }
+
+    /**
+     * Return the breeding probability of the animal.
+     *
+     * @return the animal's breeding probability
+     */
+    protected double getBreedingProbability() { return getTraits().getBreedingProbability(); }
+
+    /**
+     * Return the max litter size of the animal.
+     *
+     * @return the animal's max litter size
+     */
+    protected int getMaxLitterSize() { return getTraits().getMaxLitterSize(); }
+
+    /**
+     * Return the max health of the animal.
+     *
      * @return the animal's max health
      */
-    abstract protected int getMaxHealth();
-    
+    protected int getMaxHealth() { return getTraits().getMaxHealth(); }
+
     /**
-     * Abstract method to return whether the target object is of a specific subclass of animal
-     * 
-     * @param target The object being compared
-     * @return boolean True if target is of type of a specific animal subclass
+     * Return the set of class types that this animal is allowed to eat.
+     *
+     * @return HashSet<Class> of class types that this animal can eat.
      */
-    abstract protected boolean getAnimalClass(Object thing);
-    
+    protected HashSet<Class> getFoodSources() { return getTraits().getFoodSources(); }
+
     /**
-     * Abstract method to return the list of food sources of a specific subclass of animal
-     * 
-     * @return ArrayList<Class> of class types that a subclass of animal is allowed to eat.
+     * Return the set of class types that this animal is allowed to kill.
+     *
+     * @return HashSet<Class> of class types that this animal can kill.
      */
-    abstract protected HashSet<Class> getFoodSources();
-    
+    protected HashSet<Class> getKillable() { return getTraits().getKillable(); }
+
     /**
-     * Abstract method to return the list of killable classes of a specific subclass of animal
-     * 
-     * @return ArrayList<Class> of class types that a subclass of animal is allowed to kill.
+     * Returns whether the target object is the same species as this animal.
+     *
+     * @param thing The object being compared
+     * @return boolean True if thing is of this animal's exact class
      */
-    abstract protected HashSet<Class> getKillable();
+    protected boolean getAnimalClass(Object thing)
+    {
+        return thing != null && thing.getClass() == getClass();
+    }
+
     // Accessor and mutator methods
-    
+
     /**
      * Returns whether the animal is male
-     * 
+     *
      * @boolean True if the animal is male, false if animal is female
      */
     protected boolean getGender()
     {
         return isMale;
     }
-    
+
     /**
      * Return the current health of the animal
-     * 
+     *
      * @return int of the animal's current health
      */
     protected int getCurrentHealth() {
         return currentHealth;
     }
-    
+
     /**
      * Return whether the animal is infected
-     * 
+     *
      * @return True if the animal is infected, false if not
      */
     protected boolean getIsInfected() {
         return isInfected;
     }
-    
+
     /**
      * Sets the animal to infected state
      */
     protected void infect() {
         isInfected = true;
     }
-    
+
     // Functional methods
-    
+
+    /**
+     * Make this animal act for one step of the simulation: it ages, gets hungrier,
+     * possibly suffers from and spreads any infection, breeds and then moves towards
+     * food (dying of overcrowding if it cannot move). The infection hooks are no-ops
+     * by default and are overridden by infectable animals.
+     *
+     * @param newAnimals A list to receive newly born animals.
+     */
+    public void act(List<Organism> newAnimals)
+    {
+        incrementAge();
+        incrementHealth();
+        if (isAlive()) {
+            applyIllness();
+        }
+        if (isAlive()) {
+            attemptSpreadDisease();
+            giveBirth(newAnimals);
+            moveOrDie();
+        }
+    }
+
+    /**
+     * Move towards a source of food if one is adjacent, otherwise move to any free
+     * adjacent location. If the animal cannot move at all it dies of overcrowding.
+     */
+    protected void moveOrDie()
+    {
+        Location newLocation = findFood();
+        if (newLocation == null) {
+            // No food found - try to move to a free location.
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if (newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
+        }
+    }
+
+    /**
+     * Hook applied while the animal is alive, before it acts, allowing infected
+     * animals to suffer the effects of illness. Does nothing for healthy species.
+     */
+    protected void applyIllness() { }
+
+    /**
+     * Hook applied while the animal is alive, before it breeds, allowing infectious
+     * animals to spread disease to their neighbours. Does nothing for non-infectious
+     * species.
+     */
+    protected void attemptSpreadDisease() { }
+
     /**
      * Checks if the animal can breed
-     * 
+     *
      * @return true if the animal can breed
      */
     protected boolean canBreed()
@@ -138,7 +247,7 @@ public abstract class Animal extends Organism
         }
         return false;
     }
-    
+
     /**
      * A method that will make the animal object search the adjacent squares around it,
      * then find and eat an eligible food source.
@@ -163,7 +272,7 @@ public abstract class Animal extends Organism
         }
         return null;
     }
-    
+
     /**
      * Decrease this animal's. This could result in the animal's death by hunger.
      */

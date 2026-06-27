@@ -1,5 +1,6 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * Provides statistical data about the current state of a field.
@@ -19,14 +20,11 @@ public final class FieldStats
      */
     public static String getPopulationDetails(Field field)
     {
-        StringBuilder buffer = new StringBuilder();
+        StringJoiner details = new StringJoiner(" ");
         for(Map.Entry<Class<?>, Integer> entry : countLivingBeings(field).entrySet()) {
-            buffer.append(entry.getKey().getName());
-            buffer.append(": ");
-            buffer.append(entry.getValue());
-            buffer.append(' ');
+            details.add(entry.getKey().getName() + ": " + entry.getValue());
         }
-        return buffer.toString();
+        return details.toString();
     }
 
     /**

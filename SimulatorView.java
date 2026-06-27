@@ -20,7 +20,7 @@ import java.util.Map;
  * @version 2016.02.29
  */
 @SuppressWarnings({"serial", "this-escape"})
-public class SimulatorView extends JFrame
+public final class SimulatorView extends JFrame
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -38,7 +38,7 @@ public class SimulatorView extends JFrame
     private boolean night;
     
     // A map for storing colors for participants in the simulation
-    private final Map<Class<?>, Color> colors;
+    private final Map<Class<?>, Color> colors = new LinkedHashMap<>();
 
     /**
      * Create a view of the given width and height.
@@ -47,8 +47,6 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
-        colors = new LinkedHashMap<>();
-
         setTitle("Animal Ecosystem Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
@@ -135,25 +133,24 @@ public class SimulatorView extends JFrame
      * This is rather advanced GUI stuff - you can ignore this 
      * for your project if you like.
      */
-    private class FieldView extends JPanel
+    private static final class FieldView extends JPanel
     {
         private static final int GRID_VIEW_SCALING_FACTOR = 6;
 
         private final int gridWidth;
         private final int gridHeight;
         private int xScale, yScale;
-        private Dimension size;
+        private Dimension size = new Dimension(0, 0);
         private Graphics g;
         private Image fieldImage;
 
         /**
          * Create a new FieldView component.
          */
-        public FieldView(int height, int width)
+        private FieldView(int height, int width)
         {
             gridHeight = height;
             gridWidth = width;
-            size = new Dimension(0, 0);
         }
 
         /**
@@ -172,19 +169,13 @@ public class SimulatorView extends JFrame
          */
         public void preparePaint()
         {
-            if(! size.equals(getSize())) {  // if the size has changed...
+            if(!size.equals(getSize())) {
                 size = getSize();
                 fieldImage = createImage(size.width, size.height);
                 g = fieldImage.getGraphics();
 
-                xScale = size.width / gridWidth;
-                if(xScale < 1) {
-                    xScale = GRID_VIEW_SCALING_FACTOR;
-                }
-                yScale = size.height / gridHeight;
-                if(yScale < 1) {
-                    yScale = GRID_VIEW_SCALING_FACTOR;
-                }
+                xScale = Math.max(size.width / gridWidth, GRID_VIEW_SCALING_FACTOR);
+                yScale = Math.max(size.height / gridHeight, GRID_VIEW_SCALING_FACTOR);
             }
         }
         
@@ -204,6 +195,7 @@ public class SimulatorView extends JFrame
         @Override
         public void paintComponent(Graphics g)
         {
+            super.paintComponent(g);
             if(fieldImage != null) {
                 Dimension currentSize = getSize();
                 if(size.equals(currentSize)) {

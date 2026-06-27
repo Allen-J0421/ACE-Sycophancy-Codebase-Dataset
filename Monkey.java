@@ -11,18 +11,7 @@ public class Monkey extends Animal
 {
     // Characteristics shared by all monkeys (class variables).
 
-    // The age at which a monkey can start to breed.
-    private static final int BREEDING_AGE = 4;
-    // The age to which a monkey can live.
-    private static final int MAX_AGE = 40;
-    // The likelihood of a monkey breeding.
-    private static final double BREEDING_PROBABILITY = 0.17;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 5;
-    // The max health of a monkey
-    private static final int MAX_HEALTH = 10;
-    // Whether the animal is diurnal or nocturnal
-    private static final boolean IS_DIURNAL = true;
+    private static final AnimalProfile PROFILE = new AnimalProfile(4, 40, 0.17, 5, 10, true);
     
     // Individual characteristics (instance fields).
     // The food a monkey will eat.
@@ -43,71 +32,18 @@ public class Monkey extends Animal
         super(randomAge, field, location);
     }
     
-    // Accessor and mutator methods
-    /**
-     * Return whether the monkey is diurnal
-     * 
-     * @return boolean True if the monkey is diurnal, false if nocturnal
-     */
-    protected boolean getIsDiurnal() {
-        return IS_DIURNAL;
-    }
-    
-    /**
-     * Return the breeding age of the monkey
-     * 
-     * @return the monkey's breeding age
-     */
-    protected int getBreedingAge()
+    @Override
+    protected AnimalProfile getProfile()
     {
-        return BREEDING_AGE;
-    }
-    
-    /**
-     * Return the max age of the monkey
-     * 
-     * @return the monkey's max age
-     */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-    
-    /**
-     * Return the breeding probability of the monkey
-     * 
-     * @return the monkey's breeding probability
-     */
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    
-    /**
-     * Return the max litter size of the monkey
-     * 
-     * @return the monkey's max litter size
-     */
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-    
-    /**
-     * Return the max health of the monkey
-     * 
-     * @return the monkey's max health
-     */
-    protected int getMaxHealth()
-    {
-        return MAX_HEALTH;
+        return PROFILE;
     }
     
     /**
      * Returns the HashSet of allowed food for a monkey to eat
      * 
-     * @return HashSet<Class> of subclasses that a Monkey can eat
+     * @return HashSet<Class<?>> of subclasses that a Monkey can eat
      */
+    @Override
     protected HashSet<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
@@ -115,8 +51,9 @@ public class Monkey extends Animal
     /**
      * Returns the HashSet of allowed classes for a monkey to kill
      * 
-     * @return HashSet<Class> of subclasses that a Monkey can kill
+     * @return HashSet<Class<?>> of subclasses that a Monkey can kill
      */
+    @Override
     protected HashSet<Class<?>> getKillable() {
         return KILLABLE;
     }
@@ -126,6 +63,7 @@ public class Monkey extends Animal
      * 
      * @return an Animal object for a newborn monkey
      */
+    @Override
     protected Animal createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Monkey(randomAge, field, location);

@@ -11,23 +11,12 @@ public class Sloth extends Animal implements Infectable
 {
     // Characteristics shared by all sloths (class variables).
 
-    // The age at which a sloth can start to breed.
-    private static final int BREEDING_AGE = 5;
-    // The age to which a sloth can live.
-    private static final int MAX_AGE = 30;
-    // The likelihood of a sloth breeding.
-    private static final double BREEDING_PROBABILITY = 0.17;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
-    // The max health of a sloth
-    private static final int MAX_HEALTH = 8;
-    // Whether the animal is diurnal or nocturnal
-    private static final boolean IS_DIURNAL = true;
+    private static final AnimalProfile PROFILE = new AnimalProfile(5, 30, 0.17, 4, 8, true);
     
     // Individual characteristics (instance fields).
     // The food a sloth will eat.
     private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
-    // The classes a bear will kill
+    // The classes a sloth will kill
     private static final HashSet<Class<?>> KILLABLE = createClassSet(Plant.class);
 
     /**
@@ -43,71 +32,18 @@ public class Sloth extends Animal implements Infectable
         super(randomAge, field, location);
     }
     
-    // Accessor and mutator methods
-    /**
-     * Return whether the sloth is diurnal
-     * 
-     * @return boolean True if the sloth is diurnal, false if nocturnal
-     */
-    protected boolean getIsDiurnal() {
-        return IS_DIURNAL;
-    }
-    
-    /**
-     * Return the breeding age of the sloth
-     * 
-     * @return the sloth's breeding age
-     */
-    protected int getBreedingAge()
+    @Override
+    protected AnimalProfile getProfile()
     {
-        return BREEDING_AGE;
-    }
-    
-    /**
-     * Return the max age of the sloth
-     * 
-     * @return the sloth's max age
-     */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-    
-    /**
-     * Return the breeding probability of the sloth
-     * 
-     * @return the sloth's breeding probability
-     */
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    
-    /**
-     * Return the max litter size of the sloth
-     * 
-     * @return the sloth's max litter size
-     */
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-    
-    /**
-     * Return the max health of the sloth
-     * 
-     * @return the sloth's max health
-     */
-    protected int getMaxHealth()
-    {
-        return MAX_HEALTH;
+        return PROFILE;
     }
     
     /**
      * Returns the HashSet of allowed food for a sloth to eat
      * 
-     * @return HashSet<Class> of subclasses that a Sloth can eat
+     * @return HashSet<Class<?>> of subclasses that a Sloth can eat
      */
+    @Override
     protected HashSet<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
@@ -115,8 +51,9 @@ public class Sloth extends Animal implements Infectable
     /**
      * Returns the HashSet of allowed classes for a sloth to eat
      * 
-     * @return HashSet<Class> of subclasses that a sloth can kill
+     * @return HashSet<Class<?>> of subclasses that a sloth can kill
      */
+    @Override
     protected HashSet<Class<?>> getKillable() {
         return KILLABLE;
     }
@@ -126,6 +63,7 @@ public class Sloth extends Animal implements Infectable
      * 
      * @return an Animal object for a newborn sloth
      */
+    @Override
     protected Animal createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Sloth(randomAge, field, location);

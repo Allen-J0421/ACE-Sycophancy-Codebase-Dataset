@@ -12,18 +12,7 @@ public class Bear extends Animal implements Infectable
 {
     // Characteristics shared by all bears (class variables).
     
-    // The age at which a bear can start to breed.
-    private static final int BREEDING_AGE = 15;
-    // The age to which a bear can live.
-    private static final int MAX_AGE = 70;
-    // The likelihood of a bear breeding.
-    private static final double BREEDING_PROBABILITY = 0.125;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
-    // The max health of a bear
-    private static final int MAX_HEALTH = 40;
-    // Whether the animal is diurnal or nocturnal
-    private static final boolean IS_DIURNAL = true;
+    private static final AnimalProfile PROFILE = new AnimalProfile(15, 70, 0.125, 4, 40, true);
     
     // Individual characteristics (instance fields).
     
@@ -45,63 +34,18 @@ public class Bear extends Animal implements Infectable
         super(randomAge, field, location);
     }
     
-    // Accessor and mutator methods
-    
-    // Accessor and mutator methods
-    /**
-     * Return whether the bear is diurnal
-     * 
-     * @return boolean True if the bea is diurnal, false if nocturnal
-     */
-    protected boolean getIsDiurnal() {
-        return IS_DIURNAL;
-    }
-    
-    /**
-     * Returns breeding age of a bear
-     * 
-     * @return int of the bear's breeding age.
-     */
-    protected int getBreedingAge()
+    @Override
+    protected AnimalProfile getProfile()
     {
-        return BREEDING_AGE;
+        return PROFILE;
     }
     
     /**
-     * Returns max age of a bear
+     * Returns the allowed food for a bear to eat
      * 
-     * @return int of the bear's max age.
+     * @return HashSet<Class<?>> of subclasses that a bear can eat
      */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-    
-    /**
-     * Returns breeding probability of a bear
-     * 
-     * @return double of the bear's breeding probability
-     */
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    
-    /**
-     * Returns max litter size of a bear
-     * 
-     * @return int of the bear's max litter size
-     */
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-    
-    /**
-     * Returns the ArrayList of allowed food for a bear to eat
-     * 
-     * @return ArrayList<Class> of subclasses that a bear can eat
-     */
+    @Override
     protected HashSet<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
@@ -109,20 +53,11 @@ public class Bear extends Animal implements Infectable
     /**
      * Returns the HashSet of allowed classes for a bear to kill
      * 
-     * @return HashSet<Class> of subclasses that a bear can kill
+     * @return HashSet<Class<?>> of subclasses that a bear can kill
      */
+    @Override
     protected HashSet<Class<?>> getKillable() {
         return KILLABLE;
-    }
-    
-    /**
-     * Return the max health of the animal
-     * 
-     * @return the animal's max health
-     */
-    protected int getMaxHealth()
-    {
-        return MAX_HEALTH;
     }
     
     /**
@@ -130,6 +65,7 @@ public class Bear extends Animal implements Infectable
      * 
      * @return Organism object of subclass bear
      */
+    @Override
     protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Bear(randomAge, field, location);

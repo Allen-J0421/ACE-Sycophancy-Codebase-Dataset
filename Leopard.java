@@ -10,20 +10,9 @@ import java.util.HashSet;
  */
 public class Leopard extends Animal
 {
-    // Characteristics shared by all beares (class variables).
+    // Characteristics shared by all leopards (class variables).
     
-    // The age at which a leopard can start to breed.
-    private static final int BREEDING_AGE = 15;
-    // The age to which a leopard can live.
-    private static final int MAX_AGE = 55;
-    // The likelihood of a leopard breeding.
-    private static final double BREEDING_PROBABILITY = 0.145;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
-    // The max health of a leopard
-    private static final int MAX_HEALTH = 40;
-    // Whether the animal is diurnal or nocturnal
-    private static final boolean IS_DIURNAL = false;
+    private static final AnimalProfile PROFILE = new AnimalProfile(15, 55, 0.145, 4, 40, false);
     
     // Individual characteristics (instance fields).
     
@@ -33,10 +22,10 @@ public class Leopard extends Animal
     private static final HashSet<Class<?>> KILLABLE = createClassSet(Sloth.class, Plant.class);
 
     /**
-     * Create a bear. A bear can be created as a new born (age zero
+     * Create a leopard. A leopard can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
      * 
-     * @param randomAge If true, the bear will have random age and hunger level.
+     * @param randomAge If true, the leopard will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -45,63 +34,18 @@ public class Leopard extends Animal
         super(randomAge, field, location);
     }
     
-    // Accessor and mutator methods
-    
-    // Accessor and mutator methods
-    /**
-     * Return whether the leopard is diurnal
-     * 
-     * @return boolean True if the bea is diurnal, false if nocturnal
-     */
-    protected boolean getIsDiurnal() {
-        return IS_DIURNAL;
-    }
-    
-    /**
-     * Returns breeding age of a leopard
-     * 
-     * @return int of the leopard's breeding age.
-     */
-    protected int getBreedingAge()
+    @Override
+    protected AnimalProfile getProfile()
     {
-        return BREEDING_AGE;
-    }
-    
-    /**
-     * Returns max age of a leopard
-     * 
-     * @return int of the leopard's max age.
-     */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-    
-    /**
-     * Returns breeding probability of a leopard
-     * 
-     * @return double of the leopard's breeding probability
-     */
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    
-    /**
-     * Returns max litter size of a leopard
-     * 
-     * @return int of the leopard's max litter size
-     */
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
+        return PROFILE;
     }
     
     /**
      * Returns the HashSet of allowed food for a leopard to eat
      * 
-     * @return HashSet<Class> of subclasses that a leopard can eat
+     * @return HashSet<Class<?>> of subclasses that a leopard can eat
      */
+    @Override
     protected HashSet<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
@@ -109,20 +53,11 @@ public class Leopard extends Animal
     /**
      * Returns the HashSet of allowed classes for a leopard to kill
      * 
-     * @return HashSet<Class> of subclasses that a leopard can kill
+     * @return HashSet<Class<?>> of subclasses that a leopard can kill
      */
+    @Override
     protected HashSet<Class<?>> getKillable() {
         return KILLABLE;
-    }
-    
-    /**
-     * Return the max health of the animal
-     * 
-     * @return the animal's max health
-     */
-    protected int getMaxHealth()
-    {
-        return MAX_HEALTH;
     }
     
     /**
@@ -130,6 +65,7 @@ public class Leopard extends Animal
      * 
      * @return Organism object of subclass leopard
      */
+    @Override
     protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Leopard(randomAge, field, location);

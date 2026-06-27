@@ -10,20 +10,9 @@ import java.util.HashSet;
  */
 public class Hippopotamus extends Animal
 {
-    // Characteristics shared by all foxes (class variables).
+    // Characteristics shared by all hippopotamuses (class variables).
     
-    // The age at which a hippopotamus can start to breed.
-    private static final int BREEDING_AGE = 25;
-    // The age to which a hippopotamus can live.
-    private static final int MAX_AGE = 120;
-    // The likelihood of a hippopotamus breeding.
-    private static final double BREEDING_PROBABILITY = 0.12;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 3;
-    // The max health of a hippopotamus
-    private static final int MAX_HEALTH = 100;
-    // Whether the animal is diurnal or nocturnal
-    private static final boolean IS_DIURNAL = true;
+    private static final AnimalProfile PROFILE = new AnimalProfile(25, 120, 0.12, 3, 100, true);
     
     // Individual characteristics (instance fields).
     
@@ -33,10 +22,10 @@ public class Hippopotamus extends Animal
     private static final HashSet<Class<?>> KILLABLE = createClassSet(Monkey.class, Plant.class, Bear.class);
 
     /**
-     * Create a fox. A fox can be created as a new born (age zero
+     * Create a hippopotamus. A hippopotamus can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
      * 
-     * @param randomAge If true, the fox will have random age and hunger level.
+     * @param randomAge If true, the hippopotamus will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -45,63 +34,18 @@ public class Hippopotamus extends Animal
         super(randomAge, field, location);
     }
     
-    // Accessor and mutator methods
-    
-    // Accessor and mutator methods
-    /**
-     * Return whether the hippopotamus is diurnal
-     * 
-     * @return boolean True if the bea is diurnal, false if nocturnal
-     */
-    protected boolean getIsDiurnal() {
-        return IS_DIURNAL;
-    }
-    
-    /**
-     * Returns breeding age of a hippopotamus
-     * 
-     * @return int of the hippopotamus's breeding age.
-     */
-    protected int getBreedingAge()
+    @Override
+    protected AnimalProfile getProfile()
     {
-        return BREEDING_AGE;
-    }
-    
-    /**
-     * Returns max age of a hippopotamus
-     * 
-     * @return int of the hippopotamus's max age.
-     */
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-    
-    /**
-     * Returns breeding probability of a hippopotamus
-     * 
-     * @return double of the hippopotamus's breeding probability
-     */
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-    
-    /**
-     * Returns max litter size of a hippopotamus
-     * 
-     * @return int of the hippopotamus's max litter size
-     */
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
+        return PROFILE;
     }
     
     /**
      * Returns the HashSet of allowed food for a hippopotamus to eat
      * 
-     * @return HashSet<Class> of subclasses that a hippopotamus can eat
+     * @return HashSet<Class<?>> of subclasses that a hippopotamus can eat
      */
+    @Override
     protected HashSet<Class<?>> getFoodSources() {
         return FOOD_SOURCES;
     }
@@ -109,20 +53,11 @@ public class Hippopotamus extends Animal
     /**
      * Returns the HashSet of allowed classes for a hippo to kill
      * 
-     * @return HashSet<Class> of subclasses that a hippopotamus can kill
+     * @return HashSet<Class<?>> of subclasses that a hippopotamus can kill
      */
+    @Override
     protected HashSet<Class<?>> getKillable() {
         return KILLABLE;
-    }
-    
-    /**
-     * Return the max health of the animal
-     * 
-     * @return the animal's max health
-     */
-    protected int getMaxHealth()
-    {
-        return MAX_HEALTH;
     }
     
     /**
@@ -130,6 +65,7 @@ public class Hippopotamus extends Animal
      * 
      * @return Organism object of subclass hippopotamus
      */
+    @Override
     protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Hippopotamus(randomAge, field, location);

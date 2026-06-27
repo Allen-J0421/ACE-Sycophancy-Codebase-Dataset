@@ -39,11 +39,47 @@ public abstract class Animal extends Organism
     // Abstract methods
 
     /**
-     * Abstract method that returns the max health of the animal
-     *
-     * @return the animal's max health
+     * Return this animal type's fixed lifecycle traits.
      */
-    abstract protected int getMaxHealth();
+    abstract protected AnimalProfile getProfile();
+
+    @Override
+    protected boolean getIsDiurnal()
+    {
+        return getProfile().isDiurnal();
+    }
+
+    @Override
+    protected int getBreedingAge()
+    {
+        return getProfile().getBreedingAge();
+    }
+
+    @Override
+    protected int getMaxAge()
+    {
+        return getProfile().getMaxAge();
+    }
+
+    @Override
+    protected double getBreedingProbability()
+    {
+        return getProfile().getBreedingProbability();
+    }
+
+    @Override
+    protected int getMaxLitterSize()
+    {
+        return getProfile().getMaxLitterSize();
+    }
+
+    /**
+     * Return the max health of this animal.
+     */
+    protected int getMaxHealth()
+    {
+        return getProfile().getMaxHealth();
+    }
 
     /**
      * Return whether the target object is the same animal type.
@@ -276,6 +312,62 @@ public abstract class Animal extends Organism
         currentHealth--;
         if(currentHealth == 0) {
             setDead();
+        }
+    }
+
+    protected static final class AnimalProfile
+    {
+        private final int breedingAge;
+        private final int maxAge;
+        private final double breedingProbability;
+        private final int maxLitterSize;
+        private final int maxHealth;
+        private final boolean diurnal;
+
+        public AnimalProfile(
+            int breedingAge,
+            int maxAge,
+            double breedingProbability,
+            int maxLitterSize,
+            int maxHealth,
+            boolean diurnal)
+        {
+            this.breedingAge = breedingAge;
+            this.maxAge = maxAge;
+            this.breedingProbability = breedingProbability;
+            this.maxLitterSize = maxLitterSize;
+            this.maxHealth = maxHealth;
+            this.diurnal = diurnal;
+        }
+
+        public int getBreedingAge()
+        {
+            return breedingAge;
+        }
+
+        public int getMaxAge()
+        {
+            return maxAge;
+        }
+
+        public double getBreedingProbability()
+        {
+            return breedingProbability;
+        }
+
+        public int getMaxLitterSize()
+        {
+            return maxLitterSize;
+        }
+
+        public int getMaxHealth()
+        {
+            return maxHealth;
+        }
+
+        public boolean isDiurnal()
+        {
+            return diurnal;
         }
     }
 }

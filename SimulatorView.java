@@ -33,6 +33,7 @@ public class SimulatorView extends JFrame
     private Map<Class, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
+    private SimulationDemographics demographics;
     private Simulator simulator;
 
     /**
@@ -45,6 +46,7 @@ public class SimulatorView extends JFrame
         this.simulator = simulator;   
 
         stats = new FieldStats();
+        demographics = new SimulationDemographics(stats);
         colors = new LinkedHashMap<>();
 
         setTitle("Savannah Simulation");
@@ -139,7 +141,7 @@ public class SimulatorView extends JFrame
         }
         stats.countFinished();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + demographics.getPopulationDetails(field));
         fieldView.repaint();
     }
 
@@ -149,7 +151,7 @@ public class SimulatorView extends JFrame
      */
     public boolean isViable(Field field)
     {
-        return stats.isViable(field);
+        return demographics.isViable(field);
     }
 
     /**

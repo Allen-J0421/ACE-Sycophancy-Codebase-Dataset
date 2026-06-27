@@ -1,4 +1,4 @@
-import java.awt.Color;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -24,30 +24,6 @@ public class FieldStats
         countsValid = true;
     }
 
-    /**
-     * Get details of what is in the field.
-     * @param field The field to get details for.
-     * @return A string describing what is in the field.
-     */
-    public String getPopulationDetails(Field field)
-    {
-        StringBuffer buffer = new StringBuffer();
-        if(!countsValid) {
-            generateCounts(field);
-        }
-        int totalCount = 0;
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
-            totalCount += info.getCount();
-            buffer.append(info.getName());
-            buffer.append(": ");
-            buffer.append(info.getCount());
-            buffer.append(' ');
-        }
-        buffer.append(" Total: " + totalCount);
-        return buffer.toString();
-    }
-    
     /**
      * Invalidate the current set of statistics; reset all 
      * counts to zero.
@@ -85,53 +61,18 @@ public class FieldStats
     }
 
     /**
-     * Determine whether the simulation is still viable.
-     * I.e., should it continue to run.
-     * @field The field to generate the stats for.
-     * @return true If there is more than one species alive.
+     * @return Whether the current counts are in sync with the field.
      */
-    public boolean isViable(Field field)
+    public boolean isValid()
     {
-        // How many counts are non-zero.
-        int nonZero = 0;
-        if(!countsValid) {
-            generateCounts(field);
-        }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) {
-                nonZero++;
-            }
-        }
-        return nonZero > 1;
+        return countsValid;
     }
-    
+
     /**
-     * Generate counts of the number of organisms and water sources there are.
-     * These are not kept up to date as objects
-     * are placed in the field, but only when a request
-     * is made for the information.
-     * @param field The field to generate the stats for.
+     * @return All currently known counters.
      */
-    private void generateCounts(Field field)
+    public Collection<Counter> getCounters()
     {
-        reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Object organism = field.getObjectAt(row, col);
-                Object waterSource = field.getObjectAt(row, col);
-                Object plants = field.getObjectAt(row, col);
-                if(organism != null) {
-                    incrementCount(organism.getClass());
-                }
-                if(waterSource != null) {
-                    incrementCount(waterSource.getClass());
-                }
-                if(plants != null) {
-                    incrementCount(plants.getClass());
-                }
-            }
-        }
-        countsValid = true;
+        return counters.values();
     }
 }

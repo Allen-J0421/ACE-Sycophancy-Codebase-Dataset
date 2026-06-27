@@ -19,8 +19,8 @@ public abstract class Actor
     protected Location location;
     // Whether the actor can overlap with other actors in a particular field
     protected boolean overlap;
-    // The current time of day, true day, false night
-    private boolean day;
+    // The current phase (time of day) of the simulation step.
+    private Phase phase;
     // The current weather conditions in the field
     protected Weather weather;
     // A shared random number generator to control breeding and disease infection effects.
@@ -40,14 +40,15 @@ public abstract class Actor
     }
 
     /**
-     * Determines whether night or day.
-     * Replaces actor onto field if alive and space available
-     * Sets current weather and determines effects
-     * 
+     * Replaces actor onto field if alive and space available.
+     * Sets current weather and determines effects.
+     * Runs the action for the given phase (time of day).
+     *
      * @param newActors A list to return newly born actors.
-     * @param timeOfDay Integer value determining day or night
+     * @param phase     The phase (day or night) of this step.
+     * @param weather   The current weather conditions.
      */
-    public void act(List<Actor> newActors, int timeOfDay, Weather weather) 
+    public void act(List<Actor> newActors, Phase phase, Weather weather)
     {
         overcrowding();
         replaceActor();
@@ -56,16 +57,15 @@ public abstract class Actor
         this.weather = weather;
         setWeatherEffects();
 
-        // Sets the time of day and runs only the corresponding action.
-        // The break statements are essential: without them case 0 falls
-        // through into case 1, running nightAct on every day step.
-        switch (timeOfDay) {
-            case 0:
-                day = true;
+        // Records the phase and runs only the action for that phase.
+        // The break statements prevent the day case from falling through
+        // into the night case (which would run nightAct on every day step).
+        this.phase = phase;
+        switch (phase) {
+            case DAY:
                 dayAct(newActors);
                 break;
-            case 1:
-                day = false;
+            case NIGHT:
                 nightAct(newActors);
                 break;
         }
@@ -95,13 +95,13 @@ public abstract class Actor
     }
 
     /**
-     * Returns the current time of day 
-     * 
-     * @return Current time of day, true if day, false if night
+     * Returns whether the current phase is day.
+     *
+     * @return true if the current phase is day, false if night.
      */
     protected boolean getDay()
     {
-        return day;
+        return phase == Phase.DAY;
     }
 
     /**

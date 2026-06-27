@@ -213,7 +213,7 @@ public class Simulator
 
         // Let all actors act.
         actors.forEach(actor -> {
-                actor.act(newActors, step % 2, weather);
+                actor.act(newActors, Phase.forStep(step), weather);
                 if (!actor.isAlive()) {
                     deadActors.add(actor);
                 } 

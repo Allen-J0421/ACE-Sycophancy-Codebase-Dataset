@@ -303,11 +303,9 @@ public class SimulatorView extends JFrame
 
         // Displays day number.
         stepLabel.setText(DAY_PREFIX + (step+1)/2 + "/" + totalSteps/2);
-        // Computes and displays time of day. This mirrors Actor.act, where an
-        // even step (timeOfDay 0) runs the day phase and an odd step
-        // (timeOfDay 1) runs the night phase.
-        String time = (step % 2 == 0) ? "Day" : "Night";
-        timeLabel.setText(TIME_PREFIX + time);
+        // Computes and displays time of day, derived from the same Phase used
+        // by Actor.act so the label always matches the behaviour that ran.
+        timeLabel.setText(TIME_PREFIX + Phase.forStep(step).getLabel());
 
         // Displays additional info such as weather and virus numbers.
         setInfoText("Weather:" + weather + "   Infected :" + virusCount);

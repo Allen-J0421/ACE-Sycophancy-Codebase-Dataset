@@ -54,10 +54,6 @@ public class Initializer
     private double habitatPlantConcentration;
     // The GUIHandler handling the GUI.
     private GUIHandler handler;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
-
-
     /**
      * Builds an Initializer object and initializes its field.
      */
@@ -68,10 +64,8 @@ public class Initializer
         animalReader = new AnimalCSVReader();
         plantReader = new PlantCSVReader();
         listOfColorsForAnimals = new ArrayList<>();
-        errorThrower = new ErrorThrower();
 
         populateAnimalColors();
-        idxOfColorToUseNext = 0;
 
         openGUI();
     }
@@ -104,7 +98,7 @@ public class Initializer
         ClimateScenarios chosenClimateChangeScenario = ClimateScenarios.fromLabel(scenarioName);
         Habitat simulationHabitat = createHabitat(chosenHabitat, simulatorStepCounter, chosenClimateChangeScenario);
         if (getNumberOfPlants() + getNumberOfAnimals(animalsToCreate) > calculateFieldArea()) {
-            errorThrower.throwMessage("Too many animals were added for this habitat, please reduce the number of animals and try again");
+            ErrorThrower.throwMessage("Too many animals were added for this habitat, please reduce the number of animals and try again");
             return null;
         }
         view = new SimulatorView(DEFAULT_DEPTH, DEFAULT_WIDTH, handler);
@@ -125,7 +119,7 @@ public class Initializer
     private Habitat createHabitat(String habitatName, SimulationStep simulatorStepCounter, ClimateScenarios climateChangeScenario)
     {
         if (habitatName == null) {
-            errorThrower.throwMessage("Habitat name was not specified successfully.");
+            ErrorThrower.throwMessage("Habitat name was not specified successfully.");
             return null;
         }
         habitatReader.extractDataFor(habitatName);

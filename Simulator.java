@@ -53,11 +53,6 @@ public class Simulator
         simulate(LONG_SIMULATION_STEP_COUNT);
     }
     
-    public void runHundredSteps()
-    {
-        simulate(100);
-    }
-
     /**
      * Run the simulation from its current state for the given number of steps.
      * Stop before the given number of steps if it ceases to be viable.

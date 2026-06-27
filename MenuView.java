@@ -24,8 +24,6 @@ public class MenuView
     private ArrayList<JTextField> animalNumberReceivers;
     // The HashMap storing animals chosen by the user.
     private HashMap<String, Integer> selectedAnimals;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
 
     /**
      * Initializes all fields with the appropriate list of animal,
@@ -45,7 +43,6 @@ public class MenuView
         this.handler = handler;
         animalNumberReceivers = new ArrayList<>();
         selectedAnimals = new HashMap<>();
-        errorThrower = new ErrorThrower();
     }
 
     /**
@@ -260,20 +257,11 @@ public class MenuView
             try {
                 inputtedNumbers.add(Integer.parseInt(inputValue));
             } catch (NumberFormatException e) {
-                throwErrorMessage("One of the values inputted is not a number or one cell was left blank, please try again.");
+                ErrorThrower.throwMessage("One of the values inputted is not a number or one cell was left blank, please try again.");
                 return null;
             }
         }
         return inputtedNumbers;
-    }
-
-    /**
-     * Helper methods for other classes to print error messages if needed.
-     *
-     * @param message (String) The error message.
-     */
-    private void throwErrorMessage(String message) {
-        errorThrower.throwMessage(message);
     }
 
     /**
@@ -307,7 +295,7 @@ public class MenuView
     {
         String chosenHabitat = (String) habitatChoiceDisplay.getSelectedItem();
         if (chosenHabitat == null) {
-            throwErrorMessage("You must choose a habitat.");
+            ErrorThrower.throwMessage("You must choose a habitat.");
             return null;
         }
         return chosenHabitat;
@@ -323,7 +311,7 @@ public class MenuView
     {
         String chosenScenario = (String) scenarioChoiceDisplay.getSelectedItem();
         if (chosenScenario == null) {
-            throwErrorMessage("You must choose a climate change scenario.");
+            ErrorThrower.throwMessage("You must choose a climate change scenario.");
             return null;
         }
         return chosenScenario;

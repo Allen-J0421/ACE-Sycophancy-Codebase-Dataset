@@ -28,11 +28,13 @@ public class Animal extends Species
     private static final int STAY_STEPS = 10;
     // foodLevel cap as a multiple of nutritional value — above this threshold the animal stops eating
     private static final double FOOD_LEVEL_FULL_MULTIPLIER = 1.5;
+    // Temperature offset above minimum at which hibernating animals enter hibernation
+    private static final int HIBERNATION_TEMPERATURE_OFFSET = 5;
 
     // Fields prone to change during the animal's life
 
     // The animal's food level
-    protected int foodLevel;
+    private int foodLevel;
     // number of steps where the animal is in hibernation
     private int hiberSteps;
     // true if the animal is currently hibernating
@@ -349,7 +351,7 @@ public class Animal extends Species
      */
     protected void checkHibernation(int currentTemperature)
     {
-        if (hibernates && currentTemperature <= getMinimumTemperature() + 5)  {
+        if (hibernates && currentTemperature <= getMinimumTemperature() + HIBERNATION_TEMPERATURE_OFFSET) {
             inHibernation = true;
         }
         else {

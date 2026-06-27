@@ -9,16 +9,6 @@ public class SimulationStep
     private int currentStep;
 
     /**
-     * Construct a SimulationStep object starting with the given step.
-     *
-     * @param initialStep (int) The starting step number
-     */
-    public SimulationStep(int initialStep)
-    {
-        currentStep = initialStep;
-    }
-
-    /**
      * Construct a SimulationStep object starting with step 0.
      */
     public SimulationStep()

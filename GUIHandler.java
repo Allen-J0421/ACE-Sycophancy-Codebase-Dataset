@@ -90,7 +90,7 @@ public class GUIHandler
      */
     public void runHundredSteps()
     {
-        new Thread(simulatorOnDisplay::runHundredSteps).start();
+        new Thread(() -> simulatorOnDisplay.simulate(100)).start();
     }
 
     /**

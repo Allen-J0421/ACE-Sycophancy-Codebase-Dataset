@@ -35,14 +35,10 @@ public class AnimalCSVReader extends CSVReader
     private boolean hibernates;
     // Whether an animal is nocturnal.
     private boolean isNocturnal;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
-
     /**
      * Builds an AnimalCSVReader and initializes field.
      */
     public AnimalCSVReader() {
-        errorThrower = new ErrorThrower();
         resetParameters();
     }
 
@@ -55,7 +51,7 @@ public class AnimalCSVReader extends CSVReader
     protected void populateFields(String[] extractedData)
     {
         if (extractedData.length != 12) {
-            errorThrower.throwMessage("Animal .csv issue, please restart.");
+            ErrorThrower.throwMessage("Animal .csv issue, please restart.");
             return;
         }
         name               = extractedData[0];

@@ -13,7 +13,7 @@ public class ErrorThrower
      *
      * @param message (String) The message to be passed to the user.
      */
-    public void throwMessage(String message) {
+    public static void throwMessage(String message) {
         showMessageDialog(null, message);
     }
 }

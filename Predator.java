@@ -95,7 +95,7 @@ public class Predator extends Animal
             if(!(animal instanceof Predator)){
                 Location preyLocation = animal.getLocation();
                 animal.setDead();
-                foodLevel += animal.getNutritionalValue();
+                incrementFoodLevel(animal.getNutritionalValue());
                 return preyLocation;
             }
         }

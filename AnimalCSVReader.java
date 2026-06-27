@@ -43,19 +43,7 @@ public class AnimalCSVReader extends CSVReader
      */
     public AnimalCSVReader() {
         errorThrower = new ErrorThrower();
-        isPredator = false;
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        maximumAge = 0;
-        breedingAge = 0;
-        breedingProbability = 0;
-        maxLitterSize = 0;
-        nutritionalValue = 0;
-        strength = 0;
-        hibernates = false;
-        isNocturnal = false;
-
+        resetParameters();
     }
 
     /**
@@ -69,26 +57,18 @@ public class AnimalCSVReader extends CSVReader
         if (extractedData.length != 12) {
             errorThrower.throwMessage("Animal .csv issue, please restart.");
         }
-        name = extractedData[0];
-        if (extractedData[1].equals(TRUE_SYMBOL)) {
-            isPredator = true;
-        }
-        maximumTemperature = Integer.valueOf(extractedData[2]);
-        minimumTemperature = Integer.valueOf(extractedData[3]);
-        maximumAge = Integer.valueOf(extractedData[4]);
-        breedingAge = Integer.valueOf(extractedData[5]);
-        breedingProbability = Double.valueOf(extractedData[6]);
-        maxLitterSize = Integer.valueOf(extractedData[7]);
-        nutritionalValue = Integer.valueOf(extractedData[8]);
-        strength = Integer.valueOf(extractedData[9]);
-        if (extractedData[10].equals(TRUE_SYMBOL)) {
-            hibernates = true;
-            // By default, value is false
-        }
-        if (extractedData[11].equals(TRUE_SYMBOL)) {
-            isNocturnal = true;
-            // By default, value is false
-        }
+        name               = extractedData[0];
+        isPredator         = TRUE_SYMBOL.equals(extractedData[1]);
+        maximumTemperature = Integer.parseInt(extractedData[2]);
+        minimumTemperature = Integer.parseInt(extractedData[3]);
+        maximumAge         = Integer.parseInt(extractedData[4]);
+        breedingAge        = Integer.parseInt(extractedData[5]);
+        breedingProbability = Double.parseDouble(extractedData[6]);
+        maxLitterSize      = Integer.parseInt(extractedData[7]);
+        nutritionalValue   = Integer.parseInt(extractedData[8]);
+        strength           = Integer.parseInt(extractedData[9]);
+        hibernates         = TRUE_SYMBOL.equals(extractedData[10]);
+        isNocturnal        = TRUE_SYMBOL.equals(extractedData[11]);
     }
 
     /**

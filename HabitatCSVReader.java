@@ -24,6 +24,19 @@ public class HabitatCSVReader extends CSVReader {
     // Name of the CSV files containing data on fields.
     private static final String FILE_NAME = "habitats.csv";
 
+    // Column indices within the data row after the habitat name is removed.
+    // Each season occupies two consecutive indices: [avgTemp, tempChange].
+    private static final int WINTER_AVG_TEMP_IDX    = 0;
+    private static final int WINTER_TEMP_CHANGE_IDX = 1;
+    private static final int SPRING_AVG_TEMP_IDX    = 2;
+    private static final int SPRING_TEMP_CHANGE_IDX = 3;
+    private static final int SUMMER_AVG_TEMP_IDX    = 4;
+    private static final int SUMMER_TEMP_CHANGE_IDX = 5;
+    private static final int AUTUMN_AVG_TEMP_IDX    = 6;
+    private static final int AUTUMN_TEMP_CHANGE_IDX = 7;
+    private static final int PLANT_CONCENTRATION_IDX = 8;
+    private static final int EXPECTED_FIELD_COUNT    = 9;
+
     /**
      * Build a HabitatCSVReader and initialize its fields.
      */
@@ -47,22 +60,19 @@ public class HabitatCSVReader extends CSVReader {
     protected void populateFields(String[] extractedData)
     {
         extractedData = removeHabitatName(extractedData);
-        if (extractedData.length != 9) {
+        if (extractedData.length != EXPECTED_FIELD_COUNT) {
             errorThrower.throwMessage("Habitat issue, please restart.");
         }
 
-        for(int i = 0; i < extractedData.length; i++) {
-            if(i/2 == 0) {
-                winterTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 1) {
-                springTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 2) {
-                summerTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            } else if (i/2 == 3){
-                autumnTemperatures[i%2] = Integer.parseInt(extractedData[i]);
-            }
-            plantConcentration = Double.valueOf(extractedData[8]);
-        }
+        winterTemperatures[0] = Integer.parseInt(extractedData[WINTER_AVG_TEMP_IDX]);
+        winterTemperatures[1] = Integer.parseInt(extractedData[WINTER_TEMP_CHANGE_IDX]);
+        springTemperatures[0] = Integer.parseInt(extractedData[SPRING_AVG_TEMP_IDX]);
+        springTemperatures[1] = Integer.parseInt(extractedData[SPRING_TEMP_CHANGE_IDX]);
+        summerTemperatures[0] = Integer.parseInt(extractedData[SUMMER_AVG_TEMP_IDX]);
+        summerTemperatures[1] = Integer.parseInt(extractedData[SUMMER_TEMP_CHANGE_IDX]);
+        autumnTemperatures[0] = Integer.parseInt(extractedData[AUTUMN_AVG_TEMP_IDX]);
+        autumnTemperatures[1] = Integer.parseInt(extractedData[AUTUMN_TEMP_CHANGE_IDX]);
+        plantConcentration    = Double.parseDouble(extractedData[PLANT_CONCENTRATION_IDX]);
     }
 
     /**

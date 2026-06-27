@@ -25,17 +25,12 @@ public class PlantCSVReader extends CSVReader
     private ErrorThrower errorThrower;
     
     /**
-     * Build an PlantCSVReader and initializes field.
+     * Build a PlantCSVReader and initialize fields.
      */
     public PlantCSVReader ()
     {
         errorThrower = new ErrorThrower();
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        nutritionalValue = 0;
-        reproductionProbability = 0;
-        maxHealth = 0;
+        resetParameters();
     }
 
     /**
@@ -49,12 +44,12 @@ public class PlantCSVReader extends CSVReader
         if (extractedData.length != 6) {
             errorThrower.throwMessage("Plant .csv issue, please restart.");
         }
-        name = extractedData[0];
-        maximumTemperature = Integer.valueOf(extractedData[1]);
-        minimumTemperature = Integer.valueOf(extractedData[2]);
-        nutritionalValue = Integer.valueOf(extractedData[3]);
-        reproductionProbability = Double.valueOf(extractedData[4]);
-        maxHealth = Integer.valueOf(extractedData[5]);
+        name                    = extractedData[0];
+        maximumTemperature      = Integer.parseInt(extractedData[1]);
+        minimumTemperature      = Integer.parseInt(extractedData[2]);
+        nutritionalValue        = Integer.parseInt(extractedData[3]);
+        reproductionProbability = Double.parseDouble(extractedData[4]);
+        maxHealth               = Integer.parseInt(extractedData[5]);
     }
 
     /**

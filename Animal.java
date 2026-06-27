@@ -280,14 +280,13 @@ public class Animal extends Species
      */
     protected boolean canReproduce(ArrayList<Animal> neighboringAnimalsList)
     {
-        // task to reproduce is handed to women only so that the same reproduction does not happen twice
-        if (this.isFemale)
-        {
-            for (Animal neighbor : neighboringAnimalsList) {
-                if (!neighbor.isFemale && neighbor.getName().equals(this.getName())) {
-                    // The neighbor is a male of the same species
-                    return true;
-                }
+        // Reproduction is handled only by females to prevent the same pair from reproducing twice per step.
+        if (!this.isFemale || !canGiveBirth()) {
+            return false;
+        }
+        for (Animal neighbor : neighboringAnimalsList) {
+            if (!neighbor.isFemale && neighbor.getName().equals(this.getName())) {
+                return true;
             }
         }
         return false;

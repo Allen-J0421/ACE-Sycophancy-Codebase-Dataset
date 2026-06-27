@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -33,10 +32,8 @@ public class Simulator
     // The probability that a grass will be created in any given grid position.
     private static final double GRASS_CREATION_PROBABILITY = 0.4;    
 
-    // List of animals in the field.
-    private List<Animal> animals;
-    // List of animals in the field.
-    private List<Plant> plants;
+    // List of organisms in the field.
+    private List<Organism> organisms;
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -70,8 +67,7 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
-        animals = new ArrayList<>();
-        plants = new ArrayList<>();
+        organisms = new ArrayList<>();
         field = new Field(depth, width);
 
         // Create a view of the state of each location in the field.
@@ -116,28 +112,16 @@ public class Simulator
         updateWeather();
         SimulationStep currentStep = new SimulationStep(step, weather);
         
-        // Provide space for newborn animals.
-        List<Animal> newAnimals = new ArrayList<>();        
-        // Let all animals act.
-        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-            Animal animal = it.next();
-            animal.act(newAnimals, currentStep);
-            if(! animal.isAlive()) {
+        // Provide space for newly created organisms.
+        List<Organism> newOrganisms = new ArrayList<>();
+        for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
+            Organism organism = it.next();
+            organism.act(newOrganisms, currentStep);
+            if(! organism.isAlive()) {
                 it.remove();
             }
         }
-               
-        // Add the newly born foxes and rabbits to the main lists.
-        animals.addAll(newAnimals);
-
-        // Let all plants act.
-        for(Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-            Plant plant = it.next();
-            plant.act(currentStep);
-            if(! plant.isAlive()) {
-                it.remove();
-            }
-        }
+        organisms.addAll(newOrganisms);
         
         view.showStatus(currentStep, field);
     }
@@ -148,8 +132,7 @@ public class Simulator
     public void reset()
     {
         step = 0;
-        animals.clear();
-        plants.clear();
+        organisms.clear();
         populate();
         updateWeather();
         
@@ -215,41 +198,29 @@ public class Simulator
     private List<SpeciesDefinition> createSpeciesDefinitions()
     {
         return Arrays.asList(
-            animalSpecies(LION_CREATION_PROBABILITY, Lion.class, Color.RED,
-                          location -> new Lion(true, field, location)),
-            animalSpecies(DEER_CREATION_PROBABILITY, Deer.class, Color.BLUE,
-                          location -> new Deer(true, field, location)),
-            animalSpecies(OWL_CREATION_PROBABILITY, Owl.class, Color.ORANGE,
-                          location -> new Owl(true, field, location)),
-            animalSpecies(MOUSE_CREATION_PROBABILITY, Mouse.class, Color.YELLOW,
-                          location -> new Mouse(true, field, location)),
-            animalSpecies(CAT_CREATION_PROBABILITY, Cat.class, Color.PINK,
-                          location -> new Cat(true, field, location)),
-            plantSpecies(GRASS_CREATION_PROBABILITY, Grass.class, Color.GREEN,
-                         location -> new Grass(true, field, location))
+            species(LION_CREATION_PROBABILITY, Lion.class, Color.RED,
+                    location -> new Lion(true, field, location)),
+            species(DEER_CREATION_PROBABILITY, Deer.class, Color.BLUE,
+                    location -> new Deer(true, field, location)),
+            species(OWL_CREATION_PROBABILITY, Owl.class, Color.ORANGE,
+                    location -> new Owl(true, field, location)),
+            species(MOUSE_CREATION_PROBABILITY, Mouse.class, Color.YELLOW,
+                    location -> new Mouse(true, field, location)),
+            species(CAT_CREATION_PROBABILITY, Cat.class, Color.PINK,
+                    location -> new Cat(true, field, location)),
+            species(GRASS_CREATION_PROBABILITY, Grass.class, Color.GREEN,
+                    location -> new Grass(true, field, location))
         );
     }
 
     /**
-     * Create an animal species definition.
+     * Create a species definition.
      */
-    private <T extends Animal> SpeciesDefinition animalSpecies(double probability, Class<T> type,
-                                                               Color color,
-                                                               Function<Location, T> factory)
+    private <T extends Organism> SpeciesDefinition species(double probability, Class<T> type,
+                                                           Color color,
+                                                           Function<Location, T> factory)
     {
-        return new SpeciesDefinition(probability, type, color, factory,
-                                     organism -> animals.add(type.cast(organism)));
-    }
-
-    /**
-     * Create a plant species definition.
-     */
-    private <T extends Plant> SpeciesDefinition plantSpecies(double probability, Class<T> type,
-                                                             Color color,
-                                                             Function<Location, T> factory)
-    {
-        return new SpeciesDefinition(probability, type, color, factory,
-                                     organism -> plants.add(type.cast(organism)));
+        return new SpeciesDefinition(probability, type, color, factory);
     }
 
     /**
@@ -261,17 +232,14 @@ public class Simulator
         private final Class<? extends Organism> organismClass;
         private final Color color;
         private final Function<Location, ? extends Organism> factory;
-        private final Consumer<Organism> registrar;
 
         private SpeciesDefinition(double creationProbability, Class<? extends Organism> organismClass,
-                                  Color color, Function<Location, ? extends Organism> factory,
-                                  Consumer<Organism> registrar)
+                                  Color color, Function<Location, ? extends Organism> factory)
         {
             this.creationProbability = creationProbability;
             this.organismClass = organismClass;
             this.color = color;
             this.factory = factory;
-            this.registrar = registrar;
         }
 
         /**
@@ -288,7 +256,7 @@ public class Simulator
         private boolean tryPopulate(Random rand, Location location)
         {
             if(rand.nextDouble() <= creationProbability) {
-                registrar.accept(factory.apply(location));
+                organisms.add(factory.apply(location));
                 return true;
             }
             return false;

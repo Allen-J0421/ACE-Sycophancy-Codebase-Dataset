@@ -54,7 +54,7 @@ public class Grass extends Plant
      * the grass catches fire, it will also burn the unit adjacent to it 
      * @param step The current simulation step.
      */
-    public void act(SimulationStep step)
+    public void act(List<Organism> newOrganisms, SimulationStep step)
     {
         if(isAlive()) {
             if(step.getWeather() == Weather.RAINY) {

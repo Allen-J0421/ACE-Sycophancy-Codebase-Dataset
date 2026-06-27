@@ -142,4 +142,11 @@ public abstract class Organism
             }
         }
     }
+
+    /**
+     * Make this organism act for the current step.
+     * @param newOrganisms A list to receive newly created organisms.
+     * @param step The current simulation step.
+     */
+    abstract public void act(List<Organism> newOrganisms, SimulationStep step);
 }

@@ -52,7 +52,7 @@ public class Deer extends Animal
     }
 
     @Override
-    protected void handleAliveStep(List<Animal> newDeers, SimulationStep step)
+    protected void handleAliveStep(List<Organism> newDeers, SimulationStep step)
     {
         if(hasAdjacentMate(Deer.class, 2)) {
             addOffspring(newDeers, breed(), (field, location) -> new Deer(false, field, location));

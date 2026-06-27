@@ -52,9 +52,9 @@ public abstract class MouseHunter extends Animal
     }
 
     @Override
-    protected final void handleAliveStep(List<Animal> newAnimals, SimulationStep step)
+    protected final void handleAliveStep(List<Organism> newOrganisms, SimulationStep step)
     {
-        addOffspring(newAnimals, calculateBirths(breedingAge, breedingProbability, maxLitterSize),
+        addOffspring(newOrganisms, calculateBirths(breedingAge, breedingProbability, maxLitterSize),
                      (field, location) -> createYoung(field, location));
     }
 

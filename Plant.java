@@ -1,3 +1,5 @@
+import java.util.List;
+
 /**
  * A class representing shared characteristics of plants.
  *
@@ -19,7 +21,8 @@ public abstract class Plant extends Organism
     /**
      * Make this plant act - that is: make it do
      * whatever it wants/needs to do.
+     * @param newOrganisms A list to receive newly created organisms.
      * @param step The current simulation step.
      */
-    abstract public void act(SimulationStep step);
+    abstract public void act(List<Organism> newOrganisms, SimulationStep step);
 }

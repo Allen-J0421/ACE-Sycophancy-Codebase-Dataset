@@ -63,7 +63,7 @@ public class Mouse extends Animal
     }
 
     @Override
-    protected void handleAliveStep(List<Animal> newMice, SimulationStep step)
+    protected void handleAliveStep(List<Organism> newMice, SimulationStep step)
     {
         if(getInfected() != 0) {
             forEachAdjacent(Mouse.class, 1, mouse -> {

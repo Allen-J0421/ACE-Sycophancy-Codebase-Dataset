@@ -37,17 +37,17 @@ public abstract class Animal extends Organism
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
+     * @param newOrganisms A list to receive newly born organisms.
      * @param step The current simulation step.
      */
-    public final void act(List<Animal> newAnimals, SimulationStep step)
+    public final void act(List<Organism> newOrganisms, SimulationStep step)
     {
         incrementAge(getMaxAge());
         updateStatus(step);
         updateBurnStatus(step.getWeather());
         updateStatusAfterBurn(step);
         if(isAlive()) {
-            handleAliveStep(newAnimals, step);
+            handleAliveStep(newOrganisms, step);
             if(isAlive() && shouldMove(step)) {
                 moveToOrDie(resolveMoveLocation(selectMoveLocation(step)));
             }
@@ -81,7 +81,7 @@ public abstract class Animal extends Organism
     /**
      * Handle species-specific work for a live animal before movement.
      */
-    protected void handleAliveStep(List<Animal> newAnimals, SimulationStep step)
+    protected void handleAliveStep(List<Organism> newOrganisms, SimulationStep step)
     {
     }
 
@@ -262,14 +262,14 @@ public abstract class Animal extends Organism
     /**
      * Add offspring into available adjacent locations.
      */
-    protected final void addOffspring(List<Animal> newAnimals, int births,
+    protected final void addOffspring(List<Organism> newOrganisms, int births,
                                       OffspringFactory offspringFactory)
     {
         Field field = getField();
         List<Location> free = freeAdjacentLocations();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location location = free.remove(0);
-            newAnimals.add(offspringFactory.create(field, location));
+            newOrganisms.add(offspringFactory.create(field, location));
         }
     }
 

@@ -24,25 +24,18 @@ public class Simulator
     private int step;
     // The current daytime of the simulation.
     private int time;
-    // A graphical view of the simulation.
-    private SimulatorView view;
+    // Observer notified of each simulation step and viability queries.
+    private SimulationObserver observer;
     // Factory that owns per-species configuration and population logic.
     private EntityFactory factory;
-
-    /**
-     * Construct a simulation field with default size.
-     */
-    public Simulator()
-    {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-    }
 
     /**
      * Create a simulation field with the given size.
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
+     * @param observer Observer to be notified of each simulation step.
      */
-    public Simulator(int depth, int width) {
+    public Simulator(int depth, int width, SimulationObserver observer) {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
@@ -50,13 +43,12 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
 
+        this.observer = observer;
         entities = new ArrayList<>();
         weather = "none";
         field = new Field(depth, width);
         factory = new EntityFactory();
-
-        view = new SimulatorView(depth, width);
-        factory.registerColors(view);
+        factory.registerColors(observer);
 
         // Setup a valid starting point.
         reset();
@@ -71,18 +63,13 @@ public class Simulator
         simulate(4000);
     }
 
-    public static void main(String[] args) {
-        Simulator sim = new Simulator();
-        sim.runLongSimulation();
-    }
-
     /**
      * Run the simulation from its current state for the given number of steps.
      * Stop before the given number of steps if it ceases to be viable.
      * @param numSteps The number of steps to run for.
      */
     public void simulate(int numSteps) {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && observer.isViable(field); step++) {
             simulateOneStep();
             if (time == 24) {
                 time = 0;
@@ -133,7 +120,7 @@ public class Simulator
         }
         entities.addAll(newEntities);
 
-        view.showStatus(step, field, time, weather);
+        observer.showStatus(step, field, time, weather);
     }
 
     /**
@@ -145,7 +132,7 @@ public class Simulator
         populate();
 
         // Show the starting state in the view.
-        view.showStatus(step, field, time, weather);
+        observer.showStatus(step, field, time, weather);
     }
 
     /**

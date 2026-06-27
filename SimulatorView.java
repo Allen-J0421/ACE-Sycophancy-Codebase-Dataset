@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @version 01.03.22
  */
-public class SimulatorView extends JFrame
+public class SimulatorView extends JFrame implements SimulationObserver
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -75,6 +75,10 @@ public class SimulatorView extends JFrame
     public void setColor(Class animalClass, Color color)
     {
         colors.put(animalClass, color);
+    }
+
+    public void onColorRegistered(Class<?> entityClass, Color color) {
+        setColor(entityClass, color);
     }
 
     /**

@@ -38,9 +38,9 @@ public class EntityFactory {
         new EntityConfig(0.36, Grass.class,  Color.CYAN,   (f, l) -> new Grass(f, l))
     );
 
-    public void registerColors(SimulatorView view) {
+    public void registerColors(SimulationObserver observer) {
         for (EntityConfig cfg : CONFIGS) {
-            view.setColor(cfg.entityClass, cfg.color);
+            observer.onColorRegistered(cfg.entityClass, cfg.color);
         }
     }
 

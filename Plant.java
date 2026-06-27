@@ -14,7 +14,7 @@ public abstract class Plant extends Entity
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Plant(Field field, Location location)
+    public Plant(Field<Entity> field, Location location)
     {
         super(field, location);
     }

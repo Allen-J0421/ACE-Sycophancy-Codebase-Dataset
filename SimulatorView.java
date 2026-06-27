@@ -102,7 +102,7 @@ public class SimulatorView extends JFrame
      * @param step Which iteration step it is.
      * @param field The field whose status is to be displayed.
      */
-    public void showStatus(int step, Field field, String weather)
+    public void showStatus(int step, Field<Entity> field, String weather)
     {
         String dayzone = "";
         
@@ -132,10 +132,10 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
+                Entity entity = field.getObjectAt(row, col);
+                if(entity != null) {
+                    stats.incrementCount(entity.getClass());
+                    fieldView.drawMark(col, row, getColor(entity.getClass()));
                 }
                 else {
                     fieldView.drawMark(col, row, EMPTY_COLOR);
@@ -152,7 +152,7 @@ public class SimulatorView extends JFrame
      * Determine whether the simulation should continue to run.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field)
+    public boolean isViable(Field<Entity> field)
     {
         return stats.isViable(field);
     }

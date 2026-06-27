@@ -12,5 +12,5 @@ public interface EntityFactory
      * @param location The cell the entity occupies at birth.
      * @return A freshly constructed entity.
      */
-    Entity create(Field field, Location location);
+    Entity create(Field<Entity> field, Location location);
 }

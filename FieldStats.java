@@ -30,7 +30,7 @@ public class FieldStats
      * Get details of what is in the field.
      * @return A string describing what is in the field.
      */
-    public String getPopulationDetails(Field field)
+    public String getPopulationDetails(Field<Entity> field)
     {
         StringBuffer buffer = new StringBuffer();
         if(!countsValid) {
@@ -88,7 +88,7 @@ public class FieldStats
      * I.e., should it continue to run.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field)
+    public boolean isViable(Field<Entity> field)
     {
         // How many counts are non-zero.
         int nonZero = 0;
@@ -111,14 +111,14 @@ public class FieldStats
      * is made for the information.
      * @param field The field to generate the stats for.
      */
-    private void generateCounts(Field field)
+    private void generateCounts(Field<Entity> field)
     {
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
+                Entity entity = field.getObjectAt(row, col);
+                if(entity != null) {
+                    incrementCount(entity.getClass());
                 }
             }
         }

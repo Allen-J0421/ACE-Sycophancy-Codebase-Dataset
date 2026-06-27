@@ -30,7 +30,7 @@ public class Lion extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Lion(boolean randomAge, Field field, Location location)
+    public Lion(boolean randomAge, Field<Entity> field, Location location)
     {
         super(field, location);
         if (randomAge) {
@@ -98,12 +98,12 @@ public class Lion extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
+        Field<Entity> field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Entity animal = field.getObjectAt(where);
             if (animal instanceof Deer) {
                 Deer deer = (Deer) animal;
                 if (deer.isAlive()) {
@@ -145,12 +145,12 @@ public class Lion extends Animal
     private void giveBirth(List<Entity> newLions)
     {
         boolean breedingPair = false;
-        Field field = getField();
+        Field<Entity> field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), 2);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Entity animal = field.getObjectAt(where);
             if (animal instanceof Lion) {
                 Lion lion = (Lion) animal;
                 if (lion.getGender() != getGender()) {

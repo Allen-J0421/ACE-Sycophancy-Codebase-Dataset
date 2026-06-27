@@ -10,7 +10,7 @@ public abstract class Entity
     // Whether the entity is alive or not.
     private boolean alive;
     // The field in which this entity lives.
-    private Field field;
+    private Field<Entity> field;
     // The entity's position in the field.
     private Location location;
 
@@ -20,7 +20,7 @@ public abstract class Entity
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Entity(Field field, Location location)
+    public Entity(Field<Entity> field, Location location)
     {
         alive = true;
         this.field = field;
@@ -84,7 +84,7 @@ public abstract class Entity
     /**
      * @return the field in which this entity lives.
      */
-    protected Field getField()
+    protected Field<Entity> getField()
     {
         return field;
     }

@@ -35,7 +35,7 @@ public class Mouse extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Mouse(boolean randomAge, Field field, Location location)
+    public Mouse(boolean randomAge, Field<Entity> field, Location location)
     {
         super(field, location);
         if (randomAge) {
@@ -92,7 +92,7 @@ public class Mouse extends Animal
      */
     private void giveBirth(List<Entity> newMice)
     {
-        Field field = getField();
+        Field<Entity> field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
         for (int b = 0; b < births && free.size() > 0; b++) {
@@ -107,12 +107,12 @@ public class Mouse extends Animal
      */
     private Location findFood()
     {
-        Field field = getField();
+        Field<Entity> field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
-            Object plant = field.getObjectAt(where);
+            Entity plant = field.getObjectAt(where);
             if (plant instanceof Grass) {
                 Grass grass = (Grass) plant;
                 if (grass.isAlive()) {
@@ -157,12 +157,12 @@ public class Mouse extends Animal
      */
     private void spreadDisease()
     {
-        Field field = getField();
+        Field<Entity> field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Entity animal = field.getObjectAt(where);
             if (animal instanceof Mouse) {
                 Mouse mouse = (Mouse) animal;
                 if (mouse.getInfected() == 0) {

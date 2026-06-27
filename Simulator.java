@@ -20,7 +20,7 @@ public class Simulator
     // All living entities (animals and plants) in one unified list.
     private List<Entity> entities;
     // The current state of the field.
-    private Field field;
+    private Field<Entity> field;
     // The current step of the simulation.
     private int step;
     // The current weather of the simulation.
@@ -51,7 +51,7 @@ public class Simulator
         }
 
         entities = new ArrayList<>();
-        field    = new Field(depth, width);
+        field    = new Field<>(depth, width);
 
         view = new SimulatorView(depth, width);
         for (EntityRegistry.Registration reg : EntityRegistry.getAll()) {

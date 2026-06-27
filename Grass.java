@@ -36,7 +36,7 @@ public class Grass extends Plant
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Grass(boolean randomSize, Field field, Location location)
+    public Grass(boolean randomSize, Field<Entity> field, Location location)
     {
         super(field, location);
         
@@ -66,12 +66,12 @@ public class Grass extends Plant
             else {
                 getSteppeFire();
                 if (steppeFire() && getLocation() != null) {                
-                    Field field = getField();
+                    Field<Entity> field = getField();
                     List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
                     Iterator<Location> it = adjacent.iterator();
                     while(it.hasNext()) {
                         Location where = it.next();
-                        Object creature = field.getObjectAt(where);
+                        Entity creature = field.getObjectAt(where);
                         if(creature instanceof Grass) {
                             Grass grass = (Grass) creature;
                             grass.getSteppeFire();                        

@@ -27,7 +27,7 @@ public abstract class Animal extends Entity
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field field, Location location)
+    public Animal(Field<Entity> field, Location location)
     {
         super(field, location);
         burn = 0;

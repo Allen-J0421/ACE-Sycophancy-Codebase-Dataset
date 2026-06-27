@@ -1,6 +1,4 @@
 import java.util.Random;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -34,14 +32,14 @@ public class Water_Fern extends Plant
      */
     public Water_Fern(Time time, Field field, Location location, Set<Disease> parentDiseases)
     {
-        super(time, field, location);
+        super(time, field, location, name, MAX_AGE);
         initializeNewbornState(false, true, parentDiseases);
     }
 
     public Water_Fern(Time time, Field field, Location location)
     {
-        super(time, field, location);
-        initializeRandomStartState(false, true, MAX_AGE, name);
+        super(time, field, location, name, MAX_AGE);
+        initializeRandomStartState(false, true);
     }
 
     /**
@@ -52,23 +50,6 @@ public class Water_Fern extends Plant
     public int breed()
     {
         return breedOffspringCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
-    }
-
-    /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
-    }
-
-    /**
-     * Returns the max age that the Water fern can have before dying.
-     * @return The max age that the Water fern can have before dying.
-     */
-    public int getMaxAge()
-    {
-        return MAX_AGE;
     }
 
     /**

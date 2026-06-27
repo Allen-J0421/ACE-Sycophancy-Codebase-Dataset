@@ -21,9 +21,9 @@ public abstract class Plant extends Actor
      * @param location The location within the field.
      * @param time The time in the simulation
      */
-    public Plant(Time time, Field field, Location location)
+    public Plant(Time time, Field field, Location location, String actorName, int maxAge)
     {
-        super(time, field, location);
+        super(time, field, location, actorName, maxAge);
         waterLevel = 1.5;
         sunLightLevel = 1.5;
     }
@@ -46,15 +46,13 @@ public abstract class Plant extends Actor
      * Initialize the shared state for a plant that starts with a random age.
      * @param canGoLand Whether the plant can move on land.
      * @param canGoWater Whether the plant can move on water.
-     * @param maxAge The exclusive upper bound for the initial age.
-     * @param actorName The actor name used for startup disease seeding.
      */
-    protected void initializeRandomStartState(boolean canGoLand, boolean canGoWater, int maxAge, String actorName)
+    protected void initializeRandomStartState(boolean canGoLand, boolean canGoWater)
     {
         this.canGoLand = canGoLand;
         this.canGoWater = canGoWater;
-        age = Randomizer.getRandom().nextInt(maxAge);
-        seedStartingDiseases(actorName);
+        age = Randomizer.getRandom().nextInt(getMaxAge());
+        seedStartingDiseases(getActorName());
     }
 
     /**

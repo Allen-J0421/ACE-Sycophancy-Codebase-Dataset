@@ -42,14 +42,14 @@ public class Catfish extends Animal
      * @param parentDiseases The diseases the parent of this catfish had.
      */
     public Catfish(Time time, Field field, Location location, Set<Disease> parentDiseases){
-        super(time, field, location);
-        initializeNewbornState(true, false, true, MAX_FOOD, parentDiseases);
+        super(time, field, location, name, MAX_AGE, MAX_FOOD, PREY_FOOD_VALUES);
+        initializeNewbornState(true, false, true, parentDiseases);
     }
 
     public Catfish(Time time, Field field, Location location)
     {
-        super(time, field, location);
-        initializeRandomStartState(true, false, true, MAX_AGE, MAX_FOOD, name);
+        super(time, field, location, name, MAX_AGE, MAX_FOOD, PREY_FOOD_VALUES);
+        initializeRandomStartState(true, false, true);
     }
     
     /**
@@ -60,41 +60,6 @@ public class Catfish extends Animal
     public int breed()
     {
         return breedOffspringCount(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE, rand);
-    }
-
-    /**
-     * Returns the String name.
-     * @return The String name.
-     */
-    public String getActorName (){
-        return name;
-    }
-
-    /**
-     * Returns the max food level that the catfish can have.
-     * @return The max food level that the catfish can have.
-     */
-    public int getMaxFood()
-    {
-        return MAX_FOOD;
-    }
-
-    /**
-     * Returns the max age that the catfish can have before dying.
-     * @return The max age that the catfish can have before dying.
-     */
-    public int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    /**
-     * Returns the prey food values Map.
-     * @return The prey food values Map.
-     */
-    public Map<String, Integer> getPreyFoodValuesMap()
-    {
-        return PREY_FOOD_VALUES;
     }
 
     /**

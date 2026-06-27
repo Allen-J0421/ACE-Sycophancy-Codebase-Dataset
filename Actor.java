@@ -20,6 +20,10 @@ public abstract class Actor
     protected int age;
     //A reference to the time object of the simulation
     private Time time; 
+    // The actor's display name.
+    private final String actorName;
+    // The actor's maximum age.
+    private final int maxAge;
     //The diseases that the actor has
     protected Set<Disease> setDiseases;
     //If the animal can go on water
@@ -35,12 +39,14 @@ public abstract class Actor
      * @param location The location within the field.
      * @param time The time in the simulation
      */
-    public Actor(Time time, Field field, Location location)
+    public Actor(Time time, Field field, Location location, String actorName, int maxAge)
     {
         alive = true;
         this.field = field;
         setLocation(location);
         this.time = time;
+        this.actorName = actorName;
+        this.maxAge = maxAge;
         setDiseases = new HashSet<>();
     }
 
@@ -127,7 +133,10 @@ public abstract class Actor
      * Returns the actors Name
      * @return The actors name
      */
-    abstract protected String getActorName();
+    protected String getActorName()
+    {
+        return actorName;
+    }
 
     /**
      * Increments the actors age by 1
@@ -138,11 +147,11 @@ public abstract class Actor
     private void incrementAge()
     {
         age++;
-        int maxAge = getMaxAge();
+        int adjustedMaxAge = maxAge;
         for(Disease disease : setDiseases){
-            maxAge *= disease.getActorsAffectedMap().get(getActorName());
+            adjustedMaxAge *= disease.getActorsAffectedMap().get(getActorName());
         }
-        if(age > maxAge) {
+        if(age > adjustedMaxAge) {
             setDead();
         }
 
@@ -152,7 +161,10 @@ public abstract class Actor
      * Returns the actors max age
      * @return The max age
      */
-    abstract protected int getMaxAge();
+    protected int getMaxAge()
+    {
+        return maxAge;
+    }
 
     /**
      * Checks if there is free locations and places the offspring there

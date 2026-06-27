@@ -13,6 +13,8 @@ public abstract class Animal extends Actor
     protected int foodLevel;
     protected boolean female;
     protected boolean nocturnal;
+    private final Map<String, Integer> preyFoodValues;
+    private final int maxFood;
 
     /**
      * Create a new animal at location in field with time as well.
@@ -22,10 +24,11 @@ public abstract class Animal extends Actor
      * @param location The location within the field.
      * @param time The time in the simulation
      */
-    public Animal(Time time, Field field, Location location)
+    public Animal(Time time, Field field, Location location, String actorName, int maxAge, int maxFood, Map<String, Integer> preyFoodValues)
     {
-        super(time, field, location);
-
+        super(time, field, location, actorName, maxAge);
+        this.maxFood = maxFood;
+        this.preyFoodValues = preyFoodValues;
     }
 
     /**
@@ -33,17 +36,16 @@ public abstract class Animal extends Actor
      * @param nocturnal Whether the animal is nocturnal.
      * @param canGoLand Whether the animal can move on land.
      * @param canGoWater Whether the animal can move on water.
-     * @param foodLevel The starting food level.
      * @param parentDiseases The diseases inherited from the parent.
      */
-    protected void initializeNewbornState(boolean nocturnal, boolean canGoLand, boolean canGoWater, int foodLevel, Set<Disease> parentDiseases)
+    protected void initializeNewbornState(boolean nocturnal, boolean canGoLand, boolean canGoWater, Set<Disease> parentDiseases)
     {
         female = Randomizer.getRandom().nextBoolean();
         this.nocturnal = nocturnal;
         this.canGoLand = canGoLand;
         this.canGoWater = canGoWater;
         age = 0;
-        this.foodLevel = foodLevel;
+        this.foodLevel = maxFood;
         inheritBirthDiseases(parentDiseases);
     }
 
@@ -52,19 +54,16 @@ public abstract class Animal extends Actor
      * @param nocturnal Whether the animal is nocturnal.
      * @param canGoLand Whether the animal can move on land.
      * @param canGoWater Whether the animal can move on water.
-     * @param maxAge The exclusive upper bound for the initial age.
-     * @param maxFood The exclusive upper bound for the initial food level.
-     * @param actorName The actor name used for startup disease seeding.
      */
-    protected void initializeRandomStartState(boolean nocturnal, boolean canGoLand, boolean canGoWater, int maxAge, int maxFood, String actorName)
+    protected void initializeRandomStartState(boolean nocturnal, boolean canGoLand, boolean canGoWater)
     {
         female = Randomizer.getRandom().nextBoolean();
         this.nocturnal = nocturnal;
         this.canGoLand = canGoLand;
         this.canGoWater = canGoWater;
-        age = Randomizer.getRandom().nextInt(maxAge);
-        foodLevel = Randomizer.getRandom().nextInt(maxFood) + 1;
-        seedStartingDiseases(actorName);
+        age = Randomizer.getRandom().nextInt(getMaxAge());
+        foodLevel = Randomizer.getRandom().nextInt(getMaxFood()) + 1;
+        seedStartingDiseases(getActorName());
     }
 
     /**
@@ -200,13 +199,13 @@ public abstract class Animal extends Actor
      */
     protected boolean consumePrey(Actor prey)
     {
-        Integer foodValue = getPreyFoodValuesMap().get(prey.getActorName());
+        Integer foodValue = preyFoodValues.get(prey.getActorName());
         if(foodValue == null || !prey.isAlive()) {
             return false;
         }
         transferEatingDiseases(prey);
         prey.setDead();
-        foodLevel = Math.min(foodLevel + foodValue, getMaxFood());
+        foodLevel = Math.min(foodLevel + foodValue, maxFood);
         return true;
     }
 
@@ -241,11 +240,17 @@ public abstract class Animal extends Actor
      * Returns the Map of the prey of the animal and how much food they provide it
      * @return The Map of the prey of the animal and how much food they provide it
      */
-    abstract protected Map<String, Integer> getPreyFoodValuesMap();
+    protected Map<String, Integer> getPreyFoodValuesMap()
+    {
+        return preyFoodValues;
+    }
 
     /**
      * Returns the max food value that the animal can have
      * @return The max food value that the animal can have
      */
-    abstract protected int getMaxFood();
+    protected int getMaxFood()
+    {
+        return maxFood;
+    }
 }

@@ -2,7 +2,6 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -32,20 +31,20 @@ public class Simulator
     // Rules describing the main animal population.
     private static final PopulationRule[] PRIMARY_POPULATION_RULES = {
         new PopulationRule(HIPPOPOTAMUS_CREATION_PROBABILITY, Hippopotamus::new,
-                           Species.HIPPOPOTAMUS, Color.DARK_GRAY),
+                           Species.HIPPOPOTAMUS, DisplayColor.DARK_GRAY),
         new PopulationRule(LEOPARD_CREATION_PROBABILITY, Leopard::new,
-                           Species.LEOPARD, Color.MAGENTA),
+                           Species.LEOPARD, DisplayColor.MAGENTA),
         new PopulationRule(BEAR_CREATION_PROBABILITY, Bear::new,
-                           Species.BEAR, Color.RED),
+                           Species.BEAR, DisplayColor.RED),
         new PopulationRule(MONKEY_CREATION_PROBABILITY, Monkey::new,
-                           Species.MONKEY, Color.ORANGE)
+                           Species.MONKEY, DisplayColor.ORANGE)
     };
     // Rules describing slower secondary occupants when no primary animal appears.
     private static final PopulationRule[] SECONDARY_POPULATION_RULES = {
         new PopulationRule(SLOTH_CREATION_PROBABILITY, Sloth::new,
-                           Species.SLOTH, Color.YELLOW),
+                           Species.SLOTH, DisplayColor.YELLOW),
         new PopulationRule(PLANT_CREATION_PROBABILITY, Plant::new,
-                           Species.PLANT, Color.GREEN)
+                           Species.PLANT, DisplayColor.GREEN)
     };
 
     // List of animals in the field.
@@ -55,7 +54,7 @@ public class Simulator
     // The current step of the simulation.
     private int step;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private SimulationDisplay view;
     // Centralized engine for weather and time-of-day event rules.
     private SimulationRulesEngine rules;
     
@@ -74,6 +73,28 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
+        this(depth, width, false);
+    }
+
+    /**
+     * Create a simulation field with the given size using a headless display.
+     * @param depth Depth of the field. Must be greater than zero.
+     * @param width Width of the field. Must be greater than zero.
+     * @return A simulator that never instantiates Swing UI objects.
+     */
+    public static Simulator createHeadless(int depth, int width)
+    {
+        return new Simulator(depth, width, true);
+    }
+
+    /**
+     * Create a simulation field with the given size.
+     * @param depth Depth of the field. Must be greater than zero.
+     * @param width Width of the field. Must be greater than zero.
+     * @param headless If true, a headless display is always used.
+     */
+    private Simulator(int depth, int width, boolean headless)
+    {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
@@ -86,12 +107,14 @@ public class Simulator
         rules = new SimulationRulesEngine();
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, rules);
+        this.view = headless
+            ? new HeadlessSimulationView(rules)
+            : new SimulatorView(depth, width, rules);
         for(PopulationRule rule : PRIMARY_POPULATION_RULES) {
-            view.setColor(rule.getSpecies(), rule.getColor());
+            this.view.setColor(rule.getSpecies(), rule.getColor());
         }
         for(PopulationRule rule : SECONDARY_POPULATION_RULES) {
-            view.setColor(rule.getSpecies(), rule.getColor());
+            this.view.setColor(rule.getSpecies(), rule.getColor());
         }
         
         // Setup a valid starting point.

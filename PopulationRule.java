@@ -1,5 +1,3 @@
-import java.awt.Color;
-
 /**
  * Configuration describing how a species should be seeded and displayed.
  *
@@ -10,10 +8,10 @@ public class PopulationRule
     private final double creationProbability;
     private final OrganismFactory factory;
     private final Species species;
-    private final Color color;
+    private final DisplayColor color;
 
     public PopulationRule(double creationProbability, OrganismFactory factory,
-                          Species species, Color color)
+                          Species species, DisplayColor color)
     {
         this.creationProbability = creationProbability;
         this.factory = factory;
@@ -36,7 +34,7 @@ public class PopulationRule
         return species;
     }
 
-    public Color getColor()
+    public DisplayColor getColor()
     {
         return color;
     }

@@ -15,16 +15,30 @@ public class SimulatorView extends JFrame
 
     private JLabel stepLabel, population, infoLabel, diseaseLabel;
     private final FieldView fieldView;
-    private final SimulationDisplayStrategy displayStrategy;
+    private final CellColorStrategy cellColorStrategy;
+    private final StatusTextStrategy statusTextStrategy;
 
     /**
-     * Create a view of the given width and height.
+     * Create a view of the given width and height using default strategies.
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
     public SimulatorView(int height, int width)
     {
-        displayStrategy = new DefaultSimulationDisplayStrategy();
+        this(height, width, new DefaultCellColorStrategy(), new DefaultStatusTextStrategy());
+    }
+
+    /**
+     * Create a view of the given width and height.
+     * @param height The simulation's height.
+     * @param width  The simulation's width.
+     * @param cellColorStrategy Strategy for rendering cell colors.
+     * @param statusTextStrategy Strategy for formatting status text and viability.
+     */
+    public SimulatorView(int height, int width, CellColorStrategy cellColorStrategy, StatusTextStrategy statusTextStrategy)
+    {
+        this.cellColorStrategy = cellColorStrategy;
+        this.statusTextStrategy = statusTextStrategy;
 
         setTitle("Underwater Environment Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -56,7 +70,7 @@ public class SimulatorView extends JFrame
      */
     public void setColor(Class<?> animalClass, Color color)
     {
-        displayStrategy.setColor(animalClass, color);
+        cellColorStrategy.setColor(animalClass, color);
     }
 
     /**
@@ -82,10 +96,10 @@ public class SimulatorView extends JFrame
 
         SimulationDisplayContext context = new SimulationDisplayContext(step, field, timeOfDay, weather, oxygenLevel);
         stepLabel.setText(STEP_PREFIX + step);
-        infoLabel.setText(displayStrategy.formatInfoText(context));
+        infoLabel.setText(statusTextStrategy.formatInfoText(context));
         diseaseLabel.setText(POPULATION_DIE_OF_DISEASE_PREFIX + Animal.populationDieOfDisease);
-        displayStrategy.render(context, fieldView);
-        population.setText(POPULATION_PREFIX + displayStrategy.formatPopulationText(field));
+        cellColorStrategy.render(context, fieldView);
+        population.setText(POPULATION_PREFIX + statusTextStrategy.formatPopulationText(field));
     }
 
     /**
@@ -94,7 +108,7 @@ public class SimulatorView extends JFrame
      */
     public boolean isViable(Field field)
     {
-        return displayStrategy.isViable(field);
+        return statusTextStrategy.isViable(field);
     }
 
     /**

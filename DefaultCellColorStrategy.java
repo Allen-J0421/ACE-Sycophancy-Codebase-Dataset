@@ -5,25 +5,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Default rendering strategy for the simulator UI.
+ * Default renderer for simulation cell colors.
  */
-public class DefaultSimulationDisplayStrategy implements SimulationDisplayStrategy
+public class DefaultCellColorStrategy implements CellColorStrategy
 {
     private static final Color EMPTY_COLOR = Color.white;
     private static final Color UNKNOWN_COLOR = Color.gray;
     private static final Color INFECTED_COLOR = Color.green;
     private static final Color STORM_COLOR = Color.blue;
 
-    private static final String DAYTIME_TEXT = "daytime";
-    private static final String NIGHT_TEXT = "night";
-
     private final Map<Class<?>, Color> colors;
-    private final FieldStats stats;
 
-    public DefaultSimulationDisplayStrategy()
+    public DefaultCellColorStrategy()
     {
         colors = new HashMap<>();
-        stats = new FieldStats();
         registerDefaultColors();
     }
 
@@ -34,24 +29,9 @@ public class DefaultSimulationDisplayStrategy implements SimulationDisplayStrate
     }
 
     @Override
-    public String formatInfoText(SimulationDisplayContext context)
-    {
-        return "It is: " + (context.isTimeOfDay() ? DAYTIME_TEXT : NIGHT_TEXT)
-            + "        Oxygen Level: " + (int)(context.getOxygenLevel() * 100) + "%"
-            + "        Storm: " + (context.getWeather().getStormStart() ? "exists" : "subsides");
-    }
-
-    @Override
-    public String formatPopulationText(Field field)
-    {
-        return stats.getPopulationDetails(field);
-    }
-
-    @Override
     public void render(SimulationDisplayContext context, GridCanvas canvas)
     {
         Field field = context.getField();
-        stats.reset();
         canvas.preparePaint();
 
         Set<Location> stormLocations = stormLocations(context);
@@ -62,7 +42,6 @@ public class DefaultSimulationDisplayStrategy implements SimulationDisplayStrate
                 Color color = EMPTY_COLOR;
 
                 if(creature != null) {
-                    stats.incrementCount(creature.getClass());
                     color = colorFor(creature);
                 }
 
@@ -74,14 +53,7 @@ public class DefaultSimulationDisplayStrategy implements SimulationDisplayStrate
             }
         }
 
-        stats.countFinished();
         canvas.repaint();
-    }
-
-    @Override
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
     }
 
     private void registerDefaultColors()

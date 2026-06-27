@@ -29,6 +29,8 @@ public class Simulator
     private static final double SLOTH_CREATION_PROBABILITY = 0.08; 
     // The probability that a plant will be created in any given grid position.
     private static final double PLANT_CREATION_PROBABILITY = 0.13;
+    // Number of steps between automatic weather changes.
+    private static final int WEATHER_CHANGE_INTERVAL = 450;
     // A shared Weather object between organisms and the simulator
     public static final Weather weather = Weather.getWeather();
 
@@ -110,7 +112,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int currentStep = 1; currentStep <= numSteps && view.isViable(field); currentStep++) {
             simulateOneStep();
             //delay(60);   // uncomment this to run more slowly
         }
@@ -127,14 +129,11 @@ public class Simulator
         randomWeather();
         // Provide space for newborn animals.
         List<Organism> newOrganisms = new ArrayList<>();        
-        // Let all rabbits act.
+        // Let all active organisms act.
         for(Iterator<Organism> it = organisms.iterator(); it.hasNext(); ) {
             Organism organism = it.next();
             
-            if (organism.getIsDiurnal() && step % 80 <= 55) {
-                organism.act(newOrganisms);
-            }
-            else if (!organism.getIsDiurnal() && step % 80 > 55) {
+            if (DayCycle.isActive(organism, step)) {
                 organism.act(newOrganisms);
             }
             if(! organism.isAlive()) {
@@ -223,7 +222,7 @@ public class Simulator
      * Randomises the weather
      */
     public void randomWeather() {
-        if (step % 450 == 0) {
+        if (step % WEATHER_CHANGE_INTERVAL == 0) {
             weather.changeWeather();
         }
     }

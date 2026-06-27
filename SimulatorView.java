@@ -1,7 +1,5 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,15 +20,15 @@ public class SimulatorView extends JFrame
 
     // Color used for objects that have no defined color.
     private static final Color UNKNOWN_COLOR = Color.gray;
+    private static final String[] WEATHER_OPTIONS = { "Sunny", "Rainy", "Foggy" };
 
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
     private JLabel stepLabel, population, infoLabel;
     private FieldView fieldView;
-    private int step;
-    
+
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
     
@@ -45,44 +43,28 @@ public class SimulatorView extends JFrame
     {
         stats = new FieldStats(steps);
         colors = new LinkedHashMap<>();
-        
-        step = steps;
-        
+
         setTitle("Animal Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        
-        
+
         JPanel toolbar = new JPanel();
         toolbar.setLayout(new GridLayout(0, 1));
-        
-        JButton SunnyButton = new JButton("Set Weather to Sunny");
-        SunnyButton.addActionListener(new ActionListener() {
-                               public void actionPerformed(ActionEvent e) { SunnyButton(); }
-                           });
-        toolbar.add(SunnyButton);
-        JButton RainyButton = new JButton("Set Weather to Rainy");
-        RainyButton.addActionListener(new ActionListener() {
-                               public void actionPerformed(ActionEvent e) { RainyButton(); }
-                           });
-        toolbar.add(RainyButton);
-        JButton FoggyButton = new JButton("Set Weather to Foggy");
-        FoggyButton.addActionListener(new ActionListener() {
-                               public void actionPerformed(ActionEvent e) { FoggyButton(); }
-                           });
-        toolbar.add(FoggyButton);
-        
-        
+
+        for (String weatherOption : WEATHER_OPTIONS) {
+            addWeatherButton(toolbar, weatherOption);
+        }
+
         setLocation(100, 50);
-        
+
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        
+
         JPanel infoPane = new JPanel(new BorderLayout());
-            infoPane.add(stepLabel, BorderLayout.WEST);
-            infoPane.add(infoLabel, BorderLayout.CENTER);
+        infoPane.add(stepLabel, BorderLayout.WEST);
+        infoPane.add(infoLabel, BorderLayout.CENTER);
         contents.add(toolbar, BorderLayout.WEST);
         contents.add(infoPane, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
@@ -91,19 +73,11 @@ public class SimulatorView extends JFrame
         setVisible(true);
     }
     
-    private void SunnyButton()
+    private void addWeatherButton(JPanel toolbar, String weatherName)
     {
-        weather.setWeather("Sunny");
-    }
-    
-    private void RainyButton()
-    {
-        weather.setWeather("Rainy");
-    }
-    
-    private void FoggyButton()
-    {
-        weather.setWeather("Foggy");
+        JButton button = new JButton("Set Weather to " + weatherName);
+        button.addActionListener(event -> weather.setWeather(weatherName));
+        toolbar.add(button);
     }
     
     /**
@@ -111,7 +85,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -127,7 +101,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {

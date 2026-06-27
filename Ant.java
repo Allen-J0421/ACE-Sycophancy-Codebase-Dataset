@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of an ant.
@@ -26,8 +25,6 @@ public class Ant extends Animal
     // The food value of a single grass. In effect, this is the
     // number of steps an ant can go before it has to eat again.
     private static final int GRASS_FOOD_VALUE = 60;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create an ant. An ant can be created as a newborn (age zero
@@ -38,57 +35,18 @@ public class Ant extends Animal
      * @param location The location within the field.
      */
     public Ant(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ACACIA_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ACACIA_FOOD_VALUE);
-        }
+        super(randomAge, field, location, MAX_AGE, ACACIA_FOOD_VALUE);
     }
 
-    /**
-     * This is what the ant does most of the time: it eats grass
-     * and acacia. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newAnts A list to return newly born ants.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newAnts, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
+    protected int getMaxAge() { return MAX_AGE; }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
 
-        if(isAlive() && ((time >= 4)&&(time <= 20)))
-        {
-            if (getDisease()) {
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Ant young = new Ant(false, field, loc);
-                    young.setGender();
-                    newAnts.add(young);
-                }
-            }
+    protected boolean isActiveAt(int time) { return (time >= 4) && (time <= 20); }
 
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected Animal createOffspring(Field field, Location location) {
+        return new Ant(false, field, location);
     }
 
     /**
@@ -96,7 +54,7 @@ public class Ant extends Animal
      * Only the first grass or acacia is eaten.
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

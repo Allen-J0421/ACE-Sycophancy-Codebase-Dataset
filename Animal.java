@@ -27,11 +27,11 @@ public abstract class Animal
     private int age;
 
     // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-    
+    protected static final Random rand = Randomizer.getRandom();
+
     /**
      * Create a new animal at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -42,13 +42,71 @@ public abstract class Animal
         fog = false;
         disease = false;
     }
-    
+
+    /**
+     * Create a new animal with optional random age and food level.
+     *
+     * @param randomAge If true, the animal will have random age and food level.
+     * @param field The field currently occupied.
+     * @param location The location within the field.
+     * @param maxAge The maximum age for this species.
+     * @param initialFoodLevel The initial (and maximum) food level for this species.
+     */
+    protected Animal(boolean randomAge, Field field, Location location, int maxAge, int initialFoodLevel) {
+        this(field, location);
+        setGender();
+        if (randomAge) {
+            setAge(rand.nextInt(maxAge));
+            setFoodLevel(rand.nextInt(initialFoodLevel));
+        } else {
+            setAge(0);
+            setFoodLevel(initialFoodLevel);
+        }
+    }
+
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
+     * @param time the current time in the simulation
      */
-    abstract public void act(List<Animal> newAnimals, int time);
+    public void act(List<Animal> newAnimals, int time) {
+        incrementAge(getMaxAge());
+        incrementHunger();
+        if (isAlive() && isActiveAt(time)) {
+            if (getDisease()) {
+                spreadDisease();
+            }
+            if (giveBirth(getBreedingAge())) {
+                Field field = getField();
+                List<Location> free = field.getFreeAdjacentLocations(getLocation());
+                int births = breed(getBreedingAge(), getBreedingProbability(), getMaxLitterSize());
+                for (int b = 0; b < births && free.size() > 0; b++) {
+                    Location loc = free.remove(0);
+                    Animal young = createOffspring(field, loc);
+                    young.setGender();
+                    newAnimals.add(young);
+                }
+            }
+            Location newLocation = findFood();
+            if (newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            if (newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                setDead();
+            }
+        }
+    }
+
+    protected abstract int getMaxAge();
+    protected abstract int getBreedingAge();
+    protected abstract double getBreedingProbability();
+    protected abstract int getMaxLitterSize();
+    protected abstract boolean isActiveAt(int time);
+    protected abstract Animal createOffspring(Field field, Location location);
+    protected abstract Location findFood();
 
     /**
      * Check whether the animal is alive or not.

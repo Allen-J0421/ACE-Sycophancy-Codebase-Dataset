@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a snake.
@@ -23,8 +22,6 @@ public class Snake extends Animal
     // The food value of a single rat. In effect, this is the
     // number of steps a snake can go before it has to eat again.
     private static final int RAT_FOOD_VALUE = 100;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a snake. A snake can be created as a newborn (age zero
@@ -35,64 +32,27 @@ public class Snake extends Animal
      * @param location The location within the field.
      */
     public Snake(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge( rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(RAT_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(RAT_FOOD_VALUE);
-        }
+        super(randomAge, field, location, MAX_AGE, RAT_FOOD_VALUE);
     }
 
-    /**
-     * This is what the snake does most of the time: it hunts for
-     * rats. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param time the current time in the simulation
-     * @param newSnakes A list to return newly born snakes.
-     */
-    public void act(List<Animal> newSnakes, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive() && ((time >= 5)&&(time <= 23)))
-        {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Snake young = new Snake(false, field, loc);
-                    young.setGender();
-                    newSnakes.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected int getMaxAge() { return MAX_AGE; }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected boolean isActiveAt(int time) { return (time >= 5) && (time <= 23); }
+
+    protected Animal createOffspring(Field field, Location location) {
+        return new Snake(false, field, location);
     }
 
     /**
      * Look for rats adjacent to the current location.
-     * Only the first live ant is eaten.
-     * If it is a plant, it can be 'trampled'
+     * Only the first live rat is eaten.
+     * If it is a plant, it can be 'trampled'.
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood()
+    protected Location findFood()
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());

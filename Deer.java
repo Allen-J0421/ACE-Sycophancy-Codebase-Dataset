@@ -43,20 +43,19 @@ public class Deer extends Animal
      * This is what the Deer does most of the time - it runs 
      * around. Sometimes it will breed or die of old age.
      * @param newDeers A list to return newly born Deers.
-     * @param step The current step
-     * @param weather The current weather.
+     * @param step The current simulation step.
      */
-    public void act(List<Animal> newDeers, int step, Weather weather)
+    public void act(List<Animal> newDeers, SimulationStep step)
     {
         incrementAge(MAX_AGE);
         decrementFoodLevel();
-        updateBurnStatus(weather);
+        updateBurnStatus(step.getWeather());
         if(isAlive()) {
             giveBirth(newDeers);  
            
             // Move towards a source of food if found.
             Location newLocation;
-            if (weather == Weather.RAINY) {
+            if (step.getWeather() == Weather.RAINY) {
                 newLocation = null;
             }
             else {

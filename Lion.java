@@ -46,20 +46,19 @@ public class Lion extends Animal
      * or die of old age.
      * If the weather is foggy, it stops moving.
      * @param newLiones A list to return newly born Liones.
-     * @param step The current step.
-     * @param weather The current weather.
+     * @param step The current simulation step.
      */
-    public void act(List<Animal> newLions, int step, Weather weather)
+    public void act(List<Animal> newLions, SimulationStep step)
     {
         incrementAge(MAX_AGE);
         decrementFoodLevel();
-        updateBurnStatus(weather);
+        updateBurnStatus(step.getWeather());
 
         if(isAlive()) {
             giveBirth(newLions);            
             // Move towards a source of food if found.
             Location newLocation;
-            if (weather == Weather.FOGGY) {
+            if (step.getWeather() == Weather.FOGGY) {
                 newLocation = null;
             }
             else {
@@ -70,7 +69,7 @@ public class Lion extends Animal
                 newLocation = freeAdjacentLocation();
             }
             // See if it was possible to move.
-            if (!TimeOfDay.fromStep(step).isNight()) {
+            if (!step.isNight()) {
                 moveToOrDie(newLocation);
             } 
         }

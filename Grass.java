@@ -52,13 +52,12 @@ public class Grass extends Plant
      * This is what the Grass does most of the time - it grows 
      * around. Sometimes it will breed or die of steppeFire. If
      * the grass catches fire, it will also burn the unit adjacent to it 
-     * @param step The current step
-     * @param weather The current weather.
+     * @param step The current simulation step.
      */
-    public void act(int step, Weather weather)
+    public void act(SimulationStep step)
     {
         if(isAlive()) {
-            if(weather == Weather.RAINY) {
+            if(step.getWeather() == Weather.RAINY) {
                 incrementSize();
                 steppeFired = false;
             }

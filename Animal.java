@@ -38,10 +38,9 @@ public abstract class Animal extends Organism
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
-     * @param step The current step.
-     * @param weather The current weather.
+     * @param step The current simulation step.
      */
-    abstract public void act(List<Animal> newAnimals, int step, Weather weather);
+    abstract public void act(List<Animal> newAnimals, SimulationStep step);
 
     /**
      * Return the food value this animal provides when eaten.

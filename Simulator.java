@@ -114,13 +114,14 @@ public class Simulator
     {
         step++;
         updateWeather();
+        SimulationStep currentStep = new SimulationStep(step, weather);
         
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();        
         // Let all animals act.
         for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
             Animal animal = it.next();
-            animal.act(newAnimals, step, weather);
+            animal.act(newAnimals, currentStep);
             if(! animal.isAlive()) {
                 it.remove();
             }
@@ -132,13 +133,13 @@ public class Simulator
         // Let all plants act.
         for(Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
             Plant plant = it.next();
-            plant.act(step, weather);
+            plant.act(currentStep);
             if(! plant.isAlive()) {
                 it.remove();
             }
         }
         
-        view.showStatus(step, field, weather);
+        view.showStatus(currentStep, field);
     }
         
     /**
@@ -153,7 +154,7 @@ public class Simulator
         updateWeather();
         
         // Show the starting state in the view.
-        view.showStatus(step, field, weather);
+        view.showStatus(new SimulationStep(step, weather), field);
     }
     
     /**

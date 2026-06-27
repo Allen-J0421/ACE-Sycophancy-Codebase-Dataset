@@ -54,13 +54,12 @@ public class Mouse extends Animal
      * This is what the mouse does most of the time - it runs 
      * around. Sometimes it will breed or die of old age.
      * @param newMice A list to return newly born mouse.
-     * @param step The current step.
-     * @param weather The current weather.
+     * @param step The current simulation step.
      */
-    public void act(List<Animal> newMice, int step, Weather weather)
+    public void act(List<Animal> newMice, SimulationStep step)
     {
         incrementAge(MAX_AGE);
-        updateBurnStatus(weather);
+        updateBurnStatus(step.getWeather());
         checkInfectLevel();
         if(isAlive()) {
             // Infected mouse will spread the disease to other mouse.
@@ -147,9 +146,9 @@ public class Mouse extends Animal
      */
     private void checkInfectLevel()
     {
-        if (infect==3){
-                setDead();
-            }
+        if(infect == 3) {
+            setDead();
+        }
     }
 
     /**

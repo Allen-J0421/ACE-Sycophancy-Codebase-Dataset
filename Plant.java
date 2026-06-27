@@ -19,8 +19,7 @@ public abstract class Plant extends Organism
     /**
      * Make this plant act - that is: make it do
      * whatever it wants/needs to do.
-     * @param newPlants A list to receive newly born plants.
-     * @param weather The current weather.
+     * @param step The current simulation step.
      */
-    abstract public void act(int step, Weather weather);
+    abstract public void act(SimulationStep step);
 }

@@ -63,7 +63,7 @@ public class Predator extends Animal
 
             // Move towards a source of food if found.
             Location newLocation = null;
-            if (isNotFull()) {
+            if (canEat()) {
                 newLocation = findFoodAndEat(neighboringAnimals);
             } 
 

@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public abstract class Species
 {
-    // The probability for an individual to die if exposed to too high or too cold temperatures. Can be adjusted for simulation realism purposes.
+    // The probability for an individual to die if exposed to too high or too cold temperatures.
     private static final double DYING_OF_COLD_OR_HEAT_PROBABILITY = 0.8;
     // Whether the species is alive or not.
     private boolean alive;

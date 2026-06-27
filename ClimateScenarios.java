@@ -10,6 +10,7 @@ public enum ClimateScenarios
 
     private final String label;
     private double concreteChange;
+    private final double initialConcreteChange;
     private final double changePercentage;
 
     /**
@@ -23,6 +24,7 @@ public enum ClimateScenarios
     {
         this.label = label;
         this.concreteChange = concreteChange;
+        this.initialConcreteChange = concreteChange;
         this.changePercentage = changePercentage;
     }
 
@@ -62,5 +64,13 @@ public enum ClimateScenarios
     public void doClimateChange()
     {
         concreteChange = concreteChange + (changePercentage * concreteChange);
+    }
+
+    /**
+     * Reset concreteChange to its initial value so each simulation run starts from the base scenario.
+     */
+    public void reset()
+    {
+        concreteChange = initialConcreteChange;
     }
 }

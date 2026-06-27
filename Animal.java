@@ -30,6 +30,8 @@ public class Animal extends Species
     private static final double FOOD_LEVEL_FULL_MULTIPLIER = 1.5;
     // Temperature offset above minimum at which hibernating animals enter hibernation
     private static final int HIBERNATION_TEMPERATURE_OFFSET = 5;
+    // Divisor used to compute the lower bound of a newborn's initial food level
+    private static final int INITIAL_FOOD_LEVEL_MIN_DIVISOR = 2;
 
     // Fields prone to change during the animal's life
 
@@ -159,7 +161,7 @@ public class Animal extends Species
         }
 
         // Eats if it is possible
-        if (isNotFull()) {
+        if (canEat()) {
             findFoodAndEat();
         }
 
@@ -219,9 +221,9 @@ public class Animal extends Species
     }
     
     /**
-     * @return (boolean) true if the animal is not full and therefore can eat and false if it is full.
+     * @return (boolean) true if the animal can eat (food level below the fullness threshold).
      */
-    protected boolean isNotFull()
+    protected boolean canEat()
     {
         return foodLevel < getNutritionalValue() * FOOD_LEVEL_FULL_MULTIPLIER;
     }
@@ -245,7 +247,7 @@ public class Animal extends Species
             if (species instanceof Plant) {
                 Plant plant = (Plant) species;
                 if (plant.isAlive()) {
-                    plant.isEaten();
+                    plant.eaten();
                     incrementFoodLevel(plant.getNutritionalValue());
                     break;
                 }
@@ -314,7 +316,7 @@ public class Animal extends Species
      */
     private int randomFoodLevel()
     {
-        int lowBound = getNutritionalValue()/2;
+        int lowBound = getNutritionalValue() / INITIAL_FOOD_LEVEL_MIN_DIVISOR;
         return rand.nextInt(lowBound) + lowBound;
     }
 

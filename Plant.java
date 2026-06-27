@@ -154,7 +154,7 @@ public class Plant extends Species
      * The effect of getting eaten by an animal.
      * Decrement currentHealth by one, and set dead if the current health is less than 1.
      */
-    public void isEaten()
+    public void eaten()
     {
         currentHealth--;
 

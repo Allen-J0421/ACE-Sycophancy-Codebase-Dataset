@@ -140,14 +140,8 @@ public class Field
      */
     public Location freeAdjacentLocation(Location location)
     {
-        // The available free ones.
         List<Location> free = getFreeAdjacentLocations(location);
-        if(free.size() > 0) {
-            return free.get(0);
-        }
-        else {
-            return null;
-        }
+        return free.isEmpty() ? null : free.get(0);
     }
 
     /**

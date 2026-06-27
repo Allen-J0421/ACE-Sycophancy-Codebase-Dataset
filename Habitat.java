@@ -46,6 +46,7 @@ public class Habitat
         initialiseSeasons(spring, summer, autumn, winter);
         currentSeason = seasons.get(0);   // the simulation always starts with spring
         isSpring = true;
+        changeScenario.reset(); // reset scenario to base value so each simulation starts fresh
         climateChangeEffect(); // do the climate change effect on the first season
     }
 

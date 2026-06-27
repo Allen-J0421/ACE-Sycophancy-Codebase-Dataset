@@ -88,27 +88,26 @@ public class SimulatorView extends JFrame
      * @param weather the object of weather class
      * @param oxygenLevel the oxygen level that is to be displayed in the current step.
      */
-    public void showStatus(int step, Field field, boolean timeOfDay, Weather weather, double oxygenLevel)
+    public void showStatus(SimulationContext context)
     {
         if(!isVisible()) {
             setVisible(true);
         }
 
-        SimulationDisplayContext context = new SimulationDisplayContext(step, field, timeOfDay, weather, oxygenLevel);
-        stepLabel.setText(STEP_PREFIX + step);
+        stepLabel.setText(STEP_PREFIX + context.getStep());
         infoLabel.setText(statusTextStrategy.formatInfoText(context));
         diseaseLabel.setText(POPULATION_DIE_OF_DISEASE_PREFIX + Animal.populationDieOfDisease);
         cellColorStrategy.render(context, fieldView);
-        population.setText(POPULATION_PREFIX + statusTextStrategy.formatPopulationText(field));
+        population.setText(POPULATION_PREFIX + statusTextStrategy.formatPopulationText(context));
     }
 
     /**
      * Determine whether the simulation should continue to run.
      * @return true If there is more than one species alive.
      */
-    public boolean isViable(Field field)
+    public boolean isViable(SimulationContext context)
     {
-        return statusTextStrategy.isViable(field);
+        return statusTextStrategy.isViable(context);
     }
 
     /**

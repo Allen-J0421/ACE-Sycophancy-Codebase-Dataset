@@ -102,16 +102,16 @@ public abstract class ForagingAnimal extends Animal
      * @param step The current simulation step.
      * @return The location of the prey if found, otherwise null.
      */
-    public final Location search(Disease disease, int step)
+    public final Location search(SimulationContext context)
     {
-        Field field = getField();
+        Field field = context.getField();
         List<Location> adjacent = field.adjacentLocations(getLocation(), behavior.getSearchDistance());
         for(Location loc : adjacent) {
             Object creature = field.getObjectAt(loc);
             if(creature instanceof Animal) {
                 Animal animal = (Animal)creature;
                 if(animal.getIsInfected()) {
-                    makeInfected(disease, step);
+                    makeInfected(context);
                 }
             }
             if(isOneOf(creature, behavior.getPreyTypes())) {
@@ -146,24 +146,24 @@ public abstract class ForagingAnimal extends Animal
      * @param step The current simulation step.
      * @return The oxygen delta for this action.
      */
-    public final double act(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step)
+    public final double act(List<Creature> newCreatures, SimulationContext context)
     {
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED) {
+        if(context.getOxygenLevel() < ANIMAL_OXYGEN_REQUIRED) {
             setDead();
             return 0;
         }
 
-        if(dieOfInfection(disease)) {
+        if(dieOfInfection(context)) {
             return 0;
         }
 
-        ifCanGrantImmunity(disease, step);
+        ifCanGrantImmunity(context);
         incrementAge();
         incrementHunger();
 
-        if(isAlive() && !needSleep(atDayTime)) {
+        if(isAlive() && !needSleep(context.isTimeOfDay())) {
             giveBirth(newCreatures);
-            Location newLocation = search(disease, step);
+            Location newLocation = search(context);
             if(newLocation == null) {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }

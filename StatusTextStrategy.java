@@ -3,9 +3,9 @@
  */
 public interface StatusTextStrategy
 {
-    String formatInfoText(SimulationDisplayContext context);
+    String formatInfoText(SimulationContext context);
 
-    String formatPopulationText(Field field);
+    String formatPopulationText(SimulationContext context);
 
-    boolean isViable(Field field);
+    boolean isViable(SimulationContext context);
 }

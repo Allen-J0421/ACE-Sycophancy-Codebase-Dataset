@@ -39,7 +39,7 @@ public abstract class Creature
      * 
      * @return the oxygen level the species produced or consumed after action.
      */
-    abstract public double act(List<Creature> newCreatures, boolean atDayTime, double oxygenLevel, Disease disease, int step);
+    abstract public double act(List<Creature> newCreatures, SimulationContext context);
 
     /**
      * Check whether the creature is alive or not.

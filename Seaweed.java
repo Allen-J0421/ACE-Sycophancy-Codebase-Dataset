@@ -51,10 +51,10 @@ public class Seaweed extends Creature
      * 
      * @return the oxygen level the species produced or consumed after action.
      */
-    public double act(List<Creature> newSeaweeds, boolean atDayTime, double oxygenLevel, Disease disease,  int step)
+    public double act(List<Creature> newSeaweeds, SimulationContext context)
     {
         incrementAge();
-        if(oxygenLevel < PLANT_OXYGEN_REQUIRED) {
+        if(context.getOxygenLevel() < PLANT_OXYGEN_REQUIRED) {
             setDead();
             return 0;
         }
@@ -63,7 +63,7 @@ public class Seaweed extends Creature
             giveBirth(newSeaweeds);
         }
 
-        if(atDayTime) {
+        if(context.isTimeOfDay()) {
             return OXYGEN_GENERATED;
         }
         else {

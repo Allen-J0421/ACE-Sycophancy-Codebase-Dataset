@@ -81,15 +81,16 @@ public abstract class Animal extends Creature
      *  @param disease disease
      *  @param step current step.
      */
-    protected void makeInfected(Disease disease, int step)
+    protected void makeInfected(SimulationContext context)
     {
+        Disease disease = context.getDisease();
         if((!this.getIsImmuned()) && Randomizer.getRandom().nextDouble() <= disease.INFECTION_RATE) {
             setIsInfected(true);
         }
 
         // if the animal is infected in current step, record its start step.
         if(getIsInfected() && infectionStartStep == 0) {
-            infectionStartStep = step;
+            infectionStartStep = context.getStep();
         }
     }
 
@@ -98,11 +99,12 @@ public abstract class Animal extends Creature
      * @param disease disease.
      * @param step int step.
      */
-    protected void ifCanGrantImmunity(Disease disease, int step)
+    protected void ifCanGrantImmunity(SimulationContext context)
     {
+        Disease disease = context.getDisease();
         // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
         if(getIsInfected() && !getIsImmuned()) {
-            if(step - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
+            if(context.getStep() - infectionStartStep >= disease.NUMBER_OF_STEP_TO_WITHSTAND) {
                 setIsImmuned(true);
                 setIsInfected(false);
             }
@@ -115,8 +117,9 @@ public abstract class Animal extends Creature
      *
      * @return true if an animal dies of infection.
      */
-    protected boolean dieOfInfection(Disease disease)
+    protected boolean dieOfInfection(SimulationContext context)
     {
+        Disease disease = context.getDisease();
         // if an animal is infected, it may die. Otherwise assume it gets immuntity from that disease.
         if(getIsInfected() && !getIsImmuned()) {
             if(Randomizer.getRandom().nextDouble() <= disease.MORTALITY_RATE) {

@@ -14,7 +14,7 @@ public class DefaultStatusTextStrategy implements StatusTextStrategy
     }
 
     @Override
-    public String formatInfoText(SimulationDisplayContext context)
+    public String formatInfoText(SimulationContext context)
     {
         return "It is: " + (context.isTimeOfDay() ? DAYTIME_TEXT : NIGHT_TEXT)
             + "        Oxygen Level: " + (int)(context.getOxygenLevel() * 100) + "%"
@@ -22,14 +22,14 @@ public class DefaultStatusTextStrategy implements StatusTextStrategy
     }
 
     @Override
-    public String formatPopulationText(Field field)
+    public String formatPopulationText(SimulationContext context)
     {
-        return stats.getPopulationDetails(field);
+        return stats.getPopulationDetails(context.getField());
     }
 
     @Override
-    public boolean isViable(Field field)
+    public boolean isViable(SimulationContext context)
     {
-        return stats.isViable(field);
+        return stats.isViable(context.getField());
     }
 }

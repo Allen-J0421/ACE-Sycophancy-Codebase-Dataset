@@ -39,7 +39,7 @@ public class Disease
     /**
      * create the source of infection
      */
-    protected void creationSourceOfInfection(List<Creature> creatures, int step){
+    protected void creationSourceOfInfection(List<Creature> creatures, SimulationContext context){
         Random random = Randomizer.getRandom();
         if(getIsSpread() || random.nextDouble() > DISEASE_OCCURRENCE_PROBABILITY) {
             return;
@@ -52,7 +52,7 @@ public class Disease
                 Animal animal = (Animal)creature;
                 if(random.nextDouble() <= INFECTION_RATE){
                     animal.setIsInfected(true);
-                    animal.infectionStartStep = step;
+                    animal.infectionStartStep = context.getStep();
                     setIsSpread(true);
                 }
             }

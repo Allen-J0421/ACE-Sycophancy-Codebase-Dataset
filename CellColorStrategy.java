@@ -7,5 +7,5 @@ public interface CellColorStrategy
 {
     void setColor(Class<?> animalClass, Color color);
 
-    void render(SimulationDisplayContext context, GridCanvas canvas);
+    void render(SimulationContext context, GridCanvas canvas);
 }

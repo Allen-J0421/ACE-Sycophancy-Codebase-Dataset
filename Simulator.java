@@ -117,7 +117,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && view.isViable(createContext()); step++) {
             simulateOneStep();
             delay(60);   // uncomment this to run more slowly
         }
@@ -133,14 +133,15 @@ public class Simulator
     {
         step++;
         double totalOxygenInvolved = 0;
-        disease.creationSourceOfInfection(creatures, step);
+        SimulationContext actionContext = createContext();
+        disease.creationSourceOfInfection(creatures, actionContext);
 
         // Provide space for newborn animals.
         List<Creature> newCreatures = new ArrayList<>();
         // Let all creatures act.
         for(Iterator<Creature> it = creatures.iterator(); it.hasNext(); ) {
             Creature creature = it.next();
-            totalOxygenInvolved += creature.act(newCreatures, timeOfDay(), oxygenLevel, disease, step);
+            totalOxygenInvolved += creature.act(newCreatures, actionContext);
             if(!creature.isAlive()) {
                 it.remove();
             }
@@ -150,7 +151,7 @@ public class Simulator
         oxygenLevel += totalOxygenInvolved;
         updateDiseaseState();
         creatures.addAll(newCreatures);
-        view.showStatus(step, field, timeOfDay(), weather, oxygenLevel);
+        view.showStatus(createContext());
     }
 
     /**
@@ -165,7 +166,7 @@ public class Simulator
         Animal.populationDieOfDisease = 0;
 
         // Show the starting state in the view.
-        view.showStatus(step, field, timeOfDay(), weather, oxygenLevel);
+        view.showStatus(createContext());
     }
 
     /**
@@ -271,5 +272,14 @@ public class Simulator
         else if(rand.nextDouble() <= WHALE_CREATION_PROBABILITY) {
             creatures.add(new Whale(true, field, location));
         }
+    }
+
+    /**
+     * Build a snapshot of the current simulation state for downstream components.
+     * @return An immutable context object representing the current state.
+     */
+    private SimulationContext createContext()
+    {
+        return new SimulationContext(field, weather, disease, step, oxygenLevel, timeOfDay());
     }
 }

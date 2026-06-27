@@ -29,7 +29,7 @@ public class DefaultCellColorStrategy implements CellColorStrategy
     }
 
     @Override
-    public void render(SimulationDisplayContext context, GridCanvas canvas)
+    public void render(SimulationContext context, GridCanvas canvas)
     {
         Field field = context.getField();
         canvas.preparePaint();
@@ -82,7 +82,7 @@ public class DefaultCellColorStrategy implements CellColorStrategy
         return color;
     }
 
-    private Set<Location> stormLocations(SimulationDisplayContext context)
+    private Set<Location> stormLocations(SimulationContext context)
     {
         Set<Location> locations = new HashSet<>();
         Weather weather = context.getWeather();

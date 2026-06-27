@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -40,7 +41,7 @@ public abstract class Actor
         this.field = field;
         setLocation(location);
         this.time = time;
-        setDiseases = new HashSet();
+        setDiseases = new HashSet<>();
     }
 
     /**
@@ -54,7 +55,7 @@ public abstract class Actor
     public void act(List<Actor> newActors, WeatherCond weather)
     {
         incrementAge();
-        if(isAlive() && ((!field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnLand()) || (field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnWater()))) {
+        if(isAlive() && !canOccupy(location)) {
             setDead();
         }
     }
@@ -123,6 +124,16 @@ public abstract class Actor
     }
 
     /**
+     * Return whether this actor can survive at the given location.
+     * @param targetLocation The location to check.
+     * @return true if the actor can occupy the location.
+     */
+    protected boolean canOccupy(Location targetLocation)
+    {
+        return field != null && targetLocation != null && field.canOccupy(this, targetLocation);
+    }
+
+    /**
      * Returns the actors Name
      * @return The actors name
      */
@@ -167,7 +178,7 @@ public abstract class Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Actor young = birth(loc,setDiseases);
+            Actor young = birth(loc, setDiseases);
             newActors.add(young);
         }
     }
@@ -208,6 +219,51 @@ public abstract class Actor
     }
 
     /**
+     * Copy diseases that spread by birth from a parent to this actor.
+     * @param parentDiseases The parent diseases to inherit.
+     */
+    protected void inheritBirthDiseases(Set<Disease> parentDiseases)
+    {
+        for(Disease parentDisease : parentDiseases) {
+            if(parentDisease.isSpreadByBirth()) {
+                setDiseases.add(parentDisease);
+            }
+        }
+    }
+
+    /**
+     * Add any diseases this actor may start with at the beginning of a simulation.
+     * @param rand The random generator to use for disease assignment.
+     */
+    protected void addStartingDiseases(Random rand)
+    {
+        String actorName = getActorName();
+        for(Disease disease : Simulator.diseases) {
+            Double startingProbability = disease.getStartingActorsMap().get(actorName);
+            if(startingProbability != null && rand.nextDouble() <= startingProbability) {
+                setDiseases.add(disease);
+            }
+        }
+    }
+
+    /**
+     * Calculate the number of births for this actor.
+     * @param breedingAge The minimum age required to breed.
+     * @param breedingProbability The chance of breeding this turn.
+     * @param maxLitterSize The maximum number of offspring.
+     * @param rand The random generator to use.
+     * @return The number of births for this turn.
+     */
+    protected int calculateBreedingCount(int breedingAge, double breedingProbability,
+                                         int maxLitterSize, Random rand)
+    {
+        if(age >= breedingAge && rand.nextDouble() <= breedingProbability) {
+            return rand.nextInt(maxLitterSize) + 1;
+        }
+        return 0;
+    }
+
+    /**
      * Returns how many actors are produced during birth
      * @return The number of actors birthed
      */
@@ -219,5 +275,16 @@ public abstract class Actor
      * @param Set<Disease> The diseases that the parent had is passed down
      * @return The new actor created
      */
-    abstract protected Actor birth(Location loc, Set<Disease>... parentDiseases);
+    protected Actor birth(Location loc)
+    {
+        return birth(loc, null);
+    }
+
+    /**
+     * Creates a new actor.
+     * @param loc The new location of the child.
+     * @param parentDiseases The diseases that the parent had.
+     * @return The new actor created.
+     */
+    abstract protected Actor birth(Location loc, Set<Disease> parentDiseases);
 }

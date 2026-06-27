@@ -31,8 +31,8 @@ public class Disease
         this.name = name;
         this.spreadByBirth = spreadByBirth;
         this.spreadByEating = spreadByEating;
-        actorsAffected = new HashMap();
-        startingActors = new HashMap();
+        actorsAffected = new HashMap<>();
+        startingActors = new HashMap<>();
     }
     
     /**

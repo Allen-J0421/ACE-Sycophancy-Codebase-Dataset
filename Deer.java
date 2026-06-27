@@ -39,44 +39,20 @@ public class Deer extends Animal
         initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
     }
     
-    /**
-     * This is what the Deer does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newDeers A list to return newly born Deers.
-     * @param step The current simulation step.
-     */
-    public void act(List<Animal> newDeers, SimulationStep step)
+    @Override
+    protected int getMaxAge()
     {
-        incrementAge(MAX_AGE);
-        decrementFoodLevel();
-        updateBurnStatus(step.getWeather());
-        if(isAlive()) {
-            giveBirth(newDeers);  
-           
-            // Move towards a source of food if found.
-            Location newLocation;
-            if (step.getWeather() == Weather.RAINY) {
-                newLocation = null;
-            }
-            else {
-                newLocation = findFood();
-            }
-
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = freeAdjacentLocation();
-            }
-
-            moveToOrDie(newLocation);
-        }
+        return MAX_AGE;
     }
 
-    /**
-     * Check whether or not this Deer is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newDeers A list to return newly born Deers.
-     */
-    private void giveBirth(List<Animal> newDeers)
+    @Override
+    protected void updateStatus(SimulationStep step)
+    {
+        decrementFoodLevel();
+    }
+
+    @Override
+    protected void handleAliveStep(List<Animal> newDeers, SimulationStep step)
     {
         if(hasAdjacentMate(Deer.class, 2)) {
             addOffspring(newDeers, breed(), (field, location) -> new Deer(false, field, location));
@@ -98,6 +74,15 @@ public class Deer extends Animal
      * Only the first live grass is eaten.
      * @return Where food was found, or null if it wasn't.
      */
+    @Override
+    protected Location selectMoveLocation(SimulationStep step)
+    {
+        if(step.getWeather() == Weather.RAINY) {
+            return null;
+        }
+        return findFood();
+    }
+
     private Location findFood()
     {
         return findAdjacentLocation(Grass.class, 1, grass -> {

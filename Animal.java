@@ -40,12 +40,63 @@ public abstract class Animal extends Organism
      * @param newAnimals A list to receive newly born animals.
      * @param step The current simulation step.
      */
-    abstract public void act(List<Animal> newAnimals, SimulationStep step);
+    public final void act(List<Animal> newAnimals, SimulationStep step)
+    {
+        incrementAge(getMaxAge());
+        updateStatus(step);
+        updateBurnStatus(step.getWeather());
+        updateStatusAfterBurn(step);
+        if(isAlive()) {
+            handleAliveStep(newAnimals, step);
+            if(isAlive() && shouldMove(step)) {
+                moveToOrDie(resolveMoveLocation(selectMoveLocation(step)));
+            }
+        }
+    }
 
     /**
      * Return the food value this animal provides when eaten.
      */
     abstract public int foodValue();
+
+    /**
+     * @return The maximum age for this species.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * Update the animal's internal state before burn status is applied.
+     */
+    protected void updateStatus(SimulationStep step)
+    {
+    }
+
+    /**
+     * Update the animal's internal state after burn status is applied.
+     */
+    protected void updateStatusAfterBurn(SimulationStep step)
+    {
+    }
+
+    /**
+     * Handle species-specific work for a live animal before movement.
+     */
+    protected void handleAliveStep(List<Animal> newAnimals, SimulationStep step)
+    {
+    }
+
+    /**
+     * Pick the preferred location for this step.
+     */
+    protected abstract Location selectMoveLocation(SimulationStep step);
+
+    /**
+     * Decide whether the animal should move this step.
+     */
+    protected boolean shouldMove(SimulationStep step)
+    {
+        return true;
+    }
 
     /**
      * A factory for creating offspring at a specific location.
@@ -110,6 +161,17 @@ public abstract class Animal extends Organism
         else {
             setDead();
         }
+    }
+
+    /**
+     * Fall back to a free adjacent location when the preferred target is absent.
+     */
+    protected final Location resolveMoveLocation(Location preferredLocation)
+    {
+        if(preferredLocation != null) {
+            return preferredLocation;
+        }
+        return freeAdjacentLocation();
     }
 
     /**

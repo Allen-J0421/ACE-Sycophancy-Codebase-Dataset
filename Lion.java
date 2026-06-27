@@ -40,39 +40,16 @@ public class Lion extends Animal
         initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, NEWBORN_FOOD_LEVEL);
     }
     
-    /**
-     * This is what the Lion does most of the time: it hunts for
-     * rabbits. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * If the weather is foggy, it stops moving.
-     * @param newLiones A list to return newly born Liones.
-     * @param step The current simulation step.
-     */
-    public void act(List<Animal> newLions, SimulationStep step)
+    @Override
+    protected int getMaxAge()
     {
-        incrementAge(MAX_AGE);
-        decrementFoodLevel();
-        updateBurnStatus(step.getWeather());
+        return MAX_AGE;
+    }
 
-        if(isAlive()) {
-            giveBirth(newLions);            
-            // Move towards a source of food if found.
-            Location newLocation;
-            if (step.getWeather() == Weather.FOGGY) {
-                newLocation = null;
-            }
-            else {
-                newLocation = findFood();
-            }
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = freeAdjacentLocation();
-            }
-            // See if it was possible to move.
-            if (!step.isNight()) {
-                moveToOrDie(newLocation);
-            } 
-        }
+    @Override
+    protected void updateStatus(SimulationStep step)
+    {
+        decrementFoodLevel();
     }
     
     /**
@@ -100,17 +77,27 @@ public class Lion extends Animal
         return eat(Mouse.class);
     }
     
-    /**
-     * Check whether or not this Lion is to give birth at this step.
-     * New births will be made into free adjacent locations of the 24 nearest locations
-     * surrounding the Lion.
-     * @param newLions A list to return newly born Lions.
-     */
-    private void giveBirth(List<Animal> newLions)
+    @Override
+    protected void handleAliveStep(List<Animal> newLions, SimulationStep step)
     {
         if(hasAdjacentMate(Lion.class, 2)) {
             addOffspring(newLions, breed(), (field, location) -> new Lion(false, field, location));
         }
+    }
+
+    @Override
+    protected Location selectMoveLocation(SimulationStep step)
+    {
+        if(step.getWeather() == Weather.FOGGY) {
+            return null;
+        }
+        return findFood();
+    }
+
+    @Override
+    protected boolean shouldMove(SimulationStep step)
+    {
+        return !step.isNight();
     }
         
     /**

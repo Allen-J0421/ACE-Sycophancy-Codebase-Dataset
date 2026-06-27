@@ -29,23 +29,6 @@ public abstract class MouseHunter extends Animal
     }
 
     @Override
-    public final void act(List<Animal> newAnimals, SimulationStep step)
-    {
-        incrementAge(maxAge);
-        decrementFoodLevel();
-        updateBurnStatus(step.getWeather());
-        if(isAlive()) {
-            addOffspring(newAnimals, calculateBirths(breedingAge, breedingProbability, maxLitterSize),
-                         (field, location) -> createYoung(field, location));
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = freeAdjacentLocation();
-            }
-            moveToOrDie(newLocation);
-        }
-    }
-
-    @Override
     public final int foodValue()
     {
         return foodValue;
@@ -55,6 +38,31 @@ public abstract class MouseHunter extends Animal
      * Create a newborn of the concrete species.
      */
     protected abstract Animal createYoung(Field field, Location location);
+
+    @Override
+    protected final int getMaxAge()
+    {
+        return maxAge;
+    }
+
+    @Override
+    protected final void updateStatus(SimulationStep step)
+    {
+        decrementFoodLevel();
+    }
+
+    @Override
+    protected final void handleAliveStep(List<Animal> newAnimals, SimulationStep step)
+    {
+        addOffspring(newAnimals, calculateBirths(breedingAge, breedingProbability, maxLitterSize),
+                     (field, location) -> createYoung(field, location));
+    }
+
+    @Override
+    protected final Location selectMoveLocation(SimulationStep step)
+    {
+        return findFood();
+    }
 
     /**
      * Find and eat an adjacent mouse.

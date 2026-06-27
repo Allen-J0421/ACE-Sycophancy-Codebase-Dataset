@@ -50,52 +50,33 @@ public class Mouse extends Animal
         initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
     }
     
-    /**
-     * This is what the mouse does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newMice A list to return newly born mouse.
-     * @param step The current simulation step.
-     */
-    public void act(List<Animal> newMice, SimulationStep step)
+    @Override
+    protected int getMaxAge()
     {
-        incrementAge(MAX_AGE);
-        updateBurnStatus(step.getWeather());
-        checkInfectLevel();
-        if(isAlive()) {
-            // Infected mouse will spread the disease to other mouse.
-            if (getInfected() != 0){
-                forEachAdjacent(Mouse.class, 1, mouse -> {
-                    if(mouse.getInfected() == 0) {
-                        mouse.infect();
-                    }
-                });
-                diseaseRecover();
-            }
-            else {
-                giveBirth(newMice);    
-                infect();
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = freeAdjacentLocation();
-            }
-
-            moveToOrDie(newLocation);
-        }                    
+        return MAX_AGE;
     }
 
-    /**
-     * Check whether or not this mouse is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newMice A list to return newly born mouse.
-     */
-    private void giveBirth(List<Animal> newMice)
+    @Override
+    protected void updateStatusAfterBurn(SimulationStep step)
     {
-        addOffspring(newMice, breed(), (field, location) -> new Mouse(false, field, location));
+        checkInfectLevel();
+    }
+
+    @Override
+    protected void handleAliveStep(List<Animal> newMice, SimulationStep step)
+    {
+        if(getInfected() != 0) {
+            forEachAdjacent(Mouse.class, 1, mouse -> {
+                if(mouse.getInfected() == 0) {
+                    mouse.infect();
+                }
+            });
+            diseaseRecover();
+        }
+        else {
+            addOffspring(newMice, breed(), (field, location) -> new Mouse(false, field, location));
+            infect();
+        }
     }
 
     /**
@@ -103,6 +84,12 @@ public class Mouse extends Animal
      * Only the first seed (belong to grass) will be located.
      * @return Where food was found, or null if it wasn't.
      */
+    @Override
+    protected Location selectMoveLocation(SimulationStep step)
+    {
+        return findFood();
+    }
+
     private Location findFood()
     {
         return findAdjacentLocation(Grass.class, 1, grass -> {

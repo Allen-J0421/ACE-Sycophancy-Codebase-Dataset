@@ -8,10 +8,10 @@ import java.util.Map;
  *
  * @version 2016.02.29
  */
-public class FieldStats
+public final class FieldStats
 {
-    // Counters for each type of entity in the simulation.
-    private final Map<Class<?>, Counter> counters;
+    // Counts for each type of entity in the simulation.
+    private final Map<Class<?>, Integer> counts;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -20,8 +20,8 @@ public class FieldStats
      */
     public FieldStats()
     {
-        // Set up a collection for counters for each type of living being found.
-        counters = new LinkedHashMap<>();
+        // Set up a collection for each type of living being found.
+        counts = new LinkedHashMap<>();
         countsValid = true;
     }
 
@@ -29,17 +29,13 @@ public class FieldStats
      * Get details of what is in the field.
      * @return A string describing what is in the field.
      */
-    public String getPopulationDetails(Field field)
+    public String getPopulationDetails()
     {
         StringBuilder buffer = new StringBuilder();
-        if(!countsValid) {
-            generateCounts(field);
-        }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
-            buffer.append(info.getName());
+        for(Map.Entry<Class<?>, Integer> entry : counts.entrySet()) {
+            buffer.append(entry.getKey().getName());
             buffer.append(": ");
-            buffer.append(info.getCount());
+            buffer.append(entry.getValue());
             buffer.append(' ');
         }
         return buffer.toString();
@@ -52,24 +48,16 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class<?> key : counters.keySet()) {
-            Counter count = counters.get(key);
-            count.reset();
-        }
+        counts.replaceAll((key, count) -> 0);
     }
 
     /**
-     * Increment the count for one class of living being.
-     * @param beingClass The class of living being to increment.
+     * Record one living being in the current count.
+     * @param being The living being to record.
      */
-    public void incrementCount(Class<?> beingClass)
+    public void record(LivingBeing being)
     {
-        Counter count = counters.get(beingClass);
-        if(count == null) {
-            count = new Counter(beingClass.getName());
-            counters.put(beingClass, count);
-        }
-        count.increment();
+        counts.merge(being.getClass(), 1, Integer::sum);
     }
 
     /**
@@ -92,9 +80,8 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class<?> key : counters.keySet()) {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) {
+        for(int count : counts.values()) {
+            if(count > 0) {
                 nonZero++;
             }
         }
@@ -115,7 +102,7 @@ public class FieldStats
             for(int col = 0; col < field.getWidth(); col++) {
                 LivingBeing being = field.getLivingBeingAt(row, col);
                 if(being != null) {
-                    incrementCount(being.getClass());
+                    record(being);
                 }
             }
         }

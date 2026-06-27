@@ -4,7 +4,7 @@
  *
  * @version 2022.02.24
  */
-public class Badger extends Animal
+public final class Badger extends Animal
 {
     private static final int BREEDING_AGE = 2;
     private static final int MAX_AGE = 1000;

@@ -3,7 +3,7 @@
  *
  * @version 2016.02.29
  */
-public class Location
+public final class Location
 {
     // Row and column positions.
     private final int row;
@@ -26,13 +26,10 @@ public class Location
     @Override
     public boolean equals(Object obj)
     {
-        if(obj instanceof Location) {
-            Location other = (Location) obj;
-            return row == other.getRow() && col == other.getCol();
-        }
-        else {
+        if(!(obj instanceof Location other)) {
             return false;
         }
+        return row == other.getRow() && col == other.getCol();
     }
     
     /**

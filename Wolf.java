@@ -3,7 +3,7 @@
  *
  * @version 2022.02.24
  */
-public class Wolf extends Animal
+public final class Wolf extends Animal
 {
     private static final int BREEDING_AGE = 5;
     private static final int MAX_AGE = 500;

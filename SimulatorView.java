@@ -127,7 +127,7 @@ public class SimulatorView extends JFrame
             for(int col = 0; col < field.getWidth(); col++) {
                 LivingBeing being = field.getLivingBeingAt(row, col);
                 if(being != null) {
-                    stats.incrementCount(being.getClass());
+                    stats.record(being);
                     fieldView.drawMark(col, row, getColor(being.getClass()));
                 }
                 else {
@@ -137,7 +137,7 @@ public class SimulatorView extends JFrame
         }
         stats.countFinished();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails());
         fieldView.repaint();
     }
 

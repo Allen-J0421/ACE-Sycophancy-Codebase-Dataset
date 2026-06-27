@@ -4,7 +4,7 @@
  *
  * @version 2022.02.24 (2)
  */
-public class Bear extends Animal
+public final class Bear extends Animal
 {
     private static final int BREEDING_AGE = 10;
     private static final int MAX_AGE = 1500;

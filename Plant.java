@@ -10,7 +10,7 @@ import java.util.Random;
  *
  * @version 2022.02.24
  */
-public class Plant extends LivingBeing
+public final class Plant extends LivingBeing
 {
     private static final double GROWING_PROBABILITY = 0.35;
     private static final double RAIN_PROBABILITY = 0.25;

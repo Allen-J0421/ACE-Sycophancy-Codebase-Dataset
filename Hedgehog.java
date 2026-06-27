@@ -4,7 +4,7 @@
  *
  * @version 2022.02.24
  */
-public class Hedgehog extends Animal
+public final class Hedgehog extends Animal
 {
     private static final int BREEDING_AGE = 3;
     private static final int MAX_AGE = 35;

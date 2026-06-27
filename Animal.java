@@ -184,25 +184,43 @@ public abstract class Animal extends Actor
                 Object actor = field.getObjectAt(where);
                 if (actor instanceof Actor) {
                     Actor prey = (Actor) actor;
-                    if(getPreyFoodValuesMap().containsKey(prey.getActorName()) && prey.isAlive()) {
-                        for(Disease disease: prey.setDiseases){
-                            if (disease.isSpreadByEating() && disease.getActorsAffectedMap().containsKey(getActorName())){
-                                setDiseases.add(disease);
-                            }
-                        }
-                        prey.setDead();
-                        if (foodLevel + getPreyFoodValuesMap().get(prey.getActorName()) < getMaxFood()) {
-                            foodLevel += getPreyFoodValuesMap().get(prey.getActorName());
-                        }
-                        else {
-                            foodLevel = getMaxFood();
-                        }
+                    if(consumePrey(prey)) {
                         return where;
                     }
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * Consume a prey actor if it is edible.
+     * @param prey The potential prey.
+     * @return True if the prey was eaten.
+     */
+    protected boolean consumePrey(Actor prey)
+    {
+        Integer foodValue = getPreyFoodValuesMap().get(prey.getActorName());
+        if(foodValue == null || !prey.isAlive()) {
+            return false;
+        }
+        transferEatingDiseases(prey);
+        prey.setDead();
+        foodLevel = Math.min(foodLevel + foodValue, getMaxFood());
+        return true;
+    }
+
+    /**
+     * Transfer diseases from prey to this animal when eating.
+     * @param prey The actor being eaten.
+     */
+    private void transferEatingDiseases(Actor prey)
+    {
+        for(Disease disease : prey.setDiseases) {
+            if(disease.isSpreadByEating() && disease.getActorsAffectedMap().containsKey(getActorName())) {
+                setDiseases.add(disease);
+            }
+        }
     }
 
     /**

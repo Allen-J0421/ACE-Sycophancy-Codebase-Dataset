@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /**
  * A simple model of a snake.
  * Snakes age, move, eat rats, breed, and die.
@@ -8,6 +10,8 @@ public class Snake extends Animal
 {
 // Characteristics shared by all snakes (class variables).
 
+    // The probability that a snake will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.12;
     // The age at which a snake can start to breed.
     private static final int BREEDING_AGE = 30;
     // The age to which a snake can live.
@@ -53,4 +57,11 @@ public class Snake extends Animal
         if (foodValue >= 0) setDead();
         return foodValue;
     }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Snake.class; }
+        public Color getColor()                { return Color.BLACK; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Snake(true, f, l); }
+    };
 }

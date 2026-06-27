@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 
 /**
@@ -11,6 +12,8 @@ public class Grass extends Plant
 {
     // Characteristics shared by all grass (class variables).
 
+    // The probability that grass will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.36;
     // The likelihood of a grass reproducing.
     private static final double REPRODUCING_PROBABILITY = 0.77;
     // The maximum number of offspring that can be produced.
@@ -34,4 +37,11 @@ public class Grass extends Plant
     }
 
     protected int eatMe(Eater eater) { return eater.eatGrass(this); }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Grass.class; }
+        public Color getColor()                { return Color.CYAN; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Grass(f, l); }
+    };
 }

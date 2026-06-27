@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /**
  * A simple model of an eagle.
  * Eagles age, move, eat snakes and rats, and die.
@@ -9,6 +11,8 @@ public class Eagle extends Animal
 {
     // Characteristics shared by all eagles (class variables).
 
+    // The probability that an eagle will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.12;
     // The age at which an eagle can start to breed.
     private static final int BREEDING_AGE = 50;
     // The age to which an eagle can live.
@@ -60,4 +64,11 @@ public class Eagle extends Animal
         if (getFog()) rand.nextInt(2);
         return super.findFood();
     }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Eagle.class; }
+        public Color getColor()                { return Color.RED; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Eagle(true, f, l); }
+    };
 }

@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /**
  * A simple model of an emu.
  * Emu age, move, eat grass, and die.
@@ -8,6 +10,8 @@ public class Emu extends Animal
 {
     // Characteristics shared by all emus (class variables).
 
+    // The probability that an emu will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.08;
     // The age at which an emu can start to breed.
     private static final int BREEDING_AGE = 30;
     // The age to which an emu can live.
@@ -48,4 +52,11 @@ public class Emu extends Animal
     public boolean tramplesPlants()  { return true; }
 
     // Emus cannot be eaten; acceptInteraction() inherits the default -1 from Animal.
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Emu.class; }
+        public Color getColor()                { return Color.YELLOW; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Emu(true, f, l); }
+    };
 }

@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /**
  * A simple model of an ant.
  * Ants age, move, eat acacia and grass, breed, and die.
@@ -8,6 +10,8 @@ public class Ant extends Animal
 {
     // Characteristics shared by all ants (class variables).
 
+    // The probability that an ant will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.13;
     // The age at which an ant can start to breed.
     private static final int BREEDING_AGE = 20;
     // The age to which an ant can live.
@@ -58,4 +62,11 @@ public class Ant extends Animal
         if (foodValue >= 0) setDead();
         return foodValue;
     }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Ant.class; }
+        public Color getColor()                { return Color.GRAY; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Ant(true, f, l); }
+    };
 }

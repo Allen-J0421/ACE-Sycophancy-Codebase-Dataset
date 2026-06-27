@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /**
  * A simple model of a rat.
  * Rats age, move, eat ants, breed, and die.
@@ -8,6 +10,8 @@ public class Rat extends Animal
 {
     // Characteristics shared by all rats (class variables).
 
+    // The probability that a rat will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.11;
     // The age at which a rat can start to breed.
     private static final int BREEDING_AGE = 25;
     // The age to which a rat can live.
@@ -55,4 +59,11 @@ public class Rat extends Animal
         if (foodValue >= 0) setDead();
         return foodValue;
     }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Rat.class; }
+        public Color getColor()                { return Color.PINK; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Rat(true, f, l); }
+    };
 }

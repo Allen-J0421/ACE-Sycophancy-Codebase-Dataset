@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 /**
  * A simple model of a dingo.
  * Dingoes age, move, eat snakes, and die.
@@ -8,6 +10,8 @@ public class Dingo extends Animal
 {
     // Characteristics shared by all dingoes (class variables).
 
+    // The probability that a dingo will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.09;
     // The age at which a dingo can start to breed.
     private static final int BREEDING_AGE = 50;
     // The age to which a dingo can live.
@@ -57,4 +61,11 @@ public class Dingo extends Animal
         }
         return super.findFood();
     }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Dingo.class; }
+        public Color getColor()                { return Color.ORANGE; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Dingo(true, f, l); }
+    };
 }

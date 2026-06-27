@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.List;
 
 /**
@@ -11,6 +12,8 @@ public class Acacia extends Plant
 {
     // Characteristics shared by all acacias (class variables).
 
+    // The probability that an acacia will be created in any given grid position.
+    private static final double CREATION_PROBABILITY = 0.34;
     // The likelihood of an acacia reproducing.
     private static final double REPRODUCING_PROBABILITY = 0.71;
     // The maximum number of offspring that can be produced.
@@ -35,4 +38,11 @@ public class Acacia extends Plant
     }
 
     protected int eatMe(Eater eater) { return eater.eatAcacia(this); }
+
+    public static final EntityProvider PROVIDER = new EntityProvider() {
+        public Class<?> getEntityClass()       { return Acacia.class; }
+        public Color getColor()                { return Color.GREEN; }
+        public double getCreationProbability() { return CREATION_PROBABILITY; }
+        public LivingEntity create(Field f, Location l) { return new Acacia(f, l); }
+    };
 }

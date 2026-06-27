@@ -10,16 +10,7 @@ import java.util.ArrayList;
  */
 public abstract class Animal extends Organism
 {
-    // The level of food an animal has consumed, increases when it eats
-    private int foodLevel;
-    // Indicates whether an animal can give birth or not
-    private boolean female;
-    // Indicates whether the animal is nocturnal or not
-    private boolean nocturnal;
-    // The animal's age
-    private double age;
-    // Indicates whether the animal is sleeping or not
-    private boolean sleeping;
+    private final AnimalStatus status;
     
     /**
      * Create a new animal at location in field.
@@ -31,14 +22,11 @@ public abstract class Animal extends Organism
     public Animal(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        nocturnal = false;
+        status = new AnimalStatus(randomAge);
         Random rand = new Random();
-        female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
-        sleeping = false;
         if(!randomAge) {
             setAge(0);
-            foodLevel = rand.nextInt(10) + 8;
         }
     }
     
@@ -51,7 +39,7 @@ public abstract class Animal extends Organism
         // All animals eat; all organisms also increment age and water level
         super.act(newOrganisms);
         incrementHunger();
-        if(isAlive() && !sleeping) {        
+        if(isAlive() && !status.isSleeping()) {
             // Move towards a source of food if found
             giveBirth(newOrganisms);  
             Location newLocation = null;
@@ -78,9 +66,9 @@ public abstract class Animal extends Organism
                 setDead();
             }
         }
-        else if (sleeping) {
+        else if (status.isSleeping()) {
             // code for what to do when sleeping
-            sleeping = false;
+            status.wakeUp();
         }
     }
     
@@ -154,8 +142,8 @@ public abstract class Animal extends Organism
      */
     public void incrementHunger()
     {
-        foodLevel--;
-        if(foodLevel <= 0) {
+        status.decrementFoodLevel();
+        if(status.getFoodLevel() <= 0) {
             setDead();
         }
     }
@@ -196,7 +184,7 @@ public abstract class Animal extends Organism
      */
     protected void setFoodLevel(int foodValue)
     {
-        foodLevel = foodValue;
+        status.setFoodLevel(foodValue);
     }
     
     /** 
@@ -204,7 +192,7 @@ public abstract class Animal extends Organism
      */
     protected int getFoodLevel()
     {
-        return foodLevel;
+        return status.getFoodLevel();
     }
     
     /** 
@@ -212,7 +200,7 @@ public abstract class Animal extends Organism
      */
     public boolean isFemale()
     {
-        return female;
+        return status.isFemale();
     }
     
     /** 
@@ -220,7 +208,7 @@ public abstract class Animal extends Organism
      */
     public void setNocturnal()
     {
-        nocturnal = true;
+        status.setNocturnal();
     }
     
     /** 
@@ -228,14 +216,14 @@ public abstract class Animal extends Organism
      */
     public boolean isNocturnal()
     {
-        return nocturnal;
+        return status.isNocturnal();
     }
     
     /**
      * Sets the sleeping boolean variable to the opposite state it currently has.
      */
     public void setSleepStatus(){
-        sleeping = ! sleeping;
+        status.toggleSleeping();
     }
     
     /**

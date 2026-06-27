@@ -1,4 +1,3 @@
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +14,9 @@ public class Frog extends Animal
     private static final int MAX_LITTER_SIZE = 4;
 
     private static final int PLANT_FOOD_VALUE = 12;
-    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES =
-            new LinkedHashMap<>();
-
-    static {
-        FOOD_VALUES.put(Plant.class, PLANT_FOOD_VALUE);
-    }
+    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES = foodValues(
+        food(Plant.class, PLANT_FOOD_VALUE)
+    );
 
     /**
      * Create a frog. A frog can be created as a newborn or with a random age

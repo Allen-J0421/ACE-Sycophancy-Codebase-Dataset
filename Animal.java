@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -17,6 +19,18 @@ public abstract class Animal extends LivingBeing
     private final int maxAge;
     private int age;
     private int foodLevel;
+
+    protected static final class FoodValue
+    {
+        private final Class<? extends LivingBeing> type;
+        private final int value;
+
+        private FoodValue(Class<? extends LivingBeing> type, int value)
+        {
+            this.type = type;
+            this.value = value;
+        }
+    }
 
     /**
      * Create a new animal at location in field.
@@ -48,6 +62,20 @@ public abstract class Animal extends LivingBeing
     {
         Sex[] values = Sex.values();
         return values[rand.nextInt(values.length)];
+    }
+
+    protected static FoodValue food(Class<? extends LivingBeing> type, int value)
+    {
+        return new FoodValue(type, value);
+    }
+
+    protected static Map<Class<? extends LivingBeing>, Integer> foodValues(FoodValue... values)
+    {
+        Map<Class<? extends LivingBeing>, Integer> foods = new LinkedHashMap<>();
+        for(FoodValue value : values) {
+            foods.put(value.type, value.value);
+        }
+        return Collections.unmodifiableMap(foods);
     }
 
     /**
@@ -106,12 +134,11 @@ public abstract class Animal extends LivingBeing
         }
 
         for(Location where : field.adjacentLocations(getLocation())) {
-            Object occupant = field.getObjectAt(where);
+            LivingBeing occupant = field.getObjectAt(where);
             for(Map.Entry<Class<? extends LivingBeing>, Integer> food : foodValues.entrySet()) {
                 if(food.getKey().isInstance(occupant)) {
-                    LivingBeing prey = (LivingBeing) occupant;
-                    if(prey.isAlive()) {
-                        prey.setDead();
+                    if(occupant.isAlive()) {
+                        occupant.setDead();
                         foodLevel += food.getValue();
                         return where;
                     }
@@ -130,7 +157,7 @@ public abstract class Animal extends LivingBeing
         }
 
         for(Location where : field.adjacentLocations(getLocation())) {
-            Object occupant = field.getObjectAt(where);
+            LivingBeing occupant = field.getObjectAt(where);
             if(getClass().isInstance(occupant) && hasOppositeSex((Animal) occupant)) {
                 List<Location> free = field.getFreeAdjacentLocations(getLocation());
                 int births = breed(breedingProbability, maxLitterSize);
@@ -172,6 +199,6 @@ public abstract class Animal extends LivingBeing
      * Abstract method act, defined in subclasses (meant to be overridden)
      * @param newAnimals a list of new animals 
      */
-    abstract public void act(List<LivingBeing> newAnimals);
+    public abstract void act(List<LivingBeing> newAnimals);
     
 }

@@ -1,6 +1,12 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -65,13 +71,13 @@ public class SimulatorView extends JFrame
     }
     
     /**
-     * Define a color to be used for a given class of animal.
-     * @param animalClass The animal's Class object.
+     * Define a color to be used for a given class of living being.
+     * @param beingClass The living being's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class<?> animalClass, Color color)
+    public void setColor(Class<?> beingClass, Color color)
     {
-        colors.put(animalClass, color);
+        colors.put(beingClass, color);
     }
 
     /**
@@ -91,11 +97,11 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * @return The color to be used for a given class of animal.
+     * @return The color to be used for a given class of living being.
      */
-    private Color getColor(Class<?> animalClass)
+    private Color getColor(Class<?> beingClass)
     {
-        Color col = colors.get(animalClass);
+        Color col = colors.get(beingClass);
         if(col == null) {
             // no color defined for this class
             return UNKNOWN_COLOR;
@@ -122,10 +128,10 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
+                LivingBeing being = field.getObjectAt(row, col);
+                if(being != null) {
+                    stats.incrementCount(being.getClass());
+                    fieldView.drawMark(col, row, getColor(being.getClass()));
                 }
                 else {
                     fieldView.drawMark(col, row, night ? Color.GRAY : EMPTY_COLOR);

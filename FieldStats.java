@@ -1,4 +1,5 @@
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity in the simulation.
-    private HashMap<Class<?>, Counter> counters;
+    private final Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -19,9 +20,8 @@ public class FieldStats
      */
     public FieldStats()
     {
-        // Set up a collection for counters for each type of animal that
-        // we might find
-        counters = new HashMap<>();
+        // Set up a collection for counters for each type of living being found.
+        counters = new LinkedHashMap<>();
         countsValid = true;
     }
 
@@ -31,7 +31,7 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field);
         }
@@ -59,23 +59,21 @@ public class FieldStats
     }
 
     /**
-     * Increment the count for one class of animal.
-     * @param animalClass The class of animal to increment.
+     * Increment the count for one class of living being.
+     * @param beingClass The class of living being to increment.
      */
-    public void incrementCount(Class<?> animalClass)
+    public void incrementCount(Class<?> beingClass)
     {
-        Counter count = counters.get(animalClass);
+        Counter count = counters.get(beingClass);
         if(count == null) {
-            // We do not have a counter for this species yet.
-            // Create one.
-            count = new Counter(animalClass.getName());
-            counters.put(animalClass, count);
+            count = new Counter(beingClass.getName());
+            counters.put(beingClass, count);
         }
         count.increment();
     }
 
     /**
-     * Indicate that an animal count has been completed.
+     * Indicate that counting has been completed.
      */
     public void countFinished()
     {
@@ -104,8 +102,8 @@ public class FieldStats
     }
     
     /**
-     * Generate counts of the number of animals.
-     * These are not kept up to date as animals
+     * Generate counts of the number of living beings.
+     * These are not kept up to date as living beings
      * are placed in the field, but only when a request
      * is made for the information.
      * @param field The field to generate the stats for.
@@ -115,9 +113,9 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    incrementCount(animal.getClass());
+                LivingBeing being = field.getObjectAt(row, col);
+                if(being != null) {
+                    incrementCount(being.getClass());
                 }
             }
         }

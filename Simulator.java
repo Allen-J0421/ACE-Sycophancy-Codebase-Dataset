@@ -34,16 +34,58 @@ public class Simulator
     // The probability that a plant will be created in any given grid position.
     private static final double PLANT_CREATION_PROBABILITY = 0.2;
 
-    // List of animals in the field.
-    private List<LivingBeing> animals;
+    private interface LivingBeingFactory
+    {
+        LivingBeing create(Field field, Location location);
+    }
+
+    private static class SpeciesConfig
+    {
+        private final Class<? extends LivingBeing> type;
+        private final Color color;
+        private final double creationProbability;
+        private final LivingBeingFactory factory;
+
+        private SpeciesConfig(Class<? extends LivingBeing> type, Color color,
+                              double creationProbability, LivingBeingFactory factory)
+        {
+            this.type = type;
+            this.color = color;
+            this.creationProbability = creationProbability;
+            this.factory = factory;
+        }
+
+        private LivingBeing create(Field field, Location location)
+        {
+            return factory.create(field, location);
+        }
+    }
+
+    private static final List<SpeciesConfig> SPECIES = List.of(
+        new SpeciesConfig(Hedgehog.class, Color.YELLOW, HEDGEHOG_CREATION_PROBABILITY,
+                          (field, location) -> new Hedgehog(true, field, location)),
+        new SpeciesConfig(Bear.class, Color.RED, BEAR_CREATION_PROBABILITY,
+                          (field, location) -> new Bear(true, field, location)),
+        new SpeciesConfig(Badger.class, Color.CYAN, BADGER_CREATION_PROBABILITY,
+                          (field, location) -> new Badger(true, field, location)),
+        new SpeciesConfig(Frog.class, Color.MAGENTA, FROG_CREATION_PROBABILITY,
+                          (field, location) -> new Frog(true, field, location)),
+        new SpeciesConfig(Wolf.class, Color.PINK, WOLF_CREATION_PROBABILITY,
+                          (field, location) -> new Wolf(true, field, location)),
+        new SpeciesConfig(Plant.class, Color.GREEN, PLANT_CREATION_PROBABILITY,
+                          (field, location) -> new Plant(true, field, location))
+    );
+
+    // List of living beings in the field.
+    private final List<LivingBeing> livingBeings;
     // The current state of the field.
-    private Field field;
+    private final Field field;
     // The current step of the simulation.
     private int step;
 
     private boolean night;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    private final SimulatorView view;
     
     public static void main(String[] args) {
         Simulator sim = new Simulator();
@@ -72,19 +114,12 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
 
-        animals = new ArrayList<>();
+        livingBeings = new ArrayList<>();
         field = new Field(depth, width);
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        
-        //colours of the creatures
-        view.setColor(Hedgehog.class, Color.YELLOW);
-        view.setColor(Bear.class, Color.RED);
-        view.setColor(Badger.class, Color.CYAN);
-        view.setColor(Frog.class, Color.MAGENTA);
-        view.setColor(Wolf.class, Color.PINK);
-        view.setColor(Plant.class, Color.GREEN);
+        configureViewColors();
 
         // Setup a valid starting point.
         reset();
@@ -116,7 +151,7 @@ public class Simulator
 
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            // delay(60);   // uncomment this to run more slowl
+            // delay(60);   // uncomment this to run more slowly
         }
     }
 
@@ -139,7 +174,7 @@ public class Simulator
     /**
      * Run the simulation from its current state for a single step.
      * Iterate over the whole field updating the state of each
-     * animal
+     * living being
      */
     public void simulateOneStep()
     {
@@ -148,21 +183,21 @@ public class Simulator
             switchNight();
         }
 
-        // Provide space for newborn animals.
-        List<LivingBeing> newAnimals = new ArrayList<>();        
-        // Let all animals act.
-        for(Iterator<LivingBeing> it = animals.iterator(); it.hasNext(); ) {
+        // Provide space for newborn living beings.
+        List<LivingBeing> newBeings = new ArrayList<>();
+        // Let all living beings act.
+        for(Iterator<LivingBeing> it = livingBeings.iterator(); it.hasNext(); ) {
 
-            LivingBeing animal = it.next();
-            animal.act(newAnimals);
+            LivingBeing being = it.next();
+            being.act(newBeings);
 
-            if(! animal.isAlive()) {
+            if(! being.isAlive()) {
                 it.remove();
             }
         }
 
-        // Add the newly born animals to the main lists.
-        animals.addAll(newAnimals);
+        // Add the newly born living beings to the main list.
+        livingBeings.addAll(newBeings);
 
         view.showStatus(step, field);
     }
@@ -176,7 +211,7 @@ public class Simulator
         night = false;
         LivingBeing.setNight(night);
         view.setNight(night);
-        animals.clear();
+        livingBeings.clear();
         populate();
 
         // Show the starting state in the view.
@@ -184,43 +219,37 @@ public class Simulator
     }
 
     /**
-     * Randomly populate the field with foxes and rabbits and hedgehogs
+     * Randomly populate the field with living beings.
      */
     private void populate()
     {
         Random rand = Randomizer.getRandom();
         field.clear();
         
-        //goes through each cell and populates based on given probabilty 
+        // Goes through each cell and populates based on configured probability.
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                if(rand.nextDouble() <= HEDGEHOG_CREATION_PROBABILITY) {
-                    Hedgehog hedgehog = new Hedgehog(true, field, location);
-                    animals.add(hedgehog);
-                }
-                else if(rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-                    Bear bear = new Bear(true, field, location);
-                    animals.add(bear);
-                }
-                else if(rand.nextDouble() <= BADGER_CREATION_PROBABILITY) {
-                    Badger badger = new Badger(true, field, location);
-                    animals.add(badger);
-                }
-                else if(rand.nextDouble() <= FROG_CREATION_PROBABILITY) {
-                    Frog frog = new Frog(true,field,location);
-                    animals.add(frog);
-                }
-                else if(rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-                    Wolf wolfie = new Wolf(true,field,location);
-                    animals.add(wolfie);
-                }
-                else if(rand.nextDouble() <= PLANT_CREATION_PROBABILITY) {
-                    Plant plant = new Plant(true,field,location);
-                    animals.add(plant);
-                }
-                // else leave the location empty.
+                populate(location, rand);
             }
+        }
+    }
+
+    private void populate(Location location, Random rand)
+    {
+        for(SpeciesConfig species : SPECIES) {
+            if(rand.nextDouble() <= species.creationProbability) {
+                livingBeings.add(species.create(field, location));
+                return;
+            }
+        }
+        // Else leave the location empty.
+    }
+
+    private void configureViewColors()
+    {
+        for(SpeciesConfig species : SPECIES) {
+            view.setColor(species.type, species.color);
         }
     }
 

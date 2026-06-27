@@ -1,4 +1,3 @@
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,13 +17,10 @@ public class Wolf extends Animal
     private static final int FROG_FOOD_VALUE = 25;
     private static final int INITIAL_FOOD_LEVEL = HEDGEHOG_FOOD_VALUE + FROG_FOOD_VALUE;
 
-    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES =
-            new LinkedHashMap<>();
-
-    static {
-        FOOD_VALUES.put(Hedgehog.class, HEDGEHOG_FOOD_VALUE);
-        FOOD_VALUES.put(Frog.class, FROG_FOOD_VALUE);
-    }
+    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES = foodValues(
+        food(Hedgehog.class, HEDGEHOG_FOOD_VALUE),
+        food(Frog.class, FROG_FOOD_VALUE)
+    );
 
     /**
      * Create a wolf. A wolf can be created as a newborn or with a random age

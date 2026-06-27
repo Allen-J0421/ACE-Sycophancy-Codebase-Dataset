@@ -5,7 +5,7 @@ import java.util.Random;
 
 /**
  * Represent a rectangular grid of field positions.
- * Each position is able to store a single animal.
+ * Each position is able to store a single living being.
  *
  * @version 2016.02.29
  */
@@ -14,10 +14,10 @@ public class Field
     // A random number generator for providing random locations.
     private static final Random rand = Randomizer.getRandom();
     
-    // The depth and width of the field.
-    private int depth, width;
-    // Storage for the animals.
-    private Object[][] field;
+    private final int depth;
+    private final int width;
+    // Storage for living beings.
+    private final LivingBeing[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -28,7 +28,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new LivingBeing[depth][width];
     }
     
     /**
@@ -53,47 +53,47 @@ public class Field
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place a living being at the given location.
+     * If there is already a living being at the location it will
      * be lost.
-     * @param animal The animal to be placed.
+     * @param being The living being to be placed.
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object animal, int row, int col)
+    public void place(LivingBeing being, int row, int col)
     {
-        place(animal, new Location(row, col));
+        place(being, new Location(row, col));
     }
     
     /**
-     * Place an animal at the given location.
-     * If there is already an animal at the location it will
+     * Place a living being at the given location.
+     * If there is already a living being at the location it will
      * be lost.
-     * @param animal The animal to be placed.
-     * @param location Where to place the animal.
+     * @param being The living being to be placed.
+     * @param location Where to place the living being.
      */
-    public void place(Object animal, Location location)
+    public void place(LivingBeing being, Location location)
     {
-        field[location.getRow()][location.getCol()] = animal;
+        field[location.getRow()][location.getCol()] = being;
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the living being at the given location, if any.
      * @param location Where in the field.
-     * @return The animal at the given location, or null if there is none.
+     * @return The living being at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public LivingBeing getObjectAt(Location location)
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
     
     /**
-     * Return the animal at the given location, if any.
+     * Return the living being at the given location, if any.
      * @param row The desired row.
      * @param col The desired column.
-     * @return The animal at the given location, or null if there is none.
+     * @return The living being at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public LivingBeing getObjectAt(int row, int col)
     {
         return field[row][col];
     }

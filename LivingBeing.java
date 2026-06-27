@@ -90,7 +90,7 @@ public abstract class LivingBeing
      * whatever it wants/needs to do.
      * @param newBeings A list to receive newly born beings.
      */
-    abstract public void act(List<LivingBeing> newBeings);
+    public abstract void act(List<LivingBeing> newBeings);
 
     /**
      * Indicate that the being is no longer alive.

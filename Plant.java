@@ -34,7 +34,7 @@ public class Plant extends LivingBeing
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Plant(Boolean randomAge, Field field, Location location)
+    public Plant(boolean randomAge, Field field, Location location)
     {
         // initialise instance variables
         super(field,location);

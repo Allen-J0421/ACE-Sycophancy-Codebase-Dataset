@@ -38,7 +38,10 @@ public abstract class Animal extends Organism
     public void act(List<Actor> newOrganisms) {
         // All animals eat; all organisms also increment age and water level
         super.act(newOrganisms);
-        incrementHunger();
+        status.decrementFoodLevel();
+        if(status.getFoodLevel() <= 0) {
+            setDead();
+        }
         if(isAlive() && !status.isSleeping()) {
             // Move towards a source of food if found
             giveBirth(newOrganisms);  
@@ -135,17 +138,6 @@ public abstract class Animal extends Organism
     protected Location findWater() {
         super.findWater();
         return null;
-    }
-    
-    /**
-     * Make the animal more hungry. This could result in the animal's death.
-     */
-    public void incrementHunger()
-    {
-        status.decrementFoodLevel();
-        if(status.getFoodLevel() <= 0) {
-            setDead();
-        }
     }
     
     /**

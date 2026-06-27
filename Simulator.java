@@ -1,9 +1,7 @@
 import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.function.BiFunction;
 import java.awt.Color;
 
 /**
@@ -18,18 +16,6 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-
-    // Registry of all entity types: creation probability, display colour, and factory.
-    // Entries are checked in order per cell; the first match wins.
-    // To add a new species, add one line here — no other changes needed.
-    private static final List<EntitySpec> ENTITY_SPECS = Arrays.asList(
-        new EntitySpec(Lion.class,  0.01, Color.RED,    (f, l) -> new Lion(true, f, l)),
-        new EntitySpec(Deer.class,  0.02, Color.BLUE,   (f, l) -> new Deer(true, f, l)),
-        new EntitySpec(Owl.class,   0.05, Color.ORANGE, (f, l) -> new Owl(true, f, l)),
-        new EntitySpec(Mouse.class, 0.04, Color.YELLOW, (f, l) -> new Mouse(true, f, l)),
-        new EntitySpec(Cat.class,   0.05, Color.PINK,   (f, l) -> new Cat(true, f, l)),
-        new EntitySpec(Grass.class, 0.40, Color.GREEN,  (f, l) -> new Grass(true, f, l))
-    );
 
     // All living entities (animals and plants) in one unified list.
     private List<Entity> entities;
@@ -68,8 +54,8 @@ public class Simulator
         field    = new Field(depth, width);
 
         view = new SimulatorView(depth, width);
-        for (EntitySpec spec : ENTITY_SPECS) {
-            view.setColor(spec.type, spec.color);
+        for (EntityRegistry.Registration reg : EntityRegistry.getAll()) {
+            view.setColor(reg.type, reg.color);
         }
 
         // Setup a valid starting point.
@@ -134,9 +120,9 @@ public class Simulator
     }
 
     /**
-     * Randomly populate the field using the ENTITY_SPECS registry.
-     * Each cell draws one random number per spec in order; the first spec
-     * whose probability threshold is met claims the cell.
+     * Randomly populate the field from the entity registry.
+     * Each cell draws one random number per registration in order;
+     * the first match claims the cell.
      */
     private void populate()
     {
@@ -145,9 +131,9 @@ public class Simulator
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
                 Location location = new Location(row, col);
-                for (EntitySpec spec : ENTITY_SPECS) {
-                    if (rand.nextDouble() <= spec.probability) {
-                        entities.add(spec.factory.apply(field, location));
+                for (EntityRegistry.Registration reg : EntityRegistry.getAll()) {
+                    if (rand.nextDouble() <= reg.probability) {
+                        entities.add(reg.factory.create(field, location));
                         break;
                     }
                 }
@@ -188,30 +174,6 @@ public class Simulator
             Thread.sleep(millisec);
         } catch (InterruptedException ie) {
             // wake up
-        }
-    }
-
-    // -------------------------------------------------------------------------
-
-    /**
-     * Describes one entity type for use in the species registry.
-     * Bundles together the class (for colour registration), creation probability,
-     * display colour, and a factory that constructs an instance.
-     */
-    private static class EntitySpec
-    {
-        final Class<?>                            type;
-        final double                              probability;
-        final Color                               color;
-        final BiFunction<Field, Location, Entity> factory;
-
-        EntitySpec(Class<?> type, double probability, Color color,
-                   BiFunction<Field, Location, Entity> factory)
-        {
-            this.type        = type;
-            this.probability = probability;
-            this.color       = color;
-            this.factory     = factory;
         }
     }
 }

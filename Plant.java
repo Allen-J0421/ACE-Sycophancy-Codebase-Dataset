@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
 
 /**
  * A class representing shared characteristics of plants
@@ -18,7 +17,7 @@ public abstract class Plant extends Organism
     public Plant(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        Random rand = new Random();
+        Random rand = Randomizer.getRandom();
         if(!randomAge) {
             setAge(0);
             //sets water level to a random value when first created
@@ -37,26 +36,10 @@ public abstract class Plant extends Organism
     }
     
     /**
-     * Reduces the current water level of the plant by 1 and updates it.
-     * Checks if water level is 0. If it does, the plant dies.
-     */
-    public void decreaseWaterLevel(){
-        //newWaterLevel - passes updated value to set method in Organism class
-        int newWaterLevel = getWaterLevel() - 1;
-        setWaterLevel(newWaterLevel);
-        if(getWaterLevel() <=0) {
-            setDead();
-        }
-    }
-    
-    /**
      * Look for water adjacent to the plant's current location
      * @return Where water was found, or null if it wasn't
      */
     protected Location findWater() {
-        if (getWaterLevel() <= 5) {
-            super.findWater();
-        }
-        return null;
+        return getWaterLevel() <= 5 ? super.findWater() : null;
     }
 }

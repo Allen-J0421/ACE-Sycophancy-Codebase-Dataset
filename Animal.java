@@ -1,7 +1,6 @@
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * A class representing shared characteristics of animals.
@@ -32,7 +31,7 @@ public abstract class Animal extends Organism
     {
         super(randomAge, field, location);
         nocturnal = false;
-        Random rand = new Random();
+        Random rand = Randomizer.getRandom();
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
@@ -58,7 +57,7 @@ public abstract class Animal extends Organism
             if(getWaterLevel() < 3) {
                 newLocation = findWater();
             }
-            if (newLocation == null && getFoodLevel() < 8) {
+            if (newLocation == null && getFoodLevel() < 8 && Randomizer.getRandom().nextDouble() <= getHuntProbability()) {
                 newLocation = findFood(getPrey());
             }
             if (newLocation == null) {
@@ -96,14 +95,14 @@ public abstract class Animal extends Organism
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            // Checks nearby location (adjacent to adjacent locations)
-            List<Location> adjacent2 = field.adjacentLocations(where);
-            Iterator<Location> it2 = adjacent2.iterator();
-            while (it2.hasNext()) {
-                Location where2 = it2.next();
-                Object animal = field.getObjectAt(where);
-                if(animal != null && animal.getClass().equals(this.getClass())) {
-                    return where2;
+            Object animal = field.getObjectAt(where);
+            if(animal != null && animal.getClass().equals(this.getClass())) {
+                Animal mate = (Animal) animal;
+                if (isFemale() != mate.isFemale()) {
+                    Location freeLocation = field.freeAdjacentLocation(where);
+                    if (freeLocation != null) {
+                        return freeLocation;
+                    }
                 }
             }
         }
@@ -115,7 +114,7 @@ public abstract class Animal extends Organism
      * Only the first live prey is eaten.
      * @return Where food was found, or null if it wasn't.
      */
-    protected Location findFood(ArrayList<String> preyList)
+    protected Location findFood(List<String> preyList)
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
@@ -137,15 +136,6 @@ public abstract class Animal extends Organism
                 }
             }
         }
-        return null;
-    }
-    
-    /**
-     * Look for water adjacent to the animal's current location
-     * @return Where water was found, or null if it wasn't 
-     */
-    protected Location findWater() {
-        super.findWater();
         return null;
     }
     
@@ -182,9 +172,6 @@ public abstract class Animal extends Organism
                 Animal mate = (Animal) animal;
                 if (isFemale() != mate.isFemale()) {
                     return free;
-                }
-                else {
-                    return null;
                 }
             }
         }    
@@ -241,5 +228,13 @@ public abstract class Animal extends Organism
     /**
      * @return Returns list of prey for each animal
      */
-    abstract public ArrayList<String> getPrey();
+    abstract public List<String> getPrey();
+
+    /**
+     * @return The probability that this animal successfully hunts when it is hungry.
+     */
+    protected double getHuntProbability()
+    {
+        return 1.0;
+    }
 }

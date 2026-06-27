@@ -1,8 +1,8 @@
 import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * A simple model of a gazelle
@@ -28,7 +28,7 @@ public class Gazelle extends Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // A list of the food that the gazelle eats
-    private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Grass"));
+    private static final List<String> PREY = Collections.unmodifiableList(Arrays.asList("Grass"));
 
     /**
      * Create a new gazelle. A gazelle may be created with age
@@ -53,26 +53,17 @@ public class Gazelle extends Animal
      * around and eats grass. Sometimes it will breed or die of old age.
      * @param newGazelles A list to return newly born gazelles.
      */
+    @Override
     public void act(List<Actor> newGazelles)
     {
         super.act(newGazelles);
-    }
-    
-    /**
-     * Look for grass adjacent to the current location.
-     * Only the first piece of grass is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood()
-    {
-        super.findFood(prey);
-        return null;
     }
 
     /**
      * Increase the age.
      * This could result in the gazelle's death.
      */
+    @Override
     public void incrementAge()
     {
         super.incrementAge();
@@ -86,6 +77,7 @@ public class Gazelle extends Animal
      * New births will be made into free adjacent locations.
      * @param newGazelles A list to return newly born Gazelles.
      */
+    @Override
     protected List<Location> giveBirth(List<Actor> newGazelles)
     {
         Field field = getField();
@@ -132,16 +124,27 @@ public class Gazelle extends Animal
      * @return the food value of a gazelle, which a predator gains if 
      * the gazelle is eaten
      */
+    @Override
     public int getFoodValue()
     { 
         return GAZELLE_FOOD_VALUE;
+    }
+
+    /**
+     * @return The probability of a gazelle successfully finding grass.
+     */
+    @Override
+    protected double getHuntProbability()
+    {
+        return 1.0;
     }
     
     /**
      * @return The list of prey which it eats 
      */
-    public ArrayList<String> getPrey()
+    @Override
+    public List<String> getPrey()
     {
-        return prey;
+        return PREY;
     }
 }

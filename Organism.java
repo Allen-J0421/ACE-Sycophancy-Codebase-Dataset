@@ -133,27 +133,17 @@ public abstract class Organism implements Actor
             Object waterSource = field.getObjectAt(where);
             if(waterSource instanceof Lake) {
                 Lake lake = (Lake) waterSource;
-                // if there is enough water left to drink
-                if(lake.getVolume() >= lake.getWaterValue()){
-                    // increase drinking organism's water level and reduces lake's water level
-                    int newWaterLevel = getWaterLevel() + lake.getWaterValue();
-                    this.setWaterLevel(newWaterLevel);
-                    lake.reduceVolume(lake.getWaterValue());
-                    return where;
-                }
-                // if only a little bit of water left to drink, drinks remnants 
-                // then empties lake
-                else if (lake.getVolume() >= 0) {
-                    int newWaterLevel = getWaterLevel() + lake.getVolume();
-                    this.setWaterLevel(newWaterLevel);
-                    lake.setVolume(0);
-                    lake.setDead();
-                    return where;
-                }
-                else if(lake.getVolume() <=0){
+                if(lake.getVolume() <= 0){
                     lake.setDead();
                     return null;
                 }
+                int waterDrawn = Math.min(lake.getWaterValue(), lake.getVolume());
+                setWaterLevel(getWaterLevel() + waterDrawn);
+                lake.reduceVolume(waterDrawn);
+                if (lake.getVolume() <= 0) {
+                    lake.setDead();
+                }
+                return where;
             }
         }
         return null;

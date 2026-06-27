@@ -1,8 +1,8 @@
 import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * A simple model of a fennec fox.
@@ -30,7 +30,7 @@ public class FennecFox extends Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom(); 
     // A list of the prey that the fennec fox eats
-    private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Grass", "Mouse"));
+    private static final List<String> PREY = Collections.unmodifiableList(Arrays.asList("Grass", "Mouse"));
     
     /**
      * Create a fennec fox. A fennec fox can be created as a new born (age zero
@@ -57,6 +57,7 @@ public class FennecFox extends Animal
      * @param field The field currently occupied.
      * @param newFoxes A list to return newly born foxes.
      */
+    @Override
     public void act(List<Actor> newFoxes)
     {
         super.act(newFoxes);
@@ -65,6 +66,7 @@ public class FennecFox extends Animal
     /**
      * Increase the age. This could result in the fennec fox's death.
      */
+    @Override
     public void incrementAge() {
         super.incrementAge();    
         if(this.getAge() > MAX_AGE) {
@@ -73,23 +75,11 @@ public class FennecFox extends Animal
     }
     
     /**
-     * Look for prey adjacent to the current location.
-     * Only the first prey is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood()
-    {
-        if (rand.nextDouble() < SUCCESSFUL_HUNT_PROB) {
-            super.findFood(prey);
-        }
-        return null;
-    }
-    
-    /**
      * Check whether or not this fennec fox is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newFoxes A list to return newly born fennec foxs.
      */
+    @Override
     protected List<Location> giveBirth(List<Actor> newFoxes)
     {
          Field field = getField();
@@ -130,20 +120,31 @@ public class FennecFox extends Animal
         return (this.isFemale() && this.getAge() >= BREEDING_AGE);
     }
     
-     /**
+    /**
      * @return the food value of a fennec fox, which a predator gains if 
      * the fennec fox is eaten
      */
+    @Override
     public int getFoodValue()
     { 
         return FENNECFOX_FOOD_VALUE;
+    }
+
+    /**
+     * @return The probability of a fennec fox successfully hunting its prey.
+     */
+    @Override
+    protected double getHuntProbability()
+    {
+        return SUCCESSFUL_HUNT_PROB;
     }
     
     /**
      * @return The list of prey which it eats 
      */
-    public ArrayList<String> getPrey()
+    @Override
+    public List<String> getPrey()
     {
-        return prey;
+        return PREY;
     }
 }

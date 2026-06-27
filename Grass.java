@@ -1,6 +1,5 @@
-import java.util.Random;
-import java.util.Random;
 import java.util.List;
+import java.util.Random;
 
 /**
  * A simple model of grass - a type of plant.
@@ -46,10 +45,10 @@ public class Grass extends Plant
      * - it grows and may reproduce.
      * @param newGrass A list to return newly grown grass
      */
+    @Override
     public void act(List<Actor> newGrass)
     {
         super.act(newGrass);
-        decreaseWaterLevel();
         if(isAlive()) {
             giveBirth(newGrass); 
             findWater();
@@ -61,6 +60,7 @@ public class Grass extends Plant
      * This could result in the plant's death if they have reached their
      * maximum age.
      */
+    @Override
     public void incrementAge()
     {
         super.incrementAge();
@@ -114,9 +114,9 @@ public class Grass extends Plant
     /**
      * @return GRASS_FOOD_VALUE The food value of grass.
      */
+    @Override
     public int getFoodValue()
     { 
         return GRASS_FOOD_VALUE;
     }
 }
-

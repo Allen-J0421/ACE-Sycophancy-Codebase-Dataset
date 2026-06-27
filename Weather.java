@@ -1,7 +1,5 @@
-import java.util.Random;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Models behaviour of simple weather conditions in the simulation.
@@ -19,15 +17,11 @@ public class Weather implements Actor
     private static final double HEATWAVE_PROB = 0.0001;
     // Indicates whether new water sources need to be generated
     private boolean generateWater = false;
-    // The simulator
-    private Simulator simulator;
+
     /**
      * Constructor for objects of class Weather
      */
-    public Weather(Simulator simulator)
-    {
-        this.simulator = simulator;
-    }
+    public Weather() {}
 
     /**
      * Make the weather act - that is: make it do
@@ -35,11 +29,12 @@ public class Weather implements Actor
      * @param newActors A list to receive any species affected by the weather event
      */
     public void act(List<Actor> actorsList) {
-        //generate a random value and compare it with the probability of
-        //different types of weather occurring.
-        Random rand = new Random();
+        generateWater = false;
+        // Generate one weather event per step using shared randomness.
+        Random rand = Randomizer.getRandom();
         if (rand.nextDouble() <= RAIN_PROB) {
-            generateWater = makeRain(actorsList);
+            makeRain(actorsList);
+            generateWater = true;
         }
         else if (rand.nextDouble() <= FOG_PROB){
             makeFog(actorsList);
@@ -56,34 +51,7 @@ public class Weather implements Actor
      * @param newActors A list to receive any species affected by the weather event
      */
     protected boolean makeRain(List<Actor> actorsList){
-        //it will now rain for 3 steps
-        int current = simulator.getStep();
-        int stop = current + 3;
-        ArrayList<WaterSources> newWater = new ArrayList<>();
-        while (current <= stop) {
-            //iterate over all actors in the simulation
-            Iterator<Actor> it = actorsList.iterator();
-            while(it.hasNext()) {
-                Actor actor = it.next();
-                //add rain water value to each actor's water level
-                if (actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() + 5;
-                    plant.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    int newWaterLevel = animal.getWaterLevel() + 5;
-                    animal.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof WaterSources){
-                    WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() + 10;
-                    source.setVolume(newVolume);
-                }
-                current++;
-            }
-        }
+        adjustMoisture(actorsList, 5, 10);
         return true;
     }
 
@@ -95,31 +63,18 @@ public class Weather implements Actor
      * @param newActors A list to receive any species affected by the weather event
      */
     protected void makeFog(List<Actor> actorsList) {
-        //fog occurs for 1 step
-        int current = simulator.getStep();
-        int stop = current + 1;
-        while (current <= stop) {
-            //iterate over all actors in the simulation
-            Iterator<Actor> it = actorsList.iterator();
-            while(it.hasNext()) {
-                Actor actor = it.next();
-                //plant's & water sources' water levels increase a bit
-                if (actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() + 2;
-                    plant.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof Animal) {
-                    //animals can't do anything
-                    Animal animal = (Animal) actor;
-                    animal.setSleepStatus();
-                }
-                else if (actor instanceof WaterSources){
-                    WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() + 2;
-                    source.setVolume(newVolume);
-                }
-                current++;
+        for (Actor actor : actorsList) {
+            if (actor instanceof Plant) {
+                Plant plant = (Plant) actor;
+                plant.setWaterLevel(plant.getWaterLevel() + 2);
+            }
+            else if (actor instanceof Animal) {
+                Animal animal = (Animal) actor;
+                animal.setSleepStatus();
+            }
+            else if (actor instanceof WaterSources){
+                WaterSources source = (WaterSources) actor;
+                source.setVolume(source.getVolume() + 2);
             }
         }
     }
@@ -131,31 +86,42 @@ public class Weather implements Actor
      * @param newActors A list to receive any species affected by the weather event
      */
     protected void makeHeatWave(List<Actor> actorsList){
-        //heatwave occurs for one step
-        int current = simulator.getStep();
-        int stop = current + 1;
-        while (current <= stop) {
-            //iterate over all actors in the simulation
-            Iterator<Actor> it = actorsList.iterator();
-            while(it.hasNext()) {
-                Actor actor = it.next();
-                //water value halved by 2 for all actors
-                if (actor instanceof Plant) {
-                    Plant plant = (Plant) actor;
-                    int newWaterLevel = plant.getWaterLevel() / 2;
-                    plant.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof Animal) {
-                    Animal animal = (Animal) actor;
-                    int newWaterLevel = animal.getWaterLevel() / 2;
-                    animal.setWaterLevel(newWaterLevel);
-                }
-                else if (actor instanceof WaterSources){
-                    WaterSources source = (WaterSources) actor;
-                    int newVolume = source.getVolume() / 2;
-                    source.setVolume(newVolume);
-                }
-                current++;
+        for (Actor actor : actorsList) {
+            if (actor instanceof Plant) {
+                Plant plant = (Plant) actor;
+                plant.setWaterLevel(plant.getWaterLevel() / 2);
+            }
+            else if (actor instanceof Animal) {
+                Animal animal = (Animal) actor;
+                animal.setWaterLevel(animal.getWaterLevel() / 2);
+            }
+            else if (actor instanceof WaterSources){
+                WaterSources source = (WaterSources) actor;
+                source.setVolume(source.getVolume() / 2);
+            }
+        }
+    }
+
+    /**
+     * Increase hydration for living things and water volume for water sources.
+     * @param actorsList The active actors.
+     * @param organismDelta Water added to plants and animals.
+     * @param waterDelta Water added to water sources.
+     */
+    private void adjustMoisture(List<Actor> actorsList, int organismDelta, int waterDelta)
+    {
+        for (Actor actor : actorsList) {
+            if (actor instanceof Plant) {
+                Plant plant = (Plant) actor;
+                plant.setWaterLevel(plant.getWaterLevel() + organismDelta);
+            }
+            else if (actor instanceof Animal) {
+                Animal animal = (Animal) actor;
+                animal.setWaterLevel(animal.getWaterLevel() + organismDelta);
+            }
+            else if (actor instanceof WaterSources) {
+                WaterSources source = (WaterSources) actor;
+                source.setVolume(source.getVolume() + waterDelta);
             }
         }
     }

@@ -1,8 +1,8 @@
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -15,7 +15,7 @@ public abstract class Disease implements Actor
     // The field of the simulation
     private Field field;
     // A list of the species that the disease affects
-    private ArrayList<String> affectedSpecies;
+    private List<String> affectedSpecies;
     // A hashmap containing organisms currently infected with disease
     // and how long they've been infected for
     private HashMap<Actor, Integer> affected;
@@ -51,7 +51,7 @@ public abstract class Disease implements Actor
         // Loops through every infected animal
         Iterator<Actor> it = affected.keySet().iterator();
         // List to hold individuals who are newly infected by disease
-        ArrayList<Actor> newInfections = new ArrayList<>();
+        List<Actor> newInfections = new ArrayList<>();
         while (it.hasNext()) {
             Actor infected = it.next();
             newInfections.addAll(spread(infected));
@@ -95,16 +95,17 @@ public abstract class Disease implements Actor
      * @param The actor which is infected and spreads disease to 
      * neighbouring individuals
      */
-    public ArrayList<Actor> spread(Actor actor) {
-        ArrayList<Actor> newlyInfected = new ArrayList<>();
+    public List<Actor> spread(Actor actor) {
+        List<Actor> newlyInfected = new ArrayList<>();
         List<Location> adjacent = null;
         // looks at surrounding individuals and chance of infecting them if possible
-        try {
+        if (actor instanceof Organism) {
             Organism organism = (Organism) actor;
             if (organism.isAlive()) {
                 adjacent = field.adjacentLocations(organism.getLocation());
             }
-        } catch (Exception e) {
+        }
+        else if (actor instanceof WaterSources) {
             WaterSources water = (WaterSources) actor;
             if (!water.isEmpty()) {
                 adjacent = field.adjacentLocations(water.getLocation());
@@ -137,15 +138,13 @@ public abstract class Disease implements Actor
      * @param species Varargs so can take any number of species to be infected
      */
     protected void addSpecies(String... species) {
-        for (int i = 0; i<species.length; i++) {
-            affectedSpecies.add(species[i]);
-        }
+        Collections.addAll(affectedSpecies, species);
     }
     
     /** 
      * @return The  list of species affected by this disease
      */
-    public ArrayList<String> getSpecies() {
+    public List<String> getSpecies() {
         return affectedSpecies;
     }
     

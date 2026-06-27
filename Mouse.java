@@ -1,8 +1,8 @@
 import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * A simple model of a mouse.
@@ -29,7 +29,7 @@ public class Mouse extends Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // A list of the prey that the mouse eats
-    private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Grass"));
+    private static final List<String> PREY = Collections.unmodifiableList(Arrays.asList("Grass"));
 
     /**
      * Create a new mouse. A mouse may be created with age
@@ -53,6 +53,7 @@ public class Mouse extends Animal
      * around. Sometimes it will breed or die of old age.
      * @param newMice A list to return newly born mice.
      */
+    @Override
     public void act(List<Actor> newMice)
     {
         super.act(newMice);
@@ -62,6 +63,7 @@ public class Mouse extends Animal
      * Increase the age.
      * This could result in the mouse's death.
      */
+    @Override
     public void incrementAge()
     {
         super.incrementAge();
@@ -71,23 +73,11 @@ public class Mouse extends Animal
     }
     
     /**
-     * Look for grass adjacent to the current location.
-     * Only the first piece of grass is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    protected Location findFood(ArrayList<String> preyList)
-    {
-        if (rand.nextDouble() < SUCCESSFUL_HUNT_PROB) {
-            super.findFood(prey);
-        }
-        return null;
-    }
-    
-    /**
      * Check whether or not this mouse is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newMice A list to return newly born mice.
      */
+    @Override
     protected List<Location> giveBirth(List<Actor> newMice)
     {
         Field field = getField();
@@ -129,20 +119,31 @@ public class Mouse extends Animal
         return (this.isFemale() && this.getAge() >= BREEDING_AGE);
     }
     
-     /**
+    /**
      * @return the food value of a mouse, which a predator gains if 
      * the mouse is eaten
      */
+    @Override
     public int getFoodValue()
     { 
         return MOUSE_FOOD_VALUE;
+    }
+
+    /**
+     * @return The probability of a mouse successfully finding food.
+     */
+    @Override
+    protected double getHuntProbability()
+    {
+        return SUCCESSFUL_HUNT_PROB;
     }
     
     /**
      * @return The list of prey which it eats 
      */
-    public ArrayList<String> getPrey()
+    @Override
+    public List<String> getPrey()
     {
-        return prey;
+        return PREY;
     }
 }

@@ -1,6 +1,4 @@
-import java.util.Random;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  *  A class representing shared characteristics of water sources.
@@ -19,8 +17,6 @@ public abstract class WaterSources implements Actor
     private int volumeLevel;
     // Whether the water source is infected with a disease or not.
     private boolean infected;
-    // A list of what diseases the water is infected by.
-    private List diseases;
 
     /**
      * Create a new water source at location in field.
@@ -32,12 +28,10 @@ public abstract class WaterSources implements Actor
     {
         this.field = field;
         setLocation(location);
-        Random rand = new Random();
         if (!randomVolume) {
             setVolume(10);
         }
         isEmpty = false;
-        diseases = new ArrayList<>();
     }
 
     /**
@@ -45,10 +39,7 @@ public abstract class WaterSources implements Actor
      * whatever it wants/needs to do.
      * @param newActors A list to receive any actors relevant to action
      */
-    public void act(List<Actor> actorsList)
-    {
-
-    }
+    public void act(List<Actor> actorsList) {}
 
     /**
      * Return the water source's location.
@@ -117,12 +108,12 @@ public abstract class WaterSources implements Actor
      */
     public void setDead()
     {
-        if(volumeLevel <= 0 && location != null) {
+        if(location != null) {
             field.clear(location);
             location = null;
             field = null;
-            isEmpty = true;
         }
+        isEmpty = true;
     }
 
     /**
@@ -132,6 +123,10 @@ public abstract class WaterSources implements Actor
     protected void setVolume(int volumeLevel)
     {
         this.volumeLevel = volumeLevel;
+        if (this.volumeLevel <= 0) {
+            this.volumeLevel = 0;
+            setDead();
+        }
     }
 
     /**
@@ -152,5 +147,9 @@ public abstract class WaterSources implements Actor
         //Used when water is drunk by an animal or accessed by a plant. 
         //waterValue would be the water value of the water source.
         volumeLevel = volumeLevel - waterValue;
+        if (volumeLevel <= 0) {
+            volumeLevel = 0;
+            setDead();
+        }
     }
 }

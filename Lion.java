@@ -1,8 +1,8 @@
 import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * A simple model of a lion.
@@ -30,7 +30,7 @@ public class Lion extends Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom(); 
     // A list of the prey that the lion eats
-    private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Gazelle"));
+    private static final List<String> PREY = Collections.unmodifiableList(Arrays.asList("Gazelle"));
 
     /**
      * Create a lion. A lion can be created as a new born (age zero
@@ -56,6 +56,7 @@ public class Lion extends Animal
      * @param field The field currently occupied.
      * @param newLions A list to return newly born lions.
      */
+    @Override
     public void act(List<Actor> newLions)
     {
         super.act(newLions);
@@ -64,6 +65,7 @@ public class Lion extends Animal
     /**
      * Increase the age. This could result in the lion's death.
      */
+    @Override
     public void incrementAge() {
         super.incrementAge();    
         if(this.getAge() > MAX_AGE) {
@@ -72,23 +74,11 @@ public class Lion extends Animal
     }
 
     /**
-     * Look for gazelles adjacent to the current location.
-     * Only the first live gazelle is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood()
-    {
-        if (rand.nextDouble() < SUCCESSFUL_HUNT_PROB) {
-            super.findFood(prey);
-        }
-        return null;
-    }
-
-    /**
      * Check whether or not this lion is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newLionss A list to return newly born lions.
      */
+    @Override
     protected List<Location> giveBirth(List<Actor> newLions)
     {
         Field field = getField();
@@ -129,26 +119,30 @@ public class Lion extends Animal
         return (this.isFemale() && this.getAge() >= BREEDING_AGE);
     }
     
-     /**
+    /**
      * @return The food value of a lion
      */
+    @Override
     public int getFoodValue()
     { 
         return LION_FOOD_VALUE;
     }
 
     /**
-     * @return The probability of a lion successfully hunting its prey
+     * @return The probability of a lion successfully hunting its prey.
      */
-    public double getHuntProb(){
+    @Override
+    protected double getHuntProbability()
+    {
         return SUCCESSFUL_HUNT_PROB;
     }
     
     /**
      * @return The list of prey which it eats 
      */
-    public ArrayList<String> getPrey()
+    @Override
+    public List<String> getPrey()
     {
-        return prey;
+        return PREY;
     }
 }

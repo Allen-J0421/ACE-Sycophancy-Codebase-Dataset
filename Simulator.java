@@ -206,7 +206,7 @@ public class Simulator
         Disease leptospirosis = new Leptospirosis(field);
         diseases.addAll(Arrays.asList(covid, leptospirosis));
         
-        Weather weather = new Weather(this);
+        Weather weather = new Weather();
         
         actors.addAll(diseases);
         actors.add(weather);
@@ -264,7 +264,7 @@ public class Simulator
      */
     private void generateDisease(Actor actor) 
     {
-        Random rand = new Random();
+        Random rand = Randomizer.getRandom();
         for (Disease disease: diseases) {
             // random low chance of an individual developing a disease
             if(rand.nextDouble() <= disease.getProbability()) {
@@ -286,7 +286,6 @@ public class Simulator
     public void generateWater()
     {
         Random rand = Randomizer.getRandom();
-        ArrayList<WaterSources> newWater  = new ArrayList<>();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
                 // if there is an empty space, chance of creating a new water source

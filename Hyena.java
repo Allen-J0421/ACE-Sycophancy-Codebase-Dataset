@@ -1,8 +1,8 @@
 import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * A simple model of a hyena.
@@ -30,7 +30,7 @@ public class Hyena extends Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // A list of the prey that the hyena eats
-    private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Fennec Fox", "Gazelle"));
+    private static final List<String> PREY = Collections.unmodifiableList(Arrays.asList("Fennec Fox", "Gazelle"));
 
     /**
      * Create a hyena. A hyena can be created as a new born (age zero
@@ -57,6 +57,7 @@ public class Hyena extends Animal
      * @param field The field currently occupied.
      * @param newHyenas A list to return newly born hyenas.
      */
+    @Override
     public void act(List<Actor> newHyenas)
     {
         super.act(newHyenas);
@@ -65,6 +66,7 @@ public class Hyena extends Animal
     /**
      * Increase the age. This could result in the hyena's death.
      */
+    @Override
     public void incrementAge() {
         super.incrementAge();    
         if(this.getAge() > MAX_AGE) {
@@ -73,23 +75,11 @@ public class Hyena extends Animal
     }
 
     /**
-     * Look for prey adjacent to the current location.
-     * Only the first live prey is eaten.
-     * @return Where food was found, or null if it wasn't.
-     */
-    private Location findFood()
-    {
-        if (rand.nextDouble() < SUCCESSFUL_HUNT_PROB) {
-            super.findFood(prey);
-        }
-        return null;
-    }
-
-    /**
      * Check whether or not this hyena is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newhyenas A list to return newly born hyenas.
      */
+    @Override
     protected List<Location> giveBirth(List<Actor> newHyenas)
     {
          Field field = getField();
@@ -130,26 +120,30 @@ public class Hyena extends Animal
         return (this.isFemale() && this.getAge() >= BREEDING_AGE);
     }
 
-     /**
+    /**
      * @return the food value of a hyena 
      */
+    @Override
     public int getFoodValue()
     { 
         return HYENA_FOOD_VALUE;
     }
 
     /**
-     * @return the probability of a hyena successfully hunting its prey
+     * @return The probability of a hyena successfully hunting its prey.
      */
-    public double getHuntProb(){
+    @Override
+    protected double getHuntProbability()
+    {
         return SUCCESSFUL_HUNT_PROB;
     }
     
     /**
      * @return The list of prey which it eats 
      */
-    public ArrayList<String> getPrey()
+    @Override
+    public List<String> getPrey()
     {
-        return prey;
+        return PREY;
     }
 }

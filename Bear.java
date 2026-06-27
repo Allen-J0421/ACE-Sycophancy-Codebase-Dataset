@@ -8,17 +8,6 @@
  */
 public class Bear extends InfectiousAnimal
 {
-    private static final AnimalAttributes ATTRIBUTES =
-        ConfiguredAttributes.animal(Species.BEAR, Bear::new,
-                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                                    OrganismBehaviors.FORAGE_OR_WANDER,
-                                    OrganismBehaviors.INCREMENT_AGE,
-                                    OrganismBehaviors.DECAY_HEALTH,
-                                    OrganismBehaviors.APPLY_ILLNESS,
-                                    OrganismBehaviors.SPREAD_DISEASE,
-                                    OrganismBehaviors.GIVE_BIRTH,
-                                    OrganismBehaviors.RELOCATE);
-
     /**
      * Create a bear. A bear can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -27,8 +16,9 @@ public class Bear extends InfectiousAnimal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Bear(boolean randomAge, Field field, Location location)
+    public Bear(boolean randomAge, Field field, Location location,
+                AnimalAttributes attributes, Weather weather)
     {
-        super(randomAge, field, location, ATTRIBUTES);
+        super(randomAge, field, location, attributes, weather);
     }
 }

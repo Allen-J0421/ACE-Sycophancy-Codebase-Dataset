@@ -14,58 +14,61 @@ import java.util.Set;
  *
  * @version 2022.03.02
  */
-public final class SpeciesConfigurationLoader
+public class PropertiesSpeciesConfigurationRepository
+    implements SpeciesConfigurationRepository
 {
-    private static final String CONFIG_FILE = "organism-config.properties";
-    private static final EnumMap<Species, SpeciesConfig> CONFIGS = loadConfigs();
+    private final String configFile;
+    private final EnumMap<Species, SpeciesConfig> configs;
 
-    private SpeciesConfigurationLoader()
+    public PropertiesSpeciesConfigurationRepository(String configFile)
     {
+        this.configFile = configFile;
+        configs = loadConfigs();
     }
 
-    public static SpeciesConfig getConfig(Species species)
+    public SpeciesConfig getConfig(Species species)
     {
-        SpeciesConfig config = CONFIGS.get(species);
+        SpeciesConfig config = configs.get(species);
         if(config == null) {
             throw new IllegalStateException("Missing config for species " + species);
         }
         return config;
     }
 
-    private static EnumMap<Species, SpeciesConfig> loadConfigs()
+    private EnumMap<Species, SpeciesConfig> loadConfigs()
     {
         Properties properties = new Properties();
         try (InputStream stream = openConfig()) {
             properties.load(stream);
         }
         catch (IOException e) {
-            throw new IllegalStateException("Unable to load " + CONFIG_FILE, e);
+            throw new IllegalStateException("Unable to load " + configFile, e);
         }
 
-        EnumMap<Species, SpeciesConfig> configs = new EnumMap<>(Species.class);
+        EnumMap<Species, SpeciesConfig> loadedConfigs = new EnumMap<>(Species.class);
         for(Species species : Species.values()) {
-            configs.put(species, loadSpeciesConfig(species, properties));
+            loadedConfigs.put(species, loadSpeciesConfig(species, properties));
         }
-        return configs;
+        return loadedConfigs;
     }
 
-    private static InputStream openConfig() throws IOException
+    private InputStream openConfig() throws IOException
     {
         InputStream classpathStream =
-            SpeciesConfigurationLoader.class.getResourceAsStream("/" + CONFIG_FILE);
+            getClass().getResourceAsStream("/" + configFile);
         if(classpathStream != null) {
             return classpathStream;
         }
 
-        Path path = Paths.get(CONFIG_FILE);
+        Path path = Paths.get(configFile);
         if(Files.exists(path)) {
             return Files.newInputStream(path);
         }
 
-        throw new IOException("Configuration file not found: " + CONFIG_FILE);
+        throw new IOException("Configuration file not found: " + configFile);
     }
 
-    private static SpeciesConfig loadSpeciesConfig(Species species, Properties properties)
+    private SpeciesConfig loadSpeciesConfig(Species species, Properties properties)
     {
         String prefix = species.getConfigKey() + ".";
         boolean diurnal = readBoolean(properties, prefix + "diurnal");
@@ -79,21 +82,20 @@ public final class SpeciesConfigurationLoader
 
         return new SpeciesConfig(diurnal, breedingAge, maxAge,
                                  breedingProbability, maxLitterSize,
-                                 creationProbability,
-                                 maxHealth, foodSources);
+                                 creationProbability, maxHealth, foodSources);
     }
 
-    private static boolean readBoolean(Properties properties, String key)
+    private boolean readBoolean(Properties properties, String key)
     {
         return Boolean.parseBoolean(readRequired(properties, key));
     }
 
-    private static int readInt(Properties properties, String key)
+    private int readInt(Properties properties, String key)
     {
         return Integer.parseInt(readRequired(properties, key));
     }
 
-    private static Integer readOptionalInt(Properties properties, String key)
+    private Integer readOptionalInt(Properties properties, String key)
     {
         String value = properties.getProperty(key);
         if(value == null || value.trim().length() == 0) {
@@ -102,12 +104,12 @@ public final class SpeciesConfigurationLoader
         return Integer.valueOf(Integer.parseInt(value.trim()));
     }
 
-    private static double readDouble(Properties properties, String key)
+    private double readDouble(Properties properties, String key)
     {
         return Double.parseDouble(readRequired(properties, key));
     }
 
-    private static Set<Species> readSpeciesSet(Properties properties, String key)
+    private Set<Species> readSpeciesSet(Properties properties, String key)
     {
         String value = properties.getProperty(key);
         if(value == null || value.trim().length() == 0) {
@@ -122,7 +124,7 @@ public final class SpeciesConfigurationLoader
         return speciesSet;
     }
 
-    private static String readRequired(Properties properties, String key)
+    private String readRequired(Properties properties, String key)
     {
         String value = properties.getProperty(key);
         if(value == null) {

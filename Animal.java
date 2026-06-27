@@ -9,10 +9,10 @@ import java.util.List;
  */
 public abstract class Animal extends Organism
 {
-    // A singleton shared weather object between all organisms and the simulator
-    private static final Weather weather = Weather.getWeather();
     // Shared lifecycle and diet settings for this animal's species.
     private final AnimalAttributes attributes;
+    // Shared weather state provided by the simulation container.
+    private final Weather weather;
     // Gender of the animal
     private boolean isMale;
     // Current health of the animal
@@ -27,10 +27,11 @@ public abstract class Animal extends Organism
      * @param location The location within the field.
      */
     public Animal(boolean randomAge, Field field, Location location,
-                  AnimalAttributes attributes)
+                  AnimalAttributes attributes, Weather weather)
     {
         super(randomAge, field, location, attributes);
         this.attributes = attributes;
+        this.weather = weather;
         
         if (randomAge) {
             currentHealth = getRand().nextInt(attributes.getMaxHealth());

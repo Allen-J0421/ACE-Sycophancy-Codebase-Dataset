@@ -7,15 +7,6 @@
  */
 public class Monkey extends Animal
 {
-    private static final AnimalAttributes ATTRIBUTES =
-        ConfiguredAttributes.animal(Species.MONKEY, Monkey::new,
-                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                                    OrganismBehaviors.FORAGE_OR_WANDER,
-                                    OrganismBehaviors.INCREMENT_AGE,
-                                    OrganismBehaviors.DECAY_HEALTH,
-                                    OrganismBehaviors.GIVE_BIRTH,
-                                    OrganismBehaviors.RELOCATE);
-
     /**
      * Create a new monkey. A monkey may be created with age
      * zero (a new born) or with a random age.
@@ -24,8 +15,9 @@ public class Monkey extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Monkey(boolean randomAge, Field field, Location location)
+    public Monkey(boolean randomAge, Field field, Location location,
+                  AnimalAttributes attributes, Weather weather)
     {
-        super(randomAge, field, location, ATTRIBUTES);
+        super(randomAge, field, location, attributes, weather);
     }
 }

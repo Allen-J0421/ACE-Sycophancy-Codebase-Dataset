@@ -16,37 +16,6 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // Rules describing the main animal population.
-    private static final PopulationRule[] PRIMARY_POPULATION_RULES = {
-        new PopulationRule(
-            SpeciesConfigurationLoader.getConfig(Species.HIPPOPOTAMUS).getCreationProbability(),
-            Hippopotamus::new,
-                           Species.HIPPOPOTAMUS, DisplayColor.DARK_GRAY),
-        new PopulationRule(
-            SpeciesConfigurationLoader.getConfig(Species.LEOPARD).getCreationProbability(),
-            Leopard::new,
-                           Species.LEOPARD, DisplayColor.MAGENTA),
-        new PopulationRule(
-            SpeciesConfigurationLoader.getConfig(Species.BEAR).getCreationProbability(),
-            Bear::new,
-                           Species.BEAR, DisplayColor.RED),
-        new PopulationRule(
-            SpeciesConfigurationLoader.getConfig(Species.MONKEY).getCreationProbability(),
-            Monkey::new,
-                           Species.MONKEY, DisplayColor.ORANGE)
-    };
-    // Rules describing slower secondary occupants when no primary animal appears.
-    private static final PopulationRule[] SECONDARY_POPULATION_RULES = {
-        new PopulationRule(
-            SpeciesConfigurationLoader.getConfig(Species.SLOTH).getCreationProbability(),
-            Sloth::new,
-                           Species.SLOTH, DisplayColor.YELLOW),
-        new PopulationRule(
-            SpeciesConfigurationLoader.getConfig(Species.PLANT).getCreationProbability(),
-            Plant::new,
-                           Species.PLANT, DisplayColor.GREEN)
-    };
-
     // List of animals in the field.
     private List<Organism> organisms;
     // The current state of the field.
@@ -57,13 +26,17 @@ public class Simulator
     private SimulationDisplay view;
     // Centralized engine for weather and time-of-day event rules.
     private SimulationRulesEngine rules;
+    // Rules describing the main animal population.
+    private final PopulationRule[] primaryPopulationRules;
+    // Rules describing slower secondary occupants when no primary animal appears.
+    private final PopulationRule[] secondaryPopulationRules;
     
     /**
      * Construct a simulation field with default size.
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(new SimulationContainer(), DEFAULT_DEPTH, DEFAULT_WIDTH, false);
     }
     
     /**
@@ -73,7 +46,12 @@ public class Simulator
      */
     public Simulator(int depth, int width)
     {
-        this(depth, width, false);
+        this(new SimulationContainer(), depth, width, false);
+    }
+
+    public Simulator(SimulationContainer container, int depth, int width)
+    {
+        this(container, depth, width, false);
     }
 
     /**
@@ -84,7 +62,7 @@ public class Simulator
      */
     public static Simulator createHeadless(int depth, int width)
     {
-        return new Simulator(depth, width, true);
+        return new Simulator(new SimulationContainer(), depth, width, true);
     }
 
     /**
@@ -93,7 +71,14 @@ public class Simulator
      * @param width Width of the field. Must be greater than zero.
      * @param headless If true, a headless display is always used.
      */
-    private Simulator(int depth, int width, boolean headless)
+    public static Simulator createHeadless(SimulationContainer container,
+                                           int depth, int width)
+    {
+        return new Simulator(container, depth, width, true);
+    }
+
+    private Simulator(SimulationContainer container, int depth, int width,
+                      boolean headless)
     {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
@@ -104,16 +89,16 @@ public class Simulator
         
         organisms = new ArrayList<>();
         field = new Field(depth, width);
-        rules = new SimulationRulesEngine();
+        rules = container.getRulesEngine();
+        primaryPopulationRules = container.getPrimaryPopulationRules();
+        secondaryPopulationRules = container.getSecondaryPopulationRules();
 
         // Create a view of the state of each location in the field.
-        this.view = headless
-            ? new HeadlessSimulationView(rules)
-            : new SimulatorView(depth, width, rules);
-        for(PopulationRule rule : PRIMARY_POPULATION_RULES) {
+        this.view = container.createDisplay(depth, width, headless);
+        for(PopulationRule rule : primaryPopulationRules) {
             this.view.setColor(rule.getSpecies(), rule.getColor());
         }
-        for(PopulationRule rule : SECONDARY_POPULATION_RULES) {
+        for(PopulationRule rule : secondaryPopulationRules) {
             this.view.setColor(rule.getSpecies(), rule.getColor());
         }
         
@@ -267,10 +252,10 @@ public class Simulator
      */
     private void seedLocation(Random rand, Location location)
     {
-        if(seedFromRules(rand, location, PRIMARY_POPULATION_RULES)) {
+        if(seedFromRules(rand, location, primaryPopulationRules)) {
             return;
         }
-        seedFromRules(rand, location, SECONDARY_POPULATION_RULES);
+        seedFromRules(rand, location, secondaryPopulationRules);
     }
 
     /**

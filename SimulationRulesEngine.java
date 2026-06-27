@@ -11,11 +11,6 @@ public class SimulationRulesEngine
 
     private final Weather weather;
 
-    public SimulationRulesEngine()
-    {
-        this(Weather.getWeather());
-    }
-
     public SimulationRulesEngine(Weather weather)
     {
         this.weather = weather;

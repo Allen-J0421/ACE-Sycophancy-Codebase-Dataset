@@ -8,15 +8,6 @@
  */
 public class Leopard extends Animal
 {
-    private static final AnimalAttributes ATTRIBUTES =
-        ConfiguredAttributes.animal(Species.LEOPARD, Leopard::new,
-                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                                    OrganismBehaviors.FORAGE_OR_WANDER,
-                                    OrganismBehaviors.INCREMENT_AGE,
-                                    OrganismBehaviors.DECAY_HEALTH,
-                                    OrganismBehaviors.GIVE_BIRTH,
-                                    OrganismBehaviors.RELOCATE);
-
     /**
      * Create a bear. A bear can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -25,8 +16,9 @@ public class Leopard extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Leopard(boolean randomAge, Field field, Location location)
+    public Leopard(boolean randomAge, Field field, Location location,
+                   AnimalAttributes attributes, Weather weather)
     {
-        super(randomAge, field, location, ATTRIBUTES);
+        super(randomAge, field, location, attributes, weather);
     }
 }

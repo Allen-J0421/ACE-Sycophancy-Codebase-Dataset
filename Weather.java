@@ -1,6 +1,6 @@
 import java.util.*;
 /**
- * A singleton Weather object that will hold different types
+ * A Weather object that will hold different types
  * of weather. Each different weather has their own modifier
  * that will affect how animal's behave, notably whether
  * they are successful in finding food.
@@ -16,20 +16,10 @@ public class Weather
     private HashMap<String, Double> weatherAndModifier = new HashMap<String, Double>();
     // The current weather of the Weather object
     private String currentWeather;
-    // Singleton instance of the Weather object
-    private static Weather instance;
-    
     public Weather() {
         weatherAndModifier.put("Sunny", 1.0);
         weatherAndModifier.put("Rainy", 0.7);
         weatherAndModifier.put("Foggy", 0.5);
-    }
-    
-    public static Weather getWeather() {
-        if (instance == null) {
-            instance = new Weather();
-        }
-        return instance;
     }
     
     // Accessor and mutator methods

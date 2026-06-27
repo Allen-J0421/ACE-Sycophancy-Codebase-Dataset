@@ -7,17 +7,6 @@
  */
 public class Sloth extends InfectiousAnimal
 {
-    private static final AnimalAttributes ATTRIBUTES =
-        ConfiguredAttributes.animal(Species.SLOTH, Sloth::new,
-                                    OrganismBehaviors.MATE_REQUIRED_BREEDING,
-                                    OrganismBehaviors.FORAGE_OR_WANDER,
-                                    OrganismBehaviors.INCREMENT_AGE,
-                                    OrganismBehaviors.DECAY_HEALTH,
-                                    OrganismBehaviors.APPLY_ILLNESS,
-                                    OrganismBehaviors.SPREAD_DISEASE,
-                                    OrganismBehaviors.GIVE_BIRTH,
-                                    OrganismBehaviors.RELOCATE);
-
     /**
      * Create a new sloth. A sloth may be created with age
      * zero (a new born) or with a random age.
@@ -26,8 +15,9 @@ public class Sloth extends InfectiousAnimal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Sloth(boolean randomAge, Field field, Location location)
+    public Sloth(boolean randomAge, Field field, Location location,
+                 AnimalAttributes attributes, Weather weather)
     {
-        super(randomAge, field, location, ATTRIBUTES);
+        super(randomAge, field, location, attributes, weather);
     }
 }

@@ -20,7 +20,7 @@ public abstract class Organism
     private Location location;
     
     // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    private static final Random RAND = Randomizer.getRandom();
     
     /**
      * Constructor for objects of class Organism
@@ -29,7 +29,7 @@ public abstract class Organism
     {
         age = 0;
         if (randomAge) {
-            age = rand.nextInt(getMaxAge());
+            age = RAND.nextInt(getMaxAge());
         }
         alive = true;
         this.field = field;
@@ -74,9 +74,9 @@ public abstract class Organism
     abstract protected int getBreedingAge();
     
     /**
-     * Abstract methohd that returns the litter size of the animal
+     * Abstract method that returns the litter size of the organism
      * 
-     * @return the animal's max litter size
+     * @return the organism's max litter size
      */
     abstract protected int getMaxLitterSize();
     
@@ -120,7 +120,7 @@ public abstract class Organism
      * @return Random object of the organism
      */
     protected Random getRand() {
-        return rand;
+        return RAND;
     }
     
     /**
@@ -159,11 +159,10 @@ public abstract class Organism
      */
     protected int breed()
     {
-        int births = 0;
         if(canBreed() && getRand().nextDouble() <= getBreedingProbability()) {
-            births = getRand().nextInt(getMaxLitterSize()) + 1;
+            return getRand().nextInt(getMaxLitterSize()) + 1;
         }
-        return births;
+        return 0;
     }
     
     /**
@@ -171,12 +170,12 @@ public abstract class Organism
      */
     protected void giveBirth(List<Organism> newOrganisms)
     {
-        // New rabbits are born into adjacent locations.
+        // New organisms are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
+        for(int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
             Organism young = createNewOrganism(false, field, loc);
             newOrganisms.add(young);
@@ -189,8 +188,7 @@ public abstract class Organism
     protected void incrementAge()
     {
         age++;
-        if (age > getMaxAge())
-        {
+        if (age > getMaxAge()) {
             setDead();
         }
     }
@@ -202,11 +200,12 @@ public abstract class Organism
     protected void setDead()
     {
         alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
+        if(location == null) {
+            return;
         }
+        field.clear(location);
+        location = null;
+        field = null;
     }
 
     /**

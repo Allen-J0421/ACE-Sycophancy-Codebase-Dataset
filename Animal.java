@@ -31,12 +31,7 @@ public abstract class Animal extends Organism
         if (randomAge) {
             currentHealth = getRand().nextInt(getMaxHealth());
         }
-        if (getRand().nextInt(2) == 0) {
-            isMale = true;
-        }
-        else {
-            isMale = false;
-        }
+        isMale = getRand().nextInt(2) == 0;
 
         isInfected = false;
     }
@@ -126,19 +121,36 @@ public abstract class Animal extends Organism
      * This is what animals do each simulation step: age, lose health,
      * handle disease, breed, eat, and move.
      */
+    @Override
     public void act(List<Organism> newOrganisms)
     {
         incrementAge();
         incrementHealth();
+        handleIllness();
+        if (isAlive()) {
+            spreadDiseaseIfInfectable();
+            giveBirth(newOrganisms);
+            moveOrDie();
+        }
+    }
+
+    /**
+     * Apply infection damage when this animal supports infection.
+     */
+    private void handleIllness()
+    {
         if (isAlive() && this instanceof Infectable) {
             ((Infectable) this).illness();
         }
-        if (isAlive()) {
-            if (this instanceof Infectable) {
-                ((Infectable) this).spreadDisease();
-            }
-            giveBirth(newOrganisms);
-            moveOrDie();
+    }
+
+    /**
+     * Spread disease when this animal supports infection.
+     */
+    private void spreadDiseaseIfInfectable()
+    {
+        if (this instanceof Infectable) {
+            ((Infectable) this).spreadDisease();
         }
     }
 
@@ -147,9 +159,10 @@ public abstract class Animal extends Organism
      *
      * @return true if the animal can breed
      */
+    @Override
     protected boolean canBreed()
     {
-        if (isMale == false)
+        if (!isMale)
         {
             Field field = getField();
             for (Location where : field.adjacentLocations(getLocation()))
@@ -158,7 +171,7 @@ public abstract class Animal extends Organism
                 if (getAnimalClass(thing))
                 {
                     Animal animal = (Animal) thing;
-                    return animal.getGender() == true && getAge() >= getBreedingAge();
+                    return animal.getGender() && getAge() >= getBreedingAge();
                 }
             }
         }
@@ -175,13 +188,31 @@ public abstract class Animal extends Organism
             Object animal = field.getObjectAt(where);
             if (animal != null) {                       // makes sure to filter out empty squares
                 Organism target = (Organism) animal;
-                if (getFoodSources().contains(target.getClass()) && target.isAlive() && getRand().nextDouble() <= weather.getWeatherModifier()) {
-                    target.setDead();
-                    currentHealth = getMaxHealth();
-                }
+                eatIfPossible(target);
             }
         }
         return null;
+    }
+
+    /**
+     * Eat an eligible target and restore health when hunting succeeds.
+     */
+    private void eatIfPossible(Organism target)
+    {
+        if (canEat(target)) {
+            target.setDead();
+            currentHealth = getMaxHealth();
+        }
+    }
+
+    /**
+     * Return whether this animal can eat the target on this step.
+     */
+    private boolean canEat(Organism target)
+    {
+        return getFoodSources().contains(target.getClass())
+            && target.isAlive()
+            && getRand().nextDouble() <= weather.getWeatherModifier();
     }
 
     /**
@@ -210,12 +241,22 @@ public abstract class Animal extends Organism
             Object object = field.getObjectAt(where);
             if (object != null) {
                 Organism organism = (Organism) object;
-                if (organism instanceof Infectable && organism.isAlive() && getRand().nextDouble() <= Infectable.SPREAD_PROBABILITY) {
+                if (canInfect(organism)) {
                     Animal target = (Animal) organism;
                     target.infect();
                 }
             }
         }
+    }
+
+    /**
+     * Return whether a target can be infected by this animal on this step.
+     */
+    private boolean canInfect(Organism organism)
+    {
+        return organism instanceof Infectable
+            && organism.isAlive()
+            && getRand().nextDouble() <= Infectable.SPREAD_PROBABILITY;
     }
 
     /**

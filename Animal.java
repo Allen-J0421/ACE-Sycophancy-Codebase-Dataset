@@ -201,7 +201,7 @@ public abstract class Animal extends Locatable implements Simulatable, Breedable
     {
         Field field = getField();
         List<Animal> potentialMates = getPotentialMates(animalType);
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = new ArrayList<>(field.getFreeAdjacentLocations(getLocation()));
         for (Animal i : potentialMates) {
             int births = breed(numberOfAnimals.getCount());
             for (int b = 0; b < births && free.size() > 0; b++) {

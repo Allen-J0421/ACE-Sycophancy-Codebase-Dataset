@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of a shark.
  *
@@ -8,7 +6,7 @@ import java.util.List;
  *
  * @version 2022/03/02
  */
-public class Shark extends Animal
+public class Shark extends ForagingAnimal
 {
     private static final int BREEDING_AGE = 6;
     private static final int MAX_AGE = 150;
@@ -27,14 +25,6 @@ public class Shark extends Animal
     {
         super(field, location);
         initializeLife(randomAge, MAX_AGE, COD_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the shark does most of the time.
-     */
-    public double act(List<Creature> newSharks, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {
-        return standardAct(newSharks, atDayTime, oxygenLevel, disease, step, MAX_AGE);
     }
 
     /**
@@ -75,5 +65,11 @@ public class Shark extends Animal
     protected int getMaxLitterSize()
     {
         return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
     }
 }

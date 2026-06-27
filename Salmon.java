@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of a Salmon.
  *
@@ -8,7 +6,7 @@ import java.util.List;
  *
  * @version 2022/03/02
  */
-public class Salmon extends Animal
+public class Salmon extends ForagingAnimal
 {
     private static final int BREEDING_AGE = 4;
     private static final int MAX_AGE = 50;
@@ -27,14 +25,6 @@ public class Salmon extends Animal
     {
         super(field, location);
         initializeLife(randomAge, MAX_AGE, SEAWEED_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the salmon does most of the time.
-     */
-    public double act(List<Creature> newSalmons, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {
-        return standardAct(newSalmons, atDayTime, oxygenLevel, disease, step, MAX_AGE);
     }
 
     /**
@@ -75,5 +65,11 @@ public class Salmon extends Animal
     protected int getMaxLitterSize()
     {
         return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
     }
 }

@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of a cod.
  *
@@ -8,7 +6,7 @@ import java.util.List;
  *
  * @version 2022/03/02
  */
-public class Cod extends Animal
+public class Cod extends ForagingAnimal
 {
     // The age at which a cod can start to breed.
     private static final int BREEDING_AGE = 6;
@@ -32,14 +30,6 @@ public class Cod extends Animal
     {
         super(field, location);
         initializeLife(randomAge, MAX_AGE, SEAWEED_FOOD_VALUE);
-    }
-
-    /**
-     * This is what the cod does most of the time.
-     */
-    public double act(List<Creature> newCods, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {
-        return standardAct(newCods, atDayTime, oxygenLevel, disease, step, MAX_AGE);
     }
 
     /**
@@ -84,5 +74,11 @@ public class Cod extends Animal
     protected int getMaxLitterSize()
     {
         return MAX_LITTER_SIZE;
+    }
+
+    @Override
+    protected int getMaxAge()
+    {
+        return MAX_AGE;
     }
 }

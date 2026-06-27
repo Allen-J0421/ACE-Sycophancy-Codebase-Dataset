@@ -20,10 +20,13 @@ public abstract class Animal extends Organism
     private double age;
     // Indicates whether the animal is sleeping or not
     private boolean sleeping;
-    
+    // The shared, seeded random number generator used by all animals. Going
+    // through Randomizer keeps the whole simulation reproducible from one seed.
+    protected static final Random rand = Randomizer.getRandom();
+
     /**
      * Create a new animal at location in field.
-     * 
+     *
      * @param randomAge If true, the animal will have a random age
      * @param field The field currently occupied.
      * @param location The location within the field.
@@ -32,7 +35,6 @@ public abstract class Animal extends Organism
     {
         super(randomAge, field, location);
         nocturnal = false;
-        Random rand = new Random();
         female = rand.nextBoolean();
         setWaterLevel(rand.nextInt(10) + 5);
         sleeping = false;
@@ -162,11 +164,37 @@ public abstract class Animal extends Organism
     
     /**
      * Check whether or not this animal is to give birth at this step.
-     * New births will be made into free adjacent locations.
+     * New births are placed into free adjacent locations. This is a template
+     * method: shared for every species, with the concrete young produced by
+     * {@link #createOffspring}.
      * @param newAnimals A list to return newly born animals.
-     * @return A list of the free adjacent locations for new young to be born into
+     * @return Always null (births are added directly to newAnimals).
      */
     protected List<Location> giveBirth(List<Actor> newAnimals)
+    {
+        Field field = getField();
+        int births = breed();
+        List<Location> free = availableBirthLocations();
+        if (free != null) {
+            for(int b = 0; b < births && free.size() > 0; b++) {
+                Location loc = free.remove(0);
+                Animal young = createOffspring(field, loc);
+                // If this animal is infected with a disease, pass it to the young.
+                if (this.isInfected()) {
+                    young.setInfected();
+                }
+                newAnimals.add(young);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find the free adjacent locations a new young could be born into, but
+     * only if this animal is next to a mate of the opposite sex.
+     * @return The free adjacent locations, or null if there is no eligible mate.
+     */
+    private List<Location> availableBirthLocations()
     {
         // New animals are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -187,9 +215,72 @@ public abstract class Animal extends Organism
                     return null;
                 }
             }
-        }    
+        }
         return null;
     }
+
+    /**
+     * Increase the age. This could result in the animal's death once it
+     * passes its species' maximum age.
+     */
+    public void incrementAge()
+    {
+        super.incrementAge();
+        if(getAge() > getMaxAge()) {
+            setDead();
+        }
+    }
+
+    /**
+     * Generate a number representing the number of births, if this animal
+     * can breed at this step.
+     * @return The number of births (may be zero).
+     */
+    private int breed()
+    {
+        int births = 0;
+        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            births = rand.nextInt(getMaxLitterSize()) + 1;
+        }
+        return births;
+    }
+
+    /**
+     * An animal can breed if it is female and has reached its breeding age.
+     * @return true if this animal can breed, false otherwise.
+     */
+    private boolean canBreed()
+    {
+        return (isFemale() && getAge() >= getBreedingAge());
+    }
+
+    /**
+     * @return The age at which this species can start to breed.
+     */
+    protected abstract int getBreedingAge();
+
+    /**
+     * @return The age to which this species can live.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * @return The likelihood of this species breeding when eligible.
+     */
+    protected abstract double getBreedingProbability();
+
+    /**
+     * @return The maximum number of young produced in a single birth.
+     */
+    protected abstract int getMaxLitterSize();
+
+    /**
+     * Create a new-born of this species at the given location.
+     * @param field The field the young is born into.
+     * @param location The location the young is born at.
+     * @return The newly created young.
+     */
+    protected abstract Animal createOffspring(Field field, Location location);
     
     /**
      * @param foodValue The level of food an animal has eaten

@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -27,8 +26,6 @@ public class FennecFox extends Animal
     // The food value of a single fennec fox. In effect, this is the
     // number of steps a predator can go before it has to eat again.
     private static final int FENNECFOX_FOOD_VALUE = 12;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom(); 
     // A list of the prey that the fennec fox eats
     private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Grass", "Mouse"));
     
@@ -63,16 +60,6 @@ public class FennecFox extends Animal
     }
     
     /**
-     * Increase the age. This could result in the fennec fox's death.
-     */
-    public void incrementAge() {
-        super.incrementAge();    
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
      * Look for prey adjacent to the current location.
      * Only the first prey is eaten.
      * @return Where food was found, or null if it wasn't.
@@ -85,53 +72,21 @@ public class FennecFox extends Animal
         return null;
     }
     
-    /**
-     * Check whether or not this fennec fox is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newFoxes A list to return newly born fennec foxs.
-     */
-    protected List<Location> giveBirth(List<Actor> newFoxes)
+    protected int getBreedingAge() { return BREEDING_AGE; }
+
+    protected int getMaxAge() { return MAX_AGE; }
+
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected Animal createOffspring(Field field, Location location)
     {
-         Field field = getField();
-        int births = breed();
-        List<Location> free = super.giveBirth(newFoxes);
-        if (free != null) {
-            for(int b = 0; b < births && free.size() > 0; b++) {    
-                Location loc = free.remove(0);
-                FennecFox young = new FennecFox(false, field, loc);
-                if (this.isInfected()) {
-                    young.setInfected();
-                }
-                newFoxes.add(young);
-            }       
-        }  
-        return null;
-    }
-        
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return new FennecFox(false, field, location);
     }
 
-    /**
-     * A fennec fox can breed if it is female and has reached the breeding age.
-     */
-     private boolean canBreed()
-    {
-        return (this.isFemale() && this.getAge() >= BREEDING_AGE);
-    }
-    
      /**
-     * @return the food value of a fennec fox, which a predator gains if 
+     * @return the food value of a fennec fox, which a predator gains if
      * the fennec fox is eaten
      */
     public int getFoodValue()

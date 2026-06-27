@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -27,8 +26,6 @@ public class Hyena extends Animal
     // The food value of a hyena - not eaten by any predators so initial
     // food value of newly generated hyenas
     private static final int HYENA_FOOD_VALUE = 15;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // A list of the prey that the hyena eats
     private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Fennec Fox", "Gazelle"));
 
@@ -63,16 +60,6 @@ public class Hyena extends Animal
     }
 
     /**
-     * Increase the age. This could result in the hyena's death.
-     */
-    public void incrementAge() {
-        super.incrementAge();    
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-
-    /**
      * Look for prey adjacent to the current location.
      * Only the first live prey is eaten.
      * @return Where food was found, or null if it wasn't.
@@ -85,53 +72,21 @@ public class Hyena extends Animal
         return null;
     }
 
-    /**
-     * Check whether or not this hyena is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newhyenas A list to return newly born hyenas.
-     */
-    protected List<Location> giveBirth(List<Actor> newHyenas)
-    {
-         Field field = getField();
-        int births = breed();
-        List<Location> free = super.giveBirth(newHyenas);
-        if (free != null) {
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Hyena young = new Hyena(false, field, loc);
-                if (this.isInfected()) {
-                    young.setInfected();
-                }
-                newHyenas.add(young);
-            }
-        } 
-        return null;
-    }
+    protected int getBreedingAge() { return BREEDING_AGE; }
 
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
+    protected int getMaxAge() { return MAX_AGE; }
 
-    /**
-     * A hyena can breed if it has reached the breeding age.
-     */
-    private boolean canBreed()
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected Animal createOffspring(Field field, Location location)
     {
-        return (this.isFemale() && this.getAge() >= BREEDING_AGE);
+        return new Hyena(false, field, location);
     }
 
      /**
-     * @return the food value of a hyena 
+     * @return the food value of a hyena
      */
     public int getFoodValue()
     { 

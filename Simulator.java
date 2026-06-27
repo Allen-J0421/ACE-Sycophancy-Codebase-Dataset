@@ -262,9 +262,9 @@ public class Simulator
      * Random chance of a disease being generated in the population
      * @param actor An individual which could be infected
      */
-    private void generateDisease(Actor actor) 
+    private void generateDisease(Actor actor)
     {
-        Random rand = new Random();
+        Random rand = Randomizer.getRandom();
         for (Disease disease: diseases) {
             // random low chance of an individual developing a disease
             if(rand.nextDouble() <= disease.getProbability()) {

@@ -37,7 +37,7 @@ public class Weather implements Actor
     public void act(List<Actor> actorsList) {
         //generate a random value and compare it with the probability of
         //different types of weather occurring.
-        Random rand = new Random();
+        Random rand = Randomizer.getRandom();
         if (rand.nextDouble() <= RAIN_PROB) {
             generateWater = makeRain(actorsList);
         }

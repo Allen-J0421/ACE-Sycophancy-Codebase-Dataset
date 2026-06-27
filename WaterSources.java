@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -32,7 +31,6 @@ public abstract class WaterSources implements Actor
     {
         this.field = field;
         setLocation(location);
-        Random rand = new Random();
         if (!randomVolume) {
             setVolume(10);
         }

@@ -25,8 +25,9 @@ public abstract class Disease implements Actor
     private double infectiousness;
     // How long the disease affects an infected organism for
     private int duration;
-    // Randomiser to control random spread of disease
-    private Random rand = new Random();
+    // Randomiser to control random spread of disease. Uses the shared, seeded
+    // generator so disease spread is reproducible with the rest of the run.
+    private Random rand = Randomizer.getRandom();
     
     /**
      * Constructor for a disease

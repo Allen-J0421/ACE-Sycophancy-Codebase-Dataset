@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +24,6 @@ public class Gazelle extends Animal
     private static final int GAZELLE_FOOD_VALUE = 20;
     // The maximum number of births a gazelle can give.
     private static final int MAX_LITTER_SIZE = 4;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
     // A list of the food that the gazelle eats
     private static final ArrayList<String> prey = new ArrayList(Arrays.asList("Grass"));
 
@@ -69,67 +66,21 @@ public class Gazelle extends Animal
         return null;
     }
 
-    /**
-     * Increase the age.
-     * This could result in the gazelle's death.
-     */
-    public void incrementAge()
+    protected int getBreedingAge() { return BREEDING_AGE; }
+
+    protected int getMaxAge() { return MAX_AGE; }
+
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected Animal createOffspring(Field field, Location location)
     {
-        super.incrementAge();
-        if(this.getAge() > MAX_AGE) {
-            setDead();
-        }
-    }
-    
-    /**
-     * Check whether or not this gazelle is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newGazelles A list to return newly born Gazelles.
-     */
-    protected List<Location> giveBirth(List<Actor> newGazelles)
-    {
-        Field field = getField();
-        int births = breed();
-        List<Location> free = super.giveBirth(newGazelles);
-        if (free != null) {
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Gazelle young = new Gazelle(false, field, loc);
-                // If this animal is infected with a disease, passes on to young
-                if (this.isInfected()) {
-                    young.setInfected();
-                }
-                newGazelles.add(young);
-            }
-        }
-        return null;
-    }
-        
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
+        return new Gazelle(false, field, location);
     }
 
     /**
-     * A gazelle can breed if it is female and has reached the breeding age.
-     * @return true if the gazelle can breed, false otherwise.
-     */
-     private boolean canBreed()
-    {
-        return (this.isFemale() && this.getAge() >= BREEDING_AGE);
-    }
-    
-    /**
-     * @return the food value of a gazelle, which a predator gains if 
+     * @return the food value of a gazelle, which a predator gains if
      * the gazelle is eaten
      */
     public int getFoodValue()

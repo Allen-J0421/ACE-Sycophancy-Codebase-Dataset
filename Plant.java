@@ -18,7 +18,7 @@ public abstract class Plant extends Organism
     public Plant(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        Random rand = new Random();
+        Random rand = Randomizer.getRandom();
         if(!randomAge) {
             setAge(0);
             //sets water level to a random value when first created

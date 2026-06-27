@@ -258,10 +258,10 @@ public class MenuView
         {
             String inputValue = inputReceiver.getText();
             try {
-                int numericValue = Integer.parseInt(inputValue);
-                inputtedNumbers.add(numericValue);
+                inputtedNumbers.add(Integer.parseInt(inputValue));
             } catch (NumberFormatException e) {
                 throwErrorMessage("One of the values inputted is not a number or one cell was left blank, please try again.");
+                return null;
             }
         }
         return inputtedNumbers;
@@ -321,12 +321,12 @@ public class MenuView
 
     private String getScenarioInput(JComboBox scenarioChoiceDisplay)
     {
-        String chosenHabitat = (String) scenarioChoiceDisplay.getSelectedItem();
-        if (chosenHabitat == null) {
+        String chosenScenario = (String) scenarioChoiceDisplay.getSelectedItem();
+        if (chosenScenario == null) {
             throwErrorMessage("You must choose a climate change scenario.");
             return null;
         }
-        return chosenHabitat;
+        return chosenScenario;
     }
 
     /**

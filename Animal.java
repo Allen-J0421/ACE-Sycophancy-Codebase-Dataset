@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A class representing shared characteristics of animals,
@@ -116,9 +115,11 @@ public class Animal extends Species
             if (inHibernation)
             {
                 // a)
-                if (hiberSteps % STAY_STEPS == 0)   {
+                if (hiberSteps % STAY_STEPS == 0) {
                     makeMove(newSpecies);
-                    incrementHunger();
+                    if (isAlive()) {
+                        incrementHunger();
+                    }
                 }
                 // b)
                 incrementHiberSteps();
@@ -128,18 +129,13 @@ public class Animal extends Species
             {
                 setDead();
             }
-            // iv)
+            // iv) All animals act during the day; nocturnal animals also act at night.
             else
             {
-                // a)
-                if (isNight && isNocturnal) {
+                if (!isNight || isNocturnal) {
                     makeMove(newSpecies);
                 }
-                // b)
-                else if (! isNight) {
-                    makeMove(newSpecies);
-                }
-                if  (! isNight) {
+                if (!isNight && isAlive()) {
                     incrementHunger();
                 }
             }
@@ -185,16 +181,9 @@ public class Animal extends Species
      */
     protected ArrayList<Animal> getNeighboringAnimalsList()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> locationIterator = adjacent.iterator();
-
         ArrayList<Animal> neighboringAnimals = new ArrayList<>();
-        while (locationIterator.hasNext())
-        {
-            Location where = locationIterator.next();
-            Species species = field.getObjectAt(where);
-
+        for (Location where : getField().adjacentLocations(getLocation())) {
+            Species species = getField().getObjectAt(where);
             if (species instanceof Animal) {
                 Animal neighboringAnimal = (Animal) species;
                 if (neighboringAnimal.isAlive()) {
@@ -249,20 +238,13 @@ public class Animal extends Species
      */
     private void findFoodAndEat()
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-
-        while(it.hasNext())
-        {
-            Location where = it.next();
-            Species species = field.getObjectAt(where);
-            if(species instanceof Plant)
-            {
-                Plant plantSquare = (Plant) species;
-                if(plantSquare.isAlive()) {
-                    plantSquare.isEaten();
-                    incrementFoodLevel(plantSquare.getNutritionalValue());
+        for (Location where : getField().adjacentLocations(getLocation())) {
+            Species species = getField().getObjectAt(where);
+            if (species instanceof Plant) {
+                Plant plant = (Plant) species;
+                if (plant.isAlive()) {
+                    plant.isEaten();
+                    incrementFoodLevel(plant.getNutritionalValue());
                     break;
                 }
             }

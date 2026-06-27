@@ -1,33 +1,19 @@
 /**
- * Provide a counter for a participant in the simulation. This includes an identifying string and a count of how
- * many participants of this type currently exist within the simulation.
+ * Provide a counter for a participant in the simulation.
  *
  * @version 2022.02.28
  */
 public class Counter
 {
-    // A name for this type of simulation participant
-    private String name;
     // How many of this type exist in the simulation.
     private int count;
 
     /**
-     * Provide a name for one of the animals taking part in the simulation.
-     *
-     * @param name (String) A name, e.g. "Fox".
+     * Initialise the counter at zero.
      */
-    public Counter(String name)
+    public Counter()
     {
-        this.name = name;
         count = 0;
-    }
-    
-    /**
-     * @return (String) The short description of this type.
-     */
-    public String getName()
-    {
-        return name;
     }
 
     /**
@@ -45,7 +31,7 @@ public class Counter
     {
         count++;
     }
-    
+
     /**
      * Reset the current count to zero.
      */

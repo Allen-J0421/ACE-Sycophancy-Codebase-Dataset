@@ -41,10 +41,10 @@ public class FieldStats
      *
      * @return (String) A string describing what is in the field.
      */
-    public int getCount (String speciesName)
+    public int getCount(String speciesName)
     {
         Counter info = counters.get(speciesName);
-        return info.getCount();
+        return info != null ? info.getCount() : 0;
     }
     
     /**
@@ -70,7 +70,7 @@ public class FieldStats
         if(count == null) {
             // We do not have a counter for this specie yet.
             // Create one.
-            count = new Counter(specieName);
+            count = new Counter();
             counters.put(specieName, count);
         }
         count.increment();

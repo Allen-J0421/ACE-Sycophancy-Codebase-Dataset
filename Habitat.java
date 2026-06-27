@@ -166,7 +166,7 @@ public class Habitat
      */
     private void checkIsSpring()
     {
-        isSpring = currentSeason.getName().equals(seasons.get(0).getName());
+        isSpring = currentSeason == seasons.get(0);
     }
 
     /**

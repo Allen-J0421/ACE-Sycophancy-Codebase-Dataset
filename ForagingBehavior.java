@@ -1,3 +1,5 @@
+import java.util.function.BiFunction;
+
 /**
  * Immutable configuration for foraging animal behavior.
  */
@@ -13,6 +15,7 @@ public final class ForagingBehavior
     private final int mateDistance;
     private final boolean breedingRequiresMate;
     private final Class<?>[] preyTypes;
+    private final BiFunction<Field, Location, Creature> offspringFactory;
 
     public ForagingBehavior(
         int breedingAge,
@@ -24,6 +27,7 @@ public final class ForagingBehavior
         Class<? extends Animal> mateSpecies,
         int mateDistance,
         boolean breedingRequiresMate,
+        BiFunction<Field, Location, Creature> offspringFactory,
         Class<?>... preyTypes)
     {
         this.breedingAge = breedingAge;
@@ -35,6 +39,7 @@ public final class ForagingBehavior
         this.mateSpecies = mateSpecies;
         this.mateDistance = mateDistance;
         this.breedingRequiresMate = breedingRequiresMate;
+        this.offspringFactory = offspringFactory;
         this.preyTypes = preyTypes.clone();
     }
 
@@ -86,5 +91,10 @@ public final class ForagingBehavior
     public Class<?>[] getPreyTypes()
     {
         return preyTypes.clone();
+    }
+
+    public Creature createOffspring(Field field, Location location)
+    {
+        return offspringFactory.apply(field, location);
     }
 }

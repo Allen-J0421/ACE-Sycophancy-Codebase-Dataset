@@ -17,10 +17,10 @@ public abstract class ForagingAnimal extends Animal
     // The animal's food level.
     private int foodLevel;
 
-    protected ForagingAnimal(ForagingBehavior behavior, boolean randomAge, Field field, Location location)
+    protected ForagingAnimal(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        this.behavior = behavior;
+        this.behavior = ForagingBehaviorFactory.forAnimal(getClass().asSubclass(ForagingAnimal.class));
         initializeLife(randomAge);
     }
 
@@ -97,36 +97,6 @@ public abstract class ForagingAnimal extends Animal
     }
 
     /**
-     * Determine whether there is an opposite-sex animal of the configured species nearby.
-     * @return true if a mate is nearby.
-     */
-    protected final boolean hasOppositeSexMate(Class<? extends Animal> species, int adjacentDistance)
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), adjacentDistance);
-        for(Location where : adjacent) {
-            Object occupant = field.getObjectAt(where);
-            if(species.isInstance(occupant)) {
-                Animal mate = (Animal)occupant;
-                if(getSex() != mate.getSex()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Determine whether there is an opposite-sex animal of the configured species nearby.
-     * @return true if a mate is nearby.
-     */
-    public final boolean encounterWithDiffSex()
-    {
-        Class<? extends Animal> mateSpecies = behavior.getMateSpecies();
-        return hasOppositeSexMate(mateSpecies, behavior.getMateDistance());
-    }
-
-    /**
      * Search for prey, spread disease from infected nearby animals, and consume prey.
      * @param disease The disease model.
      * @param step The current simulation step.
@@ -154,6 +124,17 @@ public abstract class ForagingAnimal extends Animal
             }
         }
         return null;
+    }
+
+    /**
+     * identify whether a creature need to sleep
+     *
+     * @param atDayTime true if it is at day time false if it is at night time.
+     * @return true if currently it is night.
+     */
+    public boolean needSleep(boolean atDayTime)
+    {
+        return !atDayTime;
     }
 
     /**
@@ -198,25 +179,6 @@ public abstract class ForagingAnimal extends Animal
     }
 
     /**
-     * identify whether a creature need to sleep
-     *
-     * @param atDayTime true if it is at day time false if it is at night time.
-     * @return true if currently it is night.
-     */
-    public boolean needSleep(boolean atDayTime)
-    {
-        return !atDayTime;
-    }
-
-    /**
-     * Create a new offspring at the given location.
-     * @param field The field where the offspring will live.
-     * @param location The offspring's location.
-     * @return The new creature.
-     */
-    protected abstract Creature createOffspring(Field field, Location location);
-
-    /**
      * Create a birth if breeding conditions are met.
      * @return Number of offspring to create.
      */
@@ -239,7 +201,7 @@ public abstract class ForagingAnimal extends Animal
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
-            newCreatures.add(createOffspring(field, free.remove(0)));
+            newCreatures.add(behavior.createOffspring(field, free.remove(0)));
         }
     }
 
@@ -249,7 +211,7 @@ public abstract class ForagingAnimal extends Animal
      */
     protected final boolean canBreed()
     {
-        return isOldEnoughToBreed() && (!behavior.breedingRequiresMate() || encounterWithDiffSex());
+        return isOldEnoughToBreed() && (!behavior.breedingRequiresMate() || hasOppositeSexMate(behavior.getMateSpecies(), behavior.getMateDistance()));
     }
 
     /**
@@ -266,6 +228,26 @@ public abstract class ForagingAnimal extends Animal
         for(Class<?> type : classes) {
             if(type.isInstance(object)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine whether there is an opposite-sex animal of the configured species nearby.
+     * @return true if a mate is nearby.
+     */
+    private boolean hasOppositeSexMate(Class<? extends Animal> species, int adjacentDistance)
+    {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation(), adjacentDistance);
+        for(Location where : adjacent) {
+            Object occupant = field.getObjectAt(where);
+            if(species.isInstance(occupant)) {
+                Animal mate = (Animal)occupant;
+                if(getSex() != mate.getSex()) {
+                    return true;
+                }
             }
         }
         return false;

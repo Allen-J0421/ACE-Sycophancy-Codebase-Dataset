@@ -8,17 +8,8 @@
  */
 public class Salmon extends ForagingAnimal
 {
-    private static final ForagingBehavior BEHAVIOR = new ForagingBehavior(
-        4, 50, 0.3, 15, 13, 1, Salmon.class, 2, true, Seaweed.class);
-
     public Salmon(boolean randomAge, Field field, Location location)
     {
-        super(BEHAVIOR, randomAge, field, location);
-    }
-
-    @Override
-    protected Creature createOffspring(Field field, Location location)
-    {
-        return new Salmon(false, field, location);
+        super(randomAge, field, location);
     }
 }

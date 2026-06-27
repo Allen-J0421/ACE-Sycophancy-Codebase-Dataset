@@ -1,7 +1,4 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a hippopotamus. Hippopotamus will eat monkeys and plants,
@@ -31,9 +28,9 @@ public class Hippopotamus extends Animal
     // Individual characteristics (instance fields).
     
     // The food a hippopotamus will eat.
-    private HashSet<Class> foodSources;
+    private static final Set<Class<?>> FOOD_SOURCES = classSet(Monkey.class, Plant.class);
     // The classes a hippopotamus will kill
-    private static HashSet<Class> killable;
+    private static final Set<Class<?>> KILLABLE = classSet(Monkey.class, Plant.class, Bear.class);
 
     /**
      * Create a fox. A fox can be created as a new born (age zero
@@ -45,15 +42,7 @@ public class Hippopotamus extends Animal
      */
     public Hippopotamus(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location);
-        foodSources = new HashSet<>();
-        foodSources.add(Monkey.class);
-        foodSources.add(Plant.class);
-        
-        killable = new HashSet<>();
-        killable.add(Monkey.class);
-        killable.add(Plant.class);
-        killable.add(Bear.class);
+        super(randomAge, field, location, Hippopotamus.class, FOOD_SOURCES, KILLABLE);
     }
     
     // Accessor and mutator methods
@@ -109,35 +98,6 @@ public class Hippopotamus extends Animal
     }
     
     /**
-     * Returns whether the target animal is of instance Hippopotamus
-     * 
-     * @param target A target object that we want to check is of type Hippopotamus
-     * @return boolean True if target is of type Hippopotamus
-     */
-    protected boolean getAnimalClass(Object target)
-    {
-        return target instanceof Hippopotamus;
-    }
-    
-    /**
-     * Returns the HashSet of allowed food for a hippopotamus to eat
-     * 
-     * @return HashSet<Class> of subclasses that a hippopotamus can eat
-     */
-    protected HashSet<Class> getFoodSources() {
-        return foodSources;
-    }
-    
-    /**
-     * Returns the HashSet of allowed classes for a hippo to kill
-     * 
-     * @return HashSet<Class> of subclasses that a hippopotamus can kill
-     */
-    protected HashSet<Class> getKillable() {
-        return killable;
-    }
-    
-    /**
      * Return the max health of the animal
      * 
      * @return the animal's max health
@@ -145,38 +105,6 @@ public class Hippopotamus extends Animal
     protected int getMaxHealth()
     {
         return MAX_HEALTH;
-    }
-    
-    // Functional methods
-    
-    /**
-     * This is what the fox does most of the time: it hunts for
-     * monkeys. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param field The field currently occupied.
-     * @param newMonkeyes A list to return newly born foxes.
-     */
-    public void act(List<Organism> newHippopotamuss)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            giveBirth(newHippopotamuss);
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
     }
     
     /**

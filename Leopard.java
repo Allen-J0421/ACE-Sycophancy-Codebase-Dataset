@@ -1,7 +1,4 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A model of a leopard. Leopards will eat sloths,
@@ -31,9 +28,9 @@ public class Leopard extends Animal
     // Individual characteristics (instance fields).
     
     // The food a leopard will eat.
-    private static HashSet<Class> foodSources;
+    private static final Set<Class<?>> FOOD_SOURCES = classSet(Sloth.class);
     // The classes a leopard will kill
-    private static HashSet<Class> killable;
+    private static final Set<Class<?>> KILLABLE = classSet(Sloth.class, Plant.class);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero
@@ -45,13 +42,7 @@ public class Leopard extends Animal
      */
     public Leopard(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location);
-        foodSources = new HashSet<>();
-        foodSources.add(Sloth.class);
-        
-        killable = new HashSet<>();
-        killable.add(Sloth.class);
-        killable.add(Plant.class);
+        super(randomAge, field, location, Leopard.class, FOOD_SOURCES, KILLABLE);
     }
     
     // Accessor and mutator methods
@@ -107,35 +98,6 @@ public class Leopard extends Animal
     }
     
     /**
-     * Returns whether the target animal is of instance Leopard
-     * 
-     * @param target A target object that we want to check is of type Leopard
-     * @return boolean True if target is of type Leopard
-     */
-    protected boolean getAnimalClass(Object target)
-    {
-        return target instanceof Leopard;
-    }
-    
-    /**
-     * Returns the HashSet of allowed food for a leopard to eat
-     * 
-     * @return HashSet<Class> of subclasses that a leopard can eat
-     */
-    protected HashSet<Class> getFoodSources() {
-        return foodSources;
-    }
-    
-    /**
-     * Returns the HashSet of allowed classes for a leopard to kill
-     * 
-     * @return HashSet<Class> of subclasses that a leopard can kill
-     */
-    protected HashSet<Class> getKillable() {
-        return killable;
-    }
-    
-    /**
      * Return the max health of the animal
      * 
      * @return the animal's max health
@@ -143,38 +105,6 @@ public class Leopard extends Animal
     protected int getMaxHealth()
     {
         return MAX_HEALTH;
-    }
-    
-    // Functional methods
-    
-    /**
-     * This is what the bear does most of the time: it hunts for
-     * monkeys. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param field The field currently occupied.
-     * @param newMonkeyes A list to return newly born bears.
-     */
-    public void act(List<Organism> newLeopards)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            giveBirth(newLeopards);
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
     }
     
     /**

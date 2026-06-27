@@ -1,3 +1,7 @@
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 /**
  * Shared lifecycle and field-position state for all organisms in the
  * simulation.
@@ -76,5 +80,66 @@ public abstract class Organism
     protected final Field getField()
     {
         return field;
+    }
+
+    /**
+     * Return adjacent locations around this organism.
+     */
+    protected final List<Location> adjacentLocations(int radius)
+    {
+        return field.adjacentLocations(location, radius);
+    }
+
+    /**
+     * Return free adjacent locations around this organism.
+     */
+    protected final List<Location> freeAdjacentLocations()
+    {
+        return field.getFreeAdjacentLocations(location);
+    }
+
+    /**
+     * Find a free adjacent location around this organism.
+     */
+    protected final Location freeAdjacentLocation()
+    {
+        return field.freeAdjacentLocation(location);
+    }
+
+    /**
+     * Return the object at a location if it matches the requested type.
+     */
+    protected final <T> T getObjectAt(Location targetLocation, Class<T> type)
+    {
+        return field.getObjectAt(targetLocation, type);
+    }
+
+    /**
+     * Find the first adjacent location containing a matching target.
+     */
+    protected final <T> Location findAdjacentLocation(Class<T> targetClass, int radius,
+                                                      Predicate<T> predicate)
+    {
+        for(Location where : adjacentLocations(radius)) {
+            T candidate = getObjectAt(where, targetClass);
+            if(candidate != null && predicate.test(candidate)) {
+                return where;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Apply an action to each adjacent matching target.
+     */
+    protected final <T> void forEachAdjacent(Class<T> targetClass, int radius,
+                                             Consumer<T> action)
+    {
+        for(Location where : adjacentLocations(radius)) {
+            T candidate = getObjectAt(where, targetClass);
+            if(candidate != null) {
+                action.accept(candidate);
+            }
+        }
     }
 }

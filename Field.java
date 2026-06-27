@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -87,6 +86,17 @@ public class Field
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
+
+    /**
+     * Return the object at the given location if it matches the requested type.
+     * @param location Where in the field.
+     * @param type The expected type.
+     * @return The object at the location cast to the given type, or null.
+     */
+    public <T> T getObjectAt(Location location, Class<T> type)
+    {
+        return getObjectAt(location.getRow(), location.getCol(), type);
+    }
     
     /**
      * Return the animal at the given location, if any.
@@ -97,6 +107,22 @@ public class Field
     public Object getObjectAt(int row, int col)
     {
         return field[row][col];
+    }
+
+    /**
+     * Return the object at the given location if it matches the requested type.
+     * @param row The desired row.
+     * @param col The desired column.
+     * @param type The expected type.
+     * @return The object at the location cast to the given type, or null.
+     */
+    public <T> T getObjectAt(int row, int col, Class<T> type)
+    {
+        Object object = getObjectAt(row, col);
+        if(type.isInstance(object)) {
+            return type.cast(object);
+        }
+        return null;
     }
     
     /**

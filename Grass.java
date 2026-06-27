@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -64,24 +63,10 @@ public class Grass extends Plant
                 steppeFired = false;
             }
             else {
-                getSteppeFire();
-                if (steppeFire()==true && getLocation() != null) {                
-                    Field field = getField();
-                    List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-                    Iterator<Location> it = adjacent.iterator();
-                    while(it.hasNext()) {
-                        Location where = it.next();
-                        Object creature = field.getObjectAt(where);
-                        if(creature instanceof Grass) {
-                            Grass grass = (Grass) creature;
-                            grass.getSteppeFire();                        
-                        }
-                        if(creature instanceof Animal) {
-                            Animal animal = (Animal) creature;
-                            animal.burn();                        
-                        }
-                    }
-            
+                ignite();
+                if(steppeFire()) {
+                    forEachAdjacent(Grass.class, 1, Grass::ignite);
+                    forEachAdjacent(Animal.class, 1, Animal::burn);
                     decrementSize();                
                 }
             }
@@ -113,7 +98,7 @@ public class Grass extends Plant
     /**
      * Grass can become steppe fire.
      */
-    private void getSteppeFire()
+    private void ignite()
     {
         if(rand.nextDouble() <= STEPPE_FIRE_PROBABILITY) {
             steppeFired = true;

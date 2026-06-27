@@ -3,6 +3,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -43,6 +45,8 @@ public class Simulator
     private Weather weather;
     // A graphical view of the simulation.
     private SimulatorView view;
+    // Species definitions used for population and color registration.
+    private List<SpeciesDefinition> speciesDefinitions;
     
     /**
      * Construct a simulation field with default size.
@@ -72,6 +76,7 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
+        speciesDefinitions = createSpeciesDefinitions();
         configureViewColors();
         
         // Setup a valid starting point.
@@ -160,28 +165,12 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                if(tryPopulateAnimal(rand, LION_CREATION_PROBABILITY,
-                                     location -> new Lion(true, field, location), row, col)) {
-                    continue;
+                Location location = new Location(row, col);
+                for(SpeciesDefinition species : speciesDefinitions) {
+                    if(species.tryPopulate(rand, location)) {
+                        break;
+                    }
                 }
-                if(tryPopulateAnimal(rand, DEER_CREATION_PROBABILITY,
-                                     location -> new Deer(true, field, location), row, col)) {
-                    continue;
-                }
-                if(tryPopulateAnimal(rand, OWL_CREATION_PROBABILITY,
-                                     location -> new Owl(true, field, location), row, col)) {
-                    continue;
-                }
-                if(tryPopulateAnimal(rand, MOUSE_CREATION_PROBABILITY,
-                                     location -> new Mouse(true, field, location), row, col)) {
-                    continue;
-                }
-                if(tryPopulateAnimal(rand, CAT_CREATION_PROBABILITY,
-                                     location -> new Cat(true, field, location), row, col)) {
-                    continue;
-                }
-                tryPopulatePlant(rand, GRASS_CREATION_PROBABILITY,
-                                 location -> new Grass(true, field, location), row, col);
             }
         }
     }
@@ -214,39 +203,94 @@ public class Simulator
      */
     private void configureViewColors()
     {
-        view.setColor(Deer.class, Color.BLUE);
-        view.setColor(Lion.class, Color.RED);
-        view.setColor(Mouse.class, Color.YELLOW);
-        view.setColor(Owl.class, Color.ORANGE);
-        view.setColor(Cat.class, Color.PINK);
-        view.setColor(Grass.class, Color.GREEN);
+        for(SpeciesDefinition species : speciesDefinitions) {
+            species.configureView(view);
+        }
     }
 
     /**
-     * Try to populate an animal into the given field location.
+     * Create the species definitions used by the simulation.
      */
-    private boolean tryPopulateAnimal(Random rand, double probability,
-                                      Function<Location, Animal> factory,
-                                      int row, int col)
+    private List<SpeciesDefinition> createSpeciesDefinitions()
     {
-        if(rand.nextDouble() <= probability) {
-            animals.add(factory.apply(new Location(row, col)));
-            return true;
-        }
-        return false;
+        return Arrays.asList(
+            animalSpecies(LION_CREATION_PROBABILITY, Lion.class, Color.RED,
+                          location -> new Lion(true, field, location)),
+            animalSpecies(DEER_CREATION_PROBABILITY, Deer.class, Color.BLUE,
+                          location -> new Deer(true, field, location)),
+            animalSpecies(OWL_CREATION_PROBABILITY, Owl.class, Color.ORANGE,
+                          location -> new Owl(true, field, location)),
+            animalSpecies(MOUSE_CREATION_PROBABILITY, Mouse.class, Color.YELLOW,
+                          location -> new Mouse(true, field, location)),
+            animalSpecies(CAT_CREATION_PROBABILITY, Cat.class, Color.PINK,
+                          location -> new Cat(true, field, location)),
+            plantSpecies(GRASS_CREATION_PROBABILITY, Grass.class, Color.GREEN,
+                         location -> new Grass(true, field, location))
+        );
     }
 
     /**
-     * Try to populate a plant into the given field location.
+     * Create an animal species definition.
      */
-    private boolean tryPopulatePlant(Random rand, double probability,
-                                     Function<Location, Plant> factory,
-                                     int row, int col)
+    private <T extends Animal> SpeciesDefinition animalSpecies(double probability, Class<T> type,
+                                                               Color color,
+                                                               Function<Location, T> factory)
     {
-        if(rand.nextDouble() <= probability) {
-            plants.add(factory.apply(new Location(row, col)));
-            return true;
+        return new SpeciesDefinition(probability, type, color, factory,
+                                     organism -> animals.add(type.cast(organism)));
+    }
+
+    /**
+     * Create a plant species definition.
+     */
+    private <T extends Plant> SpeciesDefinition plantSpecies(double probability, Class<T> type,
+                                                             Color color,
+                                                             Function<Location, T> factory)
+    {
+        return new SpeciesDefinition(probability, type, color, factory,
+                                     organism -> plants.add(type.cast(organism)));
+    }
+
+    /**
+     * The population and presentation settings for one species.
+     */
+    private final class SpeciesDefinition
+    {
+        private final double creationProbability;
+        private final Class<? extends Organism> organismClass;
+        private final Color color;
+        private final Function<Location, ? extends Organism> factory;
+        private final Consumer<Organism> registrar;
+
+        private SpeciesDefinition(double creationProbability, Class<? extends Organism> organismClass,
+                                  Color color, Function<Location, ? extends Organism> factory,
+                                  Consumer<Organism> registrar)
+        {
+            this.creationProbability = creationProbability;
+            this.organismClass = organismClass;
+            this.color = color;
+            this.factory = factory;
+            this.registrar = registrar;
         }
-        return false;
+
+        /**
+         * Register the species color with the view.
+         */
+        private void configureView(SimulatorView simulatorView)
+        {
+            simulatorView.setColor(organismClass, color);
+        }
+
+        /**
+         * Try to create a new organism at the given location.
+         */
+        private boolean tryPopulate(Random rand, Location location)
+        {
+            if(rand.nextDouble() <= creationProbability) {
+                registrar.accept(factory.apply(location));
+                return true;
+            }
+            return false;
+        }
     }
 }

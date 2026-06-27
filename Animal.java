@@ -1,7 +1,5 @@
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * A class representing shared characteristics of animals.
@@ -100,30 +98,6 @@ public abstract class Animal extends Organism
     protected final Gender getGender()
     {
         return gender;
-    }
-
-    /**
-     * Return adjacent locations around this animal.
-     */
-    protected final List<Location> adjacentLocations(int radius)
-    {
-        return getField().adjacentLocations(getLocation(), radius);
-    }
-
-    /**
-     * Return free adjacent locations around this animal.
-     */
-    protected final List<Location> freeAdjacentLocations()
-    {
-        return getField().getFreeAdjacentLocations(getLocation());
-    }
-
-    /**
-     * Find a free adjacent location around this animal.
-     */
-    protected final Location freeAdjacentLocation()
-    {
-        return getField().freeAdjacentLocation(getLocation());
     }
 
     /**
@@ -244,46 +218,11 @@ public abstract class Animal extends Organism
     protected final boolean hasAdjacentMate(Class<? extends Animal> animalClass, int radius)
     {
         for(Location where : adjacentLocations(radius)) {
-            Object animal = getField().getObjectAt(where);
-            if(animalClass.isInstance(animal)) {
-                Animal mate = (Animal) animal;
-                if(mate.getGender() != getGender()) {
-                    return true;
-                }
+            Animal mate = getObjectAt(where, animalClass);
+            if(mate != null && mate.getGender() != getGender()) {
+                return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Find the first adjacent location containing a matching target.
-     */
-    protected final <T> Location findAdjacentLocation(Class<T> targetClass, int radius,
-                                                      Predicate<T> predicate)
-    {
-        for(Location where : adjacentLocations(radius)) {
-            Object target = getField().getObjectAt(where);
-            if(targetClass.isInstance(target)) {
-                T candidate = targetClass.cast(target);
-                if(predicate.test(candidate)) {
-                    return where;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Apply an action to each adjacent matching target.
-     */
-    protected final <T> void forEachAdjacent(Class<T> targetClass, int radius,
-                                             Consumer<T> action)
-    {
-        for(Location where : adjacentLocations(radius)) {
-            Object target = getField().getObjectAt(where);
-            if(targetClass.isInstance(target)) {
-                action.accept(targetClass.cast(target));
-            }
-        }
     }
 }

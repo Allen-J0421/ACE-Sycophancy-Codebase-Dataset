@@ -63,6 +63,41 @@ public abstract class Animal extends Actor
     }
 
     /**
+     * Apply this species' shared characteristics and set the starting age and
+     * food level. Centralises the configuration every concrete animal needs so
+     * each subclass constructor only has to supply its own constants.
+     *
+     * @param randomAge                    If true, start with a random age and food level.
+     * @param maxAge                       Maximum age the animal can reach.
+     * @param breedingAge                  Minimum age at which the animal can breed.
+     * @param breedingProbability          Probability of breeding when a mate is found.
+     * @param maxLitter                    Maximum litter size per breeding.
+     * @param foodValue                    Base food value (also the starting food level).
+     * @param deathByDiseaseProbability    Probability of dying from disease while infected.
+     */
+    protected void initialise(boolean randomAge, int maxAge, int breedingAge,
+                              double breedingProbability, int maxLitter,
+                              int foodValue, double deathByDiseaseProbability)
+    {
+        setOverlap(false);
+        setFoodValue(foodValue);
+        setDeathByDiseaseProbability(deathByDiseaseProbability);
+        setBreedingAge(breedingAge);
+        setBreedingProbability(breedingProbability);
+        setMaxLitter(maxLitter);
+        setMaxAge(maxAge);
+
+        if (randomAge) {
+            age = rand.nextInt(maxAge);
+            foodLevel = rand.nextInt(foodValue);
+        }
+        else {
+            age = 0;
+            foodLevel = foodValue;
+        }
+    }
+
+    /**
      * Creates a key for the current animal type in the MAP_OF_PREDATORS.
      * Generates empty set and assigns it to the key.
      */
@@ -271,6 +306,31 @@ public abstract class Animal extends Actor
     }
 
     /**
+     * Forage for food and move. The animal eats the first available prey and
+     * moves onto it; if no prey is found it moves to a free adjacent location.
+     * If it can neither feed nor move (overcrowding) it dies.
+     *
+     * @param listOfPrey A list of prey that this animal feeds on.
+     */
+    protected void forageAndMove(List<Class> listOfPrey)
+    {
+        // Move towards a source of food if found.
+        Location newLocation = findFood(listOfPrey);
+        if(newLocation == null) {
+            // No food found - try to move to a free location.
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        // See if it was possible to move.
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
+        }
+    }
+
+    /**
      * Generate a number representing the number of births, if it can breed.
      * 
      * @param field The field the object is currently in.
@@ -288,10 +348,10 @@ public abstract class Animal extends Actor
     /**
      * Check whether or not this animal is to give birth at this step.
      * New births will be made into free adjacent locations.
-     * 
+     *
      * @param newAnimal A list to return newly born animal.
      */
-    protected void giveBirth(List<Actor> newAnimal) 
+    protected void giveBirth(List<Actor> newAnimal)
     {
         // New animals are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -300,30 +360,20 @@ public abstract class Animal extends Actor
         int births = breed(field);
         for (int b = 0; b < births && !free.isEmpty(); b++) {
             Location loc = free.remove(0);
-            Class type = this.getClass();
-
-            if(Human.class.equals(type)){
-                Human young = new Human(false, field, loc, false);
-                newAnimal.add(young);
-            }
-            else if(Dodo.class.equals(type)){
-                Dodo young = new Dodo(false, field, loc, false);
-                newAnimal.add(young);
-            }
-            else if(Monkey.class.equals(type)){
-                Monkey young = new Monkey(false, field, loc, false);
-                newAnimal.add(young);
-            }
-            else if(Pig.class.equals(type)){
-                Pig young = new Pig(false, field, loc, false);
-                newAnimal.add(young);
-            }
-            else if(Tortoise.class.equals(type)){
-                Tortoise young = new Tortoise(false, field, loc, false);
-                newAnimal.add(young);
-            }
+            newAnimal.add(createOffspring(field, loc));
         }
     }
+
+    /**
+     * Create a new born animal of this species, used when breeding.
+     * Each concrete animal returns an instance of its own type, removing the
+     * need for the breeding logic to know about every species.
+     *
+     * @param field    The field the offspring is born into.
+     * @param location The location the offspring is born at.
+     * @return A newly born animal of the same species as this one.
+     */
+    protected abstract Animal createOffspring(Field field, Location location);
 
     /**
      * If infected, checks for adjacent animals, providing the chance for them to be infected.

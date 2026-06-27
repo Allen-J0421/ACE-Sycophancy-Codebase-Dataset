@@ -47,23 +47,21 @@ public class Dodo extends Animal
     {
         super(field, location, infected);
 
-        // Sets values in animal class
-        setOverlap(false);
-        setFoodValue(BASIC_FOOD_LEVEL);
-        setDeathByDiseaseProbability(DODO_DEATH_FROM_DISEASE_PROBABILITY);
-        setBreedingAge(BREEDING_AGE);
-        setBreedingProbability(BREEDING_PROBABILITY);
-        setMaxLitter(MAX_LITTER_SIZE);
-        setMaxAge(MAX_AGE);
+        // Sets the shared characteristics and starting state for a dodo.
+        initialise(randomAge, MAX_AGE, BREEDING_AGE, BREEDING_PROBABILITY,
+                   MAX_LITTER_SIZE, BASIC_FOOD_LEVEL, DODO_DEATH_FROM_DISEASE_PROBABILITY);
+    }
 
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(BASIC_FOOD_LEVEL);
-        }
-        else {
-            age = 0;
-            foodLevel = BASIC_FOOD_LEVEL;
-        }
+    /**
+     * Create a new born dodo, used by the breeding logic in Animal.
+     *
+     * @param field    The field the offspring is born into.
+     * @param location The location the offspring is born at.
+     * @return A new born dodo.
+     */
+    protected Animal createOffspring(Field field, Location location)
+    {
+        return new Dodo(false, field, location, false);
     }
 
     /**
@@ -78,26 +76,12 @@ public class Dodo extends Animal
         incrementHunger();
         dieInfection();
 
-        if(isAlive()) {            
-            giveBirth(newDodos);   
+        if(isAlive()) {
+            giveBirth(newDodos);
             cureInfected();
             spreadVirus();
 
-            // Move towards a source of food if found.
-            Location newLocation = super.findFood(LIST_OF_PREY);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-
-                // Overcrowding.
-                setDead();
-            }
+            forageAndMove(LIST_OF_PREY);
         }
     }
 

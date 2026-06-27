@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @version 01.03.22
  */
-public abstract class Animal implements Eater, Interactable
+public abstract class Animal implements Eater, Interactable, LivingEntity
 {
     // Whether the animal is alive or not.
     private boolean alive;
@@ -70,7 +70,7 @@ public abstract class Animal implements Eater, Interactable
      * @param newAnimals A list to receive newly born animals.
      * @param time the current time in the simulation
      */
-    public void act(List<Animal> newAnimals, int time) {
+    public void act(List<LivingEntity> newAnimals, int time) {
         incrementAge(getMaxAge());
         incrementHunger();
         if (isAlive() && isActiveAt(time)) {
@@ -152,7 +152,7 @@ public abstract class Animal implements Eater, Interactable
      * Indicate that the animal is no longer alive.
      * It is removed from the field.
      */
-    protected void setDead() {
+    public void setDead() {
         alive = false;
         if(location != null) {
             field.clear(location);

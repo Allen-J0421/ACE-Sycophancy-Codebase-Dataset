@@ -31,21 +31,19 @@ public class Simulator
     // The probability that grass will be created in any given grid position.
     private static final double GRASS_CREATION_PROBABILITY = 0.36;
 
-    // List of animals in the field.
-    private List<Animal> animals;
-    // List of plants in the field.
-    private List<Plant> plants;
-    //the current weather of the simulation
+    // Unified list of all living entities (animals and plants) in the simulation.
+    private List<LivingEntity> entities;
+    // The current weather of the simulation.
     private String weather;
     // The current state of the field.
-    private Field  field;
+    private Field field;
     // The current step of the simulation.
     private int step;
-    // The current daytime of the simulation
+    // The current daytime of the simulation.
     private int time;
     // A graphical view of the simulation.
     private SimulatorView view;
-    
+
     /**
      * Construct a simulation field with default size.
      */
@@ -53,7 +51,7 @@ public class Simulator
     {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
     }
-    
+
     /**
      * Create a simulation field with the given size.
      * @param depth Depth of the field. Must be greater than zero.
@@ -66,15 +64,11 @@ public class Simulator
             depth = DEFAULT_DEPTH;
             width = DEFAULT_WIDTH;
         }
-        
-        animals = new ArrayList<>();
-        plants = new ArrayList<>();
 
+        entities = new ArrayList<>();
         weather = "none";
-
         field = new Field(depth, width);
 
-        // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
         view.setColor(Ant.class, Color.GRAY);
         view.setColor(Dingo.class, Color.ORANGE);
@@ -85,25 +79,24 @@ public class Simulator
         view.setColor(Acacia.class, Color.GREEN);
         view.setColor(Grass.class, Color.CYAN);
 
-        
         // Setup a valid starting point.
         reset();
     }
-    
+
     /**
      * Run the simulation from its current state for a reasonably long period,
      * (4000 steps).
      */
     public void runLongSimulation()
     {
-        simulate(4000 );
+        simulate(4000);
     }
 
     public static void main(String[] args) {
         Simulator sim = new Simulator();
         sim.runLongSimulation();
     }
-    
+
     /**
      * Run the simulation from its current state for the given number of steps.
      * Stop before the given number of steps if it ceases to be viable.
@@ -125,219 +118,177 @@ public class Simulator
                 resetDisease();
                 simulateDisease();
             }
-
-            delay(20);   // uncomment this to run more slowly
+            delay(20);
         }
     }
-    
+
     /**
      * Run the simulation from its current state for a single step.
-     * Iterate over the whole field updating the state of each
-     * animal and plant
-     * Apply the effects of weather on the simulation
+     * All entities are simulated in a single unified pass.
+     * Apply the effects of weather on the simulation.
      */
     public void simulateOneStep() {
         step++;
 
-        if(weather.equals("rain")){
+        if(weather.equals("rain")) {
             resetWeather();
-            for (int i = 0; i < plants.size(); i++) {
-                plants.get(i).setRain();
+            for(LivingEntity e : entities) {
+                if(e instanceof Plant) ((Plant) e).setRain();
             }
         }
-        else if(weather.equals("flood")){
+        else if(weather.equals("flood")) {
             resetWeather();
-            List<Animal> randomRatsAnts = new ArrayList<>();
-            for (int i = 0; i < animals.size(); i++){
-                if ((animals.get(i) instanceof Ant || (animals.get(i) instanceof Rat))) {
-                    randomRatsAnts.add(animals.get(i));
-                }
+            List<LivingEntity> ratsAndAnts = new ArrayList<>();
+            for(LivingEntity e : entities) {
+                if(e instanceof Ant || e instanceof Rat) ratsAndAnts.add(e);
             }
-            Collections.shuffle(randomRatsAnts);
-            for (int i = 0; i < ((randomRatsAnts.size())/5); i++){
-                animals.get(i).setDead();
+            Collections.shuffle(ratsAndAnts);
+            for(int i = 0; i < ratsAndAnts.size() / 5; i++) {
+                ratsAndAnts.get(i).setDead();
             }
         }
-        else if (weather.equals("drought")){
+        else if(weather.equals("drought")) {
             resetWeather();
-            List<Plant> randomPlants = new ArrayList<>();
-            for (int i = 0; i < plants.size(); i++){
-                randomPlants.add(plants.get(i));
+            List<LivingEntity> allPlants = new ArrayList<>();
+            for(LivingEntity e : entities) {
+                if(e instanceof Plant) allPlants.add(e);
             }
-            Collections.shuffle(randomPlants);
-            for (int i = 0; i < ((plants.size())/5); i++){
-                plants.remove(plants.get(i));
+            Collections.shuffle(allPlants);
+            for(int i = 0; i < allPlants.size() / 5; i++) {
+                allPlants.get(i).setDead();
             }
         }
-        else if (weather.equals("fog")) {
+        else if(weather.equals("fog")) {
             resetWeather();
-            for (int i = 0; i < animals.size(); i++) {
-                animals.get(i).setFog();
+            for(LivingEntity e : entities) {
+                if(e instanceof Animal) ((Animal) e).setFog();
             }
         }
 
-        // Provide space for newborn animals.
-        List<Animal> newAnimals = new ArrayList<>();        
-        // Let all ants act.
-        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-            Animal animal = it.next();
-            animal.act(newAnimals,time);
-            if(! animal.isAlive()) {
+        // Simulate all entities — animals and plants — in a single pass.
+        List<LivingEntity> newEntities = new ArrayList<>();
+        for(Iterator<LivingEntity> it = entities.iterator(); it.hasNext(); ) {
+            LivingEntity entity = it.next();
+            entity.act(newEntities, time);
+            if(!entity.isAlive()) {
                 it.remove();
             }
         }
-
-        //provide space for new created plants
-        List<Plant> newPlants = new ArrayList<>();
-        for(Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-            Plant plant = it.next();
-            plant.act(newPlants);
-            if(! plant.isAlive()) {
-                it.remove();
-            }
-        }
-
-               
-        // Add the newly born animals and plants to the main lists.
-        animals.addAll(newAnimals);
-        plants.addAll(newPlants);
+        entities.addAll(newEntities);
 
         view.showStatus(step, field, time, weather);
     }
-
-
 
     /**
      * Reset the simulation to a starting position.
      */
     public void reset() {
         step = 0;
-        animals.clear();
+        entities.clear();
         populate();
-        
+
         // Show the starting state in the view.
         view.showStatus(step, field, time, weather);
     }
-    
+
     /**
-     * Randomly populate the field with animals and plants
+     * Randomly populate the field with animals and plants.
      */
     private void populate() {
         Random rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
+                Location location = new Location(row, col);
                 if(rand.nextDouble() <= DINGO_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Dingo dingo = new Dingo(true, field, location);
-                    animals.add(dingo);
+                    entities.add(new Dingo(true, field, location));
                 }
                 else if(rand.nextDouble() <= ANT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Ant ant = new Ant(true, field, location);
-                    animals.add(ant);
+                    entities.add(new Ant(true, field, location));
                 }
                 else if(rand.nextDouble() <= SNAKE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Snake snake = new Snake(true, field, location);
-                    animals.add(snake);
+                    entities.add(new Snake(true, field, location));
                 }
                 else if(rand.nextDouble() <= RAT_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Rat rat = new Rat(true, field, location);
-                    animals.add(rat);
+                    entities.add(new Rat(true, field, location));
                 }
                 else if(rand.nextDouble() <= EAGLE_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Eagle eagle = new Eagle(true, field, location);
-                    animals.add(eagle);
+                    entities.add(new Eagle(true, field, location));
                 }
                 else if(rand.nextDouble() <= EMU_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Emu emu = new Emu(true, field, location);
-                    animals.add(emu);
+                    entities.add(new Emu(true, field, location));
                 }
                 else if(rand.nextDouble() <= ACACIA_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Acacia acacia = new Acacia(field, location);
-                    plants.add(acacia);
+                    entities.add(new Acacia(field, location));
                 }
                 else if(rand.nextDouble() <= GRASS_CREATION_PROBABILITY) {
-                    Location location = new Location(row, col);
-                    Grass grass = new Grass(field, location);
-                    plants.add(grass);
+                    entities.add(new Grass(field, location));
                 }
-
                 // else leave the location empty.
             }
         }
     }
-    
+
     /**
      * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
+     * @param millisec The time to pause for, in milliseconds.
      */
     private void delay(int millisec) {
         try {
             Thread.sleep(millisec);
         }
-        catch (InterruptedException ie) {
+        catch(InterruptedException ie) {
             // wake up
         }
     }
 
     /**
-    * assign a weather condition to the current step of the simulation
+     * Assign a weather condition to the current step of the simulation.
      */
     private void simulateWeather() {
         Random rand = Randomizer.getRandom();
-        if (rand.nextInt(5) == 0){
+        if(rand.nextInt(5) == 0) {
             weather = "rain";
         }
-        else if (rand.nextInt(5) == 1){
+        else if(rand.nextInt(5) == 1) {
             weather = "flood";
         }
-        else if (rand.nextInt(5) == 2){
+        else if(rand.nextInt(5) == 2) {
             weather = "drought";
         }
-        else if (rand.nextInt(5) == 3){
+        else if(rand.nextInt(5) == 3) {
             weather = "fog";
         }
-        else if (rand.nextInt(5) == 4){
+        else if(rand.nextInt(5) == 4) {
             weather = "none";
         }
     }
 
     /**
-     * reset the weather conditions
-     * by setting fog field of all animals to false
-     * and setting rain field of all plants to false
+     * Reset the weather conditions across all entities.
      */
     private void resetWeather() {
-        for (int i = 0; i < animals.size(); i++) {
-            animals.get(i).resetFog();
-        }
-        for (int i = 0; i < plants.size(); i++) {
-            plants.get(i).resetRain();
+        for(LivingEntity e : entities) {
+            if(e instanceof Animal) ((Animal) e).resetFog();
+            else if(e instanceof Plant) ((Plant) e).resetRain();
         }
     }
 
     /**
-     * simulate disease by calling giveDisease on every animal
-     * in the simulation
+     * Simulate disease by calling giveDisease on every animal in the simulation.
      */
     public void simulateDisease() {
-        for (int i = 0; i < animals.size(); i++){
-            animals.get(i).giveDisease();
+        for(LivingEntity e : entities) {
+            if(e instanceof Animal) ((Animal) e).giveDisease();
         }
     }
 
     /**
-     * reset the disease for all the animals in the simulation
+     * Reset the disease for all the animals in the simulation.
      */
     private void resetDisease() {
-        for (int i = 0; i < animals.size(); i++) {
-            animals.get(i).resetDisease();
+        for(LivingEntity e : entities) {
+            if(e instanceof Animal) ((Animal) e).resetDisease();
         }
     }
 }

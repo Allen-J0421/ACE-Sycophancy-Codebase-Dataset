@@ -7,7 +7,7 @@ import java.util.Random;
  * @version 01.03.22
  */
 
-public abstract class Plant implements Interactable
+public abstract class Plant implements Interactable, LivingEntity
 {
     //whether the plant is alive or not
     private boolean alive;
@@ -39,19 +39,19 @@ public abstract class Plant implements Interactable
      * whatever it wants/needs to do.
      * @param newPlants A list to receive newly created plants.
      */
-    public void act(List<Plant> newPlants) {
+    public void act(List<LivingEntity> newEntities, int time) {
         if (isAlive()) {
-            grow(newPlants);
+            grow(newEntities);
         }
     }
 
-    private void grow(List<Plant> newPlants) {
+    private void grow(List<LivingEntity> newEntities) {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         int offspring = breed(getReproducingProbability(), getMaxOffspringSize());
         for (int b = 0; b < offspring && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            newPlants.add(createOffspring(field, loc));
+            newEntities.add(createOffspring(field, loc));
         }
     }
 
@@ -92,7 +92,7 @@ public abstract class Plant implements Interactable
      * Indicate that the plant is no longer alive.
      * It is removed from the field.
      */
-    protected void setDead() {
+    public void setDead() {
         alive = false;
         if(location != null) {
             field.clear(location);

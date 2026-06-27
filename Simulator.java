@@ -2,7 +2,6 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -12,15 +11,8 @@ import java.awt.Color;
  */
 public class Simulator
 {
-    // Constants representing configuration information for the simulation.
-    // The default width for the grid.
     private static final int DEFAULT_WIDTH = 120;
-    // The default depth of the grid.
     private static final int DEFAULT_DEPTH = 80;
-    // The probability that a fox will be created in any given grid position.
-    // private static final double FOX_CREATION_PROBABILITY = 0.02;
-    // The probability that a rabbit will be created in any given grid position.
-    // private static final double RABBIT_CREATION_PROBABILITY = 0.08;  
 
     private SimulatorState state = new SimulatorState();  
 
@@ -37,66 +29,9 @@ public class Simulator
     private SimulatorView view;
     
 
-    public static void main(String [] args ) {
+    public static void main(String[] args) {
         Simulator x = new Simulator();
-        // List<Double> values = new ArrayList<Double>();
-        // for(String i : args) {
-        //     values.add(Double.parseDouble(i));
-        // }
-        
-
-        //Six values, 5 animals, 30 values in total, 
-        // int partitionSize = 6;
-        // List<List<Double>> partitions = new ArrayList<>();
-
-        // for (int i=0; i<values.size(); i += partitionSize) {
-        //     partitions.add(values.subList(i, Math.min(i + partitionSize, values.size())));
-        // }
-
-        // for (int i = 0; i < partitions.size(); i ++) {
-        //     List<Double> controls = partitions.get(i);
-        //     PopulationControls newControls = null;
-        //     if (partitions.get(i).size() == 6) {
-        //         newControls = new PopulationControls(
-        //             controls.get(0),
-        //             controls.get(1),
-        //             controls.get(2),
-        //             controls.get(3),
-        //             controls.get(4),
-        //             controls.get(5)
-        //         );
-        //     }
-
-
-        //     switch (i) {
-        //     case 0:
-        //         Fox.POPULATION_CONTROLS = newControls;
-        //         break;
-        //     case 1:
-        //         Rabbit.POPULATION_CONTROLS = newControls;
-        //         break;
-        //     case 2:
-        //         Squirrel.POPULATION_CONTROLS = newControls;
-        //         break;
-        //     case 3:
-        //         Rat.POPULATION_CONTROLS = newControls;
-        //         break;
-        //     case 4:
-        //         Hawk.POPULATION_CONTROLS = newControls;
-        //         break;
-        //     default: 
-        //         System.out.println("outofbounds");
-
-        //     }
-        //     // System.out.println(i);
-        // }
-
-        // System.out.println("Finished INIT");
-
-
-        
         x.runLongSimulation();
-
     }
 
     /**
@@ -124,11 +59,8 @@ public class Simulator
         animals = new ArrayList<>();
         field = new Field(depth, width);
 
-        // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        // view.setColor(Rabbit.class, Color.ORANGE);
-        // view.setColor(Fox.class, Color.BLUE);
-        
+
         // Setup a valid starting point.
         reset();
     }

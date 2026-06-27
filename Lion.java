@@ -54,7 +54,7 @@ public class Lion extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newLions, int step, String weather)
+    public void act(List<Entity> newLions, int step, String weather)
     {
         incrementAge();
         incrementHunger();
@@ -142,7 +142,7 @@ public class Lion extends Animal
      * Requires an opposite-gender lion within a 2-step radius.
      * @param newLions A list to return newly born lions.
      */
-    private void giveBirth(List<Animal> newLions)
+    private void giveBirth(List<Entity> newLions)
     {
         boolean breedingPair = false;
         Field field = getField();

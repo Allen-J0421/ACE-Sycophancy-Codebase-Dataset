@@ -6,7 +6,7 @@ import java.util.Random;
  *
  * @version 2016.02.29 (2)
  */
-public abstract class Animal
+public abstract class Animal extends Entity
 {
     /** Gender of an animal. */
     public enum Gender { M, F }
@@ -14,12 +14,6 @@ public abstract class Animal
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
-    // Whether the animal is alive or not.
-    private boolean alive;
-    // The animal's field.
-    private Field field;
-    // The animal's position in the field.
-    private Location location;
     // The animal's burn level; when > 3 the animal dies.
     private int burn;
     // The animal's gender.
@@ -35,22 +29,20 @@ public abstract class Animal
      */
     public Animal(Field field, Location location)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
         burn = 0;
         gender = rand.nextBoolean() ? Gender.M : Gender.F;
         age = 0;
     }
 
     /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newAnimals A list to receive newly born animals.
+     * Make this animal act.
+     * @param newEntities A list to receive any animals born this step.
      * @param step The current step.
      * @param weather The current weather.
      */
-    abstract public void act(List<Animal> newAnimals, int step, String weather);
+    @Override
+    public abstract void act(List<Entity> newEntities, int step, String weather);
 
     // --- Species configuration: each subclass provides these ---
 
@@ -101,62 +93,6 @@ public abstract class Animal
             births = rand.nextInt(getMaxLitterSize()) + 1;
         }
         return births;
-    }
-
-    // --- Existing shared state and methods ---
-
-    /**
-     * Check whether the animal is alive or not.
-     * @return true if the animal is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
-
-    /**
-     * Indicate that the animal is no longer alive.
-     * It is removed from the field.
-     */
-    protected void setDead()
-    {
-        alive = false;
-        if (location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-
-    /**
-     * Return the animal's location.
-     * @return The animal's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-
-    /**
-     * Place the animal at the new location in the given field.
-     * @param newLocation The animal's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if (location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-
-    /**
-     * Return the animal's field.
-     * @return The animal's field.
-     */
-    protected Field getField()
-    {
-        return field;
     }
 
     /**

@@ -20,21 +20,19 @@ public class Simulator
     private static final int DEFAULT_DEPTH = 80;
 
     // Registry of all entity types: creation probability, display colour, and factory.
-    // Entries are checked in order per cell; the first match wins (preserving the
-    // original else-if semantics). To add a new species, add one line here.
+    // Entries are checked in order per cell; the first match wins.
+    // To add a new species, add one line here — no other changes needed.
     private static final List<EntitySpec> ENTITY_SPECS = Arrays.asList(
-        new EntitySpec(Lion.class,  0.01, Color.RED,    (f, l) -> new Lion(true, f, l),  true),
-        new EntitySpec(Deer.class,  0.02, Color.BLUE,   (f, l) -> new Deer(true, f, l),  true),
-        new EntitySpec(Owl.class,   0.05, Color.ORANGE, (f, l) -> new Owl(true, f, l),   true),
-        new EntitySpec(Mouse.class, 0.04, Color.YELLOW, (f, l) -> new Mouse(true, f, l), true),
-        new EntitySpec(Cat.class,   0.05, Color.PINK,   (f, l) -> new Cat(true, f, l),   true),
-        new EntitySpec(Grass.class, 0.40, Color.GREEN,  (f, l) -> new Grass(true, f, l), false)
+        new EntitySpec(Lion.class,  0.01, Color.RED,    (f, l) -> new Lion(true, f, l)),
+        new EntitySpec(Deer.class,  0.02, Color.BLUE,   (f, l) -> new Deer(true, f, l)),
+        new EntitySpec(Owl.class,   0.05, Color.ORANGE, (f, l) -> new Owl(true, f, l)),
+        new EntitySpec(Mouse.class, 0.04, Color.YELLOW, (f, l) -> new Mouse(true, f, l)),
+        new EntitySpec(Cat.class,   0.05, Color.PINK,   (f, l) -> new Cat(true, f, l)),
+        new EntitySpec(Grass.class, 0.40, Color.GREEN,  (f, l) -> new Grass(true, f, l))
     );
 
-    // List of animals in the field.
-    private List<Animal> animals;
-    // List of plants in the field.
-    private List<Plant> plants;
+    // All living entities (animals and plants) in one unified list.
+    private List<Entity> entities;
     // The current state of the field.
     private Field field;
     // The current step of the simulation.
@@ -66,9 +64,8 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
 
-        animals = new ArrayList<>();
-        plants  = new ArrayList<>();
-        field   = new Field(depth, width);
+        entities = new ArrayList<>();
+        field    = new Field(depth, width);
 
         view = new SimulatorView(depth, width);
         for (EntitySpec spec : ENTITY_SPECS) {
@@ -103,31 +100,23 @@ public class Simulator
 
     /**
      * Run the simulation from its current state for a single step.
+     * All entities — animals and plants alike — are driven through the same loop.
      */
     public void simulateOneStep()
     {
         step++;
         updateWeather();
 
-        // Provide space for newborn animals.
-        List<Animal> newAnimals = new ArrayList<>();
-        for (Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-            Animal animal = it.next();
-            animal.act(newAnimals, step, weather);
-            if (!animal.isAlive()) {
+        List<Entity> newEntities = new ArrayList<>();
+        for (Iterator<Entity> it = entities.iterator(); it.hasNext(); ) {
+            Entity entity = it.next();
+            entity.act(newEntities, step, weather);
+            if (!entity.isAlive()) {
                 it.remove();
             }
         }
-        animals.addAll(newAnimals);
-
-        // Let all plants act.
-        for (Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-            Plant plant = it.next();
-            plant.act(step, weather);
-            if (!plant.isAlive()) {
-                it.remove();
-            }
-        }
+        // Add offspring (animals only; plants never populate newEntities).
+        entities.addAll(newEntities);
 
         view.showStatus(step, field, weather);
     }
@@ -138,8 +127,7 @@ public class Simulator
     public void reset()
     {
         step = 0;
-        animals.clear();
-        plants.clear();
+        entities.clear();
         populate();
         updateWeather();
         view.showStatus(step, field, weather);
@@ -159,12 +147,7 @@ public class Simulator
                 Location location = new Location(row, col);
                 for (EntitySpec spec : ENTITY_SPECS) {
                     if (rand.nextDouble() <= spec.probability) {
-                        Object entity = spec.factory.apply(field, location);
-                        if (spec.isAnimal) {
-                            animals.add((Animal) entity);
-                        } else {
-                            plants.add((Plant) entity);
-                        }
+                        entities.add(spec.factory.apply(field, location));
                         break;
                     }
                 }
@@ -213,25 +196,22 @@ public class Simulator
     /**
      * Describes one entity type for use in the species registry.
      * Bundles together the class (for colour registration), creation probability,
-     * display colour, a factory that constructs an instance, and a flag that
-     * distinguishes animals (which produce offspring) from plants (which don't).
+     * display colour, and a factory that constructs an instance.
      */
     private static class EntitySpec
     {
-        final Class<?>                           type;
-        final double                             probability;
-        final Color                              color;
-        final BiFunction<Field, Location, Object> factory;
-        final boolean                            isAnimal;
+        final Class<?>                            type;
+        final double                              probability;
+        final Color                               color;
+        final BiFunction<Field, Location, Entity> factory;
 
         EntitySpec(Class<?> type, double probability, Color color,
-                   BiFunction<Field, Location, Object> factory, boolean isAnimal)
+                   BiFunction<Field, Location, Entity> factory)
         {
             this.type        = type;
             this.probability = probability;
             this.color       = color;
             this.factory     = factory;
-            this.isAnimal    = isAnimal;
         }
     }
 }

@@ -54,7 +54,7 @@ public class Deer extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newDeers, int step, String weather)
+    public void act(List<Entity> newDeers, int step, String weather)
     {
         incrementAge();
         incrementHunger();
@@ -122,7 +122,7 @@ public class Deer extends Animal
      * Requires an opposite-gender deer within a 2-step radius.
      * @param newDeers A list to return newly born deer.
      */
-    private void giveBirth(List<Animal> newDeers)
+    private void giveBirth(List<Entity> newDeers)
     {
         boolean breedingPair = false;
         Field field = getField();

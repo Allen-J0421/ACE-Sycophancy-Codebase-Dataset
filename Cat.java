@@ -53,7 +53,7 @@ public class Cat extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newCats, int step, String weather)
+    public void act(List<Entity> newCats, int step, String weather)
     {
         incrementAge();
         incrementHunger();
@@ -111,7 +111,7 @@ public class Cat extends Animal
      * Check whether or not this cat is to give birth at this step.
      * @param newCats A list to return newly born cats.
      */
-    private void giveBirth(List<Animal> newCats)
+    private void giveBirth(List<Entity> newCats)
     {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());

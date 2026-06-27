@@ -53,7 +53,7 @@ public class Owl extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newOwls, int step, String weather)
+    public void act(List<Entity> newOwls, int step, String weather)
     {
         incrementAge();
         incrementHunger();
@@ -111,7 +111,7 @@ public class Owl extends Animal
      * Check whether or not this owl is to give birth at this step.
      * @param newOwls A list to return newly born owls.
      */
-    private void giveBirth(List<Animal> newOwls)
+    private void giveBirth(List<Entity> newOwls)
     {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());

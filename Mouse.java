@@ -59,7 +59,7 @@ public class Mouse extends Animal
      * @param step The current step.
      * @param weather The current weather.
      */
-    public void act(List<Animal> newMice, int step, String weather)
+    public void act(List<Entity> newMice, int step, String weather)
     {
         incrementAge();
         updateBurnStatus(weather);
@@ -90,7 +90,7 @@ public class Mouse extends Animal
      * New births will be made into free adjacent locations.
      * @param newMice A list to return newly born mice.
      */
-    private void giveBirth(List<Animal> newMice)
+    private void giveBirth(List<Entity> newMice)
     {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());

@@ -2,90 +2,31 @@ import java.util.List;
 
 /**
  * A class representing shared characteristics of plants.
+ * All lifecycle state (alive, field, location) lives in Entity.
  *
- * @version 2022.02.xx 
+ * @version 2022.02.xx
  */
-public abstract class Plant
+public abstract class Plant extends Entity
 {
-    // Whether the plant is alive or not.
-    private boolean alive;
-    // The plant's field.
-    private Field field;
-    // The plant's position in the field.
-    private Location location;
-    
     /**
      * Create a new plant at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
     public Plant(Field field, Location location)
     {
-        alive = true;
-        this.field = field;
-        setLocation(location);
+        super(field, location);
     }
-    
+
     /**
-     * Make this plant act - that is: make it do
-     * whatever it wants/needs to do.
-     * @param newPlants A list to receive newly born plants.
+     * Make this plant act.
+     * Plants do not spawn new entities, so newEntities is unused.
+     *
+     * @param newEntities Unused; present to satisfy the Entity contract.
+     * @param step The current simulation step number.
      * @param weather The current weather.
      */
-    abstract public void act( int step,String weather);
-
-    /**
-     * Check whether the plant is alive or not.
-     * @return true if the plant is still alive.
-     */
-    protected boolean isAlive()
-    {
-        return alive;
-    }
-
-    /**
-     * Indicate that the plant is no longer alive.
-     * It is removed from the field.
-     */
-    protected void setDead()
-    {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-
-    /**
-     * Return the plant's location.
-     * @return The plant's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-    
-    /**
-     * Place the plant at the new location in the given field.
-     * @param newLocation The plant's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-    
-    /**
-     * Return the plant's field.
-     * @return The plant's field.
-     */
-    protected Field getField()
-    {
-        return field;
-    }
+    @Override
+    public abstract void act(List<Entity> newEntities, int step, String weather);
 }

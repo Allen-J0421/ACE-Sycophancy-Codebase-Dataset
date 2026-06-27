@@ -56,7 +56,7 @@ public class Grass extends Plant
      * @param step The current step
      * @param weather The current weather.
      */
-    public void act( int step, String weather)
+    public void act(List<Entity> newEntities, int step, String weather)
     {
         if(isAlive()) {
             if("Rainy".equals(weather)) {

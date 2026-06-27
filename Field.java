@@ -82,9 +82,9 @@ public class Field
      * @param location Where in the field.
      * @return The living being at the given location, or null if there is none.
      */
-    public LivingBeing getObjectAt(Location location)
+    public LivingBeing getLivingBeingAt(Location location)
     {
-        return getObjectAt(location.getRow(), location.getCol());
+        return getLivingBeingAt(location.getRow(), location.getCol());
     }
     
     /**
@@ -93,7 +93,7 @@ public class Field
      * @param col The desired column.
      * @return The living being at the given location, or null if there is none.
      */
-    public LivingBeing getObjectAt(int row, int col)
+    public LivingBeing getLivingBeingAt(int row, int col)
     {
         return field[row][col];
     }
@@ -122,7 +122,7 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = adjacentLocations(location);
         for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
+            if(getLivingBeingAt(next) == null) {
                 free.add(next);
             }
         }

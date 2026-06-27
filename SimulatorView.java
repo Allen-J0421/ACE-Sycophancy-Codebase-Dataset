@@ -128,7 +128,7 @@ public class SimulatorView extends JFrame
 
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                LivingBeing being = field.getObjectAt(row, col);
+                LivingBeing being = field.getLivingBeingAt(row, col);
                 if(being != null) {
                     stats.incrementCount(being.getClass());
                     fieldView.drawMark(col, row, getColor(being.getClass()));

@@ -16,7 +16,7 @@ public abstract class Animal extends LivingBeing
     private enum Sex { MALE, FEMALE }
 
     private final Sex sex;
-    private final int maxAge;
+    private final AnimalProfile profile;
     private int age;
     private int foodLevel;
 
@@ -32,29 +32,53 @@ public abstract class Animal extends LivingBeing
         }
     }
 
+    protected static final class AnimalProfile
+    {
+        private final int maxAge;
+        private final int initialFoodLevel;
+        private final int newbornFoodLevel;
+        private final boolean activeAtNight;
+        private final int breedingAge;
+        private final double breedingProbability;
+        private final int maxLitterSize;
+        private final Map<Class<? extends LivingBeing>, Integer> foodValues;
+
+        private AnimalProfile(int maxAge, int initialFoodLevel, int newbornFoodLevel,
+                              boolean activeAtNight, int breedingAge,
+                              double breedingProbability, int maxLitterSize,
+                              Map<Class<? extends LivingBeing>, Integer> foodValues)
+        {
+            this.maxAge = maxAge;
+            this.initialFoodLevel = initialFoodLevel;
+            this.newbornFoodLevel = newbornFoodLevel;
+            this.activeAtNight = activeAtNight;
+            this.breedingAge = breedingAge;
+            this.breedingProbability = breedingProbability;
+            this.maxLitterSize = maxLitterSize;
+            this.foodValues = foodValues;
+        }
+    }
+
     /**
      * Create a new animal at location in field.
      * @param randomAge If true, the animal will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
-     * @param maxAge The age to which the animal can live.
-     * @param initialFoodLevel The food level to use as the random upper bound.
-     * @param newbornFoodLevel The food level assigned to newborn animals.
+     * @param profile The species-specific lifecycle configuration.
      */
-    public Animal(boolean randomAge, Field field, Location location, int maxAge,
-                  int initialFoodLevel, int newbornFoodLevel)
+    public Animal(boolean randomAge, Field field, Location location, AnimalProfile profile)
     {
         super(field, location);
-        this.maxAge = maxAge;
+        this.profile = profile;
         sex = randomSex();
 
         if(randomAge) {
-            age = rand.nextInt(maxAge);
-            foodLevel = rand.nextInt(initialFoodLevel);
+            age = rand.nextInt(profile.maxAge);
+            foodLevel = rand.nextInt(profile.initialFoodLevel);
         }
         else {
             age = 0;
-            foodLevel = newbornFoodLevel;
+            foodLevel = profile.newbornFoodLevel;
         }
     }
 
@@ -69,7 +93,7 @@ public abstract class Animal extends LivingBeing
         return new FoodValue(type, value);
     }
 
-    protected static Map<Class<? extends LivingBeing>, Integer> foodValues(FoodValue... values)
+    private static Map<Class<? extends LivingBeing>, Integer> foodValues(FoodValue... values)
     {
         Map<Class<? extends LivingBeing>, Integer> foods = new LinkedHashMap<>();
         for(FoodValue value : values) {
@@ -78,29 +102,32 @@ public abstract class Animal extends LivingBeing
         return Collections.unmodifiableMap(foods);
     }
 
+    protected static AnimalProfile profile(int maxAge, int initialFoodLevel,
+                                           int newbornFoodLevel, boolean activeAtNight,
+                                           int breedingAge, double breedingProbability,
+                                           int maxLitterSize, FoodValue... foods)
+    {
+        return new AnimalProfile(maxAge, initialFoodLevel, newbornFoodLevel,
+                                 activeAtNight, breedingAge, breedingProbability,
+                                 maxLitterSize, foodValues(foods));
+    }
+
     /**
      * Run the standard animal lifecycle for one simulation step.
      * @param newAnimals A list to receive newly born animals.
-     * @param activeAtNight Whether this species moves, feeds and breeds at night.
-     * @param breedingAge The age at which this species can start breeding.
-     * @param breedingProbability The likelihood of this species breeding.
-     * @param maxLitterSize The maximum number of births per breeding event.
-     * @param foodValues Food classes and the energy gained from eating each one.
      */
-    protected void live(List<LivingBeing> newAnimals, boolean activeAtNight,
-                        int breedingAge, double breedingProbability, int maxLitterSize,
-                        Map<Class<? extends LivingBeing>, Integer> foodValues)
+    private void live(List<LivingBeing> newAnimals)
     {
         incrementAge();
         incrementHunger();
 
-        if(isNight() != activeAtNight || !isAlive()) {
+        if(isNight() != profile.activeAtNight || !isAlive()) {
             return;
         }
 
-        giveBirth(newAnimals, breedingAge, breedingProbability, maxLitterSize);
+        giveBirth(newAnimals);
 
-        Location newLocation = findFood(foodValues);
+        Location newLocation = findFood();
         if(newLocation == null && getLocation() != null) {
             newLocation = getField().freeAdjacentLocation(getLocation());
         }
@@ -113,7 +140,7 @@ public abstract class Animal extends LivingBeing
     private void incrementAge()
     {
         age++;
-        if(age > maxAge) {
+        if(age > profile.maxAge) {
             setDead();
         }
     }
@@ -126,7 +153,7 @@ public abstract class Animal extends LivingBeing
         }
     }
 
-    private Location findFood(Map<Class<? extends LivingBeing>, Integer> foodValues)
+    private Location findFood()
     {
         Field field = getField();
         if(field == null || getLocation() == null) {
@@ -134,8 +161,9 @@ public abstract class Animal extends LivingBeing
         }
 
         for(Location where : field.adjacentLocations(getLocation())) {
-            LivingBeing occupant = field.getObjectAt(where);
-            for(Map.Entry<Class<? extends LivingBeing>, Integer> food : foodValues.entrySet()) {
+            LivingBeing occupant = field.getLivingBeingAt(where);
+            for(Map.Entry<Class<? extends LivingBeing>, Integer> food :
+                    profile.foodValues.entrySet()) {
                 if(food.getKey().isInstance(occupant)) {
                     if(occupant.isAlive()) {
                         occupant.setDead();
@@ -148,19 +176,18 @@ public abstract class Animal extends LivingBeing
         return null;
     }
 
-    private void giveBirth(List<LivingBeing> newAnimals, int breedingAge,
-                           double breedingProbability, int maxLitterSize)
+    private void giveBirth(List<LivingBeing> newAnimals)
     {
         Field field = getField();
-        if(field == null || getLocation() == null || !canBreed(breedingAge)) {
+        if(field == null || getLocation() == null || !canBreed()) {
             return;
         }
 
         for(Location where : field.adjacentLocations(getLocation())) {
-            LivingBeing occupant = field.getObjectAt(where);
+            LivingBeing occupant = field.getLivingBeingAt(where);
             if(getClass().isInstance(occupant) && hasOppositeSex((Animal) occupant)) {
                 List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(breedingProbability, maxLitterSize);
+                int births = breed();
                 for(int b = 0; b < births && free.size() > 0; b++) {
                     Location loc = free.remove(0);
                     newAnimals.add(createOffspring(field, loc));
@@ -174,17 +201,17 @@ public abstract class Animal extends LivingBeing
         return sex != other.sex;
     }
 
-    private int breed(double breedingProbability, int maxLitterSize)
+    private int breed()
     {
-        if(rand.nextDouble() <= breedingProbability) {
-            return rand.nextInt(maxLitterSize) + 1;
+        if(rand.nextDouble() <= profile.breedingProbability) {
+            return rand.nextInt(profile.maxLitterSize) + 1;
         }
         return 0;
     }
 
-    private boolean canBreed(int breedingAge)
+    private boolean canBreed()
     {
-        return age >= breedingAge;
+        return age >= profile.breedingAge;
     }
     
     /**
@@ -196,9 +223,13 @@ public abstract class Animal extends LivingBeing
     protected abstract Animal createOffspring(Field field, Location location);
 
     /**
-     * Abstract method act, defined in subclasses (meant to be overridden)
-     * @param newAnimals a list of new animals 
+     * Act for one simulation step.
+     * @param newAnimals A list to receive newly born animals.
      */
-    public abstract void act(List<LivingBeing> newAnimals);
+    @Override
+    public final void act(List<LivingBeing> newAnimals)
+    {
+        live(newAnimals);
+    }
     
 }

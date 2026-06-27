@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Map;
-
 /**
  * Frogs eat plants, move at night and are eaten by bears, wolves and badgers.
  *
@@ -14,7 +11,9 @@ public class Frog extends Animal
     private static final int MAX_LITTER_SIZE = 4;
 
     private static final int PLANT_FOOD_VALUE = 12;
-    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES = foodValues(
+    private static final AnimalProfile PROFILE = profile(
+        MAX_AGE, PLANT_FOOD_VALUE, PLANT_FOOD_VALUE / 2, true,
+        BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
         food(Plant.class, PLANT_FOOD_VALUE)
     );
 
@@ -27,17 +26,7 @@ public class Frog extends Animal
      */
     public Frog(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, MAX_AGE, PLANT_FOOD_VALUE, PLANT_FOOD_VALUE / 2);
-    }
-
-    /**
-     * Act for one simulation step.
-     * @param newFrogs A list to return newly born frogs.
-     */
-    public void act(List<LivingBeing> newFrogs)
-    {
-        live(newFrogs, true, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
-             FOOD_VALUES);
+        super(randomAge, field, location, PROFILE);
     }
 
     @Override

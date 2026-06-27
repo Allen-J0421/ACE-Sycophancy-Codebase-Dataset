@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Map;
-
 /**
  * Hedgehogs eat plants, move at night and are eaten by wolves, bears and
  * badgers.
@@ -15,7 +12,9 @@ public class Hedgehog extends Animal
     private static final int MAX_LITTER_SIZE = 5;
 
     private static final int PLANT_FOOD_VALUE = 13;
-    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES = foodValues(
+    private static final AnimalProfile PROFILE = profile(
+        MAX_AGE, PLANT_FOOD_VALUE, PLANT_FOOD_VALUE / 2, true,
+        BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
         food(Plant.class, PLANT_FOOD_VALUE)
     );
 
@@ -28,17 +27,7 @@ public class Hedgehog extends Animal
      */
     public Hedgehog(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, MAX_AGE, PLANT_FOOD_VALUE, PLANT_FOOD_VALUE / 2);
-    }
-
-    /**
-     * Act for one simulation step.
-     * @param newHedgehogs A list to return newly born hedgehogs.
-     */
-    public void act(List<LivingBeing> newHedgehogs)
-    {
-        live(newHedgehogs, true, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
-             FOOD_VALUES);
+        super(randomAge, field, location, PROFILE);
     }
 
     @Override

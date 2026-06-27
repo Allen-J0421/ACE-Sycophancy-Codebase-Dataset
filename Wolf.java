@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Map;
-
 /**
  * Wolves eat hedgehogs and frogs. They hunt and move at night.
  *
@@ -17,7 +14,9 @@ public class Wolf extends Animal
     private static final int FROG_FOOD_VALUE = 25;
     private static final int INITIAL_FOOD_LEVEL = HEDGEHOG_FOOD_VALUE + FROG_FOOD_VALUE;
 
-    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES = foodValues(
+    private static final AnimalProfile PROFILE = profile(
+        MAX_AGE, INITIAL_FOOD_LEVEL, INITIAL_FOOD_LEVEL, true,
+        BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
         food(Hedgehog.class, HEDGEHOG_FOOD_VALUE),
         food(Frog.class, FROG_FOOD_VALUE)
     );
@@ -31,17 +30,7 @@ public class Wolf extends Animal
      */
     public Wolf(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, MAX_AGE, INITIAL_FOOD_LEVEL, INITIAL_FOOD_LEVEL);
-    }
-
-    /**
-     * Act for one simulation step.
-     * @param newWolves A list to return newly born wolves.
-     */
-    public void act(List<LivingBeing> newWolves)
-    {
-        live(newWolves, true, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
-             FOOD_VALUES);
+        super(randomAge, field, location, PROFILE);
     }
 
     @Override

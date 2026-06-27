@@ -1,6 +1,3 @@
-import java.util.List;
-import java.util.Map;
-
 /**
  * Bears are apex predators. They eat hedgehogs, badgers and frogs, and are
  * active during the day.
@@ -20,7 +17,9 @@ public class Bear extends Animal
     private static final int INITIAL_FOOD_LEVEL =
             HEDGEHOG_FOOD_VALUE + BADGER_FOOD_VALUE + FROG_FOOD_VALUE;
 
-    private static final Map<Class<? extends LivingBeing>, Integer> FOOD_VALUES = foodValues(
+    private static final AnimalProfile PROFILE = profile(
+        MAX_AGE, INITIAL_FOOD_LEVEL, INITIAL_FOOD_LEVEL, false,
+        BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
         food(Hedgehog.class, HEDGEHOG_FOOD_VALUE),
         food(Badger.class, BADGER_FOOD_VALUE),
         food(Frog.class, FROG_FOOD_VALUE)
@@ -35,17 +34,7 @@ public class Bear extends Animal
      */
     public Bear(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, MAX_AGE, INITIAL_FOOD_LEVEL, INITIAL_FOOD_LEVEL);
-    }
-
-    /**
-     * Act for one simulation step.
-     * @param newBears A list to return newly born bears.
-     */
-    public void act(List<LivingBeing> newBears)
-    {
-        live(newBears, false, BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE,
-             FOOD_VALUES);
+        super(randomAge, field, location, PROFILE);
     }
 
     @Override

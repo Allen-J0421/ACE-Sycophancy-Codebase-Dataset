@@ -27,9 +27,10 @@ public abstract class Animal extends Organism
      * @param location The location within the field.
      */
     public Animal(boolean randomAge, Field field, Location location,
-                  AnimalAttributes attributes, Weather weather)
+                  AnimalAttributes attributes, Weather weather,
+                  SimulationEventBus eventBus)
     {
-        super(randomAge, field, location, attributes);
+        super(randomAge, field, location, attributes, eventBus);
         this.attributes = attributes;
         this.weather = weather;
         

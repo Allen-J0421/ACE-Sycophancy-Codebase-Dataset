@@ -14,13 +14,13 @@ public class SimulatorView implements SimulationDisplay
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width, SimulationRulesEngine rules)
+    public SimulatorView(int height, int width, SimulationEventBus eventBus)
     {
         if(GraphicsEnvironment.isHeadless()) {
-            delegate = new HeadlessSimulationView(rules);
+            delegate = new HeadlessSimulationView(eventBus);
         }
         else {
-            delegate = new SwingSimulationView(height, width, rules);
+            delegate = new SwingSimulationView(height, width, eventBus);
         }
     }
     

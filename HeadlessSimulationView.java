@@ -14,12 +14,19 @@ public class HeadlessSimulationView implements SimulationDisplay
     private String populationText;
     private int step;
 
-    public HeadlessSimulationView(SimulationRulesEngine rules)
+    public HeadlessSimulationView(SimulationEventBus eventBus)
     {
         colors = new LinkedHashMap<>();
         stats = new FieldStats();
         infoText = "";
         populationText = "";
+        eventBus.subscribe(SimulationStateEvent.class,
+                           new SimulationEventListener() {
+                               public void onEvent(SimulationEvent event)
+                               {
+                                   showStatus(((SimulationStateEvent) event).getState());
+                               }
+                           });
     }
 
     public void setColor(Species species, DisplayColor color)

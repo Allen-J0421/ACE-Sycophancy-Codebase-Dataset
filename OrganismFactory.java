@@ -5,5 +5,6 @@
  */
 public interface OrganismFactory
 {
-    Organism create(boolean randomAge, Field field, Location location);
+    Organism create(boolean randomAge, Field field, Location location,
+                    SimulationEventBus eventBus);
 }

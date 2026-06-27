@@ -12,6 +12,8 @@ public abstract class Organism implements FieldOccupant
 {
     // Shared lifecycle settings for this organism's species.
     private final OrganismAttributes attributes;
+    // Event bus used to publish lifecycle changes.
+    private final SimulationEventBus eventBus;
     // The organism's age
     private int age;
     // Whether the organism is alive or not.
@@ -28,9 +30,10 @@ public abstract class Organism implements FieldOccupant
      * Constructor for objects of class Organism
      */
     public Organism(boolean randomAge, Field field, Location location,
-                    OrganismAttributes attributes)
+                    OrganismAttributes attributes, SimulationEventBus eventBus)
     {
         this.attributes = attributes;
+        this.eventBus = eventBus;
         age = 0;
         if (randomAge) {
             age = rand.nextInt(attributes.getMaxAge());
@@ -152,8 +155,10 @@ public abstract class Organism implements FieldOccupant
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Organism young = attributes.create(false, field, loc);
+            Organism young = attributes.create(false, field, loc, eventBus);
             newOrganisms.add(young);
+            eventBus.publish(new OrganismBornEvent(young.getSpecies(), loc,
+                                                   BirthSource.REPRODUCTION));
         }
     }
     
@@ -175,11 +180,16 @@ public abstract class Organism implements FieldOccupant
      */
     protected void setDead()
     {
+        Species species = getSpecies();
+        Location previousLocation = location;
         alive = false;
         if(location != null) {
             field.clear(location);
             location = null;
             field = null;
+        }
+        if(previousLocation != null) {
+            eventBus.publish(new OrganismDiedEvent(species, previousLocation));
         }
     }
 

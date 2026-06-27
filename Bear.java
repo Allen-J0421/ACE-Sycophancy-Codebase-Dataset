@@ -17,8 +17,9 @@ public class Bear extends InfectiousAnimal
      * @param location The location within the field.
      */
     public Bear(boolean randomAge, Field field, Location location,
-                AnimalAttributes attributes, Weather weather)
+                AnimalAttributes attributes, Weather weather,
+                SimulationEventBus eventBus)
     {
-        super(randomAge, field, location, attributes, weather);
+        super(randomAge, field, location, attributes, weather, eventBus);
     }
 }

@@ -24,6 +24,8 @@ public class Simulator
     private int step;
     // A graphical view of the simulation.
     private SimulationDisplay view;
+    // Event bus for lifecycle and environment notifications.
+    private final SimulationEventBus eventBus;
     // Centralized engine for weather and time-of-day event rules.
     private SimulationRulesEngine rules;
     // Rules describing the main animal population.
@@ -87,14 +89,15 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
+        eventBus = new SimulationEventBus();
         organisms = new ArrayList<>();
         field = new Field(depth, width);
-        rules = container.getRulesEngine();
+        rules = container.createRulesEngine(eventBus);
         primaryPopulationRules = container.getPrimaryPopulationRules();
         secondaryPopulationRules = container.getSecondaryPopulationRules();
 
         // Create a view of the state of each location in the field.
-        this.view = container.createDisplay(depth, width, headless);
+        this.view = container.createDisplay(depth, width, headless, eventBus);
         for(PopulationRule rule : primaryPopulationRules) {
             this.view.setColor(rule.getSpecies(), rule.getColor());
         }
@@ -184,7 +187,7 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        rules.applyStepEvents(step);
+        eventBus.publish(new SimulationStepStartedEvent(step));
         // Provide space for newborn animals.
         List<Organism> newOrganisms = new ArrayList<>();        
         // Let all rabbits act.
@@ -201,7 +204,7 @@ public class Simulator
                    
         // Add the newly born organisms to the main lists.
         organisms.addAll(newOrganisms);
-        view.showStatus(getState());
+        eventBus.publish(new SimulationStepCompletedEvent(getState()));
     }
         
     /**
@@ -212,10 +215,8 @@ public class Simulator
         step = 0;
         organisms.clear();
         populate();
-        rules.reset();
-        
-        // Show the starting state in the view.
-        view.showStatus(getState());
+        eventBus.publish(new SimulationResetRequestedEvent());
+        eventBus.publish(new SimulationResetCompletedEvent(getState()));
     }
     
     /**
@@ -267,7 +268,11 @@ public class Simulator
     {
         for(PopulationRule rule : rules) {
             if(rand.nextDouble() <= rule.getCreationProbability()) {
-                organisms.add(rule.create(field, location));
+                Organism organism = rule.create(field, location, eventBus);
+                organisms.add(organism);
+                eventBus.publish(new OrganismBornEvent(organism.getSpecies(),
+                                                       location,
+                                                       BirthSource.INITIAL_POPULATION));
                 return true;
             }
         }

@@ -24,9 +24,10 @@ public class PopulationRule
         return creationProbability;
     }
 
-    public Organism create(Field field, Location location)
+    public Organism create(Field field, Location location,
+                           SimulationEventBus eventBus)
     {
-        return factory.create(true, field, location);
+        return factory.create(true, field, location, eventBus);
     }
 
     public Species getSpecies()

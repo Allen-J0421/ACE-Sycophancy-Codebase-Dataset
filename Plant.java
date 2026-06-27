@@ -7,8 +7,8 @@
 public class Plant extends Organism
 {
     public Plant(boolean randomAge, Field field, Location location,
-                 OrganismAttributes attributes)
+                 OrganismAttributes attributes, SimulationEventBus eventBus)
     {
-        super(randomAge, field, location, attributes);
+        super(randomAge, field, location, attributes, eventBus);
     }
 }

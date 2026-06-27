@@ -28,15 +28,15 @@ public class SwingSimulationView extends JFrame implements SimulationDisplay
     private final String POPULATION_PREFIX = "Population: ";
     private final Map<Species, Color> colors;
     private final FieldStats stats;
-    private final SimulationRulesEngine rules;
+    private final SimulationEventBus eventBus;
     private final JLabel stepLabel;
     private final JLabel population;
     private final JLabel infoLabel;
     private final FieldView fieldView;
 
-    public SwingSimulationView(int height, int width, SimulationRulesEngine rules)
+    public SwingSimulationView(int height, int width, SimulationEventBus eventBus)
     {
-        this.rules = rules;
+        this.eventBus = eventBus;
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
@@ -79,6 +79,14 @@ public class SwingSimulationView extends JFrame implements SimulationDisplay
         contents.add(population, BorderLayout.SOUTH);
         pack();
         setVisible(true);
+
+        eventBus.subscribe(SimulationStateEvent.class,
+                           new SimulationEventListener() {
+                               public void onEvent(SimulationEvent event)
+                               {
+                                   showStatus(((SimulationStateEvent) event).getState());
+                               }
+                           });
     }
 
     public void setColor(Species species, DisplayColor color)
@@ -120,17 +128,17 @@ public class SwingSimulationView extends JFrame implements SimulationDisplay
 
     private void setSunny()
     {
-        rules.setWeather("Sunny");
+        eventBus.publish(new WeatherChangeRequestedEvent("Sunny"));
     }
 
     private void setRainy()
     {
-        rules.setWeather("Rainy");
+        eventBus.publish(new WeatherChangeRequestedEvent("Rainy"));
     }
 
     private void setFoggy()
     {
-        rules.setWeather("Foggy");
+        eventBus.publish(new WeatherChangeRequestedEvent("Foggy"));
     }
 
     private Color getColor(Species species)

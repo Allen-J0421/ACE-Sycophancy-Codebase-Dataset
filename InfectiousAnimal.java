@@ -8,9 +8,10 @@ import java.util.List;
 public abstract class InfectiousAnimal extends Animal implements Infectable
 {
     public InfectiousAnimal(boolean randomAge, Field field, Location location,
-                            AnimalAttributes attributes, Weather weather)
+                            AnimalAttributes attributes, Weather weather,
+                            SimulationEventBus eventBus)
     {
-        super(randomAge, field, location, attributes, weather);
+        super(randomAge, field, location, attributes, weather, eventBus);
     }
 
     /**

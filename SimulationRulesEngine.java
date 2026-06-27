@@ -10,10 +10,47 @@ public class SimulationRulesEngine
     private static final int WEATHER_CHANGE_INTERVAL = 450;
 
     private final Weather weather;
+    private final SimulationEventBus eventBus;
+    private TimeOfDay currentTimeOfDay;
 
-    public SimulationRulesEngine(Weather weather)
+    public SimulationRulesEngine(Weather weather, SimulationEventBus eventBus)
     {
         this.weather = weather;
+        this.eventBus = eventBus;
+        currentTimeOfDay = null;
+        registerListeners();
+    }
+
+    /**
+     * Register bus listeners for environment changes.
+     */
+    private void registerListeners()
+    {
+        eventBus.subscribe(SimulationStepStartedEvent.class,
+                           new SimulationEventListener() {
+                               public void onEvent(SimulationEvent event)
+                               {
+                                   SimulationStepStartedEvent started =
+                                       (SimulationStepStartedEvent) event;
+                                   handleStepStarted(started.getStep());
+                               }
+                           });
+        eventBus.subscribe(SimulationResetRequestedEvent.class,
+                           new SimulationEventListener() {
+                               public void onEvent(SimulationEvent event)
+                               {
+                                   reset();
+                               }
+                           });
+        eventBus.subscribe(WeatherChangeRequestedEvent.class,
+                           new SimulationEventListener() {
+                               public void onEvent(SimulationEvent event)
+                               {
+                                   WeatherChangeRequestedEvent request =
+                                       (WeatherChangeRequestedEvent) event;
+                                   setWeather(request.getWeatherName());
+                               }
+                           });
     }
 
     /**
@@ -21,10 +58,13 @@ public class SimulationRulesEngine
      *
      * @param step The simulation step being executed.
      */
-    public void applyStepEvents(int step)
+    public void handleStepStarted(int step)
     {
-        if (step % WEATHER_CHANGE_INTERVAL == 0) {
+        updateTimeOfDay(step);
+        if(step % WEATHER_CHANGE_INTERVAL == 0) {
+            String previousWeather = weather.getCurrentWeather();
             weather.changeWeather();
+            publishWeatherChanged(previousWeather, weather.getCurrentWeather());
         }
     }
 
@@ -71,7 +111,9 @@ public class SimulationRulesEngine
      */
     public void setWeather(String weatherName)
     {
+        String previousWeather = weather.getCurrentWeather();
         weather.setWeather(weatherName);
+        publishWeatherChanged(previousWeather, weatherName);
     }
 
     /**
@@ -79,6 +121,30 @@ public class SimulationRulesEngine
      */
     public void reset()
     {
+        currentTimeOfDay = null;
+        updateTimeOfDay(0);
+        String previousWeather = weather.getCurrentWeather();
         weather.resetWeather();
+        publishWeatherChanged(previousWeather, weather.getCurrentWeather());
+    }
+
+    private void updateTimeOfDay(int step)
+    {
+        TimeOfDay nextTimeOfDay = getTimeOfDay(step);
+        if(currentTimeOfDay != nextTimeOfDay) {
+            TimeOfDay previousTimeOfDay = currentTimeOfDay;
+            currentTimeOfDay = nextTimeOfDay;
+            if(previousTimeOfDay != null) {
+                eventBus.publish(new TimeOfDayChangedEvent(step, previousTimeOfDay,
+                                                           nextTimeOfDay));
+            }
+        }
+    }
+
+    private void publishWeatherChanged(String previousWeather, String nextWeather)
+    {
+        if(previousWeather == null || !previousWeather.equals(nextWeather)) {
+            eventBus.publish(new WeatherChangedEvent(previousWeather, nextWeather));
+        }
     }
 }

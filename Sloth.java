@@ -16,8 +16,9 @@ public class Sloth extends InfectiousAnimal
      * @param location The location within the field.
      */
     public Sloth(boolean randomAge, Field field, Location location,
-                 AnimalAttributes attributes, Weather weather)
+                 AnimalAttributes attributes, Weather weather,
+                 SimulationEventBus eventBus)
     {
-        super(randomAge, field, location, attributes, weather);
+        super(randomAge, field, location, attributes, weather, eventBus);
     }
 }

@@ -69,9 +69,10 @@ public class OrganismAttributes
         return maxLitterSize;
     }
 
-    public Organism create(boolean randomAge, Field field, Location location)
+    public Organism create(boolean randomAge, Field field, Location location,
+                           SimulationEventBus eventBus)
     {
-        return factory.create(randomAge, field, location);
+        return factory.create(randomAge, field, location, eventBus);
     }
 
     public BreedingStrategy getBreedingStrategy()

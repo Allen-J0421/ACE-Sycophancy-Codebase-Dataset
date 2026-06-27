@@ -12,7 +12,6 @@ public class SimulationContainer
 
     private final SpeciesConfigurationRepository configurationRepository;
     private final Weather weather;
-    private final SimulationRulesEngine rulesEngine;
     private final EnumMap<Species, OrganismAttributes> attributesBySpecies;
     private final PopulationRule[] primaryPopulationRules;
     private final PopulationRule[] secondaryPopulationRules;
@@ -28,23 +27,23 @@ public class SimulationContainer
     {
         this.configurationRepository = configurationRepository;
         this.weather = weather;
-        rulesEngine = new SimulationRulesEngine(weather);
         attributesBySpecies = buildAttributes();
         primaryPopulationRules = buildPrimaryPopulationRules();
         secondaryPopulationRules = buildSecondaryPopulationRules();
     }
 
-    public SimulationRulesEngine getRulesEngine()
+    public SimulationRulesEngine createRulesEngine(SimulationEventBus eventBus)
     {
-        return rulesEngine;
+        return new SimulationRulesEngine(weather, eventBus);
     }
 
-    public SimulationDisplay createDisplay(int depth, int width, boolean headless)
+    public SimulationDisplay createDisplay(int depth, int width, boolean headless,
+                                           SimulationEventBus eventBus)
     {
         if(headless) {
-            return new HeadlessSimulationView(rulesEngine);
+            return new HeadlessSimulationView(eventBus);
         }
-        return new SimulatorView(depth, width, rulesEngine);
+        return new SimulatorView(depth, width, eventBus);
     }
 
     public PopulationRule[] getPrimaryPopulationRules()
@@ -124,27 +123,33 @@ public class SimulationContainer
     private OrganismFactory organismFactory(final Species species)
     {
         return new OrganismFactory() {
-            public Organism create(boolean randomAge, Field field, Location location)
+            public Organism create(boolean randomAge, Field field, Location location,
+                                   SimulationEventBus eventBus)
             {
                 switch(species) {
                     case BEAR:
                         return new Bear(randomAge, field, location,
-                                        getAnimalAttributes(species), weather);
+                                        getAnimalAttributes(species), weather,
+                                        eventBus);
                     case HIPPOPOTAMUS:
                         return new Hippopotamus(randomAge, field, location,
-                                                getAnimalAttributes(species), weather);
+                                                getAnimalAttributes(species), weather,
+                                                eventBus);
                     case LEOPARD:
                         return new Leopard(randomAge, field, location,
-                                           getAnimalAttributes(species), weather);
+                                           getAnimalAttributes(species), weather,
+                                           eventBus);
                     case MONKEY:
                         return new Monkey(randomAge, field, location,
-                                          getAnimalAttributes(species), weather);
+                                          getAnimalAttributes(species), weather,
+                                          eventBus);
                     case SLOTH:
                         return new Sloth(randomAge, field, location,
-                                         getAnimalAttributes(species), weather);
+                                         getAnimalAttributes(species), weather,
+                                         eventBus);
                     case PLANT:
                         return new Plant(randomAge, field, location,
-                                         getOrganismAttributes(species));
+                                         getOrganismAttributes(species), eventBus);
                     default:
                         throw new IllegalStateException("Unsupported species " + species);
                 }

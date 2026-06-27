@@ -23,17 +23,12 @@ public class FieldStats
         for (Counter c : counters.values()) {
             c.reset();
         }
-        for (int row = 0; row < field.getDepth(); row++) {
-            for (int col = 0; col < field.getWidth(); col++) {
-                Object item = field.getObjectAt(row, col);
-                if (item != null) {
-                    incrementCount(item.getClass());
-                    if (item instanceof Infectable) {
-                        Disease disease = ((Infectable) item).getDisease();
-                        if (disease != null) {
-                            incrementCount(disease.getClass());
-                        }
-                    }
+        for (Object item : field.getOccupants()) {
+            incrementCount(item.getClass());
+            if (item instanceof Infectable) {
+                Disease disease = ((Infectable) item).getDisease();
+                if (disease != null) {
+                    incrementCount(disease.getClass());
                 }
             }
         }

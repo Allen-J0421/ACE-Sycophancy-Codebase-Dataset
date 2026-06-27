@@ -88,12 +88,22 @@ public enum WeatherCond
     }
 
     /**
+     * Returns the value of a specific weather attribute.
+     * @param attribute The weather attribute to look up.
+     * @return The attribute value.
+     */
+    public double getAttribute(WeatherAttribute attribute)
+    {
+        return weatherAttributes.get(attribute);
+    }
+
+    /**
      * Returns visibility.
      * @return visibility.
      */
     public double getVisibilty()
     {
-        return weatherAttributes.get(WeatherAttribute.VISIBILITY);
+        return getAttribute(WeatherAttribute.VISIBILITY);
     }
 
     /**
@@ -102,7 +112,7 @@ public enum WeatherCond
      */
     public double getBrightness()
     {
-        return weatherAttributes.get(WeatherAttribute.BRIGHTNESS);
+        return getAttribute(WeatherAttribute.BRIGHTNESS);
     }
     
     /**
@@ -111,16 +121,7 @@ public enum WeatherCond
      */
     public double getDampness()
     {
-        return weatherAttributes.get(WeatherAttribute.DAMPNESS);
-    }
-    
-    /**
-     * Returns the Map of all weather attributes.
-     * @return The Map of all weather attributes.
-     */
-    public Map<WeatherAttribute, Double> getWeatherAttributesMap()
-    {
-        return weatherAttributes;
+        return getAttribute(WeatherAttribute.DAMPNESS);
     }
 
     /**

@@ -86,22 +86,12 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Lemur.class, Color.RED.darker());
-        view.setColor(Panther.class, Color.ORANGE);
-        view.setColor(Grass.class, Color.GREEN.darker());
-        view.setColor(Water_Fern.class, Color.GREEN.brighter());
-        view.setColor(Alligator.class, Color.LIGHT_GRAY);
-        view.setColor(Salamander.class, Color.MAGENTA);
-        view.setColor(Catfish.class, Color.BLACK);
+        configureViewColors();
         view.display();
 
         
         weatherCond.setTime(time);
-        // Setup a valid starting point.
-        step = 0;
-        actors.clear();
-        populate();
-        view.showStatus(step, field, weatherCond, diseases);
+        initializeSimulation();
     }
 
     /**
@@ -158,6 +148,20 @@ public class Simulator
     }
 
     /**
+     * Configure the actor colors used by the view.
+     */
+    private void configureViewColors()
+    {
+        view.setColor(Lemur.class, Color.RED.darker());
+        view.setColor(Panther.class, Color.ORANGE);
+        view.setColor(Grass.class, Color.GREEN.darker());
+        view.setColor(Water_Fern.class, Color.GREEN.brighter());
+        view.setColor(Alligator.class, Color.LIGHT_GRAY);
+        view.setColor(Salamander.class, Color.MAGENTA);
+        view.setColor(Catfish.class, Color.BLACK);
+    }
+
+    /**
      * Create a List of all the diseases in the simulation, specify which actors start with the disease and which actors can catch the disease.
      * Starting and affected actors are specified by a Map with a String key and double value, of probability to get disease for starting actors,
      * and disease severity for affected actors. Severity ranges from 0.0 to 1.0, 0.0 being completely fatal as soon as contracted, and 1.0 meaning
@@ -167,22 +171,18 @@ public class Simulator
     private static List<Disease> createDiseases()
     {
         List<Disease> list = new ArrayList<>();
-        Disease dengue = new Disease("dengue", true, true);
-
-        dengue.getActorsAffectedMap().put("Lemur",0.9);
-        dengue.getActorsAffectedMap().put("Panther",0.6);
-        dengue.getActorsAffectedMap().put("Alligator",0.6);
-
-        dengue.getStartingActorsMap().put("Lemur",0.4);
+        Disease dengue = new Disease("dengue", true, true)
+            .affects("Lemur", 0.9)
+            .affects("Panther", 0.6)
+            .affects("Alligator", 0.6)
+            .startsWith("Lemur", 0.4);
         list.add(dengue);
         
-        Disease river_fever = new Disease("river_fever", true, false);
-
-        river_fever.getActorsAffectedMap().put("Water_Fern",1.0);
-        river_fever.getActorsAffectedMap().put("Catfish",0.7);
-        river_fever.getActorsAffectedMap().put("Salamander",0.8);
-
-        river_fever.getStartingActorsMap().put("Water_Fern",0.4);
+        Disease river_fever = new Disease("river_fever", true, false)
+            .affects("Water_Fern", 1.0)
+            .affects("Catfish", 0.7)
+            .affects("Salamander", 0.8)
+            .startsWith("Water_Fern", 0.4);
         list.add(river_fever);
         
         return list;
@@ -243,12 +243,7 @@ public class Simulator
      */
     public void reset()
     {
-        step = 0;
-        actors.clear();
-        populate();
-
-        // Show the starting state in the view.
-        view.showStatus(step, field, weatherCond, diseases);
+        initializeSimulation();
     }
 
     /**
@@ -288,5 +283,16 @@ public class Simulator
         catch (InterruptedException ie) {
             // wake up
         }
+    }
+
+    /**
+     * Reset actor state and show the initial simulation frame.
+     */
+    private void initializeSimulation()
+    {
+        step = 0;
+        actors.clear();
+        populate();
+        view.showStatus(step, field, weatherCond, diseases);
     }
 }

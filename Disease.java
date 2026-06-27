@@ -34,6 +34,30 @@ public class Disease
         actorsAffected = new HashMap<>();
         startingActors = new HashMap<>();
     }
+
+    /**
+     * Record that this disease affects the given actor type.
+     * @param actorName The actor type name.
+     * @param severity The severity multiplier.
+     * @return This disease.
+     */
+    public Disease affects(String actorName, double severity)
+    {
+        actorsAffected.put(actorName, severity);
+        return this;
+    }
+
+    /**
+     * Record that actors of the given type may start with this disease.
+     * @param actorName The actor type name.
+     * @param probability The starting probability.
+     * @return This disease.
+     */
+    public Disease startsWith(String actorName, double probability)
+    {
+        startingActors.put(actorName, probability);
+        return this;
+    }
     
     /**
      * Returns the String name of the disease.

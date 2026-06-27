@@ -271,7 +271,7 @@ public class Field
     public void setWeatherField(WeatherCond weather) 
     {
         for (WeatherAttribute weatherAttribute : weatherField.keySet()) {
-            double avgWeather = weather.getWeatherAttributesMap().get(weatherAttribute);
+            double avgWeather = weather.getAttribute(weatherAttribute);
             for(int row = 0; row < depth; row++) {
                 for(int col = 0; col < width; col++) {
                     weatherField.get(weatherAttribute)[row][col] = avgWeather + (rand.nextDouble() - 0.5) * 2 / 5;

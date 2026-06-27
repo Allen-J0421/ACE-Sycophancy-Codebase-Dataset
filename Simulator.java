@@ -203,7 +203,7 @@ public class Simulator
         // Creates default actors (diseases and weather)
         diseases = createDiseases();
         
-        Weather weather = new Weather(this);
+        Weather weather = createWeather();
         
         actors.addAll(diseases);
         actors.add(weather);
@@ -263,6 +263,14 @@ public class Simulator
         Disease covid = new Covid(field);
         Disease leptospirosis = new Leptospirosis(field);
         return new ArrayList<>(Arrays.asList(covid, leptospirosis));
+    }
+
+    /**
+     * Create and configure the weather actor for the simulation.
+     */
+    private Weather createWeather()
+    {
+        return new Weather(this);
     }
     
     /**

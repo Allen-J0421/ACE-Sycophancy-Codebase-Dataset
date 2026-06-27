@@ -54,19 +54,6 @@ public class Field
     
     /**
      * Place an object at the given location.
-     * If there is already an object at the location it will
-     * be lost.
-     * @param object The object to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Object object, int row, int col)
-    {
-        place(object, new Location(row, col));
-    }
-    
-    /**
-     * Place an object at the given location.
      * If there is already a object at the location it will
      * be lost.
      * @param object The object to be placed.
@@ -96,20 +83,6 @@ public class Field
     public Object getObjectAt(int row, int col)
     {
         return field[row][col];
-    }
-    
-    /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location);
-        return adjacent.get(0);
     }
     
     /**

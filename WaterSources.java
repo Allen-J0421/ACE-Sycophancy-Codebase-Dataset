@@ -6,12 +6,8 @@ import java.util.ArrayList;
  *
  * @version 2022.02.28
  */
-public abstract class WaterSources implements Actor
+public abstract class WaterSources extends FieldOccupant implements Actor
 {
-    // The water source's field.
-    private Field field;
-    // The water source's position in the field.
-    private Location location;
     // Whether the water source contains any water or not.
     private boolean isEmpty;
     // The volume of the water source, increases whenever it rains and decreases when water is drunk or taken from it.
@@ -27,10 +23,9 @@ public abstract class WaterSources implements Actor
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public WaterSources(boolean randomVolume, Field field, Location location) 
+    public WaterSources(boolean randomVolume, Field field, Location location)
     {
-        this.field = field;
-        setLocation(location);
+        super(field, location);
         if (!randomVolume) {
             setVolume(10);
         }
@@ -49,37 +44,7 @@ public abstract class WaterSources implements Actor
     }
 
     /**
-     * Return the water source's location.
-     * @return The water source's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-
-    /**
-     * Place the water source at the new location in the given field.
-     * @param newLocation The water source's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-
-    /**
-     * @return The water source's field.
-     */
-    protected Field getField()
-    {
-        return field;
-    }
-
-    /**
-     * Infects the water source with a disease 
+     * Infects the water source with a disease
      * (to spread to animals that drink from it)
      */
     protected void setInfected() {
@@ -115,10 +80,7 @@ public abstract class WaterSources implements Actor
      */
     public void setDead()
     {
-        if(volumeLevel <= 0 && location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
+        if(volumeLevel <= 0 && clearFromField()) {
             isEmpty = true;
         }
     }

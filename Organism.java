@@ -10,33 +10,28 @@ import java.util.ArrayList;
  *
  * @version 2022.02.27
  */
-public abstract class Organism implements Actor
+public abstract class Organism extends FieldOccupant implements Actor
 {
     // Whether the organism is alive or not
     private boolean alive;
-    // The organism's field
-    private Field field;
-    // The organism's position in the field
-    private Location location;
     // The water level of the organism
     private int waterLevel;
     // Whether the organism is infected with a disease or not.
     private boolean infected;
     // The organism's age
     private int age;
-    
-    /** 
+
+    /**
      * Constructor for organisms - places new organism in location
-     * 
+     *
      * @param randomAge If true, the organism will have random age
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Organism(boolean randomAge, Field field, Location location) 
+    public Organism(boolean randomAge, Field field, Location location)
     {
+        super(field, location);
         alive = true;
-        this.field = field;
-        setLocation(location);
         age = 0;
     }
     
@@ -51,37 +46,6 @@ public abstract class Organism implements Actor
     {
         incrementAge();
         decreaseWaterLevel();
-    }
-    
-    /**
-     * Return the organism's location.
-     * @return The organism's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-    
-     /**
-     * Place the organism at the new location in the given field.
-     * @param newLocation The organism's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-    
-    /**
-     * Return the organism's field.
-     * @return The organism's field.
-     */
-    protected Field getField()
-    {
-        return field;
     }
     
     /**
@@ -100,11 +64,7 @@ public abstract class Organism implements Actor
     public void setDead()
     {
         alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
+        clearFromField();
     }
     
     /**

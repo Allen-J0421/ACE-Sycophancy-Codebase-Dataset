@@ -69,6 +69,9 @@ public class Simulator
         double fogProbability      = SimulationConfiguration.FOG_PROBABILITY;
         double heatwaveProbability = SimulationConfiguration.HEATWAVE_PROBABILITY;
 
+        // Logger (defaults to console output)
+        SimulationLogger logger = new ConsoleLogger();
+
         public Builder gridDepth(int depth)   { this.gridDepth = depth;   return this; }
         public Builder gridWidth(int width)   { this.gridWidth = width;   return this; }
         public Builder stepDelayMs(int ms)    { this.stepDelayMs = ms;    return this; }
@@ -85,6 +88,8 @@ public class Simulator
         public Builder fogProbability(double p)      { this.fogProbability = p;      return this; }
         public Builder heatwaveProbability(double p) { this.heatwaveProbability = p; return this; }
 
+        public Builder logger(SimulationLogger logger) { this.logger = logger; return this; }
+
         /**
          * Validate, freeze into a SimulatorConfig, and construct the Simulator.
          */
@@ -97,11 +102,11 @@ public class Simulator
         SimulatorConfig buildConfig()
         {
             if(gridDepth <= 0) {
-                System.out.println("Depth must be greater than zero. Using default.");
+                logger.warn("Depth must be greater than zero. Using default.");
                 gridDepth = SimulationConfiguration.GRID_DEPTH;
             }
             if(gridWidth <= 0) {
-                System.out.println("Width must be greater than zero. Using default.");
+                logger.warn("Width must be greater than zero. Using default.");
                 gridWidth = SimulationConfiguration.GRID_WIDTH;
             }
             return new SimulatorConfig(this);
@@ -166,6 +171,16 @@ public class Simulator
     public SimulatorConfig getConfig()
     {
         return config;
+    }
+
+    /**
+     * @return The logger configured for this simulation.
+     * Components that hold a Simulator reference can use this to emit
+     * structured log messages without coupling to a specific output.
+     */
+    public SimulationLogger getLogger()
+    {
+        return config.getLogger();
     }
 
     /**

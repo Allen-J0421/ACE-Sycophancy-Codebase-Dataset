@@ -31,6 +31,9 @@ public class SimulatorConfig
     private final double fogProbability;
     private final double heatwaveProbability;
 
+    // Logger
+    private final SimulationLogger logger;
+
     /** Package-private: only Simulator.Builder may construct this. */
     SimulatorConfig(Simulator.Builder b)
     {
@@ -47,6 +50,7 @@ public class SimulatorConfig
         rainProbability          = b.rainProbability;
         fogProbability           = b.fogProbability;
         heatwaveProbability      = b.heatwaveProbability;
+        logger                   = b.logger;
     }
 
     public int    getGridDepth()                  { return gridDepth; }
@@ -62,4 +66,5 @@ public class SimulatorConfig
     public double getRainProbability()     { return rainProbability; }
     public double getFogProbability()      { return fogProbability; }
     public double getHeatwaveProbability() { return heatwaveProbability; }
+    public SimulationLogger getLogger()    { return logger; }
 }

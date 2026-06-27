@@ -47,11 +47,7 @@ public class Alligator extends Animal
         canGoWater = true;
         age = 0;
         foodLevel = MAX_FOOD;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-            }
-        }
+        inheritDiseases(parentDiseases);
     }
 
     /**
@@ -70,12 +66,7 @@ public class Alligator extends Animal
         canGoWater = true;
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
-        for(Disease disease : Simulator.diseases){
-            Double prob = disease.getStartingActorsMap().get(Alligator.class);
-            if(prob != null && rand.nextDouble() <= prob){
-                setDiseases.add(disease);
-            }
-        }
+        initStartingDiseases(Simulator.diseases);
     }
 
     /**

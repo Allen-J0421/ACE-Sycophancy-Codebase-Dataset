@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -165,8 +166,9 @@ public abstract class Animal extends Actor
      */
     public int breed()
     {
-        if(canBreed() && Randomizer.getRandom().nextDouble() <= getBreedingProbability()) {
-            return Randomizer.getRandom().nextInt(getMaxLitterSize()) + 1;
+        Random rand = Randomizer.getRandom();
+        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            return rand.nextInt(getMaxLitterSize()) + 1;
         }
         return 0;
     }

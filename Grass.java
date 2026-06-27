@@ -34,11 +34,7 @@ public class Grass extends Plant
         canGoLand = true;
         canGoWater = false;
         age = 0;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-            }
-        }
+        inheritDiseases(parentDiseases);
     }
 
     /**
@@ -54,12 +50,7 @@ public class Grass extends Plant
         canGoLand = true;
         canGoWater = false;
         age = rand.nextInt(MAX_AGE);
-        for(Disease disease : Simulator.diseases){
-            Double prob = disease.getStartingActorsMap().get(Grass.class);
-            if(prob != null && rand.nextDouble() <= prob){
-                setDiseases.add(disease);
-            }
-        }
+        initStartingDiseases(Simulator.diseases);
     }
 
     protected int getBreedingAge() { return BREEDING_AGE; }

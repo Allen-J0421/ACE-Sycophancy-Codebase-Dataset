@@ -34,11 +34,7 @@ public class Water_Fern extends Plant
         canGoLand = false;
         canGoWater = true;
         age = 0;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-            }
-        }
+        inheritDiseases(parentDiseases);
     }
 
     /**
@@ -54,12 +50,7 @@ public class Water_Fern extends Plant
         canGoLand = false;
         canGoWater = true;
         age = rand.nextInt(MAX_AGE);
-        for(Disease disease : Simulator.diseases){
-            Double prob = disease.getStartingActorsMap().get(Water_Fern.class);
-            if(prob != null && rand.nextDouble() <= prob){
-                setDiseases.add(disease);
-            }
-        }
+        initStartingDiseases(Simulator.diseases);
     }
 
     protected int getBreedingAge() { return BREEDING_AGE; }

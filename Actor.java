@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -191,7 +192,7 @@ public abstract class Actor
      * @return true if the actor has a disease
      */
     public boolean hasDisease(){
-        return setDiseases.size() > 0;
+        return !setDiseases.isEmpty();
     }
     
     /**
@@ -201,6 +202,31 @@ public abstract class Actor
     public Set<Disease> getActorDiseaseSet()
     {
         return setDiseases;
+    }
+
+    /**
+     * Inherit diseases from parent — called from newborn constructors.
+     */
+    protected void inheritDiseases(Set<Disease> parentDiseases) {
+        for(Disease disease : parentDiseases) {
+            if(disease.isSpreadByBirth()) {
+                setDiseases.add(disease);
+            }
+        }
+    }
+
+    /**
+     * Assign starting diseases by probability — called from random-age constructors.
+     * @param diseases The global disease list from the simulation.
+     */
+    protected void initStartingDiseases(List<Disease> diseases) {
+        Random rand = Randomizer.getRandom();
+        for(Disease disease : diseases) {
+            Double prob = disease.getStartingActorsMap().get(getClass());
+            if(prob != null && rand.nextDouble() <= prob) {
+                setDiseases.add(disease);
+            }
+        }
     }
 
     /**

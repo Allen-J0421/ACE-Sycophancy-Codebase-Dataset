@@ -207,16 +207,21 @@ public class Simulator
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                for (Actor actor : actorCreationProb.keySet()){
-                    Location location = new Location(row, col);
-                    if((rand.nextDouble() <= actorCreationProb.get(actor)) && ((actor.canMoveOnLand() && actor.canMoveOnWater()) || (field.isUnderWater(location.getRow(), location.getCol()) && actor.canMoveOnWater()) || (!field.isUnderWater(location.getRow(), location.getCol()) && actor.canMoveOnLand()))) {
-                        Actor newActor = actor.birth(new Location(row, col));
-                        actors.add(newActor);
+                for(Actor actor : actorCreationProb.keySet()) {
+                    if(rand.nextDouble() <= actorCreationProb.get(actor) && terrainCompatible(actor, row, col)) {
+                        actors.add(actor.birth(new Location(row, col)));
                         break;
                     }
                 }
             }
         }
+    }
+
+    private boolean terrainCompatible(Actor actor, int row, int col)
+    {
+        return (actor.canMoveOnLand() && actor.canMoveOnWater())
+            || (field.isUnderWater(row, col) && actor.canMoveOnWater())
+            || (!field.isUnderWater(row, col) && actor.canMoveOnLand());
     }
 
     /**

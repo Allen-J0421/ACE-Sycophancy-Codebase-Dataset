@@ -47,12 +47,7 @@ public class Catfish extends Animal
         
         age = 0;
         foodLevel = MAX_FOOD;
-        for(Disease parentDisease : parentDiseases){
-            if (parentDisease.isSpreadByBirth()){
-                setDiseases.add(parentDisease);
-                //System.out.println("Spread by parent disease");
-            }
-        }
+        inheritDiseases(parentDiseases);
     }
     
     /**
@@ -71,12 +66,7 @@ public class Catfish extends Animal
         
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
-        for(Disease disease : Simulator.diseases){
-            Double prob = disease.getStartingActorsMap().get(Catfish.class);
-            if(prob != null && rand.nextDouble() <= prob){
-                setDiseases.add(disease);
-            }
-        }
+        initStartingDiseases(Simulator.diseases);
     }
 
     /**

@@ -18,37 +18,43 @@ public class Simulator
     //   The default height for the grid:
     private static final int DEFAULT_DEPTH = 160;
                                                   
-    // Constants representing the creation probabilities for the actors:
-    //   Primary consumers:
-    private static final double GRASSHOPPER_CREATION_PROBABILITY   = 0.15;
-    private static final double HARVESTER_ANT_CREATION_PROBABILITY = 0.25;
-    private static final double TERMITE_CREATION_PROBABILITY       = 0.21;
-    private static final double IMPALA_CREATION_PROBABILITY        = 0.15;
-    //   Secondary consumers:
-    private static final double PANGOLIN_CREATION_PROBABILITY      = 0.125;
-    private static final double AARDVARK_CREATION_PROBABILITY      = 0.12;
-    private static final double MONGOOSE_CREATION_PROBABILITY      = 0.12;
-    //   Producers:
-    private static final double STAR_GRASS_CREATION_PROBABILITY    = 0.05;
-    private static final double RED_OAT_GRASS_CREATION_PROBABILITY = 0.04;
-    private static final double ACACIA_CREATION_PROBABILITY        = 0.04;
-    
-    // Constants representing the color of each actor in the simulation view:
-    //   Primary consumers:
-    private static final Color GRASSHOPPER_COLOR   = new Color(188, 248, 236);
-    private static final Color HARVESTER_ANT_COLOR = new Color(4, 139, 168);
-    private static final Color TERMITE_COLOR       = new Color(22, 219, 147);
-    private static final Color IMPALA_COLOR        = new Color(239, 234, 90);
-    //   Secondary consumers:
-    private static final Color PANGOLIN_COLOR      = new Color(242, 158, 76);
-    private static final Color AARDVARK_COLOR      = new Color(204, 183, 174);
-    private static final Color MONGOOSE_COLOR      = new Color(65, 69, 53);
-    //   Producers:
-    private static final Color STAR_GRASS_COLOR    = new Color(125, 97, 103);
-    private static final Color RED_OAT_GRASS_COLOR = new Color(164, 3, 111);
-    private static final Color ACACIA_COLOR        = new Color(187, 214, 134);
-    // Carcasses of consumers
-    private static final Color CARCASS_COLOR       = new Color(202,0,0);
+    // The registry of every species that can seed the field, in the order
+    // they are considered during population. Each entry bundles the species'
+    // colour, its per-location creation probability and a factory, so this is
+    // the single place to edit when adding, removing or tuning a species.
+    //
+    // NOTE: the order of this list is significant. populate() draws one random
+    // number per entry until one matches, so re-ordering it changes which
+    // actors are seeded for a given Randomizer seed.
+    private static final List<SpeciesDescriptor> SPECIES = List.of(
+        //   Primary consumers:
+        new SpeciesDescriptor(Grasshopper.class,  new Color(188, 248, 236), 0.15,
+                              (field, location) -> new Grasshopper(true, field, location)),
+        new SpeciesDescriptor(HarvesterAnt.class, new Color(4, 139, 168),   0.25,
+                              (field, location) -> new HarvesterAnt(true, field, location)),
+        new SpeciesDescriptor(Termite.class,      new Color(22, 219, 147),  0.21,
+                              (field, location) -> new Termite(true, field, location)),
+        new SpeciesDescriptor(Impala.class,       new Color(239, 234, 90),  0.15,
+                              (field, location) -> new Impala(true, field, location)),
+        //   Secondary consumers:
+        new SpeciesDescriptor(Pangolin.class,     new Color(242, 158, 76),  0.125,
+                              (field, location) -> new Pangolin(true, field, location)),
+        new SpeciesDescriptor(Aardvark.class,     new Color(204, 183, 174), 0.12,
+                              (field, location) -> new Aardvark(true, field, location)),
+        new SpeciesDescriptor(Mongoose.class,     new Color(65, 69, 53),    0.12,
+                              (field, location) -> new Mongoose(true, field, location)),
+        //   Producers:
+        new SpeciesDescriptor(StarGrass.class,    new Color(125, 97, 103),  0.05,
+                              (field, location) -> new StarGrass(field, location)),
+        new SpeciesDescriptor(RedOatGrass.class,  new Color(164, 3, 111),   0.04,
+                              (field, location) -> new RedOatGrass(field, location)),
+        new SpeciesDescriptor(Acacia.class,       new Color(187, 214, 134), 0.04,
+                              (field, location) -> new Acacia(field, location))
+    );
+
+    // The colour of a carcass. Carcasses are produced dynamically as actors
+    // are eaten rather than seeded, so they are not part of SPECIES.
+    private static final Color CARCASS_COLOR = new Color(202, 0, 0);
     
     // The number of steps in a day:
     public static final int NUMBER_OF_STEPS_PER_DAY = 25;
@@ -100,16 +106,10 @@ public class Simulator
         // Create a view of the state of each location in the field:
         view = new SimulatorView(this,depth, width);
         
-        view.setColor(Grasshopper.class, GRASSHOPPER_COLOR);
-        view.setColor(HarvesterAnt.class, HARVESTER_ANT_COLOR);
-        view.setColor(Termite.class, TERMITE_COLOR);
-        view.setColor(Impala.class, IMPALA_COLOR);
-        view.setColor(Pangolin.class, PANGOLIN_COLOR);
-        view.setColor(Aardvark.class, AARDVARK_COLOR);
-        view.setColor(Mongoose.class, MONGOOSE_COLOR);
-        view.setColor(StarGrass.class, STAR_GRASS_COLOR);
-        view.setColor(RedOatGrass.class, RED_OAT_GRASS_COLOR);
-        view.setColor(Acacia.class, ACACIA_COLOR);
+        for (SpeciesDescriptor descriptor : SPECIES)
+        {
+            view.setColor(descriptor.getSpecies(), descriptor.getColor());
+        }
         view.setColor(Carcass.class, CARCASS_COLOR);
         
         // Show the statistics window:
@@ -219,31 +219,20 @@ public class Simulator
             for (int col = 0; col < field.getWidth(); col++)
             {
                 Location location = new Location(row, col);
-                Actor actor;
-                
-                // Refactor this?
-                if (rand.nextDouble() <= GRASSHOPPER_CREATION_PROBABILITY)
-                    actors.add(new Grasshopper(true, field, location));
-                else if (rand.nextDouble() <= HARVESTER_ANT_CREATION_PROBABILITY)
-                    actors.add(new HarvesterAnt(true, field, location));
-                else if (rand.nextDouble() <= TERMITE_CREATION_PROBABILITY)
-                    actors.add(new Termite(true, field, location));
-                else if (rand.nextDouble() <= IMPALA_CREATION_PROBABILITY)
-                    actors.add(new Impala(true, field, location));
-                else if (rand.nextDouble() <= PANGOLIN_CREATION_PROBABILITY)
-                    actors.add(new Pangolin(true, field, location));
-                else if (rand.nextDouble() <= AARDVARK_CREATION_PROBABILITY)
-                    actors.add(new Aardvark(true, field, location));
-                else if (rand.nextDouble() <= MONGOOSE_CREATION_PROBABILITY)
-                    actors.add(new Mongoose(true, field, location));
-                else if (rand.nextDouble() <= STAR_GRASS_CREATION_PROBABILITY)
-                    actors.add(new StarGrass(field, location));
-                else if (rand.nextDouble() <= RED_OAT_GRASS_CREATION_PROBABILITY)
-                    actors.add(new RedOatGrass(field, location));
-                else if (rand.nextDouble() <= ACACIA_CREATION_PROBABILITY)
-                    actors.add(new Acacia(field, location));
-                
-                // Else leave the location empty.
+
+                // Consider each species in turn, drawing one random number
+                // per species until one is selected. This matches the original
+                // if/else-if chain exactly: the same number of draws is made in
+                // the same order, so a given Randomizer seed produces the same
+                // field. If none is selected the location is left empty.
+                for (SpeciesDescriptor descriptor : SPECIES)
+                {
+                    if (rand.nextDouble() <= descriptor.getCreationProbability())
+                    {
+                        actors.add(descriptor.create(field, location));
+                        break;
+                    }
+                }
             }
         }
     }

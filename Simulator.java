@@ -114,20 +114,18 @@ public class Simulator
         List<Disease> list = new ArrayList<>();
         Disease dengue = new Disease("dengue", true, true);
 
-        dengue.getActorsAffectedMap().put(Lemur.class, 0.9);
-        dengue.getActorsAffectedMap().put(Panther.class, 0.6);
-        dengue.getActorsAffectedMap().put(Alligator.class, 0.6);
-
-        dengue.getStartingActorsMap().put(Lemur.class, 0.4);
+        dengue.addAffectedActor(Lemur.class, 0.9);
+        dengue.addAffectedActor(Panther.class, 0.6);
+        dengue.addAffectedActor(Alligator.class, 0.6);
+        dengue.addStartingActor(Lemur.class, 0.4);
         list.add(dengue);
 
         Disease river_fever = new Disease("river_fever", true, false);
 
-        river_fever.getActorsAffectedMap().put(Water_Fern.class, 1.0);
-        river_fever.getActorsAffectedMap().put(Catfish.class, 0.7);
-        river_fever.getActorsAffectedMap().put(Salamander.class, 0.8);
-
-        river_fever.getStartingActorsMap().put(Water_Fern.class, 0.4);
+        river_fever.addAffectedActor(Water_Fern.class, 1.0);
+        river_fever.addAffectedActor(Catfish.class, 0.7);
+        river_fever.addAffectedActor(Salamander.class, 0.8);
+        river_fever.addStartingActor(Water_Fern.class, 0.4);
         list.add(river_fever);
         
         return Collections.unmodifiableList(list);
@@ -219,9 +217,7 @@ public class Simulator
 
     private boolean terrainCompatible(Actor actor, int row, int col)
     {
-        return (actor.canMoveOnLand() && actor.canMoveOnWater())
-            || (field.isUnderWater(row, col) && actor.canMoveOnWater())
-            || (!field.isUnderWater(row, col) && actor.canMoveOnLand());
+        return actor.canAccessLocation(new Location(row, col));
     }
 
     /**
@@ -234,7 +230,7 @@ public class Simulator
             Thread.sleep(millisec);
         }
         catch (InterruptedException ie) {
-            // wake up
+            Thread.currentThread().interrupt();
         }
     }
 }

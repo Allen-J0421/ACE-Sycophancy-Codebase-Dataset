@@ -55,9 +55,16 @@ public abstract class Actor
     public void act(List<Actor> newActors, WeatherCond weather)
     {
         incrementAge();
-        if(isAlive() && ((!field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnLand()) || (field.isUnderWater(location.getRow(), location.getCol()) && !canMoveOnWater()))) {
+        if(isAlive() && !canAccessLocation(location)) {
             setDead();
         }
+    }
+
+    protected boolean canAccessLocation(Location loc)
+    {
+        return (canMoveOnLand() && canMoveOnWater())
+            || (field.isUnderWater(loc.getRow(), loc.getCol()) && canMoveOnWater())
+            || (!field.isUnderWater(loc.getRow(), loc.getCol()) && canMoveOnLand());
     }
 
     /**

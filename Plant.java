@@ -10,9 +10,11 @@ import java.util.Set;
 public abstract class Plant extends Actor
 {
 
-    protected double waterLevel;
-    protected double sunLightLevel;
-    private static final double maxWaterLevel = 2.5;
+    private double waterLevel;
+    private double sunLightLevel;
+    private static final double MAX_WATER_LEVEL = 2.5;
+    private static final double WATER_DECAY = 0.5;
+    private static final double SUNLIGHT_DECAY = 0.25;
 
     /**
      * Create a new plant at location in field with time as well.
@@ -40,15 +42,11 @@ public abstract class Plant extends Actor
     {
         super.act(newPlants, weather);
         if (isAlive()){
-            waterLevel-=0.5;
-            sunLightLevel-= 0.25;
+            waterLevel -= WATER_DECAY;
+            sunLightLevel -= SUNLIGHT_DECAY;
             sunLightLevel += getField().getWeatherAttributeValueAt("brightness", getLocation());
-            if (waterLevel +getField().getWeatherAttributeValueAt("dampness", getLocation()) > maxWaterLevel){
-                waterLevel = maxWaterLevel;
-            }
-            else {
-                waterLevel += getField().getWeatherAttributeValueAt("dampness", getLocation());
-            }
+            double dampness = getField().getWeatherAttributeValueAt("dampness", getLocation());
+            waterLevel = Math.min(waterLevel + dampness, MAX_WATER_LEVEL);
             if (waterLevel < 0 || sunLightLevel <= 0){
                 setDead();
             }

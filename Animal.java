@@ -138,7 +138,7 @@ public abstract class Animal extends Actor
     {
         Field field = getField();
         for(Location where : field.adjacentLocations(getLocation())) {
-            if ((canMoveOnLand() && canMoveOnWater()) || (field.isUnderWater(where.getRow(), where.getCol()) && canMoveOnWater()) || (!field.isUnderWater(where.getRow(), where.getCol()) && canMoveOnLand())) {
+            if (canAccessLocation(where)) {
                 Object actor = field.getObjectAt(where);
                 if (actor instanceof Actor) {
                     Actor prey = (Actor) actor;

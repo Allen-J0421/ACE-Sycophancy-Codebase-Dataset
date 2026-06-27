@@ -70,6 +70,16 @@ public class Disease
      * returns the map of the actors affected by the disease
      * @return Map of actor class to severity multiplier
      */
+    public void addAffectedActor(Class<? extends Actor> actorClass, double severity)
+    {
+        actorsAffected.put(actorClass, severity);
+    }
+
+    public void addStartingActor(Class<? extends Actor> actorClass, double probability)
+    {
+        startingActors.put(actorClass, probability);
+    }
+
     public Map<Class<? extends Actor>, Double> getActorsAffectedMap()
     {
         return Collections.unmodifiableMap(actorsAffected);

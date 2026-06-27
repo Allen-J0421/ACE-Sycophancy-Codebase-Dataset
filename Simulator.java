@@ -26,20 +26,21 @@ public class Simulator
     // The probability that a bear will be created in any given grid position.
     private static final double BEAR_CREATION_PROBABILITY = 0.005;
     // The probability that a badger will be created in any given grid position.
-    private static final double BADGER_CREATION_PROBABILITY = 0.1;//0.2;
+    private static final double BADGER_CREATION_PROBABILITY = 0.1;
     // The probability that a frog will be created in any given grid position.
     private static final double FROG_CREATION_PROBABILITY = 0.125;
     // The probability that a wolf will be created in any given grid position.
-    private static final double WOLF_CREATION_PROBABILITY = 0.005;//0.25;
+    private static final double WOLF_CREATION_PROBABILITY = 0.005;
     // The probability that a plant will be created in any given grid position.
     private static final double PLANT_CREATION_PROBABILITY = 0.2;
 
+    @FunctionalInterface
     private interface LivingBeingFactory
     {
         LivingBeing create(Field field, Location location);
     }
 
-    private static class SpeciesConfig
+    private static final class SpeciesConfig
     {
         private final Class<? extends LivingBeing> type;
         private final Color color;
@@ -105,7 +106,6 @@ public class Simulator
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
      */
-    @SuppressWarnings("this-escape")
     public Simulator(int depth, int width)
     {
         if(width <= 0 || depth <= 0) {
@@ -123,7 +123,7 @@ public class Simulator
         configureViewColors();
 
         // Setup a valid starting point.
-        reset();
+        resetSimulation();
     }
 
     /**
@@ -152,7 +152,6 @@ public class Simulator
 
         for(int step = 1; step <= numSteps && view.isViable(field); step++) {
             simulateOneStep();
-            // delay(60);   // uncomment this to run more slowly
         }
     }
 
@@ -167,9 +166,7 @@ public class Simulator
      * Switches between night time and day time
      */
     private void switchNight() {
-        night = !night;
-        LivingBeing.setNight(night);
-        view.setNight(night);
+        setNight(!night);
     }
 
     /**
@@ -208,10 +205,13 @@ public class Simulator
      */
     public void reset()
     {
+        resetSimulation();
+    }
+
+    private void resetSimulation()
+    {
         step = 0;
-        night = false;
-        LivingBeing.setNight(night);
-        view.setNight(night);
+        setNight(false);
         livingBeings.clear();
         populate();
 
@@ -254,17 +254,10 @@ public class Simulator
         }
     }
 
-    /**
-     * Pause for a given time.
-     * @param millisec  The time to pause for, in milliseconds
-     */
-    private void delay(int millisec)
+    private void setNight(boolean night)
     {
-        try {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie) {
-            // wake up
-        }
+        this.night = night;
+        LivingBeing.setNightTime(night);
+        view.setNight(night);
     }
 }

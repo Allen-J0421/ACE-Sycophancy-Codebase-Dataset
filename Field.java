@@ -57,19 +57,6 @@ public class Field
      * If there is already a living being at the location it will
      * be lost.
      * @param being The living being to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(LivingBeing being, int row, int col)
-    {
-        place(being, new Location(row, col));
-    }
-    
-    /**
-     * Place a living being at the given location.
-     * If there is already a living being at the location it will
-     * be lost.
-     * @param being The living being to be placed.
      * @param location Where to place the living being.
      */
     public void place(LivingBeing being, Location location)
@@ -97,19 +84,15 @@ public class Field
     {
         return occupants[row][col];
     }
-    
+
     /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
+     * Check whether the given location is empty.
+     * @param location The location to check.
+     * @return true if the location has no living being.
      */
-    public Location randomAdjacentLocation(Location location)
+    public boolean isEmpty(Location location)
     {
-        List<Location> adjacent = getAdjacentLocations(location);
-        return adjacent.get(0);
+        return getLivingBeingAt(location) == null;
     }
     
     /**
@@ -122,7 +105,7 @@ public class Field
         List<Location> free = new LinkedList<>();
         List<Location> adjacent = getAdjacentLocations(location);
         for(Location next : adjacent) {
-            if(getLivingBeingAt(next) == null) {
+            if(isEmpty(next)) {
                 free.add(next);
             }
         }

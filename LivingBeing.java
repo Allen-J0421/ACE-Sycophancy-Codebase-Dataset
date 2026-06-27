@@ -14,7 +14,7 @@ public abstract class LivingBeing
     // The being's position in the field.
     private Location location;
     // Shared day/night state for all living beings in the simulation.
-    private static boolean nightTime;
+    private static boolean night;
 
     /**
      * Constructor for objects of class LivingBeing
@@ -27,23 +27,24 @@ public abstract class LivingBeing
         alive = true;
         this.field = field;
         setLocation(location);
-
     }
 
     /**
      * Returns if it is night time or not
      * @return true if it is night
      */
-    protected boolean isNight() {
-        return nightTime;
+    protected boolean isNight()
+    {
+        return night;
     }
 
     /**
      * Set the shared day/night state.
      * @param night true if the simulation is currently at night.
      */
-    protected static void setNight(boolean night) {
-        nightTime = night;
+    protected static void setNightTime(boolean nightTime)
+    {
+        night = nightTime;
     }
 
     /**
@@ -105,7 +106,6 @@ public abstract class LivingBeing
             location = null;
             field = null;
         }
-
     }
 
 }

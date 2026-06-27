@@ -49,7 +49,7 @@ public abstract class Organism implements Actor
      */
     public void act(List<Actor> newOrganisms)
     {
-        incrementAge();
+        grow();
         decreaseWaterLevel();
     }
     
@@ -108,9 +108,9 @@ public abstract class Organism implements Actor
     }
     
     /**
-     * Increase the age.
+     * Advance this organism through one step of its lifecycle.
      */
-    public void incrementAge()
+    public void grow()
     {
         age = age + 1;
         if(age > getMaxAge()) {

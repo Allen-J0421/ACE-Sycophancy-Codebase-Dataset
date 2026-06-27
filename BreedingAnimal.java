@@ -5,12 +5,16 @@ import java.util.List;
  */
 public abstract class BreedingAnimal extends Animal
 {
+    private final BreedingProfile breedingProfile;
+
     /**
      * Create a breeding animal.
      */
-    protected BreedingAnimal(Field field, Location location)
+    protected BreedingAnimal(boolean randomAge, Field field, Location location,
+                             AnimalProfile animalProfile, BreedingProfile breedingProfile)
     {
-        super(field, location);
+        super(randomAge, field, location, animalProfile);
+        this.breedingProfile = breedingProfile;
     }
 
     /**
@@ -20,25 +24,12 @@ public abstract class BreedingAnimal extends Animal
     {
         if(canBreedThisStep()) {
             addOffspring(newOrganisms,
-                         calculateBirths(getBreedingAge(), getBreedingProbability(), getMaxLitterSize()),
+                         calculateBirths(breedingProfile.breedingAge(),
+                                         breedingProfile.breedingProbability(),
+                                         breedingProfile.maxLitterSize()),
                          this::createYoung);
         }
     }
-
-    /**
-     * @return The breeding age for this species.
-     */
-    protected abstract int getBreedingAge();
-
-    /**
-     * @return The breeding probability for this species.
-     */
-    protected abstract double getBreedingProbability();
-
-    /**
-     * @return The maximum litter size for this species.
-     */
-    protected abstract int getMaxLitterSize();
 
     /**
      * Create a newborn organism of this species.
@@ -46,19 +37,12 @@ public abstract class BreedingAnimal extends Animal
     protected abstract Animal createYoung(Field field, Location location);
 
     /**
-     * Determine whether this species requires a nearby mate to breed.
+     * Standard breeding animals only breed during the alive-step phase.
      */
-    protected boolean requiresMate()
+    @Override
+    protected void handleAliveStep(List<Organism> newOrganisms, SimulationStep step)
     {
-        return false;
-    }
-
-    /**
-     * @return The mate search radius when a mate is required.
-     */
-    protected int getMateSearchRadius()
-    {
-        return 1;
+        breed(newOrganisms);
     }
 
     /**
@@ -66,9 +50,9 @@ public abstract class BreedingAnimal extends Animal
      */
     private boolean canBreedThisStep()
     {
-        if(!requiresMate()) {
+        if(!breedingProfile.requiresMate()) {
             return true;
         }
-        return hasAdjacentMate(getClass(), getMateSearchRadius());
+        return hasAdjacentMate(getClass(), breedingProfile.mateSearchRadius());
     }
 }

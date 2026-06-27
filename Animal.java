@@ -11,6 +11,7 @@ public abstract class Animal extends Organism
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
+    private final AnimalProfile profile;
     // The animal's hurt level, when > 3 die
     private int burn;
     // The animal's gender.
@@ -24,14 +25,19 @@ public abstract class Animal extends Organism
     /**
      * Create a new animal at location in field.
      * 
+     * @param randomAge If true, initialize with a random age and food level.
      * @param field The field currently occupied.
      * @param location The location within the field.
+     * @param profile The species profile for this animal.
      */
-    public Animal(Field field, Location location)
+    protected Animal(boolean randomAge, Field field, Location location, AnimalProfile profile)
     {
         super(field, location);
+        this.profile = profile;
         burn = 0;
         gender = Gender.random(rand);
+        initializeAge(randomAge, profile.maxAge());
+        initializeFoodLevel(randomAge, profile.randomFoodUpperBound(), profile.newbornFoodLevel());
     }
     
     /**
@@ -42,7 +48,7 @@ public abstract class Animal extends Organism
      */
     public final void act(List<Organism> newOrganisms, SimulationStep step)
     {
-        incrementAge(getMaxAge());
+        incrementAge(profile.maxAge());
         updateStatus(step);
         updateBurnStatus(step.getWeather());
         updateStatusAfterBurn(step);
@@ -54,15 +60,10 @@ public abstract class Animal extends Organism
         }
     }
 
-    /**
-     * Return the food value this animal provides when eaten.
-     */
-    abstract public int foodValue();
-
-    /**
-     * @return The maximum age for this species.
-     */
-    protected abstract int getMaxAge();
+    public final int foodValue()
+    {
+        return profile.foodValue();
+    }
 
     /**
      * Update the animal's internal state before burn status is applied.
@@ -177,7 +178,7 @@ public abstract class Animal extends Organism
     /**
      * Initialize the animal's age.
      */
-    protected final void initializeAge(boolean randomAge, int maxAge)
+    private void initializeAge(boolean randomAge, int maxAge)
     {
         if(randomAge) {
             age = rand.nextInt(maxAge);
@@ -190,8 +191,8 @@ public abstract class Animal extends Organism
     /**
      * Initialize the animal's food level.
      */
-    protected final void initializeFoodLevel(boolean randomFoodLevel, int randomUpperBound,
-                                             int initialFoodLevel)
+    private void initializeFoodLevel(boolean randomFoodLevel, int randomUpperBound,
+                                     int initialFoodLevel)
     {
         if(randomFoodLevel) {
             foodLevel = rand.nextInt(randomUpperBound);

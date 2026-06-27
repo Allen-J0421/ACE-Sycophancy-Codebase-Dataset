@@ -9,25 +9,12 @@ import java.util.Random;
  */
 public class Mouse extends BreedingAnimal
 {
-    // Characteristics shared by all mouses (class variables).
-
-    // The age at which a mouse can start to breed.
-    private static final int BREEDING_AGE = 5;
-    // The age to which a mouse can live.
-    private static final int MAX_AGE = 125;
-    // The likelihood of a mouse breeding.
-    private static final double BREEDING_PROBABILITY = 0.25;
+    private static final AnimalProfile PROFILE = new AnimalProfile(125, 5, 5, 5);
+    private static final BreedingProfile BREEDING_PROFILE = new BreedingProfile(5, 0.25, 10);
     // The likelihood of a mouse infect by disease.
     private static final double INFECT_PROBABILITY = 0.01;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 10;
-    // The food value of a single mouse. In effect, this is the
-    // number of steps a mouse can go.
-    private static final int DEFAULT_FOOD_LEVEL = 5;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    // The food value of a single mouse. 
-    private static final int FOOD_VALUE = 5;
     
     // The mouse infected by deisease.
     // 0 - not infect, 1-3 degree of infection.
@@ -45,33 +32,7 @@ public class Mouse extends BreedingAnimal
      */
     public Mouse(boolean randomAge, Field field, Location location)
     {
-        super(field, location);
-        initializeAge(randomAge, MAX_AGE);
-        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
-    }
-    
-    @Override
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
-    }
-
-    @Override
-    protected int getBreedingAge()
-    {
-        return BREEDING_AGE;
-    }
-
-    @Override
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-
-    @Override
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
+        super(randomAge, field, location, PROFILE, BREEDING_PROFILE);
     }
 
     @Override
@@ -165,11 +126,4 @@ public class Mouse extends BreedingAnimal
         }  
     }
 
-    /**
-     * @return mouse's food value.
-     */
-    public int foodValue()
-    {
-        return FOOD_VALUE;
-    }
 }

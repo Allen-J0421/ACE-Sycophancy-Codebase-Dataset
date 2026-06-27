@@ -6,14 +6,8 @@
  */
 public class Owl extends MouseHunter
 {
-    // Characteristics shared by all Owls (class variables).
-    
-    private static final int BREEDING_AGE = 5;
-    private static final int MAX_AGE = 75;
-    private static final double BREEDING_PROBABILITY = 0.10;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int DEFAULT_FOOD_LEVEL = 25;
-    private static final int FOOD_VALUE = 10;
+    private static final AnimalProfile PROFILE = new AnimalProfile(75, 25, 25, 10);
+    private static final BreedingProfile BREEDING_PROFILE = new BreedingProfile(5, 0.10, 3);
 
     /**
      * Create a Owl. A Owl can be created as a new born (age zero
@@ -25,13 +19,13 @@ public class Owl extends MouseHunter
      */
     public Owl(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY,
-              MAX_LITTER_SIZE, DEFAULT_FOOD_LEVEL, FOOD_VALUE);
+        super(randomAge, field, location, PROFILE, BREEDING_PROFILE);
     }
 
     /**
      * Create a newborn owl.
      */
+    @Override
     protected Animal createYoung(Field field, Location location)
     {
         return new Owl(false, field, location);

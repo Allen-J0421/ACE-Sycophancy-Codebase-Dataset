@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of a Deer.
  * Deers age, move, eat grass, breed, and die.
@@ -8,21 +6,9 @@ import java.util.List;
  */
 public class Deer extends BreedingAnimal
 {
-    // Characteristics shared by all Deers (class variables).
-
-    // The age at which a Deer can start to breed.
-    private static final int BREEDING_AGE = 10;
-    // The age to which a Deer can live.
-    private static final int MAX_AGE = 175;
-    // The likelihood of a Deer breeding.
-    private static final double BREEDING_PROBABILITY = 0.10;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 5;
-    // The food value of a single dear. In effect, this is the
-    // number of steps it can go.
-    private static final int FOOD_VALUE = 50;
-    // The default food value of a single deer.
-    private static final int DEFAULT_FOOD_LEVEL = 250;
+    private static final AnimalProfile PROFILE = new AnimalProfile(175, 250, 250, 50);
+    private static final BreedingProfile BREEDING_PROFILE =
+        new BreedingProfile(10, 0.10, 5, true, 2);
 
     /**
      * Create a new Deer. A Deer may be created with age
@@ -34,15 +20,7 @@ public class Deer extends BreedingAnimal
      */
     public Deer(boolean randomAge, Field field, Location location)
     {
-        super(field, location);
-        initializeAge(randomAge, MAX_AGE);
-        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, DEFAULT_FOOD_LEVEL);
-    }
-    
-    @Override
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
+        super(randomAge, field, location, PROFILE, BREEDING_PROFILE);
     }
 
     @Override
@@ -52,45 +30,9 @@ public class Deer extends BreedingAnimal
     }
 
     @Override
-    protected int getBreedingAge()
-    {
-        return BREEDING_AGE;
-    }
-
-    @Override
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-
-    @Override
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-
-    @Override
-    protected boolean requiresMate()
-    {
-        return true;
-    }
-
-    @Override
-    protected int getMateSearchRadius()
-    {
-        return 2;
-    }
-
-    @Override
     protected Animal createYoung(Field field, Location location)
     {
         return new Deer(false, field, location);
-    }
-
-    @Override
-    protected void handleAliveStep(List<Organism> newDeers, SimulationStep step)
-    {
-        breed(newDeers);
     }
     
     /**
@@ -119,14 +61,5 @@ public class Deer extends BreedingAnimal
             }
             return false;
         });
-    }
-
-
-    /**
-     * @return deer's food value.
-     */
-    public int foodValue()
-    {
-        return FOOD_VALUE;
     }
 }

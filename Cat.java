@@ -6,14 +6,8 @@
  */
 public class Cat extends MouseHunter
 {
-    // Characteristics shared by all Cats (class variables).
-    
-    private static final int BREEDING_AGE = 5;
-    private static final int MAX_AGE = 75;
-    private static final double BREEDING_PROBABILITY = 0.15;
-    private static final int MAX_LITTER_SIZE = 3;
-    private static final int DEFAULT_FOOD_LEVEL = 15;
-    private static final int FOOD_VALUE = 10;
+    private static final AnimalProfile PROFILE = new AnimalProfile(75, 15, 15, 10);
+    private static final BreedingProfile BREEDING_PROFILE = new BreedingProfile(5, 0.15, 3);
 
     /**
      * Create a Cat. A Cat can be created as a new born (age zero
@@ -25,13 +19,13 @@ public class Cat extends MouseHunter
      */
     public Cat(boolean randomAge, Field field, Location location)
     {
-        super(randomAge, field, location, BREEDING_AGE, MAX_AGE, BREEDING_PROBABILITY,
-              MAX_LITTER_SIZE, DEFAULT_FOOD_LEVEL, FOOD_VALUE);
+        super(randomAge, field, location, PROFILE, BREEDING_PROFILE);
     }
 
     /**
      * Create a newborn cat.
      */
+    @Override
     protected Animal createYoung(Field field, Location location)
     {
         return new Cat(false, field, location);

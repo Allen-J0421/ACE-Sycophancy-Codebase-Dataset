@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * A simple model of a Lion.
  * Lions age, move, eat deers/cats/owls/mouse, and die.
@@ -8,22 +6,9 @@ import java.util.List;
  */
 public class Lion extends BreedingAnimal
 {
-    // Characteristics shared by all Liones (class variables).
-    
-    // The age at which a Lion can start to breed.
-    private static final int BREEDING_AGE = 10;
-    // The age to which a Lion can live.
-    private static final int MAX_AGE = 225;
-    // The likelihood of a Lion breeding. 
-    private static final double BREEDING_PROBABILITY = 0.10;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 5;
-    // The food value of a single lion.
-    private static final int FOOD_VALUE = 20;
-    // number of steps a lion can go before it has to eat again.
-    private static final int DEFAULT_FOOD_LEVEL = 275;
-    // The starting food level for newborn lions.
-    private static final int NEWBORN_FOOD_LEVEL = 40;
+    private static final AnimalProfile PROFILE = new AnimalProfile(225, 275, 40, 20);
+    private static final BreedingProfile BREEDING_PROFILE =
+        new BreedingProfile(10, 0.10, 5, true, 2);
 
     /**
      * Create a Lion. A Lion can be created as a new born (age zero
@@ -35,15 +20,7 @@ public class Lion extends BreedingAnimal
      */
     public Lion(boolean randomAge, Field field, Location location)
     {
-        super(field, location);
-        initializeAge(randomAge, MAX_AGE);
-        initializeFoodLevel(randomAge, DEFAULT_FOOD_LEVEL, NEWBORN_FOOD_LEVEL);
-    }
-    
-    @Override
-    protected int getMaxAge()
-    {
-        return MAX_AGE;
+        super(randomAge, field, location, PROFILE, BREEDING_PROFILE);
     }
 
     @Override
@@ -78,45 +55,9 @@ public class Lion extends BreedingAnimal
     }
     
     @Override
-    protected int getBreedingAge()
-    {
-        return BREEDING_AGE;
-    }
-
-    @Override
-    protected double getBreedingProbability()
-    {
-        return BREEDING_PROBABILITY;
-    }
-
-    @Override
-    protected int getMaxLitterSize()
-    {
-        return MAX_LITTER_SIZE;
-    }
-
-    @Override
-    protected boolean requiresMate()
-    {
-        return true;
-    }
-
-    @Override
-    protected int getMateSearchRadius()
-    {
-        return 2;
-    }
-
-    @Override
     protected Animal createYoung(Field field, Location location)
     {
         return new Lion(false, field, location);
-    }
-
-    @Override
-    protected void handleAliveStep(List<Organism> newLions, SimulationStep step)
-    {
-        breed(newLions);
     }
 
     @Override
@@ -149,11 +90,4 @@ public class Lion extends BreedingAnimal
         });
     }
 
-    /**
-     * @return lion's food value.
-     */
-    public int foodValue()
-    {
-        return FOOD_VALUE;
-    }
 }

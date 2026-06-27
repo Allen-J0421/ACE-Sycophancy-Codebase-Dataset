@@ -8,6 +8,9 @@ import java.util.Random;
  */
 public abstract class Animal
 {
+    /** Gender of an animal. */
+    public enum Gender { M, F }
+
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -17,15 +20,16 @@ public abstract class Animal
     private Field field;
     // The animal's position in the field.
     private Location location;
-    // The animal's hurt level, when > 3 die
+    // The animal's burn level; when > 3 the animal dies.
     private int burn;
-    // The Deer's gender.
-    private String gender;
+    // The animal's gender.
+    private Gender gender;
+    // The animal's age (accessible by subclasses for random initialisation).
+    protected int age;
 
-    
     /**
      * Create a new animal at location in field.
-     * 
+     *
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
@@ -35,14 +39,10 @@ public abstract class Animal
         this.field = field;
         setLocation(location);
         burn = 0;
-        if (rand.nextBoolean()) {
-            gender = "M";
-        }
-        else {
-            gender = "F";
-        }
+        gender = rand.nextBoolean() ? Gender.M : Gender.F;
+        age = 0;
     }
-    
+
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
@@ -51,6 +51,59 @@ public abstract class Animal
      * @param weather The current weather.
      */
     abstract public void act(List<Animal> newAnimals, int step, String weather);
+
+    // --- Species configuration: each subclass provides these ---
+
+    /** @return this species' maximum lifespan. */
+    protected abstract int getMaxAge();
+
+    /** @return the minimum age at which this species can breed. */
+    protected abstract int getBreedingAge();
+
+    /** @return the per-step probability of breeding when eligible. */
+    protected abstract double getBreedingProbability();
+
+    /** @return the maximum litter size. */
+    protected abstract int getMaxLitterSize();
+
+    /** @return the food value this animal provides when eaten. */
+    public abstract int foodValue();
+
+    // --- Shared lifecycle logic ---
+
+    /**
+     * Increment age; the animal dies if it exceeds its maximum age.
+     */
+    protected void incrementAge()
+    {
+        age++;
+        if (age > getMaxAge()) {
+            setDead();
+        }
+    }
+
+    /**
+     * @return true if this animal has reached breeding age.
+     */
+    protected boolean canBreed()
+    {
+        return age >= getBreedingAge();
+    }
+
+    /**
+     * Generate the number of offspring for this step.
+     * @return The number of births (may be zero).
+     */
+    protected int breed()
+    {
+        int births = 0;
+        if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            births = rand.nextInt(getMaxLitterSize()) + 1;
+        }
+        return births;
+    }
+
+    // --- Existing shared state and methods ---
 
     /**
      * Check whether the animal is alive or not.
@@ -68,7 +121,7 @@ public abstract class Animal
     protected void setDead()
     {
         alive = false;
-        if(location != null) {
+        if (location != null) {
             field.clear(location);
             location = null;
             field = null;
@@ -83,20 +136,20 @@ public abstract class Animal
     {
         return location;
     }
-    
+
     /**
      * Place the animal at the new location in the given field.
      * @param newLocation The animal's new location.
      */
     protected void setLocation(Location newLocation)
     {
-        if(location != null) {
+        if (location != null) {
             field.clear(location);
         }
         location = newLocation;
         field.place(this, newLocation);
     }
-    
+
     /**
      * Return the animal's field.
      * @return The animal's field.
@@ -105,25 +158,24 @@ public abstract class Animal
     {
         return field;
     }
-    
+
     /**
-     * update the animal's burn status.
+     * Update the animal's burn status based on the current weather.
      * @param weather The current weather.
      */
     protected void updateBurnStatus(String weather)
     {
         if (burn > 0) {
-            if (weather != "Rainy") {
+            if (!weather.equals("Rainy")) {
                 burn();
-            }
-            else {
+            } else {
                 recover();
             }
         }
     }
-    
+
     /**
-     * animal that step on fire will get burn and if burn status > 3 the animal will die 
+     * Increment burn damage; the animal dies if burn exceeds 3.
      */
     protected void burn()
     {
@@ -132,9 +184,9 @@ public abstract class Animal
             setDead();
         }
     }
-    
+
     /**
-     * if weather is rainy the animal will recover and reset it's burn status to zero.
+     * Reset burn damage (called when weather is rainy).
      */
     protected void recover()
     {
@@ -142,9 +194,9 @@ public abstract class Animal
     }
 
     /**
-     * @return the animal's gender
+     * @return the animal's gender.
      */
-    protected String Gender()
+    protected Gender getGender()
     {
         return gender;
     }

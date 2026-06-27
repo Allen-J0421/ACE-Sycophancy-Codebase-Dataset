@@ -59,13 +59,13 @@ public class Grass extends Plant
     public void act( int step, String weather)
     {
         if(isAlive()) {
-            if(weather == "Rainy") {
+            if("Rainy".equals(weather)) {
                 incrementSize();
                 steppeFired = false;
             }
             else {
                 getSteppeFire();
-                if (steppeFire()==true && getLocation() != null) {                
+                if (steppeFire() && getLocation() != null) {                
                     Field field = getField();
                     List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
                     Iterator<Location> it = adjacent.iterator();

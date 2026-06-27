@@ -245,7 +245,7 @@ public abstract class Organism
     {
         alive = false;
         if(location != null) {
-            field.clear(location);
+            clearCurrentLocation();
             location = null;
             field = null;
         }
@@ -257,10 +257,20 @@ public abstract class Organism
      */
     protected void setLocation(Location newLocation)
     {
+        clearCurrentLocation();
+        location = newLocation;
+        field.place(this, newLocation);
+    }
+
+    /**
+     * Vacate the organism's current cell in the field, if it occupies one.
+     * Shared by {@link #setDead()} (death) and {@link #setLocation} (movement),
+     * which both need to clear the cell the organism is leaving.
+     */
+    private void clearCurrentLocation()
+    {
         if(location != null) {
             field.clear(location);
         }
-        location = newLocation;
-        field.place(this, newLocation);
     }
 }

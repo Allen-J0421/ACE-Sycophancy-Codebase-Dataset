@@ -22,7 +22,7 @@ public class Impala extends Consumer
     //   Max sustenance level of the impala:
     private static final int MAX_SUSTENANCE_LEVEL = 55;
     //   The prey this impala hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(Acacia.class));
 
     /**

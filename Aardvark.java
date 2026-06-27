@@ -22,7 +22,7 @@ public class Aardvark extends Consumer
     //    Max sustenance level of the aadvark:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this aardvark hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(Grasshopper.class,HarvesterAnt.class));
 
     /**

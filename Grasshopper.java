@@ -22,7 +22,7 @@ public class Grasshopper extends Consumer
     //   Max sustenance level of the grasshopper:
     private static final int MAX_SUSTENANCE_LEVEL = 150;
     //   The prey this grasshopper hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(StarGrass.class));
     /**
      * Create a new grasshopper. A grasshopper may be created with age

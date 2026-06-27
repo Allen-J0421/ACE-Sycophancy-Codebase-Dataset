@@ -1,8 +1,11 @@
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represent a rectangular grid of field positions.
@@ -86,22 +89,57 @@ public class Field
     }
     
     /**
+     * A shuffled stream of the locations adjacent to the given one.
+     * Backed by {@link #adjacentLocations(Location)}, so it consumes
+     * randomness identically.
+     * @param location The location to scan around.
+     * @return A stream of the adjacent locations, in random order.
+     */
+    public Stream<Location> adjacentLocationStream(Location location)
+    {
+        return adjacentLocations(location).stream();
+    }
+
+    /**
+     * The adjacent locations whose occupant satisfies the given test, in the
+     * field's random adjacency order. The test receives each cell's occupant,
+     * which is null for an empty cell.
+     * @param location The location to scan around.
+     * @param occupantTest The test applied to each adjacent cell's occupant.
+     * @return The matching adjacent locations.
+     */
+    public List<Location> adjacentLocationsMatching(Location location, Predicate<Object> occupantTest)
+    {
+        return adjacentLocationStream(location)
+            .filter(where -> occupantTest.test(getObjectAt(where)))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * The first adjacent location whose occupant satisfies the given test, or
+     * null if no adjacent occupant matches.
+     * @param location The location to scan around.
+     * @param occupantTest The test applied to each adjacent cell's occupant.
+     * @return A matching adjacent location, or null.
+     */
+    public Location firstAdjacentLocationMatching(Location location, Predicate<Object> occupantTest)
+    {
+        return adjacentLocationStream(location)
+            .filter(where -> occupantTest.test(getObjectAt(where)))
+            .findFirst()
+            .orElse(null);
+    }
+
+    /**
      * Get a shuffled list of the free adjacent locations.
      * @param location Get locations adjacent to this.
      * @return A list of free adjacent locations.
      */
     public List<Location> getFreeAdjacentLocations(Location location)
     {
-        List<Location> free = new LinkedList<>();
-        List<Location> adjacent = adjacentLocations(location);
-        for(Location next : adjacent) {
-            if(getObjectAt(next) == null) {
-                free.add(next);
-            }
-        }
-        return free;
+        return adjacentLocationsMatching(location, Objects::isNull);
     }
-    
+
     /**
      * Try to find a free location that is adjacent to the
      * given location. If there is none, return null.
@@ -112,14 +150,7 @@ public class Field
      */
     public Location freeAdjacentLocation(Location location)
     {
-        // The available free ones.
-        List<Location> free = getFreeAdjacentLocations(location);
-        if(free.size() > 0) {
-            return free.get(0);
-        }
-        else {
-            return null;
-        }
+        return firstAdjacentLocationMatching(location, Objects::isNull);
     }
 
     /**

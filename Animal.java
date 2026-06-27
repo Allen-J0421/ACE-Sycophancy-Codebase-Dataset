@@ -128,24 +128,19 @@ public abstract class Animal extends Organism
     protected Location findFood(List<String> preyList)
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object food = field.getObjectAt(where);
-            if(food!= null) {
-                if(preyList.contains(food.getClass().getName())) {
-                    Organism prey = (Organism) food;
-                    if(prey.isAlive()) { 
-                        prey.setDead();
-                        int increment = prey.getFoodValue() + this.getFoodLevel();
-                        this.setFoodLevel(increment);
-                        int newWaterLevel = getWaterLevel() + 5;
-                        this.setWaterLevel(newWaterLevel);
-                        return where;  
-                    }
-                }
-            }
+        // Find the first adjacent cell holding live prey of an edible species.
+        Location where = field.firstAdjacentLocationMatching(getLocation(),
+            occupant -> occupant != null
+                && preyList.contains(occupant.getClass().getName())
+                && ((Organism) occupant).isAlive());
+        if(where != null) {
+            Organism prey = (Organism) field.getObjectAt(where);
+            prey.setDead();
+            int increment = prey.getFoodValue() + this.getFoodLevel();
+            this.setFoodLevel(increment);
+            int newWaterLevel = getWaterLevel() + 5;
+            this.setWaterLevel(newWaterLevel);
+            return where;
         }
         return null;
     }
@@ -204,25 +199,16 @@ public abstract class Animal extends Organism
      */
     private List<Location> availableBirthLocations()
     {
-        // New animals are born into adjacent locations.
-        // Get a list of adjacent free locations.
+        // New animals are born into adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
+        // Look for the first adjacent animal of this same species.
+        Location mateLocation = field.firstAdjacentLocationMatching(getLocation(),
+            occupant -> occupant != null && this.getClass().equals(occupant.getClass()));
+        if(mateLocation != null) {
+            Animal mate = (Animal) field.getObjectAt(mateLocation);
             // can only breed if next to an animal of opposite sex
-            if(animal != null && this.getClass().equals(animal.getClass())) {
-                Animal mate = (Animal) animal;
-                if (isFemale() != mate.isFemale()) {
-                    return free;
-                }
-                else {
-                    return null;
-                }
-            }
+            return (isFemale() != mate.isFemale()) ? free : null;
         }
         return null;
     }

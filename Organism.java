@@ -1,7 +1,4 @@
-import java.util.Random;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * A class to represent all living creatures in the simulation
@@ -84,34 +81,31 @@ public abstract class Organism extends FieldOccupant implements Actor
      */
     protected Location findWater() {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()){
-            Location where = it.next();
-            Object waterSource = field.getObjectAt(where);
-            if(waterSource instanceof Lake) {
-                Lake lake = (Lake) waterSource;
-                // if there is enough water left to drink
-                if(lake.getVolume() >= lake.getWaterValue()){
-                    // increase drinking organism's water level and reduces lake's water level
-                    int newWaterLevel = getWaterLevel() + lake.getWaterValue();
-                    this.setWaterLevel(newWaterLevel);
-                    lake.reduceVolume(lake.getWaterValue());
-                    return where;
-                }
-                // if only a little bit of water left to drink, drinks remnants 
-                // then empties lake
-                else if (lake.getVolume() >= 0) {
-                    int newWaterLevel = getWaterLevel() + lake.getVolume();
-                    this.setWaterLevel(newWaterLevel);
-                    lake.setVolume(0);
-                    lake.setDead();
-                    return where;
-                }
-                else if(lake.getVolume() <=0){
-                    lake.setDead();
-                    return null;
-                }
+        // Find the first adjacent water source (a lake) and drink from it.
+        Location where = field.firstAdjacentLocationMatching(getLocation(),
+            occupant -> occupant instanceof Lake);
+        if(where != null) {
+            Lake lake = (Lake) field.getObjectAt(where);
+            // if there is enough water left to drink
+            if(lake.getVolume() >= lake.getWaterValue()){
+                // increase drinking organism's water level and reduces lake's water level
+                int newWaterLevel = getWaterLevel() + lake.getWaterValue();
+                this.setWaterLevel(newWaterLevel);
+                lake.reduceVolume(lake.getWaterValue());
+                return where;
+            }
+            // if only a little bit of water left to drink, drinks remnants
+            // then empties lake
+            else if (lake.getVolume() >= 0) {
+                int newWaterLevel = getWaterLevel() + lake.getVolume();
+                this.setWaterLevel(newWaterLevel);
+                lake.setVolume(0);
+                lake.setDead();
+                return where;
+            }
+            else if(lake.getVolume() <=0){
+                lake.setDead();
+                return null;
             }
         }
         return null;

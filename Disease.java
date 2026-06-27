@@ -83,22 +83,16 @@ public abstract class Disease implements Actor
      */
     public ArrayList<Actor> spread(Actor actor) {
         ArrayList<Actor> newlyInfected = new ArrayList<>();
-        List<Location> adjacent = null;
         // Only an active carrier (a living organism / a non-empty water
         // source) can spread the disease to its neighbours.
         FieldOccupant carrier = (FieldOccupant) actor;
         if (carrier.isActive()) {
-            adjacent = field.adjacentLocations(carrier.getLocation());
-        }
-        if(adjacent != null) {
-            Iterator<Location> it = adjacent.iterator();
-            while(it.hasNext()) {
-                Location where = it.next();
-                Object thing = field.getObjectAt(where);
-                if (thing != null && affectedSpecies.contains(thing.getClass().getName())) {
-                    if (rand.nextDouble() < infectiousness) {
-                        newlyInfected.add((Actor) thing);
-                    }
+            // Each adjacent occupant of an affected species has a chance of
+            // catching the disease.
+            for (Location where : field.adjacentLocationsMatching(carrier.getLocation(),
+                    thing -> thing != null && affectedSpecies.contains(thing.getClass().getName()))) {
+                if (rand.nextDouble() < infectiousness) {
+                    newlyInfected.add((Actor) field.getObjectAt(where));
                 }
             }
         }

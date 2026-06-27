@@ -115,10 +115,9 @@ public class FieldStats
         reset();
         for(int row = 0; row < field.getDepth(); row++) {
             for(int col = 0; col < field.getWidth(); col++) {
-                Object specie = field.getObjectAt(row, col);
+                Species specie = field.getObjectAt(row, col);
                 if(specie != null) {
-                    Species speciesObject = (Species) specie;
-                    incrementCount(speciesObject.getName());
+                    incrementCount(specie.getName());
                 }
             }
         }

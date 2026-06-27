@@ -191,7 +191,7 @@ public class Animal extends Species
         while (locationIterator.hasNext())
         {
             Location where = locationIterator.next();
-            Object species = field.getObjectAt(where);
+            Species species = field.getObjectAt(where);
 
             if (species instanceof Animal) {
                 Animal neighboringAnimal = (Animal) species;
@@ -254,7 +254,7 @@ public class Animal extends Species
         while(it.hasNext())
         {
             Location where = it.next();
-            Object species = field.getObjectAt(where); // change in Field
+            Species species = field.getObjectAt(where);
             if(species instanceof Plant)
             {
                 Plant plantSquare = (Plant) species;
@@ -319,7 +319,7 @@ public class Animal extends Species
      */
     private boolean randomSex()
     {
-        return Math.random() <= 0.5;
+        return rand.nextBoolean();
     }
     
     /**

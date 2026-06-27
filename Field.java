@@ -16,7 +16,7 @@ public class Field
     // The depth and width of the field.
     private int depth, width;
     // Storage for the animals.
-    private Object[][] field;
+    private Species[][] field;
 
     /**
      * Represent a field of the given dimensions.
@@ -28,7 +28,7 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new Species[depth][width];
     }
     
     /**
@@ -60,33 +60,33 @@ public class Field
      * @param row Row coordinate of the location.
      * @param col Column coordinate of the location.
      */
-    public void place(Object species, int row, int col)
+    public void place(Species species, int row, int col)
     {
         place(species, new Location(row, col));
     }
-    
+
     /**
      * Place an animal at the given location. If there is already an animal at the location it will be lost.
      *
      * @param species The animal to be placed.
      * @param location Where to place the animal.
      */
-    public void place(Object species, Location location)
+    public void place(Species species, Location location)
     {
         field[location.getRow()][location.getCol()] = species;
     }
-    
+
     /**
      * Return the animal at the given location, if any.
      *
      * @param location Where in the field.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(Location location)
+    public Species getObjectAt(Location location)
     {
         return getObjectAt(location.getRow(), location.getCol());
     }
-    
+
     /**
      * Return the animal at the given location, if any.
      *
@@ -94,7 +94,7 @@ public class Field
      * @param col The desired column.
      * @return The animal at the given location, or null if there is none.
      */
-    public Object getObjectAt(int row, int col)
+    public Species getObjectAt(int row, int col)
     {
         return field[row][col];
     }
@@ -109,7 +109,7 @@ public class Field
     public Location randomAdjacentLocation(Location location)
     {
         List<Location> adjacent = adjacentLocations(location);
-        return adjacent.get(0);
+        return adjacent.get(rand.nextInt(adjacent.size()));
     }
     
     /**

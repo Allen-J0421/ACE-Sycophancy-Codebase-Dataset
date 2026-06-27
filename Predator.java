@@ -92,9 +92,10 @@ public class Predator extends Animal
     {
         for (Animal animal : neighboringAnimals) {
             if(!(animal instanceof Predator)){
+                Location preyLocation = animal.getLocation();
                 animal.setDead();
                 foodLevel += animal.getNutritionalValue();
-                return animal.getLocation();
+                return preyLocation;
             }
         }
         // No food found
@@ -125,7 +126,7 @@ public class Predator extends Animal
                     hordeMembers.add(neighboringPredator);
                     for (int j =0; j < neighboringAnimals.size(); j++) {
                         if (nameOfInvestigatedHorde.equals(neighboringAnimals.get(j).getName())) {
-                            Predator predatorObject = (Predator)neighboringAnimals.get(i);
+                            Predator predatorObject = (Predator)neighboringAnimals.get(j);
                             totalHordeStrength += predatorObject.getStrength();
                             hordeMembers.add(predatorObject);
                         }

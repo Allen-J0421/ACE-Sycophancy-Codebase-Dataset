@@ -63,7 +63,7 @@ public class Plant extends Species
         // 1)
         if (! deadDueTemperature && ! survivesTemperature(temperature))
         {
-            setDead();
+            wilt();
         }
         // 2)
         else if (! isNight)
@@ -113,14 +113,15 @@ public class Plant extends Species
     }
 
     /**
-     * The plant dies because of the temperature or because it was eaten.
-     * Its location in the field is cleared, but it still remembers its field and location
+     * The plant wilts due to temperature: it is removed from the field but remains in the
+     * species list so it can regrow in spring. Unlike permanent death (when eaten), the
+     * plant's alive state is unchanged and its field/location references are preserved.
      */
-    protected void setDead()
+    private void wilt()
     {
         if(getLocation() != null) {
             deadDueTemperature = true;
-            canRegrow = false; // set to false because if left as true, it could regrow the next step
+            canRegrow = false; // prevent immediate regrowth next step
             getField().clear(getLocation());
         }
     }

@@ -7,10 +7,8 @@ import java.util.ArrayList;
  *
  * @version 2022.02.28
  */
-public abstract class WaterSources implements Actor
+public abstract class WaterSources extends SimulationEntity
 {
-    // The water source's field.
-    private Field field;
     // The water source's position in the field.
     private Location location;
     // Whether the water source contains any water or not.
@@ -28,9 +26,9 @@ public abstract class WaterSources implements Actor
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public WaterSources(boolean randomVolume, Field field, Location location) 
+    public WaterSources(boolean randomVolume, Field field, Location location)
     {
-        this.field = field;
+        super(field);
         setLocation(location);
         Random rand = new Random();
         if (!randomVolume) {
@@ -66,18 +64,10 @@ public abstract class WaterSources implements Actor
     protected void setLocation(Location newLocation)
     {
         if(location != null) {
-            field.clear(location);
+            getField().clear(location);
         }
         location = newLocation;
-        field.place(this, newLocation);
-    }
-
-    /**
-     * @return The water source's field.
-     */
-    protected Field getField()
-    {
-        return field;
+        getField().place(this, newLocation);
     }
 
     /**
@@ -118,9 +108,9 @@ public abstract class WaterSources implements Actor
     public void setDead()
     {
         if(volumeLevel <= 0 && location != null) {
-            field.clear(location);
+            getField().clear(location);
             location = null;
-            field = null;
+            setField(null);
             isEmpty = true;
         }
     }

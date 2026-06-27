@@ -10,12 +10,10 @@ import java.util.ArrayList;
  *
  * @version 2022.02.27
  */
-public abstract class Organism implements Actor
+public abstract class Organism extends SimulationEntity
 {
     // Whether the organism is alive or not
     private boolean alive;
-    // The organism's field
-    private Field field;
     // The organism's position in the field
     private Location location;
     // The water level of the organism
@@ -32,10 +30,10 @@ public abstract class Organism implements Actor
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Organism(boolean randomAge, Field field, Location location) 
+    public Organism(boolean randomAge, Field field, Location location)
     {
+        super(field);
         alive = true;
-        this.field = field;
         setLocation(location);
         age = 0;
     }
@@ -69,21 +67,12 @@ public abstract class Organism implements Actor
     protected void setLocation(Location newLocation)
     {
         if(location != null) {
-            field.clear(location);
+            getField().clear(location);
         }
         location = newLocation;
-        field.place(this, newLocation);
+        getField().place(this, newLocation);
     }
-    
-    /**
-     * Return the organism's field.
-     * @return The organism's field.
-     */
-    protected Field getField()
-    {
-        return field;
-    }
-    
+
     /**
      * Check whether the organism is alive or not.
      * @return true if the organism is still alive.
@@ -101,9 +90,9 @@ public abstract class Organism implements Actor
     {
         alive = false;
         if(location != null) {
-            field.clear(location);
+            getField().clear(location);
             location = null;
-            field = null;
+            setField(null);
         }
     }
     

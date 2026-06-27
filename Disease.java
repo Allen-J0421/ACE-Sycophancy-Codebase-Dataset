@@ -10,10 +10,8 @@ import java.util.Random;
  *
  * @version 2022.02.28
  */
-public abstract class Disease implements Actor
+public abstract class Disease extends SimulationEntity
 {
-    // The field of the simulation
-    private Field field;
     // A list of the species that the disease affects
     private ArrayList<String> affectedSpecies;
     // A hashmap containing organisms currently infected with disease
@@ -35,7 +33,7 @@ public abstract class Disease implements Actor
      */
     public Disease(Field field)
     {
-        this.field = field;
+        super(field);
         affectedSpecies = new ArrayList<>();
         affected = new HashMap<>();
         probability = 0.0001;
@@ -102,19 +100,19 @@ public abstract class Disease implements Actor
         try {
             Organism organism = (Organism) actor;
             if (organism.isAlive()) {
-                adjacent = field.adjacentLocations(organism.getLocation());
+                adjacent = getField().adjacentLocations(organism.getLocation());
             }
         } catch (Exception e) {
             WaterSources water = (WaterSources) actor;
             if (!water.isEmpty()) {
-                adjacent = field.adjacentLocations(water.getLocation());
+                adjacent = getField().adjacentLocations(water.getLocation());
             }
         }
         if(adjacent != null) {
             Iterator<Location> it = adjacent.iterator();
             while(it.hasNext()) {
                 Location where = it.next();
-                Object thing = field.getObjectAt(where);
+                Object thing = getField().getObjectAt(where);
                 if (thing != null && affectedSpecies.contains(thing.getClass().getName())) {
                     if (rand.nextDouble() < infectiousness) {
                         if (thing instanceof Organism) {

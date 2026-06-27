@@ -17,12 +17,12 @@ public class Simulator
     private Field field;
     // The current step of the simulation.
     private int step;
-    // A graphical view of the simulation.
-    private SimulatorView view;
     // Whether it is currently day or night - determines each animal's behaviour.
     private boolean nightTime;
     // Handles initial population and dynamic entity creation.
     private PopulationManager populationManager;
+    // Observers notified after each simulation step.
+    private final List<SimulationObserver> observers = new ArrayList<>();
 
     /**
      * Construct a simulation field with default size.
@@ -50,7 +50,7 @@ public class Simulator
         field = new Field(depth, width);
         populationManager = new PopulationManager(field, this);
 
-        view = new SimulatorView(depth, width, this);
+        SimulatorView view = new SimulatorView(depth, width);
         view.setColor(Gazelle.class, Color.ORANGE);
         view.setColor(Lion.class, Color.YELLOW);
         view.setColor(Hyena.class, Color.RED);
@@ -58,8 +58,19 @@ public class Simulator
         view.setColor(FennecFox.class, Color.MAGENTA);
         view.setColor(Grass.class, Color.GREEN);
         view.setColor(Lake.class, Color.BLUE);
+        addObserver(view);
 
         reset();
+    }
+
+    /**
+     * Register an observer to be notified after each simulation step
+     * and consulted for viability checks.
+     * @param observer The observer to register.
+     */
+    public void addObserver(SimulationObserver observer)
+    {
+        observers.add(observer);
     }
 
     /**
@@ -77,7 +88,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && checkViable(field); step++) {
             simulateOneStep();
             delay(60);
         }
@@ -142,7 +153,7 @@ public class Simulator
             actors.addAll(populationManager.generateWater());
         }
 
-        view.showStatus(step, field);
+        notifyObservers(new SimulationEvent(step, field, nightTime));
     }
 
     /**
@@ -154,7 +165,7 @@ public class Simulator
         actors.clear();
         actors.addAll(populationManager.populate());
         nightTime = false;
-        view.showStatus(step, field);
+        notifyObservers(new SimulationEvent(step, field, nightTime));
     }
 
     /**
@@ -185,5 +196,27 @@ public class Simulator
     public boolean isNight()
     {
         return nightTime;
+    }
+
+    /**
+     * Notify all registered observers that a step has completed.
+     */
+    private void notifyObservers(SimulationEvent event)
+    {
+        for(SimulationObserver obs : observers) {
+            obs.onStepCompleted(event);
+        }
+    }
+
+    /**
+     * @return true if all registered observers consider the simulation viable.
+     */
+    private boolean checkViable(Field field)
+    {
+        if(observers.isEmpty()) return false;
+        for(SimulationObserver obs : observers) {
+            if(!obs.isViable(field)) return false;
+        }
+        return true;
     }
 }

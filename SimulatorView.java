@@ -6,14 +6,17 @@ import java.util.Map;
 
 /**
  * A graphical view of the simulation grid.
- * The view displays a colored rectangle for each location 
+ * The view displays a colored rectangle for each location
  * representing its contents. It uses a default background color.
  * Colors for each type of species can be defined using the
  * setColor method.
  *
+ * Implements SimulationObserver so the Simulator can notify it through
+ * the observer interface rather than calling display methods directly.
+ *
  * @version 2022.02.28
  */
-public class SimulatorView extends JFrame
+public class SimulatorView extends JFrame implements SimulationObserver
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -33,17 +36,14 @@ public class SimulatorView extends JFrame
     private Map<Class, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
-    private Simulator simulator;
 
     /**
      * Create a view of the given width and height.
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width, Simulator simulator)
+    public SimulatorView(int height, int width)
     {
-        this.simulator = simulator;   
-
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
@@ -86,24 +86,46 @@ public class SimulatorView extends JFrame
         }
     }
 
+    // -------------------------------------------------------------------------
+    // SimulationObserver implementation
+    // -------------------------------------------------------------------------
+
+    /**
+     * Receive a simulation step notification and refresh the display.
+     * @param event Snapshot of the current simulation state.
+     */
+    @Override
+    public void onStepCompleted(SimulationEvent event)
+    {
+        showStatus(event.getStep(), event.getField(), event.isNightTime());
+    }
+
+    /**
+     * Determine whether the simulation should continue to run.
+     * @return true If there is more than one species alive.
+     */
+    @Override
+    public boolean isViable(Field field)
+    {
+        return stats.isViable(field);
+    }
+
+    // -------------------------------------------------------------------------
+    // Display logic
+    // -------------------------------------------------------------------------
+
     /**
      * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
+     * @param step      Which iteration step it is.
+     * @param field     The field whose status is to be displayed.
+     * @param nightTime Whether it is currently night in the simulation.
      */
-    public void showStatus(int step, Field field)
+    public void showStatus(int step, Field field, boolean nightTime)
     {
         if(!isVisible()) {
             setVisible(true);
         }
-        String time = "";
-        if (simulator.isNight()) {
-            time = " Night";
-        }
-        else {
-            time = " Day";
-        }
-        
+        String time = nightTime ? " Night" : " Day";
         stepLabel.setText(STEP_PREFIX + step + time);
         stats.reset();
 
@@ -144,20 +166,11 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
-    }
-
-    /**
-     * Provide a graphical view of a rectangular field. This is 
+     * Provide a graphical view of a rectangular field. This is
      * a nested class (a class defined inside a class) which
      * defines a custom component for the user interface. This
      * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
+     * This is rather advanced GUI stuff - you can ignore this
      * for your project if you like.
      */
     private class FieldView extends JPanel
@@ -246,5 +259,5 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-    } 
+    }
 }

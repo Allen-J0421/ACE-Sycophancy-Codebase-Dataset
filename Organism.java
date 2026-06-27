@@ -117,13 +117,11 @@ public abstract class Organism implements FieldOccupant
      */
     public final void act(List<Organism> newOrganisms)
     {
-        incrementAge();
-        if(isAlive()) {
-            applyStepEffects();
-        }
-        if(isAlive()) {
-            giveBirth(newOrganisms);
-            relocate();
+        for(OrganismActionCommand action : attributes.getActionCommands()) {
+            if(!isAlive()) {
+                break;
+            }
+            action.execute(this, newOrganisms);
         }
     }
     
@@ -135,7 +133,8 @@ public abstract class Organism implements FieldOccupant
     protected int breed()
     {
         int births = 0;
-        if(canBreed() && getRand().nextDouble() <= attributes.getBreedingProbability()) {
+        if(attributes.getBreedingStrategy().canBreed(this)
+           && getRand().nextDouble() <= attributes.getBreedingProbability()) {
             births = getRand().nextInt(attributes.getMaxLitterSize()) + 1;
         }
         return births;
@@ -198,52 +197,24 @@ public abstract class Organism implements FieldOccupant
     }
 
     /**
-     * Default breeding rule for organisms that reproduce without a mate.
-     *
-     * @return True when the organism is old enough to breed.
+     * Return the shared attributes for this organism.
      */
-    protected boolean canBreed()
+    final OrganismAttributes getAttributes()
     {
-        return getAge() >= attributes.getBreedingAge();
-    }
-
-    /**
-     * Hook for species-specific per-step work before breeding and movement.
-     */
-    protected void applyStepEffects()
-    {
-    }
-
-    /**
-     * Hook for organisms that may move during a simulation step.
-     *
-     * @return The next location, or null to stay in place.
-     */
-    protected Location findNextLocation()
-    {
-        return null;
-    }
-
-    /**
-     * Hook for species that die when they cannot move.
-     *
-     * @return True if the organism dies when no destination is available.
-     */
-    protected boolean diesWhenBlocked()
-    {
-        return false;
+        return attributes;
     }
 
     /**
      * Move the organism if its species requires relocation this step.
      */
-    private void relocate()
+    protected void relocate()
     {
-        Location newLocation = findNextLocation();
+        RelocationStrategy relocationStrategy = attributes.getRelocationStrategy();
+        Location newLocation = relocationStrategy.findNextLocation(this);
         if(newLocation != null) {
             setLocation(newLocation);
         }
-        else if(diesWhenBlocked()) {
+        else if(relocationStrategy.diesWhenBlocked()) {
             setDead();
         }
     }

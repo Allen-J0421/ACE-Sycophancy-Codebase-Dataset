@@ -16,10 +16,14 @@ public class AnimalAttributes extends OrganismAttributes
     public AnimalAttributes(Species species, boolean diurnal, int breedingAge,
                             int maxAge, double breedingProbability,
                             int maxLitterSize, int maxHealth,
-                            OrganismFactory factory, Set<Species> foodSources)
+                            OrganismFactory factory, Set<Species> foodSources,
+                            BreedingStrategy breedingStrategy,
+                            RelocationStrategy relocationStrategy,
+                            OrganismActionCommand... actionCommands)
     {
         super(species, diurnal, breedingAge, maxAge, breedingProbability,
-              maxLitterSize, factory);
+              maxLitterSize, factory, breedingStrategy, relocationStrategy,
+              actionCommands);
         this.maxHealth = maxHealth;
         this.foodSources = foodSources;
     }

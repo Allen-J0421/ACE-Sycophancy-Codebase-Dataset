@@ -11,7 +11,13 @@ public class Leopard extends Animal
     private static final AnimalAttributes ATTRIBUTES =
         new AnimalAttributes(Species.LEOPARD, false, 15, 55, 0.145, 4, 40,
                              Leopard::new,
-                             AnimalAttributes.speciesSet(Species.SLOTH));
+                             AnimalAttributes.speciesSet(Species.SLOTH),
+                             OrganismBehaviors.MATE_REQUIRED_BREEDING,
+                             OrganismBehaviors.FORAGE_OR_WANDER,
+                             OrganismBehaviors.INCREMENT_AGE,
+                             OrganismBehaviors.DECAY_HEALTH,
+                             OrganismBehaviors.GIVE_BIRTH,
+                             OrganismBehaviors.RELOCATE);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero

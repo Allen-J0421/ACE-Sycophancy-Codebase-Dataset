@@ -14,18 +14,6 @@ public abstract class InfectiousAnimal extends Animal implements Infectable
     }
 
     /**
-     * Infectious animals lose an extra health point when sick and may then
-     * spread the disease to nearby infectable organisms.
-     */
-    protected void applyStepEffects()
-    {
-        illness();
-        if(isAlive()) {
-            spreadDisease();
-        }
-    }
-
-    /**
      * Decides whether this animal will infect another eligible animal.
      */
     public void spreadDisease()

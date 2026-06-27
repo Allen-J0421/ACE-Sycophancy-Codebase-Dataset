@@ -78,7 +78,7 @@ public abstract class Animal extends Organism
      * 
      * @return true if the animal can breed
      */
-    protected boolean canBreed()
+    protected boolean hasBreedingMate()
     {
         if (isMale == false)
         {
@@ -92,7 +92,8 @@ public abstract class Animal extends Organism
                 if (organism != null && organism.getSpecies() == getSpecies())
                 {
                     Animal animal = (Animal) organism;
-                    return animal.getGender() == true && getAge() >= getBreedingAge();
+                    return animal.getGender() == true
+                        && getAge() >= getAttributes().getBreedingAge();
                 }
             }
         }
@@ -134,45 +135,4 @@ public abstract class Animal extends Organism
         }
     }
 
-    /**
-     * Animals lose health every step before any movement or disease effects.
-     */
-    protected void applyStepEffects()
-    {
-        incrementHealth();
-    }
-
-    /**
-     * Animals either move towards food or into a free neighbouring cell.
-     *
-     * @return The next destination for the animal.
-     */
-    protected Location findNextLocation()
-    {
-        Location newLocation = findFood();
-        if(newLocation == null) {
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        return newLocation;
-    }
-
-    /**
-     * Animals die if they cannot move because of overcrowding.
-     *
-     * @return Always true for animals.
-     */
-    protected boolean diesWhenBlocked()
-    {
-        return true;
-    }
-
-    /**
-     * Return this species' breeding age.
-     *
-     * @return The breeding age for the animal.
-     */
-    private int getBreedingAge()
-    {
-        return attributes.getBreedingAge();
-    }
 }

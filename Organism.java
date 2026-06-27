@@ -114,6 +114,16 @@ public abstract class Organism implements Actor
     {
         age = age + 1;
     }
+
+    /**
+     * Apply shared parent state to a newly created offspring.
+     * Subclasses can override to copy domain-specific state.
+     * @param offspring The newly created offspring.
+     */
+    protected void initializeOffspring(Organism offspring)
+    {
+        // Default is intentionally empty.
+    }
     
     /**
      * @return The value that eating this organism gives predator

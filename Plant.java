@@ -63,46 +63,56 @@ public abstract class Plant extends Organism
     }
 
     /**
-     * Check whether or not this plant is to reproduce at this step.
+     * Check whether or not this plant is to give birth at this step.
      * New growths will be made into free adjacent locations.
      * @param newPlants A list to return newly grown plants.
-     * @return The free adjacent locations for the new plants, or null if reproduction is not possible.
      */
-    protected List<Location> giveBirth(List<Actor> newPlants)
+    protected void giveBirth(List<Actor> newPlants)
     {
-        int births = reproduce();
+        int births = breed();
         if (births <= 0) {
-            return null;
+            return;
         }
 
-        List<Location> free = getField().getFreeAdjacentLocations(getLocation());
-        if (free.isEmpty()) {
-            return null;
+        List<Location> free = getBirthLocations();
+        if (free == null) {
+            return;
         }
 
         Field field = getField();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Plant young = createOffspring(field, loc);
+            Organism young = createOffspring(field, loc);
+            initializeOffspring(young);
             newPlants.add(young);
+        }
+    }
+
+    /**
+     * Find free adjacent locations for births if this plant can breed.
+     */
+    protected List<Location> getBirthLocations()
+    {
+        if (canBreed()) {
+            return getField().getFreeAdjacentLocations(getLocation());
         }
         return null;
     }
 
     /**
-     * Determine whether this plant can currently reproduce.
+     * Determine whether this plant can currently breed.
      */
-    private boolean canReproduce()
+    private boolean canBreed()
     {
-        return getWaterLevel() >= getReproductionWaterThreshold();
+        return getWaterLevel() >= getBreedingWaterThreshold();
     }
 
     /**
      * Generate the number of offspring produced by this plant.
      */
-    private int reproduce()
+    private int breed()
     {
-        if (canReproduce() && rand.nextDouble() <= getReproductionProbability()) {
+        if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
             return rand.nextInt(getMaxLitterSize()) + 1;
         }
         return 0;
@@ -116,7 +126,7 @@ public abstract class Plant extends Organism
     /**
      * @return The probability that this plant reproduces when conditions are met.
      */
-    protected abstract double getReproductionProbability();
+    protected abstract double getBreedingProbability();
 
     /**
      * @return The maximum number of offspring this plant can produce at once.
@@ -126,7 +136,7 @@ public abstract class Plant extends Organism
     /**
      * @return The minimum water level required to reproduce.
      */
-    protected abstract int getReproductionWaterThreshold();
+    protected abstract int getBreedingWaterThreshold();
 
     /**
      * @return The upper bound used for initial water level generation.
@@ -144,5 +154,15 @@ public abstract class Plant extends Organism
      * @param location The offspring's location.
      * @return A new instance of the same plant species.
      */
-    protected abstract Plant createOffspring(Field field, Location location);
+    protected abstract Organism createOffspring(Field field, Location location);
+
+    /**
+     * Plants do not currently copy additional state to offspring.
+     * @param offspring The offspring to initialize.
+     */
+    @Override
+    protected void initializeOffspring(Organism offspring)
+    {
+        // Default plant offspring state is already complete.
+    }
 }

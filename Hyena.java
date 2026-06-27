@@ -76,7 +76,7 @@ public class Hyena extends Animal
     }
 
     @Override
-    protected Animal createOffspring(Field field, Location location)
+    protected Organism createOffspring(Field field, Location location)
     {
         return new Hyena(false, field, location);
     }

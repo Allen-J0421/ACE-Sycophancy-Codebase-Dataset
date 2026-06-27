@@ -75,7 +75,7 @@ public class Lion extends Animal
     }
 
     @Override
-    protected Animal createOffspring(Field field, Location location)
+    protected Organism createOffspring(Field field, Location location)
     {
         return new Lion(false, field, location);
     }

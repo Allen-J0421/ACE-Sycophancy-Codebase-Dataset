@@ -154,30 +154,26 @@ public abstract class Animal extends Organism
      * Check whether or not this animal is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newAnimals A list to return newly born animals.
-     * @return A list of the free adjacent locations for new young to be born into
      */
-    protected List<Location> giveBirth(List<Actor> newAnimals)
+    protected void giveBirth(List<Actor> newAnimals)
     {
         int births = breed();
         if (births <= 0) {
-            return null;
+            return;
         }
 
         List<Location> free = getBirthLocations();
         if (free == null) {
-            return null;
+            return;
         }
 
         Field field = getField();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = createOffspring(field, loc);
-            if (this.isInfected()) {
-                young.setInfected();
-            }
+            Organism young = createOffspring(field, loc);
+            initializeOffspring(young);
             newAnimals.add(young);
         }
-        return null;
     }
 
     /**
@@ -278,7 +274,7 @@ public abstract class Animal extends Organism
      * @param location The offspring's location.
      * @return A new instance of the same species.
      */
-    protected abstract Animal createOffspring(Field field, Location location);
+    protected abstract Organism createOffspring(Field field, Location location);
 
     /**
      * Determine whether this animal can currently breed.
@@ -297,6 +293,18 @@ public abstract class Animal extends Organism
             return rand.nextInt(getMaxLitterSize()) + 1;
         }
         return 0;
+    }
+
+    /**
+     * Copy animal-specific state into a newly created offspring.
+     * @param offspring The offspring to initialize.
+     */
+    @Override
+    protected void initializeOffspring(Organism offspring)
+    {
+        if (this.isInfected()) {
+            offspring.setInfected();
+        }
     }
 
     /**

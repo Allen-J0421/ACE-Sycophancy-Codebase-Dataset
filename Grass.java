@@ -28,7 +28,7 @@ public class Grass extends Plant
     }
 
     @Override
-    protected double getReproductionProbability()
+    protected double getBreedingProbability()
     {
         return REPRODUCTION_PROBABILITY;
     }
@@ -40,7 +40,7 @@ public class Grass extends Plant
     }
 
     @Override
-    protected int getReproductionWaterThreshold()
+    protected int getBreedingWaterThreshold()
     {
         return REPRODUCTION_WATER_THRESHOLD;
     }
@@ -58,7 +58,7 @@ public class Grass extends Plant
     }
 
     @Override
-    protected Plant createOffspring(Field field, Location location)
+    protected Organism createOffspring(Field field, Location location)
     {
         return new Grass(false, field, location);
     }

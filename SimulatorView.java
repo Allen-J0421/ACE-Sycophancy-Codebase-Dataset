@@ -1,15 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * A graphical view of the simulation grid.
- * The view displays a colored rectangle for each location 
- * representing its contents. It uses a default background color.
- * Colors for each type of species can be defined using the
- * setColor method.
+ * This class is responsible solely for rendering — statistical data is
+ * computed externally (by {@link FieldStats}) and passed in as a string.
  *
  * @version 2016.02.29
  */
@@ -18,22 +14,12 @@ public class SimulatorView extends JFrame
     // Colors used for empty locations.
     private Color emptyColor = Color.white;
 
-    // Color used for objects that have no defined color.
-    private static final Color UNKNOWN_COLOR = Color.gray;
-
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
     private final String WEATHER_PREFIX = "Weather: ";
     private final String TIME_PREFIX = "Time: ";
     private JLabel stepLabel, populationLabel, infoLabel, timeLabel, weatherLabel;
     private FieldView fieldView;
-    
-    // A map for storing colors for participants in the simulation
-    // private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
-
-    
 
     /**
      * Create a view of the given width and height.
@@ -42,23 +28,19 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
-        stats = new FieldStats();
-        // colors = new LinkedHashMap<>();
-
         setTitle("Fox and Rabbit Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
         timeLabel = new JLabel("", JLabel.CENTER);
         populationLabel = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
         weatherLabel = new JLabel(WEATHER_PREFIX, JLabel.CENTER);
-        
-        
+
         setLocation(100, 50);
-        
+
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        
+
         JPanel topInfoPane = new JPanel(new BorderLayout());
             topInfoPane.add(stepLabel, BorderLayout.WEST);
             topInfoPane.add(timeLabel, BorderLayout.EAST);
@@ -75,21 +57,6 @@ public class SimulatorView extends JFrame
         setVisible(true);
     }
 
-    public Map<Class, Counter> getCurrentStats()
-    {
-        return stats.getPopulationDetails();
-    }
-    
-    /**
-     * Define a color to be used for a given class of animal.
-     * @param animalClass The animal's Class object.
-     * @param color The color to be used for the given class.
-     */
-    // public void setColor(Class animalClass, Color color)
-    // {
-    //     colors.put(animalClass, color);
-    // }
-
     /**
      * Display a short information label at the top of the window.
      */
@@ -99,87 +66,51 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * @return The color to be used for a given class of animal.
-     */
-    // private Color getColor(Class animalClass)
-    // {
-    //     Color col = colors.get(animalClass);
-    //     if(col == null) {
-    //         // no color defined for this class
-    //         return UNKNOWN_COLOR;
-    //     }
-    //     else {
-    //         return col;
-    //     }
-    // }
-
-    /**
      * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
+     * @param step             Which iteration step it is.
+     * @param field            The field whose contents are to be drawn.
+     * @param timeOfDay        The current time tracker.
+     * @param weather          The current weather.
+     * @param populationSummary Pre-computed population summary string from FieldStats.
      */
-    public void showStatus(int step, Field field, TimeTracker timeOfDay, Weather weather)
+    public void showStatus(int step, Field field, TimeTracker timeOfDay, Weather weather,
+                           String populationSummary)
     {
-        if(!isVisible()) {
+        if (!isVisible()) {
             setVisible(true);
         }
 
-            
         stepLabel.setText(STEP_PREFIX + step);
-        stats.reset();
-        
         fieldView.preparePaint();
 
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
                 Object animal = field.getObjectAt(row, col);
-                if(animal != null && animal instanceof Displayable) {
-                    Displayable item = (Displayable)animal;
-                    stats.incrementCount(animal.getClass());
-                    if (item instanceof Infectable) {
-                        Infectable potentiallyDiseasedItem = (Infectable)item;
-                        Disease disease = potentiallyDiseasedItem.getDisease();
-                        if (disease != null) {
-                            stats.incrementCount(disease.getClass());
-                        }
-                        
-                    }
-
+                if (animal instanceof Displayable) {
+                    Displayable item = (Displayable) animal;
                     fieldView.drawMark(col, row, item.getColor(), item.getBorderColor());
-                }
-                else {
+                } else {
                     fieldView.drawMark(col, row, emptyColor, null);
                 }
             }
         }
-        stats.countFinished();
 
-        populationLabel.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        populationLabel.setText(POPULATION_PREFIX + populationSummary);
         fieldView.repaint();
         timeOfDay.incrementTime();
         timeLabel.setText(TIME_PREFIX + timeOfDay.getPrettyTime());
         weatherLabel.setText(WEATHER_PREFIX + weather.name());
 
-        int smallTime = (int)Math.round(timeOfDay.normalisedTime() * 255);
+        int smallTime = (int) Math.round(timeOfDay.normalisedTime() * 255);
         emptyColor = new Color(smallTime, smallTime, smallTime);
     }
 
     /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
-    }
-    
-    /**
-     * Provide a graphical view of a rectangular field. This is 
+     * Provide a graphical view of a rectangular field. This is
      * a nested class (a class defined inside a class) which
      * defines a custom component for the user interface. This
      * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
+     * This is rather advanced GUI stuff - you can ignore this
      * for your project if you like.
      */
     private class FieldView extends JPanel
@@ -200,7 +131,7 @@ public class SimulatorView extends JFrame
             gridHeight = height;
             gridWidth = width;
             size = new Dimension(0, 0);
-            super.setBackground(new Color(0,0,0));
+            super.setBackground(new Color(0, 0, 0));
         }
 
         /**
@@ -212,44 +143,42 @@ public class SimulatorView extends JFrame
                                  gridHeight * GRID_VIEW_SCALING_FACTOR);
         }
 
-
         /**
          * Prepare for a new round of painting. Since the component
          * may be resized, compute the scaling factor again.
          */
         public void preparePaint()
         {
-            if(! size.equals(getSize())) {  // if the size has changed...
+            if (!size.equals(getSize())) {
                 size = getSize();
                 fieldImage = fieldView.createImage(size.width, size.height);
                 g = fieldImage.getGraphics();
 
                 xScale = size.width / gridWidth;
-                if(xScale < 1) {
+                if (xScale < 1) {
                     xScale = GRID_VIEW_SCALING_FACTOR;
                 }
                 yScale = size.height / gridHeight;
-                if(yScale < 1) {
+                if (yScale < 1) {
                     yScale = GRID_VIEW_SCALING_FACTOR;
                 }
             }
         }
-        
+
         /**
-         * Paint on grid location on this field in a given color.
+         * Paint one grid location on this field in a given color.
          */
         public void drawMark(int x, int y, Color color, Color borderColor)
         {
-            //If the border color is specified set it. If not, make it gray (which overrites any previously set border colors)
             if (borderColor != null) {
                 g.setColor(borderColor);
             } else {
                 g.setColor(Color.GRAY);
             }
-            g.drawRect(x * xScale, y * yScale, xScale-1, yScale-1);    
-            
+            g.drawRect(x * xScale, y * yScale, xScale - 1, yScale - 1);
+
             g.setColor(color);
-            g.fillRect(x * xScale, y * yScale, xScale-1, yScale-1);
+            g.fillRect(x * xScale, y * yScale, xScale - 1, yScale - 1);
         }
 
         /**
@@ -258,13 +187,11 @@ public class SimulatorView extends JFrame
          */
         public void paintComponent(Graphics g)
         {
-            if(fieldImage != null) {
+            if (fieldImage != null) {
                 Dimension currentSize = getSize();
-                if(size.equals(currentSize)) {
+                if (size.equals(currentSize)) {
                     g.drawImage(fieldImage, 0, 0, null);
-                }
-                else {
-                    // Rescale the previous image.
+                } else {
                     g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);
                 }
             }

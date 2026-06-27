@@ -14,18 +14,13 @@ public class Simulator
     private static final int DEFAULT_WIDTH = 120;
     private static final int DEFAULT_DEPTH = 80;
 
-    private SimulatorState state = new SimulatorState();  
+    private SimulatorState state = new SimulatorState();
+    private TimeTracker timeOfDay = new TimeTracker();
+    private FieldStats stats = new FieldStats();
 
-
-    private TimeTracker timeOfDay = new TimeTracker(); 
-
-    // List of animals in the field.
     private List<Simulatable> animals;
-    // The current state of the field.
     private Field field;
-    // The current step of the simulation.
     private int step;
-    // A graphical view of the simulation.
     private SimulatorView view;
     
 
@@ -82,7 +77,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && stats.isViable(); step++) {
             simulateOneStep();
             // delay(60);   // uncomment this to run more slowly
         }
@@ -97,23 +92,19 @@ public class Simulator
     public void simulateOneStep()
     {
         step++;
-        state.setCurrentStats(view.getCurrentStats());
-        // Provide space for newborn animals.
-        List<Simulatable> newAnimals = new ArrayList<>();        
-        // Let all rabbits act.
+        state.setCurrentStats(stats.getCounters());
+        List<Simulatable> newAnimals = new ArrayList<>();
         for(Iterator<Simulatable> it = animals.iterator(); it.hasNext(); ) {
             Simulatable animal = it.next();
-            // System.out.println(state.getAggregatedProbabilityReduction());
             animal.act(newAnimals, state);
-            if(! animal.isAlive()) {
+            if(!animal.isAlive()) {
                 it.remove();
             }
         }
-               
-        // Add the newly born foxes and rabbits to the main lists.
         animals.addAll(newAnimals);
 
-        view.showStatus(step, field, timeOfDay, state.getCurrentWeather());
+        stats.update(field);
+        view.showStatus(step, field, timeOfDay, state.getCurrentWeather(), stats.getSummary());
         state.setNormalisedTime(timeOfDay.normalisedTime());
         state.changeCurrentWeather();
         
@@ -129,9 +120,8 @@ public class Simulator
         animals.clear();
         state.setCurrentWeather(Weather.Sunny);
         populate();
-        
-        // Show the starting state in the view.
-        view.showStatus(step, field, timeOfDay, state.getCurrentWeather());
+        stats.update(field);
+        view.showStatus(step, field, timeOfDay, state.getCurrentWeather(), stats.getSummary());
     }
     
     /**

@@ -1,4 +1,5 @@
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Collects and provides statistical data on the state of a field.
@@ -7,11 +8,16 @@ import java.util.HashMap;
  * state. All other methods return values from the most recent update and
  * require no Field reference.
  *
+ * Mutation (increment / reset) is fully delegated to the internal
+ * {@link CounterRegistry}; this class only reads from the immutable snapshot
+ * produced after each scan.
+ *
  * @version 2016.02.29
  */
 public class FieldStats
 {
-    private HashMap<Class, Counter> counters = new HashMap<>();
+    private final CounterRegistry registry = new CounterRegistry();
+    private Map<Class, Counter> snapshot   = Collections.emptyMap();
 
     /**
      * Scan the field and refresh all counts.
@@ -20,28 +26,27 @@ public class FieldStats
      */
     public void update(Field field)
     {
-        for (Counter c : counters.values()) {
-            c.reset();
-        }
+        registry.clear();
         for (Object item : field.getOccupants()) {
-            incrementCount(item.getClass());
+            registry.increment(item.getClass());
             if (item instanceof Infectable) {
                 Disease disease = ((Infectable) item).getDisease();
                 if (disease != null) {
-                    incrementCount(disease.getClass());
+                    registry.increment(disease.getClass());
                 }
             }
         }
+        snapshot = registry.snapshot();
     }
 
     /**
-     * Return the raw counters keyed by class, reflecting the most recent
+     * Return an immutable snapshot of population counts from the most recent
      * {@link #update(Field)} call.
-     * @return the population counters
+     * @return map from class to its {@link Counter}
      */
-    public HashMap<Class, Counter> getCounters()
+    public Map<Class, Counter> getCounters()
     {
-        return counters;
+        return snapshot;
     }
 
     /**
@@ -51,7 +56,7 @@ public class FieldStats
     public String getSummary()
     {
         StringBuilder sb = new StringBuilder();
-        for (Counter info : counters.values()) {
+        for (Counter info : snapshot.values()) {
             sb.append(info.getName()).append(": ").append(info.getCount()).append(' ');
         }
         return sb.toString();
@@ -59,26 +64,16 @@ public class FieldStats
 
     /**
      * Determine whether the simulation is still viable.
-     * @return true if more than one species has a non-zero count
+     * @return true if more than one class has a non-zero count
      */
     public boolean isViable()
     {
         int nonZero = 0;
-        for (Counter info : counters.values()) {
+        for (Counter info : snapshot.values()) {
             if (info.getCount() > 0) {
                 nonZero++;
             }
         }
         return nonZero > 1;
-    }
-
-    private void incrementCount(Class clazz)
-    {
-        Counter c = counters.get(clazz);
-        if (c == null) {
-            c = new Counter(clazz.getName());
-            counters.put(clazz, c);
-        }
-        c.increment();
     }
 }

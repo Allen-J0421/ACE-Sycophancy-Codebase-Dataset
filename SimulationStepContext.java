@@ -42,7 +42,7 @@ class SimulationStepContext implements StepContext
     public Counter getPopulationCount(Class entityClass)
     {
         Counter c = state.getCurrentStats(entityClass);
-        return c != null ? c : new Counter(entityClass.getName());
+        return c != null ? c : new Counter(entityClass.getName(), 0);
     }
 
     @Override

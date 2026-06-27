@@ -110,9 +110,12 @@ public abstract class Organism implements Actor
     /**
      * Increase the age.
      */
-    public void incrementAge()
+    public final void incrementAge()
     {
         age = age + 1;
+        if (age > getMaxAge()) {
+            setDead();
+        }
     }
 
     /**
@@ -129,6 +132,11 @@ public abstract class Organism implements Actor
      * @return The value that eating this organism gives predator
      */
     abstract public int getFoodValue();
+
+    /**
+     * @return The maximum age this organism can reach.
+     */
+    protected abstract int getMaxAge();
     
     /**
      * Look for water adjacent to the organism's current location
@@ -213,7 +221,7 @@ public abstract class Organism implements Actor
     /**
      * @return Current age of the organism
      */
-    protected double getAge()
+    protected int getAge()
     { 
         return age;
     }

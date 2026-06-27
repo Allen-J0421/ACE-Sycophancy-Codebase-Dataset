@@ -17,8 +17,6 @@ public abstract class Animal extends Organism
     private boolean female;
     // Indicates whether the animal is nocturnal or not
     private boolean nocturnal;
-    // The animal's age
-    private double age;
     // Indicates whether the animal is sleeping or not
     private boolean sleeping;
     
@@ -96,18 +94,6 @@ public abstract class Animal extends Organism
     }
 
     /**
-     * Increase the age and kill the animal when it exceeds its lifespan.
-     */
-    @Override
-    public void incrementAge()
-    {
-        super.incrementAge();
-        if (getAge() > getMaxAge()) {
-            setDead();
-        }
-    }
-    
-    /**
      * Look for prey adjacent to the current location.
      * Only the first live prey is eaten.
      * @return Where food was found, or null if it wasn't.
@@ -127,8 +113,7 @@ public abstract class Animal extends Organism
                         prey.setDead();
                         int increment = prey.getFoodValue() + this.getFoodLevel();
                         this.setFoodLevel(increment);
-                        int newWaterLevel = getWaterLevel() + 5;
-                        this.setWaterLevel(newWaterLevel);
+                        changeWaterLevel(5);
                         return where;  
                     }
                 }
@@ -250,11 +235,6 @@ public abstract class Animal extends Organism
      * @return The age at which this animal can breed.
      */
     protected abstract int getBreedingAge();
-
-    /**
-     * @return The maximum age this animal can reach.
-     */
-    protected abstract int getMaxAge();
 
     /**
      * @return The chance this animal successfully breeds when it can breed.

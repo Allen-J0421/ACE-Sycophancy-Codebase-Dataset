@@ -42,18 +42,6 @@ public abstract class Plant extends Organism
     }
 
     /**
-     * Increase the age and kill the plant when it exceeds its lifespan.
-     */
-    @Override
-    public void incrementAge()
-    {
-        super.incrementAge();
-        if (getAge() > getMaxAge()) {
-            setDead();
-        }
-    }
-
-    /**
      * Check whether or not this plant is to give birth at this step.
      * New growths will be made into free adjacent locations.
      * @param newPlants A list to return newly grown plants.
@@ -108,11 +96,6 @@ public abstract class Plant extends Organism
         }
         return 0;
     }
-
-    /**
-     * @return The age at which this plant can die of old age.
-     */
-    protected abstract int getMaxAge();
 
     /**
      * @return The probability that this plant reproduces when conditions are met.

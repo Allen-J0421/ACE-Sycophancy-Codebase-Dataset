@@ -16,9 +16,9 @@ public class EntityFactory {
         registry.add(provider);
     }
 
-    public void registerColors(SimulationObserver observer) {
+    public void registerColors(EventBus bus) {
         for (EntityProvider p : registry) {
-            observer.onColorRegistered(p.getEntityClass(), p.getColor());
+            bus.publish(new ColorRegistrationEvent(p.getEntityClass(), p.getColor()));
         }
     }
 

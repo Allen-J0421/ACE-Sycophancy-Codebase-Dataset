@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @version 01.03.22
  */
-public class SimulatorView extends JFrame implements SimulationObserver
+public class SimulatorView extends JFrame
 {
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
@@ -77,8 +77,17 @@ public class SimulatorView extends JFrame implements SimulationObserver
         colors.put(animalClass, color);
     }
 
-    public void onColorRegistered(Class<?> entityClass, Color color) {
-        setColor(entityClass, color);
+    /**
+     * Subscribe to all simulation events published on the given bus.
+     * Call this once at startup before the simulator runs.
+     */
+    public void subscribe(EventBus bus) {
+        bus.subscribe(StepEvent.class,
+                e -> showStatus(e.step, e.field, e.time, e.weather));
+        bus.subscribe(ColorRegistrationEvent.class,
+                e -> setColor(e.entityClass, e.color));
+        bus.subscribe(ViabilityCheckEvent.class,
+                e -> { if (!isViable(e.field)) e.veto(); });
     }
 
     /**

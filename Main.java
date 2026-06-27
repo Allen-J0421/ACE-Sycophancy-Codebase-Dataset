@@ -15,8 +15,10 @@ public class Main {
 
         int depth = 80;
         int width = 120;
+        EventBus bus = new EventBus();
         SimulatorView view = new SimulatorView(depth, width);
-        Simulator sim = new Simulator(depth, width, view);
+        view.subscribe(bus);
+        Simulator sim = new Simulator(depth, width, bus);
         sim.runLongSimulation();
     }
 }

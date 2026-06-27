@@ -62,7 +62,7 @@ public class Owl extends Animal
             giveBirth(newOwls);
             Location newLocation = findFood();
             if (newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getNavigator().freeAdjacentLocation(getLocation());
             }
             if (newLocation != null) {
                 setLocation(newLocation);
@@ -90,7 +90,7 @@ public class Owl extends Animal
     private Location findFood()
     {
         Field<Entity> field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
+        List<Location> adjacent = getNavigator().adjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
@@ -114,7 +114,7 @@ public class Owl extends Animal
     private void giveBirth(List<Entity> newOwls)
     {
         Field<Entity> field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = getNavigator().getFreeAdjacentLocations(getLocation());
         int births = breed();
         for (int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);

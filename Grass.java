@@ -67,7 +67,7 @@ public class Grass extends Plant
                 getSteppeFire();
                 if (steppeFire() && getLocation() != null) {                
                     Field<Entity> field = getField();
-                    List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
+                    List<Location> adjacent = getNavigator().adjacentLocations(getLocation(), 1);
                     Iterator<Location> it = adjacent.iterator();
                     while(it.hasNext()) {
                         Location where = it.next();

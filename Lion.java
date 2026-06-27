@@ -69,7 +69,7 @@ public class Lion extends Animal
                 newLocation = findFood();
             }
             if (newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getNavigator().freeAdjacentLocation(getLocation());
             }
             if (step % 4 != 0) {
                 if (newLocation != null) {
@@ -99,7 +99,7 @@ public class Lion extends Animal
     private Location findFood()
     {
         Field<Entity> field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
+        List<Location> adjacent = getNavigator().adjacentLocations(getLocation(), 1);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
@@ -146,7 +146,7 @@ public class Lion extends Animal
     {
         boolean breedingPair = false;
         Field<Entity> field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 2);
+        List<Location> adjacent = getNavigator().adjacentLocations(getLocation(), 2);
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
@@ -160,7 +160,7 @@ public class Lion extends Animal
             }
         }
 
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = getNavigator().getFreeAdjacentLocations(getLocation());
         int births = breed();
         for (int b = 0; b < births && free.size() > 0 && breedingPair; b++) {
             Location loc = free.remove(0);

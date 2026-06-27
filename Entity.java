@@ -11,6 +11,8 @@ public abstract class Entity
     private boolean alive;
     // The field in which this entity lives.
     private Field<Entity> field;
+    // Spatial navigation utilities over that field.
+    private FieldNavigator navigator;
     // The entity's position in the field.
     private Location location;
 
@@ -24,6 +26,7 @@ public abstract class Entity
     {
         alive = true;
         this.field = field;
+        this.navigator = new FieldNavigator(field);
         setLocation(location);
     }
 
@@ -57,6 +60,7 @@ public abstract class Entity
             field.clear(location);
             location = null;
             field = null;
+            navigator = null;
         }
     }
 
@@ -87,5 +91,13 @@ public abstract class Entity
     protected Field<Entity> getField()
     {
         return field;
+    }
+
+    /**
+     * @return the navigator for spatial queries over the field.
+     */
+    protected FieldNavigator getNavigator()
+    {
+        return navigator;
     }
 }

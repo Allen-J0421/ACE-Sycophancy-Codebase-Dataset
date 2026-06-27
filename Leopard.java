@@ -40,14 +40,4 @@ public class Leopard extends Animal
     {
         return TRAITS;
     }
-
-    /**
-     * Creates and returns a new leopard object
-     *
-     * @return Organism object of subclass leopard
-     */
-    protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
-    {
-        return new Leopard(randomAge, field, location);
-    }
 }

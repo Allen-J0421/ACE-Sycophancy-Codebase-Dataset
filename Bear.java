@@ -40,14 +40,4 @@ public class Bear extends InfectableAnimal
     {
         return TRAITS;
     }
-
-    /**
-     * Creates and returns a new bear object
-     *
-     * @return Organism object of subclass bear
-     */
-    protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
-    {
-        return new Bear(randomAge, field, location);
-    }
 }

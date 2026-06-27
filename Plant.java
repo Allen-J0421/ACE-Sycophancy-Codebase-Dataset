@@ -83,15 +83,4 @@ public class Plant extends Organism
     protected double getBreedingProbability() {
         return BREEDING_PROBABILITY;
     }
-    
-    // Functional methods
-    
-    /**
-     * Creates and returns a new plant object
-     * 
-     * @return Organism object of subclass plant
-     */
-    protected Organism createNewOrganism(boolean randomAge, Field field, Location location) {
-        return new Plant(randomAge, field, location);
-    }
 }

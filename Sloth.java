@@ -39,14 +39,4 @@ public class Sloth extends InfectableAnimal
     {
         return TRAITS;
     }
-
-    /**
-     * Creates a new Animal object for a newborn sloth
-     *
-     * @return an Animal object for a newborn sloth
-     */
-    protected Animal createNewOrganism(boolean randomAge, Field field, Location location)
-    {
-        return new Sloth(randomAge, field, location);
-    }
 }

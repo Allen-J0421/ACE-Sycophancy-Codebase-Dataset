@@ -39,14 +39,4 @@ public class Monkey extends Animal
     {
         return TRAITS;
     }
-
-    /**
-     * Creates a new Animal object for a newborn monkey
-     *
-     * @return an Animal object for a newborn monkey
-     */
-    protected Animal createNewOrganism(boolean randomAge, Field field, Location location)
-    {
-        return new Monkey(randomAge, field, location);
-    }
 }

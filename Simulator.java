@@ -2,6 +2,8 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.awt.Color;
 
 /**
@@ -127,7 +129,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for(int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for(int step = 1; step <= numSteps && isViable(); step++) {
             simulateOneStep();
             //delay(60);   // uncomment this to run more slowly
         }
@@ -161,9 +163,9 @@ public class Simulator
 
         // Add the newly born organisms to the main population.
         organisms.addAll(nursery.getNewborns());
-        view.showStatus(step, field);
+        view.showStatus(populationSnapshot(), field);
     }
-        
+
     /**
      * Reset the simulation to a starting position.
      */
@@ -173,11 +175,51 @@ public class Simulator
         organisms.clear();
         populate();
         weather.resetWeather();
-        
+
         // Show the starting state in the view.
-        view.showStatus(step, field);
+        view.showStatus(populationSnapshot(), field);
     }
-    
+
+    /**
+     * Count the current population of the field, grouped by species, in the order
+     * species are first encountered while scanning the grid.
+     * @return A map from species class to head-count.
+     */
+    private Map<Class, Integer> countPopulation()
+    {
+        Map<Class, Integer> counts = new LinkedHashMap<>();
+        field.forEachCell((row, col, occupant) -> {
+            if(occupant != null) {
+                counts.merge(occupant.getClass(), 1, Integer::sum);
+            }
+        });
+        return counts;
+    }
+
+    /**
+     * Build an immutable snapshot of the current population statistics for the
+     * view to render. This is where the population stats calculation now lives,
+     * rather than in the view.
+     * @return The population snapshot for the current step.
+     */
+    private PopulationSnapshot populationSnapshot()
+    {
+        Map<Class, Integer> counts = countPopulation();
+        boolean viable = counts.size() > 1;
+        String timeOfDay = (step % 80 <= 55) ? "Day" : "Night";
+        return new PopulationSnapshot(step, counts, weather.getCurrentWeather(), timeOfDay, viable);
+    }
+
+    /**
+     * Determine whether the simulation is still viable, i.e. whether more than
+     * one species is still alive.
+     * @return true if the simulation should continue to run.
+     */
+    private boolean isViable()
+    {
+        return countPopulation().size() > 1;
+    }
+
     /**
      * Randomly populate the field with foxes and rabbits.
      */

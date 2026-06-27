@@ -31,9 +31,7 @@ public class SimulatorView extends JFrame
     
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
-    
+
     public static final Weather weather = Weather.getWeather();
 
     /**
@@ -43,7 +41,6 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width, int steps)
     {
-        stats = new FieldStats(steps);
         colors = new LinkedHashMap<>();
         
         step = steps;
@@ -140,45 +137,35 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
+     * Show the current status of the field. The population statistics are
+     * supplied by the simulator as an immutable snapshot; the view only renders
+     * them and draws the grid.
+     * @param snapshot The population statistics for the current step.
+     * @param field The field whose contents are to be drawn.
      */
-    public void showStatus(int step, Field field)
+    public void showStatus(PopulationSnapshot snapshot, Field field)
     {
         if(!isVisible()) {
             setVisible(true);
         }
-            
-        stepLabel.setText(STEP_PREFIX + step);
-        stats.reset();
-        
+
+        stepLabel.setText(STEP_PREFIX + snapshot.getStep());
+
         fieldView.preparePaint();
 
         field.forEachCell((row, col, animal) -> {
             if(animal != null) {
-                stats.incrementCount(animal.getClass());
                 fieldView.drawMark(col, row, getColor(animal.getClass()));
             }
             else {
                 fieldView.drawMark(col, row, EMPTY_COLOR);
             }
         });
-        stats.countFinished();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + snapshot.getPopulationDetails());
         fieldView.repaint();
     }
 
-    /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable(field);
-    }
-    
     /**
      * Provide a graphical view of a rectangular field. This is 
      * a nested class (a class defined inside a class) which

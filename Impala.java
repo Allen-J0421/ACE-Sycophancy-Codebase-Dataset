@@ -40,15 +40,4 @@ public class Impala extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this impala act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newImpala A list to return newly born impala.
-     */
-    public void act(List<Actor> newImpala)
-    {
-        super.act(newImpala);
-    }
 }

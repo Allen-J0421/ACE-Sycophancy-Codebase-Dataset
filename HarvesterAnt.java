@@ -40,15 +40,4 @@ public class HarvesterAnt extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this harvester ant act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newHarvesterAnts A list to return newly born harvester ants.
-     */
-    public void act(List<Actor> newHarvesterAnts)
-    {
-        super.act(newHarvesterAnts);
-    }
 }

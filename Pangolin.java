@@ -40,15 +40,4 @@ public class Pangolin extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this pangolin act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newPangolins A list to return newly born pangolins.
-     */
-    public void act(List<Actor> newPangolins)
-    {
-        super.act(newPangolins);
-    }
 }

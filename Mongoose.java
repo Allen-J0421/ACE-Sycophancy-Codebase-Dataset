@@ -40,15 +40,4 @@ public class Mongoose extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this mongoose act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newMongoose A list to return newly born mongoose.
-     */
-    public void act(List<Actor> newMongoose)
-    {
-        super.act(newMongoose);
-    }
 }

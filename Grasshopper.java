@@ -39,15 +39,4 @@ public class Grasshopper extends Consumer
         
         setStartingAge(randomAge);
     }
-    
-    /**
-     * Make this grasshopper act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newGrasshoppers A list to return newly born grasshoppers.
-     */
-    public void act(List<Actor> newGrasshoppers)
-    {
-        super.act(newGrasshoppers);
-    }
 }

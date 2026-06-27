@@ -39,7 +39,8 @@ public abstract class Actor
     {
         alive = true;
         this.field = field;
-        setLocation(location);
+        this.location = location;
+        field.place(this, location);
         this.time = time;
         setDiseases = new HashSet<>();
     }
@@ -222,11 +223,11 @@ public abstract class Actor
      * Copy diseases that spread by birth from a parent to this actor.
      * @param parentDiseases The parent diseases to inherit.
      */
-    protected void inheritBirthDiseases(Set<Disease> parentDiseases)
+    protected static void inheritBirthDiseases(Set<Disease> actorDiseases, Set<Disease> parentDiseases)
     {
         for(Disease parentDisease : parentDiseases) {
             if(parentDisease.isSpreadByBirth()) {
-                setDiseases.add(parentDisease);
+                actorDiseases.add(parentDisease);
             }
         }
     }
@@ -235,13 +236,12 @@ public abstract class Actor
      * Add any diseases this actor may start with at the beginning of a simulation.
      * @param rand The random generator to use for disease assignment.
      */
-    protected void addStartingDiseases(Random rand)
+    protected static void addStartingDiseases(String actorName, Set<Disease> actorDiseases, Random rand)
     {
-        String actorName = getActorName();
         for(Disease disease : Simulator.diseases) {
             Double startingProbability = disease.getStartingActorsMap().get(actorName);
             if(startingProbability != null && rand.nextDouble() <= startingProbability) {
-                setDiseases.add(disease);
+                actorDiseases.add(disease);
             }
         }
     }

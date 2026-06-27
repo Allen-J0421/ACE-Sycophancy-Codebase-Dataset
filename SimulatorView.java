@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class SimulatorView extends JFrame
 {
+    private static final long serialVersionUID = 1L;
+
     // Colors used for empty locations.
     private static final Color EMPTY_COLOR = Color.white;
 
@@ -29,9 +31,9 @@ public class SimulatorView extends JFrame
     private FieldView fieldView;
 
     // A map for storing colors for participants in the simulation
-    private Map<Class, Color> colors;
+    private transient Map<Class<?>, Color> colors;
     // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    private transient FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -40,10 +42,10 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
+        super("Fox and Rabbit Simulation");
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
-        setTitle("Fox and Rabbit Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
@@ -69,7 +71,7 @@ public class SimulatorView extends JFrame
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
-    public void setColor(Class animalClass, Color color)
+    public void setColor(Class<?> animalClass, Color color)
     {
         colors.put(animalClass, color);
     }
@@ -85,7 +87,7 @@ public class SimulatorView extends JFrame
     /**
      * @return The color to be used for a given class of animal.
      */
-    private Color getColor(Class animalClass)
+    private Color getColor(Class<?> animalClass)
     {
         Color col = colors.get(animalClass);
         if(col == null) {
@@ -170,13 +172,15 @@ public class SimulatorView extends JFrame
      */
     private class FieldView extends JPanel
     {
+        private static final long serialVersionUID = 1L;
+
         private final int GRID_VIEW_SCALING_FACTOR = 6;
 
         private int gridWidth, gridHeight;
         private int xScale, yScale;
         Dimension size;
-        private Graphics g;
-        private Image fieldImage;
+        private transient Graphics g;
+        private transient Image fieldImage;
 
         /**
          * Create a new FieldView component.

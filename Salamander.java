@@ -53,7 +53,7 @@ public class Salamander extends Animal
         
         age = 0;
         foodLevel = MAX_FOOD;
-        inheritBirthDiseases(parentDiseases);
+        inheritBirthDiseases(setDiseases, parentDiseases);
     }
 
     /**
@@ -72,7 +72,7 @@ public class Salamander extends Animal
         canGoWater = true;
         age = rand.nextInt(MAX_AGE);
         foodLevel = rand.nextInt(MAX_FOOD)+1;
-        addStartingDiseases(rand);
+        addStartingDiseases(name, setDiseases, rand);
     }
 
     /**

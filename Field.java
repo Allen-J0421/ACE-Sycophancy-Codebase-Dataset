@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -25,7 +26,7 @@ public class Field
     // Storage for the animals, plants, weather and altitude.
     private Object[][] animalField;
     private Object[][] plantField;
-    private Map<String, double[][]> weatherField;
+    private Map<WeatherAttribute, double[][]> weatherField;
     private int[][] altitudeField;
     private  int waterLevel;
     private static final int maxWaterLevel = 3;
@@ -54,11 +55,10 @@ public class Field
      * @param width The width of the field.
      * @return The weather field Map.
      */
-    private Map<String, double[][]> createWeatherFieldMap(int depth, int width)
+    private Map<WeatherAttribute, double[][]> createWeatherFieldMap(int depth, int width)
     {
-        Map<String, double[][]> mapTemp = new HashMap<>();
-        WeatherCond weatherTemp = WeatherCond.Sunny;
-        for (String weatherAttribute : weatherTemp.getWeatherAttributesMap().keySet()) {
+        Map<WeatherAttribute, double[][]> mapTemp = new EnumMap<>(WeatherAttribute.class);
+        for (WeatherAttribute weatherAttribute : WeatherAttribute.values()) {
             mapTemp.put(weatherAttribute, new double[depth][width]);
         }
         return mapTemp;
@@ -73,7 +73,7 @@ public class Field
             for(int col = 0; col < width; col++) {
                 animalField[row][col] = null;
                 plantField[row][col] = null;
-                for (String weatherAttribute : weatherField.keySet()) {
+                for (WeatherAttribute weatherAttribute : weatherField.keySet()) {
                     weatherField.get(weatherAttribute)[row][col] = 0;
                 }
                 altitudeField[row][col] = MAX_ALTITUDE;
@@ -270,7 +270,7 @@ public class Field
      */
     public void setWeatherField(WeatherCond weather) 
     {
-        for (String weatherAttribute : weatherField.keySet()) {
+        for (WeatherAttribute weatherAttribute : weatherField.keySet()) {
             double avgWeather = weather.getWeatherAttributesMap().get(weatherAttribute);
             for(int row = 0; row < depth; row++) {
                 for(int col = 0; col < width; col++) {
@@ -299,7 +299,7 @@ public class Field
      * @param loc The location.
      * @return The weather attribute value at the specified location.
      */
-    public double getWeatherAttributeValueAt(String weatherAttribute, Location loc)
+    public double getWeatherAttributeValueAt(WeatherAttribute weatherAttribute, Location loc)
     {
         return weatherField.get(weatherAttribute)[loc.getRow()][loc.getCol()];
     }

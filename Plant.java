@@ -41,12 +41,12 @@ public abstract class Plant extends Actor
         if (isAlive()){
             waterLevel-=0.5;
             sunLightLevel-= 0.25;
-            sunLightLevel += getField().getWeatherAttributeValueAt("brightness", getLocation());
-            if (waterLevel +getField().getWeatherAttributeValueAt("dampness", getLocation()) > maxWaterLevel){
+            sunLightLevel += getField().getWeatherAttributeValueAt(WeatherAttribute.BRIGHTNESS, getLocation());
+            if (waterLevel + getField().getWeatherAttributeValueAt(WeatherAttribute.DAMPNESS, getLocation()) > maxWaterLevel){
                 waterLevel = maxWaterLevel;
             }
             else {
-                waterLevel += getField().getWeatherAttributeValueAt("dampness", getLocation());
+                waterLevel += getField().getWeatherAttributeValueAt(WeatherAttribute.DAMPNESS, getLocation());
             }
             if (waterLevel < 0 || sunLightLevel <= 0){
                 setDead();

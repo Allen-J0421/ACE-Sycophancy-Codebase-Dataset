@@ -40,7 +40,7 @@ public class Grass extends Plant
         canGoLand = true;
         canGoWater = false;
         age = 0;
-        inheritBirthDiseases(parentDiseases);
+        inheritBirthDiseases(setDiseases, parentDiseases);
     }
 
     /**
@@ -56,7 +56,7 @@ public class Grass extends Plant
         canGoLand = true;
         canGoWater = false;
         age = rand.nextInt(MAX_AGE);
-        addStartingDiseases(rand);
+        addStartingDiseases(name, setDiseases, rand);
     }
 
     /**

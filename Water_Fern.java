@@ -40,7 +40,7 @@ public class Water_Fern extends Plant
         canGoLand = false;
         canGoWater = true;
         age = 0;
-        inheritBirthDiseases(parentDiseases);
+        inheritBirthDiseases(setDiseases, parentDiseases);
     }
 
     /**
@@ -56,7 +56,7 @@ public class Water_Fern extends Plant
         canGoLand = false;
         canGoWater = true;
         age = rand.nextInt(MAX_AGE);
-        addStartingDiseases(rand);
+        addStartingDiseases(name, setDiseases, rand);
     }
 
     /**

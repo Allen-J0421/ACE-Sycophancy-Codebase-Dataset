@@ -2,6 +2,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 /**
  * The different weather that can occur randomly in the simulator, they all have different attributes which
@@ -19,7 +20,7 @@ public enum WeatherCond
     Storm (0.4,0.5,1);
 
     private static final Random rand = Randomizer.getRandom();
-    private Map<String, Double> weatherAttributes; 
+    private Map<WeatherAttribute, Double> weatherAttributes; 
     private static Time timeOfDay;
 
     /**
@@ -30,10 +31,10 @@ public enum WeatherCond
      */
     WeatherCond(double visibilty,double brightness,double dampness)
     {
-        weatherAttributes = new HashMap<>();
-        weatherAttributes.put("visibility", visibilty);
-        weatherAttributes.put("brightness", brightness);
-        weatherAttributes.put("dampness", dampness);
+        weatherAttributes = new EnumMap<>(WeatherAttribute.class);
+        weatherAttributes.put(WeatherAttribute.VISIBILITY, visibilty);
+        weatherAttributes.put(WeatherAttribute.BRIGHTNESS, brightness);
+        weatherAttributes.put(WeatherAttribute.DAMPNESS, dampness);
     }
 
     /**
@@ -86,7 +87,7 @@ public enum WeatherCond
      */
     public double getVisibilty()
     {
-        return weatherAttributes.get("visibility");
+        return weatherAttributes.get(WeatherAttribute.VISIBILITY);
     }
 
     /**
@@ -95,7 +96,7 @@ public enum WeatherCond
      */
     public double getBrightness()
     {
-        return weatherAttributes.get("brightness");
+        return weatherAttributes.get(WeatherAttribute.BRIGHTNESS);
     }
     
     /**
@@ -104,14 +105,14 @@ public enum WeatherCond
      */
     public double getDampness()
     {
-        return weatherAttributes.get("dampness");
+        return weatherAttributes.get(WeatherAttribute.DAMPNESS);
     }
     
     /**
      * Returns the Map of all weather attributes.
      * @return The Map of all weather attributes.
      */
-    public Map<String,Double> getWeatherAttributesMap()
+    public Map<WeatherAttribute, Double> getWeatherAttributesMap()
     {
         return weatherAttributes;
     }
@@ -126,4 +127,3 @@ public enum WeatherCond
         timeOfDay = time;
     }
 }
-

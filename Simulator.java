@@ -79,7 +79,10 @@ public class Simulator
         
         weatherCond.setTime(time);
         // Setup a valid starting point.
-        reset();
+        step = 0;
+        actors.clear();
+        populate();
+        view.showStatus(step, field, weatherCond, diseases);
     }
 
     /**

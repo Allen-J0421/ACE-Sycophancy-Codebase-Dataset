@@ -28,12 +28,6 @@ public class FennecFox extends Animal
     }
 
     @Override
-    public void tick(SimulationContext context)
-    {
-        super.tick(context);
-    }
-
-    @Override
     public int getFoodValue()
     {
         return FENNECFOX_FOOD_VALUE;

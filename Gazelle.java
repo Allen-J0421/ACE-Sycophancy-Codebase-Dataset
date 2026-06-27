@@ -26,12 +26,6 @@ public class Gazelle extends Animal
     }
 
     @Override
-    public void tick(SimulationContext context)
-    {
-        super.tick(context);
-    }
-
-    @Override
     public int getFoodValue()
     {
         return GAZELLE_FOOD_VALUE;

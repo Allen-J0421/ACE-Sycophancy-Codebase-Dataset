@@ -28,48 +28,23 @@ public abstract class Plant extends Organism
     }
 
     /**
-     * Advance the plant by one lifecycle tick.
+     * Run the plant-specific part of the lifecycle after shared upkeep.
+     *
      * @param context Shared lifecycle state for the current step.
      */
     @Override
-    public void tick(SimulationContext context)
+    protected void performLifecycle(SimulationContext context)
     {
-        super.tick(context);
+        giveBirth(context.getSpawnedActors());
         if (isAlive()) {
-            giveBirth(context.getSpawnedActors());
             findWater();
-        }
-    }
-
-    /**
-     * Check whether or not this plant is to give birth at this step.
-     * New growths will be made into free adjacent locations.
-     * @param newPlants A list to return newly grown plants.
-     */
-    protected void giveBirth(List<Actor> newPlants)
-    {
-        int births = breed();
-        if (births <= 0) {
-            return;
-        }
-
-        List<Location> free = getBirthLocations();
-        if (free == null) {
-            return;
-        }
-
-        Field field = getField();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Organism young = createOffspring(field, loc);
-            initializeOffspring(young);
-            newPlants.add(young);
         }
     }
 
     /**
      * Find free adjacent locations for births if this plant can breed.
      */
+    @Override
     protected List<Location> getBirthLocations()
     {
         if (canBreed()) {
@@ -89,7 +64,8 @@ public abstract class Plant extends Organism
     /**
      * Generate the number of offspring produced by this plant.
      */
-    private int breed()
+    @Override
+    protected int breed()
     {
         if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
             return rand.nextInt(getMaxLitterSize()) + 1;

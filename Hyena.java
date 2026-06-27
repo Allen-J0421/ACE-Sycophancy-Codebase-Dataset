@@ -28,12 +28,6 @@ public class Hyena extends Animal
     }
 
     @Override
-    public void tick(SimulationContext context)
-    {
-        super.tick(context);
-    }
-
-    @Override
     public int getFoodValue()
     {
         return HYENA_FOOD_VALUE;

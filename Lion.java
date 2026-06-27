@@ -27,12 +27,6 @@ public class Lion extends Animal
     }
 
     @Override
-    public void tick(SimulationContext context)
-    {
-        super.tick(context);
-    }
-
-    @Override
     public int getFoodValue()
     {
         return LION_FOOD_VALUE;

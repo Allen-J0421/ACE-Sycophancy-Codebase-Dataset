@@ -40,17 +40,20 @@ public abstract class Animal extends Organism
         }
     }
     
+    @Override
+    protected boolean shouldTick(SimulationContext context)
+    {
+        return context.isNightTime() == isNocturnal();
+    }
+
     /**
-     * Advance the animal by one lifecycle tick.
+     * Run the animal-specific part of the lifecycle after shared upkeep.
+     *
      * @param context Shared lifecycle state for the current step.
      */
     @Override
-    public void tick(SimulationContext context) {
-        if (context.isNightTime() != isNocturnal()) {
-            return;
-        }
-
-        super.tick(context);
+    protected void performLifecycle(SimulationContext context)
+    {
         incrementHunger();
         if(isAlive() && !sleeping) {        
             // Move towards a source of food if found
@@ -137,35 +140,10 @@ public abstract class Animal extends Organism
     }
     
     /**
-     * Check whether or not this animal is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newAnimals A list to return newly born animals.
-     */
-    protected void giveBirth(List<Actor> newAnimals)
-    {
-        int births = breed();
-        if (births <= 0) {
-            return;
-        }
-
-        List<Location> free = getBirthLocations();
-        if (free == null) {
-            return;
-        }
-
-        Field field = getField();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Organism young = createOffspring(field, loc);
-            initializeOffspring(young);
-            newAnimals.add(young);
-        }
-    }
-
-    /**
      * Find free adjacent locations for births if a compatible mate is nearby.
      * @return The free locations available for offspring, or null if breeding is not possible.
      */
+    @Override
     protected List<Location> getBirthLocations()
     {
         if (hasCompatibleMateAdjacent()) {
@@ -274,7 +252,8 @@ public abstract class Animal extends Organism
     /**
      * Generate the number of offspring produced by this animal.
      */
-    private int breed()
+    @Override
+    protected int breed()
     {
         if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
             return rand.nextInt(getMaxLitterSize()) + 1;

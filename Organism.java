@@ -1,7 +1,5 @@
-import java.util.Random;
 import java.util.List;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * A class to represent all living creatures in the simulation
@@ -42,16 +40,45 @@ public abstract class Organism implements Actor
     
     /**
      * Advance the organism by one lifecycle tick.
-     * All organisms age and lose water at each tick.
+     * All organisms age and lose water at each tick before specialized
+     * lifecycle behavior is executed.
      *
      * @param context Shared lifecycle state for the current step.
      */
     @Override
-    public void tick(SimulationContext context)
+    public final void tick(SimulationContext context)
     {
+        if (!isAlive()) {
+            return;
+        }
+        if (!shouldTick(context)) {
+            return;
+        }
         incrementAge();
         decreaseWaterLevel();
+        if (isAlive()) {
+            performLifecycle(context);
+        }
     }
+
+    /**
+     * Decide whether this organism should advance during the current tick.
+     * Subclasses can use this to gate lifecycle advancement on context.
+     *
+     * @param context Shared lifecycle state for the current step.
+     * @return true if the organism should run its lifecycle this tick.
+     */
+    protected boolean shouldTick(SimulationContext context)
+    {
+        return true;
+    }
+
+    /**
+     * Execute the organism-specific lifecycle behaviour after shared upkeep.
+     *
+     * @param context Shared lifecycle state for the current step.
+     */
+    protected abstract void performLifecycle(SimulationContext context);
     
     /**
      * Return the organism's location.
@@ -127,6 +154,33 @@ public abstract class Organism implements Actor
     {
         // Default is intentionally empty.
     }
+
+    /**
+     * Create offspring for a breeding event using the subclass-specific hooks.
+     * Subclasses decide how many offspring to create and where they can be placed.
+     *
+     * @param newOffspring A list that receives the newly created offspring.
+     */
+    protected final void giveBirth(List<Actor> newOffspring)
+    {
+        int births = breed();
+        if (births <= 0) {
+            return;
+        }
+
+        List<Location> free = getBirthLocations();
+        if (free == null) {
+            return;
+        }
+
+        Field field = getField();
+        for (int b = 0; b < births && free.size() > 0; b++) {
+            Location location = free.remove(0);
+            Organism offspring = createOffspring(field, location);
+            initializeOffspring(offspring);
+            newOffspring.add(offspring);
+        }
+    }
     
     /**
      * @return The value that eating this organism gives predator
@@ -137,6 +191,26 @@ public abstract class Organism implements Actor
      * @return The maximum age this organism can reach.
      */
     protected abstract int getMaxAge();
+
+    /**
+     * Determine how many offspring this organism should create.
+     * @return The number of offspring to create.
+     */
+    protected abstract int breed();
+
+    /**
+     * Find the free locations available for offspring.
+     * @return The free locations available for offspring, or null if breeding is not possible.
+     */
+    protected abstract List<Location> getBirthLocations();
+
+    /**
+     * Create a new offspring of the current species.
+     * @param field The field the offspring should occupy.
+     * @param location The offspring's location.
+     * @return A new instance of the same species.
+     */
+    protected abstract Organism createOffspring(Field field, Location location);
     
     /**
      * Look for water adjacent to the organism's current location

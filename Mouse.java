@@ -27,12 +27,6 @@ public class Mouse extends Animal
     }
 
     @Override
-    public void tick(SimulationContext context)
-    {
-        super.tick(context);
-    }
-
-    @Override
     public int getFoodValue()
     {
         return MOUSE_FOOD_VALUE;

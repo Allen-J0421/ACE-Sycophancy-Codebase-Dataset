@@ -43,7 +43,7 @@ class Grass extends Locatable implements Eatable, Simulatable, Displayable {
 	 * @param currentState the simulators current state
 	 */ 
 	public void act(List<Simulatable> newGrass, SimulatorState currentState) {
-		if (currentState.getCurrentWeather() == Weather.Rainy) {
+		if (currentState.getCurrentWeather().precipitates()) {
 			rainAmount ++; //Increment rain count if it has rained
 		}
 

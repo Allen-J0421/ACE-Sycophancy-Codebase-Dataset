@@ -1,80 +1,91 @@
-import java.util.Random;
 import java.util.Map;
 
 /**
- * This stores the current state of the simulator. All environmental factors affecting the players are stored in here
- * 
+ * Stores the current environmental state of the simulator.
+ *
+ * Weather management is delegated to a {@link WeatherSystem} strategy,
+ * which can be supplied at construction time.  The default strategy is
+ * {@link RandomWeatherSystem}.  All other callers ({@link Simulator},
+ * {@link Animal}, {@link Grass}) use the same public API as before.
+ *
  * @version 13.7.6
  */
 class SimulatorState {
 
-	private double currentNormalisedTime = 0; //The normalised time is the time formatted as a probability 
-	private Weather currentWeather = Weather.Sunny; //The weather of the sim defaulted to sunny 
-	private Map<Class, Counter> counters;
+    private double currentNormalisedTime = 0;
+    private final WeatherSystem weatherSystem;
+    private Map<Class, Counter> counters;
 
-	private static final double WEATHER_CHANGE_PROBABILITY = 0.01;  //The probability with which the weather changes
-	private static final Random rand = Randomizer.getRandom();
+    /** Constructs a state using the default {@link RandomWeatherSystem}. */
+    SimulatorState()
+    {
+        this(new RandomWeatherSystem(Weather.Sunny));
+    }
 
+    /**
+     * Constructs a state using the supplied weather strategy.
+     * @param weatherSystem the strategy that controls weather transitions
+     */
+    SimulatorState(WeatherSystem weatherSystem)
+    {
+        this.weatherSystem = weatherSystem;
+    }
 
-	/**
-	 * Set the normalised time of the state 
-	 * @param time the normalised time
-	 */ 
-	public void setNormalisedTime(double time) {
-		currentNormalisedTime = time;
-	}
+    /**
+     * Set the normalised time (0–1) for this step.
+     * @param time the normalised time
+     */
+    public void setNormalisedTime(double time)
+    {
+        currentNormalisedTime = time;
+    }
 
-	/**
-	 * This changes the current weather if it meets a probability. 
-	 * It will not always do this 
-	 */ 
-	public void changeCurrentWeather() {
-		if (rand.nextDouble() <= WEATHER_CHANGE_PROBABILITY) {
-			int nextWeatherIndex = rand.nextInt(Weather.values().length);
-		    setCurrentWeather(Weather.values()[nextWeatherIndex]);
-		}
-	}
+    /** Advance the weather by one step via the active strategy. */
+    public void changeCurrentWeather()
+    {
+        weatherSystem.step();
+    }
 
-	/**
-	 * This forces a weather change and sets the weather. 
-	 * @param weather the weather to set.
-	 */
-	public void setCurrentWeather(Weather weather){
-		currentWeather = weather;
-	}
+    /**
+     * Force the weather to a specific state (e.g., on simulation reset).
+     * @param weather the state to set
+     */
+    public void setCurrentWeather(Weather weather)
+    {
+        weatherSystem.set(weather);
+    }
 
-	/**
-	 * @return the current weather of the sim 
-	 */ 
-	public Weather getCurrentWeather() {
-		return currentWeather;
-	}
+    /** @return the current weather state */
+    public Weather getCurrentWeather()
+    {
+        return weatherSystem.getCurrent();
+    }
 
+    /**
+     * @return the population counter for the given animal class, or null if
+     *         no count has been recorded yet
+     */
+    public Counter getCurrentStats(Class forAnimal)
+    {
+        return counters.get(forAnimal);
+    }
 
-	/**
-	 * @return the counters for all animals in the sim
-	 */ 
-	public Counter getCurrentStats(Class forAnimal) {
-		return counters.get(forAnimal);
-	}
+    /**
+     * Replace the population counters (called each step by {@link Simulator}).
+     * @param counter the new counters map
+     */
+    public void setCurrentStats(Map<Class, Counter> counter)
+    {
+        counters = counter;
+    }
 
-
-	/**
-	 * set the current population statists
-	 * @param counter the counts
-	 */ 
-	public void setCurrentStats(Map<Class, Counter> counter) {
-		counters = counter;
-	}
-
-
-
-	/**
-	 * Aggragated probability reduction is all the rductions combined into one varaible. 
-	 * This makes working out how all environmental factors will affect an animal easier. 
-	 * @return the aggrated probabiltiy reduction
-	 */
-	public double getAggregatedProbabilityReduction() {
-		return (currentNormalisedTime + getCurrentWeather().getReductionFactor()) / 2;
-	}
+    /**
+     * Returns a 0–1 value combining the time-of-day and weather effects.
+     * A value of 1 means full activity; lower values suppress animal actions.
+     * @return the aggregated probability multiplier for this step
+     */
+    public double getAggregatedProbabilityReduction()
+    {
+        return (currentNormalisedTime + weatherSystem.getCurrent().getActivityReduction()) / 2;
+    }
 }

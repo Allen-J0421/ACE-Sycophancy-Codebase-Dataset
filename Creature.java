@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Abstract class Creature - A class representing shared characteristics of creatures(animals and plants.)

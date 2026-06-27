@@ -1,6 +1,6 @@
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Write a description of class Disease here.
@@ -17,7 +17,7 @@ public class Disease
     // The steps an animal need to withstand in order to get immunity
     public static final int NUMBER_OF_STEP_TO_WITHSTAND = 3;
     // The probability that the disease may occur
-    private static final double DISEASE_OCCURENCE_PROBABILITY = 0.2;
+    private static final double DISEASE_OCCURRENCE_PROBABILITY = 0.2;
     
     // Identify if a disease start to spread
     private boolean isSpread;
@@ -40,30 +40,23 @@ public class Disease
      * create the source of infection
      */
     protected void creationSourceOfInfection(List<Creature> creatures, int step){
-       
-        if(!getIsSpread() && Randomizer.getRandom().nextDouble() <= DISEASE_OCCURENCE_PROBABILITY){
-            ArrayList<Animal> animalCollection = new ArrayList<>();
-            Iterator<Creature> it = creatures.iterator();
-            while(it.hasNext()){
-                Creature creature = it.next();
-                if(creature instanceof Animal){
-                    Animal animal = (Animal)creature;
-                        animalCollection.add(animal);
-                }
-            }
-            
-            for(Animal ani: animalCollection){
-                if(Randomizer.getRandom().nextDouble() <= 0.3){
-                    ani.setIsInfected(true);
-                    ani.infectionStartStep = step;
-                    setIsSpread(true);
-
-                }
-            }
-            
-
+        Random random = Randomizer.getRandom();
+        if(getIsSpread() || random.nextDouble() > DISEASE_OCCURRENCE_PROBABILITY) {
+            return;
         }
 
+        Iterator<Creature> it = creatures.iterator();
+        while(it.hasNext()){
+            Creature creature = it.next();
+            if(creature instanceof Animal){
+                Animal animal = (Animal)creature;
+                if(random.nextDouble() <= INFECTION_RATE){
+                    animal.setIsInfected(true);
+                    animal.infectionStartStep = step;
+                    setIsSpread(true);
+                }
+            }
+        }
     }
     
    
@@ -73,4 +66,3 @@ public class Disease
 }
     
     
-

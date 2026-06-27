@@ -1,5 +1,5 @@
-import java.awt.Color;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of entity (fox, rabbit, etc.) in the simulation.
-    private HashMap<Class, Counter> counters;
+    private Map<Class<?>, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
 
@@ -32,12 +32,12 @@ public class FieldStats
      */
     public String getPopulationDetails(Field field)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Map.Entry<Class<?>, Counter> entry : counters.entrySet()) {
+            Counter info = entry.getValue();
             buffer.append(info.getName());
             buffer.append(": ");
             buffer.append(info.getCount());
@@ -53,8 +53,7 @@ public class FieldStats
     public void reset()
     {
         countsValid = false;
-        for(Class key : counters.keySet()) {
-            Counter count = counters.get(key);
+        for(Counter count : counters.values()) {
             count.reset();
         }
     }
@@ -65,7 +64,7 @@ public class FieldStats
      * Increment the count for one class of animal.
      * @param animalClass The class of animal to increment.
      */
-    public void incrementCount(Class animalClass)
+    public void incrementCount(Class<?> animalClass)
     {
         Counter count = counters.get(animalClass);
         if(count == null) {
@@ -97,8 +96,7 @@ public class FieldStats
         if(!countsValid) {
             generateCounts(field);
         }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
+        for(Counter info : counters.values()) {
             if(info.getCount() > 0) {
                 nonZero++;
             }

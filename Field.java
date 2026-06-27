@@ -163,28 +163,7 @@ public class Field
     public List<Location> adjacentLocationsIncludingSelf(Location location, int adjacentDistance)
     {
         assert location != null : "Null location passed to adjacentLocations";
-        // The list of locations to be returned.
-        List<Location> locations = new LinkedList<>();
-        if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
-            for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
-                int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
-                    }
-                }
-            }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
-            Collections.shuffle(locations, rand);
-        }
+        List<Location> locations = collectAdjacentLocations(location, adjacentDistance, true);
         return locations;
     }
     
@@ -198,28 +177,7 @@ public class Field
     public List<Location> adjacentLocations(Location location, int adjacentDistance)
     {
         assert location != null : "Null location passed to adjacentLocations";
-        // The list of locations to be returned.
-        List<Location> locations = new LinkedList<>();
-        if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
-            for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
-                int nextRow = row + roffset;
-                if(nextRow >= 0 && nextRow < depth) {
-                    for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
-                        int nextCol = col + coffset;
-                        // Exclude invalid locations and the original location.
-                        if(nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
-                    }
-                }
-            }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order.
-            Collections.shuffle(locations, rand);
-        }
+        List<Location> locations = collectAdjacentLocations(location, adjacentDistance, false);
         return locations;
     }
 
@@ -247,10 +205,10 @@ public class Field
      */
      public Location generateRandomLocation()
     {
-       int randomWidth = rand.nextInt(width);
        int randomDepth = rand.nextInt(depth);
+       int randomWidth = rand.nextInt(width);
        
-       return new Location(randomWidth, randomDepth);
+       return new Location(randomDepth, randomWidth);
          
     }
     /**
@@ -261,8 +219,7 @@ public class Field
      */
     public List<Object> getAllObjectAt(Location location, int adjacentDistance)
     {
-        List<Object> adjacentObjectList = new ArrayList();
-        
+        List<Object> adjacentObjectList = new ArrayList<>();
         List<Location> adjacent = adjacentLocationsIncludingSelf(location, adjacentDistance);
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
@@ -273,5 +230,35 @@ public class Field
             }
         }
         return adjacentObjectList;
+    }
+
+    /**
+     * Build a shuffled list of locations around a center point.
+     * @param location The center location.
+     * @param adjacentDistance The radius to inspect around the location.
+     * @param includeSelf Whether to include the center location itself.
+     * @return The shuffled list of valid locations.
+     */
+    private List<Location> collectAdjacentLocations(Location location, int adjacentDistance, boolean includeSelf)
+    {
+        List<Location> locations = new LinkedList<>();
+        int row = location.getRow();
+        int col = location.getCol();
+
+        for(int roffset = -adjacentDistance; roffset <= adjacentDistance; roffset++) {
+            int nextRow = row + roffset;
+            if(nextRow >= 0 && nextRow < depth) {
+                for(int coffset = -adjacentDistance; coffset <= adjacentDistance; coffset++) {
+                    int nextCol = col + coffset;
+                    boolean isSelf = roffset == 0 && coffset == 0;
+                    if(nextCol >= 0 && nextCol < width && (includeSelf || !isSelf)) {
+                        locations.add(new Location(nextRow, nextCol));
+                    }
+                }
+            }
+        }
+
+        Collections.shuffle(locations, rand);
+        return locations;
     }
 }

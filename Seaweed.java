@@ -16,10 +16,6 @@ public class Seaweed extends Creature
     private static final int MATURE_AGE = 20;
     // The age to which a shrimp can live.
     private static final int MAX_AGE = 40;
-    // The likelihood of a seaweed propagate.
-    private static final double PROPAGATE_PROBABILITY = 0.05;
-    // The maximum number of births.
-    private static final int MAX_PROPAGATE_SIZE = 1;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     // The amount of oxygen a plant need to survive in night.
@@ -58,23 +54,22 @@ public class Seaweed extends Creature
     public double act(List<Creature> newSeaweeds, boolean atDayTime, double oxygenLevel, Disease disease,  int step)
     {
         incrementAge();
-        if(oxygenLevel < PLANT_OXYGEN_REQUIRED){
+        if(oxygenLevel < PLANT_OXYGEN_REQUIRED) {
             setDead();
             return 0;
-        }    
-        
-       
-        if(isAlive()){
-            if(age >= MATURE_AGE)
-                giveBirth(newSeaweeds);            
-            }
-        
-        
-        if(atDayTime)
+        }
+
+        if(isAlive() && age >= MATURE_AGE) {
+            giveBirth(newSeaweeds);
+        }
+
+        if(atDayTime) {
             return OXYGEN_GENERATED;
-        else
+        }
+        else {
             return -PLANT_OXYGEN_REQUIRED;
         }
+    }
     
     /**
      * Increase the age.
@@ -100,7 +95,7 @@ public class Seaweed extends Creature
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
 
-        for(int b = 0; free.size() > 0; b++) {
+        while(free.size() > 0) {
             Location loc = free.remove(0);
             Seaweed young = new Seaweed(false, field, loc);
             newSeaweeds.add(young);

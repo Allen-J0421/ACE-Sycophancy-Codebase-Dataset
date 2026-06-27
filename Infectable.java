@@ -1,7 +1,3 @@
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-
 /**
  * The Infectable interface specifies the methods that an
  * animal who is able to be infected and is able to spread

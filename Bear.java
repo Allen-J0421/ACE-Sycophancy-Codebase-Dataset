@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -32,9 +28,9 @@ public class Bear extends Animal implements Infectable
     // Individual characteristics (instance fields).
     
     // The food a bear will eat.
-    private static HashSet<Class> foodSources;
+    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Monkey.class);
     // The classes a bear will kill
-    private static HashSet<Class> killable;
+    private static final HashSet<Class<?>> KILLABLE = createClassSet(Monkey.class, Plant.class);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero
@@ -47,12 +43,6 @@ public class Bear extends Animal implements Infectable
     public Bear(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        foodSources = new HashSet<>();
-        foodSources.add(Monkey.class);
-        
-        killable = new HashSet<>();
-        killable.add(Monkey.class);
-        killable.add(Plant.class);
     }
     
     // Accessor and mutator methods
@@ -108,23 +98,12 @@ public class Bear extends Animal implements Infectable
     }
     
     /**
-     * Returns whether the target animal is of instance Bear
-     * 
-     * @param target A target object that we want to check is of type Bear
-     * @return boolean True if target is of type Bear
-     */
-    protected boolean getAnimalClass(Object target)
-    {
-        return target instanceof Bear;
-    }
-    
-    /**
      * Returns the ArrayList of allowed food for a bear to eat
      * 
      * @return ArrayList<Class> of subclasses that a bear can eat
      */
-    protected HashSet<Class> getFoodSources() {
-        return foodSources;
+    protected HashSet<Class<?>> getFoodSources() {
+        return FOOD_SOURCES;
     }
     
     /**
@@ -132,8 +111,8 @@ public class Bear extends Animal implements Infectable
      * 
      * @return HashSet<Class> of subclasses that a bear can kill
      */
-    protected HashSet<Class> getKillable() {
-        return killable;
+    protected HashSet<Class<?>> getKillable() {
+        return KILLABLE;
     }
     
     /**
@@ -146,62 +125,6 @@ public class Bear extends Animal implements Infectable
         return MAX_HEALTH;
     }
     
-    // Functional methods
-    
-    /**
-     * This is what the bear does most of the time: it hunts for
-     * monkeys. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param field The field currently occupied.
-     * @param newMonkeyes A list to return newly born bears.
-     */
-    public void act(List<Organism> newBears)
-    {
-        incrementAge();
-        incrementHealth();
-        if (isAlive()) {
-            illness();
-        }
-        if(isAlive()) {
-            spreadDisease();
-            giveBirth(newBears);
-            // Move towards a source of food if found.
-            Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
-    }
-    
-    /**
-     * Decides whether this animal will infect another eligible animal.
-     */
-    public void spreadDisease() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object object = field.getObjectAt(where);
-            if (object != null) {
-                Organism organism = (Organism) object;
-                if (organism instanceof Infectable && organism.isAlive() && getRand().nextDouble() <= SPREAD_PROBABILITY ) {
-                    Animal target = (Animal) organism;
-                    target.infect();
-                }
-            }
-        }
-    }
-    
     /**
      * Creates and returns a new bear object
      * 
@@ -210,14 +133,5 @@ public class Bear extends Animal implements Infectable
     protected Organism createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Bear(randomAge, field, location);
-    }
-    
-    /**
-     * Makes the bear take extra damage if it is infected
-     */
-    public void illness() {
-        if (getIsInfected()) {
-            incrementHealth();
-        }
     }
 }

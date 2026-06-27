@@ -1,6 +1,4 @@
 import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
 
 /**
  * Write a description of class Plant here.
@@ -20,9 +18,7 @@ public class Plant extends Organism
     private static final int MAX_LITTER_SIZE = 6;
     // Whether the animal is diurnal or nocturnal
     private static final boolean IS_DIURNAL = true;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-    
+
     public Plant(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);

@@ -1,7 +1,4 @@
-import java.util.List;
-import java.util.Random;
 import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * A model of a Sloth. Sloths will eat plants.
@@ -29,9 +26,9 @@ public class Sloth extends Animal implements Infectable
     
     // Individual characteristics (instance fields).
     // The food a sloth will eat.
-    private static HashSet<Class> foodSources;
+    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
     // The classes a bear will kill
-    private static HashSet<Class> killable;
+    private static final HashSet<Class<?>> KILLABLE = createClassSet(Plant.class);
 
     /**
      * Create a new sloth. A sloth may be created with age
@@ -44,11 +41,6 @@ public class Sloth extends Animal implements Infectable
     public Sloth(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        foodSources = new HashSet<>();
-        foodSources.add(Plant.class);
-        
-        killable = new HashSet<>();
-        killable.add(Plant.class);
     }
     
     // Accessor and mutator methods
@@ -112,23 +104,12 @@ public class Sloth extends Animal implements Infectable
     }
     
     /**
-     * Returns whether the target animal is of instance Sloth
-     * 
-     * @param target A target object that we want to check is of type Sloth
-     * @return boolean True if target is of type Sloth
-     */
-    protected boolean getAnimalClass(Object target)
-    {
-        return target instanceof Sloth;
-    }
-    
-    /**
      * Returns the HashSet of allowed food for a sloth to eat
      * 
      * @return HashSet<Class> of subclasses that a Sloth can eat
      */
-    protected HashSet<Class> getFoodSources() {
-        return foodSources;
+    protected HashSet<Class<?>> getFoodSources() {
+        return FOOD_SOURCES;
     }
     
     /**
@@ -136,62 +117,8 @@ public class Sloth extends Animal implements Infectable
      * 
      * @return HashSet<Class> of subclasses that a sloth can kill
      */
-    protected HashSet<Class> getKillable() {
-        return killable;
-    }
-    
-    // Functional methods
-    
-    /**
-     * This is what the sloth does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newsloths A list to return newly born sloths.
-     */
-    public void act(List<Organism> newsloths)
-    {
-        incrementAge();
-        incrementHealth();
-        if (isAlive()) {
-            illness();
-        }
-        if(isAlive()) {
-            spreadDisease();
-            giveBirth(newsloths);            
-            // Try to move into a free location.
-            Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
-    }
-    
-    /**
-     * Decides whether this animal will infect another eligible animal.
-     */
-    public void spreadDisease() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object object = field.getObjectAt(where);
-            if (object != null) {
-                Organism organism = (Organism) object;
-                if (organism instanceof Infectable && organism.isAlive() && getRand().nextDouble() <= SPREAD_PROBABILITY ) {
-                    Animal target = (Animal) organism;
-                    target.infect();
-                }
-            }
-        }
+    protected HashSet<Class<?>> getKillable() {
+        return KILLABLE;
     }
     
     /**
@@ -202,14 +129,5 @@ public class Sloth extends Animal implements Infectable
     protected Animal createNewOrganism(boolean randomAge, Field field, Location location)
     {
         return new Sloth(randomAge, field, location);
-    }
-    
-    /**
-     * Makes the sloth take extra damage if it is infected
-     */
-    public void illness() {
-        if (getIsInfected()) {
-            incrementHealth();
-        }
     }
 }

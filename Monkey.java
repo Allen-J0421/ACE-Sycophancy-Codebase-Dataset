@@ -1,7 +1,4 @@
-import java.util.List;
-import java.util.Random;
 import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * A model of a monkey. Monkeys will eat plants.
@@ -29,9 +26,9 @@ public class Monkey extends Animal
     
     // Individual characteristics (instance fields).
     // The food a monkey will eat.
-    private static HashSet<Class> foodSources;
+    private static final HashSet<Class<?>> FOOD_SOURCES = createClassSet(Plant.class);
     // The classes a monkey will kill
-    private static HashSet<Class> killable;
+    private static final HashSet<Class<?>> KILLABLE = createClassSet(Plant.class);
 
     /**
      * Create a new monkey. A monkey may be created with age
@@ -44,11 +41,6 @@ public class Monkey extends Animal
     public Monkey(boolean randomAge, Field field, Location location)
     {
         super(randomAge, field, location);
-        foodSources = new HashSet<>();
-        foodSources.add(Plant.class);
-        
-        killable = new HashSet<>();
-        killable.add(Plant.class);
     }
     
     // Accessor and mutator methods
@@ -112,23 +104,12 @@ public class Monkey extends Animal
     }
     
     /**
-     * Returns whether the target animal is of instance Monkey
-     * 
-     * @param target A target object that we want to check is of type Monkey
-     * @return boolean True if target is of type Monkey
-     */
-    protected boolean getAnimalClass(Object target)
-    {
-        return target instanceof Monkey;
-    }
-    
-    /**
      * Returns the HashSet of allowed food for a monkey to eat
      * 
      * @return HashSet<Class> of subclasses that a Monkey can eat
      */
-    protected HashSet<Class> getFoodSources() {
-        return foodSources;
+    protected HashSet<Class<?>> getFoodSources() {
+        return FOOD_SOURCES;
     }
     
     /**
@@ -136,39 +117,8 @@ public class Monkey extends Animal
      * 
      * @return HashSet<Class> of subclasses that a Monkey can kill
      */
-    protected HashSet<Class> getKillable() {
-        return killable;
-    }
-    
-    
-    // Functional methods
-    
-    /**
-     * This is what the monkey does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * @param newmonkeys A list to return newly born monkeys.
-     */
-    public void act(List<Organism> newmonkeys)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            giveBirth(newmonkeys);            
-            // Try to move into a free location.
-            Location newLocation = findFood();
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
+    protected HashSet<Class<?>> getKillable() {
+        return KILLABLE;
     }
     
     /**

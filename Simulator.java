@@ -93,15 +93,15 @@ public class Simulator
     {
         step++;
         state.setCurrentStats(stats.getCounters());
-        List<Simulatable> newAnimals = new ArrayList<>();
+        SimulationStepContext context = new SimulationStepContext(state);
         for(Iterator<Simulatable> it = animals.iterator(); it.hasNext(); ) {
             Simulatable animal = it.next();
-            animal.act(newAnimals, state);
+            animal.act(context);
             if(!animal.isAlive()) {
                 it.remove();
             }
         }
-        animals.addAll(newAnimals);
+        animals.addAll(context.getSpawned());
 
         stats.update(field);
         view.showStatus(step, field, timeOfDay, state.getCurrentWeather(), stats.getSummary());

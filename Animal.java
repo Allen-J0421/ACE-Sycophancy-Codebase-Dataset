@@ -188,25 +188,25 @@ public abstract class Animal extends Locatable implements Simulatable, Breedable
 
 
     /**
-     * This will create the new animals if the animal is a female, is near to a male and the required probability is correct
-     * @param animalType the type of the animal that this animal should breed with 
-     * @param newAnimals the list which will contian the new animlas 
-     * @param animalCreator a function of type (Location) -> Animal (conforms to CreateAnimal). This function will create the animals
+     * Spawn offspring if conditions are met: a compatible mate is nearby and
+     * the breeding probability check passes.  New entities are registered via
+     * {@link StepContext#spawn(Simulatable)} rather than appended to a list.
+     * @param numberOfAnimals population counter used by the breeding formula
+     * @param animalType      the species class to search for mates
+     * @param context         the current step context (receives spawned young)
+     * @param animalCreator   factory for creating one offspring at a location
      */
-    protected void giveBirth(Counter numberOfAnimals, Class animalType, List<Simulatable> newAnimals, CreateAnimal animalCreator)
+    protected void giveBirth(Counter numberOfAnimals, Class animalType,
+                             StepContext context, CreateAnimal animalCreator)
     {
-        // New foxes are born into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
-        List <Animal> potentialMates = getPotentialMates(animalType);
+        List<Animal> potentialMates = getPotentialMates(animalType);
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
         for (Animal i : potentialMates) {
             int births = breed(numberOfAnimals.getCount());
-            for(int b = 0; b < births && free.size() > 0; b++) {
+            for (int b = 0; b < births && free.size() > 0; b++) {
                 Location loc = free.remove(0);
-                // Hawk young = new Hawk(false, field, loc);
-                Simulatable young = animalCreator.initialise(loc);
-                newAnimals.add(young);
+                context.spawn(animalCreator.initialise(loc));
             }
         }
     }
@@ -298,15 +298,14 @@ public abstract class Animal extends Locatable implements Simulatable, Breedable
      * Shared act logic for all animals: age, hunger, disease, breeding, and movement.
      * Subclasses supply species-specific behaviour via the abstract hooks above.
      */
-    public void act(List<Simulatable> newAnimals, SimulatorState currentState) {
+    public void act(StepContext context) {
         incrementAge(getMaxAge());
-        Field f = getField();
-        if (rand.nextDouble() <= currentState.getAggregatedProbabilityReduction()) {
+        if (rand.nextDouble() <= context.getActivityReduction()) {
             incrementHunger();
             if (isAlive()) {
                 giveNearbyAnimalsDisease();
-                Counter numberOfAnimal = currentState.getCurrentStats(getClass());
-                giveBirth(numberOfAnimal, getClass(), newAnimals, loc -> createOffspring(loc));
+                Counter count = context.getPopulationCount(getClass());
+                giveBirth(count, getClass(), context, loc -> createOffspring(loc));
                 applyDiseaseEffects();
                 moveToNewLocation(getEats(), getMaxHunger());
             }

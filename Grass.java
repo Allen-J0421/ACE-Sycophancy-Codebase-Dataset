@@ -42,16 +42,14 @@ class Grass extends Locatable implements Eatable, Simulatable, Displayable {
 	 * @param newGrass all grass that has been created
 	 * @param currentState the simulators current state
 	 */ 
-	public void act(List<Simulatable> newGrass, SimulatorState currentState) {
-		if (currentState.getCurrentWeather().precipitates()) {
-			rainAmount ++; //Increment rain count if it has rained
+	public void act(StepContext context) {
+		if (context.getCurrentWeather().precipitates()) {
+			rainAmount++;
 		}
-
 		if (isAlive()) {
-			//If the animal is alive, it should try to grow. 
 			Grass newGrasslet = grow();
 			if (newGrasslet != null) {
-				newGrass.add(newGrasslet);
+				context.spawn(newGrasslet);
 			}
 		}
 	}

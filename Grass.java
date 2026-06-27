@@ -52,12 +52,6 @@ public class Grass extends Plant
     }
 
     @Override
-    protected int getWaterSearchThreshold()
-    {
-        return 5;
-    }
-
-    @Override
     protected Organism createOffspring(Field field, Location location)
     {
         return new Grass(false, field, location);

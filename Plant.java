@@ -54,15 +54,6 @@ public abstract class Plant extends Organism
     }
 
     /**
-     * Look for water adjacent to the plant's current location.
-     * @return Where water was found, or null if it wasn't.
-     */
-    protected Location findWater()
-    {
-        return getWaterLevel() <= getWaterSearchThreshold() ? super.findWater() : null;
-    }
-
-    /**
      * Check whether or not this plant is to give birth at this step.
      * New growths will be made into free adjacent locations.
      * @param newPlants A list to return newly grown plants.
@@ -144,17 +135,18 @@ public abstract class Plant extends Organism
     protected abstract int getStartingWaterLevelUpperBound();
 
     /**
-     * @return The water level at which the plant starts seeking water.
-     */
-    protected abstract int getWaterSearchThreshold();
-
-    /**
      * Create a new offspring of the current plant species.
      * @param field The field the offspring should occupy.
      * @param location The offspring's location.
      * @return A new instance of the same plant species.
      */
     protected abstract Organism createOffspring(Field field, Location location);
+
+    @Override
+    protected int getWaterSearchThreshold()
+    {
+        return 5;
+    }
 
     /**
      * Plants do not currently copy additional state to offspring.

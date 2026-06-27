@@ -55,9 +55,7 @@ public abstract class Animal extends Organism
             // Move towards a source of food if found
             giveBirth(newOrganisms);  
             Location newLocation = null;
-            if(getWaterLevel() < 3) {
-                newLocation = findWater();
-            }
+            newLocation = findWater();
             if (newLocation == null && getFoodLevel() < 8 && rand.nextDouble() <= getHuntProbability()) {
                 newLocation = findFood(getPrey());
             }
@@ -275,6 +273,12 @@ public abstract class Animal extends Organism
      * @return A new instance of the same species.
      */
     protected abstract Organism createOffspring(Field field, Location location);
+
+    @Override
+    protected int getWaterSearchThreshold()
+    {
+        return 3;
+    }
 
     /**
      * Determine whether this animal can currently breed.

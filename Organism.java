@@ -135,6 +135,9 @@ public abstract class Organism implements Actor
      * @return Where water was found, or null if it wasn't 
      */
     protected Location findWater() {
+        if (getWaterLevel() > getWaterSearchThreshold()) {
+            return null;
+        }
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
@@ -148,7 +151,7 @@ public abstract class Organism implements Actor
                     return null;
                 }
                 int waterDrawn = Math.min(lake.getWaterValue(), lake.getVolume());
-                setWaterLevel(getWaterLevel() + waterDrawn);
+                changeWaterLevel(waterDrawn);
                 lake.reduceVolume(waterDrawn);
                 if (lake.getVolume() <= 0) {
                     lake.setDead();
@@ -163,11 +166,19 @@ public abstract class Organism implements Actor
      * Lower's the organism's water level - may result in its death
      */
     public void decreaseWaterLevel(){
-        int newWaterLevel = getWaterLevel() - 1;
-        setWaterLevel(newWaterLevel);
+        changeWaterLevel(-1);
         if(getWaterLevel() <=0) {
             setDead();
         }
+    }
+
+    /**
+     * Adjust the organism's water level by the given amount.
+     * @param delta The amount to add to the current water level.
+     */
+    protected void changeWaterLevel(int delta)
+    {
+        waterLevel = waterLevel + delta;
     }
     
     /**
@@ -185,6 +196,11 @@ public abstract class Organism implements Actor
     {
         return waterLevel;
     }
+
+    /**
+     * @return The minimum water level below which the organism will seek water.
+     */
+    protected abstract int getWaterSearchThreshold();
     
     /**
      * @param age The current age of the organism

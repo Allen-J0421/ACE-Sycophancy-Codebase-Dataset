@@ -41,10 +41,14 @@ public abstract class SQLQueryCompletionItem {
 
     @NotNull
     private final SQLQueryWordEntry filterKey;
+
+    @NotNull
+    private final SQLQueryCompletionItemKind kind;
     
-    private SQLQueryCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey) {
+    private SQLQueryCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull SQLQueryCompletionItemKind kind) {
         this.score = score;
         this.filterKey = filterKey;
+        this.kind = kind;
     }
 
     public int getScore() {
@@ -57,7 +61,9 @@ public abstract class SQLQueryCompletionItem {
     }
 
     @NotNull
-    public abstract SQLQueryCompletionItemKind getKind();
+    public final SQLQueryCompletionItemKind getKind() {
+        return this.kind;
+    }
 
     @Nullable
     public DBSObject getObject() {
@@ -235,16 +241,10 @@ public abstract class SQLQueryCompletionItem {
             @NotNull SourceResolutionResult sourceInfo,
             boolean isRelated
         ) {
-            super(score, filterKey);
+            super(score, filterKey, isRelated ? SQLQueryCompletionItemKind.RELATED_SUBQUERY_ALIAS : SQLQueryCompletionItemKind.SUBQUERY_ALIAS);
             this.symbol = symbol;
             this.sourceInfo = sourceInfo;
             this.isRelated = isRelated;
-        }
-        
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return this.isRelated ? SQLQueryCompletionItemKind.RELATED_SUBQUERY_ALIAS : SQLQueryCompletionItemKind.SUBQUERY_ALIAS;
         }
 
         @Override
@@ -269,7 +269,9 @@ public abstract class SQLQueryCompletionItem {
             @Nullable SourceResolutionResult sourceInfo,
             boolean absolute
         ) {
-            super(score, filterKey);
+            super(score, filterKey, columnInfo.symbol.getSymbolClass() == SQLQuerySymbolClass.COLUMN_DERIVED
+                ? SQLQueryCompletionItemKind.DERIVED_COLUMN_NAME
+                : SQLQueryCompletionItemKind.TABLE_COLUMN_NAME);
 
             if (columnInfo == null) {
                 throw new IllegalArgumentException("columnInfo should not be null");
@@ -278,14 +280,6 @@ public abstract class SQLQueryCompletionItem {
             this.columnInfo = columnInfo;
             this.sourceInfo = sourceInfo;
             this.absolute = absolute;
-        }
-        
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return this.columnInfo.symbol.getSymbolClass() == SQLQuerySymbolClass.COLUMN_DERIVED 
-                ? SQLQueryCompletionItemKind.DERIVED_COLUMN_NAME
-                : SQLQueryCompletionItemKind.TABLE_COLUMN_NAME;
         }
 
         @Nullable
@@ -309,14 +303,8 @@ public abstract class SQLQueryCompletionItem {
             @NotNull SQLQueryWordEntry filterKey,
             @NotNull SQLQueryResultPseudoColumn columnInfo
         ) {
-            super(score, filterKey);
+            super(score, filterKey, SQLQueryCompletionItemKind.GLOBAL_PSEUDO_COLUMN);
             this.columnInfo = columnInfo;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.GLOBAL_PSEUDO_COLUMN;
         }
 
         @Override
@@ -335,8 +323,10 @@ public abstract class SQLQueryCompletionItem {
             int score,
             @NotNull SQLQueryWordEntry filterKey,
             @Nullable ContextObjectInfo resolvedContext,
-            @NotNull T object) {
-            super(score, filterKey);
+            @NotNull T object,
+            @NotNull SQLQueryCompletionItemKind kind
+        ) {
+            super(score, filterKey, kind);
             this.resolvedContext = resolvedContext;
             this.object = object;
         }
@@ -360,17 +350,17 @@ public abstract class SQLQueryCompletionItem {
             boolean isUsed,
             boolean isRelated
         ) {
-            super(score, filterKey, resolvedContext, table);
+            super(
+                score,
+                filterKey,
+                resolvedContext,
+                table,
+                isRelated ? SQLQueryCompletionItemKind.RELATED_TABLE_NAME
+                    : isUsed ? SQLQueryCompletionItemKind.USED_TABLE_NAME
+                    : SQLQueryCompletionItemKind.NEW_TABLE_NAME
+            );
             this.isUsed = isUsed;
             this.isRelated = isRelated;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return this.isRelated ? SQLQueryCompletionItemKind.RELATED_TABLE_NAME
-                : this.isUsed ? SQLQueryCompletionItemKind.USED_TABLE_NAME
-                : SQLQueryCompletionItemKind.NEW_TABLE_NAME;
         }
 
         @Override
@@ -383,21 +373,20 @@ public abstract class SQLQueryCompletionItem {
         @NotNull
         public final String text;
 
-        SQLTextCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String text) {
-            super(score, filterKey);
+        SQLTextCompletionItem(
+            int score,
+            @NotNull SQLQueryWordEntry filterKey,
+            @NotNull SQLQueryCompletionItemKind kind,
+            @NotNull String text
+        ) {
+            super(score, filterKey, kind);
             this.text = text;
         }
     }
 
     public static class SQLReservedWordCompletionItem extends SQLTextCompletionItem {
         SQLReservedWordCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String text) {
-            super(score, filterKey, text);
-        }
-    
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.RESERVED;
+            super(score, filterKey, SQLQueryCompletionItemKind.RESERVED, text);
         }
 
         @Override
@@ -415,14 +404,8 @@ public abstract class SQLQueryCompletionItem {
             @NotNull String text,
             @Nullable String description
         ) {
-            super(score, filterKey, text);
+            super(score, filterKey, SQLQueryCompletionItemKind.UNKNOWN, text);
             this.description = description;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.UNKNOWN;
         }
 
         @Override
@@ -433,8 +416,6 @@ public abstract class SQLQueryCompletionItem {
 
     public static class SQLDbNamedObjectCompletionItem extends SQLDbObjectCompletionItem<DBSObject>  {
 
-        private final SQLQueryCompletionItemKind itemKind;
-
         SQLDbNamedObjectCompletionItem(
             int score,
             @NotNull SQLQueryWordEntry filterKey,
@@ -442,14 +423,7 @@ public abstract class SQLQueryCompletionItem {
             @NotNull DBSObject object,
             @NotNull SQLQueryCompletionItemKind itemKind
         ) {
-            super(score, filterKey, resolvedContext, object);
-            this.itemKind = itemKind;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return this.itemKind;
+            super(score, filterKey, resolvedContext, object, itemKind);
         }
 
         @Override
@@ -468,14 +442,8 @@ public abstract class SQLQueryCompletionItem {
             @NotNull DBSEntityAttribute attribute,
             @NotNull SQLQueryExprType.SQLQueryExprTypeMemberInfo memberInfo
         ) {
-            super(score, filterKey, null, attribute);
+            super(score, filterKey, null, attribute, SQLQueryCompletionItemKind.COMPOSITE_FIELD_NAME);
             this.memberInfo = memberInfo;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.COMPOSITE_FIELD_NAME;
         }
 
         @Override
@@ -496,14 +464,8 @@ public abstract class SQLQueryCompletionItem {
             @NotNull SQLQueryWordEntry filterKey,
             @NotNull SQLQueryExprType.SQLQueryExprTypeMemberInfo memberInfo
         ) {
-            super(score, filterKey);
+            super(score, filterKey, SQLQueryCompletionItemKind.COMPOSITE_FIELD_NAME);
             this.memberInfo = memberInfo;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.COMPOSITE_FIELD_NAME;
         }
 
         @Override
@@ -524,15 +486,9 @@ public abstract class SQLQueryCompletionItem {
             @NotNull SQLColumnNameCompletionItem left,
             @NotNull SQLColumnNameCompletionItem right
         ) {
-            super(score, filterKey);
+            super(score, filterKey, SQLQueryCompletionItemKind.JOIN_CONDITION);
             this.left = left;
             this.right = right;
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.JOIN_CONDITION;
         }
 
         @Override
@@ -558,13 +514,7 @@ public abstract class SQLQueryCompletionItem {
     public static class SQLBuiltinFunctionCompletionItem extends SQLTextCompletionItem {
 
         private SQLBuiltinFunctionCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String name) {
-            super(score, filterKey, name);
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.PROCEDURE;
+            super(score, filterKey, SQLQueryCompletionItemKind.PROCEDURE, name);
         }
 
         @Override
@@ -581,13 +531,7 @@ public abstract class SQLQueryCompletionItem {
             @Nullable ContextObjectInfo resolvedContext,
             @NotNull DBSProcedure object
         ) {
-            super(score, filterKey, resolvedContext, object);
-        }
-
-        @NotNull
-        @Override
-        public SQLQueryCompletionItemKind getKind() {
-            return SQLQueryCompletionItemKind.PROCEDURE;
+            super(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.PROCEDURE);
         }
 
         @Override

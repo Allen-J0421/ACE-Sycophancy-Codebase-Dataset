@@ -24,12 +24,12 @@ public class TermuxPreferencesFragment extends BasePreferenceFragment {
     }
 }
 
-class TermuxPreferencesDataStore extends PreferenceDataStore {
+class TermuxPreferencesDataStore extends InitializingPreferenceDataStore {
 
     private static TermuxPreferencesDataStore mInstance;
 
     private TermuxPreferencesDataStore(Context context) {
-        TermuxAppSharedPreferences.build(context, true);
+        super(context, appContext -> TermuxAppSharedPreferences.build(appContext, true));
     }
 
     public static synchronized TermuxPreferencesDataStore getInstance(Context context) {

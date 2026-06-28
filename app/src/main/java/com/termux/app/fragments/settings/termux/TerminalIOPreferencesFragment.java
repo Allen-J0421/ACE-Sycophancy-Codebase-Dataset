@@ -8,7 +8,6 @@ import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
 import com.termux.app.fragments.settings.BasePreferenceFragment;
-import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP;
 
 @Keep
@@ -26,14 +25,12 @@ public class TerminalIOPreferencesFragment extends BasePreferenceFragment {
     }
 }
 
-class TerminalIOPreferencesDataStore extends PreferenceDataStore {
-
-    private final TermuxAppSharedPreferences mPreferences;
+class TerminalIOPreferencesDataStore extends TermuxAppPreferenceDataStore {
 
     private static TerminalIOPreferencesDataStore mInstance;
 
     private TerminalIOPreferencesDataStore(Context context) {
-        mPreferences = TermuxAppSharedPreferences.build(context, true);
+        super(context);
     }
 
     public static synchronized TerminalIOPreferencesDataStore getInstance(Context context) {

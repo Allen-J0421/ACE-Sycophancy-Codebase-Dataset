@@ -81,7 +81,7 @@ public class Hunter extends Actor
             for(int i = 0; i< SHOTS; i++){
                 Location where = it.next();
                 Object animal = field.getObjectAt(where);
-                if( animal != null && (animal instanceof Lion  || animal instanceof Cheetah)){
+                if(animal instanceof Lion || animal instanceof Cheetah){
                     Animal currentAnimal = (Animal) animal;
                     if(currentAnimal.isActive()) { 
                         currentAnimal.setDead();

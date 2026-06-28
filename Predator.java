@@ -36,7 +36,7 @@ public abstract class Predator extends Animal
             while(it.hasNext()) {
                 Location where = it.next();
                 Object actor = field.getObjectAt(where);
-                if(actor != null && actor  instanceof Plants){
+                if(actor instanceof Plants){
                     return where;
                 }
             }

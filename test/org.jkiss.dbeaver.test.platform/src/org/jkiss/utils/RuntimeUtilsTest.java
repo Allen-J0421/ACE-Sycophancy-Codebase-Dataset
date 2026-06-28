@@ -27,6 +27,13 @@ import java.util.Collections;
 public class RuntimeUtilsTest extends DBeaverUnitTest {
 
     @Test
+    public void testCurrentDateTimeFormats() {
+        Assertions.assertTrue(RuntimeUtils.getCurrentDate().matches("\\d{8}"));
+        Assertions.assertTrue(RuntimeUtils.getCurrentTime().matches("\\d{6}"));
+        Assertions.assertTrue(RuntimeUtils.getCurrentTimeStamp().matches("\\d{12}"));
+    }
+
+    @Test
     public void testSplitCommandLine() {
         Assertions.assertEquals(Arrays.asList("/bin/sh", "-c", "echo hello && echo world"), RuntimeUtils.splitCommandLine("/bin/sh -c 'echo hello && echo world'", true));
     }

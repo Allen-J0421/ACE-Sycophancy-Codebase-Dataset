@@ -123,17 +123,22 @@ public final class RuntimeUtils {
 
     @NotNull
     public static String getCurrentDate() {
-        return new SimpleDateFormat(GeneralUtils.DEFAULT_DATE_PATTERN, Locale.ENGLISH).format(new Date()); //$NON-NLS-1$
+        return formatCurrentDateTime(GeneralUtils.DEFAULT_DATE_PATTERN);
     }
 
     @NotNull
     public static String getCurrentTime() {
-        return new SimpleDateFormat(GeneralUtils.DEFAULT_TIME_PATTERN, Locale.ENGLISH).format(new Date()); //$NON-NLS-1$
+        return formatCurrentDateTime(GeneralUtils.DEFAULT_TIME_PATTERN);
     }
 
     @NotNull
     public static String getCurrentTimeStamp() {
-        return new SimpleDateFormat(GeneralUtils.DEFAULT_TIMESTAMP_PATTERN, Locale.ENGLISH).format(new Date()); //$NON-NLS-1$
+        return formatCurrentDateTime(GeneralUtils.DEFAULT_TIMESTAMP_PATTERN);
+    }
+
+    @NotNull
+    private static String formatCurrentDateTime(@NotNull String pattern) {
+        return new SimpleDateFormat(pattern, Locale.ENGLISH).format(new Date());
     }
 
     public static boolean isTypeSupported(Class<?> type, Class<?>[] supportedTypes) {

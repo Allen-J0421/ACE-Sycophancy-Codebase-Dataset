@@ -327,17 +327,9 @@ public class TermuxCrashUtils implements CrashHandler.CrashHandlerClient {
         TermuxReportUtils.setReportIssueMarkdownSuffix(currentPackageContext, reportInfo);
         reportInfo.setAddReportInfoHeaderToMarkdown(true);
 
-        ReportActivity.NewInstanceResult result = ReportActivity.newInstance(termuxPackageContext, reportInfo);
-        if (result.contentIntent == null) return;
-
-        // Must ensure result code for PendingIntents and id for notification are unique otherwise will override previous
-        int nextNotificationId = TermuxNotificationUtils.getNextNotificationId(termuxPackageContext);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(termuxPackageContext, nextNotificationId, result.contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        PendingIntent deleteIntent = null;
-        if (result.deleteIntent != null)
-            deleteIntent = PendingIntent.getBroadcast(termuxPackageContext, nextNotificationId, result.deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        TermuxNotificationUtils.ReportActivityNotificationIntents reportActivityNotificationIntents =
+            TermuxNotificationUtils.getReportActivityNotificationIntents(termuxPackageContext, reportInfo);
+        if (reportActivityNotificationIntents == null) return;
 
         // Setup the notification channel if not already set up
         setupCrashReportsNotificationChannel(termuxPackageContext);
@@ -348,14 +340,15 @@ public class TermuxCrashUtils implements CrashHandler.CrashHandlerClient {
 
         // Build the notification
         Notification.Builder builder = getCrashReportsNotificationBuilder(currentPackageContext, termuxPackageContext,
-            title, notificationTextCharSequence, notificationTextCharSequence, contentIntent, deleteIntent,
+            title, notificationTextCharSequence, notificationTextCharSequence,
+            reportActivityNotificationIntents.contentIntent, reportActivityNotificationIntents.deleteIntent,
             NotificationUtils.NOTIFICATION_MODE_VIBRATE);
         if (builder == null) return;
 
         // Send the notification
         NotificationManager notificationManager = NotificationUtils.getNotificationManager(termuxPackageContext);
         if (notificationManager != null)
-            notificationManager.notify(nextNotificationId, builder.build());
+            notificationManager.notify(reportActivityNotificationIntents.notificationId, builder.build());
     }
 
     /**

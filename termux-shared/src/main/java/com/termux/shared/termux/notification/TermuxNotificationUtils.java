@@ -6,9 +6,12 @@ import android.content.Context;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.termux.shared.R;
+import com.termux.shared.activities.ReportActivity;
+import com.termux.shared.models.ReportInfo;
 import com.termux.shared.android.resource.ResourceUtils;
 import com.termux.shared.notification.NotificationUtils;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
@@ -16,6 +19,22 @@ import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants;
 import com.termux.shared.termux.TermuxConstants;
 
 public class TermuxNotificationUtils {
+
+    public static final class ReportActivityNotificationIntents {
+        public final int notificationId;
+        @NonNull
+        public final PendingIntent contentIntent;
+        @Nullable
+        public final PendingIntent deleteIntent;
+
+        private ReportActivityNotificationIntents(int notificationId, @NonNull PendingIntent contentIntent,
+                                                  @Nullable PendingIntent deleteIntent) {
+            this.notificationId = notificationId;
+            this.contentIntent = contentIntent;
+            this.deleteIntent = deleteIntent;
+        }
+    }
+
     /**
      * Try to get the next unique notification id that isn't already being used by the app.
      *
@@ -43,6 +62,25 @@ public class TermuxNotificationUtils {
 
         preferences.setLastNotificationId(nextNotificationId);
         return nextNotificationId;
+    }
+
+    @Nullable
+    public static ReportActivityNotificationIntents getReportActivityNotificationIntents(@NonNull Context context,
+                                                                                         @NonNull ReportInfo reportInfo) {
+        ReportActivity.NewInstanceResult result = ReportActivity.newInstance(context, reportInfo);
+        if (result.contentIntent == null) return null;
+
+        int notificationId = getNextNotificationId(context);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, notificationId, result.contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent deleteIntent = null;
+        if (result.deleteIntent != null) {
+            deleteIntent = PendingIntent.getBroadcast(context, notificationId, result.deleteIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        return new ReportActivityNotificationIntents(notificationId, contentIntent, deleteIntent);
     }
 
     /**

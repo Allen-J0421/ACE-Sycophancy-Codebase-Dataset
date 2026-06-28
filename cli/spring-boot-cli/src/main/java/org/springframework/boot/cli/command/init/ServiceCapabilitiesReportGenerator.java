@@ -115,11 +115,12 @@ class ServiceCapabilitiesReportGenerator {
 	}
 
 	private void reportTags(StringBuilder report, ProjectType type) {
-		Map<String, String> tags = type.getTags();
-		Iterator<Map.Entry<String, String>> iterator = tags.entrySet().iterator();
+		List<Entry<String, String>> entries = new ArrayList<>(type.getTags().entrySet());
+		entries.sort(Entry.comparingByKey());
+		Iterator<Entry<String, String>> iterator = entries.iterator();
 		report.append(" [");
 		while (iterator.hasNext()) {
-			Map.Entry<String, String> entry = iterator.next();
+			Entry<String, String> entry = iterator.next();
 			report.append(entry.getKey()).append(":").append(entry.getValue());
 			if (iterator.hasNext()) {
 				report.append(", ");

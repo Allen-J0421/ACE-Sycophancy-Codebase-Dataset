@@ -17,6 +17,8 @@
 package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +52,24 @@ class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientMockTest
 	void listMetadataV2() throws IOException {
 		mockSuccessfulMetadataGetV2(true);
 		doTestGenerateCapabilitiesFromJson();
+	}
+
+	@Test
+	void listMetadataSortsProjectTypeTags() throws IOException {
+		Map<String, String> tags = new HashMap<>();
+		tags.put("zeta", "1");
+		tags.put("alpha", "2");
+		tags.put("beta", "3");
+		ServiceCapabilitiesReportGenerator generator = new ServiceCapabilitiesReportGenerator(new InitializrService() {
+
+			@Override
+			Object loadServiceCapabilities(String serviceUrl) {
+				return new InitializrServiceMetadata(new ProjectType("custom", "Custom", "/custom", true, tags));
+			}
+
+		});
+		String content = generator.generate("http://localhost");
+		assertThat(content).contains("custom -  Custom [alpha:2, beta:3, zeta:1] (default)");
 	}
 
 	private void doTestGenerateCapabilitiesFromJson() throws IOException {

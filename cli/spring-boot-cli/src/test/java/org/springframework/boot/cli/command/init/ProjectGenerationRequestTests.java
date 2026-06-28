@@ -179,6 +179,40 @@ class ProjectGenerationRequestTests {
 	}
 
 	@Test
+	void buildMultipleMatchMessageIsSorted() throws Exception {
+		InitializrServiceMetadata metadata = new InitializrServiceMetadata(new JSONObject("""
+				{
+				  "type": {
+				    "values": [
+				      {
+				        "id": "alpha",
+				        "name": "Alpha",
+				        "action": "/alpha",
+				        "tags": {
+				          "build": "gradle",
+				          "format": "project"
+				        }
+				      },
+				      {
+				        "id": "epsilon",
+				        "name": "Epsilon",
+				        "action": "/epsilon",
+				        "tags": {
+				          "build": "gradle",
+				          "format": "project"
+				        }
+				      }
+				    ]
+				  }
+				}
+				"""));
+		setBuildAndFormat("gradle", "project");
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.request.generateUrl(metadata))
+			.withMessage("Multiple types found with build 'gradle' and format 'project' use --type "
+					+ "with a more specific value [alpha, epsilon]");
+	}
+
+	@Test
 	void buildOneMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", null);

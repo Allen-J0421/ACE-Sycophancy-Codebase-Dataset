@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.apache.hc.core5.net.URIBuilder;
 import org.jspecify.annotations.Nullable;
@@ -365,7 +366,8 @@ class ProjectGenerationRequest {
 			}
 			else {
 				throw new ReportableException("Multiple types found with build '" + this.build + "' and format '"
-						+ this.format + "' use --type with a more specific value " + types.keySet());
+						+ this.format + "' use --type with a more specific value "
+						+ List.copyOf(new TreeSet<>(types.keySet())));
 			}
 		}
 		else {

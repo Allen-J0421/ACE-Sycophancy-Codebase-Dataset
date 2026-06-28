@@ -46,8 +46,8 @@ public abstract class DateTimeValueHandler extends BaseValueHandler implements D
     {
         if (object == null) {
             return null;
-        } else if (object instanceof Date) {
-            return (copy ? ((Date)object).clone() : object);
+        } else if (object instanceof Date date) {
+            return (copy ? date.clone() : object);
         } else {
             return object;
         }

@@ -33,10 +33,9 @@ public class BlockCanceler
         thread.setName("Operation cancel [" + block + "]");
         try {
             block.cancelBlock(monitor, block.getBlockThread());
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Throwable e) {
-            if (e instanceof RuntimeException) {
-                throw e;
-            }
             throw new DBException("Cancel error", e);
         } finally {
             thread.setName(threadOldName);

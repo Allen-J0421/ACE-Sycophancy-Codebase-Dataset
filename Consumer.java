@@ -31,7 +31,7 @@ public abstract class Consumer extends Actor
      * @param field               The field currently occupied.
      * @param location            The location within the field.
      * @param consumptionWorth    The worth of the consumer if consumed.
-     * @param breedingProbability The liklihood of the consumer breeding.
+     * @param breedingProbability The likelihood of the consumer breeding.
      * @param maxBirthsAtOnce     The max number of births for the consumer.
      * @param maxAge              The age to which this consumer can live.
      * @param breedingAge         The age at which this consumer can start to breed.
@@ -44,7 +44,6 @@ public abstract class Consumer extends Actor
               maxSustenanceLevel, maxAge);
         this.canEatCarcass = canEatCarcass;
         this.prey = prey;
-        this.maxAge = maxAge;
         this.breedingAge = breedingAge;
         this.primaryConsumer = primaryConsumer;
         sustenanceLevel = 30;

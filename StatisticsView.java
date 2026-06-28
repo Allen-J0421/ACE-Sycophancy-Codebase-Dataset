@@ -123,7 +123,7 @@ public class StatisticsView extends Application
         
         // Iterate through each counter in FieldStats:
         Field field = Simulator.getCurrentField();
-        HashMap<Class, Counter> counters = FieldStats.getCounters(field);
+        HashMap<Class, Counter> counters = SimulatorView.getStats().getCounters(field);
         
         for (Class key : counters.keySet())
         {

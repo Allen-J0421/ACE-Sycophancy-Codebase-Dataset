@@ -26,7 +26,9 @@ public class SimulatorView extends JFrame
     // A map for storing colors for participants in the simulation:
     private Map<Class, Color> colors;
     // A statistics object computing and storing simulation information:
-    private static FieldStats stats;
+    private FieldStats stats;
+    // Stable reference used by StatisticsView to access the stats instance:
+    private static SimulatorView instance;
     private Simulator simulator;
 
     // Threads for each method called by the buttons:
@@ -42,6 +44,7 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(Simulator simulator, int height, int width)
     {
+        instance = this;
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
         this.simulator = simulator;
@@ -97,6 +100,12 @@ public class SimulatorView extends JFrame
         pack();
         setVisible(true);
     }
+
+    /**
+     * @return The FieldStats instance owned by the current SimulatorView.
+     *         Used by StatisticsView to read live population counters.
+     */
+    public static FieldStats getStats() { return instance.stats; }
 
     /** @return True if any of the given threads is non-null and alive. */
     private static boolean anyAlive(Thread... threads)
@@ -214,7 +223,7 @@ public class SimulatorView extends JFrame
      *
      * @return true If there is more than one species alive.
      */
-    public static boolean isViable(Field field)
+    public boolean isViable(Field field)
     {
         return stats.isViable(field);
     }

@@ -66,9 +66,11 @@ public class Eagle extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        // NOTE: the eagle searches whether or not there is fog. The previous
-        // fog/non-fog branches ran the identical search, so fog had no effect
-        // on the outcome; the redundant branch has been removed.
+        // In fog an eagle only manages to hunt half of the time; otherwise it
+        // always searches its surroundings.
+        if (getFog() && rand.nextInt(2) != 0) {
+            return null;
+        }
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

@@ -1,4 +1,4 @@
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -207,18 +207,31 @@ public abstract class Animal extends Organism
      * in adjacent locations
      */
     protected void spreadDisease() {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Animal) {
-                Animal diseaseAnimal = (Animal) animal;
+        for(Object occupant : adjacentOccupants()) {
+            if(occupant instanceof Animal) {
+                Animal diseaseAnimal = (Animal) occupant;
                 diseaseAnimal.giveDisease();
                 diseaseAnimal.decrementHealth();
             }
         }
+    }
+
+    /**
+     * Collect the occupants of the locations immediately adjacent to this
+     * animal. Empty locations are skipped.
+     * @return The objects (animals or plants) in adjacent locations, in the
+     *         random order produced by the field.
+     */
+    private List<Object> adjacentOccupants() {
+        Field field = getField();
+        List<Object> occupants = new LinkedList<>();
+        for(Location where : field.adjacentLocations(getLocation())) {
+            Object occupant = field.getObjectAt(where);
+            if(occupant != null) {
+                occupants.add(occupant);
+            }
+        }
+        return occupants;
     }
 
     /**
@@ -248,20 +261,11 @@ public abstract class Animal extends Organism
      * @retyrn true if the animal can breed, false if it can not
      */
     protected boolean giveBirth(int BREEDING_AGE) {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal != null) {
-                if (animal.getClass() == this.getClass()) {
-                    Animal adjAnimal = (Animal) animal;
-                    if (this.getGender() != adjAnimal.getGender()) {
-                        if (age >= BREEDING_AGE) {
-                            return true;
-                        }
-                    }
+        for(Object occupant : adjacentOccupants()) {
+            if(occupant.getClass() == this.getClass()) {
+                Animal adjAnimal = (Animal) occupant;
+                if(this.getGender() != adjAnimal.getGender() && age >= BREEDING_AGE) {
+                    return true;
                 }
             }
         }

@@ -40,7 +40,6 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static org.elasticsearch.core.Strings.format;
 
 public final class InternalSnapshotsInfoService implements ClusterStateListener, SnapshotsInfoService {
 
@@ -247,7 +246,7 @@ public final class InternalSnapshotsInfoService implements ClusterStateListener,
 
         @Override
         public void onFailure(Exception e) {
-            logger.warn(() -> format("failed to retrieve shard size for %s", snapshotShard), e);
+            logger.warn("failed to retrieve shard size for {}", snapshotShard, e);
             boolean failed = false;
             synchronized (mutex) {
                 if (isMaster) {

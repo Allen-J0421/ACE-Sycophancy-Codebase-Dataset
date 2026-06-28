@@ -13,8 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 
-import static org.elasticsearch.core.Strings.format;
-
 /**
  * An {@link ActionListener} that just logs the task and its response at the info level. Used when we need a listener but aren't returning
  * the result to the user.
@@ -36,6 +34,6 @@ public final class LoggingTaskListener<Response> implements ActionListener<Respo
 
     @Override
     public void onFailure(Exception e) {
-        logger.warn(() -> format("%s failed with exception", task.getId()), e);
+        logger.warn("{} failed with exception", task.getId(), e);
     }
 }

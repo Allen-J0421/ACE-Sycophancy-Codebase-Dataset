@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.LongConsumer;
 
 import static org.elasticsearch.common.util.concurrent.ConcurrentCollections.newConcurrentMap;
-import static org.elasticsearch.core.Strings.format;
 import static org.elasticsearch.monitor.StatusInfo.Status.UNHEALTHY;
 
 public class StatefulPreVoteCollector extends PreVoteCollector {
@@ -155,7 +154,7 @@ public class StatefulPreVoteCollector extends PreVoteCollector {
 
                         @Override
                         public void handleException(TransportException exp) {
-                            logger.debug(() -> format("%s failed", this), exp);
+                            logger.debug("{} failed", this, exp);
                         }
 
                         @Override

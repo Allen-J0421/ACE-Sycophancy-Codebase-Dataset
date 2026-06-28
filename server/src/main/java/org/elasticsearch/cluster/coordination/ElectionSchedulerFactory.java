@@ -185,7 +185,7 @@ public class ElectionSchedulerFactory {
 
                 @Override
                 public void onFailure(Exception e) {
-                    logger.debug(() -> format("unexpected exception in wakeup of %s", this), e);
+                    logger.debug("unexpected exception in wakeup of {}", this, e);
                     assert false : e;
                 }
 

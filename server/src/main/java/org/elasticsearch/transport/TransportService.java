@@ -437,7 +437,7 @@ public class TransportService extends AbstractLifecycleComponent
                     }
                 } catch (Exception e) {
                     assert false : e;
-                    logger.warn(() -> format("failed to notify response handler on shutdown, action: %s", holderToNotify.action()), e);
+                    logger.warn("failed to notify response handler on shutdown, action: {}", holderToNotify.action(), e);
                 }
             }
         }
@@ -1062,7 +1062,7 @@ public class TransportService extends AbstractLifecycleComponent
             @Override
             public void onFailure(Exception e) {
                 assert false : e;
-                logger.error(() -> format("failed to notify response handler on exception, action: %s", contextToNotify.action()), e);
+                logger.error("failed to notify response handler on exception, action: {}", contextToNotify.action(), e);
             }
 
             @Override
@@ -1672,7 +1672,7 @@ public class TransportService extends AbstractLifecycleComponent
             try {
                 handler.handleException(rtx);
             } catch (Exception e) {
-                logger.error(() -> format("failed to handle exception for action [%s], handler [%s]", action, handler), e);
+                logger.error("failed to handle exception for action [{}], handler [{}]", action, handler, e);
             }
         }
 

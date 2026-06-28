@@ -53,7 +53,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static org.elasticsearch.common.util.concurrent.ConcurrentCollections.newConcurrentMap;
-import static org.elasticsearch.core.Strings.format;
 import static org.elasticsearch.monitor.StatusInfo.Status.UNHEALTHY;
 
 /**
@@ -309,7 +308,7 @@ public final class FollowersChecker {
             @Override
             public void onFailure(Exception exp) {
                 if (running() == false) {
-                    logger.debug(() -> format("%s no longer running", FollowerChecker.this), exp);
+                    logger.debug("{} no longer running", FollowerChecker.this, exp);
                     return;
                 }
 
@@ -321,20 +320,20 @@ public final class FollowersChecker {
 
                 final String reason;
                 if (exp instanceof ConnectTransportException || exp.getCause() instanceof ConnectTransportException) {
-                    logger.debug(() -> format("%s disconnected", FollowerChecker.this), exp);
+                    logger.debug("{} disconnected", FollowerChecker.this, exp);
                     reason = "disconnected";
                 } else if (exp.getCause() instanceof NodeHealthCheckFailureException) {
-                    logger.debug(() -> format("%s health check failed", FollowerChecker.this), exp);
+                    logger.debug("{} health check failed", FollowerChecker.this, exp);
                     reason = "health check failed";
                 } else if (failureCountSinceLastSuccess + timeoutCountSinceLastSuccess >= followerCheckRetryCount) {
-                    logger.debug(() -> format("%s failed too many times", FollowerChecker.this), exp);
+                    logger.debug("{} failed too many times", FollowerChecker.this, exp);
                     reason = "followers check retry count exceeded [timeouts="
                         + timeoutCountSinceLastSuccess
                         + ", failures="
                         + failureCountSinceLastSuccess
                         + "]";
                 } else {
-                    logger.debug(() -> format("%s failed, retrying", FollowerChecker.this), exp);
+                    logger.debug("{} failed, retrying", FollowerChecker.this, exp);
                     scheduleNextWakeUp();
                     return;
                 }
@@ -375,7 +374,7 @@ public final class FollowersChecker {
 
                 @Override
                 public void onRejection(Exception e) {
-                    logger.debug(() -> format("rejected task to fail node [%s] with reason [%s]", discoveryNode, reason), e);
+                    logger.debug("rejected task to fail node [{}] with reason [{}]", discoveryNode, reason, e);
                     if (e instanceof EsRejectedExecutionException esRejectedExecutionException) {
                         assert esRejectedExecutionException.isExecutorShutdown();
                     } else {
@@ -400,7 +399,7 @@ public final class FollowersChecker {
                 @Override
                 public void onFailure(Exception e) {
                     assert false : e;
-                    logger.error(() -> format("unexpected failure when failing node [%s] with reason [%s]", discoveryNode, reason), e);
+                    logger.error("unexpected failure when failing node [{}] with reason [{}]", discoveryNode, reason, e);
                 }
 
                 @Override

@@ -46,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
-import static org.elasticsearch.core.Strings.format;
 
 /**
  * Base class for transport actions that modify data in some shard like index, delete, and shardBulk.
@@ -502,7 +501,7 @@ public abstract class TransportWriteAction<
             ActionListener<Void> listener
         ) {
             if (TransportActions.isShardNotAvailableException(exception) == false) {
-                logger.warn(() -> format("[%s] %s", replica.shardId(), message), exception);
+                logger.warn("[{}] {}", replica.shardId(), message, exception);
             }
             shardStateAction.remoteShardFailed(
                 replica.shardId(),

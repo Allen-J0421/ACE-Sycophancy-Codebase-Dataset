@@ -340,7 +340,7 @@ public class LocalHealthMonitor implements ClusterStateListener {
                     if (e.getCause() instanceof NodeNotConnectedException || e.getCause() instanceof HealthNodeNotDiscoveredException) {
                         logger.debug("Failed to connect to the health node [{}], will try again.", e.getCause().getMessage());
                     } else {
-                        logger.debug(() -> format("Failed to send health info to health node, will try again."), e);
+                        logger.debug("Failed to send health info to health node, will try again.", e);
                     }
                     // If anything went wrong, we're going to reset the changed trackers to make
                     // sure their health will get reported in the next iteration.
@@ -352,7 +352,7 @@ public class LocalHealthMonitor implements ClusterStateListener {
                     ActionListener.runAfter(listener, new RunOnce(this::releaseAndScheduleNextRun))
                 );
             } catch (Exception e) {
-                logger.warn(() -> format("Failed to run scheduled health monitoring on thread pool [%s]", executor), e);
+                logger.warn("Failed to run scheduled health monitoring on thread pool [{}]", executor, e);
                 // If anything went wrong, we're going to reset all the trackers to make
                 // sure their health will get reported in the next iteration.
                 healthTrackers.forEach(HealthTracker::reset);
@@ -387,7 +387,7 @@ public class LocalHealthMonitor implements ClusterStateListener {
             try {
                 scheduledRun = threadPool.schedule(this, interval, executor);
             } catch (final EsRejectedExecutionException e) {
-                logger.debug(() -> format("Scheduled health monitoring was rejected on thread pool [%s]", executor), e);
+                logger.debug("Scheduled health monitoring was rejected on thread pool [{}]", executor, e);
             }
         }
 

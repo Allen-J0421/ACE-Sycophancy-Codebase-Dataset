@@ -346,7 +346,7 @@ public class PublicationTransportHandler {
                     connection = transportService.getConnection(node);
                 } catch (NodeNotConnectedException e) {
                     // can't send to this node, don't need to serialize anything for it
-                    logger.debug(() -> format("No connection to [%s] available, skipping serialization", node), e);
+                    logger.debug("No connection to [{}] available, skipping serialization", node, e);
                     continue;
                 }
 
@@ -432,7 +432,7 @@ public class PublicationTransportHandler {
                 try {
                     bytes = serializedStates.computeIfAbsent(version, v -> serializeFullClusterState(newState, destination, v));
                 } catch (Exception e) {
-                    logger.warn(() -> format("failed to serialize cluster state before publishing it to node %s", destination), e);
+                    logger.warn("failed to serialize cluster state before publishing it to node {}", destination, e);
                     listener.onFailure(e);
                     return;
                 }
@@ -478,7 +478,7 @@ public class PublicationTransportHandler {
                     }
                 }
 
-                logger.debug(() -> format("failed to send cluster state to %s", destination), e);
+                logger.debug("failed to send cluster state to {}", destination, e);
                 delegate.onFailure(e);
             }), this::decRef));
         }

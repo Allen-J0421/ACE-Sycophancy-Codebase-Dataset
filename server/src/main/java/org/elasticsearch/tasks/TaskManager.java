@@ -58,7 +58,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static org.elasticsearch.core.Strings.format;
 import static org.elasticsearch.http.HttpTransportSettings.SETTING_HTTP_MAX_HEADER_SIZE;
 
 /**
@@ -412,7 +411,7 @@ public class TaskManager implements ClusterStateApplier {
         try {
             taskResult = task.result(localNode, error);
         } catch (IOException ex) {
-            logger.warn(() -> format("couldn't store error %s", ExceptionsHelper.stackTrace(error)), ex);
+            logger.warn("couldn't store error {}", ExceptionsHelper.stackTrace(error), ex);
             listener.onFailure(ex);
             return;
         }
@@ -424,7 +423,7 @@ public class TaskManager implements ClusterStateApplier {
 
             @Override
             public void onFailure(Exception e) {
-                logger.warn(() -> format("couldn't store error %s", ExceptionsHelper.stackTrace(error)), e);
+                logger.warn("couldn't store error {}", ExceptionsHelper.stackTrace(error), e);
                 listener.onFailure(e);
             }
         });
@@ -445,7 +444,7 @@ public class TaskManager implements ClusterStateApplier {
         try {
             taskResult = task.result(localNode, response);
         } catch (IOException ex) {
-            logger.warn(() -> format("couldn't store response %s", response), ex);
+            logger.warn("couldn't store response {}", response, ex);
             listener.onFailure(ex);
             return;
         }
@@ -458,7 +457,7 @@ public class TaskManager implements ClusterStateApplier {
 
             @Override
             public void onFailure(Exception e) {
-                logger.warn(() -> format("couldn't store response %s", response), e);
+                logger.warn("couldn't store response {}", response, e);
                 listener.onFailure(e);
             }
         });

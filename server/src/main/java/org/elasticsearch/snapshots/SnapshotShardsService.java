@@ -600,15 +600,15 @@ public final class SnapshotShardsService extends AbstractLifecycleComponent impl
                 if (e instanceof AbortedSnapshotException) {
                     nextStage = Stage.FAILURE;
                     failure = "aborted";
-                    logger.debug(() -> format("[%s][%s] aborted shard snapshot", shardId, snapshot), e);
+                    logger.debug("[{}][{}] aborted shard snapshot", shardId, snapshot, e);
                 } else if (e instanceof PausedSnapshotException) {
                     nextStage = Stage.PAUSED;
                     failure = "paused for removal of node holding primary";
-                    logger.debug(() -> format("[%s][%s] pausing shard snapshot", shardId, snapshot), e);
+                    logger.debug("[{}][{}] pausing shard snapshot", shardId, snapshot, e);
                 } else {
                     nextStage = Stage.FAILURE;
                     failure = summarizeFailure(e);
-                    logger.warn(() -> format("[%s][%s] failed to snapshot shard", shardId, snapshot), e);
+                    logger.warn("[{}][{}] failed to snapshot shard", shardId, snapshot, e);
                 }
                 final var shardState = snapshotStatus.moveToUnsuccessful(nextStage, failure, threadPool.absoluteTimeInMillis());
                 notifyUnsuccessfulSnapshotShard(
@@ -908,7 +908,7 @@ public final class SnapshotShardsService extends AbstractLifecycleComponent impl
                 postMasterNotificationAction.accept(
                     Strings.format("exception trying to send shard snapshot state [%s] update to the master node [%s]", status.state(), e)
                 );
-                logger.warn(() -> format("[%s][%s] failed to update snapshot state to [%s]", shardId, snapshot, status), e);
+                logger.warn("[{}][{}] failed to update snapshot state to [{}]", shardId, snapshot, status, e);
             }
         };
 

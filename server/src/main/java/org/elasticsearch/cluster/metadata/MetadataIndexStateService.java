@@ -383,7 +383,7 @@ public class MetadataIndexStateService {
             blockedIndices.put(index, indexBlock);
         }
 
-        logger.info(() -> format("closing indices %s", blockedIndices.keySet().stream().map(Object::toString).collect(joining(","))));
+        logger.info("closing indices {}", blockedIndices.keySet().stream().map(Object::toString).collect(joining(",")));
         return ClusterState.builder(currentState).blocks(blocks).build();
     }
 

@@ -586,8 +586,8 @@ public class ThreadPool implements ReportingService<ThreadPoolInfo>, Scheduler, 
             interval,
             executor,
             this,
-            e -> logger.debug(() -> format("scheduled task [%s] was rejected on thread pool [%s]", command, executor), e),
-            e -> logger.warn(() -> format("failed to run scheduled task [%s] on thread pool [%s]", command, executor), e)
+            e -> logger.debug("scheduled task [{}] was rejected on thread pool [{}]", command, executor, e),
+            e -> logger.warn("failed to run scheduled task [{}] on thread pool [{}]", command, executor, e)
         );
         runnable.start();
         return runnable;

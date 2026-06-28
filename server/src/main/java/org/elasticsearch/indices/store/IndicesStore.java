@@ -297,7 +297,7 @@ public final class IndicesStore implements ClusterStateListener, Closeable {
 
         @Override
         public void handleException(TransportException exp) {
-            logger.debug(() -> format("shards active request failed for %s", shardId), exp);
+            logger.debug("shards active request failed for {}", shardId, exp);
             if (awaitingResponses.decrementAndGet() == 0) {
                 allNodesResponded();
             }
@@ -346,7 +346,7 @@ public final class IndicesStore implements ClusterStateListener, Closeable {
                 try {
                     indicesService.deleteShardStore("no longer used", shardId, currentState, indexRemovalReason);
                 } catch (Exception ex) {
-                    logger.debug(() -> format("%s failed to delete unallocated shard, ignoring", shardId), ex);
+                    logger.debug("{} failed to delete unallocated shard, ignoring", shardId, ex);
                 }
             }, new ActionListener<>() {
                 @Override
@@ -354,7 +354,7 @@ public final class IndicesStore implements ClusterStateListener, Closeable {
 
                 @Override
                 public void onFailure(Exception e) {
-                    logger.error(() -> format("%s unexpected error during deletion of unallocated shard", shardId), e);
+                    logger.error("{} unexpected error during deletion of unallocated shard", shardId, e);
                 }
             });
     }

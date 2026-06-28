@@ -46,7 +46,6 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static org.elasticsearch.core.Strings.format;
 
 public abstract class PeerFinder {
 
@@ -467,7 +466,7 @@ public abstract class PeerFinder {
 
                             if (logger.isDebugEnabled()) {
                                 // log message at level WARN, but since DEBUG logging is enabled we include the full stack trace
-                                logger.warn(() -> format("%s%s discovery result", Peer.this, believedMasterBy), e);
+                                logger.warn("{}{} discovery result", Peer.this, believedMasterBy, e);
                             } else {
                                 final StringBuilder messageBuilder = new StringBuilder();
                                 Throwable cause = e;
@@ -488,7 +487,7 @@ public abstract class PeerFinder {
                                 );
                             }
                         } else {
-                            logger.debug(() -> format("%s discovery result", Peer.this), e);
+                            logger.debug("{} discovery result", Peer.this, e);
                         }
                         synchronized (mutex) {
                             assert probeConnectionResult.get() == null
@@ -560,7 +559,7 @@ public abstract class PeerFinder {
                 @Override
                 public void handleException(TransportException exp) {
                     peersRequestInFlight = false;
-                    logger.warn(() -> format("%s peers request failed", Peer.this), exp);
+                    logger.warn("{} peers request failed", Peer.this, exp);
                 }
 
                 @Override

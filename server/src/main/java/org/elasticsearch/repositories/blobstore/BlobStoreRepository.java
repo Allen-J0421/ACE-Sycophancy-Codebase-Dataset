@@ -1370,7 +1370,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
                         INDEX_SHARD_COUNT_FORMAT.read(getProjectRepo(), indexContainer, indexMetaGeneration, namedXContentRegistry).count()
                     );
                 } catch (Exception ex) {
-                    logger.warn(() -> format("[%s] [%s] failed to read shard count for index", indexMetaGeneration, indexId.getName()), ex);
+                    logger.warn("[{}] [{}] failed to read shard count for index", indexMetaGeneration, indexId.getName(), ex);
                     // Definitely indicates something fairly badly wrong with the repo, but not immediately fatal here: we might get the
                     // shard count from another metadata blob, or we might just not process these shards. If we skip these shards
                     // then the repository will technically enter an invalid state (these shards' index-XXX blobs will refer to snapshots
@@ -1543,7 +1543,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
                     deleteFromContainer(OperationPurpose.SNAPSHOT_DATA, blobContainer(), blobPathsToDelete);
                     l.onResponse(null);
                 } catch (Exception e) {
-                    logger.warn(() -> format("%s Failed to delete some blobs during snapshot delete", snapshotIds), e);
+                    logger.warn("{} Failed to delete some blobs during snapshot delete", snapshotIds, e);
                     throw e;
                 }
             }));
@@ -1609,9 +1609,12 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
                             bytesDeleted.addAndGet(deleteResult.bytesDeleted());
                             logger.debug("[{}] Cleaned up stale index [{}]", metadata.name(), indexId);
                         } catch (IOException e) {
-                            logger.warn(() -> format("""
-                                %s index %s is no longer part of any snapshot in the repository, \
-                                but failed to clean up its index folder""", toStringShort(), indexId), e);
+                            logger.warn(
+                                "{} index {} is no longer part of any snapshot in the repository, but failed to clean up its index folder",
+                                toStringShort(),
+                                indexId,
+                                e
+                            );
                         }
                     }));
                 }
@@ -3460,7 +3463,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
         CheckedConsumer<OutputStream, IOException> writer,
         boolean failIfAlreadyExists
     ) throws IOException {
-        logger.trace(() -> format("[%s] Writing [%s] to %s atomically", metadata.name(), blobName, container.path()));
+        logger.trace("[{}] Writing [{}] to {} atomically", metadata.name(), blobName, container.path());
         container.writeMetadataBlob(purpose, blobName, failIfAlreadyExists, true, writer);
     }
 
@@ -3888,7 +3891,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
 
                 private void restoreFile(BlobStoreIndexShardSnapshot.FileInfo fileInfo, Store store) throws IOException {
                     ensureNotClosing(store);
-                    logger.trace(() -> format("[%s] restoring [%s] to [%s]", metadata.name(), fileInfo, store));
+                    logger.trace("[{}] restoring [{}] to [{}]", metadata.name(), fileInfo, store);
                     boolean success = false;
                     try (
                         IndexOutput indexOutput = store.createVerifyingOutput(
@@ -4112,7 +4115,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
         Map<String, String> serializationParams
     ) throws IOException {
         assert indexGeneration >= 0 : "Shard generation must not be negative but saw [" + indexGeneration + "]";
-        logger.trace(() -> format("[%s] Writing shard index [%s] to [%s]", metadata.name(), indexGeneration, shardContainer.path()));
+        logger.trace("[{}] Writing shard index [{}] to [{}]", metadata.name(), indexGeneration, shardContainer.path());
         final String blobName = INDEX_SHARD_SNAPSHOTS_FORMAT.blobName(String.valueOf(indexGeneration));
         writeAtomic(
             OperationPurpose.SNAPSHOT_METADATA,

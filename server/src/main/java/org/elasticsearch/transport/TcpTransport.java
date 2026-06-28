@@ -754,9 +754,9 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
                     closeChannel = false;
                 }
             } else if (e instanceof StreamCorruptedException) {
-                logger.warn(() -> format("%s, [%s], closing connection", e.getMessage(), channel));
+                logger.warn("{}, [{}], closing connection", e.getMessage(), channel);
             } else if (e instanceof TransportNotReadyException) {
-                logger.debug(() -> format("%s on [%s], closing connection", e.getMessage(), channel));
+                logger.debug("{} on [{}], closing connection", e.getMessage(), channel);
             } else if (e instanceof HeaderValidationException headerValidationException) {
                 Header header = headerValidationException.header;
                 if (channel.isOpen()) {
@@ -794,7 +794,7 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
         // Mark the channel init time
         channel.getChannelStats().markAccessed(threadPool.relativeTimeInMillis());
         channel.addCloseListener(ActionListener.running(() -> acceptedChannels.remove(channel)));
-        logger.trace(() -> format("Tcp transport channel accepted: %s", channel));
+        logger.trace("Tcp transport channel accepted: {}", channel);
     }
 
     /**
@@ -1236,7 +1236,7 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
             // Connection failures are generally logged elsewhere, but go via the ChannelsConnectedListener which only captures the first
             // exception for each bundle of channels. If the ChannelOpenTraceLogger is installed then trace-logging is enabled so we can log
             // every failure.
-            logger.trace(() -> format("failed to open transport channel: %s", channel), e);
+            logger.trace("failed to open transport channel: {}", channel, e);
         }
     }
 

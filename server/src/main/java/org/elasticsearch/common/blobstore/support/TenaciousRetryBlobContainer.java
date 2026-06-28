@@ -152,11 +152,11 @@ public abstract class TenaciousRetryBlobContainer extends FilterBlobContainer {
 
     private void logRetryFailure(Exception ex, RetryMethod method, int attempts, OperationPurpose purpose) {
         if (attempts == 1) {
-            logger.debug(() -> format("Blobstore [%s] operation [%s] failed with non-retryable exception.", blobPath, method.name()), ex);
+            logger.debug("Blobstore [{}] operation [{}] failed with non-retryable exception.", blobPath, method.name(), ex);
             return;
         }
 
-        logger.warn(() -> format("Blobstore [%s] operation [%s] failed after [%d] attempts.", blobPath, method.name(), attempts), ex);
+        logger.warn("Blobstore [{}] operation [{}] failed after [{}] attempts.", blobPath, method.name(), attempts, ex);
         repositoriesMetrics.TransientErrorRetryFailureCounter().incrementBy(1, getMetricsAttributes(method, purpose));
     }
 

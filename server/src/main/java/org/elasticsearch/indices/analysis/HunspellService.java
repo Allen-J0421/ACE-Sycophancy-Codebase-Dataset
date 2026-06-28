@@ -140,7 +140,7 @@ public final class HunspellService {
                                 } catch (Exception e) {
                                     // The cache loader throws unchecked exception (see #loadDictionary()),
                                     // here we simply report the exception and continue loading the dictionaries
-                                    logger.error(() -> format("exception while loading dictionary %s", file.getFileName()), e);
+                                    logger.error("exception while loading dictionary {}", file.getFileName(), e);
                                 }
                             }
                         }

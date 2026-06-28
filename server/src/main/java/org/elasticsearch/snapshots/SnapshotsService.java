@@ -1711,7 +1711,7 @@ public final class SnapshotsService extends AbstractLifecycleComponent implement
 
         @Override
         public void onFailure(Exception e) {
-            logger.warn(() -> format("%s failed to remove snapshot deletion metadata", deleteEntry), e);
+            logger.warn("{} failed to remove snapshot deletion metadata", deleteEntry, e);
             repositoryOperations.finishDeletion(deleteEntry.uuid());
             failAllListenersOnMasterFailOver(e);
         }

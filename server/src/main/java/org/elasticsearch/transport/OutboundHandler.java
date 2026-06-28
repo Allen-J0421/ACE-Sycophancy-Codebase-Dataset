@@ -205,7 +205,7 @@ public final class OutboundHandler {
             );
         } catch (Exception sendException) {
             sendException.addSuppressed(error);
-            logger.error(() -> format("Failed to send error response on channel [%s], closing channel", channel), sendException);
+            logger.error("Failed to send error response on channel [{}], closing channel", channel, sendException);
             channel.setCloseException(sendException);
             channel.close();
         }

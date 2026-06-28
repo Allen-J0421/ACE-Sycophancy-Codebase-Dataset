@@ -423,7 +423,7 @@ public class IndicesClusterStateService extends AbstractLifecycleComponent imple
                 new GlobalCheckpointSyncAction.Request(shardId),
                 ActionListener.wrap(r -> {}, e -> {
                     if (ExceptionsHelper.unwrap(e, AlreadyClosedException.class, IndexShardClosedException.class) == null) {
-                        logger.info(() -> format("%s global checkpoint sync failed", shardId), e);
+                        logger.info("{} global checkpoint sync failed", shardId, e);
                     }
                 })
             );
@@ -1263,16 +1263,16 @@ public class IndicesClusterStateService extends AbstractLifecycleComponent imple
         try {
             final Optional<IndexMetadata> indexMetadata = state.metadata().findIndex(shardRouting.index());
             if (indexMetadata.isEmpty()) {
-                logger.debug(() -> format("Not marking shard %s failed (reason: [%s]): index no longer exists", shardId, message));
+                logger.debug("Not marking shard {} failed (reason: [{}]): index no longer exists", shardId, message);
                 return;
             }
-            logger.warn(() -> format("Marking and sending shard failed %s due to [%s]", shardId, message), failure);
+            logger.warn("Marking and sending shard failed {} due to [{}]", shardId, message, failure);
             final long primaryTerm = indexMetadata.get().primaryTerm(shardRouting.id());
             failedShardsCache.put(shardRouting.shardId(), new FailedShardCacheEntry(shardRouting, primaryTerm));
             shardStateAction.localShardFailed(shardRouting, message, failure, ActionListener.noop(), state);
         } catch (Exception inner) {
             if (failure != null) inner.addSuppressed(failure);
-            logger.warn(() -> format("%s failed to mark shard as failed (because of [%s])", shardId, message), inner);
+            logger.warn("{} failed to mark shard as failed (because of [{}])", shardId, message, inner);
         }
     }
 

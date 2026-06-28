@@ -312,7 +312,7 @@ public class ShardStateAction {
 
         @Override
         public void messageReceived(FailedShardEntry request, TransportChannel channel, Task task) {
-            logger.debug(() -> format("%s received shard failed for [%s]", request.getShardId(), request), request.failure);
+            logger.debug("{} received shard failed for [{}]", request.getShardId(), request, request.failure);
             taskQueue.submitTask(
                 "shard-failed " + request.toStringNoFailureStackTrace(),
                 new FailedShardUpdateTask(request, new ChannelActionListener<>(channel).map(ignored -> ActionResponse.Empty.INSTANCE)),
@@ -430,7 +430,7 @@ public class ShardStateAction {
                     taskContext.success(task::onSuccess);
                 }
             } catch (Exception e) {
-                logger.warn(() -> format("failed to apply failed shards %s", failedShardsToBeApplied), e);
+                logger.warn("failed to apply failed shards {}", failedShardsToBeApplied, e);
                 // failures are communicated back to the requester
                 // cluster state will not be updated in this case
                 for (final var taskContext : tasksToBeApplied) {
@@ -460,7 +460,7 @@ public class ShardStateAction {
                     Priority.NORMAL,
                     ActionListener.wrap(
                         r -> logger.trace("{}, reroute completed", reason),
-                        e -> logger.debug(() -> format("%s, reroute failed", reason), e)
+                        e -> logger.debug("{}, reroute failed", reason, e)
                     )
                 );
             }
@@ -820,7 +820,7 @@ public class ShardStateAction {
                     taskContext.success(task::onSuccess);
                 }
             } catch (Exception e) {
-                logger.warn(() -> format("failed to apply started shards %s", shardRoutingsToBeApplied), e);
+                logger.warn("failed to apply started shards {}", shardRoutingsToBeApplied, e);
                 for (final var taskContext : tasksToBeApplied) {
                     taskContext.onFailure(e);
                 }
@@ -976,11 +976,11 @@ public class ShardStateAction {
         @Override
         public void onFailure(Exception e) {
             if (e instanceof NotMasterException) {
-                logger.debug(() -> format("%s no longer master while starting shard [%s]", entry.shardId, entry));
+                logger.debug("{} no longer master while starting shard [{}]", entry.shardId, entry);
             } else if (e instanceof FailedToCommitClusterStateException) {
-                logger.debug(() -> format("%s unexpected failure while starting shard [%s]", entry.shardId, entry), e);
+                logger.debug("{} unexpected failure while starting shard [{}]", entry.shardId, entry, e);
             } else {
-                logger.error(() -> format("%s unexpected failure while starting shard [%s]", entry.shardId, entry), e);
+                logger.error("{} unexpected failure while starting shard [{}]", entry.shardId, entry, e);
             }
             listener.onFailure(e);
         }

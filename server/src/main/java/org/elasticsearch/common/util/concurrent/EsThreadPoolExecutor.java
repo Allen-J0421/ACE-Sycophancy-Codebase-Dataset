@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 
-import static org.elasticsearch.core.Strings.format;
 
 /**
  * An extension to thread pool executor, allowing (in the future) to add specific additional stats to it.
@@ -225,7 +224,7 @@ public class EsThreadPoolExecutor extends ThreadPoolExecutor {
 
     // package-visible for testing
     void logException(AbstractRunnable r, Exception e) {
-        logger.error(() -> format("[%s] unexpected exception when submitting task [%s] for execution", name, r), e);
+        logger.error("[{}] unexpected exception when submitting task [{}] for execution", name, r, e);
         assert false : "executor throws an exception (not a rejected execution exception) before the task has been submitted " + e;
     }
 

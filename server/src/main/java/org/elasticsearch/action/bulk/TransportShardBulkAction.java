@@ -565,7 +565,7 @@ public class TransportShardBulkAction extends TransportWriteAction<BulkShardRequ
                 return true;
             }
         } catch (Exception e) {
-            logger.info(() -> format("%s mapping update rejected by primary", primary.shardId()), e);
+            logger.info("{} mapping update rejected by primary", primary.shardId(), e);
             assert result.getId() != null;
             onComplete(exceptionToResult(e, primary, false, version, result.getId()), context, updateResult);
             return true;

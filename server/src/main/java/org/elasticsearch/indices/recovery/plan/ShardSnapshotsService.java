@@ -52,7 +52,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.elasticsearch.core.Strings.format;
 
 public class ShardSnapshotsService {
     private static final Logger logger = LogManager.getLogger(ShardSnapshotsService.class);
@@ -169,7 +168,7 @@ public class ShardSnapshotsService {
                 new ShardSnapshot(latestShardSnapshot, blobStoreIndexShardSnapshot.indexFiles(), userData, commitLuceneVersion)
             );
         } catch (Exception e) {
-            logger.warn(() -> format("Unable to fetch shard snapshot files for %s", latestShardSnapshot), e);
+            logger.warn("Unable to fetch shard snapshot files for {}", latestShardSnapshot, e);
             return Optional.empty();
         }
     }

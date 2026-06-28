@@ -474,7 +474,7 @@ public class RecoverySourceHandler {
                 closeable.close();
             } catch (Exception e) {
                 assert false : e;
-                logger.warn(() -> format("Exception while closing [%s]", closeable), e);
+                logger.warn("Exception while closing [{}]", closeable, e);
             }
         });
     }

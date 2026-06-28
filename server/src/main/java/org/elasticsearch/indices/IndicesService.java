@@ -549,7 +549,7 @@ public class IndicesService extends AbstractLifecycleComponent
                         statsByShard.get(indexService.index()).add(indexShardStats);
                     }
                 } catch (IllegalIndexShardStateException | AlreadyClosedException e) {
-                    logger.trace(() -> format("%s ignoring shard stats", indexShard.shardId()), e);
+                    logger.trace("{} ignoring shard stats", indexShard.shardId(), e);
                 }
             }
         }
@@ -1046,7 +1046,7 @@ public class IndicesService extends AbstractLifecycleComponent
     ) {
         final String indexName = index.getName();
         ActionListener.run(ActionListener.assertOnce(shardsClosedListener.delegateResponse((l, e) -> {
-            logger.warn(() -> format("failed to remove index %s ([%s][%s])", index, reason, extraInfo), e);
+            logger.warn("failed to remove index {} ([{}][{}])", index, reason, extraInfo, e);
             l.onResponse(null);
         })), l -> {
             final IndexService indexService;
@@ -1165,7 +1165,7 @@ public class IndicesService extends AbstractLifecycleComponent
                 }
                 deleteIndexStore(reason, oldIndexMetadata, IndexRemovalReason.DELETED);
             } catch (Exception e) {
-                logger.warn(() -> format("[%s] failed to delete unassigned index (reason [%s])", oldIndexMetadata.getIndex(), reason), e);
+                logger.warn("[{}] failed to delete unassigned index (reason [{}])", oldIndexMetadata.getIndex(), reason, e);
             }
         }
     }
@@ -1227,9 +1227,9 @@ public class IndicesService extends AbstractLifecycleComponent
             }
             success = true;
         } catch (ShardLockObtainFailedException ex) {
-            logger.debug(() -> format("%s failed to delete index store - at least one shards is still locked", index), ex);
+            logger.debug("{} failed to delete index store - at least one shards is still locked", index, ex);
         } catch (Exception ex) {
-            logger.warn(() -> format("%s failed to delete index", index), ex);
+            logger.warn("{} failed to delete index", index, ex);
         } finally {
             if (success == false) {
                 addPendingDelete(index, indexSettings, reason);
@@ -1342,10 +1342,7 @@ public class IndicesService extends AbstractLifecycleComponent
                     return null;
                 }
             } catch (Exception e) {
-                logger.warn(
-                    () -> format("[%s] failed to load state file from a stale deleted index, " + "folders will be left on disk", index),
-                    e
-                );
+                logger.warn("[{}] failed to load state file from a stale deleted index, folders will be left on disk", index, e);
                 return null;
             }
             final IndexSettings indexSettings = buildIndexSettings(metadata);
@@ -1533,7 +1530,7 @@ public class IndicesService extends AbstractLifecycleComponent
                                 );
                                 iterator.remove();
                             } catch (IOException ex) {
-                                logger.debug(() -> format("%s retry pending delete", index), ex);
+                                logger.debug("{} retry pending delete", index, ex);
                             }
                         } else {
                             assert delete.shardId != -1;
@@ -1544,7 +1541,7 @@ public class IndicesService extends AbstractLifecycleComponent
                                     deleteShardStore("pending delete", shardLock, delete.settings, delete.reason);
                                     iterator.remove();
                                 } catch (IOException ex) {
-                                    logger.debug(() -> format("%s retry pending delete", shardLock.getShardId()), ex);
+                                    logger.debug("{} retry pending delete", shardLock.getShardId(), ex);
                                 }
                             } else {
                                 logger.warn("{} no shard lock for pending delete", delete.shardId);
@@ -1985,7 +1982,7 @@ public class IndicesService extends AbstractLifecycleComponent
                 danglingIndicesThreadPoolExecutor.execute(new AbstractRunnable() {
                     @Override
                     public void onFailure(Exception e) {
-                        logger.warn(() -> format("failed to write dangling indices state for index %s", index), e);
+                        logger.warn("failed to write dangling indices state for index {}", index, e);
                     }
 
                     @Override

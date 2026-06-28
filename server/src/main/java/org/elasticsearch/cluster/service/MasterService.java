@@ -921,7 +921,7 @@ public class MasterService extends AbstractLifecycleComponent {
                 logger.trace("ack received from node [{}], cluster_state update (version: {})", node, clusterStateVersion);
             } else {
                 this.lastFailure = e;
-                logger.debug(() -> format("ack received from node [%s], cluster_state update (version: %s)", node, clusterStateVersion), e);
+                logger.debug("ack received from node [{}], cluster_state update (version: {})", node, clusterStateVersion, e);
             }
 
             if (countDown.countDown()) {
@@ -1597,7 +1597,7 @@ public class MasterService extends AbstractLifecycleComponent {
                 nextBatch.onRejection(e);
             } catch (Exception e2) {
                 e2.addSuppressed(e);
-                logger.error(() -> format("exception failing batch on rejection [%s]", nextBatch), e2);
+                logger.error("exception failing batch on rejection [{}]", nextBatch, e2);
                 assert false : e2;
             } finally {
                 currentlyExecutingBatch = null;
@@ -1936,7 +1936,7 @@ public class MasterService extends AbstractLifecycleComponent {
                         task.onFailure(e);
                     } catch (Exception e2) {
                         e2.addSuppressed(e);
-                        logger.error(() -> format("exception failing task [%s] on rejection", task), e2);
+                        logger.error("exception failing task [{}] on rejection", task, e2);
                         assert false : e2;
                     }
                 }

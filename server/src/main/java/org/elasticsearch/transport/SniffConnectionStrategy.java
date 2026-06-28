@@ -191,7 +191,7 @@ public class SniffConnectionStrategy extends RemoteConnectionStrategy {
             }, e -> {
                 final Transport.Connection connection = openConnectionStep.result();
                 final DiscoveryNode node = connection.getNode();
-                logger.debug(() -> format("[%s] failed to handshake with seed node: [%s]", clusterAlias, node), e);
+                logger.debug("[{}] failed to handshake with seed node: [{}]", clusterAlias, node, e);
                 IOUtils.closeWhileHandlingException(connection);
                 onFailure.accept(e);
             }));
@@ -243,7 +243,7 @@ public class SniffConnectionStrategy extends RemoteConnectionStrategy {
             }, e -> {
                 final Transport.Connection connection = openConnectionStep.result();
                 final DiscoveryNode node = connection.getNode();
-                logger.debug(() -> format("[%s] failed to open managed connection to seed node: [%s]", clusterAlias, node), e);
+                logger.debug("[{}] failed to open managed connection to seed node: [{}]", clusterAlias, node, e);
                 IOUtils.closeWhileHandlingException(connection);
                 onFailure.accept(e);
             }));
@@ -340,7 +340,7 @@ public class SniffConnectionStrategy extends RemoteConnectionStrategy {
 
                         @Override
                         public void onFailure(Exception e) {
-                            logger.warn(() -> format("[%s] failed to open managed connection to node [%s]", clusterAlias, node), e);
+                            logger.warn("[{}] failed to open managed connection to node [{}]", clusterAlias, node, e);
                             if (e instanceof ConnectTransportException || e instanceof IllegalStateException) {
                                 // ISE if we fail the handshake with an version incompatible node
                                 // fair enough we can't connect just move on

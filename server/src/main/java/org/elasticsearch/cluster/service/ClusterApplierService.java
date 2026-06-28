@@ -505,20 +505,26 @@ public class ClusterApplierService extends AbstractLifecycleComponent implements
                 timedListener.onFailure(e);
                 TimeValue executionTime = getTimeSince(startTimeMillis);
                 if (logger.isTraceEnabled()) {
-                    logger.warn(() -> format("""
-                            failed to apply updated cluster state in [%s]:
-                            version [%s], uuid [%s], source [%s]
-                            %s
-                        """, executionTime, newClusterState.version(), newClusterState.stateUUID(), source, newClusterState), e);
+                    logger.warn(
+                        """
+                            failed to apply updated cluster state in [{}]:
+                            version [{}], uuid [{}], source [{}]
+                            {}
+                        """,
+                        executionTime,
+                        newClusterState.version(),
+                        newClusterState.stateUUID(),
+                        source,
+                        newClusterState,
+                        e
+                    );
                 } else {
                     logger.warn(
-                        () -> format(
-                            "failed to apply updated cluster state in [%s]:\nversion [%s], uuid [%s], source [%s]",
-                            executionTime,
-                            newClusterState.version(),
-                            newClusterState.stateUUID(),
-                            source
-                        ),
+                        "failed to apply updated cluster state in [{}]:\nversion [{}], uuid [{}], source [{}]",
+                        executionTime,
+                        newClusterState.version(),
+                        newClusterState.stateUUID(),
+                        source,
                         e
                     );
                 }

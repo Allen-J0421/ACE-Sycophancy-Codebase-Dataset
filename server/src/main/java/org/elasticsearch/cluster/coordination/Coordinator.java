@@ -572,7 +572,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
                         ensureTermAtLeast(getLocalNode(), maxTermSeen);
                         startElection();
                     } catch (Exception e) {
-                        logger.warn(() -> format("failed to bump term to %s", maxTermSeen), e);
+                        logger.warn("failed to bump term to {}", maxTermSeen, e);
                         becomeCandidate("updateMaxTermSeen");
                     }
                 }
@@ -785,10 +785,8 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
             @Override
             public void onFailure(Exception e) {
                 logger.warn(
-                    () -> format(
-                        "received join request from [%s] but could not connect back to the joining node",
-                        joinRequest.getSourceNode()
-                    ),
+                    "received join request from [{}] but could not connect back to the joining node",
+                    joinRequest.getSourceNode(),
                     e
                 );
 
@@ -880,7 +878,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
             new JoinHelper.JoinPingRequest(),
             TransportRequestOptions.of(null, channelType),
             TransportResponseHandler.empty(clusterCoordinationExecutor, listener.delegateResponse((l, e) -> {
-                logger.warn(() -> format("failed to ping joining node [%s] on channel type [%s]", discoveryNode, channelType), e);
+                logger.warn("failed to ping joining node [{}] on channel type [{}]", discoveryNode, channelType, e);
                 listener.onFailure(
                     new IllegalStateException(
                         String.format(

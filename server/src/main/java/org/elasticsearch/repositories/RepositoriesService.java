@@ -1079,7 +1079,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
         Repository repository = repositoryRef.get();
         if (repository != null) {
             RepositoryMetadata metadata = repository.getMetadata();
-            logger.debug(() -> format("delete internal repository [%s][%s].", metadata.type(), projectRepoString(projectId, name)));
+            logger.debug("delete internal repository [{}][{}].", metadata.type(), projectRepoString(projectId, name));
             closeRepository(repository);
         }
     }
@@ -1126,7 +1126,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
             return repository;
         } catch (Exception e) {
             IOUtils.closeWhileHandlingException(repository);
-            logger.warn(() -> format("failed to create repository [%s][%s]", repositoryMetadata.type(), repositoryMetadata.name()), e);
+            logger.warn("failed to create repository [{}][{}]", repositoryMetadata.type(), repositoryMetadata.name(), e);
             throw new RepositoryException(repositoryMetadata.name(), "failed to create repository", e);
         }
     }

@@ -159,7 +159,7 @@ public class EsThreadPoolExecutor extends ThreadPoolExecutor {
                     // If we are an abstract runnable we can handle the exception
                     // directly and don't need to rethrow it, but we log and assert
                     // any unexpected exception first.
-                    if (e instanceof EsRejectedExecutionException == false) {
+                    if (!(e instanceof EsRejectedExecutionException)) {
                         logException(abstractRunnable, e);
                     }
                     abstractRunnable.onRejection(e);

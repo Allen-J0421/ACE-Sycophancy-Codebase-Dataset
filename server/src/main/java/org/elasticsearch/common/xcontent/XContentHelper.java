@@ -458,7 +458,7 @@ public class XContentHelper {
                     Map<String, Object> mergedValue = null;
                     if (customMerge != null) {
                         Object tmp = customMerge.merge(parent, toMergeEntry.getKey(), baseValue, toMergeEntry.getValue());
-                        if (tmp != null && tmp instanceof Map == false) {
+                        if (tmp != null && !(tmp instanceof Map)) {
                             throw new IllegalStateException("merging of values for [" + toMergeEntry.getKey() + "] must yield a map");
                         }
                         mergedValue = (Map<String, Object>) tmp;

@@ -117,7 +117,7 @@ public class RescorePhase {
 
         // The ShardDocSortField can be used as a tiebreaker because it maintains
         // the natural document ID order within the shard.
-        if (fields[1] instanceof ShardDocSortField == false || fields[1].getReverse()) {
+        if (!(fields[1] instanceof ShardDocSortField) || fields[1].getReverse()) {
             return false;
         }
         return true;

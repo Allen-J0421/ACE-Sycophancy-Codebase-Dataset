@@ -161,7 +161,7 @@ public final class MappingParser {
             MetadataFieldMapper.TypeParser typeParser = metadataMapperParsers.get(fieldName);
             if (typeParser != null) {
                 iterator.remove();
-                if (false == fieldNode instanceof Map) {
+                if (!(fieldNode instanceof Map)) {
                     throw new IllegalArgumentException("[" + fieldName + "] config must be an object");
                 }
                 @SuppressWarnings("unchecked")

@@ -272,7 +272,7 @@ public class QueryToFilterAdapter {
      */
     static boolean matchesNoDocs(List<QueryToFilterAdapter> filters) {
         for (QueryToFilterAdapter filter : filters) {
-            if (filter.query() instanceof MatchNoDocsQuery == false) {
+            if (!(filter.query() instanceof MatchNoDocsQuery)) {
                 return false;
             }
         }

@@ -282,7 +282,7 @@ public class SliceBuilder implements Writeable, ToXContentObject {
                 throw new IllegalArgumentException("cannot load numeric doc values on " + field);
             } else {
                 IndexFieldData<?> ifm = context.getForField(type, MappedFieldType.FielddataOperation.SEARCH);
-                if (ifm instanceof IndexNumericFieldData == false) {
+                if (!(ifm instanceof IndexNumericFieldData)) {
                     throw new IllegalArgumentException("cannot load numeric doc values on " + field);
                 }
                 return new DocValuesSliceQuery(field, id, max);

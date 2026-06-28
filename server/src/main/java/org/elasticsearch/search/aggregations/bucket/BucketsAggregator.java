@@ -405,7 +405,7 @@ public abstract class BucketsAggregator extends AggregatorBase {
 
     @Override
     public BucketComparator bucketComparator(String key, SortOrder order) {
-        if (false == this instanceof SingleBucketAggregator) {
+        if (!(this instanceof SingleBucketAggregator)) {
             return super.bucketComparator(key, order);
         }
         if (key == null || "doc_count".equals(key)) {

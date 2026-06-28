@@ -133,7 +133,7 @@ public class CollectionUtils {
 
             if (value instanceof Map<?, ?> m && m.isEmpty() == false) {
                 ensureNoSelfReferences(m, ancestors, messageHint);
-            } else if ((value instanceof Iterable<?> i) && (value instanceof Path == false)) {
+            } else if ((value instanceof Iterable<?> i) && !(value instanceof Path)) {
                 ensureNoSelfReferences(i, i, ancestors, messageHint);
             } else if (value instanceof Object[]) {
                 // note: the iterable and reference arguments are different
@@ -183,7 +183,7 @@ public class CollectionUtils {
             if (distance < 0 || distance >= list.size()) {
                 throw new IllegalArgumentException();
             }
-            if ((list instanceof RandomAccess) == false) {
+            if (!(list instanceof RandomAccess)) {
                 throw new IllegalArgumentException();
             }
             this.in = list;

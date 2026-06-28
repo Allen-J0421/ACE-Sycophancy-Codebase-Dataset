@@ -345,7 +345,7 @@ public class FunctionScoreQuery extends Query {
             if (expl.isMatch() == false) {
                 return expl;
             }
-            boolean singleFunction = functions.length == 1 && functions[0] instanceof FilterScoreFunction == false;
+            boolean singleFunction = functions.length == 1 && !(functions[0] instanceof FilterScoreFunction);
             if (functions.length > 0) {
                 // First: Gather explanations for all functions/filters
                 List<Explanation> functionsExplanations = new ArrayList<>();

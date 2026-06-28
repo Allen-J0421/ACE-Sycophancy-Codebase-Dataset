@@ -49,7 +49,7 @@ public class UnmappedSampler extends InternalSampler {
             public void accept(InternalAggregation aggregation) {
                 if (aggregatorReducer != null) {
                     aggregatorReducer.accept(aggregation);
-                } else if ((aggregation instanceof UnmappedSampler) == false) {
+                } else if (!(aggregation instanceof UnmappedSampler)) {
                     aggregatorReducer = aggregation.getReducer(reduceContext, size);
                     aggregatorReducer.accept(aggregation);
                 }

@@ -324,8 +324,7 @@ public class InternalTopHits extends InternalAggregation implements TopHits {
             if (thisDoc.doc != otherDoc.doc) return false;
             if (Double.compare(thisDoc.score, otherDoc.score) != 0) return false;
             if (thisDoc instanceof FieldDoc thisFieldDoc) {
-                if (false == (otherDoc instanceof FieldDoc)) return false;
-                FieldDoc otherFieldDoc = (FieldDoc) otherDoc;
+                if (!(otherDoc instanceof FieldDoc otherFieldDoc)) return false;
                 if (thisFieldDoc.fields.length != otherFieldDoc.fields.length) return false;
                 for (int f = 0; f < thisFieldDoc.fields.length; f++) {
                     if (false == thisFieldDoc.fields[f].equals(otherFieldDoc.fields[f])) return false;

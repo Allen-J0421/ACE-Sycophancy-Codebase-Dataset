@@ -515,12 +515,11 @@ public class KnnVectorQueryBuilder extends LeafQueryBuilder<KnnVectorQueryBuilde
         if (fieldType == null) {
             return Queries.NO_DOCS_INSTANCE;
         }
-        if (fieldType instanceof DenseVectorFieldType == false) {
+        if (!(fieldType instanceof DenseVectorFieldType vectorFieldType)) {
             throw new IllegalArgumentException(
                 "[" + NAME + "] queries are only supported on [" + DenseVectorFieldMapper.CONTENT_TYPE + "] fields"
             );
         }
-        DenseVectorFieldType vectorFieldType = (DenseVectorFieldType) fieldType;
 
         List<Query> filtersInitial = doFiltersToQuery(context);
 

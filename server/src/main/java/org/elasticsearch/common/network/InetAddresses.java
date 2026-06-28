@@ -338,7 +338,7 @@ public class InetAddresses {
             // For IPv4, Java's formatting is good enough.
             return inet4Address.getHostAddress();
         }
-        if ((ip instanceof Inet6Address) == false) {
+        if (!(ip instanceof Inet6Address)) {
             throw new IllegalArgumentException("ip");
         }
         byte[] bytes = ip.getAddress();

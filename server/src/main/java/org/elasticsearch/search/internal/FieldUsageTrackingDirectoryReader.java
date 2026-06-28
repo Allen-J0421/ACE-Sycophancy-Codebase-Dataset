@@ -150,7 +150,7 @@ public class FieldUsageTrackingDirectoryReader extends FilterDirectoryReader {
                 // we can't wrap CompletionTerms, as CompletionWeight does an instanceof check.
                 // we also can't create a subclass of CompletionTerms as it is a final class.
                 // TODO: fix in Lucene
-                if (terms instanceof CompletionTerms == false) {
+                if (!(terms instanceof CompletionTerms)) {
                     terms = new FieldUsageTrackingTerms(field, terms);
                 }
             }

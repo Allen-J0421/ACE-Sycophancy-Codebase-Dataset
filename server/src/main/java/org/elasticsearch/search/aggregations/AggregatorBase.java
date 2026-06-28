@@ -129,7 +129,7 @@ public abstract class AggregatorBase extends Aggregator {
         if (topLevelQuery() != null && topLevelQuery().getClass() != MatchAllDocsQuery.class) {
             return null;
         }
-        if (parent != null && parent instanceof RandomSamplerAggregator == false) {
+        if (parent != null && !(parent instanceof RandomSamplerAggregator)) {
             return null;
         }
         return config.getPointReaderOrNull();

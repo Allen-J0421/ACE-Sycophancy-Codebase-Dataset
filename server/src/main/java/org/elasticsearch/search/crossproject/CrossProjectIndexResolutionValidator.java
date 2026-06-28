@@ -233,7 +233,7 @@ public class CrossProjectIndexResolutionValidator {
                     continue;
                 }
                 if (populateRemoteSecurityExceptionAndIndices != null) {
-                    assert localException instanceof ElasticsearchSecurityException == false;
+                    assert !(localException instanceof ElasticsearchSecurityException);
                     if (remoteAuthorizationExceptions == null) {
                         remoteAuthorizationExceptions = new HashMap<>();
                         remoteUnauthorizedIndices = new HashMap<>();

@@ -524,12 +524,11 @@ public class ReindexRequest extends AbstractBulkIndexByPaginatedSearchRequest<Re
         if (value == null) {
             return emptyMap();
         }
-        if (false == value instanceof Map) {
+        if (!(value instanceof Map<?, ?> map)) {
             throw new IllegalArgumentException("Expected [" + name + "] to be an object containing strings but was [" + value + "]");
         }
-        Map<?, ?> map = (Map<?, ?>) value;
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            if (false == entry.getKey() instanceof String || false == entry.getValue() instanceof String) {
+            if (!(entry.getKey() instanceof String) || !(entry.getValue() instanceof String)) {
                 throw new IllegalArgumentException("Expected [" + name + "] to be an object containing strings but has [" + entry + "]");
             }
         }

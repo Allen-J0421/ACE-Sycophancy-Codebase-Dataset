@@ -222,7 +222,7 @@ class BinaryValuesSource extends SingleDimensionValuesSource<BytesRef> {
     @Override
     SortedDocsProducer createSortedDocsProducerOrNull(IndexReader reader, Query query) {
         if (checkIfSortedDocsIsApplicable(reader, fieldType) == false
-            || fieldType instanceof StringFieldType == false
+            || !(fieldType instanceof StringFieldType)
             || (query != null && query.getClass() != MatchAllDocsQuery.class)) {
             return null;
         }

@@ -110,7 +110,7 @@ public abstract class BucketMetricsPipelineAggregator extends SiblingPipelineAgg
                         break;
                     }
                 }
-                if (currentAgg instanceof InternalMultiBucketAggregation == false) {
+                if (!(currentAgg instanceof InternalMultiBucketAggregation)) {
                     // Seems not retryable, should be 400
                     String msg = currentAgg == null
                         ? "did not find multi-bucket aggregation for extraction."

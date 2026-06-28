@@ -63,7 +63,7 @@ public enum CoreValuesSourceType implements ValuesSourceType {
         @Override
         public ValuesSource getField(FieldContext fieldContext, AggregationScript.LeafFactory script) {
 
-            if ((fieldContext.indexFieldData() instanceof IndexNumericFieldData) == false) {
+            if (!(fieldContext.indexFieldData() instanceof IndexNumericFieldData)) {
                 throw new IllegalArgumentException(
                     "Expected numeric type on field [" + fieldContext.field() + "], but got [" + fieldContext.fieldType().typeName() + "]"
                 );
@@ -204,10 +204,9 @@ public enum CoreValuesSourceType implements ValuesSourceType {
         public ValuesSource getField(FieldContext fieldContext, AggregationScript.LeafFactory script) {
             MappedFieldType fieldType = fieldContext.fieldType();
 
-            if (fieldType instanceof RangeFieldMapper.RangeFieldType == false) {
+            if (!(fieldType instanceof RangeFieldMapper.RangeFieldType rangeFieldType)) {
                 throw new IllegalArgumentException("Asked for range ValuesSource, but field is of type " + fieldType.name());
             }
-            RangeFieldMapper.RangeFieldType rangeFieldType = (RangeFieldMapper.RangeFieldType) fieldType;
             return new ValuesSource.Range(fieldContext.indexFieldData(), rangeFieldType.rangeType());
         }
 
@@ -274,12 +273,12 @@ public enum CoreValuesSourceType implements ValuesSourceType {
         }
 
         private ValuesSource.Numeric fieldData(FieldContext fieldContext) {
-            if ((fieldContext.indexFieldData() instanceof IndexNumericFieldData) == false) {
+            if (!(fieldContext.indexFieldData() instanceof IndexNumericFieldData)) {
                 throw new IllegalArgumentException(
                     "Expected numeric type on field [" + fieldContext.field() + "], but got [" + fieldContext.fieldType().typeName() + "]"
                 );
             }
-            if (fieldContext.fieldType() instanceof DateFieldType == false) {
+            if (!(fieldContext.fieldType() instanceof DateFieldType)) {
                 return new ValuesSource.Numeric.FieldData((IndexNumericFieldData) fieldContext.indexFieldData());
             }
 

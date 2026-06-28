@@ -9,6 +9,17 @@ public class PlantCSVReader extends CSVReader
 {
     // Name of the file containing plant data.
     private static final String FILE_NAME = "plants.csv";
+
+    // The number of columns each plant row in the .csv file must contain.
+    private static final int EXPECTED_COLUMN_COUNT = 6;
+    // The column index of each plant attribute within a .csv row.
+    private static final int COLUMN_NAME = 0;
+    private static final int COLUMN_MAXIMUM_TEMPERATURE = 1;
+    private static final int COLUMN_MINIMUM_TEMPERATURE = 2;
+    private static final int COLUMN_NUTRITIONAL_VALUE = 3;
+    private static final int COLUMN_REPRODUCTION_PROBABILITY = 4;
+    private static final int COLUMN_MAX_HEALTH = 5;
+
     // The plant's name.
     private String name;
     // The maximum temperature plant can survive to.
@@ -21,21 +32,13 @@ public class PlantCSVReader extends CSVReader
     private double reproductionProbability;
     // The plant's maximum health.
     private int maxHealth;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
-    
+
     /**
-     * Build an PlantCSVReader and initializes field.
+     * Build a PlantCSVReader and initialize its fields to their default values.
      */
     public PlantCSVReader ()
     {
-        errorThrower = new ErrorThrower();
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        nutritionalValue = 0;
-        reproductionProbability = 0;
-        maxHealth = 0;
+        resetParameters();
     }
 
     /**
@@ -46,15 +49,13 @@ public class PlantCSVReader extends CSVReader
      */
     protected void populateFields(String[] extractedData)
     {
-        if (extractedData.length != 6) {
-            errorThrower.throwMessage("Plant .csv issue, please restart.");
-        }
-        name = extractedData[0];
-        maximumTemperature = Integer.valueOf(extractedData[1]);
-        minimumTemperature = Integer.valueOf(extractedData[2]);
-        nutritionalValue = Integer.valueOf(extractedData[3]);
-        reproductionProbability = Double.valueOf(extractedData[4]);
-        maxHealth = Integer.valueOf(extractedData[5]);
+        validateColumnCount(extractedData, EXPECTED_COLUMN_COUNT, "Plant .csv issue, please restart.");
+        name = extractedData[COLUMN_NAME];
+        maximumTemperature = Integer.valueOf(extractedData[COLUMN_MAXIMUM_TEMPERATURE]);
+        minimumTemperature = Integer.valueOf(extractedData[COLUMN_MINIMUM_TEMPERATURE]);
+        nutritionalValue = Integer.valueOf(extractedData[COLUMN_NUTRITIONAL_VALUE]);
+        reproductionProbability = Double.valueOf(extractedData[COLUMN_REPRODUCTION_PROBABILITY]);
+        maxHealth = Integer.valueOf(extractedData[COLUMN_MAX_HEALTH]);
     }
 
     /**

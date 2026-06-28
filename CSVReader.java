@@ -10,11 +10,30 @@ import java.util.ArrayList;
  */
 public abstract class CSVReader
 {
+    // Tool to alert the user about any potential error; shared by all readers.
+    protected final ErrorThrower errorThrower = new ErrorThrower();
+
     /**
      * Empty constructor for this class.
      */
     public CSVReader()
     {
+    }
+
+    /**
+     * Validate that a row read from the .csv file has the expected number of columns. If it does
+     * not, the user is alerted with the given message. This mirrors the previous behaviour of
+     * warning without halting, so callers proceed to parse the row exactly as they did before.
+     *
+     * @param extractedData (String[]) the row read from the file.
+     * @param expectedColumnCount (int) the number of columns the row should contain.
+     * @param errorMessage (String) the message shown to the user when the count is wrong.
+     */
+    protected void validateColumnCount(String[] extractedData, int expectedColumnCount, String errorMessage)
+    {
+        if (extractedData.length != expectedColumnCount) {
+            errorThrower.throwMessage(errorMessage);
+        }
     }
 
     /**

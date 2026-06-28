@@ -11,6 +11,22 @@ public class AnimalCSVReader extends CSVReader
     private static final String FILE_NAME = "animals.csv";
     // String to be recognized as a boolean value of true.
     private static final String TRUE_SYMBOL = "true";
+
+    // The number of columns each animal row in the .csv file must contain.
+    private static final int EXPECTED_COLUMN_COUNT = 12;
+    // The column index of each animal attribute within a .csv row.
+    private static final int COLUMN_NAME = 0;
+    private static final int COLUMN_IS_PREDATOR = 1;
+    private static final int COLUMN_MAXIMUM_TEMPERATURE = 2;
+    private static final int COLUMN_MINIMUM_TEMPERATURE = 3;
+    private static final int COLUMN_MAXIMUM_AGE = 4;
+    private static final int COLUMN_BREEDING_AGE = 5;
+    private static final int COLUMN_BREEDING_PROBABILITY = 6;
+    private static final int COLUMN_MAX_LITTER_SIZE = 7;
+    private static final int COLUMN_NUTRITIONAL_VALUE = 8;
+    private static final int COLUMN_STRENGTH = 9;
+    private static final int COLUMN_HIBERNATES = 10;
+    private static final int COLUMN_IS_NOCTURNAL = 11;
     // tru if the animal is a predator.
     private boolean isPredator;
     // Animal's name.
@@ -35,27 +51,12 @@ public class AnimalCSVReader extends CSVReader
     private boolean hibernates;
     // Whether an animal is nocturnal.
     private boolean isNocturnal;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
 
     /**
-     * Builds an AnimalCSVReader and initializes field.
+     * Builds an AnimalCSVReader and initializes its fields to their default values.
      */
     public AnimalCSVReader() {
-        errorThrower = new ErrorThrower();
-        isPredator = false;
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        maximumAge = 0;
-        breedingAge = 0;
-        breedingProbability = 0;
-        maxLitterSize = 0;
-        nutritionalValue = 0;
-        strength = 0;
-        hibernates = false;
-        isNocturnal = false;
-
+        resetParameters();
     }
 
     /**
@@ -66,26 +67,24 @@ public class AnimalCSVReader extends CSVReader
      */
     protected void populateFields(String[] extractedData)
     {
-        if (extractedData.length != 12) {
-            errorThrower.throwMessage("Animal .csv issue, please restart.");
-        }
-        name = extractedData[0];
-        if (extractedData[1].equals(TRUE_SYMBOL)) {
+        validateColumnCount(extractedData, EXPECTED_COLUMN_COUNT, "Animal .csv issue, please restart.");
+        name = extractedData[COLUMN_NAME];
+        if (extractedData[COLUMN_IS_PREDATOR].equals(TRUE_SYMBOL)) {
             isPredator = true;
         }
-        maximumTemperature = Integer.valueOf(extractedData[2]);
-        minimumTemperature = Integer.valueOf(extractedData[3]);
-        maximumAge = Integer.valueOf(extractedData[4]);
-        breedingAge = Integer.valueOf(extractedData[5]);
-        breedingProbability = Double.valueOf(extractedData[6]);
-        maxLitterSize = Integer.valueOf(extractedData[7]);
-        nutritionalValue = Integer.valueOf(extractedData[8]);
-        strength = Integer.valueOf(extractedData[9]);
-        if (extractedData[10].equals(TRUE_SYMBOL)) {
+        maximumTemperature = Integer.valueOf(extractedData[COLUMN_MAXIMUM_TEMPERATURE]);
+        minimumTemperature = Integer.valueOf(extractedData[COLUMN_MINIMUM_TEMPERATURE]);
+        maximumAge = Integer.valueOf(extractedData[COLUMN_MAXIMUM_AGE]);
+        breedingAge = Integer.valueOf(extractedData[COLUMN_BREEDING_AGE]);
+        breedingProbability = Double.valueOf(extractedData[COLUMN_BREEDING_PROBABILITY]);
+        maxLitterSize = Integer.valueOf(extractedData[COLUMN_MAX_LITTER_SIZE]);
+        nutritionalValue = Integer.valueOf(extractedData[COLUMN_NUTRITIONAL_VALUE]);
+        strength = Integer.valueOf(extractedData[COLUMN_STRENGTH]);
+        if (extractedData[COLUMN_HIBERNATES].equals(TRUE_SYMBOL)) {
             hibernates = true;
             // By default, value is false
         }
-        if (extractedData[11].equals(TRUE_SYMBOL)) {
+        if (extractedData[COLUMN_IS_NOCTURNAL].equals(TRUE_SYMBOL)) {
             isNocturnal = true;
             // By default, value is false
         }

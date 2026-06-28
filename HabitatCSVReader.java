@@ -18,22 +18,21 @@ public class HabitatCSVReader extends CSVReader {
     private int[] autumnTemperatures;
     // The concentration of plants in a given habitat.
     private double plantConcentration;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
 
     // Name of the CSV files containing data on fields.
     private static final String FILE_NAME = "habitats.csv";
 
+    // The number of columns expected after the habitat name is removed: four seasons of
+    // (average temperature, maximum change) pairs followed by the plant concentration.
+    private static final int EXPECTED_COLUMN_COUNT = 9;
+    // The column index (after the habitat name is removed) holding the plant concentration.
+    private static final int COLUMN_PLANT_CONCENTRATION = 8;
+
     /**
-     * Build a HabitatCSVReader and initialize its fields.
+     * Build a HabitatCSVReader and initialize its fields to their default values.
      */
     public HabitatCSVReader() {
-        errorThrower = new ErrorThrower();
-        winterTemperatures = new int[2];
-        autumnTemperatures = new int[2];
-        springTemperatures = new int[2];
-        summerTemperatures = new int[2];
-        plantConcentration = 0;
+        resetParameters();
     }
 
     /**
@@ -47,9 +46,7 @@ public class HabitatCSVReader extends CSVReader {
     protected void populateFields(String[] extractedData)
     {
         extractedData = removeHabitatName(extractedData);
-        if (extractedData.length != 9) {
-            errorThrower.throwMessage("Habitat issue, please restart.");
-        }
+        validateColumnCount(extractedData, EXPECTED_COLUMN_COUNT, "Habitat issue, please restart.");
 
         for(int i = 0; i < extractedData.length; i++) {
             if(i/2 == 0) {
@@ -61,7 +58,7 @@ public class HabitatCSVReader extends CSVReader {
             } else if (i/2 == 3){
                 autumnTemperatures[i%2] = Integer.parseInt(extractedData[i]);
             }
-            plantConcentration = Double.valueOf(extractedData[8]);
+            plantConcentration = Double.valueOf(extractedData[COLUMN_PLANT_CONCENTRATION]);
         }
     }
 

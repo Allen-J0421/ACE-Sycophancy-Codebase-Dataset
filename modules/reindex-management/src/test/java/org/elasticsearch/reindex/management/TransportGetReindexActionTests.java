@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.elasticsearch.reindex.management.TransportGetReindexAction.notFoundException;
+import static org.elasticsearch.reindex.management.ReindexTaskLookup.notFoundException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;

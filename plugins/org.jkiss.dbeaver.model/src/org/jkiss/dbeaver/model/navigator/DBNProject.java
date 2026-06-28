@@ -314,8 +314,9 @@ public class DBNProject extends DBNNode implements DBNNodeWithCache, DBNNodeExte
         if (!CommonUtils.isEmpty(extraNodes)) {
             DBNNode[] result = new DBNNode[childNodes.length + extraNodes.size()];
             System.arraycopy(childNodes, 0, result, 0, childNodes.length);
-            for (int i = 0; i < extraNodes.size(); i++) {
-                result[childNodes.length + i] = extraNodes.get(i);
+            int offset = childNodes.length;
+            for (DBNNode node : extraNodes) {
+                result[offset++] = node;
             }
             return result;
         }

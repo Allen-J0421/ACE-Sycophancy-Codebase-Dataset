@@ -171,8 +171,8 @@ public class DBNModel {
 
     @Nullable
     public DBNDatabaseNode findNode(@NotNull DBSObject object) {
-        if (object instanceof DBNDatabaseNode) {
-            return (DBNDatabaseNode)object;
+        if (object instanceof DBNDatabaseNode dbNode) {
+            return dbNode;
         } else {
             return this.getNodeByObject(object);
         }
@@ -180,8 +180,8 @@ public class DBNModel {
 
     @Nullable
     public DBNDatabaseNode getNodeByObject(@NotNull DBSObject object) {
-        if (object instanceof DBNDatabaseNode) {
-            return (DBNDatabaseNode)object;
+        if (object instanceof DBNDatabaseNode dbNode) {
+            return dbNode;
         }
         object = DBUtils.getPublicObjectContainer(object);
 

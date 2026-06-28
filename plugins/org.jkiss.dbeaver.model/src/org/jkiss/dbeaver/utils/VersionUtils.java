@@ -33,21 +33,23 @@ public class VersionUtils {
 
     @Nullable
     public static String findLatestVersion(@NotNull Collection<String> allVersions) {
+        String latest = findMaxVersion(allVersions, true);
+        if (latest == null) {
+            // Only beta versions are available - use them too
+            latest = findMaxVersion(allVersions, false);
+        }
+        return latest;
+    }
+
+    @Nullable
+    private static String findMaxVersion(@NotNull Collection<String> allVersions, boolean skipBeta) {
         String latest = null;
         for (String version : allVersions) {
-            if (isBetaVersion(version)) {
+            if (skipBeta && isBetaVersion(version)) {
                 continue;
             }
             if (latest == null || compareVersions(version, latest) > 0) {
                 latest = version;
-            }
-        }
-        if (latest == null) {
-            // Now use beta versions too
-            for (String version : allVersions) {
-                if (latest == null || compareVersions(version, latest) > 0) {
-                    latest = version;
-                }
             }
         }
         return latest;

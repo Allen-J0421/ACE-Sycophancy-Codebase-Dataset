@@ -18,6 +18,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.hash.Funnels.asOutputStream;
 import static com.google.common.io.ByteStreams.skipUpTo;
+import static com.google.common.math.LongMath.saturatedAdd;
 import static java.lang.Math.min;
 
 import com.google.common.annotations.GwtIncompatible;
@@ -699,8 +700,10 @@ public abstract class ByteSource {
         if (!sizeIfKnown.isPresent()) {
           return Optional.absent();
         }
-        result += sizeIfKnown.get();
-        if (result < 0) {
+        long sourceSize = sizeIfKnown.get();
+        long oldResult = result;
+        result = saturatedAdd(result, sourceSize);
+        if (result < 0 || sourceSize > Long.MAX_VALUE - oldResult) {
           // Overflow (or one or more sources that returned a negative size, but all bets are off in
           // that case)
           // Can't represent anything higher, and realistically there probably isn't anything that
@@ -716,8 +719,10 @@ public abstract class ByteSource {
     public long size() throws IOException {
       long result = 0L;
       for (ByteSource source : sources) {
-        result += source.size();
-        if (result < 0) {
+        long sourceSize = source.size();
+        long oldResult = result;
+        result = saturatedAdd(result, sourceSize);
+        if (result < 0 || sourceSize > Long.MAX_VALUE - oldResult) {
           // Overflow (or one or more sources that returned a negative size, but all bets are off in
           // that case)
           // Can't represent anything higher, and realistically there probably isn't anything that

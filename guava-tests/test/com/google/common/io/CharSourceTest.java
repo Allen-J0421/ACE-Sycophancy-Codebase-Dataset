@@ -24,6 +24,7 @@ import static com.google.common.io.TestOption.WRITE_THROWS;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -269,6 +270,20 @@ public class CharSourceTest extends IoTestCase {
     assertTrue(emptyConcat.isEmpty());
   }
 
+  public void testConcat_lengthIfKnown_saturatesOnOverflow() {
+    CharSource concatenated =
+        CharSource.concat(newCharSourceWithLength(Long.MAX_VALUE), newCharSourceWithLength(1));
+
+    assertEquals(Long.MAX_VALUE, (long) concatenated.lengthIfKnown().get());
+  }
+
+  public void testConcat_length_saturatesOnOverflow() throws IOException {
+    CharSource concatenated =
+        CharSource.concat(newCharSourceWithLength(Long.MAX_VALUE), newCharSourceWithLength(1));
+
+    assertEquals(Long.MAX_VALUE, concatenated.length());
+  }
+
   public void testConcat_infiniteIterable() throws IOException {
     CharSource source = CharSource.wrap("abcd");
     Iterable<CharSource> cycle = Iterables.cycle(ImmutableList.of(source));
@@ -335,6 +350,25 @@ public class CharSourceTest extends IoTestCase {
 
   private static CharSource newNormalCharSource() {
     return CharSource.wrap("ABC");
+  }
+
+  private static CharSource newCharSourceWithLength(long length) {
+    return new CharSource() {
+      @Override
+      public Reader openStream() {
+        return new StringReader("");
+      }
+
+      @Override
+      public Optional<Long> lengthIfKnown() {
+        return Optional.of(length);
+      }
+
+      @Override
+      public long length() {
+        return length;
+      }
+    };
   }
 
   private static CharSink newNormalCharSink() {

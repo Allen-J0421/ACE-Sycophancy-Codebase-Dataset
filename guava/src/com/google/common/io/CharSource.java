@@ -16,6 +16,7 @@ package com.google.common.io;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Streams.stream;
+import static com.google.common.math.LongMath.saturatedAdd;
 
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.J2ktIncompatible;
@@ -706,7 +707,12 @@ public abstract class CharSource {
         if (!lengthIfKnown.isPresent()) {
           return Optional.absent();
         }
-        result += lengthIfKnown.get();
+        long sourceLength = lengthIfKnown.get();
+        long oldResult = result;
+        result = saturatedAdd(result, sourceLength);
+        if (result < 0 || sourceLength > Long.MAX_VALUE - oldResult) {
+          return Optional.of(Long.MAX_VALUE);
+        }
       }
       return Optional.of(result);
     }
@@ -715,7 +721,12 @@ public abstract class CharSource {
     public long length() throws IOException {
       long result = 0L;
       for (CharSource source : sources) {
-        result += source.length();
+        long sourceLength = source.length();
+        long oldResult = result;
+        result = saturatedAdd(result, sourceLength);
+        if (result < 0 || sourceLength > Long.MAX_VALUE - oldResult) {
+          return Long.MAX_VALUE;
+        }
       }
       return result;
     }

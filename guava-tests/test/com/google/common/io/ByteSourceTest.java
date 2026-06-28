@@ -33,9 +33,11 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -359,6 +361,20 @@ public class ByteSourceTest extends IoTestCase {
     assertEquals(0, emptyConcat.size());
   }
 
+  public void testConcat_sizeIfKnown_saturatesOnOverflow() {
+    ByteSource concatenated =
+        ByteSource.concat(newByteSourceWithSize(Long.MAX_VALUE), newByteSourceWithSize(1));
+
+    assertEquals(Long.MAX_VALUE, (long) concatenated.sizeIfKnown().get());
+  }
+
+  public void testConcat_size_saturatesOnOverflow() throws IOException {
+    ByteSource concatenated =
+        ByteSource.concat(newByteSourceWithSize(Long.MAX_VALUE), newByteSourceWithSize(1));
+
+    assertEquals(Long.MAX_VALUE, concatenated.size());
+  }
+
   public void testConcat_infiniteIterable() throws IOException {
     ByteSource source = ByteSource.wrap(new byte[] {0, 1, 2, 3});
     Iterable<ByteSource> cycle = Iterables.cycle(ImmutableList.of(source));
@@ -424,6 +440,25 @@ public class ByteSourceTest extends IoTestCase {
 
   private static ByteSource newNormalByteSource() {
     return ByteSource.wrap(new byte[10]);
+  }
+
+  private static ByteSource newByteSourceWithSize(long size) {
+    return new ByteSource() {
+      @Override
+      public InputStream openStream() {
+        return new ByteArrayInputStream(new byte[0]);
+      }
+
+      @Override
+      public Optional<Long> sizeIfKnown() {
+        return Optional.of(size);
+      }
+
+      @Override
+      public long size() {
+        return size;
+      }
+    };
   }
 
   private static ByteSink newNormalByteSink() {

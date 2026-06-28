@@ -142,7 +142,7 @@ public class Simulator
         if(weather.equals("rain")){
             resetWeather();
             for (int i = 0; i < plants.size(); i++) {
-                plants.get(i).setRain();
+                plants.get(i).setWeather();
             }
         }
         else if(weather.equals("flood")){
@@ -172,7 +172,7 @@ public class Simulator
         else if (weather.equals("fog")) {
             resetWeather();
             for (int i = 0; i < animals.size(); i++) {
-                animals.get(i).setFog();
+                animals.get(i).setWeather();
             }
         }
 
@@ -310,15 +310,14 @@ public class Simulator
 
     /**
      * reset the weather conditions
-     * by setting fog field of all animals to false
-     * and setting rain field of all plants to false
+     * by clearing the weather flag on all animals and plants
      */
     private void resetWeather() {
         for (int i = 0; i < animals.size(); i++) {
-            animals.get(i).resetFog();
+            animals.get(i).resetWeather();
         }
         for (int i = 0; i < plants.size(); i++) {
-            plants.get(i).resetRain();
+            plants.get(i).resetWeather();
         }
     }
 

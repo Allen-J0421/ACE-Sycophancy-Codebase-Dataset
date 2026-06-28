@@ -10,8 +10,6 @@ public abstract class Animal extends Organism
 {
     // Distinguishes between male and female to determine breeding
     private boolean isMale;
-    // whether or not the weather is fog
-    private boolean fog;
     // The animal's food level
     private int foodLevel;
     //whether the animal has a disease or not
@@ -27,7 +25,6 @@ public abstract class Animal extends Organism
      */
     public Animal(Field field, Location location) {
         super(field, location);
-        fog = false;
         disease = false;
     }
 
@@ -153,22 +150,6 @@ public abstract class Animal extends Organism
     protected void setGender() {
         isMale = rand.nextInt(2) == 1;
     }
-
-    /**
-     * assigns true to fog field
-     */
-    protected void setFog() { fog = true; }
-
-    /**
-     * assigns false to fog field
-     */
-    protected void resetFog(){ fog = false; }
-
-    /**
-     * returns the fog field
-     * @return true if the weather is fog, false if it is not
-     */
-    protected boolean getFog() {return fog;}
 
     /**
      * takes a food level parameter and assigns it to the foodLevel field

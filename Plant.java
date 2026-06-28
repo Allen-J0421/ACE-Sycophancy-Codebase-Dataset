@@ -8,9 +8,6 @@ import java.util.List;
 
 public abstract class Plant extends Organism
 {
-    // whether it is raining or not
-    private boolean rain;
-
     /**
      * Create a new plant at a location in field.
      *
@@ -19,7 +16,6 @@ public abstract class Plant extends Organism
      */
     public Plant(Field field, Location location) {
         super(field, location);
-        rain = false;
     }
 
     /**
@@ -28,16 +24,6 @@ public abstract class Plant extends Organism
      * @param newPlants A list to receive newly created plants.
      */
     abstract public void act(List<Plant> newPlants);
-
-    /**
-     * assign true to rain
-     */
-    protected void setRain(){ rain = true; }
-
-    /**
-     * assign false to rain
-     */
-    protected void resetRain(){ rain = false; }
 
     /**
      * Generate a number representing the number of plants to produce,
@@ -49,7 +35,7 @@ public abstract class Plant extends Organism
     {
         int offspring = 0;
         if (rand.nextDouble() <= (REPRODUCING_PROBABILITY)){
-            if (rain){
+            if (getWeather()){
                 offspring = rand.nextInt(MAX_OFFSPRING_SIZE) + 3;
             }
             else {

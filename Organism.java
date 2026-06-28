@@ -15,6 +15,9 @@ public abstract class Organism
     private Field field;
     // The organism's position in the field.
     private Location location;
+    // Whether the weather condition that affects this organism (e.g. fog for
+    // animals, rain for plants) is currently active.
+    private boolean weather;
 
     // A shared random number generator, used by all organisms for breeding
     // and other random behaviour.
@@ -30,7 +33,24 @@ public abstract class Organism
         alive = true;
         this.field = field;
         setLocation(location);
+        weather = false;
     }
+
+    /**
+     * Mark this organism's weather condition as active.
+     */
+    protected void setWeather() { weather = true; }
+
+    /**
+     * Mark this organism's weather condition as inactive.
+     */
+    protected void resetWeather() { weather = false; }
+
+    /**
+     * Report whether this organism's weather condition is currently active.
+     * @return true if the weather condition is active, false otherwise.
+     */
+    protected boolean getWeather() { return weather; }
 
     /**
      * Check whether the organism is alive or not.

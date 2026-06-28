@@ -64,7 +64,7 @@ public class Dingo extends Animal
     protected Location findFood() {
         // In fog a dingo only manages to hunt half of the time; otherwise it
         // always searches its surroundings.
-        if (getFog() && rand.nextInt(2) != 0) {
+        if (getWeather() && rand.nextInt(2) != 0) {
             return null;
         }
         Field field = getField();

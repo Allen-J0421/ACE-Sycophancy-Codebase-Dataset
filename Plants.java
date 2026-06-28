@@ -1,7 +1,4 @@
 
-import java.util.List;
-import java.util.Random;
-
 /**
  * A class representing shared characteristics of plants.
  *
@@ -9,8 +6,7 @@ import java.util.Random;
  */
 public abstract class Plants extends Actor
 {
-    //private static final Random rand = Randomizer.getRandom();
-    private int sunLevel; 
+    private int sunLevel;
     private int waterLevel;
     /**
      * Create a new plant at location in field.
@@ -81,22 +77,6 @@ public abstract class Plants extends Actor
      */
     protected void decreaseSunLevel(){
         sunLevel--;
-    }
-
-    /**
-     * Get the current water level.
-     * @return The plants current water level.
-     */
-    protected int getWaterLevel(){
-        return waterLevel;
-    }
-
-    /**
-     * Get the current sun level.
-     * @return The plants current sun level.
-     */
-    protected int getSunLevel(){
-        return sunLevel;
     }
 
     /**

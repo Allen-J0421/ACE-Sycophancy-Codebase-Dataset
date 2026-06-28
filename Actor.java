@@ -66,14 +66,6 @@ public abstract class Actor
     }
 
     /**
-     * Set the field.
-     * @param place. The field.
-     */
-    protected void setField(Field place){
-        field = place;
-    }
-
-    /**
      * Check whether the actor is alive or not.
      * @return true if the actor is still alive.
      */

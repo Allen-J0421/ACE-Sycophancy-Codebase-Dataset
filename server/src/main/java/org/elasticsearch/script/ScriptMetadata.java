@@ -206,9 +206,9 @@ public final class ScriptMetadata implements Metadata.ProjectCustom, Writeable {
                     // since there is a guarantee no more empty scripts will exist
                     if (source.getSource().isEmpty()) {
                         if (Script.DEFAULT_TEMPLATE_LANG.equals(source.getLang())) {
-                            logger.warn("empty template [" + id + "] found and dropped");
+                            logger.warn("empty template [{}] found and dropped", id);
                         } else {
-                            logger.warn("empty script [" + id + "] found and dropped");
+                            logger.warn("empty script [{}] found and dropped", id);
                         }
                     } else {
                         scripts.put(id, source);

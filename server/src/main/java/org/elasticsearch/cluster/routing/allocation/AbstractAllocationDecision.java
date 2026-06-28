@@ -163,10 +163,9 @@ public abstract class AbstractAllocationDecision implements ChunkedToXContentObj
         if (this == other) {
             return true;
         }
-        if (other == null || other instanceof AbstractAllocationDecision == false) {
+        if (!(other instanceof AbstractAllocationDecision that)) {
             return false;
         }
-        AbstractAllocationDecision that = (AbstractAllocationDecision) other;
         return Objects.equals(targetNode, that.targetNode) && Objects.equals(nodeDecisions, that.nodeDecisions);
     }
 

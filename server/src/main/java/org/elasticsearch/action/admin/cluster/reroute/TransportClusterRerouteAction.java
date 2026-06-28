@@ -261,7 +261,7 @@ public class TransportClusterRerouteAction extends TransportMasterNodeAction<Clu
 
         @Override
         public void onFailure(Exception e) {
-            logger.debug("failed to perform [" + TASK_SOURCE + "]", e);
+            logger.debug("failed to perform [{}]", TASK_SOURCE, e);
             listener.clusterStateUpdate().onFailure(e);
         }
 

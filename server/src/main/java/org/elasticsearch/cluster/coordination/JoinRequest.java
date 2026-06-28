@@ -115,9 +115,7 @@ public class JoinRequest extends AbstractTransportRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof JoinRequest) == false) return false;
-
-        JoinRequest that = (JoinRequest) o;
+        if (!(o instanceof JoinRequest that)) return false;
 
         if (minimumTerm != that.minimumTerm) return false;
         if (sourceNode.equals(that.sourceNode) == false) return false;

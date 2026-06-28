@@ -236,7 +236,7 @@ public class SystemIndexMappingUpdateService implements ClusterStateListener {
 
                 @Override
                 public void onFailure(Exception e) {
-                    logger.error("Put mapping request for [" + indexName + "] failed", e);
+                    logger.error("Put mapping request for [{}] failed", indexName, e);
                     listener.onFailure(e);
                 }
             });

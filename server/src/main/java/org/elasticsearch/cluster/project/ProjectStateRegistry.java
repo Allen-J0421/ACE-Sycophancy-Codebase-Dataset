@@ -226,8 +226,7 @@ public class ProjectStateRegistry extends AbstractNamedDiffable<Custom> implemen
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof ProjectStateRegistry == false) return false;
-        ProjectStateRegistry that = (ProjectStateRegistry) o;
+        if (!(o instanceof ProjectStateRegistry that)) return false;
         return projectsMarkedForDeletionGeneration == that.projectsMarkedForDeletionGeneration
             && Objects.equals(projectsEntries, that.projectsEntries)
             && Objects.equals(projectsMarkedForDeletion, that.projectsMarkedForDeletion);

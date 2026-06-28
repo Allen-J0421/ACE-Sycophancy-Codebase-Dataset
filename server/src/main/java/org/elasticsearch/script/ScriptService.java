@@ -979,7 +979,7 @@ public class ScriptService implements Closeable, ClusterStateApplier, ScriptComp
             ScriptCache oldCache = ref.get();
             assert oldCache != null : "expected script cache to be non-null for context [" + name + "]";
             ref.set(cache);
-            logger.debug("Replaced context [" + name + "] with new settings");
+            logger.debug("Replaced context [{}] with new settings", name);
         }
     }
 }

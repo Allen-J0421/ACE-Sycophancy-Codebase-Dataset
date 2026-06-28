@@ -206,7 +206,7 @@ public class AllocationBalancingRoundSummaryService {
             return;
         }
 
-        logger.info("Balancing round summaries: " + combinedSummaries);
+        logger.info("Balancing round summaries: {}", combinedSummaries);
     }
 
     /**

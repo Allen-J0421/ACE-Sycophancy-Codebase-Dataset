@@ -177,8 +177,7 @@ public class NodesShutdownMetadata implements Metadata.ClusterCustom {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof NodesShutdownMetadata) == false) return false;
-        NodesShutdownMetadata that = (NodesShutdownMetadata) o;
+        if (!(o instanceof NodesShutdownMetadata that)) return false;
         return nodes.equals(that.nodes);
     }
 

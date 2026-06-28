@@ -55,12 +55,10 @@ public abstract class QueryRewriteRemoteAsyncAction<T, U extends QueryRewriteRem
 
     @Override
     public boolean equals(Object obj) {
-        boolean equals = super.equals(obj);
-        if (equals) {
-            QueryRewriteRemoteAsyncAction<?, ?> other = (QueryRewriteRemoteAsyncAction<?, ?>) obj;
-            equals = Objects.equals(clusterAlias, other.clusterAlias);
+        if (super.equals(obj) == false) {
+            return false;
         }
-
-        return equals;
+        QueryRewriteRemoteAsyncAction<?, ?> other = (QueryRewriteRemoteAsyncAction<?, ?>) obj;
+        return Objects.equals(clusterAlias, other.clusterAlias);
     }
 }

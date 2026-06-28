@@ -163,10 +163,9 @@ public final class ImmutableOpenMap<KType, VType> extends AbstractMap<KType, VTy
         @SuppressWarnings("unchecked")
         @Override
         public boolean contains(Object o) {
-            if (o instanceof Map.Entry<?, ?> == false) {
+            if (!(o instanceof Map.Entry<?, ?> e)) {
                 return false;
             }
-            Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
             Object key = e.getKey();
             Object v = map.get((KType) key);
             if (v == null && map.containsKey((KType) key) == false) {

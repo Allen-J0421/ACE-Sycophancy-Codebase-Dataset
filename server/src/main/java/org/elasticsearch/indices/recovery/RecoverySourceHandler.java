@@ -1048,7 +1048,7 @@ public class RecoverySourceHandler {
         if (shard.state() == IndexShardState.CLOSED) {
             throw new IndexShardClosedException(request.shardId());
         }
-        logger.trace("recovery [phase2]: sending transaction log operations (from [" + startingSeqNo + "] to [" + endingSeqNo + "]");
+        logger.trace("recovery [phase2]: sending transaction log operations (from [{}] to [{}]", startingSeqNo, endingSeqNo);
         final StopWatch stopWatch = new StopWatch().start();
         final SubscribableListener<Void> sendListener = new SubscribableListener<>();
         final OperationBatchSender sender = new OperationBatchSender(

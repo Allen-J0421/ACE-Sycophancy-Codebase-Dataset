@@ -333,10 +333,9 @@ public class ExponentialHistogramState implements Releasable, Accountable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ExponentialHistogramState == false) {
+        if (!(obj instanceof ExponentialHistogramState that)) {
             return false;
         }
-        ExponentialHistogramState that = (ExponentialHistogramState) obj;
         if (this == that) {
             return true;
         }

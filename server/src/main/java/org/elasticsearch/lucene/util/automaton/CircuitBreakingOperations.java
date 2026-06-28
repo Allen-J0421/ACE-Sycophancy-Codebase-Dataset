@@ -231,8 +231,7 @@ public final class CircuitBreakingOperations {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if ((o instanceof IntSet) == false) return false;
-            IntSet that = (IntSet) o;
+            if (!(o instanceof IntSet that)) return false;
             return longHashCode() == that.longHashCode() && Arrays.equals(getArray(), 0, size(), that.getArray(), 0, that.size());
         }
     }

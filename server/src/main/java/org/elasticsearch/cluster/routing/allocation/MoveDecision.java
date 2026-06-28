@@ -351,10 +351,9 @@ public final class MoveDecision extends AbstractAllocationDecision {
         if (super.equals(other) == false) {
             return false;
         }
-        if (other instanceof MoveDecision == false) {
+        if (!(other instanceof MoveDecision that)) {
             return false;
         }
-        MoveDecision that = (MoveDecision) other;
         return Objects.equals(canMoveDecision, that.canMoveDecision)
             && Objects.equals(canRemainDecision, that.canRemainDecision)
             && Objects.equals(clusterRebalanceDecision, that.clusterRebalanceDecision)

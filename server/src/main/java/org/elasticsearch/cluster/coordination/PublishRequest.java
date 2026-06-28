@@ -31,9 +31,7 @@ public class PublishRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof PublishRequest) == false) return false;
-
-        PublishRequest that = (PublishRequest) o;
+        if (!(o instanceof PublishRequest that)) return false;
 
         return acceptedState.term() == that.acceptedState.term() && acceptedState.version() == that.acceptedState.version();
     }

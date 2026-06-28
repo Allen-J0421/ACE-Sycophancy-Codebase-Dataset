@@ -351,9 +351,8 @@ public class CtxMap<T extends Metadata> extends AbstractMap<String, Object> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof CtxMap) == false) return false;
+        if (!(o instanceof CtxMap<?> ctxMap)) return false;
         if (super.equals(o) == false) return false;
-        CtxMap<?> ctxMap = (CtxMap<?>) o;
         return source.equals(ctxMap.source) && metadata.equals(ctxMap.metadata);
     }
 

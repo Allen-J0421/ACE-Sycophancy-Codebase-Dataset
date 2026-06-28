@@ -287,11 +287,10 @@ public class SearchAfterBuilder implements ToXContentObject, Writeable {
 
     @Override
     public boolean equals(Object other) {
-        if ((other instanceof SearchAfterBuilder) == false) {
+        if (!(other instanceof SearchAfterBuilder that)) {
             return false;
         }
-        boolean value = Arrays.equals(sortValues, ((SearchAfterBuilder) other).sortValues);
-        return value;
+        return Arrays.equals(sortValues, that.sortValues);
     }
 
     @Override

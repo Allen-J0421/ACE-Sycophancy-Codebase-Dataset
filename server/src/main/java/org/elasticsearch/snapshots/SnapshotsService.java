@@ -2482,10 +2482,9 @@ public final class SnapshotsService extends AbstractLifecycleComponent implement
             if (this == other) {
                 return true;
             }
-            if ((other instanceof ShardSnapshotUpdate) == false) {
+            if (!(other instanceof ShardSnapshotUpdate that)) {
                 return false;
             }
-            final ShardSnapshotUpdate that = (ShardSnapshotUpdate) other;
             return this.snapshot.equals(that.snapshot)
                 && Objects.equals(this.shardId, that.shardId)
                 && Objects.equals(this.repoShardId, that.repoShardId)

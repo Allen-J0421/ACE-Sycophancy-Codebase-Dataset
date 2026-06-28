@@ -133,11 +133,11 @@ public class TransportNodesReloadSecureSettingsAction extends TransportNodesActi
             final List<Exception> exceptions = new ArrayList<>();
             // broadcast the new settings object (with the open embedded keystore) to all reloadable plugins
             pluginsService.filterPlugins(ReloadablePlugin.class).forEach(p -> {
-                logger.debug("Reloading plugin [" + p.getClass().getSimpleName() + "]");
+                logger.debug("Reloading plugin [{}]", p.getClass().getSimpleName());
                 try {
                     p.reload(settingsWithKeystore);
                 } catch (final Exception e) {
-                    logger.warn(() -> "Reload failed for plugin [" + p.getClass().getSimpleName() + "]", e);
+                    logger.warn("Reload failed for plugin [{}]", p.getClass().getSimpleName(), e);
                     exceptions.add(e);
                 }
             });
@@ -160,7 +160,7 @@ public class TransportNodesReloadSecureSettingsAction extends TransportNodesActi
         try {
             return Files.readAttributes(path, BasicFileAttributes.class).lastModifiedTime().toMillis();
         } catch (IOException e) {
-            logger.warn("Failed to read last modified time of [" + path + "]", e);
+            logger.warn("Failed to read last modified time of [{}]", path, e);
             return null;
         }
     }
@@ -169,7 +169,7 @@ public class TransportNodesReloadSecureSettingsAction extends TransportNodesActi
         try {
             return MessageDigests.toHexString(MessageDigests.sha256().digest(Files.readAllBytes(path)));
         } catch (IOException e) {
-            logger.warn("Failed to compute SHA-256 digest of [" + path + "]", e);
+            logger.warn("Failed to compute SHA-256 digest of [{}]", path, e);
             return null;
         }
     }

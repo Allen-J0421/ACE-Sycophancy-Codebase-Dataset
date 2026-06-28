@@ -341,10 +341,9 @@ public class AllocateUnassignedDecision extends AbstractAllocationDecision {
         if (super.equals(other) == false) {
             return false;
         }
-        if (other instanceof AllocateUnassignedDecision == false) {
+        if (!(other instanceof AllocateUnassignedDecision that)) {
             return false;
         }
-        AllocateUnassignedDecision that = (AllocateUnassignedDecision) other;
         return Objects.equals(allocationStatus, that.allocationStatus)
             && Objects.equals(allocationId, that.allocationId)
             && reuseStore == that.reuseStore

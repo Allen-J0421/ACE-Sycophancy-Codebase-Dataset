@@ -409,9 +409,7 @@ public class HistogramUnionState implements Releasable, Accountable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof HistogramUnionState == false) return false;
-
-        HistogramUnionState that = (HistogramUnionState) o;
+        if (!(o instanceof HistogramUnionState that)) return false;
 
         // ensure both tDigestStates are either null or equal
         if (tDigestState == null && that.tDigestState == null) {

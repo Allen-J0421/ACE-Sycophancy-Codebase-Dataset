@@ -453,10 +453,9 @@ public class PagedBytesCursor {
         if (this == obj) {
             return true;
         }
-        if (obj instanceof PagedBytesCursor == false) {
+        if (!(obj instanceof PagedBytesCursor other)) {
             return false;
         }
-        PagedBytesCursor other = (PagedBytesCursor) obj;
         if (remaining != other.remaining) {
             return false;
         }

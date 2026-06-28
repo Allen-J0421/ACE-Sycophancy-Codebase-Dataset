@@ -2920,7 +2920,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
                 // This is done as a fail-safe in case a user manually deletes the contents of the repository in which case subsequent
                 // operations must start from the EMPTY_REPO_GEN again
                 if (latestKnownRepoGen.compareAndSet(indexGen, RepositoryData.EMPTY_REPO_GEN)) {
-                    logger.warn("Resetting repository generation tracker because we failed to read generation [" + indexGen + "]", ioe);
+                    logger.warn("Resetting repository generation tracker because we failed to read generation [{}]", indexGen, ioe);
                 }
             }
             throw new RepositoryException(metadata.name(), "could not read repository data from index blob", ioe);

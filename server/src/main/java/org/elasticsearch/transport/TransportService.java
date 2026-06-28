@@ -1207,7 +1207,7 @@ public class TransportService extends AbstractLifecycleComponent
         // TODO we should makes this a hard validation and throw an exception but we need a good way to add backwards layer
         // for it. Maybe start with a deprecation layer
         if (isValidActionName(actionName) == false) {
-            logger.warn("invalid action name [" + actionName + "] must start with one of: " + TransportService.VALID_ACTION_PREFIXES);
+            logger.warn("invalid action name [{}] must start with one of: {}", actionName, TransportService.VALID_ACTION_PREFIXES);
         }
     }
 

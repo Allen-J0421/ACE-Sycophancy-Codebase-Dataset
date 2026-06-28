@@ -225,10 +225,9 @@ public class TDigestState implements Releasable, Accountable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof TDigestState == false) {
+        if (!(obj instanceof TDigestState that)) {
             return false;
         }
-        TDigestState that = (TDigestState) obj;
         if (this == that) {
             return true;
         }

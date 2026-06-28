@@ -233,7 +233,7 @@ public class OsStats implements Writeable, ToXContentFragment {
                 // We intentionally check for (total == 0) rather than (total - free < 0) so as not to hide
                 // cases where (free > total) which would be a different bug.
                 if (free > 0) {
-                    logger.debug("cannot compute used swap when total swap is 0 and free swap is " + free);
+                    logger.debug("cannot compute used swap when total swap is 0 and free swap is {}", free);
                 }
                 return ByteSizeValue.ZERO;
             }
@@ -334,7 +334,7 @@ public class OsStats implements Writeable, ToXContentFragment {
                 // We intentionally check for (total == 0) rather than (total - free < 0) so as not to hide
                 // cases where (free > total) which would be a different bug.
                 if (free > 0) {
-                    logger.debug("cannot compute used memory when total memory is 0 and free memory is " + free);
+                    logger.debug("cannot compute used memory when total memory is 0 and free memory is {}", free);
                 }
                 return ByteSizeValue.ZERO;
             }

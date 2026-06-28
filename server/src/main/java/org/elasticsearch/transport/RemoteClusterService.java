@@ -377,7 +377,7 @@ public final class RemoteClusterService extends RemoteClusterAware
             try {
                 IOUtils.close(remote);
             } catch (IOException e) {
-                logger.warn("project [" + projectId + "] failed to close remote cluster connections for cluster: " + clusterAlias, e);
+                logger.warn("project [{}] failed to close remote cluster connections for cluster: {}", projectId, clusterAlias, e);
             }
             connectionMap.remove(clusterAlias);
             remote = new RemoteClusterConnection(config, transportService, remoteClusterCredentialsManager, crossProjectEnabled());
@@ -425,7 +425,7 @@ public final class RemoteClusterService extends RemoteClusterAware
         } catch (TimeoutException ex) {
             logger.warn("project [{}] failed to connect to remote clusters within {}", projectId, timeValue.toString());
         } catch (Exception e) {
-            logger.warn("project [" + projectId + "] failed to connect to remote clusters", e);
+            logger.warn("project [{}] failed to connect to remote clusters", projectId, e);
         }
     }
 

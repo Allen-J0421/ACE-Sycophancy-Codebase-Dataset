@@ -133,9 +133,7 @@ public class CoordinationMetadata implements Writeable, ToXContentFragment {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof CoordinationMetadata) == false) return false;
-
-        CoordinationMetadata that = (CoordinationMetadata) o;
+        if (!(o instanceof CoordinationMetadata that)) return false;
 
         if (term != that.term) return false;
         if (lastCommittedConfiguration.equals(that.lastCommittedConfiguration) == false) return false;

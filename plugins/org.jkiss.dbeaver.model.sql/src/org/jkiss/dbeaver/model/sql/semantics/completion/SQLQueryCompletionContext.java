@@ -318,17 +318,14 @@ public abstract class SQLQueryCompletionContext {
 
                 if (lexicalItem != null) {
                     this.prepareLexicalItemCompletions(monitor, request, lexicalItem, position, parts, completionSets);
-                }  else if (this.nameNodesAreUseful(parts)) {
-                    this.tryApplyOriginContext();
-                    this.prepareInspectedIdentifierCompletions(monitor, request, parts, completionSets);
+                } else if (this.nameNodesAreUseful(parts)) {
+                    this.prepareWithOriginContext(() -> this.prepareInspectedIdentifierCompletions(monitor, request, parts, completionSets));
                 } else if (context.symbolsOrigin() != null) {
                     this.accomplishFromKnownOrigin(monitor, request, context.symbolsOrigin(), null, completionSets);
                 } else if (syntaxInspectionResult.expectingIdentifier()) {
-                    this.tryApplyOriginContext();
-                    this.prepareInspectedIdentifierCompletions(monitor, request, parts, completionSets);
+                    this.prepareWithOriginContext(() -> this.prepareInspectedIdentifierCompletions(monitor, request, parts, completionSets));
                 } else {
-                    this.tryApplyOriginContext();
-                    this.prepareInspectedFreeCompletions(monitor, request, completionSets);
+                    this.prepareWithOriginContext(() -> this.prepareInspectedFreeCompletions(monitor, request, completionSets));
                 }
 
                 boolean keywordsAllowed = (lexicalItem == null || (lexicalItem.getOrigin() != null && !lexicalItem.getOrigin().isChained()) || (lexicalItem.getSymbolClass() != null && potentialKeywordPartClassification.contains(lexicalItem.getSymbolClass()))) && !hasPeriod;
@@ -403,6 +400,11 @@ public abstract class SQLQueryCompletionContext {
                 } else {
                     // do nothing
                 }
+            }
+
+            private void prepareWithOriginContext(@NotNull Runnable action) {
+                this.tryApplyOriginContext();
+                action.run();
             }
 
             private void accomplishTableReference(
@@ -824,9 +826,7 @@ public abstract class SQLQueryCompletionContext {
                                     ),
                                     results
                                 );
-                                if (origin.getObject() instanceof DBSObjectContainer c) {
-                                    prepareProceduresCompletions(monitor, request, contextInfo.getKnownSources(), List.of(c), filterOrNull);
-                                }
+                                this.prepareProceduresForContainerOrigin(monitor, request, contextInfo.getKnownSources(), origin.getObject(), filterOrNull);
                             }
                             case VALUE, FUNCTION -> {
                                 makeFilteredCompletionSet(
@@ -841,9 +841,7 @@ public abstract class SQLQueryCompletionContext {
                                     ),
                                     results
                                 );
-                                if (origin.getObject() instanceof DBSObjectContainer c) {
-                                    prepareProceduresCompletions(monitor, request, contextInfo.getKnownSources(), List.of(c), filterOrNull);
-                                }
+                                this.prepareProceduresForContainerOrigin(monitor, request, contextInfo.getKnownSources(), origin.getObject(), filterOrNull);
                             }
                             case OBJECT, TABLE -> {
                                 if (origin.getObject() instanceof DBSObjectContainer objectContainer) {
@@ -867,6 +865,18 @@ public abstract class SQLQueryCompletionContext {
                             }
                             default -> throw new UnsupportedOperationException("Unexpected filter mode: " + origin.getFilterMode());
                         };
+                    }
+
+                    private void prepareProceduresForContainerOrigin(
+                        @NotNull DBRProgressMonitor monitor,
+                        @NotNull SQLCompletionRequest request,
+                        @NotNull SQLQuerySourcesInfoCollection knownSources,
+                        @Nullable DBSObject originObject,
+                        @Nullable SQLQueryWordEntry filterOrNull
+                    ) {
+                        if (originObject instanceof DBSObjectContainer c) {
+                            prepareProceduresCompletions(monitor, request, knownSources, List.of(c), filterOrNull);
+                        }
                     }
 
                     /**

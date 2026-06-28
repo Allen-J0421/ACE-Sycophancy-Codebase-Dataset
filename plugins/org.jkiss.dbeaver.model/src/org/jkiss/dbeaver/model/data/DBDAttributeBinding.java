@@ -336,8 +336,8 @@ public abstract class DBDAttributeBinding implements DBSObject, DBSAttributeBase
     @Override
     public DBSDataType getDataType() {
         DBSEntityAttribute attribute = getEntityAttribute();
-        if (attribute instanceof DBSTypedObjectEx) {
-            return ((DBSTypedObjectEx) attribute).getDataType();
+        if (attribute instanceof DBSTypedObjectEx typed) {
+            return typed.getDataType();
         }
         return null;
     }
@@ -357,8 +357,7 @@ public abstract class DBDAttributeBinding implements DBSObject, DBSAttributeBase
 
     protected List<DBSEntityReferrer> findVirtualReferrers() {
         DBSDataContainer dataContainer = getDataContainer();
-        if (dataContainer instanceof DBSEntity) {
-            DBSEntity attrEntity = (DBSEntity) dataContainer;
+        if (dataContainer instanceof DBSEntity attrEntity) {
             DBVEntity vEntity = DBVUtils.getVirtualEntity(attrEntity, false);
             if (vEntity != null) {
                 List<DBVEntityForeignKey> foreignKeys = vEntity.getForeignKeys();

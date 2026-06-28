@@ -74,8 +74,8 @@ public abstract class AbstractObjectManager<OBJECT_TYPE extends DBSObject> imple
         {
             cacheModelObject(command.getObject());
             Map<String, Object> options = null;
-            if (command instanceof DBECommandWithOptions) {
-                options = ((DBECommandWithOptions) command).getOptions();
+            if (command instanceof DBECommandWithOptions cmdWithOpts) {
+                options = cmdWithOpts.getOptions();
             }
             DBUtils.fireObjectAdd(command.getObject(), options);
         }
@@ -106,8 +106,8 @@ public abstract class AbstractObjectManager<OBJECT_TYPE extends DBSObject> imple
         {
             cacheModelObject(command.getObject());
             Map<String, Object> options = null;
-            if (command instanceof DBECommandWithOptions) {
-                options = ((DBECommandWithOptions) command).getOptions();
+            if (command instanceof DBECommandWithOptions cmdWithOpts) {
+                options = cmdWithOpts.getOptions();
             }
             DBUtils.fireObjectAdd(command.getObject(), options);
         }

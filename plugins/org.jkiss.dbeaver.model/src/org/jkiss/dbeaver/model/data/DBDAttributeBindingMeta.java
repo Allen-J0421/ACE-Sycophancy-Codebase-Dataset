@@ -285,8 +285,8 @@ public class DBDAttributeBindingMeta extends DBDAttributeBinding {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DBDAttributeBindingMeta) {
-            DBCAttributeMetaData cmpMeta = ((DBDAttributeBindingMeta) obj).metaAttribute;
+        if (obj instanceof DBDAttributeBindingMeta other) {
+            DBCAttributeMetaData cmpMeta = other.metaAttribute;
             return
                 CommonUtils.equalObjects(metaAttribute.getName(), cmpMeta.getName()) &&
                     CommonUtils.equalObjects(metaAttribute.getLabel(), cmpMeta.getLabel()) &&

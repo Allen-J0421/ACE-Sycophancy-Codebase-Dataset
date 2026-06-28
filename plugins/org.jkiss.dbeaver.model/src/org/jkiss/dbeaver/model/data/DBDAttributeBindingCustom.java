@@ -220,9 +220,8 @@ public class DBDAttributeBindingCustom extends DBDAttributeBinding {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DBDAttributeBindingCustom) {
-            DBVEntityAttribute cmpMeta = ((DBDAttributeBindingCustom) obj).vAttribute;
-            return CommonUtils.equalObjects(vAttribute.getName(), cmpMeta.getName());
+        if (obj instanceof DBDAttributeBindingCustom other) {
+            return CommonUtils.equalObjects(vAttribute.getName(), other.vAttribute.getName());
         }
         return false;
     }

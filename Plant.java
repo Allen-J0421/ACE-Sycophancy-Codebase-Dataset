@@ -15,6 +15,8 @@ public abstract class Plant implements Actor
     //////////////////////////////////////////////////////////////*/
     
     private static final int FEEDING_FACTOR = 2;
+    // Multiplier applied to the spread probability under favourable weather.
+    private static final double OPTIMAL_BREEDING_FACTOR = 4.0;
     protected boolean alive;
     protected Location location;
     protected int age;
@@ -57,13 +59,47 @@ public abstract class Plant implements Actor
     /**
      * Make this plant act - that is: make it do
      * whatever it wants/needs to do.
-     * 
+     *
+     * This is a template method capturing the life cycle every plant shares
+     * during a step: by day it grows, and if still alive it spreads - faster
+     * in favourable (rainy or sunny) weather. Species customise the growth
+     * ceiling and spread rate through the hooks below.
+     *
      * @param newPlants A list to receive newly generated plants.
      * @param weather The current weather
      * @param dayState The different state of the day
      */
-    
-    public abstract void act(List<Actor> newPlants, Weather weather, DayState dayState);
+    public final void act(List<Actor> newPlants, Weather weather, DayState dayState)
+    {
+        if(dayState == DayState.NIGHT) {
+            return;
+        }
+        grow(getMaxAge());
+        if(!isAlive()) {
+            return;
+        }
+        // Plants spread faster in favourable (rainy or sunny) weather.
+        if(weather == Weather.RAIN || weather == Weather.SUNNY) {
+            multiply(OPTIMAL_BREEDING_FACTOR * getMultiplyProbability(), newPlants);
+            return;
+        }
+        multiply(getMultiplyProbability(), newPlants);
+    }
+
+    /*///////////////////////////////////////////////////////////////
+                            TEMPLATE METHOD HOOKS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @return the maximum age this species can reach before dying.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * @return the per-cell probability that this species spreads to a free
+     *         adjacent terrain location each step.
+     */
+    protected abstract double getMultiplyProbability();
     
     /**
      * Increments the age of the plant.

@@ -52,10 +52,13 @@ class RawConfigurationMetadata {
 			return null;
 		}
 		return this.sources.stream()
-			.filter((candidate) -> item.getSourceType().equals(candidate.getType())
-					&& item.getId().startsWith(candidate.getGroupId()))
+			.filter((candidate) -> isMatchingSource(item, candidate))
 			.max(Comparator.comparingInt((candidate) -> candidate.getGroupId().length()))
 			.orElse(null);
+	}
+
+	private boolean isMatchingSource(ConfigurationMetadataItem item, ConfigurationMetadataSource candidate) {
+		return item.getSourceType().equals(candidate.getType()) && item.getId().startsWith(candidate.getGroupId());
 	}
 
 	List<ConfigurationMetadataItem> getItems() {
@@ -72,17 +75,18 @@ class RawConfigurationMetadata {
 	 * @see ConfigurationMetadataProperty#setName(String)
 	 */
 	private void resolveName(ConfigurationMetadataItem item) {
-		item.setName(item.getId()); // fallback
-		ConfigurationMetadataSource source = getSource(item);
-		if (source != null) {
-			String groupId = source.getGroupId();
-			String dottedPrefix = groupId + ".";
-			String id = item.getId();
-			if (hasLength(groupId) && id.startsWith(dottedPrefix)) {
-				String name = id.substring(dottedPrefix.length());
-				item.setName(name);
-			}
+		item.setName(resolveName(item.getId(), getSource(item)));
+	}
+
+	private String resolveName(String id, ConfigurationMetadataSource source) {
+		if (source == null || !hasLength(source.getGroupId())) {
+			return id;
 		}
+		String dottedPrefix = source.getGroupId() + ".";
+		if (id.startsWith(dottedPrefix)) {
+			return id.substring(dottedPrefix.length());
+		}
+		return id;
 	}
 
 	private static boolean hasLength(String string) {

@@ -108,13 +108,13 @@ public class FieldMaskingSpanQueryBuilder extends LeafQueryBuilder<FieldMaskingS
             } else if (token == XContentParser.Token.START_OBJECT) {
                 if (QUERY_FIELD.match(currentFieldName, parser.getDeprecationHandler())) {
                     QueryBuilder query = parseInnerQueryBuilder(parser);
-                    if (query instanceof SpanQueryBuilder == false) {
+                    if (!(query instanceof SpanQueryBuilder inner)) {
                         throw new ParsingException(
                             parser.getTokenLocation(),
                             "[" + NAME.getPreferredName() + "] query must be of type span query"
                         );
                     }
-                    inner = (SpanQueryBuilder) query;
+                    this.inner = inner;
                     checkNoBoost(NAME.getPreferredName(), currentFieldName, parser, inner);
                 } else {
                     throw new ParsingException(

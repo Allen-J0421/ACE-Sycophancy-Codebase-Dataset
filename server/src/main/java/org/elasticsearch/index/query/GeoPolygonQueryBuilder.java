@@ -148,7 +148,7 @@ public class GeoPolygonQueryBuilder extends LeafQueryBuilder<GeoPolygonQueryBuil
                 throw new QueryShardException(context, "failed to find geo_point field [" + fieldName + "]");
             }
         }
-        if ((fieldType instanceof GeoPointFieldType) == false) {
+        if (!(fieldType instanceof GeoPointFieldType)) {
             throw new QueryShardException(context, "field [" + fieldName + "] is not a geo_point field");
         }
 

@@ -623,7 +623,7 @@ public class SearchExecutionContext extends QueryRewriteContext {
     public <FactoryType> FactoryType compile(Script script, ScriptContext<FactoryType> context) {
         assert scriptService != null;
         FactoryType factory = scriptService.compile(script, context);
-        if (factory instanceof ScriptFactory && ((ScriptFactory) factory).isResultDeterministic() == false) {
+        if (factory instanceof ScriptFactory scriptFactory && scriptFactory.isResultDeterministic() == false) {
             failIfFrozen();
         }
         return factory;

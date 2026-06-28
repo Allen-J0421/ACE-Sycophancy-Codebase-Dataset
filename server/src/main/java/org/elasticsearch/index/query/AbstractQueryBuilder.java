@@ -139,7 +139,7 @@ public abstract class AbstractQueryBuilder<QB extends AbstractQueryBuilder<QB>> 
         Query query = doToQuery(context, visitor);
         if (query != null) {
             if (boost != DEFAULT_BOOST) {
-                if (query instanceof MatchNoDocsQuery == false) {
+                if (!(query instanceof MatchNoDocsQuery)) {
                     query = new BoostQuery(query, boost);
                 }
             }

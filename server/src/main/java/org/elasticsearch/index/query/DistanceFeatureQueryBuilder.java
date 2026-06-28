@@ -180,10 +180,10 @@ public class DistanceFeatureQueryBuilder extends LeafQueryBuilder<DistanceFeatur
 
         @Override
         public final boolean equals(Object other) {
-            if ((other instanceof Origin) == false) {
+            if (!(other instanceof Origin origin)) {
                 return false;
             }
-            Object otherOrigin = ((Origin) other).origin();
+            Object otherOrigin = origin.origin();
             return this.origin().equals(otherOrigin);
         }
 

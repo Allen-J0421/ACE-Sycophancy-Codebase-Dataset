@@ -96,7 +96,7 @@ public class MultiMatchQueryParser extends MatchQueryParser {
             float boostValue = fieldNames.getOrDefault(fieldName, 1.0f);
             Query query = parse(type.matchQueryType(), fieldName, value);
             query = Queries.maybeApplyMinimumShouldMatch(query, minimumShouldMatch);
-            if (query != null && boostValue != AbstractQueryBuilder.DEFAULT_BOOST && query instanceof MatchNoDocsQuery == false) {
+            if (query != null && boostValue != AbstractQueryBuilder.DEFAULT_BOOST && !(query instanceof MatchNoDocsQuery)) {
                 query = new BoostQuery(query, boostValue);
             }
             if (query != null) {
@@ -304,7 +304,7 @@ public class MultiMatchQueryParser extends MatchQueryParser {
                     blendedBoost[i] = boost;
                     i++;
                 } else {
-                    if (boost != 1f && query instanceof MatchNoDocsQuery == false) {
+                    if (boost != 1f && !(query instanceof MatchNoDocsQuery)) {
                         query = new BoostQuery(query, boost);
                     }
                     queries.add(query);

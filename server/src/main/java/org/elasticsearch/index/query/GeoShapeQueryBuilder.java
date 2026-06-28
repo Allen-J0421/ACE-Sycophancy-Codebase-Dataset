@@ -171,13 +171,12 @@ public class GeoShapeQueryBuilder extends AbstractGeometryQueryBuilder<GeoShapeQ
 
     @Override
     public Query buildShapeQuery(SearchExecutionContext context, MappedFieldType fieldType) {
-        if ((fieldType instanceof GeoShapeQueryable) == false) {
+        if (!(fieldType instanceof GeoShapeQueryable ft)) {
             throw new QueryShardException(
                 context,
                 "Field [" + fieldName + "] is of unsupported type [" + fieldType.typeName() + "] for [" + NAME + "] query"
             );
         }
-        final GeoShapeQueryable ft = (GeoShapeQueryable) fieldType;
         return new ConstantScoreQuery(ft.geoShapeQuery(context, fieldType.name(), strategy, relation, shape));
     }
 

@@ -801,7 +801,7 @@ public class QueryStringQueryParser extends QueryParser {
     private static Query applySlop(Query q, int slop) {
         if (q instanceof PhraseQuery) {
             // make sure that the boost hasn't been set beforehand, otherwise we'd lose it
-            assert q instanceof BoostQuery == false;
+            assert !(q instanceof BoostQuery);
             return addSlopToPhrase((PhraseQuery) q, slop);
         } else if (q instanceof MultiPhraseQuery) {
             MultiPhraseQuery.Builder builder = new MultiPhraseQuery.Builder((MultiPhraseQuery) q);

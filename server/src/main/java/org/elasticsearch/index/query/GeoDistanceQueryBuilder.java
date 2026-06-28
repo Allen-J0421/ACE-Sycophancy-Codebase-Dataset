@@ -209,7 +209,7 @@ public class GeoDistanceQueryBuilder extends LeafQueryBuilder<GeoDistanceQueryBu
             }
         }
 
-        if ((fieldType instanceof GeoShapeQueryable) == false) {
+        if (!(fieldType instanceof GeoShapeQueryable geoShapeQueryable)) {
             throw new QueryShardException(
                 context,
                 "Field [" + fieldName + "] is of unsupported type [" + fieldType.typeName() + "] for [" + NAME + "] query"
@@ -224,8 +224,6 @@ public class GeoDistanceQueryBuilder extends LeafQueryBuilder<GeoDistanceQueryBu
         if (GeoValidationMethod.isCoerce(validationMethod)) {
             GeoUtils.normalizePoint(center, true, true);
         }
-
-        final GeoShapeQueryable geoShapeQueryable = (GeoShapeQueryable) fieldType;
         final Circle circle = new Circle(center.lon(), center.lat(), this.distance);
         return geoShapeQueryable.geoShapeQuery(context, fieldType.name(), SpatialStrategy.RECURSIVE, ShapeRelation.INTERSECTS, circle);
     }

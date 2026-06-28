@@ -159,10 +159,9 @@ public class SpanNearQueryBuilder extends LeafQueryBuilder<SpanNearQueryBuilder>
                 if (CLAUSES_FIELD.match(currentFieldName, parser.getDeprecationHandler())) {
                     while ((token = parser.nextToken()) != XContentParser.Token.END_ARRAY) {
                         QueryBuilder query = parseInnerQueryBuilder(parser);
-                        if (query instanceof SpanQueryBuilder == false) {
+                        if (!(query instanceof SpanQueryBuilder clause)) {
                             throw new ParsingException(parser.getTokenLocation(), "span_near [clauses] must be of type span query");
                         }
-                        final SpanQueryBuilder clause = (SpanQueryBuilder) query;
                         checkNoBoost(NAME, currentFieldName, parser, clause);
                         clauses.add(clause);
                     }

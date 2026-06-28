@@ -108,8 +108,8 @@ public class InterceptedQueryBuilderWrapper implements QueryBuilder {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof InterceptedQueryBuilderWrapper == false) return false;
-        return Objects.equals(queryBuilder, ((InterceptedQueryBuilderWrapper) o).queryBuilder);
+        if (!(o instanceof InterceptedQueryBuilderWrapper other)) return false;
+        return Objects.equals(queryBuilder, other.queryBuilder);
     }
 
     @Override

@@ -410,8 +410,7 @@ public class MoreLikeThisQueryBuilder extends LeafQueryBuilder<MoreLikeThisQuery
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if ((o instanceof Item) == false) return false;
-            Item other = (Item) o;
+            if (!(o instanceof Item other)) return false;
             return Objects.equals(index, other.index)
                 && Objects.equals(id, other.id)
                 && Objects.equals(doc, other.doc)

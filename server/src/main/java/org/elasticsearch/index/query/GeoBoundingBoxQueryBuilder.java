@@ -243,7 +243,7 @@ public class GeoBoundingBoxQueryBuilder extends LeafQueryBuilder<GeoBoundingBoxQ
                 throw new QueryShardException(context, "failed to find geo field [" + fieldName + "]");
             }
         }
-        if ((fieldType instanceof GeoShapeQueryable) == false) {
+        if (!(fieldType instanceof GeoShapeQueryable geoShapeQueryable)) {
             throw new QueryShardException(
                 context,
                 "Field [" + fieldName + "] is of unsupported type [" + fieldType.typeName() + "] for [" + NAME + "] query"
@@ -271,8 +271,6 @@ public class GeoBoundingBoxQueryBuilder extends LeafQueryBuilder<GeoBoundingBoxQ
                 luceneBottomRight.resetLon(180);
             }
         }
-
-        final GeoShapeQueryable geoShapeQueryable = (GeoShapeQueryable) fieldType;
         final Rectangle rectangle = new Rectangle(
             luceneTopLeft.getLon(),
             luceneBottomRight.getLon(),

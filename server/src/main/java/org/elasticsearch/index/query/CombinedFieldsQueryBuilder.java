@@ -343,7 +343,7 @@ public final class CombinedFieldsQueryBuilder extends LeafQueryBuilder<CombinedF
         }
 
         Similarity defaultSimilarity = context.getDefaultSimilarity();
-        if ((defaultSimilarity instanceof LegacyBM25Similarity || defaultSimilarity instanceof BM25Similarity) == false) {
+        if (!(defaultSimilarity instanceof LegacyBM25Similarity || defaultSimilarity instanceof BM25Similarity)) {
             throw new IllegalArgumentException("[" + NAME + "] queries can only be used with the [BM25] similarity");
         }
     }

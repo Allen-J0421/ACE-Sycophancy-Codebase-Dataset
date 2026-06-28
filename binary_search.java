@@ -1,6 +1,5 @@
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
-    private static final int SAMPLE_TARGET = 10;
 
     private BinarySearch() {
     }
@@ -44,13 +43,11 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int index = indexOf(sampleValues(), SAMPLE_TARGET);
+        int[] values = {2, 3, 4, 10, 40};
+        int target = 10;
+        int index = indexOf(values, target);
 
         System.out.println(formatSearchResult(index));
-    }
-
-    private static int[] sampleValues() {
-        return new int[] {2, 3, 4, 10, 40};
     }
 
     private static String formatSearchResult(int index) {

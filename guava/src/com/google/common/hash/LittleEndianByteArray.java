@@ -14,6 +14,7 @@
 
 package com.google.common.hash;
 
+import static com.google.common.base.StandardSystemProperty.OS_ARCH;
 import static java.lang.Math.min;
 import static java.lang.invoke.MethodHandles.byteArrayViewVarHandle;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -314,7 +315,7 @@ final class LittleEndianByteArray {
        * which will have an efficient native implementation in JDK 9.
        *
        */
-      String arch = System.getProperty("os.arch");
+      String arch = OS_ARCH.value();
       if (Objects.equals(arch, "amd64") || Objects.equals(arch, "aarch64")) {
         return ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)
             ? UnsafeByteArray.UNSAFE_LITTLE_ENDIAN

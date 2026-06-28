@@ -36,12 +36,6 @@ final class BinarySearch {
         return indexOf(sortedValues, target) != NOT_FOUND;
     }
 
-    private static void requireValues(int[] sortedValues) {
-        if (sortedValues == null) {
-            throw new IllegalArgumentException("sortedValues must not be null");
-        }
-    }
-
     public static void main(String[] args) {
         int[] values = {2, 3, 4, 10, 40};
         int target = 10;
@@ -56,5 +50,11 @@ final class BinarySearch {
         }
 
         return "Element is present at index " + index;
+    }
+
+    private static void requireValues(int[] sortedValues) {
+        if (sortedValues == null) {
+            throw new IllegalArgumentException("sortedValues must not be null");
+        }
     }
 }

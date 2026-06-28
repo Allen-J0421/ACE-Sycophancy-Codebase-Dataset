@@ -11,6 +11,7 @@ package org.elasticsearch.action.search;
 
 import org.elasticsearch.search.internal.ShardSearchRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,6 +32,13 @@ public record SearchTelemetryContext(Map<String, Object> attributes, long absolu
         long absoluteStartMillis
     ) {
         return new SearchTelemetryContext(attributes, absoluteStartMillis);
+    }
+
+    /**
+     * Returns a mutable copy of the telemetry attributes for callers that need to add derived values.
+     */
+    public Map<String, Object> mutableAttributes() {
+        return new HashMap<>(attributes);
     }
 
     /**

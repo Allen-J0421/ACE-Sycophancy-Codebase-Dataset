@@ -68,7 +68,7 @@ public class PrefUtils {
             } else if (valueType == Double.class || valueType == Double.TYPE) {
                 return CommonUtils.toDouble(str);
             } else if (valueType == Float.class || valueType == Float.TYPE) {
-                return CommonUtils.toFloat(store);
+                return CommonUtils.toFloat(str);
             } else if (valueType == BigInteger.class) {
                 return new BigInteger(str);
             } else if (valueType == BigDecimal.class) {

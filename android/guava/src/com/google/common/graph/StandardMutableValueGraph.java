@@ -61,25 +61,7 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
   @CanIgnoreReturnValue
   public boolean addNode(N node) {
     checkNotNull(node, "node");
-
-    if (containsNode(node)) {
-      return false;
-    }
-
-    addNodeInternal(node);
-    return true;
-  }
-
-  /**
-   * Adds {@code node} to the graph and returns the associated {@link GraphConnections}.
-   *
-   * @throws IllegalStateException if {@code node} is already present
-   */
-  @CanIgnoreReturnValue
-  private GraphConnections<N, V> addNodeInternal(N node) {
-    GraphConnections<N, V> connections = newConnections();
-    checkState(nodeConnections.put(node, connections) == null);
-    return connections;
+    return MutableNodeMapConnections.addNode(nodeConnections, node, this::newConnections);
   }
 
   @Override
@@ -93,15 +75,11 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
       checkArgument(!nodeU.equals(nodeV), SELF_LOOPS_NOT_ALLOWED, nodeU);
     }
 
-    GraphConnections<N, V> connectionsU = nodeConnections.get(nodeU);
-    if (connectionsU == null) {
-      connectionsU = addNodeInternal(nodeU);
-    }
+    GraphConnections<N, V> connectionsU =
+        MutableNodeMapConnections.getOrPutNode(nodeConnections, nodeU, this::newConnections);
     V previousValue = connectionsU.addSuccessor(nodeV, value);
-    GraphConnections<N, V> connectionsV = nodeConnections.get(nodeV);
-    if (connectionsV == null) {
-      connectionsV = addNodeInternal(nodeV);
-    }
+    GraphConnections<N, V> connectionsV =
+        MutableNodeMapConnections.getOrPutNode(nodeConnections, nodeV, this::newConnections);
     connectionsV.addPredecessor(nodeU, value);
     if (previousValue == null) {
       checkPositive(++edgeCount);

@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
@@ -38,14 +36,8 @@ final class MapRetrievalCache<K, V> extends MapIteratorCache<K, V> {
 
   @SuppressWarnings("unchecked") // Safe because we only cast if key is found in map.
   @Override
-  @Nullable V get(Object key) {
-    checkNotNull(key);
-    V value = getIfCached(key);
-    if (value != null) {
-      return value;
-    }
-
-    value = getWithoutCaching(key);
+  @Nullable V getIfNotCached(Object key) {
+    V value = getWithoutCaching(key);
     if (value != null) {
       addToCache((K) key, value);
     }
@@ -68,15 +60,17 @@ final class MapRetrievalCache<K, V> extends MapIteratorCache<K, V> {
 
     // Check cache. We use == on purpose because it's cheaper and a cache miss is ok.
     entry = cacheEntry1;
-    if (entry != null && entry.key == key) {
-      return entry.value;
+    value = entry == null ? null : cachedValueForKey(entry.key, entry.value, key);
+    if (value != null) {
+      return value;
     }
     entry = cacheEntry2;
-    if (entry != null && entry.key == key) {
+    value = entry == null ? null : cachedValueForKey(entry.key, entry.value, key);
+    if (value != null) {
       // Promote second cache entry to first so the access pattern
       // [K1, K2, K1, K3, K1, K4...] still hits the cache half the time.
       addToCache(entry);
-      return entry.value;
+      return value;
     }
     return null;
   }

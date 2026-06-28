@@ -81,13 +81,7 @@ class MapIteratorCache<K, V> {
 
   @Nullable V get(Object key) {
     checkNotNull(key);
-    V value = getIfCached(key);
-    // TODO(b/192579700): Use a ternary once it no longer confuses our nullness checker.
-    if (value == null) {
-      return getWithoutCaching(key);
-    } else {
-      return value;
-    }
+    return getIfCachedOrElse(key);
   }
 
   final @Nullable V getWithoutCaching(Object key) {
@@ -134,18 +128,34 @@ class MapIteratorCache<K, V> {
 
   // Internal methods (package-visible, but treat as only subclass-visible)
 
+  final @Nullable V getIfCachedOrElse(Object key) {
+    V value = getIfCached(key);
+    // TODO(b/192579700): Use a ternary once it no longer confuses our nullness checker.
+    if (value == null) {
+      return getIfNotCached(key);
+    } else {
+      return value;
+    }
+  }
+
   @SuppressWarnings("ReferenceEquality") // see comment below
   @Nullable V getIfCached(@Nullable Object key) {
     Entry<K, V> entry = cacheEntry; // store local reference for thread-safety
 
     // Check cache. We use == on purpose because it's cheaper and a cache miss is ok.
-    if (entry != null && entry.getKey() == key) {
-      return entry.getValue();
-    }
-    return null;
+    return entry == null ? null : cachedValueForKey(entry.getKey(), entry.getValue(), key);
+  }
+
+  @Nullable V getIfNotCached(Object key) {
+    return getWithoutCaching(key);
   }
 
   void clearCache() {
     cacheEntry = null;
+  }
+
+  @SuppressWarnings("ReferenceEquality") // intentional reference-based cache lookup
+  static <K, V> @Nullable V cachedValueForKey(K cachedKey, V cachedValue, @Nullable Object key) {
+    return (cachedKey == key) ? cachedValue : null;
   }
 }

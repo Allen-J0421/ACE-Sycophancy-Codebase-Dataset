@@ -18,7 +18,6 @@ package com.google.common.graph;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.graph.GraphConstants.PARALLEL_EDGES_NOT_ALLOWED;
 import static com.google.common.graph.GraphConstants.REUSING_EDGE;
 import static com.google.common.graph.GraphConstants.SELF_LOOPS_NOT_ALLOWED;
@@ -52,25 +51,7 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
   @CanIgnoreReturnValue
   public boolean addNode(N node) {
     checkNotNull(node, "node");
-
-    if (containsNode(node)) {
-      return false;
-    }
-
-    addNodeInternal(node);
-    return true;
-  }
-
-  /**
-   * Adds {@code node} to the graph and returns the associated {@link NetworkConnections}.
-   *
-   * @throws IllegalStateException if {@code node} is already present
-   */
-  @CanIgnoreReturnValue
-  private NetworkConnections<N, E> addNodeInternal(N node) {
-    NetworkConnections<N, E> connections = newConnections();
-    checkState(nodeConnections.put(node, connections) == null);
-    return connections;
+    return MutableNodeMapConnections.addNode(nodeConnections, node, this::newConnections);
   }
 
   @Override
@@ -103,15 +84,13 @@ final class StandardMutableNetwork<N, E> extends StandardNetwork<N, E>
     if (!allowsSelfLoops()) {
       checkArgument(!isSelfLoop, SELF_LOOPS_NOT_ALLOWED, nodeU);
     }
-
-    if (connectionsU == null) {
-      connectionsU = addNodeInternal(nodeU);
-    }
+    connectionsU =
+        (connectionsU == null)
+            ? MutableNodeMapConnections.getOrPutNode(nodeConnections, nodeU, this::newConnections)
+            : connectionsU;
     connectionsU.addOutEdge(edge, nodeV);
-    NetworkConnections<N, E> connectionsV = nodeConnections.get(nodeV);
-    if (connectionsV == null) {
-      connectionsV = addNodeInternal(nodeV);
-    }
+    NetworkConnections<N, E> connectionsV =
+        MutableNodeMapConnections.getOrPutNode(nodeConnections, nodeV, this::newConnections);
     connectionsV.addInEdge(edge, nodeU, isSelfLoop);
     edgeToReferenceNode.put(edge, nodeU);
     return true;

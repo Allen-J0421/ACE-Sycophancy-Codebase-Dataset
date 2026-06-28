@@ -16,6 +16,9 @@
  */
 package org.jkiss.utils;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
 import org.jkiss.dbeaver.utils.RuntimeUtils;
 import org.jkiss.junit.DBeaverUnitTest;
 import org.junit.jupiter.api.Assertions;
@@ -42,6 +45,28 @@ public class RuntimeUtilsTest extends DBeaverUnitTest {
 
         Assertions.assertEquals(file, RuntimeUtils.getLocalFileFromURL(file.toUri().toURL()));
         Assertions.assertEquals(file, RuntimeUtils.getLocalPathFromURL(file.toUri().toURL()));
+    }
+
+    @Test
+    public void testStripStackAddsExceptionClassWhenMessageIsEmpty() {
+        IStatus status = new Status(IStatus.ERROR, "test.plugin", "failure", new RuntimeException());
+
+        IStatus stripped = RuntimeUtils.stripStack(status);
+
+        Assertions.assertEquals("java.lang.RuntimeException: failure", stripped.getMessage());
+        Assertions.assertNull(stripped.getException());
+    }
+
+    @Test
+    public void testStripStackProcessesMultiStatusChildren() {
+        IStatus child = new Status(IStatus.ERROR, "test.plugin", "child failure", new RuntimeException());
+        IStatus status = new MultiStatus("test.plugin", 0, new IStatus[]{child}, "parent failure", new RuntimeException());
+
+        IStatus stripped = RuntimeUtils.stripStack(status);
+
+        Assertions.assertNull(stripped.getException());
+        Assertions.assertEquals("java.lang.RuntimeException: child failure", stripped.getChildren()[0].getMessage());
+        Assertions.assertNull(stripped.getChildren()[0].getException());
     }
 
     @Test

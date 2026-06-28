@@ -174,22 +174,23 @@ public final class RuntimeUtils {
 
     @NotNull
     public static IStatus stripStack(@NotNull IStatus status) {
-        if (status instanceof MultiStatus) {
-            IStatus[] children = status.getChildren();
-            for (int i = 0; i < children.length; i++) {
-                children[i] = stripStack(children[i]);
-            }
-            return new MultiStatus(status.getPlugin(), status.getCode(), children, status.getMessage(), null);
-        } else if (status instanceof Status) {
-            String messagePrefix;
-            if (status.getException() != null && (CommonUtils.isEmpty(status.getException().getMessage()))) {
-                messagePrefix = status.getException().getClass().getName() + ": ";
-                return new Status(status.getSeverity(), status.getPlugin(), status.getCode(), messagePrefix + status.getMessage(), null);
-            } else {
-                return status;
-            }
+        if (status instanceof MultiStatus multiStatus) {
+            return stripMultiStatusStack(multiStatus);
+        }
+        if (status instanceof Status && status.getException() != null && CommonUtils.isEmpty(status.getException().getMessage())) {
+            String messagePrefix = status.getException().getClass().getName() + ": ";
+            return new Status(status.getSeverity(), status.getPlugin(), status.getCode(), messagePrefix + status.getMessage(), null);
         }
         return status;
+    }
+
+    @NotNull
+    private static MultiStatus stripMultiStatusStack(@NotNull MultiStatus status) {
+        IStatus[] children = status.getChildren();
+        for (int i = 0; i < children.length; i++) {
+            children[i] = stripStack(children[i]);
+        }
+        return new MultiStatus(status.getPlugin(), status.getCode(), children, status.getMessage(), null);
     }
 
     public static void pause(int ms) {

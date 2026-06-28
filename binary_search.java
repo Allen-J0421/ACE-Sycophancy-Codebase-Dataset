@@ -1,5 +1,5 @@
 final class BinarySearch {
-    static final int NOT_FOUND = -1;
+    private static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
@@ -24,6 +24,10 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    static boolean found(int result) {
+        return result != NOT_FOUND;
     }
 
     private static int midpoint(int low, int high) {
@@ -51,7 +55,7 @@ final class BinarySearchDemo {
     }
 
     private static String formatSearchResult(int result) {
-        if (result == BinarySearch.NOT_FOUND) {
+        if (!BinarySearch.found(result)) {
             return NOT_FOUND_MESSAGE;
         }
 

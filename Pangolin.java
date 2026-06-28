@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * A simple model of a pangolin.
@@ -22,8 +21,7 @@ public class Pangolin extends Consumer
     //   Max sustenance level of the pangolin:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this pangolin hunts:
-    private static final List<Class<?>> PREY
-    = new ArrayList<>(List.of(Termite.class,Impala.class));
+    private static final List<Class<?>> PREY = List.of(Termite.class, Impala.class);
 
     /**
      * Create a new pangolin. A pangolin may be created with age
@@ -36,7 +34,7 @@ public class Pangolin extends Consumer
     public Pangolin(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,true,false);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, true);
         
         setStartingAge(randomAge);
     }

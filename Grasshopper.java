@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.ArrayList;
 /**
  * A simple model of a grasshopper.
  *
@@ -21,8 +20,7 @@ public class Grasshopper extends Consumer
     //   Max sustenance level of the grasshopper:
     private static final int MAX_SUSTENANCE_LEVEL = 150;
     //   The prey this grasshopper hunts:
-    private static final List<Class<?>> PREY
-    = new ArrayList<>(List.of(StarGrass.class));
+    private static final List<Class<?>> PREY = List.of(StarGrass.class);
     /**
      * Create a new grasshopper. A grasshopper may be created with age
      * zero (a new born) or with a random age.
@@ -34,7 +32,7 @@ public class Grasshopper extends Consumer
     public Grasshopper(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,false,true);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, false);
         
         setStartingAge(randomAge);
     }

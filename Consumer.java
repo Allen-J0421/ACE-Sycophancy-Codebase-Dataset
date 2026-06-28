@@ -9,7 +9,6 @@ public abstract class Consumer extends Actor
 {
     // Properties shared between all consumers:
     private static final int STARTING_SUSTENANCE_LEVEL = 30;
-    private static final double NEW_DISEASE = 0.0005;
     private static final double NIGHT_PREY_MISS_PROBABILITY = 0.5;
 
     // Properties unique to this consumer:
@@ -19,7 +18,6 @@ public abstract class Consumer extends Actor
     private List<Class<?>> prey;
     private Disease disease;
     private boolean canEatCarcass;
-    private boolean primaryConsumer;
 
     /**
      * Create a new consumer at a location in the field.
@@ -34,14 +32,13 @@ public abstract class Consumer extends Actor
      */
     public Consumer(Field field, Location location, List<Class<?>> prey, int consumptionWorth,
                     double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,
-                    int maxSustenanceLevel, boolean canEatCarcass, boolean primaryConsumer)
+                    int maxSustenanceLevel, boolean canEatCarcass)
     {
         super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,
               maxSustenanceLevel, maxAge);
         this.canEatCarcass = canEatCarcass;
         this.prey = prey;
         this.breedingAge = breedingAge;
-        this.primaryConsumer = primaryConsumer;
         sustenanceLevel = STARTING_SUSTENANCE_LEVEL;
     }
 
@@ -207,14 +204,8 @@ public abstract class Consumer extends Actor
      */
     private int breed()
     {
-        int births = 0;
-
         boolean willBreed = rand.nextDouble() <= getBreedingProbability();
-
-        if (canBreed() && willBreed)
-            births = rand.nextInt(getMaxBirthsAtOnce()) + 1;
-
-        return births;
+        return (canBreed() && willBreed) ? rand.nextInt(getMaxBirthsAtOnce()) + 1 : 0;
     }
 
     /**

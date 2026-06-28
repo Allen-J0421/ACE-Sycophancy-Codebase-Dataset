@@ -136,11 +136,7 @@ public final class DBUtils {
      */
     @NotNull
     public static String getQuotedIdentifier(@NotNull DBSObject object) {
-        if (object instanceof DBSContextBoundAttribute cba) {
-            return cba.formatMemberReference(false, null, DBPAttributeReferencePurpose.UNSPECIFIED);
-        } else {
-            return getQuotedIdentifier(object.getDataSource(), object.getName());
-        }
+        return getQuotedIdentifier(object, DBPAttributeReferencePurpose.UNSPECIFIED);
     }
 
     /**

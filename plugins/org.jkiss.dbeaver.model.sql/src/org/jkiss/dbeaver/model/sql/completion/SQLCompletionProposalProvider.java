@@ -37,8 +37,6 @@ public final class SQLCompletionProposalProvider {
         @NotNull DBRProgressMonitor monitor,
         @NotNull DBPPreferenceStore preferenceStore,
         @NotNull SQLCompletionRequest request,
-        @NotNull String scriptText,
-        int completionOffset,
         boolean checkNavigatorNodes
     ) throws DBException, InvocationTargetException, InterruptedException {
         List<CompletionProposalBase> proposals = new ArrayList<>();
@@ -49,12 +47,7 @@ public final class SQLCompletionProposalProvider {
         if (engineDecision.semanticEnabled()) {
             proposals.addAll(SQLCompletionAnalyzerSupport.collectSemanticProposals(
                 monitor,
-                progressMonitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
-                    progressMonitor,
-                    request,
-                    scriptText,
-                    completionOffset
-                ),
+                progressMonitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(progressMonitor, request),
                 request,
                 request::getDocumentOffset
             ));

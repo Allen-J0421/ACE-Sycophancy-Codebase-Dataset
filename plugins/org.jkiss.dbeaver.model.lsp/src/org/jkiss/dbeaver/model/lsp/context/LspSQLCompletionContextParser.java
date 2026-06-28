@@ -45,8 +45,6 @@ public class LspSQLCompletionContextParser {
             new VoidProgressMonitor(),
             DBWorkbench.getPlatform().getPreferenceStore(),
             request,
-            document.getText(),
-            offset,
             false
         );
 

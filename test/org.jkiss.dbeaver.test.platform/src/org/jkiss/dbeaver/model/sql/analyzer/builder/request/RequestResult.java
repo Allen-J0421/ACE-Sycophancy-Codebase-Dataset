@@ -109,12 +109,7 @@ public class RequestResult {
                 request,
                 SQLCompletionAnalyzerSupport.collectSemanticProposals(
                     monitor,
-                    progressMonitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
-                        progressMonitor,
-                        request,
-                        request.getDocument().get(),
-                        request.getDocumentOffset()
-                    ),
+                    progressMonitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(progressMonitor, request),
                     request,
                     request::getDocumentOffset
                 )

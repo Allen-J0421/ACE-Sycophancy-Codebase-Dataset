@@ -61,8 +61,6 @@ public class SQLCompletionProposalProviderTest extends DBeaverUnitTest {
             new VoidProgressMonitor(),
             preferenceStore,
             request,
-            document.get(),
-            offset,
             false
         );
 

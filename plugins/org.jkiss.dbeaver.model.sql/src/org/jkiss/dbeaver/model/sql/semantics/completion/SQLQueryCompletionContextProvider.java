@@ -37,11 +37,10 @@ public final class SQLQueryCompletionContextProvider {
     @NotNull
     public static SQLQueryCompletionContext prepareCompletionContext(
         @NotNull DBRProgressMonitor monitor,
-        @NotNull SQLCompletionRequest request,
-        @NotNull String scriptText,
-        int position
+        @NotNull SQLCompletionRequest request
     ) {
-        SQLDocumentSyntaxContext syntaxContext = prepareDocumentSyntaxContext(monitor, request, scriptText);
+        SQLDocumentSyntaxContext syntaxContext = prepareDocumentSyntaxContext(monitor, request);
+        int position = request.getDocumentOffset();
         SQLScriptItemAtOffset scriptItem = syntaxContext.findScriptItem(position);
         if (scriptItem == null) {
             return SQLQueryCompletionContext.prepareOffquery(0, position);
@@ -59,9 +58,9 @@ public final class SQLQueryCompletionContextProvider {
     @NotNull
     public static SQLDocumentSyntaxContext prepareDocumentSyntaxContext(
         @NotNull DBRProgressMonitor monitor,
-        @NotNull SQLCompletionRequest request,
-        @NotNull String scriptText
+        @NotNull SQLCompletionRequest request
     ) {
+        String scriptText = request.getDocument().get();
         Document document = new Document(scriptText);
         SQLParserContext parserContext = new SQLParserContext(
             request.getContext().getDataSource(),

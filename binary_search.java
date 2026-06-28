@@ -50,10 +50,14 @@ final class BinarySearch {
     }
 
     private static String formatSearchResult(int result) {
-        if (result == NOT_FOUND) {
-            return NOT_FOUND_MESSAGE;
+        if (isFound(result)) {
+            return FOUND_MESSAGE_PREFIX + result;
         }
 
-        return FOUND_MESSAGE_PREFIX + result;
+        return NOT_FOUND_MESSAGE;
+    }
+
+    private static boolean isFound(int result) {
+        return result != NOT_FOUND;
     }
 }

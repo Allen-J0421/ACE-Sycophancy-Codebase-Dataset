@@ -155,7 +155,7 @@ class CommandRunnerTests {
 	void handlesExceptionWithDashDashDebug() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
-		assertThat(System.getProperty("debug")).isEqualTo("true");
+		assertThat(System.getProperty("debug")).isNull();
 		assertThat(status).isOne();
 		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}

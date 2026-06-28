@@ -166,23 +166,42 @@ public class CommandRunner implements Iterable<Command> {
 	public int runAndHandleErrors(String... args) {
 		String[] argsWithoutDebugFlags = removeDebugFlags(args);
 		boolean debug = argsWithoutDebugFlags.length != args.length;
+		String previousDebug = System.getProperty("debug");
+		applyDebugSetting(debug);
+		try {
+			try {
+				ExitStatus result = run(argsWithoutDebugFlags);
+				// The caller will hang up if it gets a non-zero status
+				if (result != null && result.isHangup()) {
+					return (result.getCode() > 0) ? result.getCode() : 0;
+				}
+				return 0;
+			}
+			catch (NoArgumentsException ex) {
+				showUsage();
+				return 1;
+			}
+			catch (Exception ex) {
+				return handleError(debug, ex);
+			}
+		}
+		finally {
+			restoreDebugSetting(previousDebug);
+		}
+	}
+
+	private void applyDebugSetting(boolean debug) {
 		if (debug) {
 			System.setProperty("debug", "true");
 		}
-		try {
-			ExitStatus result = run(argsWithoutDebugFlags);
-			// The caller will hang up if it gets a non-zero status
-			if (result != null && result.isHangup()) {
-				return (result.getCode() > 0) ? result.getCode() : 0;
-			}
-			return 0;
+	}
+
+	private void restoreDebugSetting(@Nullable String previousDebug) {
+		if (previousDebug != null) {
+			System.setProperty("debug", previousDebug);
 		}
-		catch (NoArgumentsException ex) {
-			showUsage();
-			return 1;
-		}
-		catch (Exception ex) {
-			return handleError(debug, ex);
+		else {
+			System.clearProperty("debug");
 		}
 	}
 

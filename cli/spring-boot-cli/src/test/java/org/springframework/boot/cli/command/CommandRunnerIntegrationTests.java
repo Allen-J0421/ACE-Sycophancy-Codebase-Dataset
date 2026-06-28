@@ -44,7 +44,8 @@ class CommandRunnerIntegrationTests {
 		runner.addCommand(command);
 		runner.runAndHandleErrors("args", "samples/app.groovy", "--debug");
 		assertThat(command.args).containsExactly("samples/app.groovy");
-		assertThat(System.getProperty("debug")).isEqualTo("true");
+		assertThat(command.debug).isEqualTo("true");
+		assertThat(System.getProperty("debug")).isNull();
 	}
 
 	@Test
@@ -54,12 +55,27 @@ class CommandRunnerIntegrationTests {
 		runner.addCommand(command);
 		runner.runAndHandleErrors("args", "samples/app.groovy", "--", "--debug");
 		assertThat(command.args).containsExactly("samples/app.groovy", "--", "--debug");
+		assertThat(command.debug).isNull();
+		assertThat(System.getProperty("debug")).isNull();
+	}
+
+	@Test
+	void debugDoesNotLeakBetweenRuns() {
+		CommandRunner runner = new CommandRunner("spring");
+		ArgHandlingCommand command = new ArgHandlingCommand();
+		runner.addCommand(command);
+		runner.runAndHandleErrors("args", "--debug");
+		assertThat(command.debug).isEqualTo("true");
+		runner.runAndHandleErrors("args");
+		assertThat(command.debug).isNull();
 		assertThat(System.getProperty("debug")).isNull();
 	}
 
 	static class ArgHandlingCommand extends AbstractCommand {
 
 		private String @Nullable [] args;
+
+		private @Nullable String debug;
 
 		ArgHandlingCommand() {
 			super("args", "");
@@ -68,6 +84,7 @@ class CommandRunnerIntegrationTests {
 		@Override
 		public ExitStatus run(String... args) throws Exception {
 			this.args = args;
+			this.debug = System.getProperty("debug");
 			return ExitStatus.OK;
 		}
 

@@ -27,13 +27,11 @@ public class TerminalIOPreferencesFragment extends BasePreferenceFragment {
 
 class TerminalIOPreferencesDataStore extends PreferenceDataStore {
 
-    private final Context mContext;
     private final TermuxAppSharedPreferences mPreferences;
 
     private static TerminalIOPreferencesDataStore mInstance;
 
     private TerminalIOPreferencesDataStore(Context context) {
-        mContext = context;
         mPreferences = TermuxAppSharedPreferences.build(context, true);
     }
 
@@ -53,7 +51,7 @@ class TerminalIOPreferencesDataStore extends PreferenceDataStore {
 
         switch (key) {
             case "soft_keyboard_enabled":
-                    mPreferences.setSoftKeyboardEnabled(value);
+                mPreferences.setSoftKeyboardEnabled(value);
                 break;
             case "soft_keyboard_enabled_only_if_no_hardware":
                 mPreferences.setSoftKeyboardEnabledOnlyIfNoHardware(value);
@@ -65,7 +63,7 @@ class TerminalIOPreferencesDataStore extends PreferenceDataStore {
 
     @Override
     public boolean getBoolean(String key, boolean defValue) {
-        if (mPreferences == null) return false;
+        if (mPreferences == null) return defValue;
 
         switch (key) {
             case "soft_keyboard_enabled":
@@ -73,7 +71,7 @@ class TerminalIOPreferencesDataStore extends PreferenceDataStore {
             case "soft_keyboard_enabled_only_if_no_hardware":
                 return mPreferences.isSoftKeyboardEnabledOnlyIfNoHardware();
             default:
-                return false;
+                return defValue;
         }
     }
 

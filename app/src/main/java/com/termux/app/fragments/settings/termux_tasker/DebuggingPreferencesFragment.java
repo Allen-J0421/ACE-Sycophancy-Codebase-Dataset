@@ -4,11 +4,11 @@ import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
 import com.termux.app.fragments.settings.BasePreferenceFragment;
+import com.termux.app.fragments.settings.LogLevelPreferenceDataStore;
 import com.termux.app.fragments.settings.LogLevelPreferenceUtils;
 import com.termux.shared.termux.settings.preferences.TermuxTaskerAppSharedPreferences;
 
@@ -35,15 +35,14 @@ public class DebuggingPreferencesFragment extends BasePreferenceFragment {
     }
 }
 
-class DebuggingPreferencesDataStore extends PreferenceDataStore {
+class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
 
-    private final Context mContext;
     private final TermuxTaskerAppSharedPreferences mPreferences;
 
     private static DebuggingPreferencesDataStore mInstance;
 
     private DebuggingPreferencesDataStore(Context context) {
-        mContext = context;
+        super(context);
         mPreferences = TermuxTaskerAppSharedPreferences.build(context, true);
     }
 
@@ -57,33 +56,18 @@ class DebuggingPreferencesDataStore extends PreferenceDataStore {
 
 
     @Override
-    @Nullable
-    public String getString(String key, @Nullable String defValue) {
-        if (mPreferences == null) return null;
-        if (key == null) return null;
-
-        switch (key) {
-            case "log_level":
-                return String.valueOf(mPreferences.getLogLevel(true));
-            default:
-                return null;
-        }
+    protected boolean hasPreferences() {
+        return mPreferences != null;
     }
 
     @Override
-    public void putString(String key, @Nullable String value) {
-        if (mPreferences == null) return;
-        if (key == null) return;
+    protected int getLogLevel() {
+        return mPreferences.getLogLevel(true);
+    }
 
-        switch (key) {
-            case "log_level":
-                if (value != null) {
-                    mPreferences.setLogLevel(mContext, Integer.parseInt(value), true);
-                }
-                break;
-            default:
-                break;
-        }
+    @Override
+    protected void setLogLevel(int logLevel) {
+        mPreferences.setLogLevel(mContext, logLevel, true);
     }
 
 }

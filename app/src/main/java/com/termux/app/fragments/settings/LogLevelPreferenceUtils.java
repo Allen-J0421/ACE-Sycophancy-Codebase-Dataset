@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.termux.shared.logger.Logger;
@@ -20,14 +19,12 @@ public final class LogLevelPreferenceUtils {
     public static void configureLogLevelPreference(@NonNull PreferenceFragmentCompat fragment,
                                                    @NonNull Context context,
                                                    int logLevel) {
-        PreferenceCategory loggingCategory = fragment.findPreference(LOGGING_CATEGORY_KEY);
-        if (loggingCategory == null) return;
+        if (fragment.findPreference(LOGGING_CATEGORY_KEY) == null) return;
 
         ListPreference logLevelListPreference = fragment.findPreference(LOG_LEVEL_KEY);
         if (logLevelListPreference == null) return;
 
         setLogLevelListPreferenceData(logLevelListPreference, context, logLevel);
-        loggingCategory.addPreference(logLevelListPreference);
     }
 
     private static void setLogLevelListPreferenceData(@NonNull ListPreference logLevelListPreference,

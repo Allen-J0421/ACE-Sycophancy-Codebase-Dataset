@@ -27,7 +27,6 @@ import org.jkiss.dbeaver.model.sql.semantics.SQLDocumentSyntaxContext;
 import org.jkiss.dbeaver.model.sql.semantics.SQLQueryModelRecognizer;
 import org.jkiss.dbeaver.model.sql.semantics.SQLQueryRecognitionContext;
 import org.jkiss.dbeaver.model.sql.semantics.SQLScriptItemAtOffset;
-import org.jkiss.dbeaver.runtime.DBWorkbench;
 
 public final class SQLQueryCompletionContextProvider {
 
@@ -73,7 +72,7 @@ public final class SQLQueryCompletionContextProvider {
             monitor,
             request.getContext().getExecutionContext(),
             true,
-            DBWorkbench.getPlatform().getPreferenceStore().getBoolean(SQLModelPreferences.VALIDATE_FUNCTIONS),
+            request.getContext().getPreferenceStore().getBoolean(SQLModelPreferences.VALIDATE_FUNCTIONS),
             request.getContext().getSyntaxManager(),
             request.getContext().getDataSource().getSQLDialect()
         );

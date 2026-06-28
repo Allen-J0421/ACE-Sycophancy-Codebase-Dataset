@@ -23,6 +23,7 @@ import org.jkiss.dbeaver.model.DBPImage;
 import org.jkiss.dbeaver.model.DBPKeywordType;
 import org.jkiss.dbeaver.model.DBPNamedObject;
 import org.jkiss.dbeaver.model.exec.DBCExecutionContext;
+import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.sql.SQLSyntaxManager;
 import org.jkiss.dbeaver.model.sql.parser.SQLRuleManager;
 
@@ -45,6 +46,9 @@ public interface SQLCompletionContext {
     SQLSyntaxManager getSyntaxManager();
 
     SQLRuleManager getRuleManager();
+
+    @NotNull
+    DBPPreferenceStore getPreferenceStore();
 
     boolean isUseFQNames();
 

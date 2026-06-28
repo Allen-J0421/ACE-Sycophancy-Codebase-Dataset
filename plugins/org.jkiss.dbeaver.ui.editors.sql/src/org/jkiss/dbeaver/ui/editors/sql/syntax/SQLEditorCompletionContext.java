@@ -71,6 +71,12 @@ public class SQLEditorCompletionContext implements SQLCompletionContext {
         return editor.getRuleManager();
     }
 
+    @NotNull
+    @Override
+    public DBPPreferenceStore getPreferenceStore() {
+        return getActivePreferenceStore();
+    }
+
     @Override
     public boolean isUseFQNames() {
         return objectNameFormKind.qualified;

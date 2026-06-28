@@ -37,7 +37,6 @@ import org.jkiss.dbeaver.model.impl.DBObjectNameCaseTransformer;
 import org.jkiss.dbeaver.model.impl.struct.RelationalObjectType;
 import org.jkiss.dbeaver.model.navigator.DBNNode;
 import org.jkiss.dbeaver.model.navigator.DBNUtils;
-import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.runtime.DBRRunnableParametrized;
 import org.jkiss.dbeaver.model.runtime.LocalCacheProgressMonitor;
@@ -50,7 +49,6 @@ import org.jkiss.dbeaver.model.sql.parser.SQLWordPartDetector;
 import org.jkiss.dbeaver.model.struct.*;
 import org.jkiss.dbeaver.model.struct.rdb.*;
 import org.jkiss.dbeaver.model.text.TextUtils;
-import org.jkiss.dbeaver.runtime.DBWorkbench;
 import org.jkiss.utils.ArrayUtils;
 import org.jkiss.utils.CommonUtils;
 
@@ -81,15 +79,6 @@ public class SQLCompletionAnalyzer implements DBRRunnableParametrized<DBRProgres
 
     public SQLCompletionAnalyzer(SQLCompletionRequest request) {
         this.request = request;
-
-        final DBPPreferenceStore prefStore;
-        final DBPDataSource dataSource = request.getContext().getDataSource();
-        if (dataSource != null) {
-            prefStore = request.getContext().getDataSource().getContainer().getPreferenceStore();
-        } else {
-            prefStore = DBWorkbench.getPlatform().getPreferenceStore();
-        }
-
         tableRefsAnalyzer = new TableReferencesAnalyzerImpl(request);
     }
 

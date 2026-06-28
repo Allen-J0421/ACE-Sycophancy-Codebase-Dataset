@@ -25,7 +25,6 @@ import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalProvider;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequestFactory;
-import org.jkiss.dbeaver.runtime.DBWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -43,7 +42,6 @@ public class LspSQLCompletionContextParser {
         var request = SQLCompletionRequestFactory.create(completionContext, doc, offset, false);
         List<CompletionProposalBase> proposals = SQLCompletionProposalProvider.collectProposals(
             new VoidProgressMonitor(),
-            DBWorkbench.getPlatform().getPreferenceStore(),
             request,
             false
         );

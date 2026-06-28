@@ -129,6 +129,12 @@ public class SQLCompletionProposalProviderTest extends DBeaverUnitTest {
             return ruleManager;
         }
 
+        @NotNull
+        @Override
+        public DBPPreferenceStore getPreferenceStore() {
+            return dataSource.getContainer().getPreferenceStore();
+        }
+
         @Override
         public boolean isUseFQNames() {
             return false;

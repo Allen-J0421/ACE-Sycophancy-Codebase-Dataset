@@ -23,11 +23,13 @@ import org.jkiss.dbeaver.model.DBPImage;
 import org.jkiss.dbeaver.model.DBPKeywordType;
 import org.jkiss.dbeaver.model.DBPNamedObject;
 import org.jkiss.dbeaver.model.exec.DBCExecutionContext;
+import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.sql.SQLSyntaxManager;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
 import org.jkiss.dbeaver.model.sql.parser.SQLRuleManager;
+import org.jkiss.dbeaver.runtime.DBWorkbench;
 
 import java.util.Map;
 
@@ -71,6 +73,14 @@ public class LspSQLCompletionContext implements SQLCompletionContext {
     @Override
     public SQLRuleManager getRuleManager() {
         return ruleManager;
+    }
+
+    @NotNull
+    @Override
+    public DBPPreferenceStore getPreferenceStore() {
+        return dataSource == null
+            ? DBWorkbench.getPlatform().getPreferenceStore()
+            : dataSource.getContainer().getPreferenceStore();
     }
 
     @Override

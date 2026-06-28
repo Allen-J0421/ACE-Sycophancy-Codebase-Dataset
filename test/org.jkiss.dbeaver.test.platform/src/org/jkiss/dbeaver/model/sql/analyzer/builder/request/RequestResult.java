@@ -139,7 +139,8 @@ public class RequestResult {
             dataSource,
             syntaxManager,
             ruleManager,
-            executionContext
+            executionContext,
+            dataSource.getContainer().getPreferenceStore()
         );
 
         return SQLCompletionRequestFactory.create(
@@ -164,12 +165,20 @@ public class RequestResult {
         private final SQLSyntaxManager syntaxManager;
         private final SQLRuleManager ruleManager;
         private final DBCExecutionContext executionContext;
+        private final DBPPreferenceStore preferenceStore;
 
-        private CompletionContext(DBPDataSource dataSource, SQLSyntaxManager syntaxManager, SQLRuleManager ruleManager, DBCExecutionContext executionContext) {
+        private CompletionContext(
+            DBPDataSource dataSource,
+            SQLSyntaxManager syntaxManager,
+            SQLRuleManager ruleManager,
+            DBCExecutionContext executionContext,
+            DBPPreferenceStore preferenceStore
+        ) {
             this.dataSource = dataSource;
             this.syntaxManager = syntaxManager;
             this.ruleManager = ruleManager;
             this.executionContext = executionContext;
+            this.preferenceStore = preferenceStore;
         }
 
         @Override
@@ -190,6 +199,12 @@ public class RequestResult {
         @Override
         public SQLRuleManager getRuleManager() {
             return ruleManager;
+        }
+
+        @NotNull
+        @Override
+        public DBPPreferenceStore getPreferenceStore() {
+            return preferenceStore;
         }
 
         @Override

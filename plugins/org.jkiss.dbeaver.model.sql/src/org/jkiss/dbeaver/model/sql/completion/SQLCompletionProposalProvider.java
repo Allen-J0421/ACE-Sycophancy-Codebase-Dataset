@@ -18,7 +18,6 @@ package org.jkiss.dbeaver.model.sql.completion;
 
 import org.jkiss.code.NotNull;
 import org.jkiss.dbeaver.DBException;
-import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
@@ -35,13 +34,12 @@ public final class SQLCompletionProposalProvider {
     @NotNull
     public static List<CompletionProposalBase> collectProposals(
         @NotNull DBRProgressMonitor monitor,
-        @NotNull DBPPreferenceStore preferenceStore,
         @NotNull SQLCompletionRequest request,
         boolean checkNavigatorNodes
     ) throws DBException, InvocationTargetException, InterruptedException {
         List<CompletionProposalBase> proposals = new ArrayList<>();
         SQLCompletionEngineDecider.Decision engineDecision = SQLCompletionEngineDecider.resolve(
-            preferenceStore,
+            request.getContext().getPreferenceStore(),
             request.getContext().getDataSource()
         );
         if (engineDecision.semanticEnabled()) {

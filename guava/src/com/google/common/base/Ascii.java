@@ -405,20 +405,7 @@ public final class Ascii {
    * modification.
    */
   public static String toLowerCase(String string) {
-    int length = string.length();
-    for (int i = 0; i < length; i++) {
-      if (isUpperCase(string.charAt(i))) {
-        char[] chars = string.toCharArray();
-        for (; i < length; i++) {
-          char c = chars[i];
-          if (isUpperCase(c)) {
-            chars[i] = (char) (c ^ CASE_MASK);
-          }
-        }
-        return String.valueOf(chars);
-      }
-    }
-    return string;
+    return convertCase(string, /* toLowerCase= */ true);
   }
 
   /**
@@ -429,14 +416,7 @@ public final class Ascii {
    * @since 14.0
    */
   public static String toLowerCase(CharSequence chars) {
-    if (chars instanceof String) {
-      return toLowerCase((String) chars);
-    }
-    char[] newChars = new char[chars.length()];
-    for (int i = 0; i < newChars.length; i++) {
-      newChars[i] = toLowerCase(chars.charAt(i));
-    }
-    return String.valueOf(newChars);
+    return convertCase(chars, /* toLowerCase= */ true);
   }
 
   /**
@@ -444,7 +424,7 @@ public final class Ascii {
    * lowercase equivalent. Otherwise returns the argument.
    */
   public static char toLowerCase(char c) {
-    return isUpperCase(c) ? (char) (c ^ CASE_MASK) : c;
+    return convertCase(c, /* toLowerCase= */ true);
   }
 
   /**
@@ -453,20 +433,7 @@ public final class Ascii {
    * modification.
    */
   public static String toUpperCase(String string) {
-    int length = string.length();
-    for (int i = 0; i < length; i++) {
-      if (isLowerCase(string.charAt(i))) {
-        char[] chars = string.toCharArray();
-        for (; i < length; i++) {
-          char c = chars[i];
-          if (isLowerCase(c)) {
-            chars[i] = (char) (c ^ CASE_MASK);
-          }
-        }
-        return String.valueOf(chars);
-      }
-    }
-    return string;
+    return convertCase(string, /* toLowerCase= */ false);
   }
 
   /**
@@ -477,14 +444,7 @@ public final class Ascii {
    * @since 14.0
    */
   public static String toUpperCase(CharSequence chars) {
-    if (chars instanceof String) {
-      return toUpperCase((String) chars);
-    }
-    char[] newChars = new char[chars.length()];
-    for (int i = 0; i < newChars.length; i++) {
-      newChars[i] = toUpperCase(chars.charAt(i));
-    }
-    return String.valueOf(newChars);
+    return convertCase(chars, /* toLowerCase= */ false);
   }
 
   /**
@@ -492,7 +452,7 @@ public final class Ascii {
    * uppercase equivalent. Otherwise returns the argument.
    */
   public static char toUpperCase(char c) {
-    return isLowerCase(c) ? (char) (c ^ CASE_MASK) : c;
+    return convertCase(c, /* toLowerCase= */ false);
   }
 
   /**
@@ -574,6 +534,42 @@ public final class Ascii {
         .append(seq, 0, truncationLength)
         .append(truncationIndicator)
         .toString();
+  }
+
+  private static String convertCase(CharSequence chars, boolean toLowerCase) {
+    if (chars instanceof String) {
+      return convertCase((String) chars, toLowerCase);
+    }
+    char[] newChars = new char[chars.length()];
+    for (int i = 0; i < newChars.length; i++) {
+      newChars[i] = convertCase(chars.charAt(i), toLowerCase);
+    }
+    return String.valueOf(newChars);
+  }
+
+  private static String convertCase(String string, boolean toLowerCase) {
+    int length = string.length();
+    for (int i = 0; i < length; i++) {
+      if (needsCaseConversion(string.charAt(i), toLowerCase)) {
+        char[] chars = string.toCharArray();
+        for (; i < length; i++) {
+          char c = chars[i];
+          if (needsCaseConversion(c, toLowerCase)) {
+            chars[i] = convertCase(c, toLowerCase);
+          }
+        }
+        return String.valueOf(chars);
+      }
+    }
+    return string;
+  }
+
+  private static boolean needsCaseConversion(char c, boolean toLowerCase) {
+    return toLowerCase ? isUpperCase(c) : isLowerCase(c);
+  }
+
+  private static char convertCase(char c, boolean toLowerCase) {
+    return needsCaseConversion(c, toLowerCase) ? (char) (c ^ CASE_MASK) : c;
   }
 
   /**

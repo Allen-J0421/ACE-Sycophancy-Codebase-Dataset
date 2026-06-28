@@ -110,7 +110,7 @@ public final class MoreObjects {
    * @since 18.0 (since 2.0 as {@code Objects.toStringHelper}).
    */
   public static ToStringHelper toStringHelper(Object self) {
-    return new ToStringHelper(self.getClass().getSimpleName());
+    return toStringHelper(self.getClass().getSimpleName());
   }
 
   /**
@@ -124,7 +124,7 @@ public final class MoreObjects {
    * @since 18.0 (since 7.0 as {@code Objects.toStringHelper}).
    */
   public static ToStringHelper toStringHelper(Class<?> clazz) {
-    return new ToStringHelper(clazz.getSimpleName());
+    return toStringHelper(clazz.getSimpleName());
   }
 
   /**

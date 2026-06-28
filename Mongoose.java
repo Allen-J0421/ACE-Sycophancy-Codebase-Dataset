@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +21,7 @@ public class Mongoose extends Consumer
     //   Max sustenance level of the mongoose:
     private static final int MAX_SUSTENANCE_LEVEL = 40;
     //   The prey this mongoose hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(Grasshopper.class,HarvesterAnt.class));
+    private static final List<Class<?>> PREY = List.of(Grasshopper.class, HarvesterAnt.class);
 
     /**
      * Create a new mongoose. A mongoose may be created with age

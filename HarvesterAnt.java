@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +21,7 @@ public class HarvesterAnt extends Consumer
     //   Max sustenance level of the termite:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this termite hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(RedOatGrass.class,StarGrass.class));
+    private static final List<Class<?>> PREY = List.of(RedOatGrass.class, StarGrass.class);
 
     /**
      * Create a new harvester ant. A harvester ant may be created with age

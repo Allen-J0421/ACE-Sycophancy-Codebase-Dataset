@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +21,7 @@ public class Aardvark extends Consumer
     //    Max sustenance level of the aadvark:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this aardvark hunts:
-    private static final ArrayList<Class> PREY
-    = new ArrayList<>(List.of(Grasshopper.class,HarvesterAnt.class));
+    private static final List<Class<?>> PREY = List.of(Grasshopper.class, HarvesterAnt.class);
 
     /**
      * Create a new aardvark. A aardvark may be created with age

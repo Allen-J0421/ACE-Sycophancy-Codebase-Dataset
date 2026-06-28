@@ -51,6 +51,10 @@ public class Reindeer extends HerbivoreAnimal
 
     @Override protected List<Class<? extends Plant>> getTargetPlants() { return TARGET_PLANTS; }
 
+    @Override protected Animal reproduce(Field field, Location location, Gender gender) {
+        return new Reindeer(false, field, location, gender);
+    }
+
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value

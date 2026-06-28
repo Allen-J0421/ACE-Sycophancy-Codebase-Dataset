@@ -58,6 +58,10 @@ public class Bear extends CarnivoreAnimal
 
     @Override protected List<Class<? extends Animal>> getPreyDiet() { return PREY_DIET; }
 
+    @Override protected Animal reproduce(Field field, Location location, Gender gender) {
+        return new Bear(false, field, location, gender);
+    }
+
     // Bears hibernate, so they do not act at night.
     @Override protected boolean actsAtNight() { return false; }
 

@@ -36,4 +36,8 @@ public class Sage extends Plant
     @Override protected int getMaxAge() { return MAX_AGE; }
 
     @Override protected double getMultiplyProbability() { return MULTIPLY_PROBABILITY; }
+
+    @Override protected Plant reproduce(Field field, Location location) {
+        return new Sage(false, field, location);
+    }
 }

@@ -60,6 +60,10 @@ public class Wolverine extends CarnivoreAnimal
 
     @Override protected List<Class<? extends Animal>> getPreyDiet() { return PREY_DIET; }
 
+    @Override protected Animal reproduce(Field field, Location location, Gender gender) {
+        return new Wolverine(false, field, location, gender);
+    }
+
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value

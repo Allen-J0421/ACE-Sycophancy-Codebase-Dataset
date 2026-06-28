@@ -1,101 +1,55 @@
 package com.termux.app.fragments.settings.termux_float;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.ListPreference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BaseDebuggingPreferencesFragment;
+import com.termux.app.fragments.settings.BaseLogLevelPreferenceDataStore;
+import com.termux.shared.logger.Logger;
 import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
 
 @Keep
-public class DebuggingPreferencesFragment extends PreferenceFragmentCompat {
+public class DebuggingPreferencesFragment extends BaseDebuggingPreferencesFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
-
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(DebuggingPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_float_debugging_preferences, rootKey);
-
-        configureLoggingPreferences(context);
+    protected int getPreferencesResource() {
+        return R.xml.termux_float_debugging_preferences;
     }
 
-    private void configureLoggingPreferences(@NonNull Context context) {
-        PreferenceCategory loggingCategory = findPreference("logging");
-        if (loggingCategory == null) return;
+    @Override
+    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
+        return new DebuggingPreferencesDataStore(context);
+    }
 
-        ListPreference logLevelListPreference = findPreference("log_level");
-        if (logLevelListPreference != null) {
-            TermuxFloatAppSharedPreferences preferences = TermuxFloatAppSharedPreferences.build(context, true);
-            if (preferences == null) return;
-
-            com.termux.app.fragments.settings.termux.DebuggingPreferencesFragment.
-                setLogLevelListPreferenceData(logLevelListPreference, context, preferences.getLogLevel(true));
-            loggingCategory.addPreference(logLevelListPreference);
-        }
+    @Override
+    protected int getLogLevel(@NonNull Context context) {
+        TermuxFloatAppSharedPreferences preferences = TermuxFloatAppSharedPreferences.build(context, true);
+        return preferences != null ? preferences.getLogLevel(true) : Logger.DEFAULT_LOG_LEVEL;
     }
 }
 
-class DebuggingPreferencesDataStore extends PreferenceDataStore {
+class DebuggingPreferencesDataStore extends BaseLogLevelPreferenceDataStore {
 
-    private final Context mContext;
     private final TermuxFloatAppSharedPreferences mPreferences;
 
-    private static DebuggingPreferencesDataStore mInstance;
-
-    private DebuggingPreferencesDataStore(Context context) {
-        mContext = context;
+    DebuggingPreferencesDataStore(@NonNull Context context) {
+        super(context);
         mPreferences = TermuxFloatAppSharedPreferences.build(context, true);
     }
 
-    public static synchronized DebuggingPreferencesDataStore getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new DebuggingPreferencesDataStore(context);
-        }
-        return mInstance;
-    }
-
-
-
     @Override
-    @Nullable
-    public String getString(String key, @Nullable String defValue) {
-        if (mPreferences == null) return null;
-        if (key == null) return null;
-
-        switch (key) {
-            case "log_level":
-                return String.valueOf(mPreferences.getLogLevel(true));
-            default:
-                return null;
-        }
+    protected int getLogLevel() {
+        return mPreferences != null ? mPreferences.getLogLevel(true) : Logger.DEFAULT_LOG_LEVEL;
     }
 
     @Override
-    public void putString(String key, @Nullable String value) {
+    protected void setLogLevel(int logLevel) {
         if (mPreferences == null) return;
-        if (key == null) return;
-
-        switch (key) {
-            case "log_level":
-                if (value != null) {
-                    mPreferences.setLogLevel(mContext, Integer.parseInt(value), true);
-                }
-                break;
-            default:
-                break;
-        }
+        mPreferences.setLogLevel(getContext(), logLevel, true);
     }
 
     @Override
@@ -122,5 +76,4 @@ class DebuggingPreferencesDataStore extends PreferenceDataStore {
                 return false;
         }
     }
-
 }

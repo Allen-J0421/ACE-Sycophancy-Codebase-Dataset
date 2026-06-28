@@ -1,49 +1,38 @@
 package com.termux.app.fragments.settings.termux;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BasePreferenceDataStore;
+import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 
 @Keep
-public class TerminalIOPreferencesFragment extends PreferenceFragmentCompat {
+public class TerminalIOPreferencesFragment extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
+    protected int getPreferencesResource() {
+        return R.xml.termux_terminal_io_preferences;
+    }
 
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(TerminalIOPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_terminal_io_preferences, rootKey);
+    @Override
+    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
+        return new TerminalIOPreferencesDataStore(context);
     }
 
 }
 
-class TerminalIOPreferencesDataStore extends PreferenceDataStore {
+class TerminalIOPreferencesDataStore extends BasePreferenceDataStore {
 
-    private final Context mContext;
     private final TermuxAppSharedPreferences mPreferences;
 
-    private static TerminalIOPreferencesDataStore mInstance;
-
-    private TerminalIOPreferencesDataStore(Context context) {
-        mContext = context;
+    TerminalIOPreferencesDataStore(@NonNull Context context) {
+        super(context);
         mPreferences = TermuxAppSharedPreferences.build(context, true);
-    }
-
-    public static synchronized TerminalIOPreferencesDataStore getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new TerminalIOPreferencesDataStore(context);
-        }
-        return mInstance;
     }
 
 

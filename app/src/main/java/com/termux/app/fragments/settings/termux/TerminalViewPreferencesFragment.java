@@ -1,49 +1,38 @@
 package com.termux.app.fragments.settings.termux;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BasePreferenceDataStore;
+import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 
 @Keep
-public class TerminalViewPreferencesFragment extends PreferenceFragmentCompat {
+public class TerminalViewPreferencesFragment extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
+    protected int getPreferencesResource() {
+        return R.xml.termux_terminal_view_preferences;
+    }
 
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(TerminalViewPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_terminal_view_preferences, rootKey);
+    @Override
+    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
+        return new TerminalViewPreferencesDataStore(context);
     }
 
 }
 
-class TerminalViewPreferencesDataStore extends PreferenceDataStore {
+class TerminalViewPreferencesDataStore extends BasePreferenceDataStore {
 
-    private final Context mContext;
     private final TermuxAppSharedPreferences mPreferences;
 
-    private static TerminalViewPreferencesDataStore mInstance;
-
-    private TerminalViewPreferencesDataStore(Context context) {
-        mContext = context;
+    TerminalViewPreferencesDataStore(@NonNull Context context) {
+        super(context);
         mPreferences = TermuxAppSharedPreferences.build(context, true);
-    }
-
-    public static synchronized TerminalViewPreferencesDataStore getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new TerminalViewPreferencesDataStore(context);
-        }
-        return mInstance;
     }
 
 

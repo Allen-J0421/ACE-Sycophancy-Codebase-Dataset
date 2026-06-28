@@ -6,6 +6,7 @@ import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -16,10 +17,6 @@ import com.termux.shared.models.ReportInfo;
 import com.termux.app.models.UserAction;
 import com.termux.shared.interact.ShareUtils;
 import com.termux.shared.android.PackageUtils;
-import com.termux.shared.termux.settings.preferences.TermuxAPIAppSharedPreferences;
-import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
-import com.termux.shared.termux.settings.preferences.TermuxTaskerAppSharedPreferences;
-import com.termux.shared.termux.settings.preferences.TermuxWidgetAppSharedPreferences;
 import com.termux.shared.android.AndroidUtils;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.TermuxUtils;
@@ -60,52 +57,18 @@ public class SettingsActivity extends AppCompatActivity {
 
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-            new Thread() {
-                @Override
-                public void run() {
-                    configureTermuxAPIPreference(context);
-                    configureTermuxFloatPreference(context);
-                    configureTermuxTaskerPreference(context);
-                    configureTermuxWidgetPreference(context);
-                    configureAboutPreference(context);
-                    configureDonatePreference(context);
-                }
-            }.start();
+            configurePluginPreference(context, "termux_api", TermuxConstants.TERMUX_API_PACKAGE_NAME);
+            configurePluginPreference(context, "termux_float", TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME);
+            configurePluginPreference(context, "termux_tasker", TermuxConstants.TERMUX_TASKER_PACKAGE_NAME);
+            configurePluginPreference(context, "termux_widget", TermuxConstants.TERMUX_WIDGET_PACKAGE_NAME);
+            configureAboutPreference(context);
+            configureDonatePreference(context);
         }
 
-        private void configureTermuxAPIPreference(@NonNull Context context) {
-            Preference termuxAPIPreference = findPreference("termux_api");
-            if (termuxAPIPreference != null) {
-                TermuxAPIAppSharedPreferences preferences = TermuxAPIAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxAPIPreference.setVisible(preferences != null);
-            }
-        }
-
-        private void configureTermuxFloatPreference(@NonNull Context context) {
-            Preference termuxFloatPreference = findPreference("termux_float");
-            if (termuxFloatPreference != null) {
-                TermuxFloatAppSharedPreferences preferences = TermuxFloatAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxFloatPreference.setVisible(preferences != null);
-            }
-        }
-
-        private void configureTermuxTaskerPreference(@NonNull Context context) {
-            Preference termuxTaskerPreference = findPreference("termux_tasker");
-            if (termuxTaskerPreference != null) {
-                TermuxTaskerAppSharedPreferences preferences = TermuxTaskerAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxTaskerPreference.setVisible(preferences != null);
-            }
-        }
-
-        private void configureTermuxWidgetPreference(@NonNull Context context) {
-            Preference termuxWidgetPreference = findPreference("termux_widget");
-            if (termuxWidgetPreference != null) {
-                TermuxWidgetAppSharedPreferences preferences = TermuxWidgetAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxWidgetPreference.setVisible(preferences != null);
+        private void configurePluginPreference(@NonNull Context context, @NonNull String preferenceKey, @NonNull String packageName) {
+            Preference pluginPreference = findPreference(preferenceKey);
+            if (pluginPreference != null) {
+                pluginPreference.setVisible(PackageUtils.getContextForPackage(context, packageName) != null);
             }
         }
 
@@ -132,7 +95,9 @@ public class SettingsActivity extends AppCompatActivity {
                                 Environment.getExternalStorageDirectory() + "/" +
                                     FileUtils.sanitizeFileName(TermuxConstants.TERMUX_APP_NAME + "-" + userActionName + ".log", true, true));
 
-                            ReportActivity.startReportActivity(context, reportInfo);
+                            FragmentActivity activity = getActivity();
+                            if (activity == null) return;
+                            activity.runOnUiThread(() -> ReportActivity.startReportActivity(activity, reportInfo));
                         }
                     }.start();
 

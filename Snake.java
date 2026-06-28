@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a snake.
@@ -23,8 +22,6 @@ public class Snake extends Animal
     // The food value of a single rat. In effect, this is the
     // number of steps a snake can go before it has to eat again.
     private static final int RAT_FOOD_VALUE = 100;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a snake. A snake can be created as a newborn (age zero
@@ -36,15 +33,7 @@ public class Snake extends Animal
      */
     public Snake(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge( rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(RAT_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(RAT_FOOD_VALUE);
-        }
+        initialise(randomAge);
     }
 
     protected int getMaxAge() { return MAX_AGE; }
@@ -54,6 +43,8 @@ public class Snake extends Animal
     protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected int getInitialFoodLevel() { return RAT_FOOD_VALUE; }
 
     /**
      * Snakes are active from early morning until late at night.

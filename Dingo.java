@@ -36,15 +36,7 @@ public class Dingo extends Animal
      */
     public Dingo(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(SNAKE_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(SNAKE_FOOD_VALUE);
-        }
+        initialise(randomAge);
     }
     
     protected int getMaxAge() { return MAX_AGE; }
@@ -54,6 +46,8 @@ public class Dingo extends Animal
     protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected int getInitialFoodLevel() { return SNAKE_FOOD_VALUE; }
 
     /**
      * Dingoes are active from late morning into the night.

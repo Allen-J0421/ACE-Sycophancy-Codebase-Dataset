@@ -42,7 +42,26 @@ public abstract class Animal
         fog = false;
         disease = false;
     }
-    
+
+    /**
+     * Initialise a newly created animal's gender, age and food level.
+     * A newborn (randomAge false) starts at age zero with a full food level;
+     * an animal created to seed the simulation (randomAge true) is given a
+     * random age and food level.
+     * @param randomAge If true, assign a random age and food level.
+     */
+    protected void initialise(boolean randomAge) {
+        setGender();
+        if(randomAge) {
+            setAge(rand.nextInt(getMaxAge()));
+            setFoodLevel(rand.nextInt(getInitialFoodLevel()));
+        }
+        else {
+            setAge(0);
+            setFoodLevel(getInitialFoodLevel());
+        }
+    }
+
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
@@ -105,6 +124,12 @@ public abstract class Animal
      * @return The maximum number of offspring produced in a single breed.
      */
     protected abstract int getMaxLitterSize();
+
+    /**
+     * @return The food level a newborn of this species starts with, and the
+     *         upper bound on a randomly-aged animal's starting food level.
+     */
+    protected abstract int getInitialFoodLevel();
 
     /**
      * Decide whether this animal is active (awake and behaving) at the given

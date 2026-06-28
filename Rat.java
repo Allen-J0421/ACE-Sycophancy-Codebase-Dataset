@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a rat.
@@ -23,8 +22,6 @@ public class Rat extends Animal
     // The food value of a single ant. In effect, this is the
     // number of steps a rat can go before it has to eat again.
     private static final int ANT_FOOD_VALUE = 100;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a rat. A rat can be created as a newborn (age zero
@@ -36,15 +33,7 @@ public class Rat extends Animal
      */
     public Rat(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ANT_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ANT_FOOD_VALUE);
-        }
+        initialise(randomAge);
     }
 
     protected int getMaxAge() { return MAX_AGE; }
@@ -54,6 +43,8 @@ public class Rat extends Animal
     protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected int getInitialFoodLevel() { return ANT_FOOD_VALUE; }
 
     /**
      * Rats are active in the first part of the day.

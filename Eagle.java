@@ -40,15 +40,7 @@ public class Eagle extends Animal
      */
     public Eagle(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(SNAKE_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(SNAKE_FOOD_VALUE);
-        }
+        initialise(randomAge);
     }
 
     protected int getMaxAge() { return MAX_AGE; }
@@ -58,6 +50,8 @@ public class Eagle extends Animal
     protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected int getInitialFoodLevel() { return SNAKE_FOOD_VALUE; }
 
     /**
      * Eagles are active through the daylight hours.

@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of an emu.
@@ -23,8 +22,6 @@ public class Emu extends Animal
     // The food value of a single grass. In effect, this is the
     // number of steps an emu can go before it has to eat again.
     private static final int GRASS_FOOD_VALUE = 60;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create an emu. An emu can be created as a newborn (age zero
@@ -36,15 +33,7 @@ public class Emu extends Animal
      */
     public Emu(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(GRASS_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-           setFoodLevel(GRASS_FOOD_VALUE);
-        }
+        initialise(randomAge);
     }
 
     protected int getMaxAge() { return MAX_AGE; }
@@ -54,6 +43,8 @@ public class Emu extends Animal
     protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected int getInitialFoodLevel() { return GRASS_FOOD_VALUE; }
 
     /**
      * Emus are active overnight, sleeping through the middle of the day.

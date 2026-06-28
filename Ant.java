@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of an ant.
@@ -26,8 +25,6 @@ public class Ant extends Animal
     // The food value of a single grass. In effect, this is the
     // number of steps an ant can go before it has to eat again.
     private static final int GRASS_FOOD_VALUE = 60;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create an ant. An ant can be created as a newborn (age zero
@@ -39,15 +36,7 @@ public class Ant extends Animal
      */
     public Ant(boolean randomAge, Field field, Location location) {
         super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ACACIA_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ACACIA_FOOD_VALUE);
-        }
+        initialise(randomAge);
     }
 
     protected int getMaxAge() { return MAX_AGE; }
@@ -57,6 +46,8 @@ public class Ant extends Animal
     protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    protected int getInitialFoodLevel() { return ACACIA_FOOD_VALUE; }
 
     /**
      * Ants are active through the middle of the day.

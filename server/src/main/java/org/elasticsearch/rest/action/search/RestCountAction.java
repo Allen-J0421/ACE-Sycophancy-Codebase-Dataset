@@ -62,43 +62,13 @@ public class RestCountAction extends BaseRestHandler {
 
     @Override
     public RestChannelConsumer prepareRequest(final RestRequest request, final NodeClient client) throws IOException {
-        SearchRequest countRequest = new SearchRequest(Strings.splitStringByCommaToArray(request.param("index")));
-        IndicesOptions indicesOptions = IndicesOptions.fromRequest(request, countRequest.indicesOptions());
-        if (crossProjectModeDecider.crossProjectEnabled() && countRequest.allowsCrossProject()) {
-            indicesOptions = IndicesOptions.builder(indicesOptions)
-                .crossProjectModeOptions(new IndicesOptions.CrossProjectModeOptions(true))
-                .build();
-        }
-        countRequest.indicesOptions(indicesOptions);
-
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().size(0).trackTotalHits(true);
+        SearchRequest countRequest = createCountRequest(request);
+        SearchSourceBuilder searchSourceBuilder = createCountSourceBuilder();
         countRequest.source(searchSourceBuilder);
-        request.withContentOrSourceParamParserOrNull(parser -> {
-            if (parser == null) {
-                QueryBuilder queryBuilder = RestActions.urlParamsToQueryBuilder(request);
-                if (queryBuilder != null) {
-                    // since there is no request body, no need to pass in countRequest to handle project_routing param
-                    searchSourceBuilder.query(queryBuilder);
-                }
-            } else {
-                searchSourceBuilder.query(RestActions.getQueryContent(parser, countRequest));
-            }
-        });
-        applyRoutingOrSliceForCountRequest(request, countRequest);
-        float minScore = request.paramAsFloat("min_score", -1f);
-        if (minScore != -1f) {
-            searchSourceBuilder.minScore(minScore);
-        }
-
-        countRequest.preference(request.param("preference"));
-
-        String sStats = request.param("stats");
-        if (sStats != null) {
-            searchSourceBuilder.stats(Arrays.asList(Strings.splitStringByCommaToArray(sStats)));
-        }
-
         final int terminateAfter = request.paramAsInt("terminate_after", DEFAULT_TERMINATE_AFTER);
-        searchSourceBuilder.terminateAfter(terminateAfter);
+
+        applyCountQuery(request, countRequest, searchSourceBuilder);
+        applyCountParameters(request, countRequest, searchSourceBuilder, terminateAfter);
         return channel -> client.search(countRequest, new RestBuilderListener<SearchResponse>(channel) {
             @Override
             public RestResponse buildResponse(SearchResponse response, XContentBuilder builder) throws Exception {
@@ -121,6 +91,60 @@ public class RestCountAction extends BaseRestHandler {
                 return new RestResponse(response.status(), builder);
             }
         });
+    }
+
+    private SearchRequest createCountRequest(RestRequest request) {
+        SearchRequest countRequest = new SearchRequest(Strings.splitStringByCommaToArray(request.param("index")));
+        IndicesOptions indicesOptions = IndicesOptions.fromRequest(request, countRequest.indicesOptions());
+        if (crossProjectModeDecider.crossProjectEnabled() && countRequest.allowsCrossProject()) {
+            indicesOptions = IndicesOptions.builder(indicesOptions)
+                .crossProjectModeOptions(new IndicesOptions.CrossProjectModeOptions(true))
+                .build();
+        }
+        countRequest.indicesOptions(indicesOptions);
+        return countRequest;
+    }
+
+    private static SearchSourceBuilder createCountSourceBuilder() {
+        return new SearchSourceBuilder().size(0).trackTotalHits(true);
+    }
+
+    private static void applyCountQuery(RestRequest request, SearchRequest countRequest, SearchSourceBuilder searchSourceBuilder)
+        throws IOException {
+        request.withContentOrSourceParamParserOrNull(parser -> {
+            if (parser == null) {
+                QueryBuilder queryBuilder = RestActions.urlParamsToQueryBuilder(request);
+                if (queryBuilder != null) {
+                    // since there is no request body, no need to pass in countRequest to handle project_routing param
+                    searchSourceBuilder.query(queryBuilder);
+                }
+            } else {
+                searchSourceBuilder.query(RestActions.getQueryContent(parser, countRequest));
+            }
+        });
+    }
+
+    private static void applyCountParameters(
+        RestRequest request,
+        SearchRequest countRequest,
+        SearchSourceBuilder searchSourceBuilder,
+        int terminateAfter
+    ) {
+        applyRoutingOrSliceForCountRequest(request, countRequest);
+
+        float minScore = request.paramAsFloat("min_score", -1f);
+        if (minScore != -1f) {
+            searchSourceBuilder.minScore(minScore);
+        }
+
+        countRequest.preference(request.param("preference"));
+
+        String stats = request.param("stats");
+        if (stats != null) {
+            searchSourceBuilder.stats(Arrays.asList(Strings.splitStringByCommaToArray(stats)));
+        }
+
+        searchSourceBuilder.terminateAfter(terminateAfter);
     }
 
     /**

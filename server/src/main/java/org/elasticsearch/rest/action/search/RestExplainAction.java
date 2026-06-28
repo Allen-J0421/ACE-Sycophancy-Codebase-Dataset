@@ -49,13 +49,25 @@ public class RestExplainAction extends BaseRestHandler {
     @Override
     public RestChannelConsumer prepareRequest(final RestRequest request, final NodeClient client) throws IOException {
         validateSliceParamForExplain(request);
-        final SliceIndexing.ParsedRouting parsedRouting = SliceIndexing.parseRoutingOrSliceWithProvenance(request);
         ExplainRequest explainRequest = new ExplainRequest(request.param("index"), request.param("id"));
+        applyRoutingAndParent(explainRequest, request);
+        applyQuery(explainRequest, request);
+        applyFieldParameters(explainRequest, request);
+        explainRequest.fetchSourceContext(FetchSourceContext.parseFromRestRequest(request));
+
+        return channel -> client.explain(explainRequest, new RestToXContentListener<>(channel, ExplainResponse::status));
+    }
+
+    private static void applyRoutingAndParent(ExplainRequest explainRequest, RestRequest request) {
+        final SliceIndexing.ParsedRouting parsedRouting = SliceIndexing.parseRoutingOrSliceWithProvenance(request);
         explainRequest.routing(parsedRouting.routing()).setRoutingFromSlice(parsedRouting.fromSlice());
         if (explainRequest.routing() == null) {
             explainRequest.parent(request.param("parent"));
         }
         explainRequest.preference(request.param("preference"));
+    }
+
+    private static void applyQuery(ExplainRequest explainRequest, RestRequest request) throws IOException {
         String queryString = request.param("q");
         request.withContentOrSourceParamParserOrNull(parser -> {
             if (parser != null) {
@@ -65,23 +77,18 @@ public class RestExplainAction extends BaseRestHandler {
                 explainRequest.query(query);
             }
         });
+    }
 
+    private static void applyFieldParameters(ExplainRequest explainRequest, RestRequest request) {
         if (request.param("fields") != null) {
             throw new IllegalArgumentException(
                 "The parameter [fields] is no longer supported, please use [stored_fields] to retrieve stored fields"
             );
         }
-        String sField = request.param("stored_fields");
-        if (sField != null) {
-            String[] sFields = Strings.splitStringByCommaToArray(sField);
-            if (sFields != null) {
-                explainRequest.storedFields(sFields);
-            }
+        String storedFields = request.param("stored_fields");
+        if (storedFields != null) {
+            explainRequest.storedFields(Strings.splitStringByCommaToArray(storedFields));
         }
-
-        explainRequest.fetchSourceContext(FetchSourceContext.parseFromRestRequest(request));
-
-        return channel -> client.explain(explainRequest, new RestToXContentListener<>(channel, ExplainResponse::status));
     }
 
     private static void validateSliceParamForExplain(RestRequest request) {

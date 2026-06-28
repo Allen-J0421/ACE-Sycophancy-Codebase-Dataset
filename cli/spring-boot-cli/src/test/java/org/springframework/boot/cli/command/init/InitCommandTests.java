@@ -115,6 +115,17 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
+	void generateProjectAndExtractCreatesNestedDirectories(@TempDir File tempDir) throws Exception {
+		byte[] archive = createFakeZipArchive("nested/dir/test.txt", "Fake content");
+		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip", "demo.zip",
+				archive);
+		mockSuccessfulProjectGeneration(request);
+		assertThat(this.command.run("--extract", tempDir.getAbsolutePath())).isEqualTo(ExitStatus.OK);
+		File archiveFile = new File(tempDir, "nested/dir/test.txt");
+		assertThat(archiveFile).exists();
+	}
+
+	@Test
 	void generateProjectAndExtractWillNotWriteEntriesOutsideOutputLocation(@TempDir File tempDir) throws Exception {
 		byte[] archive = createFakeZipArchive("../outside.txt", "Fake content");
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip", "demo.zip",

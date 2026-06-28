@@ -7,10 +7,6 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
-        return indexOf(values, target);
-    }
-
-    static int indexOf(int[] values, int target) {
         int low = 0;
         int high = values.length - 1;
 
@@ -41,7 +37,7 @@ final class BinarySearch {
     }
 
     private static void runDemo() {
-        int result = indexOf(SAMPLE_VALUES, SAMPLE_TARGET);
+        int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(formatSearchResult(result));
     }

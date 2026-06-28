@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -47,6 +48,14 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 			assertThat(repo.getAllGroups()).hasSize(1);
 			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter");
 			assertThat(repo.getAllProperties()).hasSize(3);
+		}
+	}
+
+	@Test
+	void jsonResourceInputStreamIsLeftOpen() throws IOException {
+		try (CloseTrackingInputStream inputStream = new CloseTrackingInputStream(getInputStreamFor("foo"))) {
+			ConfigurationMetadataRepositoryJsonBuilder.create(inputStream).build();
+			assertThat(inputStream.isClosed()).isFalse();
 		}
 	}
 
@@ -268,6 +277,26 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 		for (String key : keys) {
 			assertThat(source).containsKey(key);
 		}
+	}
+
+	private static final class CloseTrackingInputStream extends FilterInputStream {
+
+		private boolean closed;
+
+		private CloseTrackingInputStream(InputStream in) {
+			super(in);
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.closed = true;
+			super.close();
+		}
+
+		boolean isClosed() {
+			return this.closed;
+		}
+
 	}
 
 }

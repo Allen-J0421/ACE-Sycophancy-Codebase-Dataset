@@ -100,18 +100,14 @@ public abstract class CardinalityUpperBound {
             if (bucketCount < 0) {
                 throw new IllegalArgumentException("bucketCount must be positive but was [" + bucketCount + "]");
             }
-            switch (bucketCount) {
-                case 0:
-                    return NONE;
-                case 1:
-                    return this;
-                default:
+            return switch (bucketCount) {
+                case 0 -> NONE;
+                case 1 -> this;
+                default -> {
                     long newEstimate = (long) estimate * (long) bucketCount;
-                    if (newEstimate >= Integer.MAX_VALUE) {
-                        return MANY;
-                    }
-                    return new KnownCardinalityUpperBound((int) newEstimate);
-            }
+                    yield newEstimate >= Integer.MAX_VALUE ? MANY : new KnownCardinalityUpperBound((int) newEstimate);
+                }
+            };
         }
 
         @Override

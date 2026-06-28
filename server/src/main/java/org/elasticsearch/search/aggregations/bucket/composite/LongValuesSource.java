@@ -277,19 +277,13 @@ class LongValuesSource extends SingleDimensionValuesSource<Long> {
         if (fieldType instanceof NumberFieldMapper.NumberFieldType ft) {
             final ToLongFunction<byte[]> toBucketFunction;
 
-            switch (ft.typeName()) {
-                case "long":
-                    toBucketFunction = (value) -> rounding.applyAsLong(LongPoint.decodeDimension(value, 0));
-                    break;
-
-                case "int":
-                case "short":
-                case "byte":
-                    toBucketFunction = (value) -> rounding.applyAsLong(IntPoint.decodeDimension(value, 0));
-                    break;
-
-                default:
-                    return null;
+            toBucketFunction = switch (ft.typeName()) {
+                case "long" -> (value) -> rounding.applyAsLong(LongPoint.decodeDimension(value, 0));
+                case "int", "short", "byte" -> (value) -> rounding.applyAsLong(IntPoint.decodeDimension(value, 0));
+                default -> null;
+            };
+            if (toBucketFunction == null) {
+                return null;
             }
             return new PointsSortedDocsProducer(fieldType.name(), toBucketFunction, lowerPoint, upperPoint);
         } else if (fieldType instanceof DateFieldMapper.DateFieldType) {

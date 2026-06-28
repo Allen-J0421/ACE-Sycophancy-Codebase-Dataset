@@ -441,21 +441,17 @@ public class UpdateHelper {
         }
 
         public static UpdateOpType lenientFromString(String operation, Logger logger, String scriptId) {
-            switch (operation) {
-                case "create":
-                    return UpdateOpType.CREATE;
-                case "index":
-                    return UpdateOpType.INDEX;
-                case "delete":
-                    return UpdateOpType.DELETE;
-                case "noop":
-                case "none":
-                    return UpdateOpType.NONE;
-                default:
+            return switch (operation) {
+                case "create" -> UpdateOpType.CREATE;
+                case "index" -> UpdateOpType.INDEX;
+                case "delete" -> UpdateOpType.DELETE;
+                case "noop", "none" -> UpdateOpType.NONE;
+                default -> {
                     // TODO: can we remove this leniency yet??
                     logger.warn("Used upsert operation [{}] for script [{}], doing nothing...", operation, scriptId);
-                    return UpdateOpType.NONE;
-            }
+                    yield UpdateOpType.NONE;
+                }
+            };
         }
 
         @Override

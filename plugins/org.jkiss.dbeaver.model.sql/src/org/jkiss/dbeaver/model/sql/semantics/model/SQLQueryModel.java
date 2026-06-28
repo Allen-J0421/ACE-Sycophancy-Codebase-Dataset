@@ -22,11 +22,10 @@ import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.model.sql.semantics.*;
 import org.jkiss.dbeaver.model.sql.semantics.context.SQLQueryRowsSourceContext;
 import org.jkiss.dbeaver.model.stm.STMTreeNode;
-import org.jkiss.dbeaver.model.stm.STMUtils;
-import org.jkiss.dbeaver.utils.ListNode;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -94,13 +93,8 @@ public class SQLQueryModel extends SQLQueryNodeModel {
      */
     @NotNull
     public SQLQueryNodeModel findNodeContaining(int textOffset) {
-        SQLQueryNodeModel node = this;
-        SQLQueryNodeModel nested = node.findChildNodeContaining(textOffset);
-        while (nested != null) {
-            node = nested;
-            nested = nested.findChildNodeContaining(textOffset);
-        }
-        return node;
+        List<SQLQueryNodeModel> nodePath = this.collectPathToContainingNode(textOffset);
+        return nodePath.get(nodePath.size() - 1);
     }
 
     public record LexicalContextResolutionResult(
@@ -114,24 +108,15 @@ public class SQLQueryModel extends SQLQueryNodeModel {
      * Returns nested node of the query model for the specified offset in the source text
      */
     public LexicalContextResolutionResult findLexicalContext(int textOffset) {
-        ListNode<SQLQueryNodeModel> stack = ListNode.of(this);
-        { // walk down through the model till the deepest node describing given position
-            SQLQueryNodeModel node = this;
-            SQLQueryNodeModel nested = node.findChildNodeContaining(textOffset);
-            while (nested != null) {
-                stack = ListNode.push(stack, nested);
-                nested = nested.findChildNodeContaining(textOffset);
-            }
-        }
-
+        List<SQLQueryNodeModel> nodePath = this.collectPathToContainingNode(textOffset);
         SQLQueryLexicalScopeItem lexicalItem = null;
         SQLQueryLexicalScope scope = null;
         SQLQuerySymbolOrigin deepestTailOrigin = null;
 
         // walk up till the lexical scope covering given position
         // TODO consider corner-cases with adjacent scopes, maybe better use condition on lexicalItem!=null instead of the scope?
-        while (stack != null && (scope == null || deepestTailOrigin == null)) {
-            SQLQueryNodeModel node = stack.data;
+        for (int i = nodePath.size() - 1; i >= 0 && (scope == null || deepestTailOrigin == null); i--) {
+            SQLQueryNodeModel node = nodePath.get(i);
             if (scope == null) {
                 scope = node.findLexicalScope(textOffset);
                 if (scope != null) {
@@ -141,7 +126,6 @@ public class SQLQueryModel extends SQLQueryNodeModel {
             if (deepestTailOrigin == null && node.getTailOrigin() != null) {
                 deepestTailOrigin = node.getTailOrigin();
             }
-            stack = stack.next;
         }
 
         if (lexicalItem == null) {
@@ -172,6 +156,20 @@ public class SQLQueryModel extends SQLQueryNodeModel {
         }
 
         return new LexicalContextResolutionResult(textOffset, lexicalItem, symbolsOrigin);
+    }
+
+    @NotNull
+    private List<SQLQueryNodeModel> collectPathToContainingNode(int textOffset) {
+        List<SQLQueryNodeModel> nodePath = new ArrayList<>();
+        SQLQueryNodeModel node = this;
+        nodePath.add(node);
+        SQLQueryNodeModel nested = node.findChildNodeContaining(textOffset);
+        while (nested != null) {
+            nodePath.add(nested);
+            node = nested;
+            nested = node.findChildNodeContaining(textOffset);
+        }
+        return nodePath;
     }
 
     @Override

@@ -9,9 +9,7 @@ final class BinarySearch {
     }
 
     static int indexOf(int[] sortedValues, int target) {
-        if (sortedValues == null) {
-            throw new IllegalArgumentException("sortedValues must not be null");
-        }
+        requireValues(sortedValues);
 
         int low = 0;
         int high = sortedValues.length - 1;
@@ -24,7 +22,7 @@ final class BinarySearch {
                 return midpoint;
             }
 
-            if (value < target) {
+            if (isBeforeTarget(value, target)) {
                 low = midpoint + 1;
             } else {
                 high = midpoint - 1;
@@ -36,6 +34,16 @@ final class BinarySearch {
 
     static boolean contains(int[] sortedValues, int target) {
         return indexOf(sortedValues, target) != NOT_FOUND;
+    }
+
+    private static void requireValues(int[] sortedValues) {
+        if (sortedValues == null) {
+            throw new IllegalArgumentException("sortedValues must not be null");
+        }
+    }
+
+    private static boolean isBeforeTarget(int value, int target) {
+        return value < target;
     }
 
     public static void main(String[] args) {

@@ -20,7 +20,10 @@ import org.jkiss.dbeaver.utils.RuntimeUtils;
 import org.jkiss.junit.DBeaverUnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -31,6 +34,14 @@ public class RuntimeUtilsTest extends DBeaverUnitTest {
         Assertions.assertTrue(RuntimeUtils.getCurrentDate().matches("\\d{8}"));
         Assertions.assertTrue(RuntimeUtils.getCurrentTime().matches("\\d{6}"));
         Assertions.assertTrue(RuntimeUtils.getCurrentTimeStamp().matches("\\d{12}"));
+    }
+
+    @Test
+    public void testLocalPathFromURL(@TempDir Path tempDir) throws Exception {
+        Path file = Files.createFile(tempDir.resolve("sample file.txt"));
+
+        Assertions.assertEquals(file, RuntimeUtils.getLocalFileFromURL(file.toUri().toURL()));
+        Assertions.assertEquals(file, RuntimeUtils.getLocalPathFromURL(file.toUri().toURL()));
     }
 
     @Test

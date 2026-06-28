@@ -217,24 +217,16 @@ public final class RuntimeUtils {
 
     @NotNull
     public static Path getLocalFileFromURL(@NotNull URL fileURL) throws IOException {
-        // Escape spaces to avoid URI syntax error
-        try {
-            URI filePath = GeneralUtils.makeURIFromFilePath(fileURL.toString());
-            /*
-                File can't accept URI with file authority in it. This created a problem for shared folders.
-                see dbeaver#15117
-             */
-            if (filePath.getAuthority() != null) {
-                return Path.of(filePath.getSchemeSpecificPart());
-            }
-            return Path.of(filePath);
-        } catch (URISyntaxException e) {
-            throw new IOException("Bad local file path: " + fileURL, e);
-        }
+        return getLocalPath(fileURL);
     }
 
     @NotNull
     public static Path getLocalPathFromURL(@NotNull URL fileURL) throws IOException {
+        return getLocalPath(fileURL);
+    }
+
+    @NotNull
+    private static Path getLocalPath(@NotNull URL fileURL) throws IOException {
         // Escape spaces to avoid URI syntax error
         try {
             URI filePath = GeneralUtils.makeURIFromFilePath(fileURL.toString());

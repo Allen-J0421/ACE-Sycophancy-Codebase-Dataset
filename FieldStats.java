@@ -1,4 +1,6 @@
 import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * This class collects and provides some statistical data on the state
@@ -30,25 +32,16 @@ public class FieldStats
     {
         if (!areCountsValid) generateCounts(field);
 
-        StringBuilder buffer = new StringBuilder();
-        String prefix = "";
-
+        StringJoiner joiner = new StringJoiner(", ");
         for (Counter info : counters.values())
-        {
-            buffer.append(prefix);
-            buffer.append(info.getName());
-            buffer.append(": ");
-            buffer.append(info.getCount());
-            prefix = ", ";
-        }
-
-        return buffer.toString();
+            joiner.add(info.getName() + ": " + info.getCount());
+        return joiner.toString();
     }
 
     /**
      * @return The counters representing population numbers.
      */
-    public HashMap<Class<?>, Counter> getCounters(Field field)
+    public Map<Class<?>, Counter> getCounters(Field field)
     {
         if (!areCountsValid) generateCounts(field);
         return counters;
@@ -62,10 +55,7 @@ public class FieldStats
     {
         areCountsValid = false;
 
-        for (Counter count : counters.values())
-        {
-            count.reset();
-        }
+        for (Counter count : counters.values()) count.reset();
     }
 
     /**

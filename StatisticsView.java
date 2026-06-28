@@ -13,6 +13,7 @@ import javafx.util.Duration;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A graphical view of the population of each species over time as the
@@ -123,7 +124,7 @@ public class StatisticsView extends Application
         
         // Iterate through each counter in FieldStats:
         Field field = Simulator.getCurrentField();
-        HashMap<Class<?>, Counter> counters = SimulatorView.getStats().getCounters(field);
+        Map<Class<?>, Counter> counters = SimulatorView.getStats().getCounters(field);
 
         for (Class<?> key : counters.keySet())
         {

@@ -18,8 +18,8 @@ public class SimulatorView extends JFrame
     // Color used for objects that have no defined color:
     private static final Color UNKNOWN_COLOR = Color.gray;
 
-    private final String STEP_PREFIX = "Step: ";
-    private final String POPULATION_PREFIX = "Population: ";
+    private static final String STEP_PREFIX = "Step: ";
+    private static final String POPULATION_PREFIX = "Population: ";
     private JLabel stepLabel, population, infoLabel, weatherPropertiesLabel, dayLabel;
     private FieldView fieldView;
 
@@ -132,7 +132,7 @@ public class SimulatorView extends JFrame
         weatherPropertiesLabel.setText(WeatherSystem.getIsRaining() ? "RAINING" : "NOT RAINING");
     }
 
-    public void updateDayLabel()
+    private void updateDayLabel()
     {
         dayLabel.setText("Day : " + TimeSystem.getCurrentDay());
     }
@@ -153,11 +153,7 @@ public class SimulatorView extends JFrame
      */
     private Color getColor(Class<?> animalClass)
     {
-        Color col = colors.get(animalClass);
-
-        // No color defined for this class:
-        if (col == null) return UNKNOWN_COLOR;
-        else             return col;
+        return colors.getOrDefault(animalClass, UNKNOWN_COLOR);
     }
 
     /**
@@ -198,15 +194,8 @@ public class SimulatorView extends JFrame
             {
                 Object animal = field.getObjectAt(row, col);
 
-                if (animal != null)
-                {
-                    stats.incrementCount(animal.getClass());
-                    fieldView.drawMark(col, row, getColor(animal.getClass()));
-                }
-                else
-                {
-                    fieldView.drawMark(col, row, EMPTY_COLOR);
-                }
+                if (animal != null) stats.incrementCount(animal.getClass());
+                fieldView.drawMark(col, row, animal == null ? EMPTY_COLOR : getColor(animal.getClass()));
             }
         }
     }
@@ -231,11 +220,11 @@ public class SimulatorView extends JFrame
      */
     private class FieldView extends JPanel
     {
-        private final int GRID_VIEW_SCALING_FACTOR = 6;
+        private static final int GRID_VIEW_SCALING_FACTOR = 6;
 
         private int gridWidth, gridHeight;
         private int xScale, yScale;
-        Dimension size;
+        private Dimension size;
         private Graphics g;
         private Image fieldImage;
 

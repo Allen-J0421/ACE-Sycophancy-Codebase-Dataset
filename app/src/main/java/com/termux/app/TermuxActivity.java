@@ -197,10 +197,21 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Logger.logDebug(LOG_TAG, "onCreate");
+        initializeActivityState(savedInstanceState);
+
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_termux);
+
+        initializeActivityContent(savedInstanceState);
+    }
+
+    private void initializeActivityState(@Nullable Bundle savedInstanceState) {
         mIsOnResumeAfterOnCreate = true;
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             mIsActivityRecreated = savedInstanceState.getBoolean(ARG_ACTIVITY_RECREATED, false);
+        }
 
         // Delete ReportInfo serialized object files from cache older than 14 days
         ReportActivity.deleteReportInfoFilesOlderThanXDays(this, 14, false);
@@ -210,11 +221,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         reloadProperties();
 
         setActivityTheme();
+    }
 
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_termux);
-
+    private void initializeActivityContent(@Nullable Bundle savedInstanceState) {
         // Load termux shared preferences
         // This will also fail if TermuxConstants.TERMUX_PACKAGE_NAME does not equal applicationId
         mPreferences = TermuxAppSharedPreferences.build(this, true);
@@ -224,6 +233,17 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             return;
         }
 
+        initializeViews(savedInstanceState);
+        startAndBindService();
+
+        if (mIsInvalidState) return;
+
+        // Send the {@link TermuxConstants#BROADCAST_TERMUX_OPENED} broadcast to notify apps that Termux
+        // app has been opened.
+        TermuxUtils.sendTermuxOpenedBroadcast(this);
+    }
+
+    private void initializeViews(@Nullable Bundle savedInstanceState) {
         setMargins();
 
         mTermuxActivityRootView = findViewById(R.id.activity_termux_root_view);
@@ -242,41 +262,30 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         }
 
         setTermuxTerminalViewAndClients();
-
         setTerminalToolbarView(savedInstanceState);
-
         setSettingsButtonView();
-
         setNewSessionButtonView();
-
         setToggleKeyboardView();
 
         registerForContextMenu(mTerminalView);
-
         FileReceiverActivity.updateFileReceiverActivityComponentsState(this);
+    }
 
+    private void startAndBindService() {
         try {
-            // Start the {@link TermuxService} and make it run regardless of who is bound to it
             Intent serviceIntent = new Intent(this, TermuxService.class);
             startService(serviceIntent);
 
-            // Attempt to bind to the service, this will call the {@link #onServiceConnected(ComponentName, IBinder)}
-            // callback if it succeeds.
             if (!bindService(serviceIntent, this, 0))
                 throw new RuntimeException("bindService() failed");
         } catch (Exception e) {
-            Logger.logStackTraceWithMessage(LOG_TAG,"TermuxActivity failed to start TermuxService", e);
+            Logger.logStackTraceWithMessage(LOG_TAG, "TermuxActivity failed to start TermuxService", e);
             Logger.showToast(this,
                 getString(e.getMessage() != null && e.getMessage().contains("app is in background") ?
                     R.string.error_termux_service_start_failed_bg : R.string.error_termux_service_start_failed_general),
                 true);
             mIsInvalidState = true;
-            return;
         }
-
-        // Send the {@link TermuxConstants#BROADCAST_TERMUX_OPENED} broadcast to notify apps that Termux
-        // app has been opened.
-        TermuxUtils.sendTermuxOpenedBroadcast(this);
     }
 
     @Override
@@ -388,45 +397,50 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         Logger.logDebug(LOG_TAG, "onServiceConnected");
 
         mTermuxService = ((TermuxService.LocalBinder) service).service;
-
         setTermuxSessionsListView();
+        handleServiceConnectedIntent(getIntent());
+        mTermuxService.setTermuxTerminalSessionClient(mTermuxTerminalSessionActivityClient);
+    }
 
-        final Intent intent = getIntent();
+    private void handleServiceConnectedIntent(@Nullable Intent intent) {
         setIntent(null);
 
         if (mTermuxService.isTermuxSessionsEmpty()) {
-            if (mIsVisible) {
-                TermuxInstaller.setupBootstrapIfNeeded(TermuxActivity.this, () -> {
-                    if (mTermuxService == null) return; // Activity might have been destroyed.
-                    try {
-                        boolean launchFailsafe = false;
-                        if (intent != null && intent.getExtras() != null) {
-                            launchFailsafe = intent.getExtras().getBoolean(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
-                        }
-                        mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, null);
-                    } catch (WindowManager.BadTokenException e) {
-                        // Activity finished - ignore.
-                    }
-                });
-            } else {
-                // The service connected while not in foreground - just bail out.
-                finishActivityIfNotFinishing();
-            }
+            handleEmptyServiceSessionState(intent);
         } else {
-            // If termux was started from launcher "New session" shortcut and activity is recreated,
-            // then the original intent will be re-delivered, resulting in a new session being re-added
-            // each time.
-            if (!mIsActivityRecreated && intent != null && Intent.ACTION_RUN.equals(intent.getAction())) {
-                // Android 7.1 app shortcut from res/xml/shortcuts.xml.
-                boolean isFailSafe = intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
-                mTermuxTerminalSessionActivityClient.addNewSession(isFailSafe, null);
-            } else {
-                mTermuxTerminalSessionActivityClient.setCurrentSession(mTermuxTerminalSessionActivityClient.getCurrentStoredSessionOrLast());
-            }
+            handleExistingServiceSessionState(intent);
+        }
+    }
+
+    private void handleEmptyServiceSessionState(@Nullable Intent intent) {
+        if (!mIsVisible) {
+            finishActivityIfNotFinishing();
+            return;
         }
 
-        // Update the {@link TerminalSession} and {@link TerminalEmulator} clients.
-        mTermuxService.setTermuxTerminalSessionClient(mTermuxTerminalSessionActivityClient);
+        TermuxInstaller.setupBootstrapIfNeeded(TermuxActivity.this, () -> {
+            if (mTermuxService == null) return;
+            try {
+                boolean launchFailsafe = intent != null && intent.getExtras() != null &&
+                    intent.getExtras().getBoolean(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
+                mTermuxTerminalSessionActivityClient.addNewSession(launchFailsafe, null);
+            } catch (WindowManager.BadTokenException e) {
+                // Activity finished - ignore.
+            }
+        });
+    }
+
+    private void handleExistingServiceSessionState(@Nullable Intent intent) {
+        // If termux was started from launcher "New session" shortcut and activity is recreated,
+        // then the original intent will be re-delivered, resulting in a new session being re-added
+        // each time.
+        if (!mIsActivityRecreated && intent != null && Intent.ACTION_RUN.equals(intent.getAction())) {
+            boolean isFailSafe = intent.getBooleanExtra(TERMUX_ACTIVITY.EXTRA_FAILSAFE_SESSION, false);
+            mTermuxTerminalSessionActivityClient.addNewSession(isFailSafe, null);
+        } else {
+            mTermuxTerminalSessionActivityClient.setCurrentSession(
+                mTermuxTerminalSessionActivityClient.getCurrentStoredSessionOrLast());
+        }
     }
 
     @Override
@@ -660,8 +674,12 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         TerminalSession session = getCurrentSession();
+        if (handleContextMenuSelection(item.getItemId(), session)) return true;
+        return super.onContextItemSelected(item);
+    }
 
-        switch (item.getItemId()) {
+    private boolean handleContextMenuSelection(int itemId, @Nullable TerminalSession session) {
+        switch (itemId) {
             case CONTEXT_MENU_SELECT_URL_ID:
                 mTermuxTerminalViewClient.showUrlSelection();
                 return true;
@@ -699,7 +717,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
                 mTermuxTerminalViewClient.reportIssueFromTranscript();
                 return true;
             default:
-                return super.onContextItemSelected(item);
+                return false;
         }
     }
 

@@ -23,13 +23,11 @@ import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.model.DBPDataSource;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
 import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
-import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzerSupport;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
-import org.jkiss.dbeaver.model.sql.parser.SQLParserContext;
-import org.jkiss.dbeaver.model.sql.parser.SQLScriptParser;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequestFactory;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
 import org.jkiss.dbeaver.runtime.DBWorkbench;
 
@@ -47,21 +45,7 @@ public class LspSQLCompletionContextParser {
         @NotNull SQLCompletionContext completionContext
     ) throws InterruptedException, InvocationTargetException, DBException {
         Document doc = new Document(document.getText());
-        SQLParserContext parserContext = new SQLParserContext(
-            document.getDataSource(),
-            completionContext.getSyntaxManager(),
-            completionContext.getRuleManager(),
-            doc
-        );
-        SQLScriptElement activeQuery = SQLScriptParser.extractActiveQuery(parserContext, offset, 0);
-
-        SQLCompletionRequest request = new SQLCompletionRequest(
-            completionContext,
-            doc,
-            offset,
-            activeQuery,
-            false
-        );
+        SQLCompletionRequest request = SQLCompletionRequestFactory.create(completionContext, doc, offset, false);
 
         List<CompletionProposalBase> proposals = collectCompletionProposals(document, offset, request);
 

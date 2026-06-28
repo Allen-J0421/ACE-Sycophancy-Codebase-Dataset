@@ -28,12 +28,12 @@ import org.jkiss.dbeaver.model.DBPNamedObject;
 import org.jkiss.dbeaver.model.exec.DBCExecutionContext;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
-import org.jkiss.dbeaver.model.sql.SQLQuery;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzerSupport;
 import org.jkiss.dbeaver.model.sql.SQLSyntaxManager;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequestFactory;
 import org.jkiss.dbeaver.model.sql.parser.SQLRuleManager;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionProposal;
@@ -147,14 +147,12 @@ public class RequestResult {
             executionContext
         );
 
-        final SQLCompletionRequest request = new SQLCompletionRequest(
+        return SQLCompletionRequestFactory.create(
             context,
             document,
             cursor.getSecond(),
-            new SQLQuery(context.getDataSource(), cursor.getFirst()),
             simpleMode
         );
-        return request;
     }
 
     @NotNull

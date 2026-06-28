@@ -26,8 +26,8 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
-    static boolean isFound(int result) {
-        return result != NOT_FOUND;
+    static boolean isFound(int index) {
+        return index != NOT_FOUND;
     }
 
     private static int midpoint(int low, int high) {
@@ -49,16 +49,16 @@ final class BinarySearchDemo {
     }
 
     static void run() {
-        int result = BinarySearch.binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
+        int index = BinarySearch.binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
 
-        System.out.println(formatSearchResult(result));
+        System.out.println(formatSearchResult(index));
     }
 
-    private static String formatSearchResult(int result) {
-        if (!BinarySearch.isFound(result)) {
+    private static String formatSearchResult(int index) {
+        if (!BinarySearch.isFound(index)) {
             return NOT_FOUND_MESSAGE;
         }
 
-        return FOUND_MESSAGE_PREFIX + result;
+        return FOUND_MESSAGE_PREFIX + index;
     }
 }

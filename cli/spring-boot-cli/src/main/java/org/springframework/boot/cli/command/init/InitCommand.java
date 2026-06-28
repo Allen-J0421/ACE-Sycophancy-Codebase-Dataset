@@ -16,19 +16,13 @@
 
 package org.springframework.boot.cli.command.init;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import joptsimple.OptionSet;
-
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.HelpExample;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.options.OptionHandler;
-import org.springframework.boot.cli.command.status.ExitStatus;
-import org.springframework.boot.cli.util.Log;
 
 /**
  * {@link Command} that initializes a project using Spring initializr.
@@ -44,7 +38,7 @@ public class InitCommand extends OptionParsingCommand {
 		this(new InitOptionHandler(new InitializrService()));
 	}
 
-	public InitCommand(InitOptionHandler handler) {
+	InitCommand(InitOptionHandler handler) {
 		super("init", "Initialize a new project using Spring Initializr (start.spring.io)", handler);
 	}
 
@@ -62,68 +56,6 @@ public class InitCommand extends OptionParsingCommand {
 		examples.add(new HelpExample("To create a web/data-jpa gradle project unpacked",
 				"spring init -d=web,jpa --build=gradle my-dir"));
 		return examples;
-	}
-
-	/**
-	 * {@link OptionHandler} for {@link InitCommand}.
-	 */
-	static class InitOptionHandler extends OptionHandler {
-
-		private final ServiceCapabilitiesReportGenerator serviceCapabilitiesReport;
-
-		private final ProjectGenerator projectGenerator;
-
-		private final InitCommandOptionDefinitions optionDefinitions;
-
-		private final InitProjectGenerationRequestFactory requestFactory;
-
-		InitOptionHandler(InitializrService initializrService) {
-			super(new InitCommandArgumentProcessor());
-			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
-			this.projectGenerator = new ProjectGenerator(initializrService);
-			this.optionDefinitions = new InitCommandOptionDefinitions();
-			this.requestFactory = new InitProjectGenerationRequestFactory(this.optionDefinitions);
-		}
-
-		@Override
-		protected void options() {
-			this.optionDefinitions.configure(this);
-		}
-
-		@Override
-		protected ExitStatus run(OptionSet options) throws Exception {
-			try {
-				if (this.optionDefinitions.isListCapabilities(options)) {
-					generateReport(options);
-				}
-				else {
-					generateProject(options);
-				}
-				return ExitStatus.OK;
-			}
-			catch (ReportableException ex) {
-				Log.error(ex.getMessage());
-				return ExitStatus.ERROR;
-			}
-			catch (Exception ex) {
-				Log.error(ex);
-				return ExitStatus.ERROR;
-			}
-		}
-
-		private void generateReport(OptionSet options) throws IOException {
-			Log.info(this.serviceCapabilitiesReport.generate(this.optionDefinitions.getTarget(options)));
-		}
-
-		protected void generateProject(OptionSet options) throws IOException {
-			ProjectGenerationRequest request = createProjectGenerationRequest(options);
-			this.projectGenerator.generateProject(request, this.optionDefinitions.isForce(options));
-		}
-
-		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-			return this.requestFactory.create(options);
-		}
-
 	}
 
 }

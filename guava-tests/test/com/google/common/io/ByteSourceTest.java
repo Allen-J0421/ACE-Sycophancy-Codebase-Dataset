@@ -384,6 +384,13 @@ public class ByteSourceTest extends IoTestCase {
     assertArrayEquals(expected, concatenated.slice(0, 8).read());
   }
 
+  public void testConcat_infiniteIterable_sizeIfKnownAbsent() {
+    ByteSource source = ByteSource.wrap(new byte[] {0, 1, 2, 3});
+    Iterable<ByteSource> cycle = Iterables.cycle(ImmutableList.of(source));
+
+    assertFalse(ByteSource.concat(cycle).sizeIfKnown().isPresent());
+  }
+
   private static final ByteSource BROKEN_CLOSE_SOURCE =
       new TestByteSource(new byte[10], CLOSE_THROWS);
   private static final ByteSource BROKEN_OPEN_SOURCE =

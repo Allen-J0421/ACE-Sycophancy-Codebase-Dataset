@@ -37,6 +37,7 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -701,6 +702,10 @@ public abstract class CharSource {
 
     @Override
     public Optional<Long> lengthIfKnown() {
+      if (!(sources instanceof Collection)) {
+        // Infinite Iterables can cause problems here.
+        return Optional.absent();
+      }
       long result = 0L;
       for (CharSource source : sources) {
         Optional<Long> lengthIfKnown = source.lengthIfKnown();

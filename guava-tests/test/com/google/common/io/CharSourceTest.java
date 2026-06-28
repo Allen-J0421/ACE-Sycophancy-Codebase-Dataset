@@ -301,6 +301,13 @@ public class CharSourceTest extends IoTestCase {
     assertThat(builder.toString()).isEqualTo(expected);
   }
 
+  public void testConcat_infiniteIterable_lengthIfKnownAbsent() {
+    CharSource source = CharSource.wrap("abcd");
+    Iterable<CharSource> cycle = Iterables.cycle(ImmutableList.of(source));
+
+    assertFalse(CharSource.concat(cycle).lengthIfKnown().isPresent());
+  }
+
   static final CharSource BROKEN_READ_SOURCE = new TestCharSource("ABC", READ_THROWS);
   static final CharSource BROKEN_CLOSE_SOURCE = new TestCharSource("ABC", CLOSE_THROWS);
   static final CharSource BROKEN_OPEN_SOURCE = new TestCharSource("ABC", OPEN_THROWS);

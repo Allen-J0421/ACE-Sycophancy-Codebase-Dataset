@@ -54,7 +54,7 @@ class StandardValueGraph<N, V> extends AbstractValueGraph<N, V> {
   long edgeCount; // must be updated when edges are added or removed
 
   /** Constructs a graph with the properties specified in {@code builder}. */
-  StandardValueGraph(AbstractGraphBuilder<? super N> builder) {
+  StandardValueGraph(AbstractGraphBuilder<? super N, ?> builder) {
     this(
         builder,
         builder.nodeOrder.createMap(firstNonNull(builder.expectedNodeCount, DEFAULT_NODE_COUNT)),
@@ -66,7 +66,7 @@ class StandardValueGraph<N, V> extends AbstractValueGraph<N, V> {
    * node map.
    */
   StandardValueGraph(
-      AbstractGraphBuilder<? super N> builder,
+      AbstractGraphBuilder<? super N, ?> builder,
       Map<N, GraphConnections<N, V>> nodeConnections,
       long edgeCount) {
     this.isDirected = builder.directed;

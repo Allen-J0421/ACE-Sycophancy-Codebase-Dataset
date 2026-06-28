@@ -31,9 +31,9 @@ import org.jspecify.annotations.NullUnmarked;
 @NullUnmarked
 public class PackageSanityTests extends AbstractPackageSanityTests {
 
-  private static final AbstractGraphBuilder<?> graphBuilderA =
+  private static final AbstractGraphBuilder<?, ?> graphBuilderA =
       GraphBuilder.directed().expectedNodeCount(10);
-  private static final AbstractGraphBuilder<?> graphBuilderB =
+  private static final AbstractGraphBuilder<?, ?> graphBuilderB =
       ValueGraphBuilder.directed().allowsSelfLoops(true).expectedNodeCount(16);
 
   private static final ImmutableGraph<String> IMMUTABLE_GRAPH_A =

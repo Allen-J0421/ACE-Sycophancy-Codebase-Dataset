@@ -47,7 +47,7 @@ final class StandardMutableValueGraph<N, V> extends StandardValueGraph<N, V>
   private final ElementOrder<N> incidentEdgeOrder;
 
   /** Constructs a mutable graph with the properties specified in {@code builder}. */
-  StandardMutableValueGraph(AbstractGraphBuilder<? super N> builder) {
+  StandardMutableValueGraph(AbstractGraphBuilder<? super N, ?> builder) {
     super(builder);
     incidentEdgeOrder = builder.incidentEdgeOrder.cast();
   }

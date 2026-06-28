@@ -16,9 +16,7 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.graph.Graphs.checkNonNegative;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.DoNotMock;
@@ -68,7 +66,7 @@ import com.google.errorprone.annotations.DoNotMock;
  * @since 20.0
  */
 @DoNotMock
-public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
+public final class GraphBuilder<N> extends AbstractGraphBuilder<N, GraphBuilder<N>> {
 
   /** Creates a new instance with the specified edge directionality. */
   private GraphBuilder(boolean directed) {
@@ -123,8 +121,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
    */
   @CanIgnoreReturnValue
   public GraphBuilder<N> allowsSelfLoops(boolean allowsSelfLoops) {
-    this.allowsSelfLoops = allowsSelfLoops;
-    return this;
+    return allowsSelfLoopsInternal(allowsSelfLoops);
   }
 
   /**
@@ -134,8 +131,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
    */
   @CanIgnoreReturnValue
   public GraphBuilder<N> expectedNodeCount(int expectedNodeCount) {
-    this.expectedNodeCount = checkNonNegative(expectedNodeCount);
-    return this;
+    return expectedNodeCountInternal(expectedNodeCount);
   }
 
   /**
@@ -163,14 +159,8 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
    * @since 29.0
    */
   public <N1 extends N> GraphBuilder<N1> incidentEdgeOrder(ElementOrder<N1> incidentEdgeOrder) {
-    checkArgument(
-        incidentEdgeOrder.type() == ElementOrder.Type.UNORDERED
-            || incidentEdgeOrder.type() == ElementOrder.Type.STABLE,
-        "The given elementOrder (%s) is unsupported. incidentEdgeOrder() only supports"
-            + " ElementOrder.unordered() and ElementOrder.stable().",
-        incidentEdgeOrder);
     GraphBuilder<N1> newBuilder = cast();
-    newBuilder.incidentEdgeOrder = checkNotNull(incidentEdgeOrder);
+    newBuilder.incidentEdgeOrder = validateIncidentEdgeOrder(incidentEdgeOrder);
     return newBuilder;
   }
 
@@ -181,15 +171,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N> {
 
   GraphBuilder<N> copy() {
     GraphBuilder<N> newBuilder = new GraphBuilder<>(directed);
-    newBuilder.allowsSelfLoops = allowsSelfLoops;
-    newBuilder.nodeOrder = nodeOrder;
-    newBuilder.expectedNodeCount = expectedNodeCount;
-    newBuilder.incidentEdgeOrder = incidentEdgeOrder;
+    copyStateTo(newBuilder);
     return newBuilder;
-  }
-
-  @SuppressWarnings("unchecked")
-  private <N1 extends N> GraphBuilder<N1> cast() {
-    return (GraphBuilder<N1>) this;
   }
 }

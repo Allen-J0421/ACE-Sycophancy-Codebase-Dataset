@@ -71,7 +71,7 @@ import org.jspecify.annotations.Nullable;
  *     constructed based on an existing {@code Network} using {@link #from(Network)}.
  * @since 20.0
  */
-public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
+public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N, NetworkBuilder<N, E>> {
   boolean allowsParallelEdges = false;
   ElementOrder<? super E> edgeOrder = ElementOrder.insertion();
   @Nullable Integer expectedEdgeCount = null;
@@ -140,8 +140,7 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
    */
   @CanIgnoreReturnValue
   public NetworkBuilder<N, E> allowsSelfLoops(boolean allowsSelfLoops) {
-    this.allowsSelfLoops = allowsSelfLoops;
-    return this;
+    return allowsSelfLoopsInternal(allowsSelfLoops);
   }
 
   /**
@@ -151,8 +150,7 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
    */
   @CanIgnoreReturnValue
   public NetworkBuilder<N, E> expectedNodeCount(int expectedNodeCount) {
-    this.expectedNodeCount = checkNonNegative(expectedNodeCount);
-    return this;
+    return expectedNodeCountInternal(expectedNodeCount);
   }
 
   /**
@@ -193,8 +191,4 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N> {
     return new StandardMutableNetwork<>(this);
   }
 
-  @SuppressWarnings("unchecked")
-  private <N1 extends N, E1 extends E> NetworkBuilder<N1, E1> cast() {
-    return (NetworkBuilder<N1, E1>) this;
-  }
 }

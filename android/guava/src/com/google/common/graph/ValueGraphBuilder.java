@@ -16,9 +16,7 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.graph.Graphs.checkNonNegative;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
@@ -70,7 +68,8 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
  *     #from(ValueGraph)}.
  * @since 20.0
  */
-public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
+public final class ValueGraphBuilder<N, V>
+    extends AbstractGraphBuilder<N, ValueGraphBuilder<N, V>> {
 
   /** Creates a new instance with the specified edge directionality. */
   private ValueGraphBuilder(boolean directed) {
@@ -127,8 +126,7 @@ public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
    */
   @CanIgnoreReturnValue
   public ValueGraphBuilder<N, V> allowsSelfLoops(boolean allowsSelfLoops) {
-    this.allowsSelfLoops = allowsSelfLoops;
-    return this;
+    return allowsSelfLoopsInternal(allowsSelfLoops);
   }
 
   /**
@@ -138,8 +136,7 @@ public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
    */
   @CanIgnoreReturnValue
   public ValueGraphBuilder<N, V> expectedNodeCount(int expectedNodeCount) {
-    this.expectedNodeCount = checkNonNegative(expectedNodeCount);
-    return this;
+    return expectedNodeCountInternal(expectedNodeCount);
   }
 
   /**
@@ -168,14 +165,8 @@ public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
    */
   public <N1 extends N> ValueGraphBuilder<N1, V> incidentEdgeOrder(
       ElementOrder<N1> incidentEdgeOrder) {
-    checkArgument(
-        incidentEdgeOrder.type() == ElementOrder.Type.UNORDERED
-            || incidentEdgeOrder.type() == ElementOrder.Type.STABLE,
-        "The given elementOrder (%s) is unsupported. incidentEdgeOrder() only supports"
-            + " ElementOrder.unordered() and ElementOrder.stable().",
-        incidentEdgeOrder);
     ValueGraphBuilder<N1, V> newBuilder = cast();
-    newBuilder.incidentEdgeOrder = checkNotNull(incidentEdgeOrder);
+    newBuilder.incidentEdgeOrder = validateIncidentEdgeOrder(incidentEdgeOrder);
     return newBuilder;
   }
 
@@ -189,15 +180,7 @@ public final class ValueGraphBuilder<N, V> extends AbstractGraphBuilder<N> {
 
   ValueGraphBuilder<N, V> copy() {
     ValueGraphBuilder<N, V> newBuilder = new ValueGraphBuilder<>(directed);
-    newBuilder.allowsSelfLoops = allowsSelfLoops;
-    newBuilder.nodeOrder = nodeOrder;
-    newBuilder.expectedNodeCount = expectedNodeCount;
-    newBuilder.incidentEdgeOrder = incidentEdgeOrder;
+    copyStateTo(newBuilder);
     return newBuilder;
-  }
-
-  @SuppressWarnings("unchecked")
-  private <N1 extends N, V1 extends V> ValueGraphBuilder<N1, V1> cast() {
-    return (ValueGraphBuilder<N1, V1>) this;
   }
 }

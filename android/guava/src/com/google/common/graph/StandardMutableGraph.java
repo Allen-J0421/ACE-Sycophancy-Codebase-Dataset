@@ -32,7 +32,7 @@ final class StandardMutableGraph<N> extends ForwardingGraph<N> implements Mutabl
   private final MutableValueGraph<N, Presence> backingValueGraph;
 
   /** Constructs a {@link MutableGraph} with the properties specified in {@code builder}. */
-  StandardMutableGraph(AbstractGraphBuilder<? super N> builder) {
+  StandardMutableGraph(AbstractGraphBuilder<? super N, ?> builder) {
     this.backingValueGraph = new StandardMutableValueGraph<>(builder);
   }
 

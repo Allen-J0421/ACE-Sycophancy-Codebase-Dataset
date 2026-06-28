@@ -16,6 +16,11 @@
 
 package com.google.common.graph;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.graph.Graphs.checkNonNegative;
+
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -23,7 +28,7 @@ import org.jspecify.annotations.Nullable;
  *
  * @author James Sexton
  */
-abstract class AbstractGraphBuilder<N> {
+abstract class AbstractGraphBuilder<N, B extends AbstractGraphBuilder<N, B>> {
   final boolean directed;
   boolean allowsSelfLoops = false;
   ElementOrder<N> nodeOrder = ElementOrder.insertion();
@@ -39,5 +44,44 @@ abstract class AbstractGraphBuilder<N> {
    */
   AbstractGraphBuilder(boolean directed) {
     this.directed = directed;
+  }
+
+  @CanIgnoreReturnValue
+  final B allowsSelfLoopsInternal(boolean allowsSelfLoops) {
+    this.allowsSelfLoops = allowsSelfLoops;
+    return self();
+  }
+
+  @CanIgnoreReturnValue
+  final B expectedNodeCountInternal(int expectedNodeCount) {
+    this.expectedNodeCount = checkNonNegative(expectedNodeCount);
+    return self();
+  }
+
+  final void copyStateTo(AbstractGraphBuilder<N, ?> builder) {
+    builder.allowsSelfLoops = allowsSelfLoops;
+    builder.nodeOrder = nodeOrder;
+    builder.incidentEdgeOrder = incidentEdgeOrder;
+    builder.expectedNodeCount = expectedNodeCount;
+  }
+
+  static <N> ElementOrder<N> validateIncidentEdgeOrder(ElementOrder<N> incidentEdgeOrder) {
+    checkArgument(
+        incidentEdgeOrder.type() == ElementOrder.Type.UNORDERED
+            || incidentEdgeOrder.type() == ElementOrder.Type.STABLE,
+        "The given elementOrder (%s) is unsupported. incidentEdgeOrder() only supports"
+            + " ElementOrder.unordered() and ElementOrder.stable().",
+        incidentEdgeOrder);
+    return checkNotNull(incidentEdgeOrder);
+  }
+
+  @SuppressWarnings("unchecked")
+  final B self() {
+    return (B) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  final <N1 extends N, B1 extends AbstractGraphBuilder<N1, B1>> B1 cast() {
+    return (B1) this;
   }
 }

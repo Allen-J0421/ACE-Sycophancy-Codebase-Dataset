@@ -219,21 +219,12 @@ public abstract class CharSource {
     Closer closer = Closer.create();
     try {
       Reader reader = closer.register(openStream());
-      return countBySkipping(reader);
+      return CharStreams.skipUpTo(reader, Long.MAX_VALUE);
     } catch (Throwable e) {
       throw closer.rethrow(e);
     } finally {
       closer.close();
     }
-  }
-
-  private static long countBySkipping(Reader reader) throws IOException {
-    long count = 0;
-    long read;
-    while ((read = reader.skip(Long.MAX_VALUE)) != 0) {
-      count += read;
-    }
-    return count;
   }
 
   /**

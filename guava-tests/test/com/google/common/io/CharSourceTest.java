@@ -28,8 +28,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import java.io.BufferedReader;
+import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -200,6 +202,23 @@ public class CharSourceTest extends IoTestCase {
     assertEquals(SPLIT_LINES, builder.build());
     assertTrue(source.wasStreamOpened());
     assertTrue(source.wasStreamClosed());
+  }
+
+  public void testLength_withReaderThatDoesNotSkip() throws IOException {
+    CharSource source =
+        new CharSource() {
+          @Override
+          public Reader openStream() {
+            return new FilterReader(new StringReader(STRING)) {
+              @Override
+              public long skip(long n) {
+                return 0;
+              }
+            };
+          }
+        };
+
+    assertEquals(STRING.length(), source.length());
   }
 
   public void testCopyToAppendable_doesNotCloseIfWriter() throws IOException {

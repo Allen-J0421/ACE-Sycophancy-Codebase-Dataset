@@ -140,6 +140,14 @@ public class CharStreamsTest extends IoTestCase {
     assertEquals(-1, reader.read());
   }
 
+  public void testSkipFully_withReaderThatDoesNotSkip() throws IOException {
+    String testString = "abcdef";
+    Reader reader = newZeroSkippingReader(new StringReader(testString));
+
+    CharStreams.skipFully(reader, 3);
+    assertEquals(testString.charAt(3), reader.read());
+  }
+
   public void testAsWriter() {
     // Should wrap Appendable in a new object
     Appendable plainAppendable = new StringBuilder();
@@ -297,6 +305,15 @@ public class CharStreamsTest extends IoTestCase {
         // read fewer than the max number of chars to read
         // shouldn't be a problem unless the buffer is shrinking each call
         return in.read(cbuf, off, max(len - 1024, 0));
+      }
+    };
+  }
+
+  private static Reader newZeroSkippingReader(Reader reader) {
+    return new FilterReader(reader) {
+      @Override
+      public long skip(long n) {
+        return 0;
       }
     };
   }

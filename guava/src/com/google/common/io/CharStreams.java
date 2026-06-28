@@ -16,6 +16,7 @@ package com.google.common.io;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkPositionIndexes;
+import static java.lang.Math.min;
 
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.J2ktIncompatible;
@@ -260,6 +261,41 @@ public final class CharStreams {
   }
 
   /**
+   * Discards up to {@code n} characters of data from the reader. This method will block until
+   * either the full amount has been skipped or until the end of the stream is reached, whichever
+   * happens first. Returns the total number of characters skipped.
+   */
+  static long skipUpTo(Reader reader, long n) throws IOException {
+    long totalSkipped = 0;
+    // A buffer is allocated if skip does not skip any characters.
+    char[] buf = null;
+
+    while (totalSkipped < n) {
+      long remaining = n - totalSkipped;
+      long skipped = reader.skip(remaining);
+
+      if (skipped == 0) {
+        // Do a buffered read since skip could return 0 repeatedly, for example if the Reader
+        // implementation does not support skipping.
+        int skip = (int) min(remaining, DEFAULT_BUF_SIZE);
+        if (buf == null) {
+          // Allocate a buffer bounded by the maximum size that can be requested, for example an
+          // array of DEFAULT_BUF_SIZE is unnecessary when the value of remaining is smaller.
+          buf = new char[skip];
+        }
+        if ((skipped = reader.read(buf, 0, skip)) == -1) {
+          // Reached EOF.
+          break;
+        }
+      }
+
+      totalSkipped += skipped;
+    }
+
+    return totalSkipped;
+  }
+
+  /**
    * Discards {@code n} characters of data from the reader. This method will block until the full
    * amount has been skipped. Does not close the reader.
    *
@@ -270,12 +306,9 @@ public final class CharStreams {
    */
   public static void skipFully(Reader reader, long n) throws IOException {
     checkNotNull(reader);
-    while (n > 0) {
-      long amt = reader.skip(n);
-      if (amt == 0) {
-        throw new EOFException();
-      }
-      n -= amt;
+    long skipped = skipUpTo(reader, n);
+    if (skipped < n) {
+      throw new EOFException();
     }
   }
 

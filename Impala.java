@@ -40,5 +40,10 @@ public class Impala extends Consumer
         
         setStartingAge(randomAge);
     }
-    
+
+    @Override
+    protected Consumer createOffspring(Field field, Location location)
+    {
+        return new Impala(false, field, location);
+    }
 }

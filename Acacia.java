@@ -26,4 +26,10 @@ public class Acacia extends Producer
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
               MAX_BIRTHS_AT_ONCE, MAX_AGE);
     }
+
+    @Override
+    protected Producer createOffspring(Field field, Location location)
+    {
+        return new Acacia(field, location);
+    }
 }

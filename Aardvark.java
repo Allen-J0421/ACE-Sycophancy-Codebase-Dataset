@@ -40,5 +40,10 @@ public class Aardvark extends Consumer
         
         setStartingAge(randomAge);
     }
-    
+
+    @Override
+    protected Consumer createOffspring(Field field, Location location)
+    {
+        return new Aardvark(false, field, location);
+    }
 }

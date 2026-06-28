@@ -38,5 +38,10 @@ public class Grasshopper extends Consumer
         
         setStartingAge(randomAge);
     }
-    
+
+    @Override
+    protected Consumer createOffspring(Field field, Location location)
+    {
+        return new Grasshopper(false, field, location);
+    }
 }

@@ -139,8 +139,8 @@ public abstract class Actor
         
     }
     /**
-     * Returns true if the actor can become a carcass and false if it can't.
-     * return if the actor can become a carcass.
+     * Returns true if the actor becomes a carcass when eaten, false otherwise.
+     * Consumers override this to return true; all other actors use this default.
      */
-    protected abstract boolean becomeCarcass();
+    protected boolean becomeCarcass() { return false; }
 }

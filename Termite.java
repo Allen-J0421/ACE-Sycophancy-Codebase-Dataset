@@ -40,5 +40,10 @@ public class Termite extends Consumer
         
         setStartingAge(randomAge);
     }
-    
+
+    @Override
+    protected Consumer createOffspring(Field field, Location location)
+    {
+        return new Termite(false, field, location);
+    }
 }

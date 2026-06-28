@@ -40,5 +40,10 @@ public class Mongoose extends Consumer
         
         setStartingAge(randomAge);
     }
-    
+
+    @Override
+    protected Consumer createOffspring(Field field, Location location)
+    {
+        return new Mongoose(false, field, location);
+    }
 }

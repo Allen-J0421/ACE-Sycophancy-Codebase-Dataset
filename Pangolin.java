@@ -40,5 +40,10 @@ public class Pangolin extends Consumer
         
         setStartingAge(randomAge);
     }
-    
+
+    @Override
+    protected Consumer createOffspring(Field field, Location location)
+    {
+        return new Pangolin(false, field, location);
+    }
 }

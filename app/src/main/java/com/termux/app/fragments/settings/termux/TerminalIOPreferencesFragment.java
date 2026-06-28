@@ -7,9 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BooleanPreferenceStore;
 import com.termux.app.fragments.settings.BasePreferenceDataStore;
 import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+
+import java.util.Arrays;
 
 @Keep
 public class TerminalIOPreferencesFragment extends BasePreferenceFragment {
@@ -28,44 +31,29 @@ public class TerminalIOPreferencesFragment extends BasePreferenceFragment {
 
 class TerminalIOPreferencesDataStore extends BasePreferenceDataStore {
 
-    private final TermuxAppSharedPreferences mPreferences;
+    private final BooleanPreferenceStore<TermuxAppSharedPreferences> mBooleanPreferences;
 
     TerminalIOPreferencesDataStore(@NonNull Context context) {
         super(context);
-        mPreferences = TermuxAppSharedPreferences.build(context, true);
+        mBooleanPreferences = new BooleanPreferenceStore<>(TermuxAppSharedPreferences.build(context, true),
+            Arrays.asList(
+                BooleanPreferenceStore.binding("soft_keyboard_enabled",
+                    TermuxAppSharedPreferences::isSoftKeyboardEnabled,
+                    TermuxAppSharedPreferences::setSoftKeyboardEnabled),
+                BooleanPreferenceStore.binding("soft_keyboard_enabled_only_if_no_hardware",
+                    TermuxAppSharedPreferences::isSoftKeyboardEnabledOnlyIfNoHardware,
+                    TermuxAppSharedPreferences::setSoftKeyboardEnabledOnlyIfNoHardware)
+            ));
     }
-
-
 
     @Override
     public void putBoolean(String key, boolean value) {
-        if (mPreferences == null) return;
-        if (key == null) return;
-
-        switch (key) {
-            case "soft_keyboard_enabled":
-                    mPreferences.setSoftKeyboardEnabled(value);
-                break;
-            case "soft_keyboard_enabled_only_if_no_hardware":
-                mPreferences.setSoftKeyboardEnabledOnlyIfNoHardware(value);
-                break;
-            default:
-                break;
-        }
+        mBooleanPreferences.putBoolean(key, value);
     }
 
     @Override
     public boolean getBoolean(String key, boolean defValue) {
-        if (mPreferences == null) return false;
-
-        switch (key) {
-            case "soft_keyboard_enabled":
-                return mPreferences.isSoftKeyboardEnabled();
-            case "soft_keyboard_enabled_only_if_no_hardware":
-                return mPreferences.isSoftKeyboardEnabledOnlyIfNoHardware();
-            default:
-                return false;
-        }
+        return mBooleanPreferences.getBoolean(key);
     }
 
 }

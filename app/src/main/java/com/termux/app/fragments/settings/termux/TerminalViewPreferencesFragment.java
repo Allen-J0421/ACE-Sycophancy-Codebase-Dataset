@@ -7,9 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BooleanPreferenceStore;
 import com.termux.app.fragments.settings.BasePreferenceDataStore;
 import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+
+import java.util.Collections;
 
 @Keep
 public class TerminalViewPreferencesFragment extends BasePreferenceFragment {
@@ -28,39 +31,24 @@ public class TerminalViewPreferencesFragment extends BasePreferenceFragment {
 
 class TerminalViewPreferencesDataStore extends BasePreferenceDataStore {
 
-    private final TermuxAppSharedPreferences mPreferences;
+    private final BooleanPreferenceStore<TermuxAppSharedPreferences> mBooleanPreferences;
 
     TerminalViewPreferencesDataStore(@NonNull Context context) {
         super(context);
-        mPreferences = TermuxAppSharedPreferences.build(context, true);
+        mBooleanPreferences = new BooleanPreferenceStore<>(TermuxAppSharedPreferences.build(context, true),
+            Collections.singletonList(BooleanPreferenceStore.binding("terminal_margin_adjustment",
+                TermuxAppSharedPreferences::isTerminalMarginAdjustmentEnabled,
+                TermuxAppSharedPreferences::setTerminalMarginAdjustment)));
     }
-
-
 
     @Override
     public void putBoolean(String key, boolean value) {
-        if (mPreferences == null) return;
-        if (key == null) return;
-
-        switch (key) {
-            case "terminal_margin_adjustment":
-                    mPreferences.setTerminalMarginAdjustment(value);
-                break;
-            default:
-                break;
-        }
+        mBooleanPreferences.putBoolean(key, value);
     }
 
     @Override
     public boolean getBoolean(String key, boolean defValue) {
-        if (mPreferences == null) return false;
-
-        switch (key) {
-            case "terminal_margin_adjustment":
-                return mPreferences.isTerminalMarginAdjustmentEnabled();
-            default:
-                return false;
-        }
+        return mBooleanPreferences.getBoolean(key);
     }
 
 }

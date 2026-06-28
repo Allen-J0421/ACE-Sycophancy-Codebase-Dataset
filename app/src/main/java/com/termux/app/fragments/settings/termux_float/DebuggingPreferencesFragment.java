@@ -8,9 +8,12 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BooleanPreferenceStore;
 import com.termux.app.fragments.settings.BasePackageDebuggingPreferenceDataStore;
 import com.termux.app.fragments.settings.BasePackageDebuggingPreferencesFragment;
 import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
+
+import java.util.Collections;
 
 @Keep
 public class DebuggingPreferencesFragment extends BasePackageDebuggingPreferencesFragment<TermuxFloatAppSharedPreferences> {
@@ -34,35 +37,24 @@ public class DebuggingPreferencesFragment extends BasePackageDebuggingPreference
 
 class DebuggingPreferencesDataStore extends BasePackageDebuggingPreferenceDataStore<TermuxFloatAppSharedPreferences> {
 
+    private final BooleanPreferenceStore<TermuxFloatAppSharedPreferences> mBooleanPreferences;
+
     DebuggingPreferencesDataStore(@NonNull Context context,
                                   @Nullable TermuxFloatAppSharedPreferences preferences) {
         super(context, preferences);
+        mBooleanPreferences = new BooleanPreferenceStore<>(preferences,
+            Collections.singletonList(BooleanPreferenceStore.binding("terminal_view_key_logging_enabled",
+                prefs -> prefs.isTerminalViewKeyLoggingEnabled(true),
+                (prefs, value) -> prefs.setTerminalViewKeyLoggingEnabled(value, true))));
     }
 
     @Override
     public void putBoolean(String key, boolean value) {
-        TermuxFloatAppSharedPreferences preferences = getPreferences();
-        if (preferences == null) return;
-        if (key == null) return;
-
-        switch (key) {
-            case "terminal_view_key_logging_enabled":
-                preferences.setTerminalViewKeyLoggingEnabled(value, true);
-                break;
-            default:
-                break;
-        }
+        mBooleanPreferences.putBoolean(key, value);
     }
 
     @Override
     public boolean getBoolean(String key, boolean defValue) {
-        TermuxFloatAppSharedPreferences preferences = getPreferences();
-        if (preferences == null) return false;
-        switch (key) {
-            case "terminal_view_key_logging_enabled":
-                return preferences.isTerminalViewKeyLoggingEnabled(true);
-            default:
-                return false;
-        }
+        return mBooleanPreferences.getBoolean(key);
     }
 }

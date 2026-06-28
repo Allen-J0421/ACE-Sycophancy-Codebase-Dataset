@@ -138,9 +138,19 @@ public abstract class SQLQueryCompletionItem {
         @Nullable ContextObjectInfo resolvedContext,
         @NotNull DBSObject object
     ) {
-        return new SQLDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.UNKNOWN);
+        return createDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.UNKNOWN);
     }
 
+    @NotNull
+    private static SQLDbNamedObjectCompletionItem createDbNamedObjectCompletionItem(
+        int score,
+        @NotNull SQLQueryWordEntry filterKey,
+        @Nullable ContextObjectInfo resolvedContext,
+        @NotNull DBSObject object,
+        @NotNull SQLQueryCompletionItemKind itemKind
+    ) {
+        return new SQLDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, itemKind);
+    }
 
     @NotNull
     public static SQLQueryCompletionItem forDbCatalogObject(
@@ -149,7 +159,7 @@ public abstract class SQLQueryCompletionItem {
         @Nullable ContextObjectInfo resolvedContext,
         @NotNull DBSObject object
     ) {
-        return new SQLDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.CATALOG);
+        return createDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.CATALOG);
     }
 
     @NotNull
@@ -159,7 +169,7 @@ public abstract class SQLQueryCompletionItem {
         @Nullable ContextObjectInfo resolvedContext,
         @NotNull DBSObject object
     ) {
-        return new SQLDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.SCHEMA);
+        return createDbNamedObjectCompletionItem(score, filterKey, resolvedContext, object, SQLQueryCompletionItemKind.SCHEMA);
     }
 
     @NotNull

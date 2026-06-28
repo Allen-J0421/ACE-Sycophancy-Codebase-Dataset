@@ -121,7 +121,7 @@ public final class Verify {
       String errorMessageTemplate,
       @Nullable Object @Nullable ... errorMessageArgs) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, errorMessageArgs));
+      throw verifyException(errorMessageTemplate, errorMessageArgs);
     }
   }
 
@@ -136,7 +136,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, char p1) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1));
+      throw verifyException(errorMessageTemplate, p1);
     }
   }
 
@@ -151,7 +151,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, int p1) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1));
+      throw verifyException(errorMessageTemplate, p1);
     }
   }
 
@@ -166,7 +166,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, long p1) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1));
+      throw verifyException(errorMessageTemplate, p1);
     }
   }
 
@@ -181,7 +181,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, @Nullable Object p1) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1));
+      throw verifyException(errorMessageTemplate, p1);
     }
   }
 
@@ -196,7 +196,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, char p1, char p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -211,7 +211,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, int p1, char p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -226,7 +226,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, long p1, char p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -244,7 +244,7 @@ public final class Verify {
       @Nullable Object p1,
       char p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -259,7 +259,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, char p1, int p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -274,7 +274,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, int p1, int p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -289,7 +289,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, long p1, int p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -307,7 +307,7 @@ public final class Verify {
       @Nullable Object p1,
       int p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -322,7 +322,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, char p1, long p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -337,7 +337,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, int p1, long p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -352,7 +352,7 @@ public final class Verify {
   public static void verify(
       boolean expression, String errorMessageTemplate, long p1, long p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -370,7 +370,7 @@ public final class Verify {
       @Nullable Object p1,
       long p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -388,7 +388,7 @@ public final class Verify {
       char p1,
       @Nullable Object p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -406,7 +406,7 @@ public final class Verify {
       int p1,
       @Nullable Object p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -424,7 +424,7 @@ public final class Verify {
       long p1,
       @Nullable Object p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -442,7 +442,7 @@ public final class Verify {
       @Nullable Object p1,
       @Nullable Object p2) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2));
+      throw verifyException(errorMessageTemplate, p1, p2);
     }
   }
 
@@ -461,7 +461,7 @@ public final class Verify {
       @Nullable Object p2,
       @Nullable Object p3) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2, p3));
+      throw verifyException(errorMessageTemplate, p1, p2, p3);
     }
   }
 
@@ -481,7 +481,7 @@ public final class Verify {
       @Nullable Object p3,
       @Nullable Object p4) {
     if (!expression) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, p1, p2, p3, p4));
+      throw verifyException(errorMessageTemplate, p1, p2, p3, p4);
     }
   }
 
@@ -528,13 +528,18 @@ public final class Verify {
       String errorMessageTemplate,
       @Nullable Object @Nullable ... errorMessageArgs) {
     if (reference == null) {
-      throw new VerifyException(lenientFormat(errorMessageTemplate, errorMessageArgs));
+      throw verifyException(errorMessageTemplate, errorMessageArgs);
     }
     return reference;
   }
 
   // TODO(kevinb): consider <T> T verifySingleton(Iterable<T>) to take over for
   // Iterables.getOnlyElement()
+
+  private static VerifyException verifyException(
+      String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
+    return new VerifyException(lenientFormat(errorMessageTemplate, errorMessageArgs));
+  }
 
   private Verify() {}
 }

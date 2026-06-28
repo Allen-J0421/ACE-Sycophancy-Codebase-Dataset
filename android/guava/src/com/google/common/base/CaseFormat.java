@@ -39,16 +39,16 @@ public enum CaseFormat {
   LOWER_HYPHEN(CharMatcher.is('-'), "-") {
     @Override
     String normalizeWord(String word) {
-      return Ascii.toLowerCase(word);
+      return lower(word);
     }
 
     @Override
     String convert(CaseFormat format, String s) {
       if (format == LOWER_UNDERSCORE) {
-        return s.replace('-', '_');
+        return replaceSeparator(s, '-', '_');
       }
       if (format == UPPER_UNDERSCORE) {
-        return Ascii.toUpperCase(s.replace('-', '_'));
+        return upper(replaceSeparator(s, '-', '_'));
       }
       return super.convert(format, s);
     }
@@ -58,16 +58,16 @@ public enum CaseFormat {
   LOWER_UNDERSCORE(CharMatcher.is('_'), "_") {
     @Override
     String normalizeWord(String word) {
-      return Ascii.toLowerCase(word);
+      return lower(word);
     }
 
     @Override
     String convert(CaseFormat format, String s) {
       if (format == LOWER_HYPHEN) {
-        return s.replace('_', '-');
+        return replaceSeparator(s, '_', '-');
       }
       if (format == UPPER_UNDERSCORE) {
-        return Ascii.toUpperCase(s);
+        return upper(s);
       }
       return super.convert(format, s);
     }
@@ -98,16 +98,16 @@ public enum CaseFormat {
   UPPER_UNDERSCORE(CharMatcher.is('_'), "_") {
     @Override
     String normalizeWord(String word) {
-      return Ascii.toUpperCase(word);
+      return upper(word);
     }
 
     @Override
     String convert(CaseFormat format, String s) {
       if (format == LOWER_HYPHEN) {
-        return Ascii.toLowerCase(s.replace('_', '-'));
+        return lower(replaceSeparator(s, '_', '-'));
       }
       if (format == LOWER_UNDERSCORE) {
-        return Ascii.toLowerCase(s);
+        return lower(s);
       }
       return super.convert(format, s);
     }
@@ -217,5 +217,17 @@ public enum CaseFormat {
     return word.isEmpty()
         ? word
         : Ascii.toUpperCase(word.charAt(0)) + Ascii.toLowerCase(word.substring(1));
+  }
+
+  private static String lower(String word) {
+    return Ascii.toLowerCase(word);
+  }
+
+  private static String upper(String word) {
+    return Ascii.toUpperCase(word);
+  }
+
+  private static String replaceSeparator(String s, char oldSeparator, char newSeparator) {
+    return s.replace(oldSeparator, newSeparator);
   }
 }

@@ -32,17 +32,26 @@ class SentenceExtractor {
 		if (text == null) {
 			return null;
 		}
-		int dot = text.indexOf('.');
-		if (dot != -1) {
-			BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
-			breakIterator.setText(text);
-			String sentence = text.substring(breakIterator.first(), breakIterator.next());
-			return removeSpaceBetweenLine(sentence.trim());
+		if (containsSentenceTerminator(text)) {
+			return getFirstSentenceWithTerminator(text);
 		}
-		else {
-			String[] lines = text.split(System.lineSeparator());
-			return lines[0].trim();
-		}
+		return getFirstLine(text);
+	}
+
+	private boolean containsSentenceTerminator(String text) {
+		return text.indexOf('.') != -1;
+	}
+
+	private String getFirstSentenceWithTerminator(String text) {
+		BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
+		breakIterator.setText(text);
+		String sentence = text.substring(breakIterator.first(), breakIterator.next());
+		return removeSpaceBetweenLine(sentence.trim());
+	}
+
+	private String getFirstLine(String text) {
+		String[] lines = text.split(System.lineSeparator());
+		return lines[0].trim();
 	}
 
 	private String removeSpaceBetweenLine(String text) {

@@ -2487,13 +2487,13 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
                     );
                 } else if (canMatchContext.getTimeRangeFilterFromMillis() != null
                     && searchRequestAttributes.containsKey(TIME_RANGE_FILTER_FROM_ATTRIBUTE) == false) {
-                        // Add in the time_range_filter_from attribute if it was missing before due to skipped empty shards
-                        SearchRequestAttributesExtractor.addTimeRangeAttribute(
-                            canMatchContext.getTimeRangeFilterFromMillis(),
-                            shardSearchRequest.nowInMillis(),
-                            searchRequestAttributes
-                        );
-                    }
+                    // Add in the time_range_filter_from attribute if it was missing before due to skipped empty shards
+                    SearchRequestAttributesExtractor.addTimeRangeAttributeIfMissing(
+                        canMatchContext.getTimeRangeFilterFromMillis(),
+                        shardSearchRequest.nowInMillis(),
+                        searchRequestAttributes
+                    );
+                }
 
                 indexShard.getSearchOperationListener()
                     .onCanMatchPhase(searchRequestAttributes, System.nanoTime() - shardCanMatchStartTimeInNanos);

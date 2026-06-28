@@ -113,27 +113,20 @@ public class SearchResponseMetrics {
     }
 
     public long recordTookTimeForSearchScroll(long tookTime) {
-        tookDurationTotalMillisHistogram.record(tookTime, SearchRequestAttributesExtractor.SEARCH_SCROLL_ATTRIBUTES);
-        return tookTime;
+        return recordTookDuration(tookTime, SearchRequestAttributesExtractor.SEARCH_SCROLL_ATTRIBUTES);
     }
 
     public long recordTookTime(long tookTime, Long timeRangeFilterFromMillis, long nowInMillis, Map<String, Object> attributes) {
         SearchRequestAttributesExtractor.addTimeRangeAttribute(timeRangeFilterFromMillis, nowInMillis, attributes);
-        tookDurationTotalMillisHistogram.record(tookTime, attributes);
-        return tookTime;
+        return recordTookDuration(tookTime, attributes);
     }
 
     public void incrementResponseCount(ResponseCountTotalStatus responseCountTotalStatus) {
-        responseCountTotalCounter.incrementBy(
-            1L,
-            Map.of(RESPONSE_COUNT_TOTAL_STATUS_ATTRIBUTE_NAME, responseCountTotalStatus.getDisplayName())
-        );
+        incrementResponseCount(responseCountTotalStatus, Map.of());
     }
 
     public void incrementResponseCount(ResponseCountTotalStatus responseCountTotalStatus, Map<String, Object> attributes) {
-        Map<String, Object> attributesWithStatus = new HashMap<>(attributes);
-        attributesWithStatus.put(RESPONSE_COUNT_TOTAL_STATUS_ATTRIBUTE_NAME, responseCountTotalStatus.getDisplayName());
-        responseCountTotalCounter.incrementBy(1L, attributesWithStatus);
+        responseCountTotalCounter.incrementBy(1L, attributesWithStatus(responseCountTotalStatus, attributes));
     }
 
     public void recordSearchPhaseDuration(String phaseName, long tookInNanos, Map<String, Object> attributes) {
@@ -144,5 +137,19 @@ public class SearchResponseMetrics {
 
     public void recordStoreBytesRead(long bytesRead, Map<String, Object> attributes) {
         storeBytesReadHistogram.record(bytesRead, attributes);
+    }
+
+    private long recordTookDuration(long tookTime, Map<String, Object> attributes) {
+        tookDurationTotalMillisHistogram.record(tookTime, attributes);
+        return tookTime;
+    }
+
+    private static Map<String, Object> attributesWithStatus(
+        ResponseCountTotalStatus responseCountTotalStatus,
+        Map<String, Object> attributes
+    ) {
+        Map<String, Object> attributesWithStatus = new HashMap<>(attributes);
+        attributesWithStatus.put(RESPONSE_COUNT_TOTAL_STATUS_ATTRIBUTE_NAME, responseCountTotalStatus.getDisplayName());
+        return attributesWithStatus;
     }
 }

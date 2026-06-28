@@ -404,6 +404,12 @@ public final class SearchRequestAttributesExtractor {
         }
     }
 
+    public static void addTimeRangeAttributeIfMissing(Long timeRangeFrom, long nowInMillis, Map<String, Object> attributes) {
+        if (timeRangeFrom != null && attributes.containsKey(TIME_RANGE_FILTER_FROM_ATTRIBUTE) == false) {
+            addTimeRangeAttribute(timeRangeFrom, nowInMillis, attributes);
+        }
+    }
+
     static String introspectTimeRange(long timeRangeFromMillis, long nowInMillis) {
         for (TimeRangeBucket value : TimeRangeBucket.values()) {
             if (timeRangeFromMillis >= nowInMillis - value.millis) {

@@ -31,6 +31,7 @@ import org.elasticsearch.search.vectors.KnnSearchBuilder;
 import org.elasticsearch.search.vectors.KnnVectorQueryBuilder;
 import org.elasticsearch.test.ESTestCase;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -523,5 +524,19 @@ public class SearchRequestAttributesExtractorTests extends ESTestCase {
             "older_than_14_days",
             SearchRequestAttributesExtractor.introspectTimeRange(randomLongBetween(0, fourteenDaysAgo), nowInMillis)
         );
+    }
+
+    public void testAddTimeRangeAttributeIfMissing() {
+        long nowInMillis = System.currentTimeMillis();
+        long fifteenMinutesAgo = nowInMillis - (15 * 60 * 1000);
+
+        Map<String, Object> attributes = new HashMap<>();
+        SearchRequestAttributesExtractor.addTimeRangeAttributeIfMissing(fifteenMinutesAgo, nowInMillis, attributes);
+        assertEquals("15_minutes", attributes.get(SearchRequestAttributesExtractor.TIME_RANGE_FILTER_FROM_ATTRIBUTE));
+
+        Map<String, Object> existingAttributes = new HashMap<>(attributes);
+        existingAttributes.put(SearchRequestAttributesExtractor.TIME_RANGE_FILTER_FROM_ATTRIBUTE, "existing");
+        SearchRequestAttributesExtractor.addTimeRangeAttributeIfMissing(fifteenMinutesAgo, nowInMillis, existingAttributes);
+        assertEquals("existing", existingAttributes.get(SearchRequestAttributesExtractor.TIME_RANGE_FILTER_FROM_ATTRIBUTE));
     }
 }

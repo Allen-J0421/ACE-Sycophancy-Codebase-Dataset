@@ -82,18 +82,22 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 	 */
 	public void include(ConfigurationMetadataRepository repository) {
 		for (ConfigurationMetadataGroup group : repository.getAllGroups().values()) {
-			ConfigurationMetadataGroup existingGroup = this.allGroups.get(group.getId());
-			if (existingGroup == null) {
-				this.allGroups.put(group.getId(), group);
-			}
-			else {
-				// Merge properties
-				group.getProperties().forEach((name, value) -> existingGroup.getProperties().putIfAbsent(name, value));
-				// Merge sources
-				group.getSources().forEach((name, value) -> addOrMergeSource(existingGroup.getSources(), name, value));
-			}
+			include(group);
 		}
+	}
 
+	private void include(ConfigurationMetadataGroup group) {
+		ConfigurationMetadataGroup existingGroup = this.allGroups.get(group.getId());
+		if (existingGroup == null) {
+			this.allGroups.put(group.getId(), group);
+			return;
+		}
+		merge(group, existingGroup);
+	}
+
+	private void merge(ConfigurationMetadataGroup source, ConfigurationMetadataGroup target) {
+		source.getProperties().forEach((name, value) -> target.getProperties().putIfAbsent(name, value));
+		source.getSources().forEach((name, value) -> addOrMergeSource(target.getSources(), name, value));
 	}
 
 	private ConfigurationMetadataGroup getGroup(ConfigurationMetadataSource source) {

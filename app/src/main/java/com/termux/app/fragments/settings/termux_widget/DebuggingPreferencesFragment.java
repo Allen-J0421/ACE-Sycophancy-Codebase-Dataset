@@ -1,49 +1,37 @@
 package com.termux.app.fragments.settings.termux_widget;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.ListPreference;
-import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
+import com.termux.app.fragments.settings.BasePreferenceFragment;
+import com.termux.app.fragments.settings.LogLevelPreferenceUtils;
 import com.termux.shared.termux.settings.preferences.TermuxWidgetAppSharedPreferences;
 
 @Keep
-public class DebuggingPreferencesFragment extends PreferenceFragmentCompat {
+public class DebuggingPreferencesFragment extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
-
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(DebuggingPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_widget_debugging_preferences, rootKey);
-
-        configureLoggingPreferences(context);
+    protected int getPreferencesResourceId() {
+        return R.xml.termux_widget_debugging_preferences;
     }
 
-    private void configureLoggingPreferences(@NonNull Context context) {
-        PreferenceCategory loggingCategory = findPreference("logging");
-        if (loggingCategory == null) return;
+    @NonNull
+    @Override
+    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
+        return DebuggingPreferencesDataStore.getInstance(context);
+    }
 
-        ListPreference logLevelListPreference = findPreference("log_level");
-        if (logLevelListPreference != null) {
-            TermuxWidgetAppSharedPreferences preferences = TermuxWidgetAppSharedPreferences.build(context, true);
-            if (preferences == null) return;
+    @Override
+    protected void onPreferencesLoaded(@NonNull Context context) {
+        TermuxWidgetAppSharedPreferences preferences = TermuxWidgetAppSharedPreferences.build(context, true);
+        if (preferences == null) return;
 
-            com.termux.app.fragments.settings.termux.DebuggingPreferencesFragment.
-                setLogLevelListPreferenceData(logLevelListPreference, context, preferences.getLogLevel(true));
-            loggingCategory.addPreference(logLevelListPreference);
-        }
+        LogLevelPreferenceUtils.configureLogLevelPreference(this, context, preferences.getLogLevel(true));
     }
 }
 

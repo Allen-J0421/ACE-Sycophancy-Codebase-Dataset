@@ -1,30 +1,27 @@
 package com.termux.app.fragments.settings;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 
 @Keep
-public class TermuxPreferencesFragment extends PreferenceFragmentCompat {
+public class TermuxPreferencesFragment extends BasePreferenceFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
-
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(TermuxPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_preferences, rootKey);
+    protected int getPreferencesResourceId() {
+        return R.xml.termux_preferences;
     }
 
+    @NonNull
+    @Override
+    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
+        return TermuxPreferencesDataStore.getInstance(context);
+    }
 }
 
 class TermuxPreferencesDataStore extends PreferenceDataStore {

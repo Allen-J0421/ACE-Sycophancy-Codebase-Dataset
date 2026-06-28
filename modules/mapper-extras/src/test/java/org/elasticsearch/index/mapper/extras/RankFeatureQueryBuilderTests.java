@@ -62,25 +62,20 @@ public class RankFeatureQueryBuilderTests extends AbstractQueryTestCase<RankFeat
         ScoreFunction function;
         boolean mayUseNegativeField = true;
         switch (random().nextInt(4)) {
-            case 0:
+            case 0 -> {
                 mayUseNegativeField = false;
                 function = new ScoreFunction.Log(1 + randomFloat());
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (randomBoolean()) {
                     function = new ScoreFunction.Saturation();
                 } else {
                     function = new ScoreFunction.Saturation(randomFloat());
                 }
-                break;
-            case 2:
-                function = new ScoreFunction.Sigmoid(randomFloat(), randomFloat());
-                break;
-            case 3:
-                function = new ScoreFunction.Linear();
-                break;
-            default:
-                throw new AssertionError();
+            }
+            case 2 -> function = new ScoreFunction.Sigmoid(randomFloat(), randomFloat());
+            case 3 -> function = new ScoreFunction.Linear();
+            default -> throw new AssertionError();
         }
         List<String> fields = new ArrayList<>();
         fields.add("my_feature_field");

@@ -86,22 +86,20 @@ public class UserAgentProcessor extends AbstractProcessor {
 
         for (Property property : this.properties) {
             switch (property) {
-                case ORIGINAL:
-                    uaDetails.put("original", userAgent);
-                    break;
-                case NAME:
+                case ORIGINAL -> uaDetails.put("original", userAgent);
+                case NAME -> {
                     if (details.name() != null) {
                         uaDetails.put("name", details.name());
                     } else {
                         uaDetails.put("name", "Other");
                     }
-                    break;
-                case VERSION:
+                }
+                case VERSION -> {
                     if (details.version() != null) {
                         uaDetails.put("version", details.version());
                     }
-                    break;
-                case OS:
+                }
+                case OS -> {
                     if (details.os() != null) {
                         Map<String, String> osDetails = Maps.newMapWithExpectedSize(3);
                         osDetails.put("name", details.os().name());
@@ -111,8 +109,8 @@ public class UserAgentProcessor extends AbstractProcessor {
                         }
                         uaDetails.put("os", osDetails);
                     }
-                    break;
-                case DEVICE:
+                }
+                case DEVICE -> {
                     Map<String, String> deviceDetails = Maps.newMapWithExpectedSize(1);
                     if (details.device() != null && details.device().name() != null) {
                         deviceDetails.put("name", details.device().name());
@@ -130,7 +128,7 @@ public class UserAgentProcessor extends AbstractProcessor {
                         }
                     }
                     uaDetails.put("device", deviceDetails);
-                    break;
+                }
             }
         }
 

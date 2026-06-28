@@ -166,10 +166,8 @@ public class RatedRequestsTests extends ESTestCase {
 
         int mutate = randomIntBetween(0, 3);
         switch (mutate) {
-            case 0:
-                id = randomValueOtherThan(id, () -> randomAlphaOfLength(10));
-                break;
-            case 1:
+            case 0 -> id = randomValueOtherThan(id, () -> randomAlphaOfLength(10));
+            case 1 -> {
                 if (evaluationRequest != null) {
                     int size = randomValueOtherThan(evaluationRequest.size(), () -> randomInt(Integer.MAX_VALUE));
                     evaluationRequest = new SearchSourceBuilder();
@@ -185,15 +183,14 @@ public class RatedRequestsTests extends ESTestCase {
                         templateId = randomValueOtherThan(templateId, () -> randomAlphaOfLength(5));
                     }
                 }
-                break;
-            case 2:
-                ratedDocs = Arrays.asList(randomValueOtherThanMany(ratedDocs::contains, () -> RatedDocumentTests.createRatedDocument()));
-                break;
-            case 3:
-                summaryFields = Arrays.asList(randomValueOtherThanMany(summaryFields::contains, () -> randomAlphaOfLength(10)));
-                break;
-            default:
-                throw new IllegalStateException("Requested to modify more than available parameters.");
+            }
+            case 2 -> ratedDocs = Arrays.asList(
+                randomValueOtherThanMany(ratedDocs::contains, () -> RatedDocumentTests.createRatedDocument())
+            );
+            case 3 -> summaryFields = Arrays.asList(
+                randomValueOtherThanMany(summaryFields::contains, () -> randomAlphaOfLength(10))
+            );
+            default -> throw new IllegalStateException("Requested to modify more than available parameters.");
         }
 
         RatedRequest ratedRequest;

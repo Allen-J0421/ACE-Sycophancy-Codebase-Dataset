@@ -222,24 +222,17 @@ public class EvalQueryQualityTests extends ESTestCase {
         }
         MetricDetail metricDetails = original.getMetricDetails();
         switch (randomIntBetween(0, 3)) {
-            case 0:
-                id = id + "_";
-                break;
-            case 1:
-                metricScore = metricScore + 0.1;
-                break;
-            case 2:
+            case 0 -> id = id + "_";
+            case 1 -> metricScore = metricScore + 0.1;
+            case 2 -> {
                 if (metricDetails == null) {
                     metricDetails = new PrecisionAtK.Detail(1, 5);
                 } else {
                     metricDetails = null;
                 }
-                break;
-            case 3:
-                ratedHits.add(RatedSearchHitTests.randomRatedSearchHit());
-                break;
-            default:
-                throw new IllegalStateException("The test should only allow four parameters mutated");
+            }
+            case 3 -> ratedHits.add(RatedSearchHitTests.randomRatedSearchHit());
+            default -> throw new IllegalStateException("The test should only allow four parameters mutated");
         }
         EvalQueryQuality evalQueryQuality = new EvalQueryQuality(id, metricScore);
         evalQueryQuality.setMetricDetails(metricDetails);

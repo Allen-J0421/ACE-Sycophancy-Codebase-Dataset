@@ -169,22 +169,19 @@ public class RankEvalSpecTests extends ESTestCase {
 
         int mutate = randomIntBetween(0, 2);
         switch (mutate) {
-            case 0:
+            case 0 -> {
                 RatedRequest request = RatedRequestsTests.createTestItem(true);
                 ratedRequests.add(request);
-                break;
-            case 1:
+            }
+            case 1 -> {
                 if (metric instanceof PrecisionAtK) {
                     metric = new DiscountedCumulativeGain();
                 } else {
                     metric = new PrecisionAtK();
                 }
-                break;
-            case 2:
-                templates.put("mutation", new Script(ScriptType.INLINE, "mustache", randomAlphaOfLength(10), new HashMap<>()));
-                break;
-            default:
-                throw new IllegalStateException("Requested to modify more than available parameters.");
+            }
+            case 2 -> templates.put("mutation", new Script(ScriptType.INLINE, "mustache", randomAlphaOfLength(10), new HashMap<>()));
+            default -> throw new IllegalStateException("Requested to modify more than available parameters.");
         }
 
         List<ScriptWithId> scripts = new ArrayList<>();

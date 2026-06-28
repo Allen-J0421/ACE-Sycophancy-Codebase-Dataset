@@ -307,9 +307,8 @@ public final class DefBootstrap {
          * Does a slow lookup for the operator
          */
         private MethodHandle lookup(Object[] args) throws Throwable {
-            switch (flavor) {
-                case UNARY_OPERATOR:
-                case SHIFT_OPERATOR:
+            return switch (flavor) {
+                case UNARY_OPERATOR, SHIFT_OPERATOR -> {
                     // shifts are treated as unary, as java allows long arguments without a cast (but bits are ignored)
                     MethodHandle unary = DefMath.lookupUnary(args[0].getClass(), name);
                     if ((flags & OPERATOR_EXPLICIT_CAST) != 0) {
@@ -317,10 +316,11 @@ public final class DefBootstrap {
                     } else if ((flags & OPERATOR_COMPOUND_ASSIGNMENT) != 0) {
                         unary = DefMath.cast(args[0].getClass(), unary);
                     }
-                    return unary;
-                case BINARY_OPERATOR:
+                    yield unary;
+                }
+                case BINARY_OPERATOR -> {
                     if (args[0] == null || args[1] == null) {
-                        return lookupGeneric(); // can handle nulls, casts if supported
+                        yield lookupGeneric(); // can handle nulls, casts if supported
                     } else {
                         MethodHandle binary = DefMath.lookupBinary(args[0].getClass(), args[1].getClass(), name);
                         if ((flags & OPERATOR_EXPLICIT_CAST) != 0) {
@@ -328,11 +328,11 @@ public final class DefBootstrap {
                         } else if ((flags & OPERATOR_COMPOUND_ASSIGNMENT) != 0) {
                             binary = DefMath.cast(args[0].getClass(), binary);
                         }
-                        return binary;
+                        yield binary;
                     }
-                default:
-                    throw new AssertionError();
-            }
+                }
+                default -> throw new AssertionError();
+            };
         }
 
         private MethodHandle lookupGeneric() {
@@ -520,10 +520,9 @@ public final class DefBootstrap {
                 if (args.length == 0) {
                     throw new BootstrapMethodError("Invalid number of parameters for method call");
                 }
-                if (args[0] instanceof String == false) {
+                if (!(args[0] instanceof String recipe)) {
                     throw new BootstrapMethodError("Illegal parameter for method call: " + args[0]);
                 }
-                String recipe = (String) args[0];
                 // 'S' is a leading non-lambda sentinel set by the compiler when the call site
                 // pushed the script receiver ahead of user args; peel it before counting lambdas.
                 int recipeLambdaStart = (recipe.isEmpty() == false && recipe.charAt(0) == 'S') ? 1 : 0;
@@ -546,7 +545,7 @@ public final class DefBootstrap {
                 if (args.length != 1) {
                     throw new BootstrapMethodError("Invalid number of parameters for reference call");
                 }
-                if (args[0] instanceof String == false) {
+                if (!(args[0] instanceof String)) {
                     throw new BootstrapMethodError("Illegal parameter for reference call: " + args[0]);
                 }
                 return new PIC(painlessLookup, functions, constants, methodHandlesLookup, name, type, initialDepth, flavor, args);
@@ -557,7 +556,7 @@ public final class DefBootstrap {
                 if (args.length != 1) {
                     throw new BootstrapMethodError("Invalid number of parameters for operator call");
                 }
-                if (args[0] instanceof Integer == false) {
+                if (!(args[0] instanceof Integer)) {
                     throw new BootstrapMethodError("Illegal parameter for reference call: " + args[0]);
                 }
                 int flags = (int) args[0];

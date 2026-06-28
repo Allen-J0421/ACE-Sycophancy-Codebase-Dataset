@@ -91,23 +91,22 @@ public class DeviceTypeParser {
         for (String patternKey : patternListKeys) {
             String deviceType = null;
             switch (patternKey) {
-                case OS_PARSERS:
+                case OS_PARSERS -> {
                     if (os != null && os.name() != null) {
                         deviceType = findMatch(deviceTypePatterns.get(patternKey), os.name());
                     }
-                    break;
-                case BROWSER_PARSER:
+                }
+                case BROWSER_PARSER -> {
                     if (userAgent != null && userAgent.name() != null) {
                         deviceType = findMatch(deviceTypePatterns.get(patternKey), userAgent.name());
                     }
-                    break;
-                case DEVICE_PARSER:
+                }
+                case DEVICE_PARSER -> {
                     if (device != null && device.name() != null) {
                         deviceType = findMatch(deviceTypePatterns.get(patternKey), device.name());
                     }
-                    break;
-                default:
-                    break;
+                }
+                default -> throw new AssertionError("unexpected patternKey: " + patternKey);
             }
 
             if (deviceType != null) {

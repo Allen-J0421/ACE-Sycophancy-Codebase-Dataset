@@ -53,24 +53,22 @@ final class CsvParser {
         length = lineValue.length();
         for (currentIndex = 0; currentIndex < length; currentIndex++) {
             switch (state) {
-                case START:
+                case START -> {
                     if (processStart()) {
                         return;
                     }
-                    break;
-                case UNQUOTED:
+                }
+                case UNQUOTED -> {
                     if (processUnquoted()) {
                         return;
                     }
-                    break;
-                case QUOTED:
-                    processQuoted();
-                    break;
-                case QUOTED_END:
+                }
+                case QUOTED -> processQuoted();
+                case QUOTED_END -> {
                     if (processQuotedEnd()) {
                         return;
                     }
-                    break;
+                }
             }
         }
 

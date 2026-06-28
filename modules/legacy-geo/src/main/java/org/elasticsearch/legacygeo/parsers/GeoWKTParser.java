@@ -279,18 +279,16 @@ public class GeoWKTParser {
 
     /** next word in the stream */
     private static String nextWord(StreamTokenizer stream) throws ElasticsearchParseException, IOException {
-        switch (stream.nextToken()) {
-            case StreamTokenizer.TT_WORD:
+        return switch (stream.nextToken()) {
+            case StreamTokenizer.TT_WORD -> {
                 final String word = stream.sval;
-                return word.equalsIgnoreCase(EMPTY) ? EMPTY : word;
-            case '(':
-                return LPAREN;
-            case ')':
-                return RPAREN;
-            case ',':
-                return COMMA;
-        }
-        throw new ElasticsearchParseException("expected word but found: " + tokenString(stream), stream.lineno());
+                yield word.equalsIgnoreCase(EMPTY) ? EMPTY : word;
+            }
+            case '(' -> LPAREN;
+            case ')' -> RPAREN;
+            case ',' -> COMMA;
+            default -> throw new ElasticsearchParseException("expected word but found: " + tokenString(stream), stream.lineno());
+        };
     }
 
     private static double nextNumber(StreamTokenizer stream) throws IOException, ElasticsearchParseException {

@@ -26,7 +26,7 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
-    static boolean found(int result) {
+    static boolean isFound(int result) {
         return result != NOT_FOUND;
     }
 
@@ -55,7 +55,7 @@ final class BinarySearchDemo {
     }
 
     private static String formatSearchResult(int result) {
-        if (!BinarySearch.found(result)) {
+        if (!BinarySearch.isFound(result)) {
             return NOT_FOUND_MESSAGE;
         }
 

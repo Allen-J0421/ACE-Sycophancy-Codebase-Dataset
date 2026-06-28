@@ -33,9 +33,7 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.elasticsearch.reindex.management.ReindexCancellation.notFoundException;
 import static org.hamcrest.Matchers.arrayContaining;
@@ -68,7 +66,7 @@ public class TransportCancelReindexActionTests extends ESTestCase {
     }
 
     public void testCancelTaskRequestIsScopedToReindexParentTasks() {
-        mockCancelTasks(new ListTasksResponse(List.of(taskInfo(taskId, ReindexAction.NAME, TaskId.EMPTY_TASK_ID)), List.of(), List.of()));
+        mockCancelTasks(new ListTasksResponse(List.of(ReindexManagementTestUtils.reindexTaskInfo(taskId)), List.of(), List.of()));
 
         safeAwait((ActionListener<CancelReindexResponse> l) -> action.doExecute(mock(), new CancelReindexRequest(taskId, false), l));
 
@@ -82,7 +80,7 @@ public class TransportCancelReindexActionTests extends ESTestCase {
     }
 
     public void testCancelAsynchronouslyReturnsAcknowledged() {
-        mockCancelTasks(new ListTasksResponse(List.of(taskInfo(taskId, ReindexAction.NAME, TaskId.EMPTY_TASK_ID)), List.of(), List.of()));
+        mockCancelTasks(new ListTasksResponse(List.of(ReindexManagementTestUtils.reindexTaskInfo(taskId)), List.of(), List.of()));
 
         final CancelReindexResponse response = safeAwait(l -> action.doExecute(mock(), new CancelReindexRequest(taskId, false), l));
 
@@ -95,20 +93,13 @@ public class TransportCancelReindexActionTests extends ESTestCase {
         TaskId currentTaskId = randomValueOtherThan(originalTaskId, () -> new TaskId(randomAlphaOfLength(10), randomNonNegativeLong()));
         long originalStart = between(0, 1_000);
         long currentStart = originalStart + randomLongBetween(1, 1_000);
-        TaskInfo info = new TaskInfo(
+        TaskInfo info = ReindexManagementTestUtils.relocatedReindexTaskInfo(
             currentTaskId,
-            randomAlphaOfLength(10),
-            currentTaskId.getNodeId(),
-            randomAlphaOfLength(10),
-            randomAlphaOfLength(10),
-            null,
+            originalTaskId,
             currentStart,
             randomNonNegativeLong(),
             true,
             randomBoolean(),
-            TaskId.EMPTY_TASK_ID,
-            Map.of(),
-            originalTaskId,
             originalStart
         );
         mockCancelTasks(new ListTasksResponse(List.of(info), List.of(), List.of()));
@@ -124,7 +115,7 @@ public class TransportCancelReindexActionTests extends ESTestCase {
     }
 
     public void testCancelSynchronouslyEmbedsGetReindexResponseWithCancelledTrue() {
-        TaskInfo info = taskInfo(taskId, ReindexAction.NAME, TaskId.EMPTY_TASK_ID);
+        TaskInfo info = ReindexManagementTestUtils.reindexTaskInfo(taskId);
         mockCancelTasks(new ListTasksResponse(List.of(info), List.of(), List.of()));
         mockGetReindex(new GetReindexResponse(new TaskResult(true, info)));
 
@@ -271,7 +262,7 @@ public class TransportCancelReindexActionTests extends ESTestCase {
     }
 
     public void testGetReindexFailurePropagated() {
-        mockCancelTasks(new ListTasksResponse(List.of(taskInfo(taskId, ReindexAction.NAME, TaskId.EMPTY_TASK_ID)), List.of(), List.of()));
+        mockCancelTasks(new ListTasksResponse(List.of(ReindexManagementTestUtils.reindexTaskInfo(taskId)), List.of(), List.of()));
 
         RuntimeException getFailure = new RuntimeException("boom");
         doAnswer((InvocationOnMock inv) -> {
@@ -288,10 +279,6 @@ public class TransportCancelReindexActionTests extends ESTestCase {
     }
 
     // --- helpers ---
-
-    private TaskInfo taskInfo(TaskId taskId, String action, TaskId parent) {
-        return new TaskInfo(taskId, "test", taskId.getNodeId(), action, "test", null, 0, 0, true, false, parent, Collections.emptyMap());
-    }
 
     private void mockCancelTasks(ListTasksResponse response) {
         doAnswer(inv -> {

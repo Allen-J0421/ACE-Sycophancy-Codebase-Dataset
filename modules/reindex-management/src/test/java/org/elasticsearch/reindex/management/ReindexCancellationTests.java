@@ -14,15 +14,12 @@ import org.elasticsearch.ResourceNotFoundException;
 import org.elasticsearch.action.FailedNodeException;
 import org.elasticsearch.action.TaskOperationFailure;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksResponse;
-import org.elasticsearch.index.reindex.ReindexAction;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.tasks.TaskId;
-import org.elasticsearch.tasks.TaskInfo;
 import org.elasticsearch.tasks.TaskResult;
 import org.elasticsearch.test.ESTestCase;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
@@ -76,22 +73,9 @@ public class ReindexCancellationTests extends ESTestCase {
 
     public void testCompletedResponseForcesCancelledFlag() {
         TaskId taskId = new TaskId(randomAlphaOfLength(10), randomNonNegativeLong());
-        TaskInfo taskInfo = new TaskInfo(
-            taskId,
-            "transport",
-            taskId.getNodeId(),
-            ReindexAction.NAME,
-            "reindex",
-            null,
-            randomNonNegativeLong(),
-            randomNonNegativeLong(),
-            true,
-            false,
-            TaskId.EMPTY_TASK_ID,
-            Map.of()
-        );
+        TaskResult taskResult = new TaskResult(true, ReindexManagementTestUtils.reindexTaskInfo(taskId));
 
-        CancelReindexResponse response = ReindexCancellation.completedResponse(new GetReindexResponse(new TaskResult(true, taskInfo)));
+        CancelReindexResponse response = ReindexCancellation.completedResponse(new GetReindexResponse(taskResult));
 
         assertThat(response.getCompletedReindexResponse().isPresent(), is(true));
         assertThat(response.getCompletedReindexResponse().orElseThrow().getTaskResult().getTask().cancelled(), is(true));

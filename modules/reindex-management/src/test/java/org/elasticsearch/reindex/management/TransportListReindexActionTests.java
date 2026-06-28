@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,7 +48,7 @@ public class TransportListReindexActionTests extends ESTestCase {
     @Before
     public void setup() {
         client = mock();
-        var threadPool = mock(ThreadPool.class);
+        ThreadPool threadPool = mock(ThreadPool.class);
         when(client.threadPool()).thenReturn(threadPool);
         when(threadPool.getThreadContext()).thenReturn(new ThreadContext(Settings.EMPTY));
         action = new TransportListReindexAction(mock(), mock(), client);
@@ -60,21 +59,7 @@ public class TransportListReindexActionTests extends ESTestCase {
 
     public void testNonRelocatedTaskPassedThrough() {
         final TaskId taskId = new TaskId(randomAlphanumericOfLength(5), randomNonNegativeLong());
-        final boolean cancellable = randomBoolean();
-        final TaskInfo info = new TaskInfo(
-            taskId,
-            randomAlphanumericOfLength(10),
-            taskId.getNodeId(),
-            ReindexAction.NAME,
-            randomAlphanumericOfLength(10),
-            null,
-            randomNonNegativeLong(),
-            randomNonNegativeLong(),
-            cancellable,
-            cancellable && randomBoolean(),
-            TaskId.EMPTY_TASK_ID,
-            Map.of()
-        );
+        final TaskInfo info = ReindexManagementTestUtils.reindexTaskInfo(taskId);
 
         returnGivenTasksOnActionExecution(List.of(info));
         action.doExecute(mock(), new ListReindexRequest(randomBoolean()), listener);
@@ -89,22 +74,13 @@ public class TransportListReindexActionTests extends ESTestCase {
         final long originalStartMillis = randomLongBetween(0, 100);
         final long relocatedStartMillis = randomLongBetween(originalStartMillis, originalStartMillis + randomLongBetween(0, 100));
         final long relocatedRunningNanos = randomNonNegativeLong();
-        final boolean cancellable = randomBoolean();
-
-        final TaskInfo info = new TaskInfo(
+        final TaskInfo info = ReindexManagementTestUtils.relocatedReindexTaskInfo(
             relocatedId,
-            randomAlphanumericOfLength(10),
-            relocatedId.getNodeId(),
-            ReindexAction.NAME,
-            randomAlphanumericOfLength(10),
-            null,
+            originalId,
             relocatedStartMillis,
             relocatedRunningNanos,
-            cancellable,
-            cancellable && randomBoolean(),
-            TaskId.EMPTY_TASK_ID,
-            Map.of(),
-            originalId,
+            randomBoolean(),
+            randomBoolean(),
             originalStartMillis
         );
 
@@ -125,35 +101,9 @@ public class TransportListReindexActionTests extends ESTestCase {
 
     public void testChildTasksFiltered() {
         final TaskId parentId = new TaskId(randomAlphanumericOfLength(5), randomNonNegativeLong());
-        final TaskInfo parentTask = new TaskInfo(
-            parentId,
-            randomAlphanumericOfLength(10),
-            parentId.getNodeId(),
-            ReindexAction.NAME,
-            randomAlphanumericOfLength(10),
-            null,
-            randomNonNegativeLong(),
-            randomNonNegativeLong(),
-            randomBoolean(),
-            false,
-            TaskId.EMPTY_TASK_ID,
-            Map.of()
-        );
+        final TaskInfo parentTask = ReindexManagementTestUtils.reindexTaskInfo(parentId);
         final TaskId childId = new TaskId(randomAlphanumericOfLength(5), randomNonNegativeLong());
-        final TaskInfo childTask = new TaskInfo(
-            childId,
-            randomAlphanumericOfLength(10),
-            childId.getNodeId(),
-            ReindexAction.NAME,
-            randomAlphanumericOfLength(10),
-            null,
-            randomNonNegativeLong(),
-            randomNonNegativeLong(),
-            randomBoolean(),
-            false,
-            parentId,
-            Map.of()
-        );
+        final TaskInfo childTask = ReindexManagementTestUtils.taskInfo(childId, ReindexAction.NAME, parentId);
 
         returnGivenTasksOnActionExecution(List.of(parentTask, childTask));
         action.doExecute(mock(), new ListReindexRequest(randomBoolean()), listener);

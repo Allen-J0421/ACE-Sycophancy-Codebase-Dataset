@@ -12,7 +12,6 @@ package org.elasticsearch.reindex.management;
 import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ActionType;
 import org.elasticsearch.core.TimeValue;
-import org.elasticsearch.index.reindex.ReindexAction;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.tasks.TaskId;
 import org.elasticsearch.tasks.TaskInfo;
@@ -132,6 +131,6 @@ public class ReindexManagementRestActionsTests extends RestActionTestCase {
     }
 
     private TaskInfo reindexTaskInfo(TaskId taskId) {
-        return new TaskInfo(taskId, "transport", taskId.getNodeId(), ReindexAction.NAME, "reindex", null, 0L, 0L, true, false, TaskId.EMPTY_TASK_ID, Map.of());
+        return ReindexManagementTestUtils.reindexTaskInfo(taskId);
     }
 }

@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -132,20 +131,7 @@ public class TransportGetReindexActionTests extends ESTestCase {
 
     public void testSubtaskTreatedAsNotFound() {
         TaskId parentTaskId = new TaskId(randomAlphaOfLength(10), randomIntBetween(1, 1000));
-        TaskInfo subtaskInfo = new TaskInfo(
-            taskId,
-            "test",
-            taskId.getNodeId(),
-            ReindexAction.NAME,
-            "test",
-            null,
-            0,
-            0,
-            false,
-            false,
-            parentTaskId,
-            Collections.emptyMap()
-        );
+        TaskInfo subtaskInfo = ReindexManagementTestUtils.taskInfo(taskId, ReindexAction.NAME, parentTaskId);
         GetReindexRequest request = createGetReindexRequest(randomBoolean());
 
         mockGetTask(new TaskResult(false, subtaskInfo));
@@ -190,22 +176,7 @@ public class TransportGetReindexActionTests extends ESTestCase {
 
     public void testMergedRelocatedResultAccepted() {
         TaskId relocatedTaskId = randomValueOtherThan(taskId, () -> new TaskId(randomAlphaOfLength(10), randomIntBetween(1, 1000)));
-        TaskInfo mergedInfo = new TaskInfo(
-            relocatedTaskId,
-            "test",
-            relocatedTaskId.getNodeId(),
-            ReindexAction.NAME,
-            "test",
-            null,
-            100,
-            5000,
-            false,
-            false,
-            TaskId.EMPTY_TASK_ID,
-            Collections.emptyMap(),
-            taskId,
-            100
-        );
+        TaskInfo mergedInfo = ReindexManagementTestUtils.relocatedReindexTaskInfo(relocatedTaskId, taskId, 100, 5000, false, false);
         TaskResult probeResult = new TaskResult(false, createReindexTaskInfo());
         TaskResult mergedResult = new TaskResult(false, mergedInfo);
         GetReindexRequest request = createGetReindexRequest(false);
@@ -237,7 +208,7 @@ public class TransportGetReindexActionTests extends ESTestCase {
     // --- helpers ---
 
     private TaskInfo createReindexTaskInfo() {
-        return createTaskInfo(taskId, ReindexAction.NAME);
+        return ReindexManagementTestUtils.reindexTaskInfo(taskId);
     }
 
     private void mockGetTask(TaskResult result) {
@@ -296,20 +267,7 @@ public class TransportGetReindexActionTests extends ESTestCase {
     }
 
     private TaskInfo createTaskInfo(TaskId taskId, String action) {
-        return new TaskInfo(
-            taskId,
-            "test",
-            taskId.getNodeId(),
-            action,
-            "test",
-            null,
-            0,
-            0,
-            false,
-            false,
-            TaskId.EMPTY_TASK_ID,
-            Collections.emptyMap()
-        );
+        return ReindexManagementTestUtils.taskInfo(taskId, action, TaskId.EMPTY_TASK_ID);
     }
 
     private GetReindexRequest createGetReindexRequest(boolean waitForCompletion) {

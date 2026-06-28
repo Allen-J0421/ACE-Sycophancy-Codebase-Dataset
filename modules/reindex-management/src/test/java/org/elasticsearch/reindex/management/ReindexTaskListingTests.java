@@ -17,7 +17,6 @@ import org.elasticsearch.tasks.TaskInfo;
 import org.elasticsearch.test.ESTestCase;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -37,8 +36,8 @@ public class ReindexTaskListingTests extends ESTestCase {
 
     public void testReindexTasksFiltersChildrenAndPreservesNonRelocatedTask() {
         TaskId parentId = new TaskId(randomAlphaOfLength(10), randomNonNegativeLong());
-        TaskInfo parentTask = taskInfo(parentId, TaskId.EMPTY_TASK_ID);
-        TaskInfo childTask = taskInfo(new TaskId(randomAlphaOfLength(10), randomNonNegativeLong()), parentId);
+        TaskInfo parentTask = ReindexManagementTestUtils.reindexTaskInfo(parentId);
+        TaskInfo childTask = ReindexManagementTestUtils.taskInfo(new TaskId(randomAlphaOfLength(10), randomNonNegativeLong()), ReindexAction.NAME, parentId);
 
         List<TaskInfo> tasks = ReindexTaskListing.reindexTasks(List.of(parentTask, childTask));
 
@@ -51,20 +50,13 @@ public class ReindexTaskListingTests extends ESTestCase {
         long originalStartMillis = randomLongBetween(0, 100);
         long relocatedStartMillis = randomLongBetween(originalStartMillis, originalStartMillis + randomLongBetween(0, 100));
         long relocatedRunningNanos = randomNonNegativeLong();
-        TaskInfo relocatedTask = new TaskInfo(
+        TaskInfo relocatedTask = ReindexManagementTestUtils.relocatedReindexTaskInfo(
             relocatedId,
-            "transport",
-            relocatedId.getNodeId(),
-            ReindexAction.NAME,
-            "reindex",
-            null,
+            originalId,
             relocatedStartMillis,
             relocatedRunningNanos,
             false,
             false,
-            TaskId.EMPTY_TASK_ID,
-            Map.of(),
-            originalId,
             originalStartMillis
         );
 
@@ -83,14 +75,10 @@ public class ReindexTaskListingTests extends ESTestCase {
 
     public void testResponseUsesProjectedTasks() {
         TaskId taskId = new TaskId(randomAlphaOfLength(10), randomNonNegativeLong());
-        TaskInfo parentTask = taskInfo(taskId, TaskId.EMPTY_TASK_ID);
+        TaskInfo parentTask = ReindexManagementTestUtils.reindexTaskInfo(taskId);
 
         ListReindexResponse response = ReindexTaskListing.response(new ListTasksResponse(List.of(parentTask), List.of(), List.of()));
 
         assertThat(response.getTasks(), equalTo(List.of(parentTask)));
-    }
-
-    private TaskInfo taskInfo(TaskId taskId, TaskId parentTaskId) {
-        return new TaskInfo(taskId, "transport", taskId.getNodeId(), ReindexAction.NAME, "reindex", null, 0L, 0L, false, false, parentTaskId, Map.of());
     }
 }

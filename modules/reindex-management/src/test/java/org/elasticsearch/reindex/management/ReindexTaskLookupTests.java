@@ -14,11 +14,8 @@ import org.elasticsearch.action.admin.cluster.node.tasks.get.GetTaskRequest;
 import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.index.reindex.ReindexAction;
 import org.elasticsearch.tasks.TaskId;
-import org.elasticsearch.tasks.TaskInfo;
 import org.elasticsearch.tasks.TaskResult;
 import org.elasticsearch.test.ESTestCase;
-
-import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 
@@ -50,7 +47,7 @@ public class ReindexTaskLookupTests extends ESTestCase {
     public void testValidateProbeResultAcceptsReindexParentTask() {
         TaskId taskId = new TaskId(randomAlphaOfLength(10), randomNonNegativeLong());
 
-        ReindexTaskLookup.validateProbeResult(taskId, new TaskResult(false, taskInfo(taskId, ReindexAction.NAME, TaskId.EMPTY_TASK_ID)));
+        ReindexTaskLookup.validateProbeResult(taskId, new TaskResult(false, ReindexManagementTestUtils.reindexTaskInfo(taskId)));
     }
 
     public void testValidateProbeResultRejectsNonReindexTask() {
@@ -58,7 +55,10 @@ public class ReindexTaskLookupTests extends ESTestCase {
 
         ResourceNotFoundException e = expectThrows(
             ResourceNotFoundException.class,
-            () -> ReindexTaskLookup.validateProbeResult(taskId, new TaskResult(false, taskInfo(taskId, "other_action", TaskId.EMPTY_TASK_ID)))
+            () -> ReindexTaskLookup.validateProbeResult(
+                taskId,
+                new TaskResult(false, ReindexManagementTestUtils.taskInfo(taskId, "other_action", TaskId.EMPTY_TASK_ID))
+            )
         );
 
         assertEquals(ReindexTaskLookup.notFoundException(taskId).getMessage(), e.getMessage());
@@ -70,13 +70,12 @@ public class ReindexTaskLookupTests extends ESTestCase {
 
         ResourceNotFoundException e = expectThrows(
             ResourceNotFoundException.class,
-            () -> ReindexTaskLookup.validateProbeResult(taskId, new TaskResult(false, taskInfo(taskId, ReindexAction.NAME, parentTaskId)))
+            () -> ReindexTaskLookup.validateProbeResult(
+                taskId,
+                new TaskResult(false, ReindexManagementTestUtils.taskInfo(taskId, ReindexAction.NAME, parentTaskId))
+            )
         );
 
         assertEquals(ReindexTaskLookup.notFoundException(taskId).getMessage(), e.getMessage());
-    }
-
-    private TaskInfo taskInfo(TaskId taskId, String action, TaskId parentTaskId) {
-        return new TaskInfo(taskId, "transport", taskId.getNodeId(), action, "reindex", null, 0L, 0L, false, false, parentTaskId, Map.of());
     }
 }

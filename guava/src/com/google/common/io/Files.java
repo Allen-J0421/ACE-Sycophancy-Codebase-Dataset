@@ -116,9 +116,7 @@ public final class Files {
     return new FileByteSource(file);
   }
 
-  private static final class FileByteSource extends
-      ByteSource
-  {
+  private static final class FileByteSource extends ByteSource {
 
     private final File file;
 

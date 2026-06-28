@@ -170,37 +170,37 @@ public class RandomShapeGenerator extends RandomGeoGenerator {
         // NOTE: multipolygon not yet supported. Overlapping polygons are invalid so randomization
         // requires an approach to avoid overlaps. This could be approached by creating polygons
         // inside non overlapping bounding rectangles
-        switch (st) {
-            case POINT:
+        return switch (st) {
+            case POINT -> {
                 Point p = xRandomPointIn(r, within);
-                PointBuilder pb = new PointBuilder().coordinate(new Coordinate(p.getX(), p.getY(), Double.NaN));
-                return pb;
-            case MULTIPOINT:
-            case LINESTRING:
+                yield new PointBuilder().coordinate(new Coordinate(p.getX(), p.getY(), Double.NaN));
+            }
+            case MULTIPOINT, LINESTRING -> {
                 // for random testing having a maximum number of 10 points for a line string is more than sufficient
                 // if this number gets out of hand, the number of self intersections for a linestring can become
                 // (n^2-n)/2 and computing the relation intersection matrix will become NP-Hard
                 int numPoints = RandomNumbers.randomIntBetween(r, 3, 10);
                 CoordinatesBuilder coordinatesBuilder = new CoordinatesBuilder();
                 for (int i = 0; i < numPoints; ++i) {
-                    p = xRandomPointIn(r, within);
+                    Point p = xRandomPointIn(r, within);
                     coordinatesBuilder.coordinate(p.getX(), p.getY());
                 }
-                ShapeBuilder<?, ?, ?> pcb = (st == ShapeType.MULTIPOINT)
+                yield (st == ShapeType.MULTIPOINT)
                     ? new MultiPointBuilder(coordinatesBuilder.build())
                     : new LineStringBuilder(coordinatesBuilder);
-                return pcb;
-            case MULTILINESTRING:
+            }
+            case MULTILINESTRING -> {
                 MultiLineStringBuilder mlsb = new MultiLineStringBuilder();
                 for (int i = 0; i < RandomNumbers.randomIntBetween(r, 1, 10); ++i) {
                     mlsb.linestring((LineStringBuilder) createShape(r, nearPoint, within, ShapeType.LINESTRING, false));
                 }
-                return mlsb;
-            case POLYGON:
-                numPoints = RandomNumbers.randomIntBetween(r, 5, 25);
+                yield mlsb;
+            }
+            case POLYGON -> {
+                int numPoints = RandomNumbers.randomIntBetween(r, 5, 25);
                 Coordinate[] coordinates = new Coordinate[numPoints];
                 for (int i = 0; i < numPoints; ++i) {
-                    p = (Point) createShape(r, nearPoint, within, ShapeType.POINT, false).buildS4J();
+                    Point p = (Point) createShape(r, nearPoint, within, ShapeType.POINT, false).buildS4J();
                     coordinates[i] = new Coordinate(p.getX(), p.getY());
                 }
                 // random point order or random linestrings can lead to invalid self-crossing polygons,
@@ -227,13 +227,13 @@ public class RandomShapeGenerator extends RandomGeoGenerator {
                     } catch (AssertionError | InvalidShapeException e) {
                         // jts bug may occasionally misinterpret coordinate order causing an unhelpful ('geom' assertion)
                         // or InvalidShapeException
-                        return null;
+                        yield null;
                     }
                 }
-                return pgb;
-            default:
-                throw new ElasticsearchException("Unable to create shape of type [" + st + "]");
-        }
+                yield pgb;
+            }
+            default -> throw new ElasticsearchException("Unable to create shape of type [" + st + "]");
+        };
     }
 
     public static Point xRandomPoint(Random r) {

@@ -256,15 +256,9 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
 
         // Random flush or refresh or nothing, so that the next GETs are executed on flushed segments or in memory segments.
         switch (randomFrom(Operation.values())) {
-            case FLUSH:
-                flush(dataStreamName);
-                break;
-            case REFRESH:
-                refresh(dataStreamName);
-                break;
-            case NONE:
-            default:
-                break;
+            case FLUSH -> flush(dataStreamName);
+            case REFRESH -> refresh(dataStreamName);
+            case NONE -> {}
         }
 
         // Get by synthetic _id
@@ -283,15 +277,9 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
 
         // Random flush or refresh or nothing, so that the next DELETEs are executed on flushed segments or in memory segments.
         switch (randomFrom(Operation.values())) {
-            case FLUSH:
-                flush(dataStreamName);
-                break;
-            case REFRESH:
-                refresh(dataStreamName);
-                break;
-            case NONE:
-            default:
-                break;
+            case FLUSH -> flush(dataStreamName);
+            case REFRESH -> refresh(dataStreamName);
+            case NONE -> {}
         }
 
         // Delete by synthetic _id
@@ -705,15 +693,9 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
         // from the source shard index, which load the `_id` field from stored fields (see LuceneSyntheticSourceChangesSnapshot).
         final var operation = randomFrom(Operation.values());
         switch (operation) {
-            case FLUSH:
-                flush(dataStreamName);
-                break;
-            case REFRESH:
-                refresh(dataStreamName);
-                break;
-            case NONE:
-            default:
-                break;
+            case FLUSH -> flush(dataStreamName);
+            case REFRESH -> refresh(dataStreamName);
+            case NONE -> {}
         }
 
         final String[] sourceNodes = internalCluster().getNodeNames();
@@ -1013,15 +995,13 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
         Function<String, String> expectedDocIndexSupplier,
         boolean useNestedDocs
     ) {
-        final String expectedDocId;
-        final BytesRef expectedDocIdEncoded;
         switch (operation.opType()) {
-            case INDEX:
+            case INDEX -> {
                 final var index = asInstanceOf(Translog.Index.class, operation);
-                expectedDocId = expectedDocIdSupplier.apply(index.seqNo());
+                final String expectedDocId = expectedDocIdSupplier.apply(index.seqNo());
                 assertThat(Uid.decodeId(index.uid()), equalTo(expectedDocId));
 
-                expectedDocIdEncoded = Uid.encodeId(expectedDocId);
+                final BytesRef expectedDocIdEncoded = Uid.encodeId(expectedDocId);
                 assertThat(index.uid(), equalTo(expectedDocIdEncoded));
 
                 assertThat(expectedDocIndexSupplier.apply(expectedDocId), equalTo(indexName));
@@ -1102,22 +1082,19 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
                         )
                     );
                 }
-                break;
-
-            case DELETE:
+            }
+            case DELETE -> {
                 final var delete = asInstanceOf(Translog.Delete.class, operation);
-                expectedDocId = expectedDocIdSupplier.apply(delete.seqNo());
+                final String expectedDocId = expectedDocIdSupplier.apply(delete.seqNo());
                 assertThat(Uid.decodeId(delete.uid()), equalTo(expectedDocId));
 
-                expectedDocIdEncoded = Uid.encodeId(expectedDocId);
+                final BytesRef expectedDocIdEncoded = Uid.encodeId(expectedDocId);
                 assertThat(delete.uid(), equalTo(expectedDocIdEncoded));
 
                 assertThat(expectedDocIndexSupplier.apply(expectedDocId), equalTo(indexName));
                 assertThat(delete.primaryTerm(), equalTo(1L));
-                break;
-
-            default:
-                throw new AssertionError("Unsupported operation type: " + operation);
+            }
+            default -> throw new AssertionError("Unsupported operation type: " + operation);
         }
     }
 
@@ -2203,7 +2180,7 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
             int noopOps = 0;
             while ((operation = luceneSnapshot.next()) != null) {
                 switch (operation.opType()) {
-                    case INDEX:
+                    case INDEX -> {
                         final var index = asInstanceOf(Translog.Index.class, operation);
                         String expectedDocId = seqNoToDocId.apply(index.seqNo());
                         assertThat(
@@ -2212,12 +2189,9 @@ public class TSDBSyntheticIdsIT extends ESIntegTestCase {
                             equalTo(expectedDocId)
                         );
                         indexOps++;
-                        break;
-                    case NO_OP:
-                        noopOps++;
-                        break;
-                    default:
-                        fail("Unexpected operation type: " + operation.opType());
+                    }
+                    case NO_OP -> noopOps++;
+                    default -> fail("Unexpected operation type: " + operation.opType());
                 }
             }
             assertThat("Should have read all index operations", indexOps, equalTo(totalDocs));

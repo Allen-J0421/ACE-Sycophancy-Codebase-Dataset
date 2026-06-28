@@ -72,19 +72,20 @@ public class CommandCompleter extends StringsCompleter {
 
 	@Override
 	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
+		String bufferToUse = (buffer != null) ? buffer : "";
 		int completionIndex = super.complete(buffer, cursor, candidates);
-		int spaceIndex = buffer.indexOf(' ');
-		String commandName = ((spaceIndex != -1) ? buffer.substring(0, spaceIndex) : "");
+		int spaceIndex = bufferToUse.indexOf(' ');
+		String commandName = (spaceIndex != -1) ? bufferToUse.substring(0, spaceIndex) : "";
 		if (StringUtils.hasText(commandName)) {
 			for (Command command : this.commands) {
 				if (command.getName().equals(commandName)) {
-					if (cursor == buffer.length() && buffer.endsWith(" ")) {
+					if (cursor == bufferToUse.length() && bufferToUse.endsWith(" ")) {
 						printUsage(command);
 						break;
 					}
 					Completer completer = this.commandCompleters.get(command.getName());
 					if (completer != null) {
-						completionIndex = completer.complete(buffer, cursor, candidates);
+						completionIndex = completer.complete(bufferToUse, cursor, candidates);
 						break;
 					}
 				}
@@ -105,7 +106,7 @@ public class CommandCompleter extends StringsCompleter {
 
 			this.console.println();
 			this.console.println("Usage:");
-			this.console.println(command.getName() + " " + command.getUsageHelp());
+			this.console.println(getUsage(command));
 			for (OptionHelpLine optionHelpLine : optionHelpLines) {
 				this.console.println(String.format("\t%" + maxOptionsLength + "s: %s", optionHelpLine.getOptions(),
 						optionHelpLine.getUsage()));
@@ -115,6 +116,10 @@ public class CommandCompleter extends StringsCompleter {
 		catch (IOException ex) {
 			Log.error(ex.getMessage() + " (" + ex.getClass().getName() + ")");
 		}
+	}
+
+	private String getUsage(Command command) {
+		return (command.getUsageHelp() != null) ? command.getName() + " " + command.getUsageHelp() : command.getName();
 	}
 
 	/**

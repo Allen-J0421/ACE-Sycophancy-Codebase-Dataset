@@ -27,6 +27,10 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
+        runDemo();
+    }
+
+    private static void runDemo() {
         int[] values = { 2, 3, 4, 10, 40 };
         int target = 10;
         int result = binarySearch(values, target);

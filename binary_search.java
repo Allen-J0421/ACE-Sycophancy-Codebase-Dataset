@@ -23,13 +23,21 @@ final class BinarySearch {
             }
 
             if (current < target) {
-                low = mid + 1;
+                low = nextLowerBound(mid);
             } else {
-                high = mid - 1;
+                high = nextUpperBound(mid);
             }
         }
 
         return NOT_FOUND;
+    }
+
+    private static int nextLowerBound(int mid) {
+        return mid + 1;
+    }
+
+    private static int nextUpperBound(int mid) {
+        return mid - 1;
     }
 
     public static void main(String[] args) {

@@ -55,19 +55,6 @@ public class Field
     }
     
     /**
-     * Place a creature at the given location.
-     * If there is already a creature at the location it will
-     * be lost.
-     * @param creature The creature to be placed.
-     * @param row Row coordinate of the location.
-     * @param col Column coordinate of the location.
-     */
-    public void place(Object creature, int row, int col)
-    {
-        place(creature, new Location(row, col));
-    }
-    
-    /**
      * Place an creature at the given location.
      * If there is already an creature at the location it will
      * be lost.
@@ -98,20 +85,6 @@ public class Field
     public Object getObjectAt(int row, int col)
     {
         return field[row][col];
-    }
-    
-    /**
-     * Generate a random location that is adjacent to the
-     * given location, or is the same location.
-     * The returned location will be within the valid bounds
-     * of the field.
-     * @param location The location from which to generate an adjacency.
-     * @return A valid location within the grid area.
-     */
-    public Location randomAdjacentLocation(Location location)
-    {
-        List<Location> adjacent = adjacentLocations(location, 1);
-        return adjacent.get(0);
     }
     
     /**
@@ -261,7 +234,7 @@ public class Field
      */
     public List<Object> getAllObjectAt(Location location, int adjacentDistance)
     {
-        List<Object> adjacentObjectList = new ArrayList();
+        List<Object> adjacentObjectList = new ArrayList<>();
         
         List<Location> adjacent = adjacentLocationsIncludingSelf(location, adjacentDistance);
         Iterator<Location> it = adjacent.iterator();

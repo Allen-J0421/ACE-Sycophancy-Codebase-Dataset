@@ -23,12 +23,6 @@ public abstract class Animal extends Creature
 
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
-    // The possibility that an animal may be infected by a disease.
-    protected static final double INFECTION_RATE = 1;
-    // The possibility an animal may die of a disease.
-    protected static final double MORTALITY_RATE = 1;
-    // The steps an animal need to withstand in order to get immunity
-    protected static final int stepStandNum = 3;
 
     // If the animal is infected by disease.
     private boolean isInfected;

@@ -92,15 +92,7 @@ public final class Strings {
    */
   public static String padStart(String string, int minLength, char padChar) {
     checkNotNull(string); // eager for GWT.
-    if (string.length() >= minLength) {
-      return string;
-    }
-    StringBuilder sb = new StringBuilder(minLength);
-    for (int i = string.length(); i < minLength; i++) {
-      sb.append(padChar);
-    }
-    sb.append(string);
-    return sb.toString();
+    return pad(string, minLength, padChar, /* padStart= */ true);
   }
 
   /**
@@ -123,15 +115,7 @@ public final class Strings {
    */
   public static String padEnd(String string, int minLength, char padChar) {
     checkNotNull(string); // eager for GWT.
-    if (string.length() >= minLength) {
-      return string;
-    }
-    StringBuilder sb = new StringBuilder(minLength);
-    sb.append(string);
-    for (int i = string.length(); i < minLength; i++) {
-      sb.append(padChar);
-    }
-    return sb.toString();
+    return pad(string, minLength, padChar, /* padStart= */ false);
   }
 
   /**
@@ -217,6 +201,23 @@ public final class Strings {
       s--;
     }
     return a.subSequence(a.length() - s, a.length()).toString();
+  }
+
+  private static String pad(String string, int minLength, char padChar, boolean padStart) {
+    if (string.length() >= minLength) {
+      return string;
+    }
+    StringBuilder sb = new StringBuilder(minLength);
+    if (!padStart) {
+      sb.append(string);
+    }
+    for (int i = string.length(); i < minLength; i++) {
+      sb.append(padChar);
+    }
+    if (padStart) {
+      sb.append(string);
+    }
+    return sb.toString();
   }
 
   /**

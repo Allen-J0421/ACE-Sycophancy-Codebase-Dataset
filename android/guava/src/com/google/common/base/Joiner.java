@@ -120,9 +120,7 @@ public class Joiner {
   @CanIgnoreReturnValue
   public final <A extends Appendable> A appendTo(A appendable, @Nullable Object[] parts)
       throws IOException {
-    @SuppressWarnings("nullness") // TODO: b/316358623 - Remove suppression after fixing checker
-    List<?> partsList = Arrays.<@Nullable Object>asList(parts);
-    return appendTo(appendable, partsList);
+    return appendTo(appendable, asList(parts));
   }
 
   /** Appends to {@code appendable} the string representation of each of the remaining arguments. */
@@ -219,9 +217,7 @@ public class Joiner {
    * previously configured separator between each.
    */
   public final String join(@Nullable Object[] parts) {
-    @SuppressWarnings("nullness") // TODO: b/316358623 - Remove suppression after fixing checker
-    List<?> partsList = Arrays.<@Nullable Object>asList(parts);
-    return join(partsList);
+    return join(asList(parts));
   }
 
   /**
@@ -514,6 +510,12 @@ public class Joiner {
         }
       }
     };
+  }
+
+  private static List<@Nullable Object> asList(@Nullable Object[] parts) {
+    @SuppressWarnings("nullness") // TODO: b/316358623 - Remove suppression after fixing checker
+    List<@Nullable Object> partsList = Arrays.<@Nullable Object>asList(parts);
+    return partsList;
   }
 
   // cloned from ImmutableCollection

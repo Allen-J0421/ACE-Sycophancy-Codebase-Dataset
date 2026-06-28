@@ -295,8 +295,8 @@ public abstract class AbstractObjectCache<OWNER extends DBSObject, OBJECT extend
     @NotNull
     protected String getObjectName(@NotNull OBJECT object) {
         String name;
-        if (object instanceof DBPUniqueObject) {
-            name = ((DBPUniqueObject) object).getUniqueName();
+        if (object instanceof DBPUniqueObject uniqueObj) {
+            name = uniqueObj.getUniqueName();
         } else {
             name = object.getName();
         }

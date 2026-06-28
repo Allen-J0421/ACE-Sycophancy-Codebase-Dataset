@@ -9,7 +9,6 @@
 
 package org.elasticsearch.reindex.management;
 
-import org.elasticsearch.action.ActionRequest;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
@@ -18,31 +17,22 @@ import org.elasticsearch.core.TimeValue;
 import org.elasticsearch.tasks.TaskId;
 
 import java.io.IOException;
-import java.util.Objects;
 
-import static org.elasticsearch.action.ValidateActions.addValidationError;
-
-public class GetReindexRequest extends ActionRequest {
-    private final TaskId taskId;
+public class GetReindexRequest extends AbstractReindexTaskRequest {
     private final boolean waitForCompletion;
     @Nullable
     private final TimeValue timeout;
 
     public GetReindexRequest(TaskId taskId, boolean waitForCompletion, @Nullable TimeValue timeout) {
-        this.taskId = Objects.requireNonNull(taskId, "id cannot be null");
+        super(taskId, "id cannot be null");
         this.waitForCompletion = waitForCompletion;
         this.timeout = timeout;
     }
 
     public GetReindexRequest(StreamInput in) throws IOException {
         super(in);
-        taskId = TaskId.readFromStream(in);
         waitForCompletion = in.readBoolean();
         timeout = in.readOptionalTimeValue();
-    }
-
-    public TaskId getTaskId() {
-        return taskId;
     }
 
     public boolean getWaitForCompletion() {
@@ -56,17 +46,12 @@ public class GetReindexRequest extends ActionRequest {
 
     @Override
     public ActionRequestValidationException validate() {
-        ActionRequestValidationException validationException = null;
-        if (taskId.isSet() == false) {
-            validationException = addValidationError("id is required", validationException);
-        }
-        return validationException;
+        return validateTaskId("id is required");
     }
 
     @Override
     public void writeTo(StreamOutput out) throws IOException {
         super.writeTo(out);
-        taskId.writeTo(out);
         out.writeBoolean(waitForCompletion);
         out.writeOptionalTimeValue(timeout);
     }

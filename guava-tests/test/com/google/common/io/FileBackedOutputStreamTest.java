@@ -125,20 +125,36 @@ public class FileBackedOutputStreamTest extends IoTestCase {
     out.flush(); // for coverage
   }
 
-  // TODO(chrisn): only works if we ensure we have crossed file threshold
-
-  public void testWriteErrorAfterClose() throws Exception {
+  public void testWriteErrorAfterClose_fileBacked() throws Exception {
     byte[] data = newPreFilledByteArray(100);
     FileBackedOutputStream out = new FileBackedOutputStream(50);
     ByteSource source = out.asByteSource();
 
     out.write(data);
-    assertThat(source.read()).isEqualTo(data);
+    assertThat(out.getFile()).isNotNull();
+    assertWriteAfterCloseFailsWithoutChangingData(out, source, data);
+  }
 
-    out.close();
-    assertThrows(IOException.class, () -> out.write(42));
+  public void testWriteErrorAfterClose_inMemory() throws Exception {
+    byte[] data = newPreFilledByteArray(100);
+    FileBackedOutputStream out = new FileBackedOutputStream(Integer.MAX_VALUE);
+    ByteSource source = out.asByteSource();
 
-    // Verify that write had no effect
+    out.write(data);
+    assertThat(out.getFile()).isNull();
+    assertWriteAfterCloseFailsWithoutChangingData(out, source, data);
+  }
+
+  public void testInvalidWriteDoesNotCreateFileOrChangeData() throws Exception {
+    byte[] data = newPreFilledByteArray(9);
+    FileBackedOutputStream out = new FileBackedOutputStream(/* fileThreshold= */ 10);
+    ByteSource source = out.asByteSource();
+
+    out.write(data);
+    assertThat(out.getFile()).isNull();
+
+    assertThrows(IndexOutOfBoundsException.class, () -> out.write(new byte[2], 1, 2));
+    assertThat(out.getFile()).isNull();
     assertThat(source.read()).isEqualTo(data);
     out.reset();
   }
@@ -231,5 +247,17 @@ public class FileBackedOutputStreamTest extends IoTestCase {
     assertThat(file.exists()).isTrue();
     reachabilityFence(out); // not sure if this is necessary even in theory
     return new FileAndWeakByteSource(file, new WeakReference<>(out.asByteSource()));
+  }
+
+  private static void assertWriteAfterCloseFailsWithoutChangingData(
+      FileBackedOutputStream out, ByteSource source, byte[] expectedData) throws IOException {
+    assertThat(source.read()).isEqualTo(expectedData);
+
+    out.close();
+    assertThrows(IOException.class, () -> out.write(42));
+
+    // Verify that write had no effect.
+    assertThat(source.read()).isEqualTo(expectedData);
+    out.reset();
   }
 }

@@ -15,6 +15,7 @@
 package com.google.common.io;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkPositionIndexes;
 import static com.google.common.base.Throwables.throwIfUnchecked;
 import static com.google.common.collect.Sets.newConcurrentHashSet;
 import static java.util.Objects.requireNonNull;
@@ -204,6 +205,7 @@ public final class FileBackedOutputStream extends OutputStream {
 
   @Override
   public void write(byte[] b, int off, int len) throws IOException {
+    checkPositionIndexes(off, off + len, b.length);
     try {
       state.write(b, off, len);
     } finally {
@@ -251,7 +253,7 @@ public final class FileBackedOutputStream extends OutputStream {
       this.fileThreshold = fileThreshold;
       this.resetWhenGarbageCollected = resetWhenGarbageCollected;
       this.memory = new MemoryOutput();
-      this.out = memory;
+      this.out = requireNonNull(memory);
     }
 
     synchronized @Nullable File getFile() {
@@ -272,19 +274,8 @@ public final class FileBackedOutputStream extends OutputStream {
       try {
         close();
       } finally {
-        if (memory == null) {
-          memory = new MemoryOutput();
-        } else {
-          memory.reset();
-        }
-        out = memory;
-        if (file != null) {
-          File deleteMe = file;
-          file = null;
-          if (!deleteMe.delete()) {
-            throw new IOException("Could not delete: " + deleteMe);
-          }
-        }
+        resetMemoryBuffer();
+        deleteFileIfPresent();
       }
     }
 
@@ -312,33 +303,59 @@ public final class FileBackedOutputStream extends OutputStream {
      */
     @GuardedBy("this")
     void update(int len) throws IOException {
-      if (memory != null && (memory.getCount() + len > fileThreshold)) {
-        File temp = TempFileCreator.INSTANCE.createTempFile("FileBackedOutputStream");
-        if (resetWhenGarbageCollected) {
-          // References are not guaranteed to be collected on system shutdown; this is insurance.
-          temp.deleteOnExit();
-        }
-        FileOutputStream transfer = null;
-        try {
-          transfer = new FileOutputStream(temp);
-          transfer.write(memory.getBuffer(), 0, memory.getCount());
-          transfer.flush();
-          // We've successfully transferred the data; switch to writing to file.
-          out = transfer;
-        } catch (IOException e) {
-          if (transfer != null) {
-            try {
-              transfer.close();
-            } catch (IOException closeException) {
-              e.addSuppressed(closeException);
-            }
-          }
-          temp.delete();
-          throw e;
-        }
+      if (memory != null && memory.getCount() > fileThreshold - len) {
+        promoteToFile();
+      }
+    }
 
+    @GuardedBy("this")
+    private void resetMemoryBuffer() {
+      if (memory == null) {
+        memory = new MemoryOutput();
+      } else {
+        memory.reset();
+      }
+      out = requireNonNull(memory);
+    }
+
+    @GuardedBy("this")
+    private void deleteFileIfPresent() throws IOException {
+      if (file == null) {
+        return;
+      }
+      File deleteMe = file;
+      file = null;
+      if (!deleteMe.delete()) {
+        throw new IOException("Could not delete: " + deleteMe);
+      }
+    }
+
+    @GuardedBy("this")
+    private void promoteToFile() throws IOException {
+      File temp = TempFileCreator.INSTANCE.createTempFile("FileBackedOutputStream");
+      if (resetWhenGarbageCollected) {
+        // References are not guaranteed to be collected on system shutdown; this is insurance.
+        temp.deleteOnExit();
+      }
+      FileOutputStream transfer = null;
+      try {
+        transfer = new FileOutputStream(temp);
+        MemoryOutput memory = requireNonNull(this.memory);
+        transfer.write(memory.getBuffer(), 0, memory.getCount());
+        transfer.flush();
+        out = transfer;
         file = temp;
-        memory = null;
+        this.memory = null;
+      } catch (IOException e) {
+        if (transfer != null) {
+          try {
+            transfer.close();
+          } catch (IOException closeException) {
+            e.addSuppressed(closeException);
+          }
+        }
+        temp.delete();
+        throw e;
       }
     }
   }

@@ -64,13 +64,26 @@ abstract class TempFileCreator {
   abstract File createTempFile(String prefix) throws IOException;
 
   private static TempFileCreator pickSecureCreator() {
-    try {
-      Class.forName("java.nio.file.Path");
+    if (isJavaNioAvailable()) {
       return new JavaNioCreator();
-    } catch (ClassNotFoundException runningUnderAndroid) {
-      // Try another way.
     }
 
+    // Android isolates apps' temporary directories since Jelly Bean:
+    // https://github.com/google/guava/issues/4011#issuecomment-770020802
+    // So we can create files there with any permissions and still get security from the isolation.
+    return isAndroidVersionAtLeastJellyBean() ? new JavaIoCreator() : new ThrowingCreator();
+  }
+
+  private static boolean isJavaNioAvailable() {
+    try {
+      Class.forName("java.nio.file.Path");
+      return true;
+    } catch (ClassNotFoundException runningUnderAndroid) {
+      return false;
+    }
+  }
+
+  private static boolean isAndroidVersionAtLeastJellyBean() {
     try {
       int version = (int) Class.forName("android.os.Build$VERSION").getField("SDK_INT").get(null);
       int jellyBean =
@@ -79,18 +92,11 @@ abstract class TempFileCreator {
        * I assume that this check can't fail because JELLY_BEAN will be present only if we're
        * running under Jelly Bean or higher. But it seems safest to check.
        */
-      if (version < jellyBean) {
-        return new ThrowingCreator();
-      }
+      return version >= jellyBean;
     } catch (ReflectiveOperationException e) {
       // Should be impossible, but we want to return *something* so that class init succeeds.
-      return new ThrowingCreator();
+      return false;
     }
-
-    // Android isolates apps' temporary directories since Jelly Bean:
-    // https://github.com/google/guava/issues/4011#issuecomment-770020802
-    // So we can create files there with any permissions and still get security from the isolation.
-    return new JavaIoCreator();
   }
 
   /**
@@ -156,30 +162,8 @@ abstract class TempFileCreator {
 
     private static PermissionSupplier userPermissions() {
       try {
-        UserPrincipal user =
-            FileSystems.getDefault()
-                .getUserPrincipalLookupService()
-                .lookupPrincipalByName(getUsername());
-        ImmutableList<AclEntry> acl =
-            ImmutableList.of(
-                AclEntry.newBuilder()
-                    .setType(ALLOW)
-                    .setPrincipal(user)
-                    .setPermissions(EnumSet.allOf(AclEntryPermission.class))
-                    .setFlags(DIRECTORY_INHERIT, FILE_INHERIT)
-                    .build());
         FileAttribute<ImmutableList<AclEntry>> attribute =
-            new FileAttribute<ImmutableList<AclEntry>>() {
-              @Override
-              public String name() {
-                return "acl:acl";
-              }
-
-              @Override
-              public ImmutableList<AclEntry> value() {
-                return acl;
-              }
-            };
+            userAclAttribute(lookupCurrentUser());
         return () -> attribute;
       } catch (IOException e) {
         // We throw a new exception each time so that the stack trace is right.
@@ -187,6 +171,34 @@ abstract class TempFileCreator {
           throw new IOException("Could not find user", e);
         };
       }
+    }
+
+    private static UserPrincipal lookupCurrentUser() throws IOException {
+      return FileSystems.getDefault()
+          .getUserPrincipalLookupService()
+          .lookupPrincipalByName(getUsername());
+    }
+
+    private static FileAttribute<ImmutableList<AclEntry>> userAclAttribute(UserPrincipal user) {
+      ImmutableList<AclEntry> acl =
+          ImmutableList.of(
+              AclEntry.newBuilder()
+                  .setType(ALLOW)
+                  .setPrincipal(user)
+                  .setPermissions(EnumSet.allOf(AclEntryPermission.class))
+                  .setFlags(DIRECTORY_INHERIT, FILE_INHERIT)
+                  .build());
+      return new FileAttribute<ImmutableList<AclEntry>>() {
+        @Override
+        public String name() {
+          return "acl:acl";
+        }
+
+        @Override
+        public ImmutableList<AclEntry> value() {
+          return acl;
+        }
+      };
     }
 
     private static String getUsername() {

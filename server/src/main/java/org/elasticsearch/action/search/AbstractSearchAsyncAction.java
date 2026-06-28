@@ -676,7 +676,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
         }
         var storeMetrics = directoryMetrics.metrics(StoreMetrics.NAME);
         if (storeMetrics != null) {
-            searchResponseMetrics.recordStoreBytesRead(storeMetrics.cast(StoreMetrics.class).getBytesRead(), telemetryContext.attributes());
+            searchResponseMetrics.recordStoreBytesRead(storeMetrics.cast(StoreMetrics.class).getBytesRead(), telemetryContext);
         }
     }
 
@@ -823,7 +823,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
      * @see #onShardResult(SearchPhaseResult)
      */
     private void onPhaseDone() {  // as a tribute to @kimchy aka. finishHim()
-        searchResponseMetrics.recordSearchPhaseDuration(getName(), System.nanoTime() - phaseStartTimeInNanos, telemetryContext.attributes());
+        searchResponseMetrics.recordSearchPhaseDuration(getName(), System.nanoTime() - phaseStartTimeInNanos, telemetryContext);
         executeNextPhase(getName(), this::getNextPhase);
     }
 

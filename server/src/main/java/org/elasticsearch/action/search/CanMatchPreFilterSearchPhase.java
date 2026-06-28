@@ -175,7 +175,7 @@ final class CanMatchPreFilterSearchPhase {
                 searchResponseMetrics.recordSearchPhaseDuration(
                     PHASE_NAME,
                     System.nanoTime() - phaseStartTimeInNanos,
-                    telemetryContext.attributes()
+                    telemetryContext
                 );
             }
 

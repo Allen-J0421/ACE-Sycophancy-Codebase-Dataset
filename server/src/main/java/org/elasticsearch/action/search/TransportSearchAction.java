@@ -2682,8 +2682,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                 searchResponseMetrics.recordTookTime(
                     searchResponse.getTookInMillis(),
                     searchResponse.getTimeRangeFilterFromMillis(),
-                    telemetryContext.absoluteStartMillis(),
-                    telemetryContext.attributes()
+                    telemetryContext
                 );
                 SearchResponseMetrics.ResponseCountTotalStatus responseCountTotalStatus =
                     SearchResponseMetrics.ResponseCountTotalStatus.SUCCESS;
@@ -2702,7 +2701,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                         }
                     }
                 }
-                searchResponseMetrics.incrementResponseCount(responseCountTotalStatus, telemetryContext.attributes());
+                searchResponseMetrics.incrementResponseCount(responseCountTotalStatus, telemetryContext);
 
                 if (collectCCSTelemetry) {
                     extractCCSTelemetry(searchResponse);
@@ -2718,7 +2717,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
 
         @Override
         public void onFailure(Exception e) {
-            searchResponseMetrics.incrementResponseCount(SearchResponseMetrics.ResponseCountTotalStatus.FAILURE, telemetryContext.attributes());
+            searchResponseMetrics.incrementResponseCount(SearchResponseMetrics.ResponseCountTotalStatus.FAILURE, telemetryContext);
             if (collectCCSTelemetry) {
                 usageBuilder.setFailure(e);
                 recordTelemetry();

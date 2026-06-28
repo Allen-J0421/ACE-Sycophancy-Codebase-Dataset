@@ -10,6 +10,7 @@
 package org.elasticsearch.rest.action.search;
 
 import org.elasticsearch.action.search.SearchRequestAttributesExtractor;
+import org.elasticsearch.action.search.SearchTelemetryContext;
 import org.elasticsearch.telemetry.metric.LongCounter;
 import org.elasticsearch.telemetry.metric.LongHistogram;
 import org.elasticsearch.telemetry.metric.MeterRegistry;
@@ -121,6 +122,19 @@ public class SearchResponseMetrics {
         return recordTookDuration(tookTime, attributes);
     }
 
+    /**
+     * Records the response took time using the immutable telemetry bundle threaded through the search pipeline.
+     */
+    public long recordTookTime(long tookTime, Long timeRangeFilterFromMillis, SearchTelemetryContext telemetryContext) {
+        Map<String, Object> attributes = telemetryContext.attributes();
+        SearchRequestAttributesExtractor.addTimeRangeAttribute(
+            timeRangeFilterFromMillis,
+            telemetryContext.absoluteStartMillis(),
+            attributes
+        );
+        return recordTookDuration(tookTime, attributes);
+    }
+
     public void incrementResponseCount(ResponseCountTotalStatus responseCountTotalStatus) {
         responseCountTotalCounter.incrementBy(
             1L,
@@ -132,14 +146,38 @@ public class SearchResponseMetrics {
         responseCountTotalCounter.incrementBy(1L, attributesWithStatus(responseCountTotalStatus, attributes));
     }
 
+    /**
+     * Records response count metrics using the immutable telemetry bundle threaded through the search pipeline.
+     */
+    public void incrementResponseCount(ResponseCountTotalStatus responseCountTotalStatus, SearchTelemetryContext telemetryContext) {
+        Map<String, Object> attributes = telemetryContext.attributes();
+        responseCountTotalCounter.incrementBy(1L, attributesWithStatus(responseCountTotalStatus, attributes));
+    }
+
     public void recordSearchPhaseDuration(String phaseName, long tookInNanos, Map<String, Object> attributes) {
         LongHistogram queryPhaseDurationHistogram = phaseNameToDurationHistogram.get(phaseName);
         assert queryPhaseDurationHistogram != null;
         queryPhaseDurationHistogram.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), attributes);
     }
 
+    /**
+     * Records phase duration metrics using the immutable telemetry bundle threaded through the search pipeline.
+     */
+    public void recordSearchPhaseDuration(String phaseName, long tookInNanos, SearchTelemetryContext telemetryContext) {
+        LongHistogram queryPhaseDurationHistogram = phaseNameToDurationHistogram.get(phaseName);
+        assert queryPhaseDurationHistogram != null;
+        queryPhaseDurationHistogram.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), telemetryContext.attributes());
+    }
+
     public void recordStoreBytesRead(long bytesRead, Map<String, Object> attributes) {
         storeBytesReadHistogram.record(bytesRead, attributes);
+    }
+
+    /**
+     * Records store bytes read using the immutable telemetry bundle threaded through the search pipeline.
+     */
+    public void recordStoreBytesRead(long bytesRead, SearchTelemetryContext telemetryContext) {
+        storeBytesReadHistogram.record(bytesRead, telemetryContext.attributes());
     }
 
     private long recordTookDuration(long tookTime, Map<String, Object> attributes) {

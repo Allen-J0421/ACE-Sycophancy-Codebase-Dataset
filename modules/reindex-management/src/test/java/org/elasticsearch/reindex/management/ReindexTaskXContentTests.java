@@ -13,10 +13,10 @@ import org.elasticsearch.test.ESTestCase;
 
 import java.util.Optional;
 
-import static org.elasticsearch.reindex.management.GetReindexResponse.sanitizeDescription;
+import static org.elasticsearch.reindex.management.ReindexTaskXContent.sanitizeDescription;
 import static org.hamcrest.Matchers.equalTo;
 
-public class GetReindexResponseTests extends ESTestCase {
+public class ReindexTaskXContentTests extends ESTestCase {
 
     public void testSanitizeDescriptionNull() {
         assertThat(sanitizeDescription(null), equalTo(Optional.empty()));

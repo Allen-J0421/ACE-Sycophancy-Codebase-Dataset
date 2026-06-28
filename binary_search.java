@@ -4,11 +4,11 @@ final class BinarySearch {
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] sortedValues, int target) {
+    public static int binarySearch(int[] sortedValues, int target) {
         return indexOf(sortedValues, target);
     }
 
-    static int indexOf(int[] sortedValues, int target) {
+    public static int indexOf(int[] sortedValues, int target) {
         requireValues(sortedValues);
 
         int low = 0;
@@ -32,7 +32,7 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
-    static boolean contains(int[] sortedValues, int target) {
+    public static boolean contains(int[] sortedValues, int target) {
         return indexOf(sortedValues, target) != NOT_FOUND;
     }
 

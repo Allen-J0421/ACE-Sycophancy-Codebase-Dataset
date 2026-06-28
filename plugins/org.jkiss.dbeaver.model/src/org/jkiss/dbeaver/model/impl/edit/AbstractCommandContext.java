@@ -759,7 +759,7 @@ public abstract class AbstractCommandContext implements DBECommandContext {
         private List<DBECommandQueue> subQueues;
         private final DBPObject object;
         private final DBEObjectManager objectManager;
-        private List<CommandInfo> commands = new ArrayList<>();
+        private final List<CommandInfo> commands = new ArrayList<>();
 
         private CommandQueue(@NotNull DBEObjectManager objectManager, @Nullable CommandQueue parent, @NotNull DBPObject object) {
             this.parent = parent;

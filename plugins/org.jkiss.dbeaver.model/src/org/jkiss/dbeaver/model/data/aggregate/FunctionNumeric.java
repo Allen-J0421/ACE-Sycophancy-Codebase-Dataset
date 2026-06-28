@@ -36,8 +36,8 @@ public abstract class FunctionNumeric implements IAggregateFunction {
                 // Not a number. Its ok, do not warn  
             }
         }
-        if (value instanceof Number) {
-            return (Number) value;
+        if (value instanceof Number n) {
+            return n;
         }
         return null;
     }
@@ -49,8 +49,8 @@ public abstract class FunctionNumeric implements IAggregateFunction {
                 value = num;
             }
         }
-        if (value instanceof Comparable) {
-            return (Comparable<?>)value;
+        if (value instanceof Comparable<?> c) {
+            return c;
         }
         return null;
     }

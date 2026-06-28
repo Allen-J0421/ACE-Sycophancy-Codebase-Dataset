@@ -273,8 +273,7 @@ public class DBDAttributeConstraintBase {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DBDAttributeConstraintBase) {
-            DBDAttributeConstraintBase source = (DBDAttributeConstraintBase) obj;
+        if (obj instanceof DBDAttributeConstraintBase source) {
             return
                 this.orderPosition == source.orderPosition &&
                     this.orderDescending == source.orderDescending &&

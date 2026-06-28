@@ -160,8 +160,7 @@ public class DBDAttributeConstraint extends DBDAttributeConstraintBase {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DBDAttributeConstraint) {
-            DBDAttributeConstraint source = (DBDAttributeConstraint) obj;
+        if (obj instanceof DBDAttributeConstraint source) {
             return
                 CommonUtils.equalObjects(this.attribute, source.attribute) &&
                     super.equals(obj);

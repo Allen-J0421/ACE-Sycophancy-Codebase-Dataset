@@ -11,7 +11,7 @@ import org.elasticsearch.common.unit.ByteSizeValue;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Objects;
 
 /**
  * An inputstream throwing an exception when a preconfigured number of bytes is reached
@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 final class SizeLimitInputStream extends FilterInputStream {
 
-    private final int maxByteSize;
-    private final AtomicInteger byteCounter = new AtomicInteger(0);
+    private final long maxByteSize;
+    private long bytesRead;
 
     /**
      * Creates a new input stream, that throws an exception when a certain number of bytes is read
@@ -30,22 +30,26 @@ final class SizeLimitInputStream extends FilterInputStream {
      * @param in          The underlying inputstream containing the data
      */
     SizeLimitInputStream(ByteSizeValue maxByteSize, InputStream in) {
-        super(in);
-        this.maxByteSize = maxByteSize.bytesAsInt();
+        super(Objects.requireNonNull(in, "in"));
+        this.maxByteSize = Objects.requireNonNull(maxByteSize, "maxByteSize").getBytes();
     }
 
     @Override
     public int read() throws IOException {
-        byteCounter.incrementAndGet();
-        checkMaximumLengthReached();
-        return super.read();
+        int nextByte = super.read();
+        if (nextByte != -1) {
+            recordBytesRead(1);
+        }
+        return nextByte;
     }
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        byteCounter.addAndGet(len);
-        checkMaximumLengthReached();
-        return super.read(b, off, len);
+        int read = super.read(b, off, len);
+        if (read > 0) {
+            recordBytesRead(read);
+        }
+        return read;
     }
 
     @Override
@@ -63,8 +67,9 @@ final class SizeLimitInputStream extends FilterInputStream {
         return false;
     }
 
-    private void checkMaximumLengthReached() throws IOException {
-        if (byteCounter.get() > maxByteSize) {
+    private void recordBytesRead(int read) throws IOException {
+        bytesRead += read;
+        if (bytesRead > maxByteSize) {
             throw new IOException("Maximum limit of [" + maxByteSize + "] bytes reached");
         }
     }

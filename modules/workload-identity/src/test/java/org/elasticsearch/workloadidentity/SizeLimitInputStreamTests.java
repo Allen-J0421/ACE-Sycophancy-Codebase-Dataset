@@ -29,6 +29,14 @@ public class SizeLimitInputStreamTests extends ESTestCase {
         }
     }
 
+    public void testBulkReadCountsActualBytesRead() throws IOException {
+        int size = randomIntBetween(1, 100);
+        try (SizeLimitInputStream stream = streamOf(size, size)) {
+            assertThat(stream.read(new byte[size + randomIntBetween(1, 100)]), is(size));
+            assertThat(stream.read(), is(-1));
+        }
+    }
+
     public void testReadsOneByteAtATimeUpToLimitWithoutThrowing() throws IOException {
         int size = randomIntBetween(1, 100);
         try (SizeLimitInputStream stream = streamOf(size, size)) {

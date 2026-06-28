@@ -29,6 +29,15 @@ public class SizeLimitInputStreamTests extends ESTestCase {
         }
     }
 
+    public void testRead_WithBufferLargerThanStream_UsesActualBytesRead() throws IOException {
+        int size = randomIntBetween(1, 100);
+
+        try (var stream = createRandomLimitedStream(size, size)) {
+            assertThat(stream.read(new byte[size + randomIntBetween(1, 100)]), is(size));
+            assertThat(stream.read(), is(-1));
+        }
+    }
+
     public void testRead_OneByteAtATime_WithoutThrowingException() throws IOException {
         int size = randomIntBetween(1, 100);
 
@@ -65,6 +74,16 @@ public class SizeLimitInputStreamTests extends ESTestCase {
         });
 
         assertThat(e.getMessage(), is(format("Maximum limit of [%s] bytes reached", maxAllowed)));
+    }
+
+    public void testReadPastEofAfterLimitDoesNotThrow() throws IOException {
+        int size = randomIntBetween(1, 100);
+
+        try (var stream = createRandomLimitedStream(size, size)) {
+            assertThat(stream.readAllBytes().length, is(size));
+            assertThat(stream.read(), is(-1));
+            assertThat(stream.read(new byte[randomIntBetween(1, 100)]), is(-1));
+        }
     }
 
     public void testMarkAndReset_ThrowsUnsupportedException() throws IOException {

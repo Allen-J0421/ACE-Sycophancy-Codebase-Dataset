@@ -23,10 +23,35 @@ public class SizeLimitInputStreamTests extends ESTestCase {
         test(length, length);
     }
 
+    public void testReadWithBufferLargerThanStreamUsesActualBytesRead() throws IOException {
+        int length = scaledRandomIntBetween(1, 100);
+        ByteSizeValue byteSizeValue = ByteSizeValue.of(length, ByteSizeUnit.BYTES);
+        try (SizeLimitInputStream is = new SizeLimitInputStream(
+            byteSizeValue,
+            new ByteArrayInputStream(randomAlphaOfLength(length).getBytes(UTF_8))
+        )) {
+            assertThat(is.read(new byte[length + scaledRandomIntBetween(1, 100)]), is(length));
+            assertThat(is.read(), is(-1));
+        }
+    }
+
     public void testLimitReached() {
         int length = scaledRandomIntBetween(1, 100);
         IOException e = expectThrows(IOException.class, () -> test(length + 1, length));
         assertThat(e.getMessage(), is("Maximum limit of [" + length + "] bytes reached"));
+    }
+
+    public void testReadPastEofAfterLimitDoesNotThrow() throws IOException {
+        int length = scaledRandomIntBetween(1, 100);
+        ByteSizeValue byteSizeValue = ByteSizeValue.of(length, ByteSizeUnit.BYTES);
+        try (SizeLimitInputStream is = new SizeLimitInputStream(
+            byteSizeValue,
+            new ByteArrayInputStream(randomAlphaOfLength(length).getBytes(UTF_8))
+        )) {
+            assertThat(is.readAllBytes().length, is(length));
+            assertThat(is.read(), is(-1));
+            assertThat(is.read(new byte[scaledRandomIntBetween(1, 100)]), is(-1));
+        }
     }
 
     public void testMarking() {

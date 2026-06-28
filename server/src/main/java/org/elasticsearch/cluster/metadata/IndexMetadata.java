@@ -2827,22 +2827,20 @@ public class IndexMetadata implements Diffable<IndexMetadata>, ToXContentFragmen
                 token = parser.nextToken();
                 if (token == XContentParser.Token.START_OBJECT) {
                     switch (currentFieldName) {
-                        case KEY_SETTINGS:
-                            builder.settings(Settings.fromXContent(parser));
-                            break;
-                        case KEY_MAPPINGS:
+                        case KEY_SETTINGS -> builder.settings(Settings.fromXContent(parser));
+                        case KEY_MAPPINGS -> {
                             while ((currentFieldName = parser.nextFieldName()) != null) {
                                 token = parser.nextToken();
                                 XContentParserUtils.ensureExpectedToken(XContentParser.Token.START_OBJECT, token, parser);
                                 builder.putMapping(new MappingMetadata(currentFieldName, Map.of(currentFieldName, parser.mapOrdered())));
                             }
-                            break;
-                        case KEY_ALIASES:
+                        }
+                        case KEY_ALIASES -> {
                             while (parser.nextToken() != XContentParser.Token.END_OBJECT) {
                                 builder.putAlias(AliasMetadata.Builder.fromXContent(parser));
                             }
-                            break;
-                        case KEY_IN_SYNC_ALLOCATIONS:
+                        }
+                        case KEY_IN_SYNC_ALLOCATIONS -> {
                             while ((currentFieldName = parser.nextFieldName()) != null) {
                                 token = parser.nextToken();
                                 XContentParserUtils.ensureExpectedToken(XContentParser.Token.START_ARRAY, token, parser);
@@ -2855,47 +2853,38 @@ public class IndexMetadata implements Diffable<IndexMetadata>, ToXContentFragmen
                                 }
                                 builder.putInSyncAllocationIds(shardId, allocationIds);
                             }
-                            break;
-                        case KEY_ROLLOVER_INFOS:
+                        }
+                        case KEY_ROLLOVER_INFOS -> {
                             while ((currentFieldName = parser.nextFieldName()) != null) {
                                 token = parser.nextToken();
                                 XContentParserUtils.ensureExpectedToken(XContentParser.Token.START_OBJECT, token, parser);
                                 builder.putRolloverInfo(RolloverInfo.parse(parser, currentFieldName));
                             }
-                            break;
-                        case "warmers":
+                        }
+                        case "warmers" -> {
                             // TODO: do this in 6.0:
                             // throw new IllegalArgumentException("Warmers are not supported anymore - are you upgrading from 1.x?");
                             // ignore: warmers have been removed in 5.0 and are
                             // simply ignored when upgrading from 2.x
                             assert Version.CURRENT.major <= 5;
                             parser.skipChildren();
-                            break;
-                        case KEY_TIMESTAMP_RANGE:
-                            builder.timestampRange(IndexLongFieldRange.fromXContent(parser));
-                            break;
-                        case KEY_EVENT_INGESTED_RANGE:
-                            builder.eventIngestedRange(IndexLongFieldRange.fromXContent(parser));
-                            break;
-                        case KEY_STATS:
-                            builder.stats(IndexMetadataStats.fromXContent(parser));
-                            break;
-                        case KEY_INFERENCE_FIELDS:
+                        }
+                        case KEY_TIMESTAMP_RANGE -> builder.timestampRange(IndexLongFieldRange.fromXContent(parser));
+                        case KEY_EVENT_INGESTED_RANGE -> builder.eventIngestedRange(IndexLongFieldRange.fromXContent(parser));
+                        case KEY_STATS -> builder.stats(IndexMetadataStats.fromXContent(parser));
+                        case KEY_INFERENCE_FIELDS -> {
                             while (parser.nextToken() != XContentParser.Token.END_OBJECT) {
                                 builder.putInferenceField(InferenceFieldMetadata.fromXContent(parser));
                             }
-                            break;
-                        case KEY_RESHARDING:
-                            builder.reshardingMetadata(IndexReshardingMetadata.fromXContent(parser));
-                            break;
-                        default:
+                        }
+                        case KEY_RESHARDING -> builder.reshardingMetadata(IndexReshardingMetadata.fromXContent(parser));
+                        default ->
                             // assume it's custom index metadata
                             builder.putCustom(currentFieldName, parser.mapStrings());
-                            break;
                     }
                 } else if (token == XContentParser.Token.START_ARRAY) {
                     switch (currentFieldName) {
-                        case KEY_MAPPINGS:
+                        case KEY_MAPPINGS -> {
                             while ((token = parser.nextToken()) != XContentParser.Token.END_ARRAY) {
                                 if (token == XContentParser.Token.VALUE_EMBEDDED_OBJECT) {
                                     builder.putMapping(new MappingMetadata(new CompressedXContent(parser.binaryValue())));
@@ -2907,17 +2896,16 @@ public class IndexMetadata implements Diffable<IndexMetadata>, ToXContentFragmen
                                     }
                                 }
                             }
-                            break;
-                        case KEY_PRIMARY_TERMS:
+                        }
+                        case KEY_PRIMARY_TERMS -> {
                             ArrayList<Long> list = new ArrayList<>();
                             while ((token = parser.nextToken()) != XContentParser.Token.END_ARRAY) {
                                 XContentParserUtils.ensureExpectedToken(XContentParser.Token.VALUE_NUMBER, token, parser);
                                 list.add(parser.longValue());
                             }
                             builder.primaryTerms(list.stream().mapToLong(i -> i).toArray());
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Unexpected field for an array " + currentFieldName);
+                        }
+                        default -> throw new IllegalArgumentException("Unexpected field for an array " + currentFieldName);
                     }
                 } else if (token.isValue()) {
                     switch (currentFieldName) {

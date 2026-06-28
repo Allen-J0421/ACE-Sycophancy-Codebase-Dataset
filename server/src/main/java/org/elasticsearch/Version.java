@@ -583,9 +583,7 @@ public class Version implements VersionId<Version>, ToXContentFragment {
                 continue;
             }
             switch (field.getName()) {
-                case "CURRENT":
-                case "V_EMPTY":
-                    continue;
+                case "CURRENT", "V_EMPTY" -> { continue; }
             }
             assert field.getName().matches("V(_\\d+){3}?") : field.getName();
             try {

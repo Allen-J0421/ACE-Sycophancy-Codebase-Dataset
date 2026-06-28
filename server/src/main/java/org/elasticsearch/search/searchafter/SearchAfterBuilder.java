@@ -152,14 +152,14 @@ public class SearchAfterBuilder implements ToXContentObject, Writeable {
 
     private static Object convertValueFromSortType(String fieldName, SortField.Type sortType, Object value, DocValueFormat format) {
         try {
-            switch (sortType) {
-                case DOC:
+            return switch (sortType) {
+                case DOC -> {
                     if (value instanceof Number valueNumber) {
-                        return (valueNumber).intValue();
+                        yield (valueNumber).intValue();
                     }
-                    return Integer.parseInt(value.toString());
-
-                case INT:
+                    yield Integer.parseInt(value.toString());
+                }
+                case INT -> {
                     // As mixing INT and LONG sort in a single request is allowed,
                     // we may get search_after values that are larger than Integer.MAX_VALUE
                     // in this case convert them to Integer.MAX_VALUE
@@ -167,47 +167,45 @@ public class SearchAfterBuilder implements ToXContentObject, Writeable {
                         if (valueNumber.longValue() > Integer.MAX_VALUE) {
                             valueNumber = Integer.MAX_VALUE;
                         }
-                        return (valueNumber).intValue();
+                        yield (valueNumber).intValue();
                     }
-                    return Integer.parseInt(value.toString());
-
-                case SCORE, FLOAT:
+                    yield Integer.parseInt(value.toString());
+                }
+                case SCORE, FLOAT -> {
                     if (value instanceof Number) {
-                        return ((Number) value).floatValue();
+                        yield ((Number) value).floatValue();
                     }
-                    return Float.parseFloat(value.toString());
-
-                case DOUBLE:
+                    yield Float.parseFloat(value.toString());
+                }
+                case DOUBLE -> {
                     if (value instanceof Number) {
-                        return ((Number) value).doubleValue();
+                        yield ((Number) value).doubleValue();
                     }
-                    return Double.parseDouble(value.toString());
-
-                case LONG:
+                    yield Double.parseDouble(value.toString());
+                }
+                case LONG -> {
                     // for unsigned_long field type we want to pass search_after value through formatting
                     if (value instanceof Number && format != DocValueFormat.UNSIGNED_LONG_SHIFTED) {
-                        return ((Number) value).longValue();
+                        yield ((Number) value).longValue();
                     }
-                    return format.parseLong(
+                    yield format.parseLong(
                         value.toString(),
                         false,
                         () -> { throw new IllegalStateException("now() is not allowed in [search_after] key"); }
                     );
-
-                case STRING_VAL:
-                case STRING:
+                }
+                case STRING_VAL, STRING -> {
                     if (value instanceof BytesRef bytesRef) {
                         // _tsid is stored and ordered as BytesRef. We should not format it
-                        return bytesRef;
+                        yield bytesRef;
                     } else {
-                        return format.parseBytesRef(value);
+                        yield format.parseBytesRef(value);
                     }
-
-                default:
-                    throw new IllegalArgumentException(
-                        "Comparator type [" + sortType.name() + "] for field [" + fieldName + "] is not supported."
-                    );
-            }
+                }
+                default -> throw new IllegalArgumentException(
+                    "Comparator type [" + sortType.name() + "] for field [" + fieldName + "] is not supported."
+                );
+            };
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
                 "Failed to parse " + SEARCH_AFTER.getPreferredName() + " value for field [" + fieldName + "].",

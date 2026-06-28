@@ -39,9 +39,7 @@ final class BinarySearch {
     }
 
     private static void runDemo() {
-        int result = binarySearch(DEMO_VALUES, DEMO_TARGET);
-
-        printSearchResult(result);
+        printSearchResult(binarySearch(DEMO_VALUES, DEMO_TARGET));
     }
 
     private static void printSearchResult(int result) {

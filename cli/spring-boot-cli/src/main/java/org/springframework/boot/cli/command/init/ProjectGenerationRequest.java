@@ -311,53 +311,31 @@ class ProjectGenerationRequest {
 			}
 
 			ProjectType projectType = determineProjectType(metadata);
-			this.type = projectType.getId();
 			sb.append(projectType.getAction());
 			builder.setPath(sb.toString());
-
-			if (!this.dependencies.isEmpty()) {
-				builder.setParameter("dependencies", StringUtils.collectionToCommaDelimitedString(this.dependencies));
-			}
-
-			if (this.groupId != null) {
-				builder.setParameter("groupId", this.groupId);
-			}
-			String resolvedArtifactId = resolveArtifactId();
-			if (resolvedArtifactId != null) {
-				builder.setParameter("artifactId", resolvedArtifactId);
-			}
-			if (this.version != null) {
-				builder.setParameter("version", this.version);
-			}
-			if (this.name != null) {
-				builder.setParameter("name", this.name);
-			}
-			if (this.description != null) {
-				builder.setParameter("description", this.description);
-			}
-			if (this.packageName != null) {
-				builder.setParameter("packageName", this.packageName);
-			}
-			if (this.type != null) {
-				builder.setParameter("type", projectType.getId());
-			}
-			if (this.packaging != null) {
-				builder.setParameter("packaging", this.packaging);
-			}
-			if (this.javaVersion != null) {
-				builder.setParameter("javaVersion", this.javaVersion);
-			}
-			if (this.language != null) {
-				builder.setParameter("language", this.language);
-			}
-			if (this.bootVersion != null) {
-				builder.setParameter("bootVersion", this.bootVersion);
-			}
-
+			addParameterIfPresent(builder, "dependencies",
+					(!this.dependencies.isEmpty()) ? StringUtils.collectionToCommaDelimitedString(this.dependencies) : null);
+			addParameterIfPresent(builder, "groupId", this.groupId);
+			addParameterIfPresent(builder, "artifactId", resolveArtifactId());
+			addParameterIfPresent(builder, "version", this.version);
+			addParameterIfPresent(builder, "name", this.name);
+			addParameterIfPresent(builder, "description", this.description);
+			addParameterIfPresent(builder, "packageName", this.packageName);
+			addParameterIfPresent(builder, "type", projectType.getId());
+			addParameterIfPresent(builder, "packaging", this.packaging);
+			addParameterIfPresent(builder, "javaVersion", this.javaVersion);
+			addParameterIfPresent(builder, "language", this.language);
+			addParameterIfPresent(builder, "bootVersion", this.bootVersion);
 			return builder.build();
 		}
 		catch (URISyntaxException ex) {
 			throw new ReportableException("Invalid service URL (" + ex.getMessage() + ")");
+		}
+	}
+
+	private void addParameterIfPresent(URIBuilder builder, String name, @Nullable String value) {
+		if (value != null) {
+			builder.setParameter(name, value);
 		}
 	}
 

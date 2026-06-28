@@ -17,13 +17,13 @@
 package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -237,57 +237,45 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
+			List<?> nonOptionArguments = options.nonOptionArguments();
 			Assert.state(nonOptionArguments.size() <= 1, "Only the target location may be specified");
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
 			request.setServiceUrl(options.valueOf(this.target));
-			if (options.has(this.bootVersion)) {
-				request.setBootVersion(options.valueOf(this.bootVersion));
-			}
+			setOptionIfPresent(options, this.bootVersion, request::setBootVersion);
 			if (options.has(this.dependencies)) {
-				for (String dep : options.valueOf(this.dependencies).split(",")) {
-					request.getDependencies().add(dep.trim());
-				}
+				addDependencies(request, options.valueOf(this.dependencies));
 			}
-			if (options.has(this.javaVersion)) {
-				request.setJavaVersion(options.valueOf(this.javaVersion));
-			}
-			if (options.has(this.packageName)) {
-				request.setPackageName(options.valueOf(this.packageName));
-			}
+			setOptionIfPresent(options, this.javaVersion, request::setJavaVersion);
+			setOptionIfPresent(options, this.packageName, request::setPackageName);
 			request.setBuild(options.valueOf(this.build));
 			request.setFormat(options.valueOf(this.format));
 			request.setDetectType(options.has(this.build) || options.has(this.format));
-			if (options.has(this.type)) {
-				request.setType(options.valueOf(this.type));
-			}
-			if (options.has(this.packaging)) {
-				request.setPackaging(options.valueOf(this.packaging));
-			}
-			if (options.has(this.language)) {
-				request.setLanguage(options.valueOf(this.language));
-			}
-			if (options.has(this.groupId)) {
-				request.setGroupId(options.valueOf(this.groupId));
-			}
-			if (options.has(this.artifactId)) {
-				request.setArtifactId(options.valueOf(this.artifactId));
-			}
-			if (options.has(this.name)) {
-				request.setName(options.valueOf(this.name));
-			}
-			if (options.has(this.version)) {
-				request.setVersion(options.valueOf(this.version));
-			}
-			if (options.has(this.description)) {
-				request.setDescription(options.valueOf(this.description));
-			}
+			setOptionIfPresent(options, this.type, request::setType);
+			setOptionIfPresent(options, this.packaging, request::setPackaging);
+			setOptionIfPresent(options, this.language, request::setLanguage);
+			setOptionIfPresent(options, this.groupId, request::setGroupId);
+			setOptionIfPresent(options, this.artifactId, request::setArtifactId);
+			setOptionIfPresent(options, this.name, request::setName);
+			setOptionIfPresent(options, this.version, request::setVersion);
+			setOptionIfPresent(options, this.description, request::setDescription);
 			request.setExtract(options.has(this.extract));
 			if (nonOptionArguments.size() == 1) {
 				String output = (String) nonOptionArguments.get(0);
 				request.setOutput(output);
 			}
 			return request;
+		}
+
+		private void addDependencies(ProjectGenerationRequest request, String dependencies) {
+			for (String dependency : dependencies.split(",")) {
+				request.getDependencies().add(dependency.trim());
+			}
+		}
+
+		private void setOptionIfPresent(OptionSet options, OptionSpec<String> option, Consumer<String> setter) {
+			if (options.has(option)) {
+				setter.accept(options.valueOf(option));
+			}
 		}
 
 		private static String processArgument(String argument) {

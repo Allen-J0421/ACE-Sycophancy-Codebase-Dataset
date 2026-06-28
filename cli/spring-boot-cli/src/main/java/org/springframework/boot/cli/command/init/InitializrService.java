@@ -206,7 +206,7 @@ class InitializrService {
 			int statusCode = statusLine.getStatusCode();
 			message += " (unexpected " + statusCode + " error)";
 		}
-		throw new ReportableException(message);
+		return new ReportableException(message);
 	}
 
 	private @Nullable String extractMessage(@Nullable HttpEntity entity) {

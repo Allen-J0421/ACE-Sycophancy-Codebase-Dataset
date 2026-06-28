@@ -186,6 +186,15 @@ class ProjectGenerationRequestTests {
 	}
 
 	@Test
+	void detectedTypeIsResolvedForEachInvocation() throws Exception {
+		InitializrServiceMetadata metadata = readMetadata();
+		setBuildAndFormat("gradle", null);
+		assertThat(this.request.generateUrl(metadata)).isEqualTo(createDefaultUrl("?type=gradle-project"));
+		setBuildAndFormat("maven", null);
+		assertThat(this.request.generateUrl(metadata)).isEqualTo(createUrl("/pom.xml?type=maven-build"));
+	}
+
+	@Test
 	void typeAndBuildAndFormat() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", "project");

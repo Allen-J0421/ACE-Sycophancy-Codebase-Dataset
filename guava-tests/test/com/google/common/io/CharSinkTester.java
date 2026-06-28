@@ -16,6 +16,7 @@
 
 package com.google.common.io;
 
+import static com.google.common.base.StandardSystemProperty.LINE_SEPARATOR;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.base.Joiner;
@@ -105,7 +106,7 @@ public class CharSinkTester extends SourceSinkTester<CharSink, String, CharSinkF
   }
 
   public void testWriteLines_systemDefaultSeparator() throws IOException {
-    String separator = System.getProperty("line.separator");
+    String separator = LINE_SEPARATOR.value();
     sink.writeLines(lines);
 
     assertContainsExpectedLines(separator);
@@ -119,7 +120,7 @@ public class CharSinkTester extends SourceSinkTester<CharSink, String, CharSinkF
   }
 
   public void testWriteLinesStream_systemDefaultSeparator() throws IOException {
-    String separator = System.getProperty("line.separator");
+    String separator = LINE_SEPARATOR.value();
     sink.writeLines(lines.stream());
 
     assertContainsExpectedLines(separator);

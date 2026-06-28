@@ -90,7 +90,7 @@ public class CharSinkTest extends IoTestCase {
 
   public void testWriteLines_withDefaultSeparator() throws IOException {
     sink.writeLines(ImmutableList.of("foo", "bar", "baz"));
-    String separator = System.getProperty("line.separator");
+    String separator = LINE_SEPARATOR.value();
     assertThat(sink.getString())
         .isEqualTo("foo" + separator + "bar" + separator + "baz" + separator);
   }

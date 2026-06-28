@@ -29,10 +29,8 @@ public class Initializer
     private static final ArrayList<String> CLIMATE_CHANGE_SCENARIO_NAMES = new ArrayList<>(Arrays.asList("none", "low", "medium", "high"));
     // False of the simulation starts during the day, true if it starts during the night.
     private static final boolean DEFAULT_START_TIME = false;
-    // The list of colors available for animal objects.
-    private ArrayList<Color> listOfColorsForAnimals;
-    // The index of the next color from the list used for an animal.
-    private int idxOfColorToUseNext;
+    // The palette supplying colors for animal species.
+    private final AnimalColorPalette animalColorPalette;
     // List of species to evolve in the field.
     private List<Species> speciesToEvolveInSimulation;
     // To read habitat related data.
@@ -62,11 +60,8 @@ public class Initializer
         habitatReader = new HabitatCSVReader();
         animalReader = new AnimalCSVReader();
         plantReader = new PlantCSVReader();
-        listOfColorsForAnimals = new ArrayList<>();
+        animalColorPalette = new AnimalColorPalette();
         errorThrower = new ErrorThrower();
-
-        populateAnimalColors();
-        idxOfColorToUseNext = 0;
 
         openGUI();
     }
@@ -141,51 +136,50 @@ public class Initializer
      */
     private void populateWithAnimals(HashMap<String, Integer> animalsToCreate, Field field)
     {
-        idxOfColorToUseNext = 0;
-        Location freeLocationToPlaceAnimal;
+        animalColorPalette.reset();
 
         for(String animalName : animalsToCreate.keySet()) {
             animalReader.extractDataFor(animalName);
-            if (animalsToCreate.get(animalName) != 0)
+            int numberToCreate = animalsToCreate.get(animalName);
+            if (numberToCreate != 0)
             {
-                // Retrieve appropriate data.
-                String name = animalReader.getName();
-                int maximumTemperature = animalReader.getMaximumTemperature();
-                int minimumTemperature = animalReader.getMinimumTemperature();
-                int maxAge = animalReader.getMaximumAge();
-                int breedingAge = animalReader.getBreedingAge();
-                double breedingProbability = animalReader.getBreedingProbability();
-                int maxLitterSize = animalReader.getMaxLitterSize();
-                int nutritionalValue = animalReader.getNutritionalValue();
-                boolean hibernates = animalReader.canHibernate();
-                boolean isNocturnal = animalReader.isNocturnal();
-
-                if (animalReader.isPredator()) {
-                    // Predator object should be created, retrieving appropriate data.
-                    int strength = animalReader.getStrength();
-
-                    // Creating the right number of Predator objects.
-                    for (int i = 0; i < animalsToCreate.get(animalName); i++) {
-                        freeLocationToPlaceAnimal = findAvailableLocation(field);
-                        Predator newPredator = new Predator(strength, field, freeLocationToPlaceAnimal, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
-                        speciesToEvolveInSimulation.add(newPredator);
-                    }
+                // Create the requested number of this species, then assign it a color.
+                for (int i = 0; i < numberToCreate; i++) {
+                    Location location = findAvailableLocation(field);
+                    speciesToEvolveInSimulation.add(createAnimalFromReaderData(field, location));
                 }
-                else {
-                    // Animal object should be created
-                    // Creating the right number of Animal objects.
-                    for (int i = 0; i < animalsToCreate.get(animalName); i++) {
-                        freeLocationToPlaceAnimal = findAvailableLocation(field);
-                        Animal newAnimal = new Animal(field, freeLocationToPlaceAnimal, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
-                        speciesToEvolveInSimulation.add(newAnimal);
-                    }
-                }
-
-                // Setting the color for this species.
-                view.setColor(name, listOfColorsForAnimals.get(idxOfColorToUseNext));
-                idxOfColorToUseNext ++;
+                view.setColor(animalReader.getName(), animalColorPalette.nextColor());
             }
         }
+    }
+
+    /**
+     * Create a single animal of the species currently loaded in the animal reader, placed at the
+     * given location. A Predator is created when the species is a predator, otherwise a plain Animal;
+     * either way the returned object is an Animal, which keeps the population loop type-agnostic.
+     *
+     * @param field (Field) The field in which the animal will evolve.
+     * @param location (Location) The location at which the animal should be placed.
+     * @return (Animal) the created animal (possibly a Predator).
+     */
+    private Animal createAnimalFromReaderData(Field field, Location location)
+    {
+        String name = animalReader.getName();
+        int maximumTemperature = animalReader.getMaximumTemperature();
+        int minimumTemperature = animalReader.getMinimumTemperature();
+        int maxAge = animalReader.getMaximumAge();
+        int breedingAge = animalReader.getBreedingAge();
+        double breedingProbability = animalReader.getBreedingProbability();
+        int maxLitterSize = animalReader.getMaxLitterSize();
+        int nutritionalValue = animalReader.getNutritionalValue();
+        boolean hibernates = animalReader.canHibernate();
+        boolean isNocturnal = animalReader.isNocturnal();
+
+        if (animalReader.isPredator()) {
+            int strength = animalReader.getStrength();
+            return new Predator(strength, field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
+        }
+        return new Animal(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, breedingProbability, maxAge, breedingAge, maxLitterSize, RANDOM_ANIMAL_AGE, hibernates, isNocturnal);
     }
 
     /**
@@ -288,38 +282,5 @@ public class Initializer
             totalNumber += animalsToCreate.get(animalName);
         }
         return totalNumber;
-    }
-
-    /**
-     * Populate the list of colors to use for animals with 25 colors. 25 animals can therefore be created
-     * , other colors be added to implement more animal choices.
-     */
-    private void populateAnimalColors()
-    {
-        listOfColorsForAnimals.add(Color.decode("0xFF1493"));
-        listOfColorsForAnimals.add(Color.decode("0xFFA500"));
-        listOfColorsForAnimals.add(Color.decode("0x007CFF"));
-        listOfColorsForAnimals.add(Color.decode("0x44FF99"));
-        listOfColorsForAnimals.add(Color.decode("0x7F0000"));
-        listOfColorsForAnimals.add(Color.decode("0x00FFFF"));
-        listOfColorsForAnimals.add(Color.decode("0xBECF33"));
-        listOfColorsForAnimals.add(Color.decode("0x483D8B"));
-        listOfColorsForAnimals.add(Color.decode("0x7F007F"));
-        listOfColorsForAnimals.add(Color.decode("0xA020F0"));
-        listOfColorsForAnimals.add(Color.decode("0x7E70CA"));
-        listOfColorsForAnimals.add(Color.decode("0xFF9988"));
-        listOfColorsForAnimals.add(Color.decode("0xFFFF00"));
-        listOfColorsForAnimals.add(Color.decode("0x772D26"));
-        listOfColorsForAnimals.add(Color.decode("0xBD7791"));
-        listOfColorsForAnimals.add(Color.decode("0x808080"));
-        listOfColorsForAnimals.add(Color.decode("0xD5A9F5"));
-        listOfColorsForAnimals.add(Color.decode("0xFFB6C1"));
-        listOfColorsForAnimals.add(Color.decode("0xFFE378"));
-        listOfColorsForAnimals.add(Color.decode("0x00008B"));
-        listOfColorsForAnimals.add(Color.decode("0x808000"));
-        listOfColorsForAnimals.add(Color.decode("0x8FBC8F"));
-        listOfColorsForAnimals.add(Color.decode("0xFF0000"));
-        listOfColorsForAnimals.add(Color.decode("0x008B8B"));
-        listOfColorsForAnimals.add(Color.decode("0xADD8E6"));
     }
 }

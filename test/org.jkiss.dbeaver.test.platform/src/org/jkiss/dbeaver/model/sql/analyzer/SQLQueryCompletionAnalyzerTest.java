@@ -94,6 +94,37 @@ public class SQLQueryCompletionAnalyzerTest extends DBeaverUnitTest {
     }
 
     @Test
+    public void testMultiStatementCompletionContext() throws DBException {
+        final RequestResult request = RequestBuilder
+            .tables(s -> {
+                s.table("Table1", t -> {
+                    t.attribute("Col1");
+                    t.attribute("Col2");
+                });
+                s.table("Table2", t -> {
+                    t.attribute("Col3");
+                    t.attribute("Col4");
+                });
+            })
+            .prepare();
+
+        {
+            final Set<String> proposals = request.requestNewStrings("SELECT * FROM Table1; |");
+
+            Assertions.assertTrue(proposals.contains("SELECT"));
+        }
+
+        {
+            final Set<String> proposals = request.requestNewStrings("SELECT * FROM Table1; SELECT | FROM Table2");
+
+            Assertions.assertTrue(proposals.contains("Col3"));
+            Assertions.assertTrue(proposals.contains("Col4"));
+            Assertions.assertFalse(proposals.contains("Col1"));
+            Assertions.assertFalse(proposals.contains("Col2"));
+        }
+    }
+
+    @Test
     public void testColumnNamesCompletion() throws DBException {
         final RequestResult request = RequestBuilder
             .tables(s -> {

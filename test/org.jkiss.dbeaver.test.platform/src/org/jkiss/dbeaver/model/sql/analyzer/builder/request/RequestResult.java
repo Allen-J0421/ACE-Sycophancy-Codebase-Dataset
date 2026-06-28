@@ -35,16 +35,10 @@ import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
 import org.jkiss.dbeaver.model.sql.parser.SQLRuleManager;
-import org.jkiss.dbeaver.model.sql.semantics.SQLDocumentScriptItemSyntaxContext;
-import org.jkiss.dbeaver.model.sql.semantics.SQLQueryModelRecognizer;
-import org.jkiss.dbeaver.model.sql.semantics.SQLQueryRecognitionContext;
-import org.jkiss.dbeaver.model.sql.semantics.SQLScriptItemAtOffset;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionAnalyzer;
-import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContext;
+import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionProposal;
-import org.jkiss.dbeaver.model.sql.semantics.model.SQLQueryModel;
 import org.jkiss.utils.Pair;
-import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -114,22 +108,8 @@ public class RequestResult {
         boolean simpleMode
     ) throws DBException {
         final SQLCompletionRequest request = prepareCompletionRequest(sql, simpleMode);
-        final String queryText = request.getActiveQuery().getText();
         final DBRProgressMonitor monitor = new VoidProgressMonitor();
-
-        SQLQueryRecognitionContext recognitionContext = new SQLQueryRecognitionContext(
-            monitor,
-            request.getContext().getExecutionContext(),
-            true,
-            true,
-            request.getContext().getSyntaxManager(),
-            request.getContext().getDataSource().getSQLDialect()
-        );
-        recognitionContext.reset();
-        SQLQueryModel queryModel = SQLQueryModelRecognizer.recognizeQuery(recognitionContext, queryText);
-        Assertions.assertNotNull(queryModel);
-
-        final SQLQueryCompletionAnalyzer analyzer = getSqlQueryCompletionAnalyzer(queryText, queryModel, request);
+        final SQLQueryCompletionAnalyzer analyzer = getSqlQueryCompletionAnalyzer(request);
         try {
             analyzer.run(monitor);
         } catch (InvocationTargetException | InterruptedException e) {
@@ -139,30 +119,17 @@ public class RequestResult {
     }
 
     @NotNull
-    private static SQLQueryCompletionAnalyzer getSqlQueryCompletionAnalyzer(
-        String queryText,
-        SQLQueryModel queryModel,
-        SQLCompletionRequest request
-    ) {
-        SQLDocumentScriptItemSyntaxContext scriptItemContext = new SQLDocumentScriptItemSyntaxContext(
-            0,
-            queryText,
-            queryModel,
-            queryText.length()
-        );
-        scriptItemContext.setHasContextBoundaryAtLength(false);
-
-        final SQLQueryCompletionAnalyzer analyzer = new SQLQueryCompletionAnalyzer(
-            m -> SQLQueryCompletionContext.prepareCompletionContext(
-                new SQLScriptItemAtOffset(0, scriptItemContext),
-                request.getDocumentOffset(),
-                request.getContext().getExecutionContext(),
-                request.getContext().getDataSource().getSQLDialect()
+    private static SQLQueryCompletionAnalyzer getSqlQueryCompletionAnalyzer(SQLCompletionRequest request) {
+        return new SQLQueryCompletionAnalyzer(
+            monitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
+                monitor,
+                request,
+                request.getDocument().get(),
+                request.getDocumentOffset()
             ),
             request,
             request::getDocumentOffset
         );
-        return analyzer;
     }
 
     @NotNull

@@ -248,7 +248,7 @@ public class RemoteInfo implements Writeable, ToXContentObject, Closeable {
         if (query == null) {
             return BytesReference.bytes(matchAllQuery().toXContent(builder, ToXContent.EMPTY_PARAMS));
         }
-        if ((query instanceof Map) == false) {
+        if (!(query instanceof Map)) {
             throw new IllegalArgumentException("Expected [query] to be an object but was [" + query + "]");
         }
         @SuppressWarnings("unchecked")

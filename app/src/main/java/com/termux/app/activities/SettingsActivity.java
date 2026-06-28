@@ -2,8 +2,6 @@ package com.termux.app.activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -12,7 +10,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.termux.R;
 import com.termux.shared.activities.ReportActivity;
-import com.termux.shared.file.FileUtils;
 import com.termux.shared.models.ReportInfo;
 import com.termux.app.models.UserAction;
 import com.termux.shared.interact.ShareUtils;
@@ -20,6 +17,7 @@ import com.termux.shared.android.PackageUtils;
 import com.termux.shared.android.AndroidUtils;
 import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.termux.TermuxConstants;
+import com.termux.shared.termux.TermuxReportUtils;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.activity.media.AppCompatActivityUtils;
 import com.termux.shared.theme.NightMode;
@@ -87,12 +85,9 @@ public class SettingsActivity extends AppCompatActivity {
 
                         String userActionName = UserAction.ABOUT.getName();
 
-                        ReportInfo reportInfo = new ReportInfo(userActionName,
+                        ReportInfo reportInfo = TermuxReportUtils.newReportInfo(userActionName,
                             TermuxConstants.TERMUX_APP.TERMUX_SETTINGS_ACTIVITY_NAME, title);
                         reportInfo.setReportString(aboutString.toString());
-                        reportInfo.setReportSaveFileLabelAndPath(userActionName,
-                            Environment.getExternalStorageDirectory() + "/" +
-                                FileUtils.sanitizeFileName(TermuxConstants.TERMUX_APP_NAME + "-" + userActionName + ".log", true, true));
 
                         FragmentActivity activity = getActivity();
                         if (activity == null) return;

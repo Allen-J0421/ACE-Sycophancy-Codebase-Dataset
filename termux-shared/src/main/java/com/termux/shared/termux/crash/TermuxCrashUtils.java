@@ -6,8 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Environment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,13 +15,13 @@ import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.crash.CrashHandler;
 import com.termux.shared.data.DataUtils;
 import com.termux.shared.errors.Error;
-import com.termux.shared.file.FileUtils;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.markdown.MarkdownUtils;
 import com.termux.shared.models.ReportInfo;
 import com.termux.shared.notification.NotificationUtils;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.TermuxConstants.TERMUX_APP;
+import com.termux.shared.termux.TermuxReportUtils;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.models.UserAction;
 import com.termux.shared.termux.notification.TermuxNotificationUtils;
@@ -324,13 +322,10 @@ public class TermuxCrashUtils implements CrashHandler.CrashHandlerClient {
 
         String userActionName = UserAction.CRASH_REPORT.getName();
 
-        ReportInfo reportInfo = new ReportInfo(userActionName, logTag, title.toString());
+        ReportInfo reportInfo = TermuxReportUtils.newReportInfo(userActionName, logTag, title.toString());
         reportInfo.setReportString(reportString.toString());
-        reportInfo.setReportStringSuffix("\n\n" + TermuxUtils.getReportIssueMarkdownString(currentPackageContext));
+        TermuxReportUtils.setReportIssueMarkdownSuffix(currentPackageContext, reportInfo);
         reportInfo.setAddReportInfoHeaderToMarkdown(true);
-        reportInfo.setReportSaveFileLabelAndPath(userActionName,
-            Environment.getExternalStorageDirectory() + "/" +
-                FileUtils.sanitizeFileName(TermuxConstants.TERMUX_APP_NAME + "-" + userActionName + ".log", true, true));
 
         ReportActivity.NewInstanceResult result = ReportActivity.newInstance(termuxPackageContext, reportInfo);
         if (result.contentIntent == null) return;

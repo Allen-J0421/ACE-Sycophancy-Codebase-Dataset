@@ -5,14 +5,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Build;
-import android.os.Environment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.termux.shared.R;
 import com.termux.shared.activities.ReportActivity;
-import com.termux.shared.file.FileUtils;
 import com.termux.shared.termux.file.TermuxFileUtils;
 import com.termux.shared.shell.command.result.ResultConfig;
 import com.termux.shared.shell.command.result.ResultData;
@@ -35,6 +32,7 @@ import com.termux.shared.termux.settings.properties.TermuxAppSharedProperties;
 import com.termux.shared.shell.command.ExecutionCommand;
 import com.termux.shared.data.DataUtils;
 import com.termux.shared.markdown.MarkdownUtils;
+import com.termux.shared.termux.TermuxReportUtils;
 import com.termux.shared.termux.TermuxUtils;
 
 public class TermuxPluginUtils {
@@ -366,13 +364,10 @@ public class TermuxPluginUtils {
 
         String userActionName = UserAction.PLUGIN_EXECUTION_COMMAND.getName();
 
-        ReportInfo reportInfo = new ReportInfo(userActionName, logTag, title.toString());
+        ReportInfo reportInfo = TermuxReportUtils.newReportInfo(userActionName, logTag, title.toString());
         reportInfo.setReportString(reportString.toString());
-        reportInfo.setReportStringSuffix("\n\n" + TermuxUtils.getReportIssueMarkdownString(currentPackageContext));
+        TermuxReportUtils.setReportIssueMarkdownSuffix(currentPackageContext, reportInfo);
         reportInfo.setAddReportInfoHeaderToMarkdown(true);
-        reportInfo.setReportSaveFileLabelAndPath(userActionName,
-            Environment.getExternalStorageDirectory() + "/" +
-                FileUtils.sanitizeFileName(TermuxConstants.TERMUX_APP_NAME + "-" + userActionName + ".log", true, true));
 
         ReportActivity.NewInstanceResult result = ReportActivity.newInstance(termuxPackageContext, reportInfo);
         if (result.contentIntent == null) return;

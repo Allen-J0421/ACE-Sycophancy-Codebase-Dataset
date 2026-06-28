@@ -2496,7 +2496,7 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
                     );
                 }
 
-                SearchTelemetryContext telemetryContext = new SearchTelemetryContext(
+                SearchTelemetryContext telemetryContext = SearchTelemetryContext.of(
                     searchRequestAttributes,
                     shardSearchRequest.nowInMillis()
                 );

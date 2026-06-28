@@ -197,7 +197,7 @@ public class TransportSearchShardsAction extends TransportAction<SearchShardsReq
                         )
                     );
                 } else {
-                    final SearchTelemetryContext telemetryContext = createTelemetryContext(
+                    final SearchTelemetryContext telemetryContext = SearchTelemetryContext.from(
                         searchRequest,
                         concreteIndexNames,
                         timeProvider
@@ -245,14 +245,4 @@ public class TransportSearchShardsAction extends TransportAction<SearchShardsReq
         return groups;
     }
 
-    private static SearchTelemetryContext createTelemetryContext(
-        SearchRequest searchRequest,
-        String[] localIndices,
-        TransportSearchAction.SearchTimeProvider timeProvider
-    ) {
-        return new SearchTelemetryContext(
-            SearchRequestAttributesExtractor.extractAttributes(searchRequest, localIndices),
-            timeProvider.absoluteStartMillis()
-        );
-    }
 }

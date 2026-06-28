@@ -513,7 +513,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
 
             final ActionListener<SearchResponse> searchResponseActionListener;
             if (collectSearchTelemetry) {
-                SearchTelemetryContext telemetryContext = createTelemetryContext(
+                SearchTelemetryContext telemetryContext = SearchTelemetryContext.from(
                     original,
                     Arrays.stream(resolvedIndices.getConcreteLocalIndices()).map(Index::getName).toArray(String[]::new),
                     timeProvider
@@ -1980,7 +1980,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
             iteratorsForSearchPhase = shardIterators;
         }
 
-        final SearchTelemetryContext telemetryContext = createTelemetryContext(
+        final SearchTelemetryContext telemetryContext = SearchTelemetryContext.from(
             searchRequest,
             concreteLocalIndices,
             timeProvider
@@ -2072,17 +2072,6 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
             }
         }
         return preFilterShardSize < numShards && (SearchService.canRewriteToMatchNone(source) || hasPrimaryFieldSort(source));
-    }
-
-    private static SearchTelemetryContext createTelemetryContext(
-        SearchRequest searchRequest,
-        String[] localIndices,
-        SearchTimeProvider timeProvider
-    ) {
-        return new SearchTelemetryContext(
-            SearchRequestAttributesExtractor.extractAttributes(searchRequest, localIndices),
-            timeProvider.absoluteStartMillis()
-        );
     }
 
     private static boolean hasReadOnlyIndices(String[] indices, ProjectState projectState) {

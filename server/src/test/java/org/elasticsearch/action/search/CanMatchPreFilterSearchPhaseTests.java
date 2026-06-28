@@ -116,7 +116,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
     }
 
     private static SearchTelemetryContext telemetryContext() {
-        return new SearchTelemetryContext(Map.of(), 0L);
+        return SearchTelemetryContext.of(Map.of(), 0L);
     }
 
     public void testFilterShards() throws InterruptedException {

@@ -9,6 +9,8 @@
 
 package org.elasticsearch.action.search;
 
+import org.elasticsearch.search.internal.ShardSearchRequest;
+
 import java.util.Map;
 
 /**
@@ -19,5 +21,44 @@ import java.util.Map;
 public record SearchTelemetryContext(Map<String, Object> attributes, long absoluteStartMillis) {
     SearchTelemetryContext {
         attributes = Map.copyOf(attributes);
+    }
+
+    /**
+     * Creates telemetry from precomputed attributes and the request start time.
+     */
+    public static SearchTelemetryContext of(
+        Map<String, Object> attributes,
+        long absoluteStartMillis
+    ) {
+        return new SearchTelemetryContext(attributes, absoluteStartMillis);
+    }
+
+    /**
+     * Extracts telemetry from a top-level search request using the resolved local indices.
+     */
+    public static SearchTelemetryContext from(
+        SearchRequest searchRequest,
+        String[] localIndices,
+        TransportSearchAction.SearchTimeProvider timeProvider
+    ) {
+        return of(
+            SearchRequestAttributesExtractor.extractAttributes(searchRequest, localIndices),
+            timeProvider.absoluteStartMillis()
+        );
+    }
+
+    /**
+     * Extracts telemetry from a shard-level search request and adds the current
+     * shard timing metadata.
+     */
+    public static SearchTelemetryContext from(
+        ShardSearchRequest shardSearchRequest,
+        Long timeRangeFilterFromMillis
+    ) {
+        long nowInMillis = shardSearchRequest.nowInMillis();
+        return of(
+            SearchRequestAttributesExtractor.extractAttributes(shardSearchRequest, timeRangeFilterFromMillis, nowInMillis),
+            nowInMillis
+        );
     }
 }

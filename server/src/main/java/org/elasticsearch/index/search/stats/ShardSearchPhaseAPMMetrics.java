@@ -9,7 +9,6 @@
 
 package org.elasticsearch.index.search.stats;
 
-import org.elasticsearch.action.search.SearchRequestAttributesExtractor;
 import org.elasticsearch.action.search.SearchTelemetryContext;
 import org.elasticsearch.index.query.SearchExecutionContext;
 import org.elasticsearch.index.shard.SearchOperationListener;
@@ -88,10 +87,7 @@ public final class ShardSearchPhaseAPMMetrics implements SearchOperationListener
         ShardSearchRequest request,
         Long timeRangeFilterFromMillis
     ) {
-        SearchTelemetryContext telemetryContext = new SearchTelemetryContext(
-            SearchRequestAttributesExtractor.extractAttributes(request, timeRangeFilterFromMillis, request.nowInMillis()),
-            request.nowInMillis()
-        );
+        SearchTelemetryContext telemetryContext = SearchTelemetryContext.from(request, timeRangeFilterFromMillis);
         histogramMetric.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), telemetryContext.attributes());
     }
 }

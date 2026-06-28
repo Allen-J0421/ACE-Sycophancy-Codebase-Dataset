@@ -1,4 +1,6 @@
 class BinarySearch {
+    private static final int NOT_FOUND = -1;
+
     static int binarySearch(int[] numbers, int target) {
         int low = 0;
         int high = numbers.length - 1;
@@ -17,7 +19,7 @@ class BinarySearch {
             }
         }
 
-        return -1;
+        return NOT_FOUND;
     }
 
     public static void main(String[] args) {
@@ -25,10 +27,14 @@ class BinarySearch {
         int target = 10;
         int result = binarySearch(numbers, target);
 
-        if (result == -1) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + result);
+        System.out.println(formatSearchResult(result));
+    }
+
+    private static String formatSearchResult(int result) {
+        if (result == NOT_FOUND) {
+            return "Element is not present in array";
         }
+
+        return "Element is present at index " + result;
     }
 }

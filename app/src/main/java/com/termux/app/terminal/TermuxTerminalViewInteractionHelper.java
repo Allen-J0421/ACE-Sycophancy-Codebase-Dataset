@@ -1,14 +1,9 @@
 package com.termux.app.terminal;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Environment;
-import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -25,9 +20,6 @@ import com.termux.shared.data.DataUtils;
 import com.termux.shared.file.FileUtils;
 import com.termux.shared.interact.MessageDialogUtils;
 import com.termux.shared.interact.ShareUtils;
-import com.termux.shared.logger.Logger;
-import com.termux.shared.markdown.MarkdownUtils;
-import com.termux.shared.shell.ShellUtils;
 import com.termux.shared.termux.TermuxBootstrap;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.extrakeys.SpecialButton;
@@ -35,6 +27,9 @@ import com.termux.shared.termux.settings.properties.TermuxPropertyConstants;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.data.TermuxUrlUtils;
 import com.termux.shared.view.KeyboardUtils;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.markdown.MarkdownUtils;
+import com.termux.shared.shell.ShellUtils;
 import com.termux.terminal.KeyHandler;
 import com.termux.terminal.TerminalEmulator;
 import com.termux.terminal.TerminalSession;
@@ -132,6 +127,126 @@ final class TermuxTerminalViewInteractionHelper {
             else
                 Logger.logVerbose(LOG_TAG, "Not showing soft keyboard onSingleTapUp since its disabled");
         }
+    }
+
+    boolean onCodePoint(final int codePoint, boolean ctrlDown, boolean virtualFnKeyDown, TerminalSession session,
+        Runnable clearVirtualFnKeyDownRunnable) {
+        if (virtualFnKeyDown) {
+            int resultingKeyCode = -1;
+            int resultingCodePoint = -1;
+            boolean altDown = false;
+            int lowerCase = Character.toLowerCase(codePoint);
+            switch (lowerCase) {
+                case 'w':
+                    resultingKeyCode = KeyEvent.KEYCODE_DPAD_UP;
+                    break;
+                case 'a':
+                    resultingKeyCode = KeyEvent.KEYCODE_DPAD_LEFT;
+                    break;
+                case 's':
+                    resultingKeyCode = KeyEvent.KEYCODE_DPAD_DOWN;
+                    break;
+                case 'd':
+                    resultingKeyCode = KeyEvent.KEYCODE_DPAD_RIGHT;
+                    break;
+                case 'p':
+                    resultingKeyCode = KeyEvent.KEYCODE_PAGE_UP;
+                    break;
+                case 'n':
+                    resultingKeyCode = KeyEvent.KEYCODE_PAGE_DOWN;
+                    break;
+                case 't':
+                    resultingKeyCode = KeyEvent.KEYCODE_TAB;
+                    break;
+                case 'i':
+                    resultingKeyCode = KeyEvent.KEYCODE_INSERT;
+                    break;
+                case 'h':
+                    resultingCodePoint = '~';
+                    break;
+                case 'u':
+                    resultingCodePoint = '_';
+                    break;
+                case 'l':
+                    resultingCodePoint = '|';
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    resultingKeyCode = (codePoint - '1') + KeyEvent.KEYCODE_F1;
+                    break;
+                case '0':
+                    resultingKeyCode = KeyEvent.KEYCODE_F10;
+                    break;
+                case 'e':
+                    resultingCodePoint = /*Escape*/ 27;
+                    break;
+                case '.':
+                    resultingCodePoint = /*^.*/ 28;
+                    break;
+                case 'b':
+                case 'f':
+                case 'x':
+                    resultingCodePoint = lowerCase;
+                    altDown = true;
+                    break;
+                case 'v':
+                    resultingCodePoint = -1;
+                    AudioManager audio = (AudioManager) mHost.getActivity().getSystemService(Context.AUDIO_SERVICE);
+                    audio.adjustSuggestedStreamVolume(AudioManager.ADJUST_SAME, AudioManager.USE_DEFAULT_STREAM_TYPE, AudioManager.FLAG_SHOW_UI);
+                    break;
+                case 'q':
+                case 'k':
+                    mHost.toggleTerminalToolbar();
+                    clearVirtualFnKeyDownRunnable.run();
+                    break;
+            }
+
+            if (resultingKeyCode != -1) {
+                TerminalEmulator term = session.getEmulator();
+                session.write(KeyHandler.getCode(resultingKeyCode, 0, term.isCursorKeysApplicationMode(), term.isKeypadApplicationMode()));
+            } else if (resultingCodePoint != -1) {
+                session.writeCodePoint(altDown, resultingCodePoint);
+            }
+            return true;
+        } else if (ctrlDown) {
+            if (codePoint == 106 /* Ctrl+j or \n */ && !session.isRunning()) {
+                mTermuxTerminalSessionActivityClient.removeFinishedSession(session);
+                return true;
+            }
+
+            List<KeyboardShortcut> shortcuts = mSessionShortcuts;
+            if (shortcuts != null && !shortcuts.isEmpty()) {
+                int codePointLowerCase = Character.toLowerCase(codePoint);
+                for (int i = shortcuts.size() - 1; i >= 0; i--) {
+                    KeyboardShortcut shortcut = shortcuts.get(i);
+                    if (codePointLowerCase == shortcut.codePoint) {
+                        switch (shortcut.shortcutAction) {
+                            case TermuxPropertyConstants.ACTION_SHORTCUT_CREATE_SESSION:
+                                mTermuxTerminalSessionActivityClient.addNewSession(false, null);
+                                return true;
+                            case TermuxPropertyConstants.ACTION_SHORTCUT_NEXT_SESSION:
+                                mTermuxTerminalSessionActivityClient.switchToSession(true);
+                                return true;
+                            case TermuxPropertyConstants.ACTION_SHORTCUT_PREVIOUS_SESSION:
+                                mTermuxTerminalSessionActivityClient.switchToSession(false);
+                                return true;
+                            case TermuxPropertyConstants.ACTION_SHORTCUT_RENAME_SESSION:
+                                mTermuxTerminalSessionActivityClient.renameSession(session);
+                                return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     void changeFontSize(boolean increase) {

@@ -22,7 +22,6 @@ public abstract class Producer extends Actor
     {
         super(field, location, consumptionWorth, breedingProbability,
               maxBirthsAtOnce, 0, maxAge);
-        currentAge = 0;
     }
 
     /**

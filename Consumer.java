@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class Consumer extends Actor
 {
     // Properties shared between all consumers:
-    private static final int STARTING_SUSTENANCE_LEVEL = 20;
+    private static final int STARTING_SUSTENANCE_LEVEL = 30;
     private static final double NEW_DISEASE = 0.0005;
     private static final double NIGHT_PREY_MISS_PROBABILITY = 0.5;
 
@@ -42,7 +42,7 @@ public abstract class Consumer extends Actor
         this.prey = prey;
         this.breedingAge = breedingAge;
         this.primaryConsumer = primaryConsumer;
-        sustenanceLevel = 30;
+        sustenanceLevel = STARTING_SUSTENANCE_LEVEL;
     }
 
     /**

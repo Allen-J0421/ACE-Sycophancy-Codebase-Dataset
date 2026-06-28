@@ -1,7 +1,6 @@
- import java.util.Random;
+import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.awt.Color;
 import javafx.application.Application;
 
@@ -48,7 +47,7 @@ public class Simulator
     // A graphical view of the simulation:
     private static SimulatorView view;
     // A Boolean indicating whether or not to reset the StatisticsView:
-    public static boolean resetStatisticsView = false;
+    static boolean resetStatisticsView = false;
 
     /**
      * Construct a simulation field with default size.
@@ -126,10 +125,9 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for (int step = 1; step <= numSteps && view.isViable(field); step++)
+        for (int i = 0; i < numSteps && view.isViable(field); i++)
         {
             simulateOneStep();
-            //delay(60);   // uncomment this to run more slowly
         }
     }
 
@@ -151,14 +149,8 @@ public class Simulator
         List<Actor> newActors = new ArrayList<>();
 
         // Let all actors act:
-        for (Iterator<Actor> it = actors.iterator(); it.hasNext(); )
-        {
-            Actor actor = it.next();
-
-            actor.act(newActors);
-
-            if(!actor.getIsAlive()) it.remove();
-        }
+        for (Actor actor : actors) actor.act(newActors);
+        actors.removeIf(a -> !a.getIsAlive());
 
         // Add the newly born actors to the main list:
         actors.addAll(newActors);
@@ -210,20 +202,4 @@ public class Simulator
         }
     }
 
-    /**
-     * Pause for a given time.
-     *
-     * @param millisec The time to pause for, in milliseconds
-     */
-    private void delay(int millisec)
-    {
-        try
-        {
-            Thread.sleep(millisec);
-        }
-        catch (InterruptedException ie)
-        {
-            // Wake up.
-        }
-    }
 }

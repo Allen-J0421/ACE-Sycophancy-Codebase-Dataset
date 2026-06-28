@@ -215,13 +215,7 @@ public abstract class Animal
      * Randomly assigns an animal a gender
      */
     protected void setGender() {
-        Random rand = Randomizer.getRandom();
-        if (rand.nextInt(2) == 1) {
-            isMale = true;
-        }
-        else {
-            isMale = false;
-        }
+        isMale = rand.nextInt(2) == 1;
     }
 
     /**
@@ -256,7 +250,6 @@ public abstract class Animal
      * 1 in 100 chance of assigning true to disease
      */
     protected void giveDisease() {
-        Random rand = Randomizer.getRandom();
         if (rand.nextInt(101) == 1) {
             disease = true;
         }

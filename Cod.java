@@ -1,11 +1,10 @@
-import java.util.Random;
 import java.util.List;
 import java.util.Iterator;
 
 /**
  * A simple model of a cod.
- * 
- * Cods age, move, eat seaweed, consume oxygen, propogate, 
+ *
+ * Cods age, move, eat seaweed, consume oxygen, propogate,
  * and may get infected by disease and die of that or of weather.
  *
  * @version 2022/03/02
@@ -27,157 +26,34 @@ public class Cod extends Animal
     // number of steps a cod can go before it has to eat again.
     private static final int SEAWEED_FOOD_VALUE = 13;
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-
-    // Individual characteristics (instance fields).
-
-    // The cod's age.
-    private int age;
-
-    // THe cod's food level
-    private int foodLevel;
-
-    // Track the first step at which the animal is infected;
-    private int infectionStartStep;
-
     /**
      * Create a new cod. A cod may be created with age
      * zero (a new born) or with a random age.
-     * 
+     *
      * @param randomAge If true, the cod will have a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
     public Cod(boolean randomAge, Field field, Location location)
     {
-        super(field, location);
-
-        if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(SEAWEED_FOOD_VALUE);
-        }
-        else {
-            age = 0;
-            foodLevel = SEAWEED_FOOD_VALUE;
-        }
+        super(field, location, randomAge);
     }
 
-    /**
-     * This is what the cod does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * 
-     * @param newCods A list to return newly born cods.
-     * @param atDayTime true if current step is daytime false otherwise.
-     * @param oxygenLevel The inital level of dissolved oxygen in the water.
-     * @param disease The disease may happened during simulation.  
-     * @param step current step.
-     * 
-     * @return the oxygen level the species produced or consumed after action.
-     * 
-     */
-    public double act(List<Creature> newCods, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {   
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED){
-            setDead();
-            return 0;
-        }     
+    protected int getMaxAge() { return MAX_AGE; }
 
-        //if the cod dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
-            return 0;
+    protected int getMaxFoodValue() { return SEAWEED_FOOD_VALUE; }
 
-        // check if the cod is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
+    protected int getBreedingAge() { return BREEDING_AGE; }
 
-        incrementAge();
-        incrementHunger();
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
 
-        if(isAlive() && !needSleep(atDayTime)) {
-            giveBirth(newCods);            
-            // Move towards a source of food if found.
-            Location newLocation = search(disease, step);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
 
-        }
-        return -ANIMAL_OXYGEN_REQUIRED;         
-    }
+    protected boolean requiresMate() { return true; }
 
-    /**
-     * Increase the age.
-     * This could result in the cod's death.
-     */
-    private void incrementAge()
+    protected Animal createChild(Field field, Location location)
     {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-
-    /**
-     * Make this cod more hungry. This could result in the cod's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
-    }
-
-    /**
-     * Check whether or not this cod is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newCods A list to return newly born cods.
-
-     */
-    private void giveBirth(List<Creature> newCod)
-    {
-        // New cods are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Cod young = new Cod(false, field, loc);
-            newCod.add(young);
-        }
-    }
-
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A cod can breed if it has reached the breeding age.
-     * @return true if the cod can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE && encounterWithDiffSex();
+        return new Cod(false, field, location);
     }
 
     /**
@@ -203,7 +79,7 @@ public class Cod extends Animal
 
     /**
      * Look for seaweed adjacent to the current location.
-     * Only the first live seaweed is eaten., if the nearby animal is 
+     * Only the first live seaweed is eaten., if the nearby animal is
      * infected, then this animal also may be infected.
      * @param disease disease.
      * @param step int step.
@@ -227,7 +103,7 @@ public class Cod extends Animal
             // if food is found, set the food death.
             if(creature instanceof Seaweed) {
                 Seaweed seaweed = (Seaweed) creature;
-                if(seaweed.isAlive()) { 
+                if(seaweed.isAlive()) {
                     seaweed.setDead();
                     foodLevel = SEAWEED_FOOD_VALUE;
                     return loc;

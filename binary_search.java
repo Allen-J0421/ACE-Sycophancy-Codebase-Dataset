@@ -11,20 +11,32 @@ class BinarySearch {
         int high = numbers.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
 
             if (numbers[mid] == target) {
                 return mid;
             }
 
             if (numbers[mid] < target) {
-                low = mid + 1;
+                low = nextLowerBound(mid);
             } else {
-                high = mid - 1;
+                high = nextUpperBound(mid);
             }
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
+    private static int nextLowerBound(int mid) {
+        return mid + 1;
+    }
+
+    private static int nextUpperBound(int mid) {
+        return mid - 1;
     }
 
     private static String formatSearchResult(int index) {

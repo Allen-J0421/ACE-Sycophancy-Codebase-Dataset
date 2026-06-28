@@ -47,45 +47,22 @@ public class Emu extends Animal
         }
     }
 
+    protected int getMaxAge() { return MAX_AGE; }
+
+    protected int getBreedingAge() { return BREEDING_AGE; }
+
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
     /**
-     * This is what the emu does most of the time: it eats grass.
-     * In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newEmus A list to return newly born emus.
-     * @param time the current time in the simulation
+     * Emus are active overnight, sleeping through the middle of the day.
      */
-    public void act(List<Animal> newEmus,int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
+    protected boolean isActive(int time) { return (time <= 9) || (time >= 21); }
 
-        if(isAlive() && ((time <= 9)||(time >= 21))) {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Emu young = new Emu(false, field, loc);
-                    young.setGender();
-                    newEmus.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected Animal createYoung(Field field, Location location) {
+        return new Emu(false, field, location);
     }
-
 
     /**
      * Look for grass adjacent to the current location.
@@ -93,7 +70,7 @@ public class Emu extends Animal
      * If acacia is adjacent, it is 'trampled'
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

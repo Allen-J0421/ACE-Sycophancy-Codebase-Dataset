@@ -47,43 +47,21 @@ public class Dingo extends Animal
         }
     }
     
+    protected int getMaxAge() { return MAX_AGE; }
+
+    protected int getBreedingAge() { return BREEDING_AGE; }
+
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
     /**
-     * This is what the dingo does most of the time: it hunts for
-     * snakes. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newDingoes A list to return newly born dingoes.
-     * @param time the current time in the simulation
+     * Dingoes are active from late morning into the night.
      */
-    public void act(List<Animal> newDingoes, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive() && ((time>=8)&&(time <=24)))
-        {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Dingo young = new Dingo(false, field, loc);
-                    young.setGender();
-                    newDingoes.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected boolean isActive(int time) { return (time >= 8) && (time <= 24); }
+
+    protected Animal createYoung(Field field, Location location) {
+        return new Dingo(false, field, location);
     }
 
     /**
@@ -92,7 +70,7 @@ public class Dingo extends Animal
      * If it is a plant, then it is 'trampled'
      * @return where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    protected Location findFood() {
         if (getFog()){
             if (rand.nextInt(2) == 0) {
                 Field field = getField();

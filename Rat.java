@@ -47,44 +47,21 @@ public class Rat extends Animal
         }
     }
 
-    /**
-     * This is what the rat does most of the time: it hunts for
-     * ants. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newRats A list to return newly born rats.
-     * @param time the current time in the simulation
-     */
-    public void act(List<Animal> newRats, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
+    protected int getMaxAge() { return MAX_AGE; }
 
-        if(isAlive() && ((time >= 0)&&(time <= 18)))
-        {
-            if (getDisease()){
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Rat young = new Rat(false, field, loc);
-                    young.setGender();
-                    newRats.add(young);
-                }
-            }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected int getBreedingAge() { return BREEDING_AGE; }
+
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    /**
+     * Rats are active in the first part of the day.
+     */
+    protected boolean isActive(int time) { return (time >= 0) && (time <= 18); }
+
+    protected Animal createYoung(Field field, Location location) {
+        return new Rat(false, field, location);
     }
 
     /**
@@ -93,7 +70,7 @@ public class Rat extends Animal
      * if there is a plant adjacent, it can be 'trampled'
      * @return where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

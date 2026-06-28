@@ -46,9 +46,87 @@ public abstract class Animal
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
+     *
+     * This is a template method: it defines the fixed daily routine common to
+     * every animal (grow older, get hungrier and, while alive and active,
+     * spread disease, breed and then feed/move/die). The species-specific
+     * decisions are delegated to the hook methods declared below.
+     *
      * @param newAnimals A list to receive newly born animals.
+     * @param time The current time in the simulation.
      */
-    abstract public void act(List<Animal> newAnimals, int time);
+    public void act(List<Animal> newAnimals, int time) {
+        incrementAge(getMaxAge());
+        incrementHunger();
+        if(isAlive() && isActive(time)) {
+            if(getDisease()) {
+                spreadDisease();
+            }
+            if(giveBirth(getBreedingAge())) {
+                Field field = getField();
+                List<Location> free = field.getFreeAdjacentLocations(getLocation());
+                int births = breed(getBreedingAge(), getBreedingProbability(), getMaxLitterSize());
+                for(int b = 0; b < births && free.size() > 0; b++) {
+                    Location loc = free.remove(0);
+                    newAnimals.add(createYoung(field, loc));
+                }
+            }
+            Location newLocation = findFood();
+            if(newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            if(newLocation != null) {
+                setLocation(newLocation);
+            }
+            else {
+                setDead();
+            }
+        }
+    }
+
+    // ---- Species-specific hooks used by the act() template method ----
+
+    /**
+     * @return The age beyond which this species dies of old age.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * @return The minimum age at which this species can breed.
+     */
+    protected abstract int getBreedingAge();
+
+    /**
+     * @return The probability that a breeding-age animal breeds in a step.
+     */
+    protected abstract double getBreedingProbability();
+
+    /**
+     * @return The maximum number of offspring produced in a single breed.
+     */
+    protected abstract int getMaxLitterSize();
+
+    /**
+     * Decide whether this animal is active (awake and behaving) at the given
+     * time of day.
+     * @param time The current time in the simulation.
+     * @return true if the animal should take its turn at this time.
+     */
+    protected abstract boolean isActive(int time);
+
+    /**
+     * Look for food adjacent to the current location, consuming it if found.
+     * @return Where food was found, or null if it wasn't.
+     */
+    protected abstract Location findFood();
+
+    /**
+     * Create a newborn of this species at the given place.
+     * @param field The field the young is placed in.
+     * @param location The location of the young within the field.
+     * @return The newly created animal.
+     */
+    protected abstract Animal createYoung(Field field, Location location);
 
     /**
      * Check whether the animal is alive or not.

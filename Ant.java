@@ -50,45 +50,21 @@ public class Ant extends Animal
         }
     }
 
+    protected int getMaxAge() { return MAX_AGE; }
+
+    protected int getBreedingAge() { return BREEDING_AGE; }
+
+    protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+
+    protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
     /**
-     * This is what the ant does most of the time: it eats grass
-     * and acacia. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newAnts A list to return newly born ants.
-     * @param time the current time in the simulation
+     * Ants are active through the middle of the day.
      */
-    public void act(List<Animal> newAnts, int time) {
-        incrementAge(MAX_AGE);
-        incrementHunger();
+    protected boolean isActive(int time) { return (time >= 4) && (time <= 20); }
 
-        if(isAlive() && ((time >= 4)&&(time <= 20)))
-        {
-            if (getDisease()) {
-                spreadDisease();
-            }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Ant young = new Ant(false, field, loc);
-                    young.setGender();
-                    newAnts.add(young);
-                }
-            }
-
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-        }
+    protected Animal createYoung(Field field, Location location) {
+        return new Ant(false, field, location);
     }
 
     /**
@@ -96,7 +72,7 @@ public class Ant extends Animal
      * Only the first grass or acacia is eaten.
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

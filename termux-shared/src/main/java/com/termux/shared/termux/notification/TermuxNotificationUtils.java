@@ -1,6 +1,7 @@
 package com.termux.shared.termux.notification;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.drawable.Icon;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.termux.shared.R;
 import com.termux.shared.activities.ReportActivity;
+import com.termux.shared.markdown.MarkdownUtils;
 import com.termux.shared.models.ReportInfo;
 import com.termux.shared.android.resource.ResourceUtils;
 import com.termux.shared.notification.NotificationUtils;
@@ -81,6 +83,39 @@ public class TermuxNotificationUtils {
         }
 
         return new ReportActivityNotificationIntents(notificationId, contentIntent, deleteIntent);
+    }
+
+    public static void sendReportNotification(@NonNull Context currentPackageContext,
+                                              @NonNull Context termuxPackageContext,
+                                              @NonNull String channelId,
+                                              @NonNull String channelName,
+                                              @NonNull CharSequence title,
+                                              @NonNull String notificationTextString,
+                                              @NonNull ReportActivityNotificationIntents reportActivityNotificationIntents) {
+        setupHighPriorityNotificationChannel(termuxPackageContext, channelId, channelName);
+
+        CharSequence notificationTextCharSequence =
+            MarkdownUtils.getSpannedMarkdownText(termuxPackageContext, notificationTextString);
+
+        Notification.Builder builder = getTermuxOrPluginAppNotificationBuilder(
+            currentPackageContext, termuxPackageContext, channelId, Notification.PRIORITY_HIGH,
+            title, notificationTextCharSequence, notificationTextCharSequence,
+            reportActivityNotificationIntents.contentIntent, reportActivityNotificationIntents.deleteIntent,
+            NotificationUtils.NOTIFICATION_MODE_VIBRATE);
+        if (builder == null) return;
+
+        NotificationManager notificationManager = NotificationUtils.getNotificationManager(termuxPackageContext);
+        if (notificationManager != null) {
+            notificationManager.notify(reportActivityNotificationIntents.notificationId, builder.build());
+        }
+    }
+
+    private static void setupHighPriorityNotificationChannel(@NonNull Context context,
+                                                             @NonNull String channelId,
+                                                             @NonNull String channelName) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+        NotificationUtils.setupNotificationChannel(context, channelId, channelName,
+            NotificationManager.IMPORTANCE_HIGH);
     }
 
     /**

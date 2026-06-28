@@ -1,24 +1,16 @@
 package com.termux.shared.termux.plugins;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.os.Build;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.termux.shared.R;
-import com.termux.shared.activities.ReportActivity;
 import com.termux.shared.termux.file.TermuxFileUtils;
 import com.termux.shared.shell.command.result.ResultConfig;
 import com.termux.shared.shell.command.result.ResultData;
 import com.termux.shared.errors.Errno;
 import com.termux.shared.errors.Error;
-import com.termux.shared.notification.NotificationUtils;
 import com.termux.shared.termux.models.UserAction;
 import com.termux.shared.termux.notification.TermuxNotificationUtils;
-import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants;
 import com.termux.shared.shell.command.result.ResultSender;
 import com.termux.shared.shell.ShellUtils;
 import com.termux.shared.android.AndroidUtils;
@@ -31,7 +23,6 @@ import com.termux.shared.models.ReportInfo;
 import com.termux.shared.termux.settings.properties.TermuxAppSharedProperties;
 import com.termux.shared.shell.command.ExecutionCommand;
 import com.termux.shared.data.DataUtils;
-import com.termux.shared.markdown.MarkdownUtils;
 import com.termux.shared.termux.TermuxReportUtils;
 import com.termux.shared.termux.TermuxUtils;
 
@@ -280,7 +271,7 @@ public class TermuxPluginUtils {
      * @param message The message for the error report.
      * @param forceNotification If set to {@code true}, then a notification will be shown
      *                          regardless of if pending intent is {@code null} or
-     *                          {@link TermuxPreferenceConstants.TERMUX_APP#KEY_PLUGIN_ERROR_NOTIFICATIONS_ENABLED}
+     *                          {@link com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP#KEY_PLUGIN_ERROR_NOTIFICATIONS_ENABLED}
      *                          is {@code false}.
      * @param showToast If set to {@code true}, then a toast will be shown for {@code notificationTextString}.
      * @param addDeviceInfo If set to {@code true}, then device info should be appended to the message.
@@ -306,7 +297,7 @@ public class TermuxPluginUtils {
      * @param message The message for the error report.
      * @param forceNotification If set to {@code true}, then a notification will be shown
      *                          regardless of if pending intent is {@code null} or
-     *                          {@link TermuxPreferenceConstants.TERMUX_APP#KEY_PLUGIN_ERROR_NOTIFICATIONS_ENABLED}
+     *                          {@link com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP#KEY_PLUGIN_ERROR_NOTIFICATIONS_ENABLED}
      *                          is {@code false}.
      * @param showToast If set to {@code true}, then a toast will be shown for {@code notificationTextString}.
      * @param appInfoMode The {@link TermuxUtils.AppInfoMode} to use to add app info to the message.
@@ -346,7 +337,8 @@ public class TermuxPluginUtils {
         if (showToast)
             Logger.showToast(currentPackageContext, notificationTextString, true);
 
-        // Send a notification to show the error which when clicked will open the ReportActivity
+        // Send a notification to show the error which when clicked will open the
+        // {@link com.termux.shared.activities.ReportActivity}
         // to show the details of the error
         if (title == null || title.toString().isEmpty())
             title = TermuxConstants.TERMUX_APP_NAME + " Plugin Execution Command Error";
@@ -373,65 +365,10 @@ public class TermuxPluginUtils {
             TermuxNotificationUtils.getReportActivityNotificationIntents(termuxPackageContext, reportInfo);
         if (reportActivityNotificationIntents == null) return;
 
-        // Setup the notification channel if not already set up
-        setupPluginCommandErrorsNotificationChannel(termuxPackageContext);
-
-        // Use markdown in notification
-        CharSequence notificationTextCharSequence = MarkdownUtils.getSpannedMarkdownText(termuxPackageContext, notificationTextString);
-        //CharSequence notificationTextCharSequence = notificationTextString;
-
-        // Build the notification
-        Notification.Builder builder = getPluginCommandErrorsNotificationBuilder(currentPackageContext, termuxPackageContext,
-            title, notificationTextCharSequence, notificationTextCharSequence,
-            reportActivityNotificationIntents.contentIntent, reportActivityNotificationIntents.deleteIntent,
-            NotificationUtils.NOTIFICATION_MODE_VIBRATE);
-        if (builder == null) return;
-
-        // Send the notification
-        NotificationManager notificationManager = NotificationUtils.getNotificationManager(termuxPackageContext);
-        if (notificationManager != null)
-            notificationManager.notify(reportActivityNotificationIntents.notificationId, builder.build());
-    }
-
-    /**
-     * Get {@link Notification.Builder} for {@link TermuxConstants#TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_ID}
-     * and {@link TermuxConstants#TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_NAME}.
-     *
-     * @param currentPackageContext The {@link Context} of current package.
-     * @param termuxPackageContext The {@link Context} of termux package.
-     * @param title The title for the notification.
-     * @param notificationText The second line text of the notification.
-     * @param notificationBigText The full text of the notification that may optionally be styled.
-     * @param contentIntent The {@link PendingIntent} which should be sent when notification is clicked.
-     * @param deleteIntent The {@link PendingIntent} which should be sent when notification is deleted.
-     * @param notificationMode The notification mode. It must be one of {@code NotificationUtils.NOTIFICATION_MODE_*}.
-     * @return Returns the {@link Notification.Builder}.
-     */
-    @Nullable
-    public static Notification.Builder getPluginCommandErrorsNotificationBuilder(final Context currentPackageContext,
-                                                                                 final Context termuxPackageContext,
-                                                                                 final CharSequence title,
-                                                                                 final CharSequence notificationText,
-                                                                                 final CharSequence notificationBigText,
-                                                                                 final PendingIntent contentIntent,
-                                                                                 final PendingIntent deleteIntent,
-                                                                                 final int notificationMode) {
-        return TermuxNotificationUtils.getTermuxOrPluginAppNotificationBuilder(
-            currentPackageContext, termuxPackageContext,
-            TermuxConstants.TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_ID, Notification.PRIORITY_HIGH,
-            title, notificationText, notificationBigText, contentIntent, deleteIntent, notificationMode);
-    }
-
-    /**
-     * Setup the notification channel for {@link TermuxConstants#TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_ID} and
-     * {@link TermuxConstants#TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_NAME}.
-     *
-     * @param context The {@link Context} for operations.
-     */
-    public static void setupPluginCommandErrorsNotificationChannel(final Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-        NotificationUtils.setupNotificationChannel(context, TermuxConstants.TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_ID,
-            TermuxConstants.TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+        TermuxNotificationUtils.sendReportNotification(currentPackageContext, termuxPackageContext,
+            TermuxConstants.TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_ID,
+            TermuxConstants.TERMUX_PLUGIN_COMMAND_ERRORS_NOTIFICATION_CHANNEL_NAME,
+            title, notificationTextString, reportActivityNotificationIntents);
     }
 
 

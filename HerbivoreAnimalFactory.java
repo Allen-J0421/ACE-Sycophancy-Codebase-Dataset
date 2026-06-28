@@ -1,42 +1,30 @@
 /**
  * Factory Class responsible for creating animals that are herbivore
  *
- * @version 1.0
+ * @version 1.1
  */
 public class HerbivoreAnimalFactory extends AnimalFactory
 {
-    
+
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
-    
+
     /**
-     * Creates A CarnivoreAnimalFactory.
-     * 
+     * Creates a HerbivoreAnimalFactory.
+     *
      * @param field reference to later pass into animals
      */
     public HerbivoreAnimalFactory(Field field) {
         super(field);
     }
-    
+
     /**
-     * Creates and returns an animal given a particular type.
-     * 
-     * @param animalType The type of animal to create.
-     * @param location The initial location of the newly created animal.
-     * @return the newly created animal.
+     * Registers the herbivore species this factory can create.
      */
-    public Animal getAnimal(String animalType, Location location) {
-        if(animalType == null) {
-            return null;
-        }
-        Gender randomGender = Utils.getRandomEnumValue(Gender.class);
-        if (animalType.equalsIgnoreCase("SHEEP")) {
-            return new Sheep(true, field, location, randomGender);
-        }
-        else if (animalType.equalsIgnoreCase("REINDEER")) {
-            return new Reindeer(true, field, location, randomGender);
-        }
-        return null;
+    @Override
+    protected void registerSpecies() {
+        register("SHEEP", (location, gender) -> new Sheep(true, field, location, gender));
+        register("REINDEER", (location, gender) -> new Reindeer(true, field, location, gender));
     }
 }

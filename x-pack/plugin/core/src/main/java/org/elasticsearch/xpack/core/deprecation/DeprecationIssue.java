@@ -274,7 +274,7 @@ public class DeprecationIssue implements Writeable, ToXContentObject {
             final List<Action> actionsIntersection;
             if (actions != null && another.actions != null) {
                 List<Action> combinedActions = this.actions.stream()
-                    .filter(action -> action instanceof RemovalAction == false)
+                    .filter(action -> !(action instanceof RemovalAction))
                     .collect(Collectors.toList());
                 Optional<Action> thisRemovalAction = this.actions.stream().filter(action -> action instanceof RemovalAction).findFirst();
                 Optional<Action> otherRemovalAction = another.actions.stream()

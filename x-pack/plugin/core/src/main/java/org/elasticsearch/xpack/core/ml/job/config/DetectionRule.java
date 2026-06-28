@@ -121,11 +121,10 @@ public class DetectionRule implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (obj instanceof DetectionRule == false) {
+        if (!(obj instanceof DetectionRule other)) {
             return false;
         }
 
-        DetectionRule other = (DetectionRule) obj;
         return Objects.equals(actions, other.actions)
             && Objects.equals(scope, other.scope)
             && Objects.equals(conditions, other.conditions)

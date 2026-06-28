@@ -114,10 +114,9 @@ public class ExpressionModel {
         if (left.equals(other)) {
             return true;
         }
-        if ((other instanceof Number) == false) {
+        if (!(other instanceof Number right)) {
             return false;
         }
-        Number right = (Number) other;
         if (left instanceof Double || left instanceof Float || right instanceof Double || right instanceof Float) {
             return Double.compare(left.doubleValue(), right.doubleValue()) == 0;
         }

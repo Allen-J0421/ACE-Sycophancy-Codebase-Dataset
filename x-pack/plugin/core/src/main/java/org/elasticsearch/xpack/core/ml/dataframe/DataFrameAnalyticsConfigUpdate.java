@@ -204,11 +204,10 @@ public class DataFrameAnalyticsConfigUpdate implements Writeable, ToXContentObje
             return true;
         }
 
-        if (other instanceof DataFrameAnalyticsConfigUpdate == false) {
+        if (!(other instanceof DataFrameAnalyticsConfigUpdate that)) {
             return false;
         }
 
-        DataFrameAnalyticsConfigUpdate that = (DataFrameAnalyticsConfigUpdate) other;
 
         return Objects.equals(this.id, that.id)
             && Objects.equals(this.description, that.description)

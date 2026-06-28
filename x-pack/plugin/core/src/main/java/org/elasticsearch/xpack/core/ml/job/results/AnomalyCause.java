@@ -359,11 +359,10 @@ public class AnomalyCause implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof AnomalyCause == false) {
+        if (!(other instanceof AnomalyCause that)) {
             return false;
         }
 
-        AnomalyCause that = (AnomalyCause) other;
 
         return this.probability == that.probability
             && Objects.deepEquals(this.typical, that.typical)

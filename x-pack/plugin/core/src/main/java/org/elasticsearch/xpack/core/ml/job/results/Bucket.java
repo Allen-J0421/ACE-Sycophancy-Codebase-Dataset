@@ -362,11 +362,10 @@ public class Bucket implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof Bucket == false) {
+        if (!(other instanceof Bucket that)) {
             return false;
         }
 
-        Bucket that = (Bucket) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.timestamp, that.timestamp)

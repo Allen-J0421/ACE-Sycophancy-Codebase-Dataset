@@ -219,11 +219,11 @@ public class LangIdentNeuralNetwork implements StrictlyParsedTrainedModel, Lenie
         if (config.requestingImportance()) {
             throw ExceptionsHelper.badRequestException("[{}] model does not supports feature importance", NAME.getPreferredName());
         }
-        if (config instanceof ClassificationConfig == false) {
+        if (!(config instanceof ClassificationConfig)) {
             throw ExceptionsHelper.badRequestException("[{}] model only supports classification", NAME.getPreferredName());
         }
         Object vector = fields.get(embeddedVectorFeatureName);
-        if (vector instanceof List<?> == false) {
+        if (!(vector instanceof List<?>)) {
             throw ExceptionsHelper.badRequestException(
                 "[{}] model could not find non-null collection of embeddings separated by unicode script type [{}]. "
                     + "Please verify that the input is a string.",
@@ -247,10 +247,9 @@ public class LangIdentNeuralNetwork implements StrictlyParsedTrainedModel, Lenie
         double[] probabilities = new double[LANGUAGE_NAMES.size()];
         int totalLen = 0;
         for (Object vec : embeddedVector) {
-            if (vec instanceof CustomWordEmbedding.StringLengthAndEmbedding == false) {
+            if (!(vec instanceof CustomWordEmbedding.StringLengthAndEmbedding stringLengthAndEmbedding)) {
                 continue;
             }
-            CustomWordEmbedding.StringLengthAndEmbedding stringLengthAndEmbedding = (CustomWordEmbedding.StringLengthAndEmbedding) vec;
             int square = stringLengthAndEmbedding.getUtf8StringLen() * stringLengthAndEmbedding.getUtf8StringLen();
             totalLen += square;
             double[] h0 = hiddenLayer.productPlusBias(false, stringLengthAndEmbedding.getEmbedding());

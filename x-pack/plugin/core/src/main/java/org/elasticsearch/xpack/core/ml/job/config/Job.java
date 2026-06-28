@@ -695,11 +695,10 @@ public class Job implements SimpleDiffable<Job>, Writeable, ToXContentObject {
             return true;
         }
 
-        if (other instanceof Job == false) {
+        if (!(other instanceof Job that)) {
             return false;
         }
 
-        Job that = (Job) other;
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.jobType, that.jobType)
             && Objects.equals(this.jobVersion, that.jobVersion)

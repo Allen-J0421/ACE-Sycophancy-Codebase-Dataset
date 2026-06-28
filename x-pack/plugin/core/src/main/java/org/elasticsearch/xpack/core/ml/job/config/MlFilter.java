@@ -120,11 +120,10 @@ public class MlFilter implements ToXContentObject, Writeable {
             return true;
         }
 
-        if ((obj instanceof MlFilter) == false) {
+        if (!(obj instanceof MlFilter other)) {
             return false;
         }
 
-        MlFilter other = (MlFilter) obj;
         return id.equals(other.id) && Objects.equals(description, other.description) && items.equals(other.items);
     }
 

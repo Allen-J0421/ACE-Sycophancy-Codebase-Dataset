@@ -226,10 +226,9 @@ public class CustomWordEmbedding implements LenientlyParsedPreProcessor, Strictl
     @Override
     public void process(Map<String, Object> fields) {
         Object field = fields.get(fieldName);
-        if ((field instanceof String) == false) {
+        if (!(field instanceof String text)) {
             return;
         }
-        String text = (String) field;
         text = FeatureUtils.cleanAndLowerText(text);
         text = FeatureUtils.truncateToNumValidBytes(text, MAX_STRING_SIZE_IN_BYTES);
         final String finalText = text;

@@ -348,10 +348,9 @@ public final class ForecastRequestStats implements ToXContentObject, Writeable {
         if (this == other) {
             return true;
         }
-        if (other instanceof ForecastRequestStats == false) {
+        if (!(other instanceof ForecastRequestStats that)) {
             return false;
         }
-        ForecastRequestStats that = (ForecastRequestStats) other;
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.forecastId, that.forecastId)
             && this.recordCount == that.recordCount

@@ -416,11 +416,10 @@ public class DatafeedUpdate implements Writeable, ToXContentObject {
             return true;
         }
 
-        if (other instanceof DatafeedUpdate == false) {
+        if (!(other instanceof DatafeedUpdate that)) {
             return false;
         }
 
-        DatafeedUpdate that = (DatafeedUpdate) other;
 
         return Objects.equals(this.id, that.id)
             && Objects.equals(this.jobId, that.jobId)

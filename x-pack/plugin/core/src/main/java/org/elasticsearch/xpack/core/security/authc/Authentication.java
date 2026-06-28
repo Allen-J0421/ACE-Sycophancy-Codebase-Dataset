@@ -154,7 +154,7 @@ public final class Authentication implements ToXContentObject {
         final User innerUser;
         if (hasInnerUser) {
             innerUser = AuthenticationSerializationHelper.readUserFrom(in);
-            assert false == innerUser instanceof InternalUser : "internal users cannot participate in run-as [" + innerUser + "]";
+            assert !(innerUser instanceof InternalUser) : "internal users cannot participate in run-as [" + innerUser + "]";
         } else {
             innerUser = null;
         }
@@ -413,7 +413,7 @@ public final class Authentication implements ToXContentObject {
      */
     public Authentication runAs(User runAs, @Nullable RealmRef lookupRealmRef) {
         assert supportsRunAs(null);
-        assert false == runAs instanceof AnonymousUser;
+        assert !(runAs instanceof AnonymousUser);
         assert false == hasSyntheticRealmNameOrType(lookupRealmRef) : "should not use synthetic realm name/type for lookup realms";
 
         Objects.requireNonNull(runAs);
@@ -453,7 +453,7 @@ public final class Authentication implements ToXContentObject {
         final boolean shouldAddAnonymousRoleNames = anonymousUser != null
             && anonymousUser.enabled()
             && false == anonymousUser.equals(getEffectiveSubject().getUser())
-            && false == getEffectiveSubject().getUser() instanceof InternalUser
+            && !(getEffectiveSubject().getUser() instanceof InternalUser)
             && false == isApiKey()
             && false == isCrossClusterAccess()
             && false == isServiceAccount();
@@ -680,7 +680,7 @@ public final class Authentication implements ToXContentObject {
         if (isRunAs) {
             final User outerUser = effectiveSubject.getUser();
             final User innerUser = authenticatingSubject.getUser();
-            assert false == outerUser instanceof InternalUser && false == innerUser instanceof InternalUser
+            assert !(outerUser instanceof InternalUser) && !(innerUser instanceof InternalUser)
                 : "internal users cannot participate in run-as (outer=[" + outerUser + "] inner=[" + innerUser + "])";
             User.writeUser(outerUser, out);
             out.writeBoolean(true);
@@ -968,7 +968,7 @@ public final class Authentication implements ToXContentObject {
             );
         }
         checkNoDomain(authenticatingRealm, "Internal");
-        if (false == authenticatingSubject.getUser() instanceof InternalUser) {
+        if (!(authenticatingSubject.getUser() instanceof InternalUser)) {
             throw new IllegalArgumentException("Internal authentication must have internal user");
         }
         checkNoRunAs(this, "Internal");
@@ -1792,7 +1792,7 @@ public final class Authentication implements ToXContentObject {
          */
         public static User readUserFrom(StreamInput input) throws IOException {
             final User user = readUserWithoutTrailingBoolean(input);
-            if (false == user instanceof InternalUser) {
+            if (!(user instanceof InternalUser)) {
                 boolean hasInnerUser = input.readBoolean();
                 assert false == hasInnerUser : "inner user is not allowed";
                 if (hasInnerUser) {

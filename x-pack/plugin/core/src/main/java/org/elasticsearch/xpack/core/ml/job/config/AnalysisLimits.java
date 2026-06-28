@@ -228,11 +228,10 @@ public class AnalysisLimits implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof AnalysisLimits == false) {
+        if (!(other instanceof AnalysisLimits that)) {
             return false;
         }
 
-        AnalysisLimits that = (AnalysisLimits) other;
         return Objects.equals(this.modelMemoryLimit, that.modelMemoryLimit)
             && Objects.equals(this.categorizationExamplesLimit, that.categorizationExamplesLimit);
     }

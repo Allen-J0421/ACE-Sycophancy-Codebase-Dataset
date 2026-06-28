@@ -99,11 +99,10 @@ public class ModelPlotConfig implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof ModelPlotConfig == false) {
+        if (!(other instanceof ModelPlotConfig that)) {
             return false;
         }
 
-        ModelPlotConfig that = (ModelPlotConfig) other;
         return this.enabled == that.enabled && Objects.equals(this.terms, that.terms) && this.annotationsEnabled == that.annotationsEnabled;
     }
 

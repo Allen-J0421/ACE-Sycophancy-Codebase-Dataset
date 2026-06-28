@@ -603,11 +603,10 @@ public class JobUpdate implements Writeable, ToXContentObject {
             return true;
         }
 
-        if (other instanceof JobUpdate == false) {
+        if (!(other instanceof JobUpdate that)) {
             return false;
         }
 
-        JobUpdate that = (JobUpdate) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.groups, that.groups)
@@ -744,11 +743,10 @@ public class JobUpdate implements Writeable, ToXContentObject {
             if (this == other) {
                 return true;
             }
-            if (other instanceof DetectorUpdate == false) {
+            if (!(other instanceof DetectorUpdate that)) {
                 return false;
             }
 
-            DetectorUpdate that = (DetectorUpdate) other;
             return this.detectorIndex == that.detectorIndex
                 && Objects.equals(this.description, that.description)
                 && Objects.equals(this.rules, that.rules);

@@ -199,11 +199,10 @@ public class DataDescription implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof DataDescription == false) {
+        if (!(other instanceof DataDescription that)) {
             return false;
         }
 
-        DataDescription that = (DataDescription) other;
 
         return Objects.equals(this.timeFieldName, that.timeFieldName) && Objects.equals(this.timeFormat, that.timeFormat);
     }

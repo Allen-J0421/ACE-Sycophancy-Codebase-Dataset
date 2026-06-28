@@ -89,11 +89,10 @@ public class FilterRef implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (obj instanceof FilterRef == false) {
+        if (!(obj instanceof FilterRef other)) {
             return false;
         }
 
-        FilterRef other = (FilterRef) obj;
         return Objects.equals(filterId, other.filterId) && Objects.equals(filterType, other.filterType);
     }
 

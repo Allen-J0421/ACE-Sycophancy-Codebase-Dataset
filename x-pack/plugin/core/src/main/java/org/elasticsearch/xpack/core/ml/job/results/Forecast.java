@@ -271,10 +271,9 @@ public class Forecast implements ToXContentObject, Writeable {
         if (this == other) {
             return true;
         }
-        if (other instanceof Forecast == false) {
+        if (!(other instanceof Forecast that)) {
             return false;
         }
-        Forecast that = (Forecast) other;
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.forecastId, that.forecastId)
             && Objects.equals(this.timestamp, that.timestamp)

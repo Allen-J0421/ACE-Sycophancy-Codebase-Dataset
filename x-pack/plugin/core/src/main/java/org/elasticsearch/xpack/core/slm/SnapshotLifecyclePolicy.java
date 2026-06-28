@@ -309,7 +309,7 @@ public class SnapshotLifecyclePolicy implements SimpleDiffable<SnapshotLifecycle
         }
 
         if (configuration != null && configuration.containsKey(METADATA_FIELD_NAME)) {
-            if (configuration.get(METADATA_FIELD_NAME) instanceof Map == false) {
+            if (!(configuration.get(METADATA_FIELD_NAME) instanceof Map)) {
                 err.addValidationError(
                     "invalid configuration."
                         + METADATA_FIELD_NAME

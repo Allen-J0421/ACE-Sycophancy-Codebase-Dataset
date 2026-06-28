@@ -292,11 +292,10 @@ public class CategorizerStats implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof CategorizerStats == false) {
+        if (!(other instanceof CategorizerStats that)) {
             return false;
         }
 
-        CategorizerStats that = (CategorizerStats) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.partitionFieldName, that.partitionFieldName)

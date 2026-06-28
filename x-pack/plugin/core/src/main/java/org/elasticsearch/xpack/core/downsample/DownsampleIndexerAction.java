@@ -215,9 +215,8 @@ public class DownsampleIndexerAction extends ActionType<DownsampleIndexerAction.
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if ((o instanceof Response) == false) return false;
+            if (!(o instanceof Response response)) return false;
 
-            Response response = (Response) o;
 
             if (created != response.created) return false;
             return numIndexed == response.numIndexed;

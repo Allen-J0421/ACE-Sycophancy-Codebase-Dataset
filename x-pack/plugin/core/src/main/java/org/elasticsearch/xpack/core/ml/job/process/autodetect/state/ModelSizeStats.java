@@ -502,11 +502,10 @@ public class ModelSizeStats implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof ModelSizeStats == false) {
+        if (!(other instanceof ModelSizeStats that)) {
             return false;
         }
 
-        ModelSizeStats that = (ModelSizeStats) other;
 
         return this.modelBytes == that.modelBytes
             && Objects.equals(this.peakModelBytes, that.peakModelBytes)

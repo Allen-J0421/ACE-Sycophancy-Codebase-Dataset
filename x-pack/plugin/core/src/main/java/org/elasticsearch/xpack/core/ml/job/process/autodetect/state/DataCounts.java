@@ -634,11 +634,10 @@ public final class DataCounts implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof DataCounts == false) {
+        if (!(other instanceof DataCounts that)) {
             return false;
         }
 
-        DataCounts that = (DataCounts) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && this.processedRecordCount == that.processedRecordCount

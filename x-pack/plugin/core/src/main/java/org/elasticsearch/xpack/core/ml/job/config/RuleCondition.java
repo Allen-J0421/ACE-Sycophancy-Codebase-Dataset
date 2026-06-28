@@ -94,11 +94,10 @@ public class RuleCondition implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (obj instanceof RuleCondition == false) {
+        if (!(obj instanceof RuleCondition other)) {
             return false;
         }
 
-        RuleCondition other = (RuleCondition) obj;
         return appliesTo == other.appliesTo && operator == other.operator && value == other.value;
     }
 

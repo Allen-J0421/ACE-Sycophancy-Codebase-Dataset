@@ -449,7 +449,7 @@ public class SSLService {
     }
 
     X509ExtendedTrustManager wrapWithDiagnostics(X509ExtendedTrustManager trustManager, SslConfiguration configuration) {
-        if (diagnoseTrustExceptions && trustManager instanceof DiagnosticTrustManager == false) {
+        if (diagnoseTrustExceptions && !(trustManager instanceof DiagnosticTrustManager)) {
             final Logger diagnosticLogger = LogManager.getLogger(DiagnosticTrustManager.class);
             // A single configuration might be used in many place, if there are multiple, we just list "shared" because
             // that is better than the alternatives. Just listing would be misleading (it might not be the right one)

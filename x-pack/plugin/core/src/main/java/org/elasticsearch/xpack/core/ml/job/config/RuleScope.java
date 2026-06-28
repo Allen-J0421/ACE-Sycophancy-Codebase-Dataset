@@ -109,11 +109,10 @@ public class RuleScope implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (obj instanceof RuleScope == false) {
+        if (!(obj instanceof RuleScope other)) {
             return false;
         }
 
-        RuleScope other = (RuleScope) obj;
         return Objects.equals(scope, other.scope);
     }
 

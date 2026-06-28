@@ -198,8 +198,7 @@ public class ImmutableFollowParameters implements Writeable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof ImmutableFollowParameters == false) return false;
-        ImmutableFollowParameters that = (ImmutableFollowParameters) o;
+        if (!(o instanceof ImmutableFollowParameters that)) return false;
         return Objects.equals(maxReadRequestOperationCount, that.maxReadRequestOperationCount)
             && Objects.equals(maxWriteRequestOperationCount, that.maxWriteRequestOperationCount)
             && Objects.equals(maxOutstandingReadRequests, that.maxOutstandingReadRequests)

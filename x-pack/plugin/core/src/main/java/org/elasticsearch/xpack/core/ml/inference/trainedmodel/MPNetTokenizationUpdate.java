@@ -44,7 +44,7 @@ public class MPNetTokenizationUpdate extends AbstractTokenizationUpdate {
 
     @Override
     public Tokenization apply(Tokenization originalConfig) {
-        if (originalConfig instanceof MPNetTokenization == false) {
+        if (!(originalConfig instanceof MPNetTokenization)) {
             throw ExceptionsHelper.badRequestException(
                 "Tokenization config of type [{}] can not be updated with a request of type [{}]",
                 originalConfig.getName(),

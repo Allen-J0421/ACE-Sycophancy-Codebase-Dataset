@@ -137,11 +137,10 @@ public abstract class AbstractAuditMessage implements ToXContentObject {
         if (obj == null) {
             return false;
         }
-        if (obj instanceof AbstractAuditMessage == false) {
+        if (!(obj instanceof AbstractAuditMessage other)) {
             return false;
         }
 
-        AbstractAuditMessage other = (AbstractAuditMessage) obj;
         return Objects.equals(resourceId, other.resourceId)
             && Objects.equals(message, other.message)
             && Objects.equals(level, other.level)

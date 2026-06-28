@@ -311,10 +311,9 @@ public class ModelPlot implements ToXContentObject, Writeable {
         if (this == other) {
             return true;
         }
-        if (other instanceof ModelPlot == false) {
+        if (!(other instanceof ModelPlot that)) {
             return false;
         }
-        ModelPlot that = (ModelPlot) other;
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.timestamp, that.timestamp)
             && Objects.equals(this.partitionFieldValue, that.partitionFieldValue)

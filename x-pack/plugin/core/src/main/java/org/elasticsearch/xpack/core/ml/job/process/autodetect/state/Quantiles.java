@@ -142,11 +142,10 @@ public class Quantiles implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof Quantiles == false) {
+        if (!(other instanceof Quantiles that)) {
             return false;
         }
 
-        Quantiles that = (Quantiles) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.timestamp, that.timestamp)

@@ -657,11 +657,10 @@ public class AnomalyRecord implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof AnomalyRecord == false) {
+        if (!(other instanceof AnomalyRecord that)) {
             return false;
         }
 
-        AnomalyRecord that = (AnomalyRecord) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && this.detectorIndex == that.detectorIndex

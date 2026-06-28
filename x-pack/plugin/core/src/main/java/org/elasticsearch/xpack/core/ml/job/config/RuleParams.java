@@ -83,11 +83,10 @@ public class RuleParams implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (obj instanceof RuleParams == false) {
+        if (!(obj instanceof RuleParams other)) {
             return false;
         }
 
-        RuleParams other = (RuleParams) obj;
         return Objects.equals(forceTimeShift, other.forceTimeShift);
     }
 

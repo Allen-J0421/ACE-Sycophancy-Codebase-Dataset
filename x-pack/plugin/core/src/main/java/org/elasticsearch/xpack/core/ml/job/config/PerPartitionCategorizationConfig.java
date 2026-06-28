@@ -99,11 +99,10 @@ public class PerPartitionCategorizationConfig implements ToXContentObject, Write
             return true;
         }
 
-        if (other instanceof PerPartitionCategorizationConfig == false) {
+        if (!(other instanceof PerPartitionCategorizationConfig that)) {
             return false;
         }
 
-        PerPartitionCategorizationConfig that = (PerPartitionCategorizationConfig) other;
         return this.enabled == that.enabled && this.stopOnWarn == that.stopOnWarn;
     }
 

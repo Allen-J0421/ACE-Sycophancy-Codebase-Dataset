@@ -196,7 +196,7 @@ public class EmbeddingRequestChunker<E extends EmbeddingResults.Embedding<E>> {
 
         @Override
         public void onResponse(InferenceServiceResults inferenceServiceResults) {
-            if (inferenceServiceResults instanceof EmbeddingResults<?> == false) {
+            if (!(inferenceServiceResults instanceof EmbeddingResults<?>)) {
                 onFailure(unexpectedResultTypeException(inferenceServiceResults.getWriteableName()));
                 return;
             }

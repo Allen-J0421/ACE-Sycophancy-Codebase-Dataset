@@ -63,11 +63,10 @@ public class RuleParamsForForceTimeShift implements ToXContentObject, Writeable 
             return true;
         }
 
-        if (obj instanceof RuleParamsForForceTimeShift == false) {
+        if (!(obj instanceof RuleParamsForForceTimeShift other)) {
             return false;
         }
 
-        RuleParamsForForceTimeShift other = (RuleParamsForForceTimeShift) obj;
         return timeShiftAmount == other.timeShiftAmount;
     }
 

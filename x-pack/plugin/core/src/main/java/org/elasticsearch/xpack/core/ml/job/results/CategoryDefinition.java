@@ -267,10 +267,9 @@ public class CategoryDefinition implements ToXContentObject, Writeable {
         if (this == other) {
             return true;
         }
-        if (other instanceof CategoryDefinition == false) {
+        if (!(other instanceof CategoryDefinition that)) {
             return false;
         }
-        CategoryDefinition that = (CategoryDefinition) other;
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.categoryId, that.categoryId)
             && Objects.equals(this.partitionFieldName, that.partitionFieldName)

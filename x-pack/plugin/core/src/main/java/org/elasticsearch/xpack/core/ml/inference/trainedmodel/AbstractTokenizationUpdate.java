@@ -71,10 +71,9 @@ public abstract class AbstractTokenizationUpdate implements TokenizationUpdate {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof AbstractTokenizationUpdate == false) {
+        if (!(o instanceof AbstractTokenizationUpdate that)) {
             return false;
         }
-        AbstractTokenizationUpdate that = (AbstractTokenizationUpdate) o;
         return Objects.equals(truncate, that.truncate) && Objects.equals(span, that.span);
     }
 

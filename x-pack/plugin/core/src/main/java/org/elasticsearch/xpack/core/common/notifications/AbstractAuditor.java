@@ -189,7 +189,7 @@ public abstract class AbstractAuditor<T extends AbstractAuditMessage> {
 
             @Override
             public boolean shouldRetry(Exception e) {
-                return (e instanceof IndexNotFoundException) == false && attempts.getAndIncrement() < MAX_WRITE_RETRIES;
+                return !(e instanceof IndexNotFoundException) && attempts.getAndIncrement() < MAX_WRITE_RETRIES;
             }
         }.run();
     }

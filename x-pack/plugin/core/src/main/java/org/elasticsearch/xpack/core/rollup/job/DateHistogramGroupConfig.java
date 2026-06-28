@@ -356,10 +356,9 @@ public abstract class DateHistogramGroupConfig implements Writeable, ToXContentO
         if (this == other) {
             return true;
         }
-        if (other == null || other instanceof DateHistogramGroupConfig == false) {
+        if (!(other instanceof DateHistogramGroupConfig that)) {
             return false;
         }
-        final DateHistogramGroupConfig that = (DateHistogramGroupConfig) other;
         return Objects.equals(interval, that.interval)
             && Objects.equals(field, that.field)
             && Objects.equals(delay, that.delay)

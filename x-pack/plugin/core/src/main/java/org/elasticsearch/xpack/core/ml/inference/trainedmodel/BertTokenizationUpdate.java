@@ -44,7 +44,7 @@ public class BertTokenizationUpdate extends AbstractTokenizationUpdate {
 
     @Override
     public Tokenization apply(Tokenization originalConfig) {
-        if (originalConfig instanceof BertTokenization == false) {
+        if (!(originalConfig instanceof BertTokenization)) {
             throw ExceptionsHelper.badRequestException(
                 "Tokenization config of type [{}] can not be updated with a request of type [{}]",
                 originalConfig.getName(),

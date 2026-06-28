@@ -88,10 +88,9 @@ public abstract class AbstractGetResourcesRequest extends LegacyActionRequest {
         if (obj == null) {
             return false;
         }
-        if (obj instanceof AbstractGetResourcesRequest == false) {
+        if (!(obj instanceof AbstractGetResourcesRequest other)) {
             return false;
         }
-        AbstractGetResourcesRequest other = (AbstractGetResourcesRequest) obj;
         return Objects.equals(resourceId, other.resourceId)
             && Objects.equals(pageParams, other.pageParams)
             && allowNoResources == other.allowNoResources;

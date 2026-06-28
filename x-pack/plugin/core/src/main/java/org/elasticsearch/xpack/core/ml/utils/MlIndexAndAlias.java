@@ -774,11 +774,11 @@ public final class MlIndexAndAlias {
             return false;
         }
         var rawProperties = indexMetadata.mapping().sourceAsMap().get("properties");
-        if (rawProperties instanceof Map<?, ?> == false) {
+        if (!(rawProperties instanceof Map<?, ?>)) {
             return false;
         }
         var rawField = ((Map<String, Object>) rawProperties).get(fieldName);
-        if (rawField instanceof Map<?, ?> == false) {
+        if (!(rawField instanceof Map<?, ?>)) {
             return false;
         }
         return expectedType.equals(((Map<String, Object>) rawField).get("type"));

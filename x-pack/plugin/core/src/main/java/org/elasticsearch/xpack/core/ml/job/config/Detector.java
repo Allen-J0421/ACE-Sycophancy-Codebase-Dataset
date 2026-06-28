@@ -441,11 +441,10 @@ public class Detector implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof Detector == false) {
+        if (!(other instanceof Detector that)) {
             return false;
         }
 
-        Detector that = (Detector) other;
 
         return Objects.equals(this.detectorDescription, that.detectorDescription)
             && Objects.equals(this.function, that.function)

@@ -122,11 +122,10 @@ public class OverallBucket implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof OverallBucket == false) {
+        if (!(other instanceof OverallBucket that)) {
             return false;
         }
 
-        OverallBucket that = (OverallBucket) other;
 
         return Objects.equals(this.timestamp, that.timestamp)
             && this.bucketSpan == that.bucketSpan
@@ -185,10 +184,9 @@ public class OverallBucket implements ToXContentObject, Writeable {
             if (this == other) {
                 return true;
             }
-            if (other instanceof JobInfo == false) {
+            if (!(other instanceof JobInfo that)) {
                 return false;
             }
-            JobInfo that = (JobInfo) other;
             return Objects.equals(this.jobId, that.jobId) && this.maxAnomalyScore == that.maxAnomalyScore;
         }
 

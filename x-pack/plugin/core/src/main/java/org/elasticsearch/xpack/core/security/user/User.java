@@ -110,9 +110,8 @@ public class User implements ToXContentObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof User == false) return false;
+        if (!(o instanceof User user)) return false;
 
-        User user = (User) o;
 
         if (username.equals(user.username) == false) return false;
         // Probably incorrect - comparing Object[] arrays with Arrays.equals

@@ -240,11 +240,10 @@ public class ScheduledEvent implements ToXContentObject, Writeable {
             return true;
         }
 
-        if ((obj instanceof ScheduledEvent) == false) {
+        if (!(obj instanceof ScheduledEvent other)) {
             return false;
         }
 
-        ScheduledEvent other = (ScheduledEvent) obj;
         return description.equals(other.description)
             && Objects.equals(startTime, other.startTime)
             && Objects.equals(endTime, other.endTime)

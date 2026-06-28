@@ -302,11 +302,10 @@ public class ModelSnapshot implements ToXContentObject, Writeable {
             return true;
         }
 
-        if (other instanceof ModelSnapshot == false) {
+        if (!(other instanceof ModelSnapshot that)) {
             return false;
         }
 
-        ModelSnapshot that = (ModelSnapshot) other;
 
         return Objects.equals(this.jobId, that.jobId)
             && Objects.equals(this.minVersion, that.minVersion)

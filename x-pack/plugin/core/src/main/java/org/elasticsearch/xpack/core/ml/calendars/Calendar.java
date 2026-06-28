@@ -125,11 +125,10 @@ public class Calendar implements ToXContentObject, Writeable {
             return true;
         }
 
-        if ((obj instanceof Calendar) == false) {
+        if (!(obj instanceof Calendar other)) {
             return false;
         }
 
-        Calendar other = (Calendar) obj;
         return id.equals(other.id) && jobIds.equals(other.jobIds) && Objects.equals(description, other.description);
     }
 

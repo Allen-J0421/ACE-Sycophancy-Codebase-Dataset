@@ -842,11 +842,10 @@ public class DatafeedConfig implements SimpleDiffable<DatafeedConfig>, ToXConten
             return true;
         }
 
-        if (other instanceof DatafeedConfig == false) {
+        if (!(other instanceof DatafeedConfig that)) {
             return false;
         }
 
-        DatafeedConfig that = (DatafeedConfig) other;
 
         return Objects.equals(this.id, that.id)
             && Objects.equals(this.jobId, that.jobId)

@@ -171,7 +171,7 @@ public final class SourceOnlySnapshotRepository extends FilterRepository {
         }
         final Store store = context.store();
         Directory unwrap = FilterDirectory.unwrap(store.directory());
-        if (unwrap instanceof FSDirectory == false) {
+        if (!(unwrap instanceof FSDirectory fsDirectory)) {
             context.onFailure(
                 new IllegalStateException(
                     context.indexCommit()
@@ -182,7 +182,7 @@ public final class SourceOnlySnapshotRepository extends FilterRepository {
             );
             return;
         }
-        Path dataPath = ((FSDirectory) unwrap).getDirectory().getParent();
+        Path dataPath = fsDirectory.getDirectory().getParent();
         // TODO should we have a snapshot tmp directory per shard that is maintained by the system?
         Path snapPath = dataPath.resolve(SNAPSHOT_DIR_NAME);
         final List<Closeable> toClose = new ArrayList<>(3);

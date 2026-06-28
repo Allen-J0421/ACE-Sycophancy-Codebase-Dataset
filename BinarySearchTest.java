@@ -13,14 +13,17 @@ public final class BinarySearchTest {
             missing(new int[] {1, 3, 5, 7}, 6)
         };
 
+        assertSearchCases(cases);
+        assertFoundFlag();
+
+        System.out.println("All binary search tests passed.");
+    }
+
+    private static void assertSearchCases(SearchCase[] cases) {
         for (SearchCase searchCase : cases) {
             assertSearchMethods(searchCase);
             assertContains(searchCase);
         }
-
-        assertFoundFlag();
-
-        System.out.println("All binary search tests passed.");
     }
 
     private static void assertSearchMethods(SearchCase searchCase) {

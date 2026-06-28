@@ -334,9 +334,12 @@ public class Animal extends Species
      * Creates the appropriate number of animals of the same species. These new animals of course share the same features as their "parent"
      * except the sex which is randomized,  their age and foodLevel are not randomized.
      *
+     * The reproduction loop is shared by all animals; the concrete species to instantiate is
+     * supplied by the {@link #createOffspring} factory method, which subclasses override.
+     *
      * @param  speciesInSimulation (List<Species>) List of Species objects in the simulation for the newborns to be added to it.
      */
-    protected void reproduce(List<Species> speciesInSimulation)
+    protected final void reproduce(List<Species> speciesInSimulation)
     {
         Field field = getField();
         if (field != null)
@@ -345,10 +348,24 @@ public class Animal extends Species
             int births = numberOfBirths();
             for(int b = 0; b < births && free.size() > 0; b++) {
                 Location loc = free.remove(0);
-                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
-                speciesInSimulation.add(young);
+                speciesInSimulation.add(createOffspring(field, loc));
             }
         }
+    }
+
+    /**
+     * Factory method creating a single newborn of this animal's exact species at the given location.
+     * The shared {@link #reproduce} loop calls it once per birth; subclasses override it to instantiate
+     * their own type. Newborns share their parent's features except for the randomized sex, and start
+     * at age and foodLevel that are not randomized.
+     *
+     * @param field (Field) the field the newborn appears in.
+     * @param location (Location) the location at which the newborn appears.
+     * @return (Animal) the newly created offspring.
+     */
+    protected Animal createOffspring(Field field, Location location)
+    {
+        return new Animal(field, location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize, false, hibernates, isNocturnal);
     }
 
     /**

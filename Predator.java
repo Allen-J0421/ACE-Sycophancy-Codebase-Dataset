@@ -134,24 +134,18 @@ public class Predator extends Animal
     }
 
     /**
-     * Creates the appropriate number of predators of the same species due to reproduction. These new predators of course share the same
-     * features as their "parent" except the sex which is randomized, their age and foodLevel are not randomized.
+     * Creates a single newborn predator of the same species, sharing its parent's features (including
+     * strength) except for the randomized sex, with age and foodLevel that are not randomized. The shared
+     * {@link Animal#reproduce} loop calls this factory method once per birth.
      *
-     * @param newOfThisKind (List<Species>) The list of species to which newborns must be added.
+     * @param field (Field) the field the newborn appears in.
+     * @param location (Location) the location at which the newborn appears.
+     * @return (Animal) the newly created predator.
      */
-    protected void reproduce(List<Species> newOfThisKind)
+    @Override
+    protected Animal createOffspring(Field field, Location location)
     {
-        Field field = getField();
-        if (field != null)
-        {
-            List<Location> free = field.getFreeAdjacentLocations(getLocation());
-            int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Predator young = new Predator(strength, field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(),false, getHibernates(), getIsNocturnal());
-                newOfThisKind.add(young);
-            }
-        }
+        return new Predator(strength, field, location, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), getMaxAge(), getBreedingAge(), getMaxLitterSize(), false, getHibernates(), getIsNocturnal());
     }
 
     /**

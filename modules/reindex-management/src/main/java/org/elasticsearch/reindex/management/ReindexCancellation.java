@@ -75,7 +75,7 @@ final class ReindexCancellation {
      * Forces the completed task view to reflect cancellation, even if the stored task snapshot predates the cancellation flag update.
      */
     static CancelReindexResponse completedResponse(final GetReindexResponse getResponse) {
-        return new CancelReindexResponse(new GetReindexResponse(taskResultWithCancelledTrue(getResponse.getTaskResult())));
+        return CancelReindexResponse.completed(new GetReindexResponse(taskResultWithCancelledTrue(getResponse.getTaskResult())));
     }
 
     /**

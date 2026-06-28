@@ -87,7 +87,7 @@ public class TransportCancelReindexAction extends AbstractReindexTransportAction
                     )
                 );
             } else {
-                l.onResponse(new CancelReindexResponse((GetReindexResponse) null));
+                l.onResponse(CancelReindexResponse.acknowledged());
             }
         }));
     }

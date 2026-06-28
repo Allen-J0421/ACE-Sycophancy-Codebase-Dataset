@@ -30,12 +30,20 @@ public class CancelReindexResponse extends ActionResponse implements ToXContentO
     @Nullable
     private final GetReindexResponse completedReindexResponse;
 
-    public CancelReindexResponse(@Nullable final GetReindexResponse completedReindexResponse) {
+    private CancelReindexResponse(@Nullable final GetReindexResponse completedReindexResponse) {
         this.completedReindexResponse = completedReindexResponse;
     }
 
     public CancelReindexResponse(final StreamInput in) throws IOException {
         this.completedReindexResponse = in.readOptionalWriteable(GetReindexResponse::new);
+    }
+
+    public static CancelReindexResponse acknowledged() {
+        return new CancelReindexResponse(null);
+    }
+
+    public static CancelReindexResponse completed(final GetReindexResponse completedReindexResponse) {
+        return new CancelReindexResponse(completedReindexResponse);
     }
 
     @Override
@@ -55,5 +63,9 @@ public class CancelReindexResponse extends ActionResponse implements ToXContentO
 
     public Optional<GetReindexResponse> getCompletedReindexResponse() {
         return Optional.ofNullable(completedReindexResponse);
+    }
+
+    public boolean isAcknowledged() {
+        return completedReindexResponse == null;
     }
 }

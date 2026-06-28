@@ -94,7 +94,7 @@ public class ReindexManagementRestActionsTests extends RestActionTestCase {
             CancelReindexRequest request = (CancelReindexRequest) actionRequest;
             assertEquals(taskId, request.getTaskId());
             assertTrue(request.waitForCompletion());
-            return new CancelReindexResponse(null);
+            return CancelReindexResponse.acknowledged();
         });
 
         dispatchRequest(cancelRequest(taskId.toString(), Map.of()));

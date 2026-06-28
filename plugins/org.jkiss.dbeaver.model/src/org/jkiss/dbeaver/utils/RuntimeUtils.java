@@ -545,8 +545,7 @@ public final class RuntimeUtils {
                             argument.append(ch);
                             state = CommandLineState.NORMAL;
                         } else if (state == CommandLineState.NORMAL) {
-                            arguments.add(argument.toString());
-                            argument.setLength(0);
+                            addCommandLineArgument(arguments, argument);
                             state = CommandLineState.NONE;
                         }
                     }
@@ -573,12 +572,17 @@ public final class RuntimeUtils {
 
         if (escaped) {
             argument.append('\\');
-            arguments.add(argument.toString());
-        } else if (state != CommandLineState.NONE) {
-            arguments.add(argument.toString());
+        }
+        if (escaped || state != CommandLineState.NONE) {
+            addCommandLineArgument(arguments, argument);
         }
 
         return arguments;
+    }
+
+    private static void addCommandLineArgument(@NotNull List<String> arguments, @NotNull StringBuilder argument) {
+        arguments.add(argument.toString());
+        argument.setLength(0);
     }
 
     @NotNull

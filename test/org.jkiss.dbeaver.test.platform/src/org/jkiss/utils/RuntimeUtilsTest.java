@@ -84,5 +84,6 @@ public class RuntimeUtilsTest extends DBeaverUnitTest {
     public void testBackslashEscape() {
         Assertions.assertEquals(Arrays.asList("ls", "-l", "/home/folder with spaces"), RuntimeUtils.splitCommandLine("ls -l /home/folder\\ with\\ spaces", true));
         Assertions.assertEquals(Arrays.asList("ls", "-l", "/home/\"folder with quotes\""), RuntimeUtils.splitCommandLine("ls -l /home/\\\"folder\\ with\\ quotes\\\"", true));
+        Assertions.assertEquals(Collections.singletonList("echo\\"), RuntimeUtils.splitCommandLine("echo\\", true));
     }
 }

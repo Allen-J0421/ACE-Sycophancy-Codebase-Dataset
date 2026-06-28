@@ -7,14 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
-import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.app.fragments.settings.LogLevelPreferenceDataStore;
-import com.termux.app.fragments.settings.LogLevelPreferenceUtils;
+import com.termux.app.fragments.settings.LogLevelPreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_FLOAT_APP;
 
 @Keep
-public class DebuggingPreferencesFragment extends BasePreferenceFragment {
+public class DebuggingPreferencesFragment extends LogLevelPreferenceFragment {
 
     @Override
     protected int getPreferencesResourceId() {
@@ -28,11 +27,9 @@ public class DebuggingPreferencesFragment extends BasePreferenceFragment {
     }
 
     @Override
-    protected void onPreferencesLoaded(@NonNull Context context) {
+    protected Integer getLogLevel(@NonNull Context context) {
         TermuxFloatAppSharedPreferences preferences = TermuxFloatAppSharedPreferences.build(context, true);
-        if (preferences == null) return;
-
-        LogLevelPreferenceUtils.configureLogLevelPreference(this, context, preferences.getLogLevel(true));
+        return preferences == null ? null : preferences.getLogLevel(true);
     }
 }
 

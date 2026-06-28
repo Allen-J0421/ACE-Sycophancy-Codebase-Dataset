@@ -11,17 +11,14 @@ package org.elasticsearch.reindex.management;
 
 import org.elasticsearch.client.internal.node.NodeClient;
 import org.elasticsearch.features.NodeFeature;
-import org.elasticsearch.rest.BaseRestHandler;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.ServerlessScope;
 import org.elasticsearch.rest.action.RestChunkedToXContentListener;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 
-import static org.elasticsearch.reindex.management.ReindexManagementPlugin.CAPABILITY_REINDEX_MANAGEMENT_API;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.Scope.PUBLIC;
 
@@ -29,12 +26,10 @@ import static org.elasticsearch.rest.Scope.PUBLIC;
  * REST handler for listing all running reindex tasks.
  */
 @ServerlessScope(PUBLIC)
-public class RestListReindexAction extends BaseRestHandler {
-
-    private final Predicate<NodeFeature> clusterSupportsFeature;
+public class RestListReindexAction extends AbstractReindexManagementRestHandler {
 
     RestListReindexAction(final Predicate<NodeFeature> clusterSupportsFeature) {
-        this.clusterSupportsFeature = Objects.requireNonNull(clusterSupportsFeature);
+        super(clusterSupportsFeature);
     }
 
     @Override
@@ -48,16 +43,8 @@ public class RestListReindexAction extends BaseRestHandler {
     }
 
     @Override
-    protected RestChannelConsumer prepareRequest(RestRequest request, NodeClient client) {
-        if (clusterSupportsFeature.test(ReindexManagementFeatures.NEW_ENDPOINTS) == false) {
-            throw new IllegalArgumentException("endpoint not supported on all nodes in the cluster");
-        }
+    protected RestChannelConsumer innerPrepareRequest(RestRequest request, NodeClient client) throws IOException {
         ListReindexRequest listReindexRequest = new ListReindexRequest(request.paramAsBoolean("detailed", false));
         return channel -> client.execute(TransportListReindexAction.TYPE, listReindexRequest, new RestChunkedToXContentListener<>(channel));
-    }
-
-    @Override
-    public Set<String> supportedCapabilities() {
-        return Set.of(CAPABILITY_REINDEX_MANAGEMENT_API);
     }
 }

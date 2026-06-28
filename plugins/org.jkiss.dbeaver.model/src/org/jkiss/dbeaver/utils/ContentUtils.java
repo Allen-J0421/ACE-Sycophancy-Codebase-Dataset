@@ -39,6 +39,7 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.LongFunction;
 import java.util.stream.Stream;
 
 /**
@@ -116,30 +117,22 @@ public class ContentUtils {
         OutputStream outputStream,
         DBRProgressMonitor monitor)
         throws IOException {
-        monitor.beginTask("Copy binary content", contentLength < 0 ? STREAM_COPY_BUFFER_SIZE : (int) contentLength);
-        try {
-            byte[] buffer = new byte[STREAM_COPY_BUFFER_SIZE];
-            long totalCopied = 0;
-            NumberFormat nf = new ByteNumberFormat(ByteNumberFormat.BinaryPrefix.ISO);
-            String subtaskSuffix = " / " + nf.format(contentLength);
-            for (; ; ) {
-                if (monitor.isCanceled()) {
-                    break;
-                }
+        byte[] buffer = new byte[STREAM_COPY_BUFFER_SIZE];
+        NumberFormat nf = new ByteNumberFormat(ByteNumberFormat.BinaryPrefix.ISO);
+        String subtaskSuffix = " / " + nf.format(contentLength);
+
+        copyStreams(
+            "Copy binary content",
+            contentLength,
+            monitor,
+            () -> {
                 int count = inputStream.read(buffer);
-                if (count <= 0) {
-                    break;
+                if (count > 0) {
+                    outputStream.write(buffer, 0, count);
                 }
-                totalCopied += count;
-                outputStream.write(buffer, 0, count);
-                monitor.worked(STREAM_COPY_BUFFER_SIZE);
-                if (contentLength > 0) {
-                    monitor.subTask(nf.format(totalCopied) + subtaskSuffix);
-                }
-            }
-        } finally {
-            monitor.done();
-        }
+                return count;
+            },
+            totalCopied -> nf.format(totalCopied) + subtaskSuffix);
     }
 
     public static void copyStreams(
@@ -148,23 +141,54 @@ public class ContentUtils {
         Writer writer,
         DBRProgressMonitor monitor)
         throws IOException {
-        monitor.beginTask("Copy character content", contentLength < 0 ? STREAM_COPY_BUFFER_SIZE : (int) contentLength);
+        char[] buffer = new char[STREAM_COPY_BUFFER_SIZE];
+
+        copyStreams(
+            "Copy character content",
+            contentLength,
+            monitor,
+            () -> {
+                int count = reader.read(buffer);
+                if (count > 0) {
+                    writer.write(buffer, 0, count);
+                }
+                return count;
+            },
+            null);
+    }
+
+    private static void copyStreams(
+        @NotNull String taskName,
+        long contentLength,
+        @NotNull DBRProgressMonitor monitor,
+        @NotNull ContentChunkCopier copier,
+        @Nullable LongFunction<String> subTaskFormatter
+    ) throws IOException {
+        monitor.beginTask(taskName, contentLength < 0 ? STREAM_COPY_BUFFER_SIZE : (int) contentLength);
         try {
-            char[] buffer = new char[STREAM_COPY_BUFFER_SIZE];
+            long totalCopied = 0;
             for (; ; ) {
                 if (monitor.isCanceled()) {
                     break;
                 }
-                int count = reader.read(buffer);
+                int count = copier.copyNext();
                 if (count <= 0) {
                     break;
                 }
-                writer.write(buffer, 0, count);
+                totalCopied += count;
                 monitor.worked(STREAM_COPY_BUFFER_SIZE);
+                if (subTaskFormatter != null && contentLength > 0) {
+                    monitor.subTask(subTaskFormatter.apply(totalCopied));
+                }
             }
         } finally {
             monitor.done();
         }
+    }
+
+    @FunctionalInterface
+    private interface ContentChunkCopier {
+        int copyNext() throws IOException;
     }
 
     public static long calculateContentLength(

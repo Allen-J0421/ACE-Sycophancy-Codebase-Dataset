@@ -47,7 +47,7 @@ public final class BinarySearchTest {
     }
 
     private static void assertContains(SearchCase searchCase) {
-        boolean expected = searchCase.expectedIndex != BinarySearch.NOT_FOUND;
+        boolean expected = searchCase.expectsFound();
         boolean actual = BinarySearch.contains(searchCase.values, searchCase.target);
 
         if (actual != expected) {
@@ -88,6 +88,10 @@ public final class BinarySearchTest {
             this.values = values;
             this.target = target;
             this.expectedIndex = expectedIndex;
+        }
+
+        private boolean expectsFound() {
+            return expectedIndex != BinarySearch.NOT_FOUND;
         }
     }
 }

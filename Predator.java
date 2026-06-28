@@ -100,7 +100,7 @@ public class Predator extends Animal
                     hordeMembers.add(neighboringPredator);
                     for (int j =0; j < neighboringAnimals.size(); j++) {
                         if (nameOfInvestigatedHorde.equals(neighboringAnimals.get(j).getName())) {
-                            Predator predatorObject = (Predator)neighboringAnimals.get(i);
+                            Predator predatorObject = (Predator)neighboringAnimals.get(j);
                             totalHordeStrength += predatorObject.getStrength();
                             hordeMembers.add(predatorObject);
                         }

@@ -126,7 +126,7 @@ public class SearchResponseMetrics {
      * Records the response took time using the immutable telemetry bundle threaded through the search pipeline.
      */
     public long recordTookTime(long tookTime, Long timeRangeFilterFromMillis, SearchTelemetryContext telemetryContext) {
-        Map<String, Object> attributes = telemetryContext.attributes();
+        Map<String, Object> attributes = new HashMap<>(telemetryContext.attributes());
         SearchRequestAttributesExtractor.addTimeRangeAttribute(
             timeRangeFilterFromMillis,
             telemetryContext.absoluteStartMillis(),

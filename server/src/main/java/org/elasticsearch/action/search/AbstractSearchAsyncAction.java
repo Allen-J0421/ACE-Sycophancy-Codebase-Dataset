@@ -850,10 +850,10 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
     }
 
     /**
-     * Returns search request attributes used to record attributes for search phase timings in an immutable map.
+     * Returns the telemetry bundle threaded through the search pipeline.
      */
-    public Map<String, Object> getSearchRequestAttributes() {
-        return telemetryContext.attributes();
+    public SearchTelemetryContext getTelemetryContext() {
+        return telemetryContext;
     }
 
     public final void execute(Runnable command) {

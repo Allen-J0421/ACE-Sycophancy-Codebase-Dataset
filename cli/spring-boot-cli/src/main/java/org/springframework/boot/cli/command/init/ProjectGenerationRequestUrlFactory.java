@@ -18,8 +18,6 @@ package org.springframework.boot.cli.command.init;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.hc.core5.net.URIBuilder;
 import org.jspecify.annotations.Nullable;
@@ -35,10 +33,20 @@ import org.springframework.util.StringUtils;
  */
 class ProjectGenerationRequestUrlFactory {
 
+	private final ProjectTypeResolver projectTypeResolver;
+
+	ProjectGenerationRequestUrlFactory() {
+		this(new ProjectTypeResolver());
+	}
+
+	ProjectGenerationRequestUrlFactory(ProjectTypeResolver projectTypeResolver) {
+		this.projectTypeResolver = projectTypeResolver;
+	}
+
 	URI create(ProjectGenerationRequest request, InitializrServiceMetadata metadata) {
 		try {
 			URIBuilder builder = new URIBuilder(request.getServiceUrl());
-			ProjectType projectType = determineProjectType(request, metadata);
+			ProjectType projectType = this.projectTypeResolver.resolve(request, metadata);
 			builder.setPath(resolvePath(builder.getPath(), projectType.getAction()));
 			setParameter(builder, "dependencies", request.getDependencies().isEmpty()
 					? null : StringUtils.collectionToCommaDelimitedString(request.getDependencies()));
@@ -60,41 +68,6 @@ class ProjectGenerationRequestUrlFactory {
 		}
 	}
 
-	private ProjectType determineProjectType(ProjectGenerationRequest request, InitializrServiceMetadata metadata) {
-		if (request.getType() != null) {
-			ProjectType result = metadata.getProjectTypes().get(request.getType());
-			if (result == null) {
-				throw new ReportableException(
-						("No project type with id '" + request.getType() + "' - check the service capabilities (--list)"));
-			}
-			return result;
-		}
-		if (request.isDetectType()) {
-			Map<String, ProjectType> types = new HashMap<>(metadata.getProjectTypes());
-			if (request.getBuild() != null) {
-				filter(types, "build", request.getBuild());
-			}
-			if (request.getFormat() != null) {
-				filter(types, "format", request.getFormat());
-			}
-			if (types.size() == 1) {
-				return types.values().iterator().next();
-			}
-			if (types.isEmpty()) {
-				throw new ReportableException("No type found with build '" + request.getBuild() + "' and format '"
-						+ request.getFormat() + "' check the service capabilities (--list)");
-			}
-			throw new ReportableException("Multiple types found with build '" + request.getBuild() + "' and format '"
-					+ request.getFormat() + "' use --type with a more specific value " + types.keySet());
-		}
-		ProjectType defaultType = metadata.getDefaultType();
-		if (defaultType == null) {
-			throw new ReportableException(("No project type is set and no default is defined. "
-					+ "Check the service capabilities (--list)"));
-		}
-		return defaultType;
-	}
-
 	private @Nullable String resolveArtifactId(ProjectGenerationRequest request) {
 		if (request.getArtifactId() != null) {
 			return request.getArtifactId();
@@ -104,10 +77,6 @@ class ProjectGenerationRequestUrlFactory {
 			return (i != -1) ? request.getOutput().substring(0, i) : request.getOutput();
 		}
 		return null;
-	}
-
-	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
-		projects.entrySet().removeIf((entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
 	}
 
 	private String resolvePath(@Nullable String path, String action) {

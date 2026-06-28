@@ -19,7 +19,6 @@ public class Monkey extends Animal
     private static final boolean IS_DIURNAL = true;
 
     private static final HashSet<Class> FOOD_SOURCES = classSet(Plant.class);
-    private static final HashSet<Class> KILLABLE = classSet(Plant.class);
 
     /**
      * Create a new monkey. A monkey may be created with age
@@ -33,7 +32,7 @@ public class Monkey extends Animal
     {
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
-                Monkey.class, FOOD_SOURCES, KILLABLE);
+                Monkey.class, FOOD_SOURCES);
     }
 
     /**

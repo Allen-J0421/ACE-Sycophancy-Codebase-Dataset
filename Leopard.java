@@ -19,7 +19,6 @@ public class Leopard extends Animal
     private static final boolean IS_DIURNAL = false;
 
     private static final HashSet<Class> FOOD_SOURCES = classSet(Sloth.class);
-    private static final HashSet<Class> KILLABLE = classSet(Sloth.class, Plant.class);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero
@@ -33,7 +32,7 @@ public class Leopard extends Animal
     {
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
-                Leopard.class, FOOD_SOURCES, KILLABLE);
+                Leopard.class, FOOD_SOURCES);
     }
 
     /**

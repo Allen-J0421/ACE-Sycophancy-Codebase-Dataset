@@ -24,8 +24,6 @@ public abstract class Animal extends Organism
     private boolean isInfected;
     // The food sources available to this animal.
     private final HashSet<Class> foodSources;
-    // The classes this animal is willing to kill.
-    private final HashSet<Class> killable;
     
     /**
      * Create a new animal at location in field.
@@ -36,15 +34,13 @@ public abstract class Animal extends Organism
     public Animal(boolean randomAge, Field field, Location location,
             int breedingAge, int maxAge, double breedingProbability,
             int maxLitterSize, boolean isDiurnal, int maxHealth,
-            Class<? extends Animal> animalClass, HashSet<Class> foodSources,
-            HashSet<Class> killable)
+            Class<? extends Animal> animalClass, HashSet<Class> foodSources)
     {
         super(randomAge, field, location, breedingAge, maxAge, breedingProbability,
                 maxLitterSize, isDiurnal);
         this.maxHealth = maxHealth;
         this.animalClass = animalClass;
         this.foodSources = new HashSet<>(foodSources);
-        this.killable = new HashSet<>(killable);
         
         if (randomAge) {
             currentHealth = getRand().nextInt(maxHealth);
@@ -117,15 +113,6 @@ public abstract class Animal extends Organism
      */
     protected HashSet<Class> getFoodSources() {
         return foodSources;
-    }
-
-    /**
-     * Returns the classes this animal can kill.
-     *
-     * @return The animal's killable classes.
-     */
-    protected HashSet<Class> getKillable() {
-        return killable;
     }
     
     /**

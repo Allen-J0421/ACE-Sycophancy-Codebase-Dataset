@@ -19,7 +19,6 @@ public class Hippopotamus extends Animal
     private static final boolean IS_DIURNAL = true;
 
     private static final HashSet<Class> FOOD_SOURCES = classSet(Monkey.class, Plant.class);
-    private static final HashSet<Class> KILLABLE = classSet(Monkey.class, Plant.class, Bear.class);
 
     /**
      * Create a fox. A fox can be created as a new born (age zero
@@ -33,7 +32,7 @@ public class Hippopotamus extends Animal
     {
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
-                Hippopotamus.class, FOOD_SOURCES, KILLABLE);
+                Hippopotamus.class, FOOD_SOURCES);
     }
 
     /**

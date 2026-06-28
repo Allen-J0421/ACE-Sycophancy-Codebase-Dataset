@@ -19,7 +19,6 @@ public class Bear extends InfectableAnimal
     private static final boolean IS_DIURNAL = true;
 
     private static final HashSet<Class> FOOD_SOURCES = classSet(Monkey.class);
-    private static final HashSet<Class> KILLABLE = classSet(Monkey.class, Plant.class);
 
     /**
      * Create a bear. A bear can be created as a new born (age zero
@@ -33,7 +32,7 @@ public class Bear extends InfectableAnimal
     {
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
-                Bear.class, FOOD_SOURCES, KILLABLE);
+                Bear.class, FOOD_SOURCES);
     }
 
     /**

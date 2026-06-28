@@ -20,16 +20,14 @@ public abstract class InfectableAnimal extends Animal implements Infectable
      * @param maxHealth The maximum health.
      * @param animalClass The concrete species type.
      * @param foodSources The food sources available to the species.
-     * @param killable The classes this species can kill.
      */
     protected InfectableAnimal(boolean randomAge, Field field, Location location,
             int breedingAge, int maxAge, double breedingProbability,
             int maxLitterSize, boolean isDiurnal, int maxHealth,
-            Class<? extends Animal> animalClass, java.util.HashSet<Class> foodSources,
-            java.util.HashSet<Class> killable)
+            Class<? extends Animal> animalClass, java.util.HashSet<Class> foodSources)
     {
         super(randomAge, field, location, breedingAge, maxAge, breedingProbability,
-                maxLitterSize, isDiurnal, maxHealth, animalClass, foodSources, killable);
+                maxLitterSize, isDiurnal, maxHealth, animalClass, foodSources);
     }
 
     /**

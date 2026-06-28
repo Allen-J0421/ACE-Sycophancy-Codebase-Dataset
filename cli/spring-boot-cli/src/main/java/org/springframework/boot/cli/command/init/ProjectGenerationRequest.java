@@ -17,16 +17,9 @@
 package org.springframework.boot.cli.command.init;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.hc.core5.net.URIBuilder;
 import org.jspecify.annotations.Nullable;
-
-import org.springframework.util.StringUtils;
 
 /**
  * Represent the settings to apply to generating the project.
@@ -303,97 +296,7 @@ class ProjectGenerationRequest {
 	 * @return the project generation URI
 	 */
 	URI generateUrl(InitializrServiceMetadata metadata) {
-		try {
-			URIBuilder builder = new URIBuilder(this.serviceUrl);
-			ProjectType projectType = determineProjectType(metadata);
-			builder.setPath(resolvePath(builder.getPath(), projectType.getAction()));
-			setParameter(builder, "dependencies", this.dependencies.isEmpty()
-					? null : StringUtils.collectionToCommaDelimitedString(this.dependencies));
-			setParameter(builder, "groupId", this.groupId);
-			setParameter(builder, "artifactId", resolveArtifactId());
-			setParameter(builder, "version", this.version);
-			setParameter(builder, "name", this.name);
-			setParameter(builder, "description", this.description);
-			setParameter(builder, "packageName", this.packageName);
-			builder.setParameter("type", projectType.getId());
-			setParameter(builder, "packaging", this.packaging);
-			setParameter(builder, "javaVersion", this.javaVersion);
-			setParameter(builder, "language", this.language);
-			setParameter(builder, "bootVersion", this.bootVersion);
-			return builder.build();
-		}
-		catch (URISyntaxException ex) {
-			throw new ReportableException("Invalid service URL (" + ex.getMessage() + ")");
-		}
-	}
-
-	protected ProjectType determineProjectType(InitializrServiceMetadata metadata) {
-		if (this.type != null) {
-			ProjectType result = metadata.getProjectTypes().get(this.type);
-			if (result == null) {
-				throw new ReportableException(
-						("No project type with id '" + this.type + "' - check the service capabilities (--list)"));
-			}
-			return result;
-		}
-		if (isDetectType()) {
-			Map<String, ProjectType> types = new HashMap<>(metadata.getProjectTypes());
-			if (this.build != null) {
-				filter(types, "build", this.build);
-			}
-			if (this.format != null) {
-				filter(types, "format", this.format);
-			}
-			if (types.size() == 1) {
-				return types.values().iterator().next();
-			}
-			if (types.isEmpty()) {
-				throw new ReportableException("No type found with build '" + this.build + "' and format '" + this.format
-						+ "' check the service capabilities (--list)");
-			}
-			throw new ReportableException("Multiple types found with build '" + this.build + "' and format '"
-					+ this.format + "' use --type with a more specific value " + types.keySet());
-		}
-		ProjectType defaultType = metadata.getDefaultType();
-		if (defaultType == null) {
-			throw new ReportableException(("No project type is set and no default is defined. "
-					+ "Check the service capabilities (--list)"));
-		}
-		return defaultType;
-	}
-
-	/**
-	 * Resolve the artifactId to use or {@code null} if it should not be customized.
-	 * @return the artifactId
-	 */
-	protected @Nullable String resolveArtifactId() {
-		if (this.artifactId != null) {
-			return this.artifactId;
-		}
-		if (this.output != null) {
-			int i = this.output.lastIndexOf('.');
-			return (i != -1) ? this.output.substring(0, i) : this.output;
-		}
-		return null;
-	}
-
-	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
-		projects.entrySet().removeIf((entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
-	}
-
-	private String resolvePath(@Nullable String path, String action) {
-		StringBuilder resolvedPath = new StringBuilder();
-		if (path != null) {
-			resolvedPath.append(path);
-		}
-		resolvedPath.append(action);
-		return resolvedPath.toString();
-	}
-
-	private void setParameter(URIBuilder builder, String name, @Nullable String value) {
-		if (value != null) {
-			builder.setParameter(name, value);
-		}
+		return new ProjectGenerationRequestUrlFactory().create(this, metadata);
 	}
 
 }

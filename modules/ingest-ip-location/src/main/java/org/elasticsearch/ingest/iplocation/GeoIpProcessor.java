@@ -116,10 +116,10 @@ public final class GeoIpProcessor extends AbstractProcessor {
             boolean match = false;
             List<Map<String, Object>> dataList = new ArrayList<>(ipList.size());
             for (Object ipAddr : ipList) {
-                if (ipAddr instanceof String == false) {
+                if (!(ipAddr instanceof String ipAddrStr)) {
                     throw new IllegalArgumentException("array in field [" + field + "] should only contain strings");
                 }
-                Map<String, Object> data = ipDataLookup.lookup((String) ipAddr);
+                Map<String, Object> data = ipDataLookup.lookup(ipAddrStr);
                 if (data == null) {
                     if (ignoreMissing == false) {
                         tag(document, type, databaseFile);
@@ -247,7 +247,7 @@ public final class GeoIpProcessor extends AbstractProcessor {
             return newMutableLocationList(lon, lat);
         } else {
             // Assert that we don't have any unexpected Map values (only location should be a Map)
-            assert value instanceof Map == false : "unexpected Map value for key [" + key + "]";
+            assert !(value instanceof Map) : "unexpected Map value for key [" + key + "]";
         }
         return value;
     }

@@ -82,7 +82,7 @@ public final class DotExpanderProcessor extends AbstractProcessor {
                     String partialPath = pathToExpand.substring(0, index);
                     if (ingestDocument.hasField(partialPath)) {
                         Object val = ingestDocument.getFieldValue(partialPath, Object.class);
-                        if ((val instanceof Map) == false) {
+                        if (!(val instanceof Map)) {
                             throw new IllegalArgumentException(
                                 "cannot expand ["
                                     + pathToExpand

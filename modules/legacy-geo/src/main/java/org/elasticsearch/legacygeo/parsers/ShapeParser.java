@@ -40,10 +40,10 @@ public interface ShapeParser {
     static ShapeBuilder<?, ?, ?> parse(XContentParser parser, AbstractGeometryFieldMapper<?> geometryMapper) throws IOException {
         AbstractShapeGeometryFieldMapper<?> shapeMapper = null;
         if (geometryMapper != null) {
-            if (geometryMapper instanceof AbstractShapeGeometryFieldMapper == false) {
+            if (!(geometryMapper instanceof AbstractShapeGeometryFieldMapper<?> abstractShapeGeometryFieldMapper)) {
                 throw new IllegalArgumentException("geometry must be a shape type");
             }
-            shapeMapper = (AbstractShapeGeometryFieldMapper<?>) geometryMapper;
+            shapeMapper = abstractShapeGeometryFieldMapper;
         }
         if (parser.currentToken() == XContentParser.Token.VALUE_NULL) {
             return null;

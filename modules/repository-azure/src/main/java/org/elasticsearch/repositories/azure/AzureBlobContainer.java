@@ -140,10 +140,9 @@ public class AzureBlobContainer extends AbstractBlobContainer {
         throws IOException {
         assert BlobContainer.assertPurposeConsistency(purpose, sourceBlobName);
         assert BlobContainer.assertPurposeConsistency(purpose, blobName);
-        if (sourceBlobContainer instanceof AzureBlobContainer == false) {
+        if (!(sourceBlobContainer instanceof AzureBlobContainer azureSourceBlobContainer)) {
             throw new IllegalArgumentException("source blob container must be a AzureBlobContainer");
         }
-        AzureBlobContainer azureSourceBlobContainer = (AzureBlobContainer) sourceBlobContainer;
         blobStore.copyBlob(
             purpose,
             azureSourceBlobContainer.buildKey(sourceBlobName),

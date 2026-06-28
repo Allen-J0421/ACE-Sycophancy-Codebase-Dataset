@@ -272,7 +272,7 @@ public final class GeoIpDownloaderTaskExecutor extends PersistentTasksExecutor<G
             .prepareDelete(databasesIndex.getName())
             .execute(ActionListener.wrap(rr -> {}, e -> {
                 Throwable t = ExceptionsHelper.unwrapCause(e);
-                if (t instanceof ResourceNotFoundException == false) {
+                if (!(t instanceof ResourceNotFoundException)) {
                     logger.warn("failed to remove " + databasesIndex, e);
                 }
             }));

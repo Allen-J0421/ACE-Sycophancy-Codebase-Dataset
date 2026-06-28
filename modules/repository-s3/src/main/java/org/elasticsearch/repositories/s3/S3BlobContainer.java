@@ -360,11 +360,9 @@ class S3BlobContainer extends AbstractBlobContainer {
     ) throws IOException {
         assert BlobContainer.assertPurposeConsistency(purpose, sourceBlobName);
         assert BlobContainer.assertPurposeConsistency(purpose, blobName);
-        if (sourceBlobContainer instanceof S3BlobContainer == false) {
+        if (!(sourceBlobContainer instanceof S3BlobContainer s3SourceBlobContainer)) {
             throw new IllegalArgumentException("source blob container must be a S3BlobContainer");
         }
-
-        final var s3SourceBlobContainer = (S3BlobContainer) sourceBlobContainer;
 
         try {
             if (blobSize > getMaxCopySizeBeforeMultipart()) {

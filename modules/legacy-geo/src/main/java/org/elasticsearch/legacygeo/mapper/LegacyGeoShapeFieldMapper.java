@@ -614,7 +614,7 @@ public class LegacyGeoShapeFieldMapper extends AbstractShapeGeometryFieldMapper<
                     context.doc().addAll(Arrays.asList(fieldType().defaultPrefixTreeStrategy().createIndexableFields(s)));
                 }
                 return;
-            } else if (shape instanceof Point == false) {
+            } else if (!(shape instanceof Point)) {
                 throw new DocumentParsingException(
                     context.parser().getTokenLocation(),
                     "[{"
@@ -646,7 +646,7 @@ public class LegacyGeoShapeFieldMapper extends AbstractShapeGeometryFieldMapper<
 
     @Override
     protected void checkIncomingMergeType(FieldMapper mergeWith) {
-        if (mergeWith instanceof LegacyGeoShapeFieldMapper == false && CONTENT_TYPE.equals(mergeWith.typeName())) {
+        if (!(mergeWith instanceof LegacyGeoShapeFieldMapper) && CONTENT_TYPE.equals(mergeWith.typeName())) {
             throw new IllegalArgumentException(
                 "mapper [" + fullPath() + "] of type [geo_shape] cannot change strategy from [recursive] to [BKD]"
             );

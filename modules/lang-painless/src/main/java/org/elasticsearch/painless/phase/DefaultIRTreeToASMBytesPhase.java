@@ -1169,7 +1169,7 @@ public class DefaultIRTreeToASMBytesPhase implements IRTreeVisitor<WriteScope> {
 
         visit(irLeftNode, writeScope);
 
-        if (irRightNode instanceof NullNode == false) {
+        if (!(irRightNode instanceof NullNode)) {
             visit(irRightNode, writeScope);
         }
 
@@ -1239,7 +1239,7 @@ public class DefaultIRTreeToASMBytesPhase implements IRTreeVisitor<WriteScope> {
                 if (eq) {
                     if (irRightNode instanceof NullNode) {
                         methodWriter.ifNull(jump);
-                    } else if (irLeftNode instanceof NullNode == false && operation == Operation.EQ) {
+                    } else if (!(irLeftNode instanceof NullNode) && operation == Operation.EQ) {
                         methodWriter.invokeDefCall("eq", descriptor, DefBootstrap.BINARY_OPERATOR, DefBootstrap.OPERATOR_ALLOWS_NULL);
                         writejump = false;
                     } else {
@@ -1248,7 +1248,7 @@ public class DefaultIRTreeToASMBytesPhase implements IRTreeVisitor<WriteScope> {
                 } else if (ne) {
                     if (irRightNode instanceof NullNode) {
                         methodWriter.ifNonNull(jump);
-                    } else if (irLeftNode instanceof NullNode == false && operation == Operation.NE) {
+                    } else if (!(irLeftNode instanceof NullNode) && operation == Operation.NE) {
                         methodWriter.invokeDefCall("eq", descriptor, DefBootstrap.BINARY_OPERATOR, DefBootstrap.OPERATOR_ALLOWS_NULL);
                         methodWriter.ifZCmp(MethodWriter.EQ, jump);
                     } else {

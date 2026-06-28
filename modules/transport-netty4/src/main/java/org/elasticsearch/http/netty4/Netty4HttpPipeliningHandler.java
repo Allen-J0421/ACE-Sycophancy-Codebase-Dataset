@@ -188,7 +188,7 @@ public class Netty4HttpPipeliningHandler extends ChannelDuplexHandler {
     }
 
     private void enqueuePipelinedResponse(ChannelHandlerContext ctx, Netty4HttpResponse restResponse, ChannelPromise promise) {
-        assert restResponse instanceof Netty4ChunkedHttpContinuation == false
+        assert !(restResponse instanceof Netty4ChunkedHttpContinuation)
             : "received out-of-order continuation at [" + restResponse.getSequence() + "], expecting [" + writeSequence + "]";
         assert restResponse.getSequence() > writeSequence
             : "response sequence [" + restResponse.getSequence() + "] we below write sequence [" + writeSequence + "]";

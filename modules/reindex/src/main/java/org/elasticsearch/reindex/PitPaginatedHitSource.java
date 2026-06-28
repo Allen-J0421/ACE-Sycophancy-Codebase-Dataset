@@ -50,10 +50,10 @@ public abstract class PitPaginatedHitSource extends PaginatedHitSource {
 
     @Override
     protected final void restoreState(WorkerResumeInfo resumeInfo) {
-        if (resumeInfo instanceof PitWorkerResumeInfo == false) {
+        if (!(resumeInfo instanceof PitWorkerResumeInfo pitWorkerResumeInfo)) {
             throw new IllegalArgumentException("PitPaginatedHitSource requires PitWorkerResumeInfo, got " + resumeInfo.getClass());
         }
-        restorePitState((PitWorkerResumeInfo) resumeInfo);
+        restorePitState(pitWorkerResumeInfo);
     }
 
     @Override

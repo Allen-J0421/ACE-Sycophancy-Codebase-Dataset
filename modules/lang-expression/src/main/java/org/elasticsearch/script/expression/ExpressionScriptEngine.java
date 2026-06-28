@@ -193,7 +193,7 @@ public class ExpressionScriptEngine implements ScriptEngine {
                                     + name
                                     + "] does not exist in the executable expressions script."
                             );
-                        } else if (value instanceof Number == false) {
+                        } else if (!(value instanceof Number)) {
                             throw new IllegalArgumentException(
                                 "Error using "
                                     + expr

@@ -85,7 +85,7 @@ public class AzureRetryingInputStream extends RetryingInputStream<String> {
          */
         @Override
         public boolean isRetryableException(StreamAction action, Exception e) {
-            return e instanceof AlreadyClosedException == false;
+            return !(e instanceof AlreadyClosedException);
         }
 
         @Override

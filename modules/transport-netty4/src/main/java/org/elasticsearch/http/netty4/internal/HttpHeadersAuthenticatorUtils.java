@@ -109,12 +109,12 @@ public final class HttpHeadersAuthenticatorUtils {
     }
 
     private static HttpHeadersWithAuthenticationContext unwrapAuthenticatedHeaders(org.elasticsearch.http.HttpRequest request) {
-        if (request instanceof Netty4HttpRequest == false) {
+        if (!(request instanceof Netty4HttpRequest netty4Request)) {
             return null;
         }
-        if (((Netty4HttpRequest) request).getNettyRequest().headers() instanceof HttpHeadersWithAuthenticationContext == false) {
+        if (!(netty4Request.getNettyRequest().headers() instanceof HttpHeadersWithAuthenticationContext)) {
             return null;
         }
-        return (HttpHeadersWithAuthenticationContext) (((Netty4HttpRequest) request).getNettyRequest().headers());
+        return (HttpHeadersWithAuthenticationContext) netty4Request.getNettyRequest().headers();
     }
 }

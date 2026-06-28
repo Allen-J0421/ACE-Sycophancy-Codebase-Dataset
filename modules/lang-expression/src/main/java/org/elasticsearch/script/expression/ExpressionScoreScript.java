@@ -52,12 +52,12 @@ class ExpressionScoreScript implements ScoreScript.LeafFactory {
     @Override
     public ScoreScript newInstance(final DocReader reader) throws IOException {
         // Use DocReader to get the leaf context while transitioning to DocReader for Painless. DocReader for expressions should follow.
-        if (reader instanceof LeafReaderContextSupplier == false) {
+        if (!(reader instanceof LeafReaderContextSupplier leafSupplier)) {
             throw new IllegalStateException(
                 "Expected LeafReaderContextSupplier when creating expression ExpressionScoreScript instead of [" + reader + "]"
             );
         }
-        final LeafReaderContext leaf = ((LeafReaderContextSupplier) reader).getLeafReaderContext();
+        final LeafReaderContext leaf = leafSupplier.getLeafReaderContext();
 
         return new ScoreScript(null, null, null) {
             // Fake the scorer until setScorer is called.

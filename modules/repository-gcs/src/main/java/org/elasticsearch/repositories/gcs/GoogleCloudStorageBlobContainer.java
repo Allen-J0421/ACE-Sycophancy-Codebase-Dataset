@@ -128,10 +128,9 @@ class GoogleCloudStorageBlobContainer extends AbstractBlobContainer {
     ) throws IOException {
         assert BlobContainer.assertPurposeConsistency(purpose, sourceBlobName);
         assert BlobContainer.assertPurposeConsistency(purpose, blobName);
-        if (sourceBlobContainer instanceof GoogleCloudStorageBlobContainer == false) {
+        if (!(sourceBlobContainer instanceof GoogleCloudStorageBlobContainer source)) {
             throw new IllegalArgumentException("source blob container must be a GoogleCloudStorageBlobContainer");
         }
-        var source = (GoogleCloudStorageBlobContainer) sourceBlobContainer;
         BlobId sourceBlobId = BlobId.of(source.blobStore.bucketName, source.buildKey(sourceBlobName));
         BlobId blobId = BlobId.of(blobStore.bucketName, buildKey(blobName));
         BlobInfo targetBlobInfo = blobStore.applyStorageClass(BlobInfo.newBuilder(blobId), purpose).build();

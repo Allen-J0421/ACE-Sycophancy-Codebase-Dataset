@@ -189,7 +189,7 @@ public final class DatabaseNodeService implements IpLocationService, IpDatabaseP
 
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException e) {
-                if (e instanceof NoSuchFileException == false) {
+                if (!(e instanceof NoSuchFileException)) {
                     // parameterized log fails logger check, see https://github.com/elastic/elasticsearch/issues/104782
                     logger.warn("can't delete stale file [" + file + "]", e);
                 }

@@ -53,11 +53,11 @@ final class MatrixStatsAggregatorFactory extends ArrayValuesSourceAggregatorFact
     ) throws IOException {
         Map<String, ValuesSource.Numeric> typedValuesSources = Maps.newMapWithExpectedSize(valuesSources.size());
         for (Map.Entry<String, ValuesSource> entry : valuesSources.entrySet()) {
-            if (entry.getValue() instanceof ValuesSource.Numeric == false) {
+            if (!(entry.getValue() instanceof ValuesSource.Numeric numericValuesSource)) {
                 throw AggregationErrors.unsupportedValuesSourceType(entry.getValue(), this.name());
             }
             // TODO: There must be a better option than this.
-            typedValuesSources.put(entry.getKey(), (ValuesSource.Numeric) entry.getValue());
+            typedValuesSources.put(entry.getKey(), numericValuesSource);
         }
         return new MatrixStatsAggregator(name, typedValuesSources, context, parent, multiValueMode, metadata);
     }

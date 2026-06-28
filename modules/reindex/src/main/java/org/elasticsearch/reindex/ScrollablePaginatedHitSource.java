@@ -41,12 +41,12 @@ public abstract class ScrollablePaginatedHitSource extends PaginatedHitSource {
 
     @Override
     protected final void restoreState(WorkerResumeInfo resumeInfo) {
-        if (resumeInfo instanceof ScrollWorkerResumeInfo == false) {
+        if (!(resumeInfo instanceof ScrollWorkerResumeInfo scrollWorkerResumeInfo)) {
             throw new IllegalArgumentException(
                 "ScrollablePaginatedHitSource requires ScrollWorkerResumeInfo, got " + resumeInfo.getClass()
             );
         }
-        restoreScrollState((ScrollWorkerResumeInfo) resumeInfo);
+        restoreScrollState(scrollWorkerResumeInfo);
     }
 
     @Override

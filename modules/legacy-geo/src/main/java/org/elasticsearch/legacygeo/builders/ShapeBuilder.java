@@ -465,7 +465,7 @@ public abstract class ShapeBuilder<T extends Shape, G extends org.elasticsearch.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof ShapeBuilder) == false) return false;
+        if (!(o instanceof ShapeBuilder)) return false;
 
         ShapeBuilder<?, ?, ?> that = (ShapeBuilder<?, ?, ?>) o;
 

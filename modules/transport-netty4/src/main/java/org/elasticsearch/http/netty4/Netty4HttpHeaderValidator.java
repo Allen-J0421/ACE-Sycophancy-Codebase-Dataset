@@ -148,7 +148,7 @@ public class Netty4HttpHeaderValidator extends ChannelDuplexHandler {
             assert state == State.VALIDATING : state;
             httpRequest.setDecoderResult(DecoderResult.failure(e));
             state = State.DROPPING;
-            while (buffer.isEmpty() == false && buffer.peekFirst() instanceof HttpRequest == false) {
+            while (buffer.isEmpty() == false && !(buffer.peekFirst() instanceof HttpRequest)) {
                 assert buffer.peekFirst() instanceof HttpContent;
                 ((ReferenceCounted) buffer.pollFirst()).release();
             }

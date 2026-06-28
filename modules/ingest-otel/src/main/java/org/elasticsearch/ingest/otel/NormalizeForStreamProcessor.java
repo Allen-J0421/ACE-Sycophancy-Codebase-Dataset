@@ -210,7 +210,7 @@ public class NormalizeForStreamProcessor extends AbstractProcessor {
         Object resource = source.get(RESOURCE_KEY);
         if (resource instanceof Map<?, ?> resourceMap) {
             Object resourceAttributes = resourceMap.get(ATTRIBUTES_KEY);
-            if (resourceAttributes != null && (resourceAttributes instanceof Map) == false) {
+            if (resourceAttributes != null && !(resourceAttributes instanceof Map)) {
                 return false;
             }
         } else {
@@ -218,12 +218,12 @@ public class NormalizeForStreamProcessor extends AbstractProcessor {
         }
 
         Object scope = source.get(SCOPE_KEY);
-        if (scope != null && scope instanceof Map == false) {
+        if (scope != null && !(scope instanceof Map)) {
             return false;
         }
 
         Object attributes = source.get(ATTRIBUTES_KEY);
-        if (attributes != null && attributes instanceof Map == false) {
+        if (attributes != null && !(attributes instanceof Map)) {
             return false;
         }
 
@@ -231,11 +231,11 @@ public class NormalizeForStreamProcessor extends AbstractProcessor {
         if (body != null) {
             if (body instanceof Map<?, ?> bodyMap) {
                 Object bodyText = bodyMap.get(TEXT_KEY);
-                if (bodyText != null && (bodyText instanceof String) == false) {
+                if (bodyText != null && !(bodyText instanceof String)) {
                     return false;
                 }
                 Object bodyStructured = bodyMap.get(STRUCTURED_KEY);
-                return (bodyStructured instanceof String) == false;
+                return !(bodyStructured instanceof String);
             } else {
                 return false;
             }

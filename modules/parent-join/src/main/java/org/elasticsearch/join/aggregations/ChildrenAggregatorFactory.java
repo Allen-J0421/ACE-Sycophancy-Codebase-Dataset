@@ -63,10 +63,9 @@ public class ChildrenAggregatorFactory extends ValuesSourceAggregatorFactory {
     protected Aggregator doCreateInternal(Aggregator parent, CardinalityUpperBound cardinality, Map<String, Object> metadata)
         throws IOException {
         ValuesSource rawValuesSource = config.getValuesSource();
-        if (rawValuesSource instanceof WithOrdinals == false) {
+        if (!(rawValuesSource instanceof WithOrdinals valuesSource)) {
             throw AggregationErrors.unsupportedValuesSourceType(rawValuesSource, this.name());
         }
-        WithOrdinals valuesSource = (WithOrdinals) rawValuesSource;
         long maxOrd = valuesSource.globalMaxOrd(context.searcher().getIndexReader());
         return new ParentToChildrenAggregator(
             name,

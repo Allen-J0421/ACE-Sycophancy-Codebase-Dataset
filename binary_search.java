@@ -10,16 +10,17 @@ class BinarySearch {
 
         while (bounds.hasCandidates()) {
             int mid = bounds.midpoint();
-            int comparison = compareAt(sortedArray, mid, target);
+            SearchDecision decision = decideAt(sortedArray, mid, target);
 
-            if (comparison == 0) {
-                return mid;
-            }
-
-            if (comparison < 0) {
-                bounds.discardLowerHalf(mid);
-            } else {
-                bounds.discardUpperHalf(mid);
+            switch (decision) {
+                case FOUND:
+                    return mid;
+                case TARGET_AFTER_MIDPOINT:
+                    bounds.discardLowerHalf(mid);
+                    break;
+                case TARGET_BEFORE_MIDPOINT:
+                    bounds.discardUpperHalf(mid);
+                    break;
             }
         }
 
@@ -30,8 +31,18 @@ class BinarySearch {
         runDemo();
     }
 
-    private static int compareAt(int[] sortedArray, int index, int target) {
-        return Integer.compare(sortedArray[index], target);
+    private static SearchDecision decideAt(int[] sortedArray, int index, int target) {
+        int comparison = Integer.compare(sortedArray[index], target);
+
+        if (comparison == 0) {
+            return SearchDecision.FOUND;
+        }
+
+        if (comparison < 0) {
+            return SearchDecision.TARGET_AFTER_MIDPOINT;
+        }
+
+        return SearchDecision.TARGET_BEFORE_MIDPOINT;
     }
 
     private static void runDemo() {
@@ -46,6 +57,12 @@ class BinarySearch {
         }
 
         return FOUND_MESSAGE_PREFIX + result;
+    }
+
+    private enum SearchDecision {
+        FOUND,
+        TARGET_BEFORE_MIDPOINT,
+        TARGET_AFTER_MIDPOINT
     }
 
     private static final class SearchBounds {

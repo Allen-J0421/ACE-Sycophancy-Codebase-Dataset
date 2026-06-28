@@ -145,35 +145,66 @@ public class Animal extends Species
     }
 
     /**
-     * An animal's movement. It first tries to reproduce, then to eat if a plant is in one of the neighboring cells and finally to move
-     * if an adjacent cell is available. If no adjacent cell is available, it dies of overcrowding.
+     * An animal's movement, defined as a template method so that all animals share the same
+     * sequence of steps while subclasses customize the variable parts via the hooks below.
+     *
+     * The fixed sequence is:
+     * 1) react to neighbors before moving ({@link #onBeforeMove}); a subclass may die here.
+     * 2) if still alive, try to reproduce.
+     * 3) if hungry, try to eat ({@link #findFoodAndEat}); the food hook may report a cell to move into.
+     * 4) move into the food's cell if one was reported, otherwise into any free adjacent cell.
+     * 5) if no adjacent cell is available, die of overcrowding.
      *
      * @param newSpecies (List<Species>) A list to receive newly born animals.
      */
-    protected void makeMove(List<Species> newSpecies)
+    protected final void makeMove(List<Species> newSpecies)
     {
         ArrayList<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
 
+        // 1) Hook: subclasses may react to neighbors before moving (e.g. predators check for horde attacks).
+        onBeforeMove(neighboringAnimalsList);
+
+        // The hook may have killed this animal (e.g. it was eaten by a horde).
+        if (! isAlive()) {
+            return;
+        }
+
+        // 2)
         if (canReproduce(neighboringAnimalsList)) {
             reproduce(newSpecies);
         }
 
-        // Eats if it is possible
+        // 3) Eats if it is possible. The food hook may report the cell it wants to move into.
+        Location foodLocation = null;
         if (isNotFull()) {
-            findFoodAndEat();
+            foodLocation = findFoodAndEat(neighboringAnimalsList);
         }
 
-        // Find a free location in adjacent cells
-        Location newLocation = getField().freeAdjacentLocation(getLocation());
+        // 4) Move into the food's cell if one was reported, otherwise any free adjacent cell.
+        Location newLocation = (foodLocation != null)
+                ? foodLocation
+                : getField().freeAdjacentLocation(getLocation());
 
         // See if it was possible to move.
         if(newLocation != null) {
             setLocation(newLocation);
         }
         else {
-            // Overcrowding.
+            // 5) Overcrowding.
             setDead();
         }
+    }
+
+    /**
+     * Hook for subclasses to react to neighboring animals before this animal moves. The
+     * default implementation does nothing; predators override it to check for horde attacks
+     * that may kill this animal before it acts.
+     *
+     * @param neighboringAnimalsList (ArrayList<Animal>) the animals located in neighboring cells.
+     */
+    protected void onBeforeMove(ArrayList<Animal> neighboringAnimalsList)
+    {
+        // No-op by default.
     }
 
     /**
@@ -242,10 +273,17 @@ public class Animal extends Species
     }
 
     /**
-     * Look for plants adjacent to the current location.
-     * Only the first plant is eaten.
+     * The feeding hook used by {@link #makeMove}. The default behaviour looks for plants
+     * adjacent to the current location and eats only the first one found.
+     *
+     * The returned value is the cell the animal should move into as a result of feeding.
+     * Plant eaters do not relocate onto the eaten plant, so this implementation always
+     * returns {@code null}; a prey-eating subclass overrides it to return its prey's cell.
+     *
+     * @param neighboringAnimalsList (ArrayList<Animal>) the animals in neighboring cells (unused for plant eaters).
+     * @return (Location) always {@code null} for plant eaters.
      */
-    private void findFoodAndEat()
+    protected Location findFoodAndEat(ArrayList<Animal> neighboringAnimalsList)
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
@@ -265,6 +303,7 @@ public class Animal extends Species
                 }
             }
         }
+        return null;
     }
 
     /**

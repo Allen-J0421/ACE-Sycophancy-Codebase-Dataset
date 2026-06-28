@@ -43,52 +43,27 @@ public class Predator extends Animal
     }
 
     /**
-     * A predator's movement. It first checks if it attacked by a horde of another species of predators. If it is the case,
-     * it dies and execution stops. If not, it first tries to reproduce, then to find a prey to eat in the neighboring cells,
-     * and finally to move to either the cell the prey he ate was occupying or another free adjacent cell. If no adjacent cell
-     * is available, it dies of overcrowding.
+     * Predators react to their neighbors before moving by checking for a horde attack: if a
+     * stronger horde of another predator species is adjacent, this predator is eaten and dies,
+     * which the {@link Animal#makeMove} template method detects to stop the move early.
      *
-     * @param newSpecies (List<Species>) A list to receive newly born animals.
+     * @param neighboringAnimals (ArrayList<Animal>) the animals located in neighboring cells.
      */
-    protected void makeMove(List<Species> newSpecies)
+    @Override
+    protected void onBeforeMove(ArrayList<Animal> neighboringAnimals)
     {
-        ArrayList<Animal> neighboringAnimals = getNeighboringAnimalsList();
         checkForAttack(neighboringAnimals);
-
-        if (isAlive()) {
-            if (canReproduce(neighboringAnimals)){
-                reproduce(newSpecies);
-            }
-
-            // Move towards a source of food if found.
-            Location newLocation = null;
-            if (isNotFull()) {
-                newLocation = findFoodAndEat(neighboringAnimals);
-            } 
-
-            if(newLocation == null) {
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
     }
 
     /**
-     * Tries to find a prey in one of the neighboring cell. If a prey is found, it is eaten and its location is returned.
+     * Tries to find a prey in one of the neighboring cell. If a prey is found, it is eaten and its location is returned
+     * so that the {@link Animal#makeMove} template method moves this predator into the prey's cell.
      *
      * @param  neighboringAnimals (ArrayList<Animal>) A list of neighboring animals.
      * @return (Location) the location of the eaten prey, null if no prey was found.
      */
-    private Location findFoodAndEat(ArrayList<Animal> neighboringAnimals)
+    @Override
+    protected Location findFoodAndEat(ArrayList<Animal> neighboringAnimals)
     {
         for (Animal animal : neighboringAnimals) {
             if(!(animal instanceof Predator)){

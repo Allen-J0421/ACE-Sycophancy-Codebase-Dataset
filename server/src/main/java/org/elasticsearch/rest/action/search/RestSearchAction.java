@@ -217,21 +217,41 @@ public class RestSearchAction extends BaseRestHandler {
             searchRequest.source(new SearchSourceBuilder());
         }
         searchRequest.indices(Strings.splitStringByCommaToArray(request.param("index")));
-        /*
-         * We pass this object to the request body parser so that we can extract info such as project_routing.
-         * We only do it if in a Cross Project Environment, though, because outside it, such details are not
-         * expected and valid.
-         */
-        SearchRequest searchRequestForParsing = crossProjectEnabled.orElse(false) ? searchRequest : null;
-        if (requestContentParser != null) {
-            if (searchUsageHolder == null) {
-                searchRequest.source().parseXContent(searchRequestForParsing, requestContentParser, true, clusterSupportsFeature);
-            } else {
-                searchRequest.source()
-                    .parseXContent(searchRequestForParsing, requestContentParser, true, searchUsageHolder, clusterSupportsFeature);
-            }
+        parseSearchRequestBody(searchRequest, requestContentParser, clusterSupportsFeature, searchUsageHolder, crossProjectEnabled);
+        parseSearchSource(searchRequest.source(), request, setSize);
+        applySearchRequestParameters(searchRequest, request, crossProjectEnabled);
+        validateSearchRequest(request, searchRequest);
+        applySearchRequestTailParameters(searchRequest, request, crossProjectEnabled);
+    }
+
+    /**
+     * We pass the request object to the request body parser so that it can extract info such as project_routing.
+     * We only do it if in a Cross Project Environment, though, because outside it, such details are not expected and valid.
+     */
+    private static void parseSearchRequestBody(
+        SearchRequest searchRequest,
+        @Nullable XContentParser requestContentParser,
+        Predicate<NodeFeature> clusterSupportsFeature,
+        @Nullable SearchUsageHolder searchUsageHolder,
+        Optional<Boolean> crossProjectEnabled
+    ) throws IOException {
+        final SearchRequest searchRequestForParsing = crossProjectEnabled.orElse(false) ? searchRequest : null;
+        if (requestContentParser == null) {
+            return;
         }
 
+        if (searchUsageHolder == null) {
+            searchRequest.source().parseXContent(searchRequestForParsing, requestContentParser, true, clusterSupportsFeature);
+        } else {
+            searchRequest.source().parseXContent(searchRequestForParsing, requestContentParser, true, searchUsageHolder, clusterSupportsFeature);
+        }
+    }
+
+    private static void applySearchRequestParameters(
+        SearchRequest searchRequest,
+        RestRequest request,
+        Optional<Boolean> crossProjectEnabled
+    ) {
         final int batchedReduceSize = request.paramAsInt("batched_reduce_size", searchRequest.getBatchedReduceSize());
         searchRequest.setBatchedReduceSize(batchedReduceSize);
         if (request.hasParam("pre_filter_shard_size")) {
@@ -257,7 +277,6 @@ public class RestSearchAction extends BaseRestHandler {
         }
 
         searchRequest.searchType(request.param("search_type"));
-        parseSearchSource(searchRequest.source(), request, setSize);
         searchRequest.requestCache(request.paramAsBoolean("request_cache", searchRequest.requestCache()));
 
         String scroll = request.param("scroll");
@@ -277,9 +296,13 @@ public class RestSearchAction extends BaseRestHandler {
                 .build();
         }
         searchRequest.indicesOptions(indicesOptions);
+    }
 
-        validateSearchRequest(request, searchRequest);
-
+    private static void applySearchRequestTailParameters(
+        SearchRequest searchRequest,
+        RestRequest request,
+        Optional<Boolean> crossProjectEnabled
+    ) {
         if (searchRequest.pointInTimeBuilder() != null) {
             preparePointInTime(searchRequest, request);
         } else {
@@ -297,17 +320,59 @@ public class RestSearchAction extends BaseRestHandler {
      * values that are not overridden by the rest request.
      */
     private static void parseSearchSource(final SearchSourceBuilder searchSourceBuilder, RestRequest request, IntConsumer setSize) {
+        applySearchSourceQuery(searchSourceBuilder, request);
+        applySearchSourceWindow(searchSourceBuilder, request, setSize);
+        applySearchSourceFields(searchSourceBuilder, request);
+        applySearchSourceTracking(searchSourceBuilder, request);
+        applySearchSourceSorts(searchSourceBuilder, request);
+        applySearchSourceStats(searchSourceBuilder, request);
+        applySearchSourceSuggest(searchSourceBuilder, request);
+    }
+
+    private static void applySearchSourceQuery(SearchSourceBuilder searchSourceBuilder, RestRequest request) {
         QueryBuilder queryBuilder = RestActions.urlParamsToQueryBuilder(request);
         if (queryBuilder != null) {
             searchSourceBuilder.query(queryBuilder);
         }
+    }
 
+    private static void applySearchSourceWindow(SearchSourceBuilder searchSourceBuilder, RestRequest request, IntConsumer setSize) {
         if (request.hasParam("from")) {
             searchSourceBuilder.from(request.paramAsInt("from", 0));
         }
         if (request.hasParam("size")) {
             setSize.accept(request.paramAsInt("size", SearchService.DEFAULT_SIZE));
         }
+        if (request.hasParam("timeout")) {
+            searchSourceBuilder.timeout(request.paramAsTime("timeout", null));
+        }
+        if (request.hasParam("terminate_after")) {
+            int terminateAfter = request.paramAsInt("terminate_after", SearchContext.DEFAULT_TERMINATE_AFTER);
+            searchSourceBuilder.terminateAfter(terminateAfter);
+        }
+    }
+
+    private static void applySearchSourceFields(SearchSourceBuilder searchSourceBuilder, RestRequest request) {
+        StoredFieldsContext storedFieldsContext = StoredFieldsContext.fromRestRequest(
+            SearchSourceBuilder.STORED_FIELDS_FIELD.getPreferredName(),
+            request
+        );
+        if (storedFieldsContext != null) {
+            searchSourceBuilder.storedFields(storedFieldsContext);
+        }
+        String sDocValueFields = request.param("docvalue_fields");
+        if (sDocValueFields != null && Strings.hasText(sDocValueFields)) {
+            for (String field : Strings.splitStringByCommaToArray(sDocValueFields)) {
+                searchSourceBuilder.docValueField(field, null);
+            }
+        }
+        FetchSourceContext fetchSourceContext = FetchSourceContext.parseFromRestRequest(request);
+        if (fetchSourceContext != null) {
+            searchSourceBuilder.fetchSource(fetchSourceContext);
+        }
+    }
+
+    private static void applySearchSourceTracking(SearchSourceBuilder searchSourceBuilder, RestRequest request) {
         if (request.hasParam("explain")) {
             searchSourceBuilder.explain(request.paramAsBoolean("explain", null));
         }
@@ -317,35 +382,6 @@ public class RestSearchAction extends BaseRestHandler {
         if (request.hasParam("seq_no_primary_term")) {
             searchSourceBuilder.seqNoAndPrimaryTerm(request.paramAsBoolean("seq_no_primary_term", null));
         }
-        if (request.hasParam("timeout")) {
-            searchSourceBuilder.timeout(request.paramAsTime("timeout", null));
-        }
-        if (request.hasParam("terminate_after")) {
-            int terminateAfter = request.paramAsInt("terminate_after", SearchContext.DEFAULT_TERMINATE_AFTER);
-            searchSourceBuilder.terminateAfter(terminateAfter);
-        }
-
-        StoredFieldsContext storedFieldsContext = StoredFieldsContext.fromRestRequest(
-            SearchSourceBuilder.STORED_FIELDS_FIELD.getPreferredName(),
-            request
-        );
-        if (storedFieldsContext != null) {
-            searchSourceBuilder.storedFields(storedFieldsContext);
-        }
-        String sDocValueFields = request.param("docvalue_fields");
-        if (sDocValueFields != null) {
-            if (Strings.hasText(sDocValueFields)) {
-                String[] sFields = Strings.splitStringByCommaToArray(sDocValueFields);
-                for (String field : sFields) {
-                    searchSourceBuilder.docValueField(field, null);
-                }
-            }
-        }
-        FetchSourceContext fetchSourceContext = FetchSourceContext.parseFromRestRequest(request);
-        if (fetchSourceContext != null) {
-            searchSourceBuilder.fetchSource(fetchSourceContext);
-        }
-
         if (request.hasParam("track_scores")) {
             searchSourceBuilder.trackScores(request.paramAsBoolean("track_scores", false));
         }
@@ -359,37 +395,45 @@ public class RestSearchAction extends BaseRestHandler {
                 );
             }
         }
+    }
 
+    private static void applySearchSourceSorts(SearchSourceBuilder searchSourceBuilder, RestRequest request) {
         String sSorts = request.param("sort");
-        if (sSorts != null) {
-            String[] sorts = Strings.splitStringByCommaToArray(sSorts);
-            for (String sort : sorts) {
-                int delimiter = sort.lastIndexOf(':');
-                if (delimiter != -1) {
-                    String sortField = sort.substring(0, delimiter);
-                    String reverse = sort.substring(delimiter + 1);
-                    if ("asc".equals(reverse)) {
-                        searchSourceBuilder.sort(sortField, SortOrder.ASC);
-                    } else if ("desc".equals(reverse)) {
-                        searchSourceBuilder.sort(sortField, SortOrder.DESC);
-                    }
-                } else {
-                    searchSourceBuilder.sort(sort);
-                }
-            }
+        if (sSorts == null) {
+            return;
         }
 
+        for (String sort : Strings.splitStringByCommaToArray(sSorts)) {
+            int delimiter = sort.lastIndexOf(':');
+            if (delimiter != -1) {
+                String sortField = sort.substring(0, delimiter);
+                String reverse = sort.substring(delimiter + 1);
+                if ("asc".equals(reverse)) {
+                    searchSourceBuilder.sort(sortField, SortOrder.ASC);
+                } else if ("desc".equals(reverse)) {
+                    searchSourceBuilder.sort(sortField, SortOrder.DESC);
+                }
+            } else {
+                searchSourceBuilder.sort(sort);
+            }
+        }
+    }
+
+    private static void applySearchSourceStats(SearchSourceBuilder searchSourceBuilder, RestRequest request) {
         String sStats = request.param("stats");
         if (sStats != null) {
             searchSourceBuilder.stats(Arrays.asList(Strings.splitStringByCommaToArray(sStats)));
         }
+    }
+
+    private static void applySearchSourceSuggest(SearchSourceBuilder searchSourceBuilder, RestRequest request) {
         SuggestBuilder suggestBuilder = parseSuggestUrlParameters(request);
         if (suggestBuilder != null) {
             searchSourceBuilder.suggest(suggestBuilder);
         }
     }
 
-    private static final String[] suggestQueryStringParams = new String[] { "suggest_text", "suggest_size", "suggest_mode" };
+    private static final String[] SUGGEST_QUERY_STRING_PARAMS = new String[] { "suggest_text", "suggest_size", "suggest_mode" };
 
     /**
      * package private for testing
@@ -407,7 +451,7 @@ public class RestSearchAction extends BaseRestHandler {
                     .suggestMode(TermSuggestionBuilder.SuggestMode.resolve(suggestMode))
             );
         } else {
-            List<String> unconsumedParams = Arrays.stream(suggestQueryStringParams).filter(key -> request.param(key) != null).toList();
+            List<String> unconsumedParams = Arrays.stream(SUGGEST_QUERY_STRING_PARAMS).filter(key -> request.param(key) != null).toList();
             if (unconsumedParams.isEmpty() == false) {
                 // this would lead to a non-descriptive error from RestBaseHandler#unrecognized later, so throw a better IAE here
                 throw new IllegalArgumentException(
@@ -465,14 +509,14 @@ public class RestSearchAction extends BaseRestHandler {
             searchRequest.source().trackTotalHits(true);
         } else if (trackTotalHitsUpTo != SearchContext.TRACK_TOTAL_HITS_ACCURATE
             && trackTotalHitsUpTo != SearchContext.TRACK_TOTAL_HITS_DISABLED) {
-                throw new IllegalArgumentException(
-                    "["
-                        + TOTAL_HITS_AS_INT_PARAM
-                        + "] cannot be used "
-                        + "if the tracking of total hits is not accurate, got "
-                        + trackTotalHitsUpTo
-                );
-            }
+            throw new IllegalArgumentException(
+                "["
+                    + TOTAL_HITS_AS_INT_PARAM
+                    + "] cannot be used "
+                    + "if the tracking of total hits is not accurate, got "
+                    + trackTotalHitsUpTo
+            );
+        }
     }
 
     private static void checkSearchType(RestRequest restRequest, SearchRequest searchRequest) {

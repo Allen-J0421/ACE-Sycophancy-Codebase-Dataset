@@ -15,6 +15,8 @@ import org.elasticsearch.rest.RestRequest;
 import java.util.Optional;
 
 public class SearchParamsParser {
+    private static final String CCS_MINIMIZE_ROUNDTRIPS_PARAM = "ccs_minimize_roundtrips";
+
     public static final String MRT_SET_IN_CPS_WARN = "ccs_minimize_roundtrips always defaults to true in Cross Project Search context."
         + " Setting it explicitly has no effect irrespective of the value specified and is ignored."
         + " It will soon be deprecated and made unavailable for Cross project Search.";
@@ -32,18 +34,17 @@ public class SearchParamsParser {
     }
 
     public static boolean parseCcsMinimizeRoundtrips(Optional<Boolean> crossProjectEnabled, RestRequest request, boolean defaultValue) {
-        if (crossProjectEnabled.orElse(false)) {
-            if (request.hasParam("ccs_minimize_roundtrips")) {
-                request.param("ccs_minimize_roundtrips");
-                HeaderWarning.addWarning(MRT_SET_IN_CPS_WARN);
-                return true;
-            }
-
-            // MRT was not provided; default to true.
-            return true;
-        } else {
+        if (crossProjectEnabled.orElse(false) == false) {
             // This is not a CPS request; use the value the user has provided.
-            return request.paramAsBoolean("ccs_minimize_roundtrips", defaultValue);
+            return request.paramAsBoolean(CCS_MINIMIZE_ROUNDTRIPS_PARAM, defaultValue);
         }
+
+        if (request.hasParam(CCS_MINIMIZE_ROUNDTRIPS_PARAM)) {
+            request.param(CCS_MINIMIZE_ROUNDTRIPS_PARAM);
+            HeaderWarning.addWarning(MRT_SET_IN_CPS_WARN);
+        }
+
+        // MRT was not provided or is ignored in CPS; default to true.
+        return true;
     }
 }

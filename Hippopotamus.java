@@ -3,7 +3,7 @@ import java.util.List;
 
 /**
  * A model of a hippopotamus. Hippopotamus will eat monkeys and plants,
- * but will kill monkeys, plants and bears.
+ * and interact with nearby organisms through feeding and infection.
  * They will move and look for food and age at every step of the simulation,
  * and die when they reach their max age or have gone too long without food.
  * 

@@ -3,7 +3,7 @@ import java.util.List;
 
 /**
  * A model of a bear. Bears will eat monkeys,
- * but will kill monkeys and plants.
+ * and interact with nearby organisms through feeding and infection.
  * They will move and look for food and age at every step of the simulation,
  * and die when they reach their max age or have gone too long without food.
  * 

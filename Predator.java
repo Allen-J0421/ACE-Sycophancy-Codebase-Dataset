@@ -95,9 +95,10 @@ public class Predator extends Animal
                 
                 if(! this.getName().equals(nameOfInvestigatedHorde))
                 {
-                    int totalHordeStrength =  neighboringPredator.getStrength();
+                    // Collect every member of the investigated horde exactly once. The loop
+                    // covers index i as well, so the outer predator must not be pre-added.
+                    int totalHordeStrength = 0;
 
-                    hordeMembers.add(neighboringPredator);
                     for (int j =0; j < neighboringAnimals.size(); j++) {
                         if (nameOfInvestigatedHorde.equals(neighboringAnimals.get(j).getName())) {
                             Predator predatorObject = (Predator)neighboringAnimals.get(j);

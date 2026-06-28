@@ -6,21 +6,17 @@ import java.util.Random;
  *
  * @version 1.3
  */
-public abstract class Animal implements Actor
+public abstract class Animal extends Organism
 {
-    
+
     /*///////////////////////////////////////////////////////////////
                                   STATE
     //////////////////////////////////////////////////////////////*/
-    
-    private boolean alive;
-    private Field field;
-    private Location location;
-    protected int age;
+
     protected final Gender gender;
     protected int foodLevel;
     protected Integer infectionTimestamp;
-    
+
     private static final Random rand = Randomizer.getRandom();
     
     /*///////////////////////////////////////////////////////////////
@@ -56,19 +52,6 @@ public abstract class Animal implements Actor
     /*///////////////////////////////////////////////////////////////
                             ANIMAL BEHAVIOUR LOGIC
     //////////////////////////////////////////////////////////////*/
-    
-    /**
-     * Increments the age of the animal.
-     * 
-     * @param maxAge The maximum age of the animal before he dies.
-     */
-    protected void incrementAge(int maxAge)
-    {
-        age++;
-        if(age > maxAge) { 
-            setDead();
-        }
-    }
     
     /**
      * Increment the hunger of the animal.
@@ -322,61 +305,24 @@ public abstract class Animal implements Actor
     }
     
     /**
-     * Check whether the animal is alive or not.
-     * 
-     * @return true if the animal is still alive.
+     * Animals live on the field's animal grid.
+     *
+     * @param location Where to place this animal.
      */
-    public boolean isAlive()
+    @Override
+    protected void placeInField(Location location)
     {
-        return alive;
+        field.place(this, location);
     }
 
     /**
-     * Indicate that the animal is no longer alive.
-     * 
-     * It is removed from the field.
+     * Remove this animal from the field's animal grid.
+     *
+     * @param location The location to clear.
      */
-    protected void setDead()
+    @Override
+    protected void clearFromField(Location location)
     {
-        alive = false;
-        if(location != null) {
-            field.clear(location);
-            location = null;
-            field = null;
-        }
-    }
-    
-    /**
-     * Return the animal's location.
-     * 
-     * @return The animal's location.
-     */
-    protected Location getLocation()
-    {
-        return location;
-    }
-    
-    /**
-     * Place the animal at the new location in the given field.
-     * 
-     * @param newLocation The animal's new location.
-     */
-    protected void setLocation(Location newLocation)
-    {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.place(this, newLocation);
-    }
-    
-    /**
-     * Return the animal's field.
-     * 
-     * @return The animal's field.
-     */
-    protected Field getField()
-    {
-        return field;
+        field.clear(location);
     }
 }

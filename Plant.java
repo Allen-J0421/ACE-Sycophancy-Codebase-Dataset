@@ -6,23 +6,19 @@ import java.util.List;
  *
  * @version 1.0
  */
-public abstract class Plant implements Actor
+public abstract class Plant extends Organism
 {
-    
+
     /*///////////////////////////////////////////////////////////////
                                   STATE
     //////////////////////////////////////////////////////////////*/
-    
+
     private static final int FEEDING_FACTOR = 2;
     // Multiplier applied to the spread probability under favourable weather.
     private static final double OPTIMAL_BREEDING_FACTOR = 4.0;
-    protected boolean alive;
-    protected Location location;
-    protected int age;
     protected int health;
-    protected int feedingValue; 
-    protected Field field;
-     
+    protected int feedingValue;
+
     private static final Random rand = Randomizer.getRandom();
     
     /*///////////////////////////////////////////////////////////////
@@ -101,18 +97,6 @@ public abstract class Plant implements Actor
     protected abstract double getMultiplyProbability();
     
     /**
-     * Increments the age of the plant.
-     * 
-     * @param maxAge The maximum age a plant can take.
-     */
-    private void incrementAge(int maxAge) {
-        age++;
-        if(age > maxAge) {
-            setDead();
-        }
-    }
-    
-    /**
      * Updates how much the plant will feed if it is to be eaten.
      */
     private void updateFeedingValue()
@@ -159,16 +143,6 @@ public abstract class Plant implements Actor
     protected abstract Plant reproduce(Field field, Location location);
     
     /**
-     * Accessor method to denote whether or not the plant is alive.
-     * 
-     * @return flag conveying if the plant is alive.
-     */
-    public boolean isAlive()
-    {
-        return alive;
-    }
-    
-    /**
      * Accessor method for the feeding value of the plant.
      * 
      * @return the feeding value of the plant.
@@ -179,30 +153,24 @@ public abstract class Plant implements Actor
     }
     
     /**
-     * Mutator method for the location of the plant.
-     * 
-     * @param newLocation the new location to be set.
+     * Plants live on the field's plant terrain grid.
+     *
+     * @param location Where to place this plant.
      */
-    protected void setLocation(Location newLocation)
+    @Override
+    protected void placeInField(Location location)
     {
-        if(location != null) {
-            field.clear(location);
-        }
-        location = newLocation;
-        field.placePlant(this, newLocation);
+        field.placePlant(this, location);
     }
-    
+
     /**
-     * Sets the plant dead and removes all references to it, as well as its storage.
+     * Remove this plant from the field's plant terrain grid.
+     *
+     * @param location The location to clear.
      */
-    protected void setDead()
+    @Override
+    protected void clearFromField(Location location)
     {
-        alive = false;
-        if(location != null) {
-            //errain.clear(location);
-            field.clearPlant(location);
-            location = null;
-            field = null;
-        }
+        field.clearPlant(location);
     }
 }

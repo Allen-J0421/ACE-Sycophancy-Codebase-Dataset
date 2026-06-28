@@ -20,19 +20,14 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.lsp4j.CompletionItem;
 import org.jkiss.code.NotNull;
 import org.jkiss.dbeaver.DBException;
-import org.jkiss.dbeaver.model.DBPDataSource;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
-import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
 import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzerSupport;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalProvider;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequestFactory;
-import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
 import org.jkiss.dbeaver.runtime.DBWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LspSQLCompletionContextParser {
@@ -45,68 +40,19 @@ public class LspSQLCompletionContextParser {
         @NotNull SQLCompletionContext completionContext
     ) throws InterruptedException, InvocationTargetException, DBException {
         Document doc = new Document(document.getText());
-        SQLCompletionRequest request = SQLCompletionRequestFactory.create(completionContext, doc, offset, false);
-
-        List<CompletionProposalBase> proposals = collectCompletionProposals(document, offset, request);
+        var request = SQLCompletionRequestFactory.create(completionContext, doc, offset, false);
+        List<CompletionProposalBase> proposals = SQLCompletionProposalProvider.collectProposals(
+            new VoidProgressMonitor(),
+            DBWorkbench.getPlatform().getPreferenceStore(),
+            request,
+            document.getText(),
+            offset,
+            false
+        );
 
         return proposals.stream()
             .limit(MAX_RESULTS)
             .map(p -> new CompletionItem(p.getReplacementString()))
             .toList();
-    }
-
-    @NotNull
-    private static List<CompletionProposalBase> collectCompletionProposals(
-        @NotNull ContextAwareDocument document,
-        int offset,
-        @NotNull SQLCompletionRequest request
-    ) throws InterruptedException, InvocationTargetException, DBException {
-        List<CompletionProposalBase> proposals = new ArrayList<>();
-        SQLCompletionEngineDecider.Decision engineDecision = resolveCompletionEngines(document.getDataSource());
-        if (engineDecision.semanticEnabled()) {
-            collectSemanticCompletionProposals(document, offset, request, proposals);
-        }
-        if (engineDecision.legacyEnabled() && (!engineDecision.legacyRequiresWordPart() || request.getWordPart() != null)) {
-            collectLegacyCompletionProposals(request, proposals);
-        }
-        return proposals;
-    }
-
-    @NotNull
-    private static SQLCompletionEngineDecider.Decision resolveCompletionEngines(@NotNull DBPDataSource dataSource) {
-        return SQLCompletionEngineDecider.resolve(
-            DBWorkbench.getPlatform().getPreferenceStore(),
-            dataSource
-        );
-    }
-
-    private static void collectSemanticCompletionProposals(
-        @NotNull ContextAwareDocument document,
-        int offset,
-        @NotNull SQLCompletionRequest request,
-        @NotNull List<CompletionProposalBase> proposals
-    ) throws InterruptedException, InvocationTargetException, DBException {
-        proposals.addAll(SQLCompletionAnalyzerSupport.collectSemanticProposals(
-            new VoidProgressMonitor(),
-            monitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
-                monitor,
-                request,
-                document.getText(),
-                offset
-            ),
-            request,
-            request::getDocumentOffset
-        ));
-    }
-
-    private static void collectLegacyCompletionProposals(
-        @NotNull SQLCompletionRequest request,
-        @NotNull List<CompletionProposalBase> proposals
-    ) throws DBException {
-        proposals.addAll(SQLCompletionAnalyzerSupport.collectLegacyProposals(
-            new VoidProgressMonitor(),
-            request,
-            false
-        ));
     }
 }

@@ -263,9 +263,13 @@ public final class WorkloadIdentitySslConfig implements Closeable {
         }
         this.context = newContext;
         logger.debug("loaded workload-identity SSL context");
-        for (Runnable l : reloadListeners) {
+        notifyReloadListeners();
+    }
+
+    private void notifyReloadListeners() {
+        for (Runnable listener : reloadListeners) {
             try {
-                l.run();
+                listener.run();
             } catch (Exception e) {
                 // Isolate listener failures so one consumer cannot block others or the watcher thread.
                 logger.warn("workload-identity SSL reload listener threw", e);

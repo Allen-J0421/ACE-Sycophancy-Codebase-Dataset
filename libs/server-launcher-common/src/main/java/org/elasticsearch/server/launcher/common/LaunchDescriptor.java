@@ -66,7 +66,7 @@ public class LaunchDescriptor {
         this.workingDir = workingDir;
         this.tempDir = tempDir;
         this.daemonize = daemonize;
-        this.serverArgsBytes = serverArgsBytes.clone();
+        this.serverArgsBytes = copyServerArgsBytes(serverArgsBytes);
     }
 
     /**
@@ -80,7 +80,7 @@ public class LaunchDescriptor {
         this.workingDir = other.workingDir;
         this.tempDir = other.tempDir;
         this.daemonize = other.daemonize;
-        this.serverArgsBytes = other.serverArgsBytes;
+        this.serverArgsBytes = copyServerArgsBytes(other.serverArgsBytes);
     }
 
     public String command() {
@@ -112,7 +112,7 @@ public class LaunchDescriptor {
     }
 
     public byte[] serverArgsBytes() {
-        return serverArgsBytes;
+        return copyServerArgsBytes(serverArgsBytes);
     }
 
     /**
@@ -267,6 +267,10 @@ public class LaunchDescriptor {
     protected static String readNullableString(DataInputStream in) throws IOException {
         boolean present = in.readBoolean();
         return present ? in.readUTF() : null;
+    }
+
+    private static byte[] copyServerArgsBytes(byte[] serverArgsBytes) {
+        return serverArgsBytes.clone();
     }
 
     private static void appendSection(StringBuilder sb, String name, String value) {

@@ -79,6 +79,48 @@ public class LaunchDescriptorTests extends ESTestCase {
     }
 
     /**
+     * Constructor clones the provided server args so later caller mutations cannot affect the descriptor.
+     */
+    public void testConstructorDefensivelyCopiesServerArgs() {
+        byte[] serverArgsBytes = new byte[] { 1, 2, 3 };
+        LaunchDescriptor descriptor = new LaunchDescriptor(
+            "/usr/bin/java",
+            List.of(),
+            List.of(),
+            Map.of(),
+            "/var/log/elasticsearch",
+            "/tmp/elasticsearch",
+            false,
+            serverArgsBytes
+        );
+
+        serverArgsBytes[0] = 42;
+
+        assertTrue(Arrays.equals(new byte[] { 1, 2, 3 }, descriptor.serverArgsBytes()));
+    }
+
+    /**
+     * Getter returns a fresh copy so callers cannot mutate the descriptor's internal state.
+     */
+    public void testServerArgsBytesGetterReturnsDefensiveCopy() {
+        LaunchDescriptor descriptor = new LaunchDescriptor(
+            "/usr/bin/java",
+            List.of(),
+            List.of(),
+            Map.of(),
+            "/var/log/elasticsearch",
+            "/tmp/elasticsearch",
+            false,
+            new byte[] { 1, 2, 3 }
+        );
+
+        byte[] returnedBytes = descriptor.serverArgsBytes();
+        returnedBytes[0] = 42;
+
+        assertTrue(Arrays.equals(new byte[] { 1, 2, 3 }, descriptor.serverArgsBytes()));
+    }
+
+    /**
      * Reading from a stream with wrong magic number throws IOException with a clear message.
      */
     public void testInvalidMagicThrows() throws IOException {

@@ -233,11 +233,24 @@ public abstract class Animal extends Creature
     }
 
     /**
-     * Every animal have different gender. and the implementation of this method is at its subclass.
+     * Decide whether this animal has an adjacent individual of its own species
+     * and the opposite sex. Only species that {@link #requiresMate} consult this
+     * (see {@link #canBreed}); by default an animal recognises no mate, so
+     * species that do require one override this method.
      *
+     * @return true if a mate of the opposite sex is adjacent, false otherwise.
      */
-    public abstract boolean encounterWithDiffSex();
+    public boolean encounterWithDiffSex(){
+        return false;
+    }
 
+    /**
+     * Look for food adjacent to the current location, eat the first live prey
+     * found, and possibly catch an infection from infected neighbours.
+     * @param disease the disease currently in the simulation.
+     * @param step the current step.
+     * @return Where food was found, or null if it wasn't.
+     */
     public abstract Location search(Disease disease, int step);
 
     /**

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A simple model of a Salmon.
@@ -9,7 +8,7 @@ import java.util.Iterator;
  *
  * @version 2022/03/02
  */
-public class Salmon extends Animal
+public class Salmon extends Herbivore
 {
     // Characteristics shared by all salmons (class variables).
 
@@ -49,49 +48,9 @@ public class Salmon extends Animal
 
     protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
 
-    protected boolean requiresMate() { return true; }
-
     protected Animal createChild(Field field, Location location)
     {
         return new Salmon(false, field, location);
-    }
-
-    /**
-     * Look for seaweed adjacent to the current location.
-     * Only the first live seaweed is eaten, if the nearby animal is
-     * infected, then this animal also may be infected.
-     * @param disease disease.
-     * @param step int current step.
-     * @return Where food was found, or null if it wasn't.
-     */
-    public Location search(Disease disease, int step){
-        Field field = getField();
-         //trying to find food.
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location loc = it.next();
-            Object creature = field.getObjectAt(loc);
-            //If nearby animal is infected,then it has the probability to be infected as well
-            if(creature instanceof Animal){
-                Animal animal = (Animal)creature;
-                if(animal.getIsInfected()){
-                    makeInfected(disease, step);
-                }
-            }
-            // if food is found, set the food death.
-            if(creature instanceof Seaweed) {
-                Seaweed seaweed = (Seaweed) creature;
-                if(seaweed.isAlive()) {
-                    seaweed.setDead();
-                    foodLevel = SEAWEED_FOOD_VALUE;
-                    return loc;
-                }
-            }
-        }
-        return null;
-
-
     }
 
     /**

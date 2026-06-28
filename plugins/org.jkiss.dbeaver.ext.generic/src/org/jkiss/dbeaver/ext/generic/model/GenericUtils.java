@@ -55,8 +55,8 @@ public class GenericUtils {
 
     public static String safeGetString(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetString(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetString(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetString(dbResult, column.toString());
         }
@@ -64,8 +64,8 @@ public class GenericUtils {
 
     public static String safeGetStringTrimmed(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetStringTrimmed(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetStringTrimmed(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetStringTrimmed(dbResult, column.toString());
         }
@@ -73,8 +73,8 @@ public class GenericUtils {
 
     public static int safeGetInt(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetInt(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetInt(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetInt(dbResult, column.toString());
         }
@@ -82,8 +82,8 @@ public class GenericUtils {
 
     public static Integer safeGetInteger(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetInteger(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetInteger(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetInteger(dbResult, column.toString());
         }
@@ -91,8 +91,8 @@ public class GenericUtils {
 
     public static long safeGetLong(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetLong(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetLong(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetLong(dbResult, column.toString());
         }
@@ -100,8 +100,8 @@ public class GenericUtils {
 
     public static double safeGetDouble(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetDouble(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetDouble(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetDouble(dbResult, column.toString());
         }
@@ -109,8 +109,8 @@ public class GenericUtils {
 
     public static BigDecimal safeGetBigDecimal(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetBigDecimal(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetBigDecimal(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetBigDecimal(dbResult, column.toString());
         }
@@ -118,8 +118,8 @@ public class GenericUtils {
 
     public static boolean safeGetBoolean(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetBoolean(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetBoolean(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetBoolean(dbResult, column.toString());
         }
@@ -127,8 +127,8 @@ public class GenericUtils {
 
     public static Object safeGetObject(GenericMetaObject object, ResultSet dbResult, String columnId) {
         Object column = getColumn(object, columnId);
-        if (column instanceof Number) {
-            return JDBCUtils.safeGetObject(dbResult, ((Number) column).intValue());
+        if (column instanceof Number n) {
+            return JDBCUtils.safeGetObject(dbResult, n.intValue());
         } else {
             return JDBCUtils.safeGetObject(dbResult, column.toString());
         }
@@ -136,7 +136,7 @@ public class GenericUtils {
 
     public static boolean isLegacySQLDialect(DBSObject owner) {
         SQLDialect dialect = SQLUtils.getDialectFromObject(owner);
-        return dialect instanceof GenericSQLDialect && ((GenericSQLDialect) dialect).isLegacySQLDialect();
+        return dialect instanceof GenericSQLDialect gsd && gsd.isLegacySQLDialect();
     }
 
     public static String normalizeProcedureName(String procedureName) {

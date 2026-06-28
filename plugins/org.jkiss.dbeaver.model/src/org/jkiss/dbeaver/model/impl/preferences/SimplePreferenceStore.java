@@ -335,10 +335,9 @@ public abstract class SimplePreferenceStore extends AbstractPreferenceStore {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof SimplePreferenceStore)) {
+        if (!(obj instanceof SimplePreferenceStore copy)) {
             return false;
         }
-        SimplePreferenceStore copy = (SimplePreferenceStore)obj;
         return
             CommonUtils.equalObjects(parentStore, copy.parentStore) &&
             CommonUtils.equalObjects(properties, copy.properties) &&

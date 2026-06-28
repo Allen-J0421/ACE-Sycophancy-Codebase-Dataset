@@ -89,22 +89,22 @@ public class DateTimeDataFormatter implements DBDDataFormatter {
     @Override
     public String formatValue(Object value)
     {
-        if (value instanceof Date && zone != null) {
-            return dateTimeFormatter.format(ZonedDateTime.ofInstant(((Date) value).toInstant(), zone));
+        if (value instanceof Date d && zone != null) {
+            return dateTimeFormatter.format(ZonedDateTime.ofInstant(d.toInstant(), zone));
         }
-        if (value instanceof TemporalAccessor) {
+        if (value instanceof TemporalAccessor ta) {
             if (zone != null) {
-                if (value instanceof LocalDateTime) {
-                    return dateTimeFormatter.format(((LocalDateTime) value).atZone(zone));
+                if (ta instanceof LocalDateTime ldt) {
+                    return dateTimeFormatter.format(ldt.atZone(zone));
                 }
-                if (value instanceof ZonedDateTime) {
-                    return dateTimeFormatter.format(((ZonedDateTime) value).withZoneSameInstant(zone));
+                if (ta instanceof ZonedDateTime zdt) {
+                    return dateTimeFormatter.format(zdt.withZoneSameInstant(zone));
                 }
-                if (value instanceof OffsetDateTime) {
-                    return dateTimeFormatter.format(((OffsetDateTime) value).atZoneSameInstant(zone));
+                if (ta instanceof OffsetDateTime odt) {
+                    return dateTimeFormatter.format(odt.atZoneSameInstant(zone));
                 }
             }
-            return dateTimeFormatter.format((TemporalAccessor) value);
+            return dateTimeFormatter.format(ta);
         }
         synchronized (dateFormat) {
             buffer.setLength(0);

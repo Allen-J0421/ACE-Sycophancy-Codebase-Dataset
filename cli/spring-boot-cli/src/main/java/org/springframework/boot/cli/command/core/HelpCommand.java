@@ -92,33 +92,35 @@ public class HelpCommand extends AbstractCommand {
 			throw new NoHelpCommandArgumentsException();
 		}
 		String commandName = args[0];
-		for (Command command : this.commandRunner) {
-			if (command.getName().equals(commandName)) {
-				Log.info(this.commandRunner.getName() + command.getName() + " - " + command.getDescription());
-				Log.info("");
-				if (command.getUsageHelp() != null) {
-					Log.info("usage: " + this.commandRunner.getName() + command.getName() + " "
-							+ command.getUsageHelp());
-					Log.info("");
-				}
-				if (command.getHelp() != null) {
-					Log.info(command.getHelp());
-				}
-				Collection<HelpExample> examples = command.getExamples();
-				if (examples != null) {
-					Log.info((examples.size() != 1) ? "examples:" : "example:");
-					Log.info("");
-					for (HelpExample example : examples) {
-						Log.info("    " + example.getDescription() + ":");
-						Log.info("        $ " + example.getExample());
-						Log.info("");
-					}
-					Log.info("");
-				}
-				return ExitStatus.OK;
-			}
+		Command command = this.commandRunner.findCommand(commandName);
+		if (command == null) {
+			throw new NoSuchCommandException(commandName);
 		}
-		throw new NoSuchCommandException(commandName);
+		logHelp(command);
+		return ExitStatus.OK;
+	}
+
+	private void logHelp(Command command) {
+		Log.info(this.commandRunner.getName() + command.getName() + " - " + command.getDescription());
+		Log.info("");
+		if (command.getUsageHelp() != null) {
+			Log.info("usage: " + this.commandRunner.getName() + command.getName() + " " + command.getUsageHelp());
+			Log.info("");
+		}
+		if (command.getHelp() != null) {
+			Log.info(command.getHelp());
+		}
+		Collection<HelpExample> examples = command.getExamples();
+		if (examples != null) {
+			Log.info((examples.size() != 1) ? "examples:" : "example:");
+			Log.info("");
+			for (HelpExample example : examples) {
+				Log.info("    " + example.getDescription() + ":");
+				Log.info("        $ " + example.getExample());
+				Log.info("");
+			}
+			Log.info("");
+		}
 	}
 
 }

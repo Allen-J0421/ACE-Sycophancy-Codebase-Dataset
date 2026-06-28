@@ -173,6 +173,13 @@ class CommandRunnerTests {
 	}
 
 	@Test
+	void helpForOptionCommandAlias() throws Exception {
+		this.commandRunner.setOptionCommands(this.regularCommand.getClass());
+		this.commandRunner.run("help", "--command");
+		then(this.regularCommand).should().getHelp();
+	}
+
+	@Test
 	void helpNoCommand() {
 		assertThatExceptionOfType(NoHelpCommandArgumentsException.class)
 			.isThrownBy(() -> this.commandRunner.run("help"));

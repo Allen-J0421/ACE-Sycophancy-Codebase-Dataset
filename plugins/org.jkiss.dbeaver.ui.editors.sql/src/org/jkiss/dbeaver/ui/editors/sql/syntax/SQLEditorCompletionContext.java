@@ -18,17 +18,14 @@ package org.jkiss.dbeaver.ui.editors.sql.syntax;
 
 import org.jkiss.code.NotNull;
 import org.jkiss.code.Nullable;
-import org.jkiss.dbeaver.model.DBPDataSource;
 import org.jkiss.dbeaver.model.DBPImage;
 import org.jkiss.dbeaver.model.DBPKeywordType;
 import org.jkiss.dbeaver.model.DBPNamedObject;
-import org.jkiss.dbeaver.model.exec.DBCExecutionContext;
 import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.sql.SQLSyntaxManager;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
+import org.jkiss.dbeaver.model.sql.completion.AbstractSQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
-import org.jkiss.dbeaver.model.sql.parser.SQLRuleManager;
 import org.jkiss.dbeaver.ui.editors.sql.SQLEditorBase;
 import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants;
 import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants.*;
@@ -36,11 +33,18 @@ import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants.*;
 import java.util.Map;
 
 
-public class SQLEditorCompletionContext implements SQLCompletionContext {
+public class SQLEditorCompletionContext extends AbstractSQLCompletionContext {
     private final SQLEditorBase editor;
     private final SQLCompletionObjectNameFormKind objectNameFormKind;
 
     public SQLEditorCompletionContext(SQLEditorBase editor) {
+        super(
+            editor.getDataSource(),
+            editor.getExecutionContext(),
+            editor.getSyntaxManager(),
+            editor.getRuleManager(),
+            editor.getActivePreferenceStore()
+        );
         this.editor = editor;
         this.objectNameFormKind = SQLCompletionObjectNameFormKind.getFromPreferences(editor.getActivePreferenceStore());
     }
@@ -48,27 +52,6 @@ public class SQLEditorCompletionContext implements SQLCompletionContext {
     @NotNull
     public SQLCompletionObjectNameFormKind getObjectNameForm() {
         return this.objectNameFormKind;
-    }
-
-    @Override
-    public DBPDataSource getDataSource() {
-        return editor.getDataSource();
-    }
-
-    @Nullable
-    @Override
-    public DBCExecutionContext getExecutionContext() {
-        return editor.getExecutionContext();
-    }
-
-    @Override
-    public SQLSyntaxManager getSyntaxManager() {
-        return editor.getSyntaxManager();
-    }
-
-    @Override
-    public SQLRuleManager getRuleManager() {
-        return editor.getRuleManager();
     }
 
     @NotNull

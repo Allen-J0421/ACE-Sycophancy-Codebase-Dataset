@@ -856,8 +856,8 @@ public class SearchRequest extends LegacyActionRequest implements IndicesRequest
         // skip the tiebreaker if it is not provided in the search after values
             && (searchAfter == null || searchAfter.length == source.sorts().size() + 1)) {
             SortBuilder<?> lastSort = source.sorts().get(source.sorts().size() - 1);
-            if (lastSort instanceof FieldSortBuilder == false
-                || FieldSortBuilder.SHARD_DOC_FIELD_NAME.equals(((FieldSortBuilder) lastSort).getFieldName()) == false) {
+            if (!(lastSort instanceof FieldSortBuilder fs)
+                || FieldSortBuilder.SHARD_DOC_FIELD_NAME.equals(fs.getFieldName()) == false) {
                 List<SortBuilder<?>> newSorts = new ArrayList<>(source.sorts());
                 newSorts.add(SortBuilders.pitTiebreaker().unmappedType("long"));
                 source = source.shallowCopy().sort(newSorts);

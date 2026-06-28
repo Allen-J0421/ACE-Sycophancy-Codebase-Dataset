@@ -500,7 +500,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
             } else {
                 // the failure is already present, try and not override it with an exception that is less meaningless
                 // for example, getting illegal shard state
-                if (TransportActions.isReadOverrideException(e) && (e instanceof SearchContextMissingException == false)) {
+                if (TransportActions.isReadOverrideException(e) && !(e instanceof SearchContextMissingException)) {
                     shardFailures.set(shardIndex, new ShardSearchFailure(e, shardTarget));
                 }
             }

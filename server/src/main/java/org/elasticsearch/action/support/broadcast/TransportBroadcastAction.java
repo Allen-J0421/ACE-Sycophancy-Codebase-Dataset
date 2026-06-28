@@ -265,7 +265,7 @@ public abstract class TransportBroadcastAction<
         }
 
         void setFailure(ShardIterator shardIt, int shardIndex, Exception e) {
-            if ((e instanceof BroadcastShardOperationFailedException) == false) {
+            if (!(e instanceof BroadcastShardOperationFailedException)) {
                 e = new BroadcastShardOperationFailedException(shardIt.shardId(), e);
             }
 
@@ -275,7 +275,7 @@ public abstract class TransportBroadcastAction<
                 shardsResponses.set(shardIndex, e);
             }
 
-            if ((response instanceof Throwable) == false) {
+            if (!(response instanceof Throwable)) {
                 // we should never really get here...
                 return;
             }

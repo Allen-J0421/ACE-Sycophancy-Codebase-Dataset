@@ -90,6 +90,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -111,6 +112,10 @@ import org.jspecify.annotations.Nullable;
 @GwtCompatible
 public final class Maps {
   private Maps() {}
+
+  private static <T> T getOrCreate(@LazyInit @Nullable T value, Supplier<? extends T> supplier) {
+    return (value != null) ? value : supplier.get();
+  }
 
   static <K extends @Nullable Object, V extends @Nullable Object> Iterator<K> keyIterator(
       Iterator<Entry<K, V>> entryIterator) {
@@ -1780,16 +1785,12 @@ public final class Maps {
 
     @Override
     public BiMap<V, K> inverse() {
-      BiMap<V, K> result = inverse;
-      return (result == null)
-          ? inverse = new UnmodifiableBiMap<>(delegate.inverse(), this)
-          : result;
+      return inverse = getOrCreate(inverse, () -> new UnmodifiableBiMap<>(delegate.inverse(), this));
     }
 
     @Override
     public Set<V> values() {
-      Set<V> result = values;
-      return (result == null) ? values = unmodifiableSet(delegate.values()) : result;
+      return values = getOrCreate(values, () -> unmodifiableSet(delegate.values()));
     }
 
     @GwtIncompatible @J2ktIncompatible private static final long serialVersionUID = 0;
@@ -3696,16 +3697,14 @@ public final class Maps {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-      Set<Entry<K, V>> result = entrySet;
-      return (result == null) ? entrySet = createEntrySet() : result;
+      return entrySet = getOrCreate(entrySet, this::createEntrySet);
     }
 
     @LazyInit private transient @Nullable Set<K> keySet;
 
     @Override
     public Set<K> keySet() {
-      Set<K> result = keySet;
-      return (result == null) ? keySet = createKeySet() : result;
+      return keySet = getOrCreate(keySet, this::createKeySet);
     }
 
     Set<K> createKeySet() {
@@ -3716,8 +3715,7 @@ public final class Maps {
 
     @Override
     public Collection<V> values() {
-      Collection<V> result = values;
-      return (result == null) ? values = createValues() : result;
+      return values = getOrCreate(values, this::createValues);
     }
 
     Collection<V> createValues() {
@@ -4269,15 +4267,16 @@ public final class Maps {
     @SuppressWarnings("unchecked")
     @Override
     public Comparator<? super K> comparator() {
-      Comparator<? super K> result = comparator;
-      if (result == null) {
-        Comparator<? super K> forwardCmp = forward().comparator();
-        if (forwardCmp == null) {
-          forwardCmp = (Comparator) Ordering.natural();
-        }
-        result = comparator = reverse(forwardCmp);
-      }
-      return result;
+      return comparator =
+          getOrCreate(
+              comparator,
+              () -> {
+                Comparator<? super K> forwardCmp = forward().comparator();
+                if (forwardCmp == null) {
+                  forwardCmp = (Comparator) Ordering.natural();
+                }
+                return reverse(forwardCmp);
+              });
     }
 
     // If we inline this, we get a javac error.
@@ -4366,8 +4365,7 @@ public final class Maps {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-      Set<Entry<K, V>> result = entrySet;
-      return (result == null) ? entrySet = createEntrySet() : result;
+      return entrySet = getOrCreate(entrySet, this::createEntrySet);
     }
 
     abstract Iterator<Entry<K, V>> entryIterator();
@@ -4397,8 +4395,7 @@ public final class Maps {
 
     @Override
     public NavigableSet<K> navigableKeySet() {
-      NavigableSet<K> result = navigableKeySet;
-      return (result == null) ? navigableKeySet = new NavigableKeySet<>(this) : result;
+      return navigableKeySet = getOrCreate(navigableKeySet, () -> new NavigableKeySet<>(this));
     }
 
     @Override

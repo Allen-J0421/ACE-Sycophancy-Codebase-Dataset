@@ -115,8 +115,7 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N, NetworkB
    * @since 28.0
    */
   public <N1 extends N, E1 extends E> ImmutableNetwork.Builder<N1, E1> immutable() {
-    NetworkBuilder<N1, E1> castBuilder = cast();
-    return new ImmutableNetwork.Builder<>(castBuilder);
+    return new ImmutableNetwork.Builder<>(cast());
   }
 
   /**
@@ -170,9 +169,7 @@ public final class NetworkBuilder<N, E> extends AbstractGraphBuilder<N, NetworkB
    * <p>The default value is {@link ElementOrder#insertion() insertion order}.
    */
   public <N1 extends N> NetworkBuilder<N1, E> nodeOrder(ElementOrder<N1> nodeOrder) {
-    NetworkBuilder<N1, E> newBuilder = cast();
-    newBuilder.nodeOrder = checkNotNull(nodeOrder);
-    return newBuilder;
+    return nodeOrderInternal(nodeOrder);
   }
 
   /**

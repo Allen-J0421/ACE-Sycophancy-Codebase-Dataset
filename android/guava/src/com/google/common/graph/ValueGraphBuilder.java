@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 /**
@@ -113,8 +111,7 @@ public final class ValueGraphBuilder<N, V>
    * @since 28.0
    */
   public <N1 extends N, V1 extends V> ImmutableValueGraph.Builder<N1, V1> immutable() {
-    ValueGraphBuilder<N1, V1> castBuilder = cast();
-    return new ImmutableValueGraph.Builder<>(castBuilder);
+    return new ImmutableValueGraph.Builder<>(cast());
   }
 
   /**
@@ -145,9 +142,7 @@ public final class ValueGraphBuilder<N, V>
    * <p>The default value is {@link ElementOrder#insertion() insertion order}.
    */
   public <N1 extends N> ValueGraphBuilder<N1, V> nodeOrder(ElementOrder<N1> nodeOrder) {
-    ValueGraphBuilder<N1, V> newBuilder = cast();
-    newBuilder.nodeOrder = checkNotNull(nodeOrder);
-    return newBuilder;
+    return nodeOrderInternal(nodeOrder);
   }
 
   /**
@@ -165,9 +160,7 @@ public final class ValueGraphBuilder<N, V>
    */
   public <N1 extends N> ValueGraphBuilder<N1, V> incidentEdgeOrder(
       ElementOrder<N1> incidentEdgeOrder) {
-    ValueGraphBuilder<N1, V> newBuilder = cast();
-    newBuilder.incidentEdgeOrder = validateIncidentEdgeOrder(incidentEdgeOrder);
-    return newBuilder;
+    return incidentEdgeOrderInternal(incidentEdgeOrder);
   }
 
   /**
@@ -179,8 +172,6 @@ public final class ValueGraphBuilder<N, V>
   }
 
   ValueGraphBuilder<N, V> copy() {
-    ValueGraphBuilder<N, V> newBuilder = new ValueGraphBuilder<>(directed);
-    copyStateTo(newBuilder);
-    return newBuilder;
+    return copyStateToNew(new ValueGraphBuilder<>(directed));
   }
 }

@@ -16,8 +16,6 @@
 
 package com.google.common.graph;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.DoNotMock;
 
@@ -108,8 +106,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N, GraphBuilder<
    * @since 28.0
    */
   public <N1 extends N> ImmutableGraph.Builder<N1> immutable() {
-    GraphBuilder<N1> castBuilder = cast();
-    return new ImmutableGraph.Builder<>(castBuilder);
+    return new ImmutableGraph.Builder<>(cast());
   }
 
   /**
@@ -140,9 +137,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N, GraphBuilder<
    * <p>The default value is {@link ElementOrder#insertion() insertion order}.
    */
   public <N1 extends N> GraphBuilder<N1> nodeOrder(ElementOrder<N1> nodeOrder) {
-    GraphBuilder<N1> newBuilder = cast();
-    newBuilder.nodeOrder = checkNotNull(nodeOrder);
-    return newBuilder;
+    return nodeOrderInternal(nodeOrder);
   }
 
   /**
@@ -159,9 +154,7 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N, GraphBuilder<
    * @since 29.0
    */
   public <N1 extends N> GraphBuilder<N1> incidentEdgeOrder(ElementOrder<N1> incidentEdgeOrder) {
-    GraphBuilder<N1> newBuilder = cast();
-    newBuilder.incidentEdgeOrder = validateIncidentEdgeOrder(incidentEdgeOrder);
-    return newBuilder;
+    return incidentEdgeOrderInternal(incidentEdgeOrder);
   }
 
   /** Returns an empty {@link MutableGraph} with the properties of this {@link GraphBuilder}. */
@@ -170,8 +163,6 @@ public final class GraphBuilder<N> extends AbstractGraphBuilder<N, GraphBuilder<
   }
 
   GraphBuilder<N> copy() {
-    GraphBuilder<N> newBuilder = new GraphBuilder<>(directed);
-    copyStateTo(newBuilder);
-    return newBuilder;
+    return copyStateToNew(new GraphBuilder<>(directed));
   }
 }

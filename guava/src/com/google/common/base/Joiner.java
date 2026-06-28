@@ -219,7 +219,9 @@ public class Joiner {
            * collection like ConcurrentHashMap, which sums up several counters that may not be in
            * sync with one another). We accommodate that by resizing as necessary.
            */
-          toJoin = Arrays.copyOf(toJoin, expandedCapacity(toJoin.length, toJoin.length + 1));
+          toJoin =
+              Arrays.copyOf(
+                  toJoin, JoinerCapacity.expandedCapacity(toJoin.length, toJoin.length + 1));
         }
         toJoin[i++] = toString(part);
       }
@@ -550,24 +552,5 @@ public class Joiner {
         }
       }
     };
-  }
-
-  // cloned from ImmutableCollection
-  private static int expandedCapacity(int oldCapacity, int minCapacity) {
-    if (minCapacity < 0) {
-      throw new IllegalArgumentException("cannot store more than Integer.MAX_VALUE elements");
-    } else if (minCapacity <= oldCapacity) {
-      return oldCapacity;
-    }
-    // careful of overflow!
-    int newCapacity = oldCapacity + (oldCapacity >> 1) + 1;
-    if (newCapacity < minCapacity) {
-      newCapacity = Integer.highestOneBit(minCapacity - 1) << 1;
-    }
-    if (newCapacity < 0) {
-      newCapacity = Integer.MAX_VALUE;
-      // guaranteed to be >= newCapacity
-    }
-    return newCapacity;
   }
 }

@@ -58,11 +58,30 @@ abstract class AbstractGraphBuilder<N, B extends AbstractGraphBuilder<N, B>> {
     return self();
   }
 
+  final <N1 extends N, B1 extends AbstractGraphBuilder<N1, B1>> B1 nodeOrderInternal(
+      ElementOrder<N1> nodeOrder) {
+    B1 newBuilder = cast();
+    newBuilder.nodeOrder = checkNotNull(nodeOrder);
+    return newBuilder;
+  }
+
+  final <N1 extends N, B1 extends AbstractGraphBuilder<N1, B1>> B1 incidentEdgeOrderInternal(
+      ElementOrder<N1> incidentEdgeOrder) {
+    B1 newBuilder = cast();
+    newBuilder.incidentEdgeOrder = validateIncidentEdgeOrder(incidentEdgeOrder);
+    return newBuilder;
+  }
+
   final void copyStateTo(AbstractGraphBuilder<N, ?> builder) {
     builder.allowsSelfLoops = allowsSelfLoops;
     builder.nodeOrder = nodeOrder;
     builder.incidentEdgeOrder = incidentEdgeOrder;
     builder.expectedNodeCount = expectedNodeCount;
+  }
+
+  final <B1 extends AbstractGraphBuilder<N, B1>> B1 copyStateToNew(B1 builder) {
+    copyStateTo(builder);
+    return builder;
   }
 
   static <N> ElementOrder<N> validateIncidentEdgeOrder(ElementOrder<N> incidentEdgeOrder) {

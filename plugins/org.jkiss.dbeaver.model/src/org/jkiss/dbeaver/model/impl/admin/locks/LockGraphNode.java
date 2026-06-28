@@ -49,29 +49,22 @@ public class LockGraphNode  {
 		return this.level;
 	}  
 
-	private List<LockGraphEdge> sourceEdges;
+	private List<LockGraphEdge> sourceEdges = new ArrayList<>();
 
-	private List<LockGraphEdge> targetEdges;
+	private List<LockGraphEdge> targetEdges = new ArrayList<>();
 	
 	public LockGraphNode(DBAServerLock lock){
-		
 		this.lock = lock;
 		this.level = 0;
 		this.span = 0;
 		this.title = lock.getTitle();
-		this.sourceEdges = new ArrayList<>();
-		this.targetEdges = new ArrayList<>();
-		
 		this.levelPosition = LevelPosition.CENTER;
-		
 	}
 
 	public LockGraphNode(String title,int level,int span) {
 		this.level = level;
 		this.span = span;
 		this.title = title;
-		this.sourceEdges = new ArrayList<>();
-		this.targetEdges = new ArrayList<>();
 	}
 
 	public void addSourceEdge(LockGraphEdge sourceEdge) {

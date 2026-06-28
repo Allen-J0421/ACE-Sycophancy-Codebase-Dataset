@@ -104,22 +104,15 @@ public class NumericAttributeTransformer implements DBDAttributeTransformer {
         @Nullable
         private static Object parseValue(@NotNull String value, @NotNull String type, boolean lenient) {
             try {
-                switch (type) {
-                    case "byte":
-                        return Byte.parseByte(value);
-                    case "short":
-                        return Short.parseShort(value);
-                    case "int":
-                        return Integer.parseInt(value);
-                    case "long":
-                        return Long.parseLong(value);
-                    case "float":
-                        return Float.parseFloat(value);
-                    case "double":
-                        return Double.parseDouble(value);
-                    default:
-                        return null;
-                }
+                return switch (type) {
+                    case "byte" -> Byte.parseByte(value);
+                    case "short" -> Short.parseShort(value);
+                    case "int" -> Integer.parseInt(value);
+                    case "long" -> Long.parseLong(value);
+                    case "float" -> Float.parseFloat(value);
+                    case "double" -> Double.parseDouble(value);
+                    default -> null;
+                };
             } catch (NumberFormatException e) {
                 if (lenient) {
                     log.trace("Error converting string '" + value + "' to " + type, e);

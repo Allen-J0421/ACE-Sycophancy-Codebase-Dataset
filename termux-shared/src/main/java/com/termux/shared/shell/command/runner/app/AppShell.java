@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.google.common.base.Joiner;
 import com.termux.shared.R;
+import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.data.DataUtils;
 import com.termux.shared.shell.command.ExecutionCommand;
 import com.termux.shared.shell.command.environment.ShellEnvironmentUtils;
@@ -143,16 +144,13 @@ public final class AppShell {
                 // TODO: Should either of these be handled or returned?
             }
         } else {
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        appShell.executeInner(currentPackageContext);
-                    } catch (IllegalThreadStateException | InterruptedException e) {
-                        // TODO: Should either of these be handled or returned?
-                    }
+            ThreadUtils.runAsync("termux-app-shell", () -> {
+                try {
+                    appShell.executeInner(currentPackageContext);
+                } catch (IllegalThreadStateException | InterruptedException e) {
+                    // TODO: Should either of these be handled or returned?
                 }
-            }.start();
+            });
         }
 
         return appShell;

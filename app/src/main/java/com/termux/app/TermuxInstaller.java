@@ -19,6 +19,7 @@ import com.termux.shared.logger.Logger;
 import com.termux.shared.markdown.MarkdownUtils;
 import com.termux.shared.errors.Error;
 import com.termux.shared.android.PackageUtils;
+import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment;
@@ -115,13 +116,11 @@ final class TermuxInstaller {
         }
 
         final ProgressDialog progress = ProgressDialog.show(activity, null, activity.getString(R.string.bootstrap_installer_body), true, false);
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Logger.logInfo(LOG_TAG, "Installing " + TermuxConstants.TERMUX_APP_NAME + " bootstrap packages.");
+        ThreadUtils.runAsync("termux-bootstrap-installer", () -> {
+            try {
+                Logger.logInfo(LOG_TAG, "Installing " + TermuxConstants.TERMUX_APP_NAME + " bootstrap packages.");
 
-                    Error error;
+                Error error;
 
                     // Delete prefix staging directory or any file at its destination
                     error = FileUtils.deleteFile("termux prefix staging directory", TERMUX_STAGING_PREFIX_DIR_PATH, true);
@@ -223,20 +222,19 @@ final class TermuxInstaller {
 
                     activity.runOnUiThread(whenDone);
 
-                } catch (final Exception e) {
-                    showBootstrapErrorDialog(activity, whenDone, Logger.getStackTracesMarkdownString(null, Logger.getStackTracesStringArray(e)));
+            } catch (final Exception e) {
+                showBootstrapErrorDialog(activity, whenDone, Logger.getStackTracesMarkdownString(null, Logger.getStackTracesStringArray(e)));
 
-                } finally {
-                    activity.runOnUiThread(() -> {
-                        try {
-                            progress.dismiss();
-                        } catch (RuntimeException e) {
-                            // Activity already dismissed - ignore.
-                        }
-                    });
-                }
+            } finally {
+                activity.runOnUiThread(() -> {
+                    try {
+                        progress.dismiss();
+                    } catch (RuntimeException e) {
+                        // Activity already dismissed - ignore.
+                    }
+                });
             }
-        }.start();
+        });
     }
 
     public static void showBootstrapErrorDialog(Activity activity, Runnable whenDone, String message) {
@@ -280,11 +278,10 @@ final class TermuxInstaller {
 
         Logger.logInfo(LOG_TAG, "Setting up storage symlinks.");
 
-        new Thread() {
-            public void run() {
-                try {
-                    Error error;
-                    File storageDir = TermuxConstants.TERMUX_STORAGE_HOME_DIR;
+        ThreadUtils.runAsync("termux-storage-symlinks", () -> {
+            try {
+                Error error;
+                File storageDir = TermuxConstants.TERMUX_STORAGE_HOME_DIR;
 
                     error = FileUtils.clearDirectory("~/storage", storageDir.getAbsolutePath());
                     if (error != null) {
@@ -360,15 +357,14 @@ final class TermuxInstaller {
                     }
 
                     Logger.logInfo(LOG_TAG, "Storage symlinks created successfully.");
-                } catch (Exception e) {
-                    Logger.logErrorAndShowToast(context, LOG_TAG, e.getMessage());
-                    Logger.logStackTraceWithMessage(LOG_TAG, "Setup Storage Error: Error setting up link", e);
-                    TermuxCrashUtils.sendCrashReportNotification(context, LOG_TAG, title, null,
-                        "## " + title + "\n\n" + Logger.getStackTracesMarkdownString(null, Logger.getStackTracesStringArray(e)),
-                        true, false, TermuxUtils.AppInfoMode.TERMUX_PACKAGE, true);
-                }
+            } catch (Exception e) {
+                Logger.logErrorAndShowToast(context, LOG_TAG, e.getMessage());
+                Logger.logStackTraceWithMessage(LOG_TAG, "Setup Storage Error: Error setting up link", e);
+                TermuxCrashUtils.sendCrashReportNotification(context, LOG_TAG, title, null,
+                    "## " + title + "\n\n" + Logger.getStackTracesMarkdownString(null, Logger.getStackTracesStringArray(e)),
+                    true, false, TermuxUtils.AppInfoMode.TERMUX_PACKAGE, true);
             }
-        }.start();
+        });
     }
 
     private static Error ensureDirectoryExists(File directory) {

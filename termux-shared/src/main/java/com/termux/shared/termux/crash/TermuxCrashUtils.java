@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.termux.shared.activities.ReportActivity;
 import com.termux.shared.android.AndroidUtils;
+import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.crash.CrashHandler;
 import com.termux.shared.data.DataUtils;
 import com.termux.shared.errors.Error;
@@ -158,12 +159,7 @@ public class TermuxCrashUtils implements CrashHandler.CrashHandlerClient {
         if (!preferences.areCrashReportNotificationsEnabled(false))
             return;
 
-        new Thread() {
-            @Override
-            public void run() {
-                notifyAppCrashFromCrashLogFileInner(context, logTagParam);
-            }
-        }.start();
+        ThreadUtils.runAsync("termux-crash-notify", () -> notifyAppCrashFromCrashLogFileInner(context, logTagParam));
     }
 
     private static synchronized void notifyAppCrashFromCrashLogFileInner(final Context context, final String logTagParam) {

@@ -18,6 +18,7 @@ import com.termux.app.models.UserAction;
 import com.termux.shared.interact.ShareUtils;
 import com.termux.shared.android.PackageUtils;
 import com.termux.shared.android.AndroidUtils;
+import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.activity.media.AppCompatActivityUtils;
@@ -76,30 +77,27 @@ public class SettingsActivity extends AppCompatActivity {
             Preference aboutPreference = findPreference("about");
             if (aboutPreference != null) {
                 aboutPreference.setOnPreferenceClickListener(preference -> {
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            String title = "About";
+                    ThreadUtils.runAsync("termux-about-report", () -> {
+                        String title = "About";
 
-                            StringBuilder aboutString = new StringBuilder();
-                            aboutString.append(TermuxUtils.getAppInfoMarkdownString(context, TermuxUtils.AppInfoMode.TERMUX_AND_PLUGIN_PACKAGES));
-                            aboutString.append("\n\n").append(AndroidUtils.getDeviceInfoMarkdownString(context, true));
-                            aboutString.append("\n\n").append(TermuxUtils.getImportantLinksMarkdownString(context));
+                        StringBuilder aboutString = new StringBuilder();
+                        aboutString.append(TermuxUtils.getAppInfoMarkdownString(context, TermuxUtils.AppInfoMode.TERMUX_AND_PLUGIN_PACKAGES));
+                        aboutString.append("\n\n").append(AndroidUtils.getDeviceInfoMarkdownString(context, true));
+                        aboutString.append("\n\n").append(TermuxUtils.getImportantLinksMarkdownString(context));
 
-                            String userActionName = UserAction.ABOUT.getName();
+                        String userActionName = UserAction.ABOUT.getName();
 
-                            ReportInfo reportInfo = new ReportInfo(userActionName,
-                                TermuxConstants.TERMUX_APP.TERMUX_SETTINGS_ACTIVITY_NAME, title);
-                            reportInfo.setReportString(aboutString.toString());
-                            reportInfo.setReportSaveFileLabelAndPath(userActionName,
-                                Environment.getExternalStorageDirectory() + "/" +
-                                    FileUtils.sanitizeFileName(TermuxConstants.TERMUX_APP_NAME + "-" + userActionName + ".log", true, true));
+                        ReportInfo reportInfo = new ReportInfo(userActionName,
+                            TermuxConstants.TERMUX_APP.TERMUX_SETTINGS_ACTIVITY_NAME, title);
+                        reportInfo.setReportString(aboutString.toString());
+                        reportInfo.setReportSaveFileLabelAndPath(userActionName,
+                            Environment.getExternalStorageDirectory() + "/" +
+                                FileUtils.sanitizeFileName(TermuxConstants.TERMUX_APP_NAME + "-" + userActionName + ".log", true, true));
 
-                            FragmentActivity activity = getActivity();
-                            if (activity == null) return;
-                            activity.runOnUiThread(() -> ReportActivity.startReportActivity(activity, reportInfo));
-                        }
-                    }.start();
+                        FragmentActivity activity = getActivity();
+                        if (activity == null) return;
+                        activity.runOnUiThread(() -> ReportActivity.startReportActivity(activity, reportInfo));
+                    });
 
                     return true;
                 });

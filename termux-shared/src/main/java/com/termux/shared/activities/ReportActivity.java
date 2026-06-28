@@ -18,6 +18,7 @@ import android.view.MenuItem;
 
 import com.termux.shared.R;
 import com.termux.shared.activity.media.AppCompatActivityUtils;
+import com.termux.shared.android.ThreadUtils;
 import com.termux.shared.data.DataUtils;
 import com.termux.shared.file.FileUtils;
 import com.termux.shared.file.filesystem.FileType;
@@ -431,12 +432,12 @@ public class ReportActivity extends AppCompatActivity {
         if (isSynchronous) {
             return deleteReportInfoFilesOlderThanXDaysInner(context, days);
         } else {
-            new Thread() { public void run() {
+            ThreadUtils.runAsync("termux-report-cleanup", () -> {
                 Error error = deleteReportInfoFilesOlderThanXDaysInner(context, days);
                 if (error != null) {
                     Logger.logErrorExtended(LOG_TAG, error.toString());
                 }
-            }}.start();
+            });
             return null;
         }
     }

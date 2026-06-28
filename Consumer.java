@@ -19,8 +19,7 @@ public abstract class Consumer extends Actor
     private int sustenanceLevel;
     private final List<Class<?>> prey;
     private Disease disease;
-    private boolean ifCarcass;
-    private Carcass newCarcass;
+    private Carcass pendingCarcass;
     private final boolean canEatCarcass;
     
     /**
@@ -59,12 +58,7 @@ public abstract class Consumer extends Actor
         {
             giveBirth(newConsumers);
             boolean wasPossibleToMove = huntForFood();
-            if(ifCarcass)
-            {
-                newConsumers.add(newCarcass);
-                ifCarcass = false;
-                newCarcass = null;
-            }
+            emitPendingCarcass(newConsumers);
             if(hasDisease())
             {                                                                                   
                 diseaseEffect();
@@ -137,6 +131,20 @@ public abstract class Consumer extends Actor
                     ((Consumer) consumer).disease = giveDisease();
                 }
             }
+    }
+
+    /**
+     * Add any pending carcass to the newborn list.
+     *
+     * @param newConsumers A list to receive newly born consumers.
+     */
+    private void emitPendingCarcass(List<Actor> newConsumers)
+    {
+        if (pendingCarcass != null)
+        {
+            newConsumers.add(pendingCarcass);
+            pendingCarcass = null;
+        }
     }
     /**
      * Hunt for food by moving toward it.
@@ -351,8 +359,7 @@ public abstract class Consumer extends Actor
                     int foodLeft = (sustenanceLevel + consumptionWorth) - maxSustenanceLevel;
                     sustenanceLevel = maxSustenanceLevel;
                     Carcass carcass = new Carcass(getField(),location,foodLeft);
-                    newCarcass = carcass;
-                    ifCarcass = true;
+                    pendingCarcass = carcass;
                 return getLocation();
             }  
         }

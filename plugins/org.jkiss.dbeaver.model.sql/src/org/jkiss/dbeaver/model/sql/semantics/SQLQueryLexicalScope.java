@@ -24,7 +24,6 @@ import org.jkiss.dbeaver.model.stm.STMTreeNode;
 import org.jkiss.utils.Pair;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class SQLQueryLexicalScope {
 
@@ -69,20 +68,24 @@ public class SQLQueryLexicalScope {
     @NotNull
     public Interval getInterval() {
         if (this.interval == null) {
-    
-            int a = Stream.concat(
-                items.stream().map(x -> x.getSyntaxNode().getRealInterval().a),
-                syntaxNodes.stream().map(x -> x.getRealInterval().a)
-            ).mapToInt(x -> x).min().orElse(0);
+            int start = Integer.MAX_VALUE;
+            int end = Integer.MIN_VALUE;
 
-            int b = Stream.concat(
-                items.stream().map(x -> { Interval r = x.getSyntaxNode().getRealInterval(); return r.b + r.length(); }),
-                syntaxNodes.stream().map(x -> { Interval r = x.getRealInterval(); return r.b + r.length(); })
-            ).mapToInt(x -> x).max().orElse(Integer.MAX_VALUE);
+            for (SQLQueryLexicalScopeItem item : items) {
+                Interval itemInterval = item.getSyntaxNode().getRealInterval();
+                start = Math.min(start, itemInterval.a);
+                end = Math.max(end, itemInterval.b + itemInterval.length());
+            }
 
-            this.interval = Interval.of(a, b);
+            for (STMTreeNode syntaxNode : syntaxNodes) {
+                Interval nodeInterval = syntaxNode.getRealInterval();
+                start = Math.min(start, nodeInterval.a);
+                end = Math.max(end, nodeInterval.b + nodeInterval.length());
+            }
+
+            this.interval = Interval.of(start == Integer.MAX_VALUE ? 0 : start, end == Integer.MIN_VALUE ? Integer.MAX_VALUE : end);
         }
-        
+
         return this.interval;
     }
 
@@ -122,8 +125,8 @@ public class SQLQueryLexicalScope {
     @Nullable
     public SQLQueryLexicalScopeItem findItem(int position) {
         return this.items.stream()
-           .filter(t -> t.getSyntaxNode().getRealInterval().properlyContains(Interval.of(position, position)))
-           .min(Comparator.comparingInt(t -> t.getSyntaxNode().getRealInterval().a))
+           .filter(item -> containsPosition(item.getSyntaxNode().getRealInterval(), position))
+           .min(Comparator.comparingInt(item -> item.getSyntaxNode().getRealInterval().a))
            .orElse(null);
     }
 
@@ -132,7 +135,7 @@ public class SQLQueryLexicalScope {
         ArrayList<Pair<SQLQueryLexicalScopeItem, Interval>> candidates = new ArrayList<>(this.items.size());
         for (SQLQueryLexicalScopeItem item : this.items) {
             Interval interval = item.getSyntaxNode().getRealInterval();
-            if (interval.a < position && interval.b + 1 >= position) {
+            if (coversPosition(interval, position)) {
                 candidates.add(Pair.of(item, interval));
             }
         }
@@ -142,6 +145,14 @@ public class SQLQueryLexicalScope {
             candidates.sort(scopeItemsComparator);
             return candidates.get(0).getFirst();
         }
+    }
+
+    private static boolean containsPosition(@NotNull Interval interval, int position) {
+        return interval.properlyContains(Interval.of(position, position));
+    }
+
+    private static boolean coversPosition(@NotNull Interval interval, int position) {
+        return interval.a < position && interval.b + 1 >= position;
     }
 
     private static int getLexicalItemPriority(@NotNull SQLQueryLexicalScopeItem item) {

@@ -34,6 +34,7 @@ import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.runtime.AbstractJob;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.runtime.DBRRunnableParametrized;
+import org.jkiss.dbeaver.model.sql.SQLCompletionMode;
 import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionActivityTracker;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzer;
@@ -48,7 +49,6 @@ import org.jkiss.dbeaver.ui.UIUtils;
 import org.jkiss.dbeaver.ui.editors.sql.SQLEditorBase;
 import org.jkiss.dbeaver.ui.editors.sql.SQLEditorUtils;
 import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants;
-import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants.SQLAutocompletionMode;
 import org.jkiss.dbeaver.ui.editors.sql.semantics.SQLEditorQueryCompletionAnalyzer;
 import org.jkiss.dbeaver.ui.editors.sql.templates.SQLContext;
 import org.jkiss.dbeaver.ui.editors.sql.templates.SQLTemplateCompletionProposal;
@@ -177,8 +177,8 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                     DBPDataSource dataSource = editor.getDataSource();
 
                     DBPPreferenceStore store = this.editor.getActivePreferenceStore();
-                    SQLAutocompletionMode mode = SQLAutocompletionMode.fromPreferences(store);
-                    boolean useNewCompletionEngine = mode.useNewAnalyzer
+                    SQLCompletionMode mode = SQLCompletionMode.fromPreferences(store);
+                    boolean useNewCompletionEngine = mode.usesSemanticAnalyzer()
                         && store.getBoolean(SQLPreferenceConstants.ADVANCED_HIGHLIGHTING_ENABLE)
                         && store.getBoolean(SQLPreferenceConstants.READ_METADATA_FOR_SEMANTIC_ANALYSIS)
                         && dataSource != null && dataSource.getSQLDialect() instanceof BasicSQLDialect;
@@ -207,7 +207,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                         });
                     }
 
-                    if (request.getWordPart() != null && mode.useOldAnalyzer || !useNewCompletionEngine) {
+                    if ((request.getWordPart() != null && mode.usesLegacyAnalyzer()) || !useNewCompletionEngine) {
                         if (dataSource != null) {
                             completionJobSuppliers.add(() -> {
                                 // old analyzer is not reusable, but it doesn't matter because see the next comment below

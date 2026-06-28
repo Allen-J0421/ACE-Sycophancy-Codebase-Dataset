@@ -57,36 +57,6 @@ public class SQLPreferenceConstants {
 
     }
     
-    public enum SQLAutocompletionMode {
-        DEFAULT(true, false, SQLEditorMessages.pref_page_sql_completion_label_completion_mode_default),
-        NEW(false, true, SQLEditorMessages.pref_page_sql_completion_label_completion_mode_new_engine),
-        COMBINED(true, true, SQLEditorMessages.pref_page_sql_completion_label_completion_mode_combined);
-    
-        public final boolean useOldAnalyzer;
-        public final boolean useNewAnalyzer;
-
-        public final String title;
-    
-        SQLAutocompletionMode(boolean useOldAnalyzer, boolean useNewAnalyzer, String title) {
-            this.useOldAnalyzer = useOldAnalyzer;
-            this.useNewAnalyzer = useNewAnalyzer;
-            this.title = title;
-        }
-        
-        public String getName() {
-            return this.toString();
-        }
-
-        public static SQLAutocompletionMode valueByName(String name) {
-            return CommonUtils.valueOf(SQLAutocompletionMode.class, name, DEFAULT);
-        }
-
-        @NotNull
-        public static SQLAutocompletionMode fromPreferences(@NotNull DBPPreferenceStore preferenceStore) {
-            return valueByName(preferenceStore.getString(SQLModelPreferences.AUTOCOMPLETION_MODE));
-        }
-    }
-
     public enum SQLCompletionObjectNameFormKind {
         DEFAULT(false, false, SQLEditorMessages.pref_page_sql_default),
         UNQUALIFIED(true, false, SQLEditorMessages.pref_page_sql_completion_label_use_short_names),

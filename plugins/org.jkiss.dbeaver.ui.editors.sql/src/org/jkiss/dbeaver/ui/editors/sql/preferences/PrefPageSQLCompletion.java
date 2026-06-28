@@ -24,12 +24,12 @@ import org.jkiss.code.NotNull;
 import org.jkiss.dbeaver.Log;
 import org.jkiss.dbeaver.model.DBPDataSourceContainer;
 import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
+import org.jkiss.dbeaver.model.sql.SQLCompletionMode;
 import org.jkiss.dbeaver.model.sql.SQLModelPreferences;
 import org.jkiss.dbeaver.model.sql.SQLTableAliasInsertMode;
 import org.jkiss.dbeaver.runtime.DBWorkbench;
 import org.jkiss.dbeaver.ui.UIUtils;
 import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants;
-import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants.SQLAutocompletionMode;
 import org.jkiss.dbeaver.ui.editors.sql.SQLPreferenceConstants.SQLCompletionObjectNameFormKind;
 import org.jkiss.dbeaver.ui.editors.sql.internal.SQLEditorMessages;
 import org.jkiss.dbeaver.ui.internal.UIMessages;
@@ -139,8 +139,8 @@ public class PrefPageSQLCompletion extends TargetPrefPage {
                 SQLEditorMessages.pref_page_sql_completion_label_completion_mode,
                 SQLEditorMessages.pref_page_sql_completion_label_completion_mode_tip,
                 SWT.READ_ONLY | SWT.DROP_DOWN);
-            for (SQLAutocompletionMode mode : SQLAutocompletionMode.values()) {
-                csCompletionMode.add(mode.title);
+            for (SQLCompletionMode mode : SQLCompletionMode.values()) {
+                csCompletionMode.add(getCompletionModeTitle(mode));
             }
             
             UIUtils.createControlLabel(assistGroup, SQLEditorMessages.pref_page_sql_completion_label_auto_activation_delay + UIMessages.label_ms);
@@ -228,7 +228,7 @@ public class PrefPageSQLCompletion extends TargetPrefPage {
     {
         try {
             csAutoActivationCheck.setSelection(store.getBoolean(SQLPreferenceConstants.ENABLE_AUTO_ACTIVATION));
-            csCompletionMode.select(SQLAutocompletionMode.fromPreferences(store).ordinal());
+            csCompletionMode.select(SQLCompletionMode.fromPreferences(store).ordinal());
             csHippieActivation.setSelection(store.getBoolean(SQLPreferenceConstants.ENABLE_HIPPIE));
             csAutoActivationDelaySpinner.setSelection(store.getInt(SQLPreferenceConstants.AUTO_ACTIVATION_DELAY));
             csAutoActivateOnKeystroke.setSelection(store.getBoolean(SQLPreferenceConstants.ENABLE_KEYSTROKE_ACTIVATION));
@@ -260,7 +260,10 @@ public class PrefPageSQLCompletion extends TargetPrefPage {
     {
         try {
             store.setValue(SQLPreferenceConstants.ENABLE_AUTO_ACTIVATION, csAutoActivationCheck.getSelection());
-            store.setValue(SQLPreferenceConstants.AUTOCOMPLETION_MODE, SQLAutocompletionMode.values()[csCompletionMode.getSelectionIndex()].getName());
+            store.setValue(
+                SQLPreferenceConstants.AUTOCOMPLETION_MODE,
+                SQLCompletionMode.values()[csCompletionMode.getSelectionIndex()].getPreferenceValue()
+            );
             store.setValue(SQLPreferenceConstants.ENABLE_HIPPIE, csHippieActivation.getSelection());
             store.setValue(SQLPreferenceConstants.AUTO_ACTIVATION_DELAY, csAutoActivationDelaySpinner.getSelection());
             store.setValue(SQLPreferenceConstants.ENABLE_KEYSTROKE_ACTIVATION, csAutoActivateOnKeystroke.getSelection());
@@ -335,8 +338,17 @@ public class PrefPageSQLCompletion extends TargetPrefPage {
         csUseGlobalSearch.setSelection(store.getDefaultBoolean(SQLPreferenceConstants.USE_GLOBAL_ASSISTANT));
         csShowColumnProcedures.setSelection(store.getDefaultBoolean(SQLPreferenceConstants.SHOW_COLUMN_PROCEDURES));
         csHippieActivation.setSelection(store.getDefaultBoolean(SQLPreferenceConstants.ENABLE_HIPPIE));
-        csCompletionMode.select(SQLAutocompletionMode.valueByName(store.getDefaultString(SQLPreferenceConstants.AUTOCOMPLETION_MODE)).ordinal());
+        csCompletionMode.select(SQLCompletionMode.valueByName(store.getDefaultString(SQLPreferenceConstants.AUTOCOMPLETION_MODE)).ordinal());
         super.performDefaults();
+    }
+
+    @NotNull
+    private static String getCompletionModeTitle(@NotNull SQLCompletionMode mode) {
+        return switch (mode) {
+            case DEFAULT -> SQLEditorMessages.pref_page_sql_completion_label_completion_mode_default;
+            case NEW -> SQLEditorMessages.pref_page_sql_completion_label_completion_mode_new_engine;
+            case COMBINED -> SQLEditorMessages.pref_page_sql_completion_label_completion_mode_combined;
+        };
     }
 
     @NotNull

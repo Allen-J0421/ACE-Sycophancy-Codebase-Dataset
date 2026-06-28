@@ -21,7 +21,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.jkiss.code.NotNull;
 import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
-import org.jkiss.dbeaver.model.sql.SQLModelPreferences;
+import org.jkiss.dbeaver.model.sql.SQLCompletionMode;
 import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzer;
@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LspSQLCompletionContextParser {
-
-    private static final String DEFAULT_ENGINE_COMPLETION = "DEFAULT";
     private static final int MAX_RESULTS = 200;
 
     @NotNull
@@ -89,9 +87,7 @@ public class LspSQLCompletionContextParser {
     }
 
     private static boolean useLegacyCompletionEngine() {
-        return DEFAULT_ENGINE_COMPLETION.equalsIgnoreCase(
-            DBWorkbench.getPlatform().getPreferenceStore().getString(SQLModelPreferences.AUTOCOMPLETION_MODE)
-        );
+        return !SQLCompletionMode.fromPreferences(DBWorkbench.getPlatform().getPreferenceStore()).usesSemanticAnalyzer();
     }
 
     private static void collectSemanticCompletionProposals(

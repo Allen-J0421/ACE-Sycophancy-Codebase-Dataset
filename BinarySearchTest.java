@@ -4,13 +4,13 @@ public final class BinarySearchTest {
 
     public static void main(String[] args) {
         SearchCase[] cases = {
-            new SearchCase(new int[] {}, 1, BinarySearch.NOT_FOUND),
-            new SearchCase(new int[] {1}, 1, 0),
-            new SearchCase(new int[] {1}, 2, BinarySearch.NOT_FOUND),
-            new SearchCase(new int[] {1, 3, 5, 7}, 1, 0),
-            new SearchCase(new int[] {1, 3, 5, 7}, 5, 2),
-            new SearchCase(new int[] {1, 3, 5, 7}, 7, 3),
-            new SearchCase(new int[] {1, 3, 5, 7}, 6, BinarySearch.NOT_FOUND)
+            missing(new int[] {}, 1),
+            found(new int[] {1}, 1, 0),
+            missing(new int[] {1}, 2),
+            found(new int[] {1, 3, 5, 7}, 1, 0),
+            found(new int[] {1, 3, 5, 7}, 5, 2),
+            found(new int[] {1, 3, 5, 7}, 7, 3),
+            missing(new int[] {1, 3, 5, 7}, 6)
         };
 
         for (SearchCase searchCase : cases) {
@@ -36,6 +36,14 @@ public final class BinarySearchTest {
             "binarySearch",
             searchCase.target
         );
+    }
+
+    private static SearchCase found(int[] values, int target, int expectedIndex) {
+        return new SearchCase(values, target, expectedIndex);
+    }
+
+    private static SearchCase missing(int[] values, int target) {
+        return new SearchCase(values, target, BinarySearch.NOT_FOUND);
     }
 
     private static void assertContains(SearchCase searchCase) {

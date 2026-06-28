@@ -304,24 +304,10 @@ public final class ImmutableLongArray implements Serializable {
     private void ensureRoomFor(int numberToAdd) {
       int newCount = count + numberToAdd; // TODO(kevinb): check overflow now?
       if (newCount > array.length) {
-        array = Arrays.copyOf(array, expandedCapacity(array.length, newCount));
+        array =
+            Arrays.copyOf(
+                array, PrimitiveImmutableArrayBuilderCapacity.expandedCapacity(array.length, newCount));
       }
-    }
-
-    // Unfortunately this is pasted from ImmutableCollection.Builder.
-    private static int expandedCapacity(int oldCapacity, int minCapacity) {
-      if (minCapacity < 0) {
-        throw new AssertionError("cannot store more than MAX_VALUE elements");
-      }
-      // careful of overflow!
-      int newCapacity = oldCapacity + (oldCapacity >> 1) + 1;
-      if (newCapacity < minCapacity) {
-        newCapacity = Integer.highestOneBit(minCapacity - 1) << 1;
-      }
-      if (newCapacity < 0) {
-        newCapacity = Integer.MAX_VALUE; // guaranteed to be >= newCapacity
-      }
-      return newCapacity;
     }
 
     /**

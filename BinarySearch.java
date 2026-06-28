@@ -14,9 +14,9 @@ public final class BinarySearch {
         Objects.requireNonNull(sortedValues, "sortedValues");
 
         int low = 0;
-        int high = sortedValues.length - 1;
+        int high = sortedValues.length;
 
-        while (low <= high) {
+        while (low < high) {
             int mid = midpoint(low, high);
             int value = sortedValues[mid];
 
@@ -27,7 +27,7 @@ public final class BinarySearch {
             if (value < target) {
                 low = mid + 1;
             } else {
-                high = mid - 1;
+                high = mid;
             }
         }
 

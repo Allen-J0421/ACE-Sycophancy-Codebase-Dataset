@@ -1239,8 +1239,8 @@ public class DataSourceDescriptor
             proxyHandler = null;
             // Failed
             connectFailed = true;
-            if (e instanceof DBException) {
-                throw (DBException) e;
+            if (e instanceof DBException dbe) {
+                throw dbe;
             } else {
                 throw new DBException("Internal error connecting to " + getName(), e);
             }

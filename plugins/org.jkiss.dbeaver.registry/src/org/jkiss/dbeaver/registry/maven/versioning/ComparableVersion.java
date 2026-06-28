@@ -389,7 +389,7 @@ public class ComparableVersion
     }
 
     public boolean equals(Object o) {
-        return (o instanceof ComparableVersion) && canonical.equals(((ComparableVersion) o).canonical);
+        return o instanceof ComparableVersion cv && canonical.equals(cv.canonical);
     }
 
     public int hashCode() {

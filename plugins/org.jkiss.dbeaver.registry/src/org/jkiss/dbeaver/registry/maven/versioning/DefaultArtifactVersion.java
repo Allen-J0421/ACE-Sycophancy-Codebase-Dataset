@@ -58,16 +58,16 @@ public class DefaultArtifactVersion
             return true;
         }
 
-        if (!(other instanceof ArtifactVersion)) {
+        if (!(other instanceof ArtifactVersion av)) {
             return false;
         }
 
-        return compareTo((ArtifactVersion) other) == 0;
+        return compareTo(av) == 0;
     }
 
     public int compareTo(ArtifactVersion otherVersion) {
-        if (otherVersion instanceof DefaultArtifactVersion) {
-            return this.comparable.compareTo(((DefaultArtifactVersion) otherVersion).comparable);
+        if (otherVersion instanceof DefaultArtifactVersion dav) {
+            return this.comparable.compareTo(dav.comparable);
         } else {
             return compareTo(new DefaultArtifactVersion(otherVersion.toString()));
         }

@@ -114,11 +114,9 @@ public class Restriction {
             return true;
         }
 
-        if (!(other instanceof Restriction)) {
+        if (!(other instanceof Restriction restriction)) {
             return false;
         }
-
-        Restriction restriction = (Restriction) other;
         if (lowerBound != null) {
             if (!lowerBound.equals(restriction.lowerBound)) {
                 return false;

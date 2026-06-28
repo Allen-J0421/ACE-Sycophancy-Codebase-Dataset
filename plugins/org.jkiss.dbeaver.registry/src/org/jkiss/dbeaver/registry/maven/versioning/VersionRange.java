@@ -412,10 +412,9 @@ public class VersionRange {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof VersionRange)) {
+        if (!(obj instanceof VersionRange other)) {
             return false;
         }
-        VersionRange other = (VersionRange) obj;
 
         boolean equals =
             recommendedVersion == other.recommendedVersion

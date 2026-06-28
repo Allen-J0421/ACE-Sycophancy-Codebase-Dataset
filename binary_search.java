@@ -1,5 +1,5 @@
 final class BinarySearch {
-    private static final int NOT_FOUND = -1;
+    static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }

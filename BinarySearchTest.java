@@ -4,13 +4,13 @@ public final class BinarySearchTest {
 
     public static void main(String[] args) {
         SearchCase[] cases = {
-            new SearchCase(new int[] {}, 1, -1),
+            new SearchCase(new int[] {}, 1, BinarySearch.NOT_FOUND),
             new SearchCase(new int[] {1}, 1, 0),
-            new SearchCase(new int[] {1}, 2, -1),
+            new SearchCase(new int[] {1}, 2, BinarySearch.NOT_FOUND),
             new SearchCase(new int[] {1, 3, 5, 7}, 1, 0),
             new SearchCase(new int[] {1, 3, 5, 7}, 5, 2),
             new SearchCase(new int[] {1, 3, 5, 7}, 7, 3),
-            new SearchCase(new int[] {1, 3, 5, 7}, 6, -1)
+            new SearchCase(new int[] {1, 3, 5, 7}, 6, BinarySearch.NOT_FOUND)
         };
 
         for (SearchCase searchCase : cases) {
@@ -39,7 +39,7 @@ public final class BinarySearchTest {
     }
 
     private static void assertContains(SearchCase searchCase) {
-        boolean expected = searchCase.expectedIndex != -1;
+        boolean expected = searchCase.expectedIndex != BinarySearch.NOT_FOUND;
         boolean actual = BinarySearch.contains(searchCase.values, searchCase.target);
 
         if (actual != expected) {
@@ -56,8 +56,8 @@ public final class BinarySearchTest {
             throw new AssertionError("Expected index 0 to be treated as found.");
         }
 
-        if (BinarySearch.isFound(-1)) {
-            throw new AssertionError("Expected index -1 to be treated as not found.");
+        if (BinarySearch.isFound(BinarySearch.NOT_FOUND)) {
+            throw new AssertionError("Expected the not-found index to be treated as not found.");
         }
     }
 

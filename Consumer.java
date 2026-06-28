@@ -61,20 +61,13 @@ public abstract class Consumer extends Actor
     public void act(List<Actor> newConsumers)
     {
         incrementAge();
+        if (!getIsAlive()) return;
         incrementHunger();
-        if (getIsAlive())
-        {
-            giveBirth(newConsumers);
-            boolean wasPossibleToMove = huntForFood(newConsumers);
-            if (hasDisease())
-            {
-                diseaseEffect();
-            }
-            if (!wasPossibleToMove)
-            {
-                setDead();
-            }
-        }
+        if (!getIsAlive()) return;
+        giveBirth(newConsumers);
+        boolean wasPossibleToMove = huntForFood(newConsumers);
+        if (hasDisease()) diseaseEffect();
+        if (getIsAlive() && !wasPossibleToMove) setDead();
     }
 
     /** @return True if this consumer is currently diseased. */
@@ -83,11 +76,8 @@ public abstract class Consumer extends Actor
         return disease != null;
     }
 
-    /** @return A new Disease instance. */
-    private Disease giveDisease()
-    {
-        return new Disease();
-    }
+    /** Mark this consumer as newly infected with a disease. */
+    private void infect() { disease = new Disease(); }
 
     /** Advance the disease by one step: progress timer, spread, then check lethality. */
     private void diseaseEffect()
@@ -120,7 +110,7 @@ public abstract class Consumer extends Actor
             Object animal = field.getObjectAt(loc);
             if (animal != null && animal.getClass() == this.getClass())
             {
-                ((Consumer) animal).disease = giveDisease();
+                ((Consumer) animal).infect();
             }
         }
     }
@@ -166,7 +156,7 @@ public abstract class Consumer extends Actor
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
 
         int births = breed();
-        for (int b = 0; b < births && free.size() > 0; b++)
+        for (int b = 0; b < births && !free.isEmpty(); b++)
         {
             Location location = free.remove(0);
             newConsumers.add(createOffspring(field, location));
@@ -255,10 +245,7 @@ public abstract class Consumer extends Actor
 
             if (object instanceof Carcass carcass && canEatCarcass)
             {
-                if (carcass.isDiseased())
-                {
-                    disease = giveDisease();
-                }
+                if (carcass.isDiseased()) infect();
                 sustenanceLevel += carcass.getConsumptionWorth();
                 carcass.setDead();
                 return where;

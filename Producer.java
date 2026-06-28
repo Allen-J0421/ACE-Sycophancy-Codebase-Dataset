@@ -33,10 +33,7 @@ public abstract class Producer extends Actor
     public void act(List<Actor> newProducers)
     {
         incrementAge();
-        if (getIsAlive())
-        {
-            giveBirth(newProducers);
-        }
+        if (getIsAlive()) giveBirth(newProducers);
     }
 
     /**
@@ -62,7 +59,7 @@ public abstract class Producer extends Actor
 
         int births = breed();
 
-        for (int b = 0; b < births && free.size() > 0; b++)
+        for (int b = 0; b < births && !free.isEmpty(); b++)
         {
             Location location = free.remove(0);
             newProducers.add(createOffspring(field, location));

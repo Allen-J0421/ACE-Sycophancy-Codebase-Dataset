@@ -67,7 +67,7 @@ public abstract class Actor
      * 
      * @param newActors A list to receive newly born actors.
      */
-    abstract public void act(List<Actor> newActors);
+    public abstract void act(List<Actor> newActors);
     
     /**
      * @return The probability of this actor breeding.

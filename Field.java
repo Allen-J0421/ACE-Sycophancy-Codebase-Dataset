@@ -125,8 +125,7 @@ public class Field
         List<Location> free = getFreeAdjacentLocations(searchLocation);
         
         // Return the first free location or null if there are none:
-        if (free.size() > 0) return free.get(0);
-        else                 return null;
+        return free.isEmpty() ? null : free.get(0);
     }
 
     /**

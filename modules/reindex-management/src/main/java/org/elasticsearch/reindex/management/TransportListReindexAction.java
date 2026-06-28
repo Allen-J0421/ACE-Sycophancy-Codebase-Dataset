@@ -11,20 +11,16 @@ package org.elasticsearch.reindex.management;
 
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ActionType;
-import org.elasticsearch.action.admin.cluster.node.tasks.list.ListTasksRequest;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.TransportListTasksAction;
 import org.elasticsearch.action.support.ActionFilters;
 import org.elasticsearch.action.support.HandledTransportAction;
 import org.elasticsearch.client.internal.Client;
 import org.elasticsearch.client.internal.OriginSettingClient;
 import org.elasticsearch.common.util.concurrent.EsExecutors;
-import org.elasticsearch.index.reindex.ReindexAction;
 import org.elasticsearch.injection.guice.Inject;
 import org.elasticsearch.tasks.Task;
-import org.elasticsearch.tasks.TaskInfo;
 import org.elasticsearch.transport.TransportService;
 
-import java.util.List;
 import java.util.Objects;
 
 import static org.elasticsearch.action.admin.cluster.node.tasks.get.TransportGetTaskAction.TASKS_ORIGIN;
@@ -46,17 +42,10 @@ public class TransportListReindexAction extends HandledTransportAction<ListReind
 
     @Override
     protected void doExecute(final Task task, final ListReindexRequest request, final ActionListener<ListReindexResponse> listener) {
-        final ListTasksRequest listTasksRequest = new ListTasksRequest();
-        listTasksRequest.setActions(ReindexAction.NAME);
-        listTasksRequest.setDetailed(request.getDetailed());
-
-        client.execute(TransportListTasksAction.TYPE, listTasksRequest, listener.delegateFailureAndWrap((l, response) -> {
-            final List<TaskInfo> tasks = response.getTasks()
-                .stream()
-                .filter(t -> t.parentTaskId().isSet() == false)
-                .map(TaskInfo::withOriginalRelocationIdentity)
-                .toList();
-            l.onResponse(new ListReindexResponse(tasks, response.getTaskFailures(), response.getNodeFailures()));
-        }));
+        client.execute(
+            TransportListTasksAction.TYPE,
+            ReindexTaskListing.listTasksRequest(request),
+            listener.delegateFailureAndWrap((l, response) -> l.onResponse(ReindexTaskListing.response(response)))
+        );
     }
 }

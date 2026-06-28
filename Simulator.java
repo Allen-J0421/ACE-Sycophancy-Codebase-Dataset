@@ -127,7 +127,7 @@ public class Simulator
         List<Actor> newGrass = new ArrayList<>();  
 
         getRandomWeather();
-        while(!isDay && weather == weather.SUNNY){
+        while(!isDay && weather == Weather.SUNNY){
             getRandomWeather();
         }
         // Let all actors act.
@@ -250,8 +250,8 @@ public class Simulator
      * @return A random weather.
      */
     private void getRandomWeather(){
-        int value = rand.nextInt(weather.values().length);
-        weather = weather.values()[value];
+        int value = rand.nextInt(Weather.values().length);
+        weather = Weather.values()[value];
     }
 
     /**

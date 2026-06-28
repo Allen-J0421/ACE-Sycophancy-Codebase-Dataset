@@ -64,17 +64,18 @@ class InitializrServiceMetadata {
 	 * @throws JSONException on JSON parsing failure
 	 */
 	InitializrServiceMetadata(JSONObject root) throws JSONException {
-		this.dependencies = parseDependencies(root);
+		this.dependencies = Collections.unmodifiableMap(parseDependencies(root));
 		this.projectTypes = parseProjectTypes(root);
 		this.defaults = Collections.unmodifiableMap(parseDefaults(root));
 	}
 
 	InitializrServiceMetadata(ProjectType defaultProjectType) {
-		this.dependencies = new HashMap<>();
+		this.dependencies = Collections.emptyMap();
 		this.projectTypes = new MetadataHolder<>();
 		this.projectTypes.getContent().put(defaultProjectType.getId(), defaultProjectType);
 		this.projectTypes.setDefaultItem(defaultProjectType);
-		this.defaults = new HashMap<>();
+		this.projectTypes.makeImmutable();
+		this.defaults = Collections.emptyMap();
 	}
 
 	/**
@@ -82,7 +83,7 @@ class InitializrServiceMetadata {
 	 * @return the supported dependencies
 	 */
 	Collection<Dependency> getDependencies() {
-		return this.dependencies.values();
+		return Collections.unmodifiableCollection(this.dependencies.values());
 	}
 
 	/**
@@ -144,6 +145,7 @@ class InitializrServiceMetadata {
 	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root) throws JSONException {
 		MetadataHolder<String, ProjectType> result = new MetadataHolder<>();
 		if (!root.has(TYPE_EL)) {
+			result.makeImmutable();
 			return result;
 		}
 		JSONObject type = root.getJSONObject(TYPE_EL);
@@ -157,6 +159,7 @@ class InitializrServiceMetadata {
 				result.setDefaultItem(projectType);
 			}
 		}
+		result.makeImmutable();
 		return result;
 	}
 
@@ -227,7 +230,7 @@ class InitializrServiceMetadata {
 
 	private static final class MetadataHolder<K, T> {
 
-		private final Map<K, T> content;
+		private Map<K, T> content;
 
 		private @Nullable T defaultItem;
 
@@ -237,6 +240,10 @@ class InitializrServiceMetadata {
 
 		Map<K, T> getContent() {
 			return this.content;
+		}
+
+		void makeImmutable() {
+			this.content = Collections.unmodifiableMap(this.content);
 		}
 
 		@Nullable T getDefaultItem() {

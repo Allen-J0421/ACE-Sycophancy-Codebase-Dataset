@@ -29,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link InitializrServiceMetadata}.
@@ -85,6 +86,29 @@ class InitializrServiceMetadataTests {
 		assertThat(projectType).isNotNull();
 		assertThat(projectType.getTags()).containsEntry("build", "maven");
 		assertThat(projectType.getTags()).containsEntry("format", "project");
+	}
+
+	@Test
+	void dependenciesAreImmutable() throws Exception {
+		InitializrServiceMetadata metadata = createInstance("2.0.0");
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> metadata.getDependencies().clear());
+	}
+
+	@Test
+	void projectTypesAreImmutable() throws Exception {
+		InitializrServiceMetadata metadata = createInstance("2.0.0");
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> metadata.getProjectTypes().put("test", new ProjectType("test", "Test", "/test", false, null)));
+	}
+
+	@Test
+	void defaultsAreImmutableForDefaultProjectTypeConstructor() {
+		InitializrServiceMetadata metadata = new InitializrServiceMetadata(
+				new ProjectType("default", "Default", "/default", true, null));
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> metadata.getProjectTypes().put("test", new ProjectType("test", "Test", "/test", false, null)));
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> metadata.getDefaults().put("a", "b"));
 	}
 
 	private static InitializrServiceMetadata createInstance(String version) throws JSONException {

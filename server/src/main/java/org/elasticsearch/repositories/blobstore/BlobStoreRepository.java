@@ -2853,7 +2853,7 @@ public abstract class BlobStoreRepository extends AbstractLifecycleComponent imp
     private void markRepoCorrupted(long corruptedGeneration, Exception originalException, ActionListener<Void> listener) {
         assert corruptedGeneration != RepositoryData.UNKNOWN_REPO_GEN;
         assert bestEffortConsistency == false;
-        logger.warn(() -> "Marking repository " + toStringShort() + " as corrupted", originalException);
+        logger.warn("Marking repository {} as corrupted", toStringShort(), originalException);
         submitUnbatchedTask("mark repository corrupted " + toStringShort() + "[" + corruptedGeneration + "]", new ClusterStateUpdateTask() {
             @Override
             public ClusterState execute(ClusterState currentState) {

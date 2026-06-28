@@ -339,7 +339,7 @@ public class PluginsLoader {
                 qualifiedExports
             );
         } else {
-            logger.debug(() -> "Loading bundle: " + plugin.getName() + ", creating spi, non-modular");
+            logger.debug("Loading bundle: {}, creating spi, non-modular", plugin.getName());
             return LayerAndLoader.ofLoader(URLClassLoader.newInstance(bundle.spiUrls.toArray(new URL[0]), parentLoader));
         }
     }
@@ -354,14 +354,14 @@ public class PluginsLoader {
     ) {
         final PluginDescriptor plugin = bundle.plugin;
         if (plugin.getModuleName().isPresent()) {
-            logger.debug(() -> "Loading bundle: " + plugin.getName() + ", modular");
+            logger.debug("Loading bundle: {}, modular", plugin.getName());
             var parentLayers = Stream.concat(
                 Stream.ofNullable(spiLayerAndLoader != null ? spiLayerAndLoader.layer() : null),
                 extendedPlugins.stream().map(LoadedPluginLayer::spiModuleLayer)
             ).toList();
             return createPluginModuleLayer(bundle, pluginParentLoader, parentLayers, qualifiedExports, modulesWithNativeAccess);
         } else if (plugin.isStable()) {
-            logger.debug(() -> "Loading bundle: " + plugin.getName() + ", non-modular as synthetic module");
+            logger.debug("Loading bundle: {}, non-modular as synthetic module", plugin.getName());
             return LayerAndLoader.ofUberModuleLoader(
                 UberModuleClassLoader.getInstance(
                     pluginParentLoader,
@@ -373,7 +373,7 @@ public class PluginsLoader {
                 )
             );
         } else {
-            logger.debug(() -> "Loading bundle: " + plugin.getName() + ", non-modular");
+            logger.debug("Loading bundle: {}, non-modular", plugin.getName());
             return LayerAndLoader.ofLoader(URLClassLoader.newInstance(bundle.urls.toArray(URL[]::new), pluginParentLoader));
         }
     }
@@ -424,7 +424,7 @@ public class PluginsLoader {
         Map<String, List<ModuleQualifiedExportsService>> qualifiedExports,
         Set<String> modulesWithNativeAccess
     ) {
-        logger.debug(() -> "Loading bundle: creating module layer and loader for module " + moduleName);
+        logger.debug("Loading bundle: creating module layer and loader for module {}", moduleName);
         var finder = ModuleFinder.of(paths);
 
         var configuration = Configuration.resolveAndBind(
@@ -441,7 +441,7 @@ public class PluginsLoader {
         // configure qualified exports/opens to other modules/plugins
         addPluginExportsServices(qualifiedExports, controller);
         enableNativeAccess(moduleName, modulesWithNativeAccess, controller);
-        logger.debug(() -> "Loading bundle: created module layer and loader for module " + moduleName);
+        logger.debug("Loading bundle: created module layer and loader for module {}", moduleName);
         return new LayerAndLoader(controller.layer(), controller.layer().findLoader(moduleName));
     }
 

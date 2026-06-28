@@ -277,7 +277,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
                     new RegisterRepositoryTask(this, projectId, request, acknowledgementStep) {
                         @Override
                         public void onFailure(Exception e) {
-                            logger.warn(() -> "failed to create repository " + projectRepoString(projectId, request.name()), e);
+                            logger.warn("failed to create repository {}", projectRepoString(projectId, request.name()), e);
                             publicationStep.onFailure(e);
                             super.onFailure(e);
                         }
@@ -852,7 +852,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
                     } catch (RepositoryException ex) {
                         // TODO: this catch is bogus, it means the old repo is already closed,
                         // but we have nothing to replace it
-                        logger.warn(() -> "failed to change repository " + projectRepoString(projectId, repositoryMetadata.name()), ex);
+                        logger.warn("failed to change repository {}", projectRepoString(projectId, repositoryMetadata.name()), ex);
                         repository = new InvalidRepository(projectId, repositoryMetadata, ex);
                     }
                 }
@@ -865,7 +865,7 @@ public class RepositoriesService extends AbstractLifecycleComponent implements C
                         RepositoriesService::createUnknownTypeRepository
                     );
                 } catch (RepositoryException ex) {
-                    logger.warn(() -> "failed to create repository " + projectRepoString(projectId, repositoryMetadata.name()), ex);
+                    logger.warn("failed to create repository {}", projectRepoString(projectId, repositoryMetadata.name()), ex);
                     repository = new InvalidRepository(projectId, repositoryMetadata, ex);
                 }
             }

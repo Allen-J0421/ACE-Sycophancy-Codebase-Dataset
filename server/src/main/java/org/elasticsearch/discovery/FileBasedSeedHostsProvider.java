@@ -51,7 +51,7 @@ public class FileBasedSeedHostsProvider implements SeedHostsProvider {
                 return lines.filter(line -> line.startsWith("#") == false) // lines starting with `#` are comments
                     .toList();
             } catch (IOException e) {
-                logger.warn(() -> "failed to read file [" + unicastHostsFilePath + "]", e);
+                logger.warn("failed to read file [{}]", unicastHostsFilePath, e);
                 return Collections.emptyList();
             }
         }

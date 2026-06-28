@@ -603,7 +603,7 @@ public final class RestoreService implements ClusterStateApplier {
                     snapshotInfo.snapshot(),
                     name
                 );
-                logger.warn(() -> warningMessage);
+                logger.warn(warningMessage);
                 HeaderWarning.addWarning(warningMessage);
             }
         }

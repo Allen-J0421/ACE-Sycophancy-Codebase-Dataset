@@ -318,7 +318,7 @@ public class HealthPeriodicLogger extends AbstractLifecycleComponent implements 
                     // In case of an exception before the listener was wired, we can release the flag here, and we feel safe
                     // that it will not release it again because this can only be run once.
                     release.run();
-                    logger.warn(() -> "The health periodic logger encountered an error.", e);
+                    logger.warn("The health periodic logger encountered an error.", e);
                 }
                 return true;
             } else {

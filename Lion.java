@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.HashMap;
 
 /**
  * A simple model of a Lion.
@@ -36,8 +32,6 @@ public class Lion extends Predator
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.9;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.8;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
     /**
      * Create a Lion. A Lion can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -57,32 +51,16 @@ public class Lion extends Predator
             setAge( 0);
             setFoodLevel(PREY_CHEETAH_FOOD_VALUE);
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/100.0);
         addFood(field);
     }
 
     /**
-     * This is what the Lion does most of the time: it hunts for
-     * gazelle & cheetahs. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newLions A list to return newly born Lions.
-     * @param simulator The simulator.
+     * How much a lion grows during a single step.
+     * @return The lion's per-step growth increment.
      */
-    public void act(List<Actor> newLions,Simulator simulator)
-    {
-        setGrowthLevel(0.01);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newLions);  
-                super.act(newLions,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+    protected double getStepGrowthLevel(){
+        return 0.01;
     }
 
     /**
@@ -102,11 +80,11 @@ public class Lion extends Predator
     }
 
     /**
-     * Returns the current lion occupying the location.
-     * @return the current lion.
+     * Create a new-born lion at the given location.
+     * @return A new-born lion.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location location){
+        return new Lion(false, field, location);
     }
 
     /**
@@ -131,20 +109,8 @@ public class Lion extends Predator
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, PREY_GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
-        Cheetah cheetah = new Cheetah(true,field,tempLocation );
-        food.put(cheetah, PREY_CHEETAH_FOOD_VALUE);
-        cheetah.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the lion eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */   
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+        registerPrey(new Gazelle(true, field, tempLocation), PREY_GAZELLE_FOOD_VALUE);
+        registerPrey(new Cheetah(true, field, tempLocation), PREY_CHEETAH_FOOD_VALUE);
     }
 
     /**

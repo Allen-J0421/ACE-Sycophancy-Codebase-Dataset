@@ -14,6 +14,8 @@ public abstract class Animal extends Actor
     private double foodLevel;
     private boolean isGirl;
     private boolean isHealthy;
+    // What this animal eats, mapped to the food value each prey provides.
+    private final HashMap<Actor, Integer> food = new HashMap<>();
     //the number of steps an animal takes when infected.
     private int infectedStepCounter;
     //how many steps animal needs to wait before it can breed again.
@@ -37,12 +39,41 @@ public abstract class Animal extends Actor
     }
 
     /**
-     * Make this animal act - that is: make it do
-     * whatever it wants/needs to do.
+     * Make this animal act - that is: make it do whatever it wants/needs to do.
+     * All animals share the same daily routine: they grow a little, and during
+     * the day they age, get hungrier, and (if still alive) try to breed and move.
+     * Species-specific behaviour is supplied through {@link #getStepGrowthLevel()}
+     * and the food/breeding hooks.
      * @param newAnimals A list to receive newly born animals.
      * @param simulator The simulator.
      */
     public void act(List<Actor> newAnimals, Simulator simulator){
+        setGrowthLevel(getStepGrowthLevel());
+        if(simulator.isDay()){
+            incrementAge(simulator.getSteps());
+            incrementHunger();
+            if(isActive()) {
+                giveBirth(newAnimals);
+                move(simulator);
+            }
+        }else{
+            //space for potential night activities
+        }
+    }
+
+    /**
+     * How much this species grows during a single step. Added to the animal's
+     * growth level on every act.
+     * @return The per-step growth increment.
+     */
+    abstract protected double getStepGrowthLevel();
+
+    /**
+     * Try to find food in the current weather and move there; failing that, move
+     * to a free adjacent location, or die of overcrowding if none is available.
+     * @param simulator The simulator.
+     */
+    protected void move(Simulator simulator){
         Location newLocation = null;
         switch(simulator.getWeather()){
             case SUNNY:
@@ -58,7 +89,7 @@ public abstract class Animal extends Actor
                 findFood(getRandom().nextDouble());
                 break;
         }
-        if(newLocation == null) { 
+        if(newLocation == null) {
             // No food found - try to move to a free location.
             newLocation = getField().freeAdjacentLocation(getLocation());
         }
@@ -103,19 +134,7 @@ public abstract class Animal extends Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = getAnimal();
-            Animal baby = null;
-            if(young instanceof Gazelle){
-                baby = new Gazelle(false, field, loc);
-            }else if(young instanceof Jaguar){
-                baby = new Jaguar(false, field, loc);
-            }else if(young instanceof Cheetah){
-                baby = new Cheetah(false, field, loc);
-            }else if(young instanceof Lion){
-                baby = new Lion(false, field, loc);
-            }else if(young instanceof Zebra){
-                baby = new Zebra(false, field, loc);
-            }
+            Animal baby = reproduce(field, loc);
             if(!getHealth()){
                 baby.setUnhealthy(); //setting the baby to be unhealthy if the parent is unhealthy.
             }
@@ -148,7 +167,7 @@ public abstract class Animal extends Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        Animal currentAnimal = getAnimal();
+        Animal currentAnimal = this;
         while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
@@ -179,10 +198,14 @@ public abstract class Animal extends Actor
     abstract protected int getMaxLitterSize();
 
     /**
-     * Returns the current animal occupying the location.
-     * @return the current animal.
+     * Create a new-born of this animal's own species at the given location.
+     * Each concrete species supplies its own offspring, removing the need to
+     * branch on the runtime type when giving birth.
+     * @param field The field the offspring is born into.
+     * @param location The location of the offspring.
+     * @return A new-born animal of the same species.
      */
-    abstract protected Animal getAnimal();
+    abstract protected Animal reproduce(Field field, Location location);
 
     /**
      * Returns the animal's current food level.
@@ -257,7 +280,21 @@ public abstract class Animal extends Actor
      * Returns the HashMap which contains what prey the animal eats and the amount of food each prey gives.
      * @return The HashMap which contains the Actor and an Integer.
      */
-    abstract protected HashMap<Actor, Integer> getFood();
+    protected HashMap<Actor, Integer> getFood(){
+        return food;
+    }
+
+    /**
+     * Register a prey species this animal feeds on. The prey instance acts as a
+     * prototype keyed by its class; it is removed from the field immediately as
+     * it only exists to describe the diet.
+     * @param prey A prototype instance of the prey species.
+     * @param foodValue The food value eating this prey provides.
+     */
+    protected void registerPrey(Actor prey, int foodValue){
+        food.put(prey, foodValue);
+        prey.setDead();
+    }
 
     /**
      * Uses a random generator to assign if the animal is female or not.

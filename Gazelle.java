@@ -1,8 +1,3 @@
-import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
-import java.util.HashMap;
-
 /**
  * A simple model of a Gazelle.
  * Gazelles age, move,eat grass, breed, and die.
@@ -33,8 +28,6 @@ public class Gazelle extends Animal
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 1;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
     /**
      * Create a new Gazelle. A Gazelle may be created with age
      * zero (a new born) or with a random age.
@@ -52,32 +45,16 @@ public class Gazelle extends Animal
             setAge(getRandom().nextInt(MAX_AGE));
             setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/75.0);
         addFood(field);
     }
 
     /**
-     * This is what the Gazelle does most of the time: it finds
-     * grass to eat. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newGazelles A list to return newly born Gazelles.
-     * @param simulator The simulator.
+     * How much a gazelle grows during a single step.
+     * @return The gazelle's per-step growth increment.
      */
-    public void act(List<Actor> newGazelles, Simulator simulator)
-    {
-        setGrowthLevel(0.012);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newGazelles);  
-                super.act(newGazelles,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+    protected double getStepGrowthLevel(){
+        return 0.012;
     }
 
     /**
@@ -113,11 +90,11 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Returns the current gazelle occupying the location.
-     * @return the current gazelle.
+     * Create a new-born gazelle at the given location.
+     * @return A new-born gazelle.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location location){
+        return new Gazelle(false, field, location);
     }
 
     /**
@@ -126,17 +103,7 @@ public class Gazelle extends Animal
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Plants grass = new Grass(true,field,tempLocation );
-        food.put(grass, GRASS_FOOD_VALUE);
-        grass.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the gazelle eats and the amount of food each plant gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+        registerPrey(new Grass(true, field, tempLocation), GRASS_FOOD_VALUE);
     }
 
     /**

@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.HashMap;
 /**
  * A simple model of a Cheetah.
  * Cheetahs age, move, eat zebras, breed and die.
@@ -33,8 +29,6 @@ public class Cheetah extends Predator
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.8;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.7;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
     /**
      * Create a Cheetah. A Cheetah can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -54,32 +48,16 @@ public class Cheetah extends Predator
             setAge(0);
             setFoodLevel(ZEBRA_FOOD_VALUE);
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/102.0);
         addFood(field);
     }
 
     /**
-     * This is what the Cheetah does most of the time: it hunts for
-     * zebras. In the process, it might breed, die of hunger,
-     * die of infection or die of old age.
-     * 
-     * @param newCheetahs A list to return newly born Cheetahs.
-     * @param simulator The simulator.
+     * How much a cheetah grows during a single step.
+     * @return The cheetah's per-step growth increment.
      */
-    public void act(List<Actor> newCheetahs, Simulator simulator)
-    {
-        setGrowthLevel(0.012);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newCheetahs);  
-                super.act(newCheetahs,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+    protected double getStepGrowthLevel(){
+        return 0.012;
     }
 
     /**
@@ -99,11 +77,11 @@ public class Cheetah extends Predator
     }
 
     /**
-     * Returns the current cheetah occupying the location.
-     * @return the current cheetah.
+     * Create a new-born cheetah at the given location.
+     * @return A new-born cheetah.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location location){
+        return new Cheetah(false, field, location);
     }
 
     /**
@@ -128,21 +106,8 @@ public class Cheetah extends Predator
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Zebra zebra = new Zebra(true,field,tempLocation );
-        food.put(zebra, ZEBRA_FOOD_VALUE);
-        zebra.setDead();
-        //Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the cheetah eats and the amount of food each prey gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */   
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+        registerPrey(new Zebra(true, field, tempLocation), ZEBRA_FOOD_VALUE);
+        registerPrey(new Gazelle(true, field, tempLocation), GAZELLE_FOOD_VALUE);
     }
 
     /**

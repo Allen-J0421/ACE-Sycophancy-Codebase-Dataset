@@ -1,9 +1,4 @@
 
-import java.util.List;
-import java.util.Random;
-import java.util.Iterator;
-import java.util.HashMap;
-
 /**
  * A simple model of a Zebra.
  * Zebras age, move, eat grass, breed, and die.
@@ -33,8 +28,6 @@ public class Zebra extends Animal
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 1;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
     /**
      * Create a new Zebra. A Zebra may be created with age
      * zero (a new born) or with a random age.
@@ -52,32 +45,16 @@ public class Zebra extends Animal
             setAge(getRandom().nextInt(MAX_AGE));
             setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/67.0);
         addFood( field);
     }
 
     /**
-     * This is what the Zebra does most of the time: it finds
-     * grass to eat. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newZebras A list to return newly born Zebras.
-     * @param simulator The simulator.
+     * How much a zebra grows during a single step.
+     * @return The zebra's per-step growth increment.
      */
-    public void act(List<Actor> newZebra, Simulator simulator)
-    {
-        setGrowthLevel(0.015);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newZebra); 
-                super.act(newZebra,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+    protected double getStepGrowthLevel(){
+        return 0.015;
     }
 
     /**
@@ -113,11 +90,11 @@ public class Zebra extends Animal
     }
 
     /**
-     * Returns the current zebra occupying the location.
-     * @return The current zebra.
+     * Create a new-born zebra at the given location.
+     * @return A new-born zebra.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location location){
+        return new Zebra(false, field, location);
     }
 
     /**
@@ -126,17 +103,7 @@ public class Zebra extends Animal
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Plants grass = new Grass(true,field,tempLocation );
-        food.put(grass, GRASS_FOOD_VALUE);
-        grass.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the zebra eats and the amount of food each plant gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+        registerPrey(new Grass(true, field, tempLocation), GRASS_FOOD_VALUE);
     }
 
     /**

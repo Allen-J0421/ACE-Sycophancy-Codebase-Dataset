@@ -1,8 +1,4 @@
 
-import java.util.Random;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * A simple model of a Jaguar.
  * Jaguars age, move, eat gazelle, and die.
@@ -32,8 +28,6 @@ public class Jaguar extends Predator
     private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.7;
     private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.4;
 
-    // Individual characteristics (instance fields).
-    private HashMap<Actor, Integer> food;
     /**
      * Create a Jaguar. A Jaguar can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
@@ -53,32 +47,16 @@ public class Jaguar extends Predator
             setAge( 0);
             setFoodLevel(GAZELLE_FOOD_VALUE);
         }
-        food = new HashMap<>();
         setGrowthLevel(getAge()/89.0);
         addFood(field);
     }
 
     /**
-     * This is what the Jaguar does most of the time: it finds
-     * gazelle to eat. In the process, it might breed, die of hunger,
-     * die of disease or die of old age.
-     * 
-     * @param newJaguars A list to return newly born Jaguars.
-     * @param simulator The simulator.
+     * How much a jaguar grows during a single step.
+     * @return The jaguar's per-step growth increment.
      */
-    public void act(List<Actor> newJaguars, Simulator simulator)
-    {
-        setGrowthLevel(0.013);
-        if(simulator.isDay()){
-            incrementAge(simulator.getSteps());
-            incrementHunger();
-            if(isActive()) {
-                giveBirth(newJaguars);  
-                super.act(newJaguars,simulator);
-            }
-        }else{
-            //space for potential night activities
-        }
+    protected double getStepGrowthLevel(){
+        return 0.013;
     }
 
     /**
@@ -98,11 +76,11 @@ public class Jaguar extends Predator
     }
 
     /**
-     * Returns the current jaguar occupying the location.
-     * @return the current jaguar.
+     * Create a new-born jaguar at the given location.
+     * @return A new-born jaguar.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location location){
+        return new Jaguar(false, field, location);
     }
 
     /**
@@ -127,17 +105,7 @@ public class Jaguar extends Predator
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
-        gazelle.setDead();
-    }
-
-    /**
-     * Returns the HashMap which contains what food the jaguar eats and the amount of food each gazelle gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
+        registerPrey(new Gazelle(true, field, tempLocation), GAZELLE_FOOD_VALUE);
     }
 
     /**

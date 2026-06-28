@@ -48,8 +48,9 @@ public class HintCommand extends AbstractCommand {
 		try {
 			int index = (args.length != 0) ? Integer.parseInt(args[0]) - 1 : 0;
 			List<String> arguments = new ArrayList<>(args.length);
-			for (int i = 2; i < args.length; i++) {
-				arguments.add(args[i]);
+			Collections.addAll(arguments, args);
+			if (!arguments.isEmpty()) {
+				arguments.remove(0);
 			}
 			String starting = "";
 			if (index < arguments.size()) {

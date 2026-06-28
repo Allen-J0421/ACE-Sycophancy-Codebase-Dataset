@@ -124,14 +124,14 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
    *
    * @since 28.0
    */
-  public static class Builder<N, V> {
-
-    private final MutableValueGraph<N, V> mutableValueGraph;
+  public static class Builder<N, V>
+      extends ImmutableGraphBuilderBase<
+          N, MutableValueGraph<N, V>, ImmutableValueGraph<N, V>, Builder<N, V>> {
 
     Builder(ValueGraphBuilder<N, V> graphBuilder) {
       // The incidentEdgeOrder for immutable graphs is always stable. However, we don't want to
       // modify this builder, so we make a copy instead.
-      this.mutableValueGraph = graphBuilder.copy().incidentEdgeOrder(ElementOrder.stable()).build();
+      super(graphBuilder.copy().incidentEdgeOrder(ElementOrder.stable()).build());
     }
 
     /**
@@ -143,8 +143,7 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
      */
     @CanIgnoreReturnValue
     public ImmutableValueGraph.Builder<N, V> addNode(N node) {
-      mutableValueGraph.addNode(node);
-      return this;
+      return addNodeInternal(node);
     }
 
     /**
@@ -165,7 +164,7 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
      */
     @CanIgnoreReturnValue
     public ImmutableValueGraph.Builder<N, V> putEdgeValue(N nodeU, N nodeV, V value) {
-      mutableValueGraph.putEdgeValue(nodeU, nodeV, value);
+      mutableDelegate.putEdgeValue(nodeU, nodeV, value);
       return this;
     }
 
@@ -190,7 +189,7 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
      */
     @CanIgnoreReturnValue
     public ImmutableValueGraph.Builder<N, V> putEdgeValue(EndpointPair<N> endpoints, V value) {
-      mutableValueGraph.putEdgeValue(endpoints, value);
+      mutableDelegate.putEdgeValue(endpoints, value);
       return this;
     }
 
@@ -199,7 +198,17 @@ public final class ImmutableValueGraph<N, V> extends StandardValueGraph<N, V> {
      * Builder}.
      */
     public ImmutableValueGraph<N, V> build() {
-      return copyOf(mutableValueGraph);
+      return buildInternal();
+    }
+
+    @Override
+    void addNodeToDelegate(N node) {
+      mutableDelegate.addNode(node);
+    }
+
+    @Override
+    ImmutableValueGraph<N, V> buildFromDelegate() {
+      return copyOf(mutableDelegate);
     }
   }
 }

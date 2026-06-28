@@ -150,12 +150,12 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
    *
    * @since 28.0
    */
-  public static class Builder<N, E> {
-
-    private final MutableNetwork<N, E> mutableNetwork;
+  public static class Builder<N, E>
+      extends ImmutableGraphBuilderBase<
+          N, MutableNetwork<N, E>, ImmutableNetwork<N, E>, Builder<N, E>> {
 
     Builder(NetworkBuilder<N, E> networkBuilder) {
-      this.mutableNetwork = networkBuilder.build();
+      super(networkBuilder.build());
     }
 
     /**
@@ -167,8 +167,7 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
      */
     @CanIgnoreReturnValue
     public ImmutableNetwork.Builder<N, E> addNode(N node) {
-      mutableNetwork.addNode(node);
-      return this;
+      return addNodeInternal(node);
     }
 
     /**
@@ -194,7 +193,7 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
      */
     @CanIgnoreReturnValue
     public ImmutableNetwork.Builder<N, E> addEdge(N nodeU, N nodeV, E edge) {
-      mutableNetwork.addEdge(nodeU, nodeV, edge);
+      mutableDelegate.addEdge(nodeU, nodeV, edge);
       return this;
     }
 
@@ -225,7 +224,7 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
      */
     @CanIgnoreReturnValue
     public ImmutableNetwork.Builder<N, E> addEdge(EndpointPair<N> endpoints, E edge) {
-      mutableNetwork.addEdge(endpoints, edge);
+      mutableDelegate.addEdge(endpoints, edge);
       return this;
     }
 
@@ -234,7 +233,17 @@ public final class ImmutableNetwork<N, E> extends StandardNetwork<N, E> {
      * Builder}.
      */
     public ImmutableNetwork<N, E> build() {
-      return copyOf(mutableNetwork);
+      return buildInternal();
+    }
+
+    @Override
+    void addNodeToDelegate(N node) {
+      mutableDelegate.addNode(node);
+    }
+
+    @Override
+    ImmutableNetwork<N, E> buildFromDelegate() {
+      return copyOf(mutableDelegate);
     }
   }
 }

@@ -126,14 +126,13 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
    *
    * @since 28.0
    */
-  public static class Builder<N> {
-
-    private final MutableGraph<N> mutableGraph;
+  public static class Builder<N>
+      extends ImmutableGraphBuilderBase<N, MutableGraph<N>, ImmutableGraph<N>, Builder<N>> {
 
     Builder(GraphBuilder<N> graphBuilder) {
       // The incidentEdgeOrder for immutable graphs is always stable. However, we don't want to
       // modify this builder, so we make a copy instead.
-      this.mutableGraph = graphBuilder.copy().incidentEdgeOrder(ElementOrder.stable()).build();
+      super(graphBuilder.copy().incidentEdgeOrder(ElementOrder.stable()).build());
     }
 
     /**
@@ -145,8 +144,7 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
      */
     @CanIgnoreReturnValue
     public Builder<N> addNode(N node) {
-      mutableGraph.addNode(node);
-      return this;
+      return addNodeInternal(node);
     }
 
     /**
@@ -164,7 +162,7 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
      */
     @CanIgnoreReturnValue
     public Builder<N> putEdge(N nodeU, N nodeV) {
-      mutableGraph.putEdge(nodeU, nodeV);
+      mutableDelegate.putEdge(nodeU, nodeV);
       return this;
     }
 
@@ -187,7 +185,7 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
      */
     @CanIgnoreReturnValue
     public Builder<N> putEdge(EndpointPair<N> endpoints) {
-      mutableGraph.putEdge(endpoints);
+      mutableDelegate.putEdge(endpoints);
       return this;
     }
 
@@ -195,7 +193,17 @@ public class ImmutableGraph<N> extends ForwardingGraph<N> {
      * Returns a newly-created {@code ImmutableGraph} based on the contents of this {@code Builder}.
      */
     public ImmutableGraph<N> build() {
-      return copyOf(mutableGraph);
+      return buildInternal();
+    }
+
+    @Override
+    void addNodeToDelegate(N node) {
+      mutableDelegate.addNode(node);
+    }
+
+    @Override
+    ImmutableGraph<N> buildFromDelegate() {
+      return copyOf(mutableDelegate);
     }
   }
 }

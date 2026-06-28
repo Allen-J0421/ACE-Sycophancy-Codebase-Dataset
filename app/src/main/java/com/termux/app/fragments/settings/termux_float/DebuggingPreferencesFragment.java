@@ -4,16 +4,16 @@ import android.content.Context;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
-import com.termux.app.fragments.settings.BaseDebuggingPreferencesFragment;
-import com.termux.app.fragments.settings.BaseLogLevelPreferenceDataStore;
-import com.termux.shared.logger.Logger;
+import com.termux.app.fragments.settings.BasePackageDebuggingPreferenceDataStore;
+import com.termux.app.fragments.settings.BasePackageDebuggingPreferencesFragment;
 import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
 
 @Keep
-public class DebuggingPreferencesFragment extends BaseDebuggingPreferencesFragment {
+public class DebuggingPreferencesFragment extends BasePackageDebuggingPreferencesFragment<TermuxFloatAppSharedPreferences> {
 
     @Override
     protected int getPreferencesResource() {
@@ -21,45 +21,33 @@ public class DebuggingPreferencesFragment extends BaseDebuggingPreferencesFragme
     }
 
     @Override
-    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
-        return new DebuggingPreferencesDataStore(context);
+    protected PreferenceDataStore createPreferenceDataStore(@NonNull Context context,
+                                                            @Nullable TermuxFloatAppSharedPreferences preferences) {
+        return new DebuggingPreferencesDataStore(context, preferences);
     }
 
     @Override
-    protected int getLogLevel(@NonNull Context context) {
-        TermuxFloatAppSharedPreferences preferences = TermuxFloatAppSharedPreferences.build(context, true);
-        return preferences != null ? preferences.getLogLevel(true) : Logger.DEFAULT_LOG_LEVEL;
+    protected TermuxFloatAppSharedPreferences buildPreferences(@NonNull Context context) {
+        return TermuxFloatAppSharedPreferences.build(context, true);
     }
 }
 
-class DebuggingPreferencesDataStore extends BaseLogLevelPreferenceDataStore {
+class DebuggingPreferencesDataStore extends BasePackageDebuggingPreferenceDataStore<TermuxFloatAppSharedPreferences> {
 
-    private final TermuxFloatAppSharedPreferences mPreferences;
-
-    DebuggingPreferencesDataStore(@NonNull Context context) {
-        super(context);
-        mPreferences = TermuxFloatAppSharedPreferences.build(context, true);
-    }
-
-    @Override
-    protected int getLogLevel() {
-        return mPreferences != null ? mPreferences.getLogLevel(true) : Logger.DEFAULT_LOG_LEVEL;
-    }
-
-    @Override
-    protected void setLogLevel(int logLevel) {
-        if (mPreferences == null) return;
-        mPreferences.setLogLevel(getContext(), logLevel, true);
+    DebuggingPreferencesDataStore(@NonNull Context context,
+                                  @Nullable TermuxFloatAppSharedPreferences preferences) {
+        super(context, preferences);
     }
 
     @Override
     public void putBoolean(String key, boolean value) {
-        if (mPreferences == null) return;
+        TermuxFloatAppSharedPreferences preferences = getPreferences();
+        if (preferences == null) return;
         if (key == null) return;
 
         switch (key) {
             case "terminal_view_key_logging_enabled":
-                mPreferences.setTerminalViewKeyLoggingEnabled(value, true);
+                preferences.setTerminalViewKeyLoggingEnabled(value, true);
                 break;
             default:
                 break;
@@ -68,10 +56,11 @@ class DebuggingPreferencesDataStore extends BaseLogLevelPreferenceDataStore {
 
     @Override
     public boolean getBoolean(String key, boolean defValue) {
-        if (mPreferences == null) return false;
+        TermuxFloatAppSharedPreferences preferences = getPreferences();
+        if (preferences == null) return false;
         switch (key) {
             case "terminal_view_key_logging_enabled":
-                return mPreferences.isTerminalViewKeyLoggingEnabled(true);
+                return preferences.isTerminalViewKeyLoggingEnabled(true);
             default:
                 return false;
         }

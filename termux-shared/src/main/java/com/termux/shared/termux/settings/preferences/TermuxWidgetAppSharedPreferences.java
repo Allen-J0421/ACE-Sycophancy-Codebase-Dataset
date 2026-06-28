@@ -61,14 +61,9 @@ public class TermuxWidgetAppSharedPreferences extends TermuxPackageAppSharedPref
         return token;
     }
 
-
-
-    public int getLogLevel(boolean readFromFile) {
-        return getStoredLogLevel(TERMUX_WIDGET_APP.KEY_LOG_LEVEL, readFromFile);
-    }
-
-    public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        setStoredLogLevel(context, TERMUX_WIDGET_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
+    @Override
+    protected String getLogLevelPreferenceKey() {
+        return TERMUX_WIDGET_APP.KEY_LOG_LEVEL;
     }
 
 }

@@ -11,7 +11,8 @@ import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.TermuxUtils;
 
-abstract class TermuxPackageAppSharedPreferences extends AppSharedPreferences {
+abstract class TermuxPackageAppSharedPreferences extends AppSharedPreferences
+    implements TermuxAppLogLevelPreferences {
 
     @FunctionalInterface
     protected interface PreferencesFactory<T extends TermuxPackageAppSharedPreferences> {
@@ -54,6 +55,19 @@ abstract class TermuxPackageAppSharedPreferences extends AppSharedPreferences {
 
     protected void setStoredBoolean(@NonNull String key, boolean value, boolean commitToFile) {
         SharedPreferenceUtils.setBoolean(mSharedPreferences, key, value, commitToFile);
+    }
+
+    @NonNull
+    protected abstract String getLogLevelPreferenceKey();
+
+    @Override
+    public final int getLogLevel(boolean readFromFile) {
+        return getStoredLogLevel(getLogLevelPreferenceKey(), readFromFile);
+    }
+
+    @Override
+    public final void setLogLevel(@NonNull Context context, int logLevel, boolean commitToFile) {
+        setStoredLogLevel(context, getLogLevelPreferenceKey(), logLevel, commitToFile);
     }
 
 }

@@ -41,14 +41,9 @@ public class TermuxBootAppSharedPreferences extends TermuxPackageAppSharedPrefer
             TermuxBootAppSharedPreferences::new);
     }
 
-
-
-    public int getLogLevel(boolean readFromFile) {
-        return getStoredLogLevel(TERMUX_BOOT_APP.KEY_LOG_LEVEL, readFromFile);
-    }
-
-    public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        setStoredLogLevel(context, TERMUX_BOOT_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
+    @Override
+    protected String getLogLevelPreferenceKey() {
+        return TERMUX_BOOT_APP.KEY_LOG_LEVEL;
     }
 
 }

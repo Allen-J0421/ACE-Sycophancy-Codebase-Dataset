@@ -101,6 +101,11 @@ public class TermuxAppSharedPreferences extends TermuxFontSizeAppSharedPreferenc
         return TERMUX_APP.KEY_FONTSIZE;
     }
 
+    @Override
+    protected String getLogLevelPreferenceKey() {
+        return TERMUX_APP.KEY_LOG_LEVEL;
+    }
+
 
 
     public String getCurrentSession() {
@@ -114,11 +119,11 @@ public class TermuxAppSharedPreferences extends TermuxFontSizeAppSharedPreferenc
 
 
     public int getLogLevel() {
-        return getStoredLogLevel(TERMUX_APP.KEY_LOG_LEVEL, false);
+        return getLogLevel(false);
     }
 
     public void setLogLevel(Context context, int logLevel) {
-        setStoredLogLevel(context, TERMUX_APP.KEY_LOG_LEVEL, logLevel, false);
+        setLogLevel(context, logLevel, false);
     }
 
 

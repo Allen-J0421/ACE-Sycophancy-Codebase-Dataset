@@ -8,13 +8,12 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
 
 import com.termux.R;
-import com.termux.app.fragments.settings.BaseDebuggingPreferencesFragment;
-import com.termux.app.fragments.settings.BaseLogLevelPreferenceDataStore;
+import com.termux.app.fragments.settings.BasePackageDebuggingPreferenceDataStore;
+import com.termux.app.fragments.settings.BasePackageDebuggingPreferencesFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
-import com.termux.shared.logger.Logger;
 
 @Keep
-public class DebuggingPreferencesFragment extends BaseDebuggingPreferencesFragment {
+public class DebuggingPreferencesFragment extends BasePackageDebuggingPreferencesFragment<TermuxAppSharedPreferences> {
 
     @Override
     protected int getPreferencesResource() {
@@ -22,41 +21,55 @@ public class DebuggingPreferencesFragment extends BaseDebuggingPreferencesFragme
     }
 
     @Override
-    protected PreferenceDataStore getPreferenceDataStore(@NonNull Context context) {
-        return new DebuggingPreferencesDataStore(context);
+    protected PreferenceDataStore createPreferenceDataStore(@NonNull Context context,
+                                                            @Nullable TermuxAppSharedPreferences preferences) {
+        return new DebuggingPreferencesDataStore(context, preferences);
     }
 
     @Override
-    protected int getLogLevel(@NonNull Context context) {
-        TermuxAppSharedPreferences preferences = TermuxAppSharedPreferences.build(context, true);
-        return preferences != null ? preferences.getLogLevel() : Logger.DEFAULT_LOG_LEVEL;
+    protected TermuxAppSharedPreferences buildPreferences(@NonNull Context context) {
+        return TermuxAppSharedPreferences.build(context, true);
+    }
+
+    @Override
+    protected boolean shouldReadLogLevelFromFile() {
+        return false;
     }
 
 }
 
-class DebuggingPreferencesDataStore extends BaseLogLevelPreferenceDataStore {
+class DebuggingPreferencesDataStore extends BasePackageDebuggingPreferenceDataStore<TermuxAppSharedPreferences> {
 
-    private final TermuxAppSharedPreferences mPreferences;
+    DebuggingPreferencesDataStore(@NonNull Context context,
+                                  @Nullable TermuxAppSharedPreferences preferences) {
+        super(context, preferences);
+    }
 
-    DebuggingPreferencesDataStore(@NonNull Context context) {
-        super(context);
-        mPreferences = TermuxAppSharedPreferences.build(context, true);
+    @Override
+    protected boolean shouldReadLogLevelFromFile() {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldCommitLogLevelToFile() {
+        return false;
     }
 
     @Override
     public void putBoolean(String key, boolean value) {
-        if (mPreferences == null) return;
+        TermuxAppSharedPreferences preferences = getPreferences();
+        if (preferences == null) return;
         if (key == null) return;
 
         switch (key) {
             case "terminal_view_key_logging_enabled":
-                    mPreferences.setTerminalViewKeyLoggingEnabled(value);
+                preferences.setTerminalViewKeyLoggingEnabled(value);
                 break;
             case "plugin_error_notifications_enabled":
-                mPreferences.setPluginErrorNotificationsEnabled(value);
+                preferences.setPluginErrorNotificationsEnabled(value);
                 break;
             case "crash_report_notifications_enabled":
-                mPreferences.setCrashReportNotificationsEnabled(value);
+                preferences.setCrashReportNotificationsEnabled(value);
                 break;
             default:
                 break;
@@ -64,26 +77,16 @@ class DebuggingPreferencesDataStore extends BaseLogLevelPreferenceDataStore {
     }
 
     @Override
-    protected int getLogLevel() {
-        return mPreferences != null ? mPreferences.getLogLevel() : Logger.DEFAULT_LOG_LEVEL;
-    }
-
-    @Override
-    protected void setLogLevel(int logLevel) {
-        if (mPreferences == null) return;
-        mPreferences.setLogLevel(getContext(), logLevel);
-    }
-
-    @Override
     public boolean getBoolean(String key, boolean defValue) {
-        if (mPreferences == null) return false;
+        TermuxAppSharedPreferences preferences = getPreferences();
+        if (preferences == null) return false;
         switch (key) {
             case "terminal_view_key_logging_enabled":
-                return mPreferences.isTerminalViewKeyLoggingEnabled();
+                return preferences.isTerminalViewKeyLoggingEnabled();
             case "plugin_error_notifications_enabled":
-                return mPreferences.arePluginErrorNotificationsEnabled(false);
+                return preferences.arePluginErrorNotificationsEnabled(false);
             case "crash_report_notifications_enabled":
-                return mPreferences.areCrashReportNotificationsEnabled(false);
+                return preferences.areCrashReportNotificationsEnabled(false);
             default:
                 return false;
         }

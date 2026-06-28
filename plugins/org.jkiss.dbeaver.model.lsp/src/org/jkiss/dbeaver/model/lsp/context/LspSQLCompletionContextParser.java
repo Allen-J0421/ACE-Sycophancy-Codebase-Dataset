@@ -23,8 +23,7 @@ import org.jkiss.dbeaver.DBException;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
 import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalProvider;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequestFactory;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -39,10 +38,12 @@ public class LspSQLCompletionContextParser {
         @NotNull SQLCompletionContext completionContext
     ) throws InterruptedException, InvocationTargetException, DBException {
         Document doc = new Document(document.getText());
-        var request = SQLCompletionRequestFactory.create(completionContext, doc, offset, false);
-        List<CompletionProposalBase> proposals = SQLCompletionProposalProvider.collectProposals(
+        List<CompletionProposalBase> proposals = SQLCompletionService.collectProposals(
             new VoidProgressMonitor(),
-            request,
+            completionContext,
+            doc,
+            offset,
+            false,
             false
         );
 

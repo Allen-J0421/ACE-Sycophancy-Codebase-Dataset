@@ -21,8 +21,6 @@ import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.model.DBPImage;
 import org.jkiss.dbeaver.model.DBPKeywordType;
 import org.jkiss.dbeaver.model.DBPNamedObject;
-import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
-import org.jkiss.dbeaver.model.sql.SQLSyntaxManager;
 import org.jkiss.dbeaver.model.sql.completion.AbstractSQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
@@ -34,7 +32,6 @@ import java.util.Map;
 
 
 public class SQLEditorCompletionContext extends AbstractSQLCompletionContext {
-    private final SQLEditorBase editor;
     private final SQLCompletionObjectNameFormKind objectNameFormKind;
 
     public SQLEditorCompletionContext(SQLEditorBase editor) {
@@ -45,19 +42,12 @@ public class SQLEditorCompletionContext extends AbstractSQLCompletionContext {
             editor.getRuleManager(),
             editor.getActivePreferenceStore()
         );
-        this.editor = editor;
-        this.objectNameFormKind = SQLCompletionObjectNameFormKind.getFromPreferences(editor.getActivePreferenceStore());
+        this.objectNameFormKind = SQLCompletionObjectNameFormKind.getFromPreferences(getPreferenceStore());
     }
 
     @NotNull
     public SQLCompletionObjectNameFormKind getObjectNameForm() {
         return this.objectNameFormKind;
-    }
-
-    @NotNull
-    @Override
-    public DBPPreferenceStore getPreferenceStore() {
-        return getActivePreferenceStore();
     }
 
     @Override
@@ -67,12 +57,12 @@ public class SQLEditorCompletionContext extends AbstractSQLCompletionContext {
 
     @Override
     public boolean isReplaceWords() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.PROPOSAL_REPLACE_WORD);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.PROPOSAL_REPLACE_WORD);
     }
 
     @Override
     public boolean isShowServerHelp() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.SHOW_SERVER_HELP_TOPICS);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.SHOW_SERVER_HELP_TOPICS);
     }
 
     @Override
@@ -82,42 +72,42 @@ public class SQLEditorCompletionContext extends AbstractSQLCompletionContext {
 
     @Override
     public int getInsertCase() {
-        return getActivePreferenceStore().getInt(SQLPreferenceConstants.PROPOSAL_INSERT_CASE);
+        return getPreferenceStore().getInt(SQLPreferenceConstants.PROPOSAL_INSERT_CASE);
     }
 
     @Override
     public boolean isSearchProcedures() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.SHOW_COLUMN_PROCEDURES);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.SHOW_COLUMN_PROCEDURES);
     }
 
     @Override
     public boolean isSearchInsideNames() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.PROPOSALS_MATCH_CONTAINS);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.PROPOSALS_MATCH_CONTAINS);
     }
 
     @Override
     public boolean isSortAlphabetically() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.PROPOSAL_SORT_ALPHABETICALLY);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.PROPOSAL_SORT_ALPHABETICALLY);
     }
 
     @Override
     public boolean isSearchGlobally() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.USE_GLOBAL_ASSISTANT);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.USE_GLOBAL_ASSISTANT);
     }
 
     @Override
     public boolean isHideDuplicates() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.HIDE_DUPLICATE_PROPOSALS);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.HIDE_DUPLICATE_PROPOSALS);
     }
 
     @Override
     public boolean isShowValues() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.SHOW_VALUES);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.SHOW_VALUES);
     }
 
     @Override
     public boolean isForceQualifiedColumnNames() {
-        return getActivePreferenceStore().getBoolean(SQLPreferenceConstants.QUALIFIED_COLUMN_NAMES);
+        return getPreferenceStore().getBoolean(SQLPreferenceConstants.QUALIFIED_COLUMN_NAMES);
     }
 
     @Override
@@ -141,9 +131,5 @@ public class SQLEditorCompletionContext extends AbstractSQLCompletionContext {
             description,
             object,
             params);
-    }
-
-    private DBPPreferenceStore getActivePreferenceStore() {
-        return editor.getActivePreferenceStore();
     }
 }

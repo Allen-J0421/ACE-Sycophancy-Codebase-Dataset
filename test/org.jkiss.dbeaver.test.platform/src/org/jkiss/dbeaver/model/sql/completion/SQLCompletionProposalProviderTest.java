@@ -61,6 +61,29 @@ public class SQLCompletionProposalProviderTest extends DBeaverUnitTest {
         Assertions.assertEquals("SELECT", proposals.get(0).getReplacementString());
     }
 
+    @Test
+    public void serviceShouldPrepareRequestAndCollectLegacyCompletionProposals()
+        throws DBException, InvocationTargetException, InterruptedException {
+        DBPPreferenceStore preferenceStore = mockPreferenceStore(SQLCompletionMode.DEFAULT, false, false);
+        SQLCompletionTestContext context = createCompletionContext(preferenceStore);
+
+        String sql = "SEL|";
+        int offset = sql.indexOf('|');
+        Document document = new Document(sql.replace("|", ""));
+
+        List<CompletionProposalBase> proposals = SQLCompletionService.collectProposals(
+            new VoidProgressMonitor(),
+            context,
+            document,
+            offset,
+            false,
+            false
+        );
+
+        Assertions.assertFalse(proposals.isEmpty());
+        Assertions.assertEquals("SELECT", proposals.get(0).getReplacementString());
+    }
+
     private static DBPPreferenceStore mockPreferenceStore(
         SQLCompletionMode mode,
         boolean advancedHighlightingEnabled,

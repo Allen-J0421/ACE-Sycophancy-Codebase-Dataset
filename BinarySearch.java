@@ -7,6 +7,10 @@ public final class BinarySearch {
     }
 
     public static int binarySearch(int[] sortedValues, int target) {
+        return indexOf(sortedValues, target);
+    }
+
+    public static int indexOf(int[] sortedValues, int target) {
         Objects.requireNonNull(sortedValues, "sortedValues");
 
         int low = 0;

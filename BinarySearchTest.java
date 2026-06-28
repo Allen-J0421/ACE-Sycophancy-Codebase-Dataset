@@ -14,7 +14,7 @@ public final class BinarySearchTest {
     }
 
     private static void assertSearch(int[] sortedValues, int target, int expectedIndex) {
-        int actualIndex = BinarySearch.binarySearch(sortedValues, target);
+        int actualIndex = BinarySearch.indexOf(sortedValues, target);
 
         if (actualIndex != expectedIndex) {
             throw new AssertionError(
@@ -24,7 +24,7 @@ public final class BinarySearchTest {
 
     private static void assertNullInputRejected() {
         try {
-            BinarySearch.binarySearch(null, 10);
+            BinarySearch.indexOf(null, 10);
             throw new AssertionError("Expected null input to be rejected");
         } catch (NullPointerException exception) {
             if (!"sortedValues".equals(exception.getMessage())) {

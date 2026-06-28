@@ -5,7 +5,7 @@ public final class BinarySearchDemo {
     public static void main(String[] args) {
         int[] sortedValues = { 2, 3, 4, 10, 40 };
         int target = 10;
-        int result = BinarySearch.binarySearch(sortedValues, target);
+        int result = BinarySearch.indexOf(sortedValues, target);
 
         System.out.println(formatSearchResult(result));
     }

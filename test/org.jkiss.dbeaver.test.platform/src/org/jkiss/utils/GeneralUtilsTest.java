@@ -16,6 +16,7 @@
  */
 package org.jkiss.utils;
 
+import org.eclipse.core.runtime.IStatus;
 import org.jkiss.code.NotNull;
 import org.jkiss.dbeaver.utils.GeneralUtils;
 import org.jkiss.junit.DBeaverUnitTest;
@@ -56,6 +57,21 @@ public class GeneralUtilsTest extends DBeaverUnitTest {
         Assertions.assertEquals(new BigInteger("123"), GeneralUtils.convertString("123.45", BigInteger.class));
         Assertions.assertEquals(Double.valueOf("1.25"), GeneralUtils.convertString("1.25", Double.TYPE));
         Assertions.assertEquals(Float.valueOf("1.5"), GeneralUtils.convertString("1.5", Float.class));
+    }
+
+    @Test
+    public void testMakeStatusHelpers() {
+        RuntimeException exception = new RuntimeException("boom");
+
+        IStatus infoStatus = GeneralUtils.makeInfoStatus("info");
+        Assertions.assertEquals(IStatus.INFO, infoStatus.getSeverity());
+        Assertions.assertEquals("info", infoStatus.getMessage());
+        Assertions.assertNull(infoStatus.getException());
+
+        IStatus errorStatus = GeneralUtils.makeErrorStatus("error", exception);
+        Assertions.assertEquals(IStatus.ERROR, errorStatus.getSeverity());
+        Assertions.assertEquals("error", errorStatus.getMessage());
+        Assertions.assertSame(exception, errorStatus.getException());
     }
 
     @Test

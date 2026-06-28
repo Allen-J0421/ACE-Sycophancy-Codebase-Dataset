@@ -219,7 +219,7 @@ public class MultiFileWriter extends AbstractRefCounted implements Releasable {
             try {
                 entry.getValue().close();
             } catch (Exception e) {
-                logger.debug(() -> "error while closing recovery output [" + entry.getValue() + "]", e);
+                logger.debug("error while closing recovery output [{}]", entry.getValue(), e);
             }
             iterator.remove();
         }

@@ -1018,7 +1018,7 @@ public class SystemIndices {
                     return ResetFeatureStateStatus.success(name);
                 } else {
                     for (final var exception : exceptions) {
-                        logger.warn(() -> "error while resetting feature [" + name + "]", exception);
+                        logger.warn("error while resetting feature [{}]", name, exception);
                     }
                     return ResetFeatureStateStatus.failure(
                         name,

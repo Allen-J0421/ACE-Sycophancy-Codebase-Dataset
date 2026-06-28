@@ -491,7 +491,7 @@ public class DiskThresholdMonitor {
             ActionListener.releaseAfter(
                 ActionListener.runAfter(
                     ActionListener.<Void>noop()
-                        .delegateResponse((l, e) -> logger.debug(() -> "setting indices [" + readOnly + "] read-only failed", e)),
+                        .delegateResponse((l, e) -> logger.debug("setting indices [{}] read-only failed", readOnly, e)),
                     this::setLastRunTimeMillis
                 ),
                 onCompletion

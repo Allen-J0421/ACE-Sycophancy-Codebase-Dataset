@@ -533,7 +533,7 @@ public class IndexingMemoryController implements IndexingOperationListener, Clos
         try {
             shard.flushOnIdle(inactiveTimeNS);
         } catch (AlreadyClosedException e) {
-            logger.trace(() -> "ignore exception while checking if shard " + shard.shardId() + " is inactive", e);
+            logger.trace("ignore exception while checking if shard {} is inactive", shard.shardId(), e);
         }
     }
 }

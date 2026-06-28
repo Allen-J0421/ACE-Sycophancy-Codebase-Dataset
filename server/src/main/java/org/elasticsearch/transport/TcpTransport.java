@@ -681,7 +681,7 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
                 List<TcpServerChannel> channels = entry.getValue();
                 ActionListener<Void> closeFailLogger = ActionListener.wrap(
                     c -> {},
-                    e -> logger.warn(() -> "Error closing serverChannel for profile [" + profile + "]", e)
+                    e -> logger.warn("Error closing serverChannel for profile [{}]", profile, e)
                 );
                 channels.forEach(c -> c.addCloseListener(closeFailLogger));
                 CloseableChannel.closeChannels(channels, true);
@@ -735,9 +735,9 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
                     );
                 }
             } else if (isConnectException(e)) {
-                logger.debug(() -> "connect exception caught on transport layer [" + channel + "]", e);
+                logger.debug("connect exception caught on transport layer [{}]", channel, e);
             } else if (e instanceof BindException) {
-                logger.debug(() -> "bind exception caught on transport layer [" + channel + "]", e);
+                logger.debug("bind exception caught on transport layer [{}]", channel, e);
             } else if (e instanceof CancelledKeyException) {
                 logger.debug(
                     () -> format("cancelled key exception caught on transport layer [%s], disconnecting from relevant node", channel),
@@ -770,7 +770,7 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
                     );
                 }
             } else {
-                logger.warn(() -> "exception caught on transport layer [" + channel + "], closing connection", e);
+                logger.warn("exception caught on transport layer [{}], closing connection", channel, e);
             }
         } finally {
             if (closeChannel) {

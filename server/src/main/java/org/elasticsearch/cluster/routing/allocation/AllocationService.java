@@ -256,7 +256,7 @@ public class AllocationService {
                 if (failedShardEntry.markAsStale()) {
                     allocation.removeAllocationId(failedShard);
                 }
-                logger.warn(() -> "failing shard [" + failedShardEntry + "]", failedShardEntry.failure());
+                logger.warn("failing shard [{}]", failedShardEntry, failedShardEntry.failure());
                 allocation.routingNodes().failShard(failedShard, unassignedInfo, allocation.changes());
             } else {
                 logger.trace("{} shard routing failed in an earlier iteration (routing: {})", shardToFail.shardId(), shardToFail);

@@ -28,7 +28,7 @@ public class Probes {
                 }
                 return load;
             } catch (Exception e) {
-                logger.debug(() -> "failed to invoke method [" + method + "] on osMxBean [" + osMxBean + "]", e);
+                logger.debug("failed to invoke method [{}] on osMxBean [{}]", method, osMxBean, e);
                 return -1;
             }
         }

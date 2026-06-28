@@ -128,7 +128,7 @@ public class TaskResultsService {
                     listener.onFailure(e);
                 } else {
                     TimeValue wait = backoff.next();
-                    logger.warn(() -> "failed to store task result, retrying in [" + wait + "]", e);
+                    logger.warn("failed to store task result, retrying in [{}]", wait, e);
                     threadPool.schedule(() -> doStoreResult(backoff, index, listener), wait, EsExecutors.DIRECT_EXECUTOR_SERVICE);
                 }
             }

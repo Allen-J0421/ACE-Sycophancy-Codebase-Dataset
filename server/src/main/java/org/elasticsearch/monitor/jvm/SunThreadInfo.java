@@ -115,7 +115,7 @@ public class SunThreadInfo {
             return method;
         } catch (Exception e) {
             // not available
-            logger.debug(() -> "failed to get method [" + methodName + "] from class [" + className + "]", e);
+            logger.debug("failed to get method [{}] from class [{}]", methodName, className, e);
             return null;
         }
     }

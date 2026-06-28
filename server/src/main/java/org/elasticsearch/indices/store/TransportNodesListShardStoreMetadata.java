@@ -143,10 +143,10 @@ public class TransportNodesListShardStoreMetadata extends TransportNodesAction<
                         exists = true;
                         return storeFilesMetadata;
                     } catch (IndexNotFoundException e) {
-                        logger.trace(() -> "[" + shardId + "] node is missing index, responding with empty", e);
+                        logger.trace("[{}] node is missing index, responding with empty", shardId, e);
                         return StoreFilesMetadata.EMPTY;
                     } catch (IOException e) {
-                        logger.warn(() -> "[" + shardId + "] can't read metadata from store, responding with empty", e);
+                        logger.warn("[{}] can't read metadata from store, responding with empty", shardId, e);
                         return StoreFilesMetadata.EMPTY;
                     }
                 }

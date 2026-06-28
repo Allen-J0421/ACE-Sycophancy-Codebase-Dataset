@@ -343,7 +343,7 @@ public class SystemIndexMappingUpdateService implements ClusterStateListener {
             }
             return (int) rawVersion;
         } catch (ElasticsearchParseException | IllegalArgumentException e) {
-            logger.error(() -> "Cannot parse the mapping for index [" + indexName + "]", e);
+            logger.error("Cannot parse the mapping for index [{}]", indexName, e);
             return -1;
         }
     }

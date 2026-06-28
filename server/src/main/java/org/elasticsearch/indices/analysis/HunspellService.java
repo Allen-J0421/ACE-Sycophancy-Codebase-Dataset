@@ -198,7 +198,7 @@ public final class HunspellService {
             }
 
         } catch (Exception e) {
-            logger.error(() -> "Could not load hunspell dictionary [" + locale + "]", e);
+            logger.error("Could not load hunspell dictionary [{}]", locale, e);
             throw e;
         } finally {
             IOUtils.close(affixStream);

@@ -200,7 +200,7 @@ public final class FsHealthService extends AbstractLifecycleComponent implements
                         }
                     }
                 } catch (Exception ex) {
-                    logger.error(() -> "health check of [" + path + "] failed", ex);
+                    logger.error("health check of [{}] failed", path, ex);
                     if (currentUnhealthyPaths == null) {
                         currentUnhealthyPaths = Sets.newHashSetWithExpectedSize(1);
                     }

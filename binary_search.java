@@ -47,10 +47,14 @@ final class BinarySearch {
         int target = 10;
         int index = indexOf(values, target);
 
+        System.out.println(formatSearchResult(index));
+    }
+
+    private static String formatSearchResult(int index) {
         if (index == NOT_FOUND) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + index);
+            return "Element is not present in array";
         }
+
+        return "Element is present at index " + index;
     }
 }

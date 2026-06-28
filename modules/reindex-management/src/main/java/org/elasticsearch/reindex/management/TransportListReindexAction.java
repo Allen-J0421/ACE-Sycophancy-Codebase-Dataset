@@ -13,31 +13,22 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ActionType;
 import org.elasticsearch.action.admin.cluster.node.tasks.list.TransportListTasksAction;
 import org.elasticsearch.action.support.ActionFilters;
-import org.elasticsearch.action.support.HandledTransportAction;
 import org.elasticsearch.client.internal.Client;
-import org.elasticsearch.client.internal.OriginSettingClient;
 import org.elasticsearch.common.util.concurrent.EsExecutors;
 import org.elasticsearch.injection.guice.Inject;
 import org.elasticsearch.tasks.Task;
 import org.elasticsearch.transport.TransportService;
 
-import java.util.Objects;
-
-import static org.elasticsearch.action.admin.cluster.node.tasks.get.TransportGetTaskAction.TASKS_ORIGIN;
-
 /// Transport action for listing all running reindex tasks.
 /// Delegates to {@link TransportListTasksAction} to fan out to all nodes (which handles deduplication if we list a non-relocated and
 /// relocated task), then filters for reindex parent tasks and rewrites task identity to reflect the original (pre-relocation) task.
-public class TransportListReindexAction extends HandledTransportAction<ListReindexRequest, ListReindexResponse> {
+public class TransportListReindexAction extends AbstractReindexTransportAction<ListReindexRequest, ListReindexResponse> {
 
     public static final ActionType<ListReindexResponse> TYPE = new ActionType<>("cluster:monitor/reindex/list");
 
-    private final Client client;
-
     @Inject
     public TransportListReindexAction(final TransportService transportService, final ActionFilters actionFilters, final Client client) {
-        super(TYPE.name(), transportService, actionFilters, ListReindexRequest::new, EsExecutors.DIRECT_EXECUTOR_SERVICE);
-        this.client = new OriginSettingClient(Objects.requireNonNull(client), TASKS_ORIGIN);
+        super(TYPE, transportService, actionFilters, ListReindexRequest::new, EsExecutors.DIRECT_EXECUTOR_SERVICE, client);
     }
 
     @Override

@@ -12,29 +12,25 @@ package org.elasticsearch.reindex.management;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ActionType;
 import org.elasticsearch.action.support.ActionFilters;
-import org.elasticsearch.action.support.HandledTransportAction;
 import org.elasticsearch.client.internal.Client;
-import org.elasticsearch.client.internal.OriginSettingClient;
 import org.elasticsearch.common.util.concurrent.EsExecutors;
 import org.elasticsearch.injection.guice.Inject;
 import org.elasticsearch.tasks.Task;
 import org.elasticsearch.transport.TransportService;
 
-import static org.elasticsearch.action.admin.cluster.node.tasks.get.TransportGetTaskAction.TASKS_ORIGIN;
-
 /**
  * Transport action for getting a reindex task. Validates that the requested task is a reindex parent task,
  * then delegates to the relocation-aware Get Task API which transparently follows any relocation chain.
  */
-public class TransportGetReindexAction extends HandledTransportAction<GetReindexRequest, GetReindexResponse> {
+public class TransportGetReindexAction extends AbstractReindexTransportAction<GetReindexRequest, GetReindexResponse> {
     public static final ActionType<GetReindexResponse> TYPE = new ActionType<>("cluster:monitor/reindex/get");
 
     private final ReindexTaskLookup taskLookup;
 
     @Inject
     public TransportGetReindexAction(TransportService transportService, ActionFilters actionFilters, Client client) {
-        super(TYPE.name(), transportService, actionFilters, GetReindexRequest::new, EsExecutors.DIRECT_EXECUTOR_SERVICE);
-        this.taskLookup = new ReindexTaskLookup(new OriginSettingClient(client, TASKS_ORIGIN));
+        super(TYPE, transportService, actionFilters, GetReindexRequest::new, EsExecutors.DIRECT_EXECUTOR_SERVICE, client);
+        this.taskLookup = new ReindexTaskLookup(this.client);
     }
 
     @Override

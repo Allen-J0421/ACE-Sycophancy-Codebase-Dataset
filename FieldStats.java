@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class FieldStats
 {
     // Counters for each type of actor in the simulation:
-    private HashMap<Class, Counter> counters;
+    private HashMap<Class<?>, Counter> counters;
     // Whether the counters are currently up to date:
     private boolean areCountsValid;
 
@@ -48,7 +48,7 @@ public class FieldStats
     /**
      * @return The counters representing population numbers.
      */
-    public HashMap<Class, Counter> getCounters(Field field)
+    public HashMap<Class<?>, Counter> getCounters(Field field)
     {
         if (!areCountsValid) generateCounts(field);
         return counters;
@@ -73,7 +73,7 @@ public class FieldStats
      *
      * @param actorClass The class of actor to increment.
      */
-    public void incrementCount(Class actorClass)
+    public void incrementCount(Class<?> actorClass)
     {
         Counter count = counters.get(actorClass);
 

@@ -148,8 +148,8 @@ public abstract class Consumer extends Actor
      */
     protected void setStartingAge(boolean randomAge)
     {
-        if (randomAge) currentAge = rand.nextInt(maxAge);
-        else           currentAge = 0;
+        if (randomAge) setCurrentAge(rand.nextInt(getMaxAge()));
+        else           setCurrentAge(0);
     }
 
     /**
@@ -213,7 +213,7 @@ public abstract class Consumer extends Actor
      *
      * @return True if the consumer can breed, false otherwise.
      */
-    private boolean canBreed() { return currentAge >= breedingAge; }
+    private boolean canBreed() { return getCurrentAge() >= breedingAge; }
 
     /**
      * Make this consumer more hungry. This could result in the consumer's death.

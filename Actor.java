@@ -25,22 +25,21 @@ public abstract class Actor
     // A shared random number generator controlling breeding:
     protected static final Random rand = Randomizer.getRandom();
     // The maximum amount of food an actor can eat:
-    protected int maxSustenanceLevel;
+    private int maxSustenanceLevel;
     // The maximum age the actor can have:
-    protected int maxAge;
+    private int maxAge;
     // The current age of the actor:
-    protected int currentAge;
-    
-    
+    private int currentAge;
+
     /**
      * Create a new actor at a location in the field.
-     * 
+     *
      * @param field            The field currently occupied.
      * @param location         The location within the field.
      * @param consumptionWorth The worth of the actor if consumed.
      */
     public Actor(Field field, Location location, int consumptionWorth,
-                 double breedingProbability, int maxBirthsAtOnce,int maxSustenanceLevel,int maxAge)
+                 double breedingProbability, int maxBirthsAtOnce, int maxSustenanceLevel, int maxAge)
     {
         isAlive = true;
         this.field = field;
@@ -52,6 +51,15 @@ public abstract class Actor
         this.maxSustenanceLevel = maxSustenanceLevel;
         this.maxAge = maxAge;
     }
+
+    /** @return The maximum age this actor can reach. */
+    protected int getMaxAge() { return maxAge; }
+
+    /** @return The current age of this actor. */
+    protected int getCurrentAge() { return currentAge; }
+
+    /** Set the current age of this actor. */
+    protected void setCurrentAge(int age) { currentAge = age; }
     
     /**
      * Make this actor act - that is: make it do

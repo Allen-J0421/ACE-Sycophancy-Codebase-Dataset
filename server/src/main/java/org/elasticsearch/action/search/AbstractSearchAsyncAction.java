@@ -49,7 +49,6 @@ import org.elasticsearch.transport.Transport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +112,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
     private final int skippedCount;
     private final TransportVersion mintransportVersion;
     protected final SearchResponseMetrics searchResponseMetrics;
-    protected final Map<String, Object> searchRequestAttributes;
+    protected final SearchTelemetryContext telemetryContext;
     private final boolean isPitRelocationEnabled;
     protected long phaseStartTimeInNanos;
     private final AtomicReference<DirectoryMetrics> mergedDirectoryMetrics = new AtomicReference<>(DirectoryMetrics.EMPTY);
@@ -143,7 +142,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
         int maxConcurrentRequestsPerNode,
         SearchResponse.Clusters clusters,
         SearchResponseMetrics searchResponseMetrics,
-        Map<String, Object> searchRequestAttributes,
+        SearchTelemetryContext telemetryContext,
         boolean pitRelocationEnabled
     ) {
         super(name);
@@ -180,7 +179,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
         addReleasable(resultConsumer);
         this.clusters = clusters;
         this.searchResponseMetrics = searchResponseMetrics;
-        this.searchRequestAttributes = searchRequestAttributes;
+        this.telemetryContext = telemetryContext;
         this.isPitRelocationEnabled = pitRelocationEnabled;
     }
 
@@ -677,7 +676,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
         }
         var storeMetrics = directoryMetrics.metrics(StoreMetrics.NAME);
         if (storeMetrics != null) {
-            searchResponseMetrics.recordStoreBytesRead(storeMetrics.cast(StoreMetrics.class).getBytesRead(), searchRequestAttributes);
+            searchResponseMetrics.recordStoreBytesRead(storeMetrics.cast(StoreMetrics.class).getBytesRead(), telemetryContext.attributes());
         }
     }
 
@@ -824,7 +823,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
      * @see #onShardResult(SearchPhaseResult)
      */
     private void onPhaseDone() {  // as a tribute to @kimchy aka. finishHim()
-        searchResponseMetrics.recordSearchPhaseDuration(getName(), System.nanoTime() - phaseStartTimeInNanos, searchRequestAttributes);
+        searchResponseMetrics.recordSearchPhaseDuration(getName(), System.nanoTime() - phaseStartTimeInNanos, telemetryContext.attributes());
         executeNextPhase(getName(), this::getNextPhase);
     }
 
@@ -854,7 +853,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
      * Returns search request attributes used to record attributes for search phase timings in an immutable map.
      */
     public Map<String, Object> getSearchRequestAttributes() {
-        return Collections.unmodifiableMap(searchRequestAttributes);
+        return telemetryContext.attributes();
     }
 
     public final void execute(Runnable command) {

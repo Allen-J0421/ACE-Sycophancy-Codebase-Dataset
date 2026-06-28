@@ -122,7 +122,7 @@ public class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<S
         boolean batchQueryPhase,
         boolean pitRelocationEnabled,
         SearchResponseMetrics searchResponseMetrics,
-        Map<String, Object> searchRequestAttributes
+        SearchTelemetryContext telemetryContext
     ) {
         super(
             "query",
@@ -145,7 +145,7 @@ public class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<S
             request.getMaxConcurrentShardRequests(),
             clusters,
             searchResponseMetrics,
-            searchRequestAttributes,
+            telemetryContext,
             pitRelocationEnabled
         );
         this.topDocsSize = getTopDocsSize(request);

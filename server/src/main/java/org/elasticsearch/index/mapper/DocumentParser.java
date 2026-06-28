@@ -255,13 +255,12 @@ public final class DocumentParser {
         if (root.isEnabled()) {
             final XContentParser.Token token = parser.nextToken();
             switch (token) {
-                case END_OBJECT:
+                case END_OBJECT -> {
                     // empty doc, we can handle it...
                     return true;
-                case FIELD_NAME:
-                    return false;
-                default:
-                    throwOnMalformedContent(parser);
+                }
+                case FIELD_NAME -> { return false; }
+                default -> throwOnMalformedContent(parser);
             }
         }
         return false;
@@ -391,7 +390,7 @@ public final class DocumentParser {
                 throwEOF(context.parent(), context);
             }
             switch (token) {
-                case FIELD_NAME:
+                case FIELD_NAME -> {
                     currentFieldName = flatPrefix != null ? flatPrefix.concat(parser.currentName()) : parser.currentName();
                     if (currentFieldName.isEmpty()) {
                         throw new IllegalArgumentException("Field name cannot be an empty string");
@@ -399,21 +398,15 @@ public final class DocumentParser {
                     if (currentFieldName.isBlank()) {
                         throwFieldNameBlank(context, currentFieldName);
                     }
-                    break;
-                case START_OBJECT:
-                    parseObject(context, currentFieldName);
-                    break;
-                case START_ARRAY:
-                    parseArray(context, currentFieldName);
-                    break;
-                case VALUE_NULL:
-                    parseNullValue(context, currentFieldName);
-                    break;
-                default:
+                }
+                case START_OBJECT -> parseObject(context, currentFieldName);
+                case START_ARRAY -> parseArray(context, currentFieldName);
+                case VALUE_NULL -> parseNullValue(context, currentFieldName);
+                default -> {
                     if (token.isValue()) {
                         parseValue(context, currentFieldName);
                     }
-                    break;
+                }
             }
             token = parser.nextToken();
         }

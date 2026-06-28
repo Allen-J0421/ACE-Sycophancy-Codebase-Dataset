@@ -763,56 +763,44 @@ public abstract class Rounding implements Writeable {
         }
 
         private LocalDateTime truncateLocalDateTime(LocalDateTime localDateTime) {
-            switch (unit) {
-                case SECOND_OF_MINUTE:
-                    return localDateTime.withNano(0);
-
-                case MINUTE_OF_HOUR:
-                    return LocalDateTime.of(
-                        localDateTime.getYear(),
-                        localDateTime.getMonthValue(),
-                        localDateTime.getDayOfMonth(),
-                        localDateTime.getHour(),
-                        localDateTime.getMinute(),
-                        0,
-                        0
-                    );
-
-                case HOUR_OF_DAY:
-                    return LocalDateTime.of(
-                        localDateTime.getYear(),
-                        localDateTime.getMonth(),
-                        localDateTime.getDayOfMonth(),
-                        localDateTime.getHour(),
-                        0,
-                        0
-                    );
-
-                case DAY_OF_MONTH:
+            return switch (unit) {
+                case SECOND_OF_MINUTE -> localDateTime.withNano(0);
+                case MINUTE_OF_HOUR -> LocalDateTime.of(
+                    localDateTime.getYear(),
+                    localDateTime.getMonthValue(),
+                    localDateTime.getDayOfMonth(),
+                    localDateTime.getHour(),
+                    localDateTime.getMinute(),
+                    0,
+                    0
+                );
+                case HOUR_OF_DAY -> LocalDateTime.of(
+                    localDateTime.getYear(),
+                    localDateTime.getMonth(),
+                    localDateTime.getDayOfMonth(),
+                    localDateTime.getHour(),
+                    0,
+                    0
+                );
+                case DAY_OF_MONTH -> {
                     LocalDate localDate = localDateTime.query(TemporalQueries.localDate());
-                    return localDate.atStartOfDay();
-
-                case WEEK_OF_WEEKYEAR:
-                    return LocalDateTime.of(localDateTime.toLocalDate(), LocalTime.MIDNIGHT).with(ChronoField.DAY_OF_WEEK, 1);
-
-                case MONTH_OF_YEAR:
-                    return LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(), 1, 0, 0);
-
-                case QUARTER_OF_YEAR:
-                    return LocalDateTime.of(localDateTime.getYear(), (((localDateTime.getMonthValue() - 1) / 3) * 3) + 1, 1, 0, 0);
-
-                case YEAR_OF_CENTURY:
-                    return LocalDateTime.of(LocalDate.of(localDateTime.getYear(), 1, 1), LocalTime.MIDNIGHT);
-
-                case YEARS_OF_CENTURY:
-                    return LocalDateTimeUtils.truncateToYears(localDateTime, multiplier);
-
-                case MONTHS_OF_YEAR:
-                    return LocalDateTimeUtils.truncateToMonths(localDateTime, multiplier);
-
-                default:
-                    throw new IllegalArgumentException("NOT YET IMPLEMENTED for unit " + unit);
-            }
+                    yield localDate.atStartOfDay();
+                }
+                case WEEK_OF_WEEKYEAR -> LocalDateTime.of(localDateTime.toLocalDate(), LocalTime.MIDNIGHT)
+                    .with(ChronoField.DAY_OF_WEEK, 1);
+                case MONTH_OF_YEAR -> LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(), 1, 0, 0);
+                case QUARTER_OF_YEAR -> LocalDateTime.of(
+                    localDateTime.getYear(),
+                    (((localDateTime.getMonthValue() - 1) / 3) * 3) + 1,
+                    1,
+                    0,
+                    0
+                );
+                case YEAR_OF_CENTURY -> LocalDateTime.of(LocalDate.of(localDateTime.getYear(), 1, 1), LocalTime.MIDNIGHT);
+                case YEARS_OF_CENTURY -> LocalDateTimeUtils.truncateToYears(localDateTime, multiplier);
+                case MONTHS_OF_YEAR -> LocalDateTimeUtils.truncateToMonths(localDateTime, multiplier);
+                default -> throw new IllegalArgumentException("NOT YET IMPLEMENTED for unit " + unit);
+            };
         }
 
         @Override

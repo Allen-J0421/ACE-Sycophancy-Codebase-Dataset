@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of an eagle.
@@ -27,8 +26,6 @@ public class Eagle extends Animal
     // The food value of a single snake. In effect, this is the
     // number of steps an eagle can go before it has to eat again.
     private static final int SNAKE_FOOD_VALUE = 60;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create an eagle. An eagle can be created as a newborn (age zero

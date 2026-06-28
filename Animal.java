@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A class representing shared characteristics of animals.
@@ -20,9 +19,6 @@ public abstract class Animal extends Organism
     // The animal's age.
     private int age;
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-    
     /**
      * Create a new animal at location in field.
      * 

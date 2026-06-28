@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple model of a dingo.
@@ -23,8 +22,6 @@ public class Dingo extends Animal
     // The food value of a single snake. In effect, this is the
     // number of steps a dingo can go before it has to eat again.
     private static final int SNAKE_FOOD_VALUE = 100;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a dingo. A dingo can be created as a newborn (age zero

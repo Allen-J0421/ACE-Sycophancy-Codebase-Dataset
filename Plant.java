@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * A class representing the shared characteristics of plants
@@ -11,9 +10,6 @@ public abstract class Plant extends Organism
 {
     // whether it is raining or not
     private boolean rain;
-
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a new plant at a location in field.

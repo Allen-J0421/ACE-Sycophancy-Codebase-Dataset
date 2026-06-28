@@ -1,3 +1,5 @@
+import java.util.Random;
+
 /**
  * A class representing characteristics shared by all organisms in the
  * simulation (animals and plants): occupancy of a single location within a
@@ -13,6 +15,10 @@ public abstract class Organism
     private Field field;
     // The organism's position in the field.
     private Location location;
+
+    // A shared random number generator, used by all organisms for breeding
+    // and other random behaviour.
+    protected static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a new organism at location in field.

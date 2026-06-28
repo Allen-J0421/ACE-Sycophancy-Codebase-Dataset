@@ -3,22 +3,30 @@ public final class BinarySearchTest {
     }
 
     public static void main(String[] args) {
-        assertSearch(new int[] {}, 10, BinarySearch.NOT_FOUND);
-        assertSearch(new int[] { 10 }, 10, 0);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 2, 0);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 10, 3);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 40, 4);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 5, BinarySearch.NOT_FOUND);
-        assertSearch(new int[] { -8, -3, 0, 7, 11 }, -3, 1);
+        SearchCase[] cases = {
+                new SearchCase(new int[] {}, 10, BinarySearch.NOT_FOUND),
+                new SearchCase(new int[] { 10 }, 10, 0),
+                new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 2, 0),
+                new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
+                new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 40, 4),
+                new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 5, BinarySearch.NOT_FOUND),
+                new SearchCase(new int[] { -8, -3, 0, 7, 11 }, -3, 1),
+        };
+
+        for (SearchCase searchCase : cases) {
+            assertSearch(searchCase);
+        }
+
         assertNullInputRejected();
     }
 
-    private static void assertSearch(int[] sortedValues, int target, int expectedIndex) {
-        int actualIndex = BinarySearch.indexOf(sortedValues, target);
+    private static void assertSearch(SearchCase searchCase) {
+        int actualIndex = BinarySearch.indexOf(searchCase.sortedValues, searchCase.target);
 
-        if (actualIndex != expectedIndex) {
+        if (actualIndex != searchCase.expectedIndex) {
             throw new AssertionError(
-                    "Expected index " + expectedIndex + " for target " + target + ", but got " + actualIndex);
+                    "Expected index " + searchCase.expectedIndex + " for target " + searchCase.target
+                            + ", but got " + actualIndex);
         }
     }
 
@@ -30,6 +38,18 @@ public final class BinarySearchTest {
             if (!"sortedValues".equals(exception.getMessage())) {
                 throw new AssertionError("Expected null input message to name sortedValues");
             }
+        }
+    }
+
+    private static final class SearchCase {
+        private final int[] sortedValues;
+        private final int target;
+        private final int expectedIndex;
+
+        private SearchCase(int[] sortedValues, int target, int expectedIndex) {
+            this.sortedValues = sortedValues;
+            this.target = target;
+            this.expectedIndex = expectedIndex;
         }
     }
 }

@@ -73,24 +73,27 @@ public class InitCommand extends OptionParsingCommand {
 
 		private final ProjectGenerator projectGenerator;
 
-		private final InitCommandOptions commandOptions;
+		private final InitCommandOptionDefinitions optionDefinitions;
+
+		private final InitProjectGenerationRequestFactory requestFactory;
 
 		InitOptionHandler(InitializrService initializrService) {
 			super(new InitCommandArgumentProcessor());
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
 			this.projectGenerator = new ProjectGenerator(initializrService);
-			this.commandOptions = new InitCommandOptions();
+			this.optionDefinitions = new InitCommandOptionDefinitions();
+			this.requestFactory = new InitProjectGenerationRequestFactory(this.optionDefinitions);
 		}
 
 		@Override
 		protected void options() {
-			this.commandOptions.configure(this);
+			this.optionDefinitions.configure(this);
 		}
 
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			try {
-				if (this.commandOptions.isListCapabilities(options)) {
+				if (this.optionDefinitions.isListCapabilities(options)) {
 					generateReport(options);
 				}
 				else {
@@ -109,16 +112,16 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void generateReport(OptionSet options) throws IOException {
-			Log.info(this.serviceCapabilitiesReport.generate(this.commandOptions.getTarget(options)));
+			Log.info(this.serviceCapabilitiesReport.generate(this.optionDefinitions.getTarget(options)));
 		}
 
 		protected void generateProject(OptionSet options) throws IOException {
 			ProjectGenerationRequest request = createProjectGenerationRequest(options);
-			this.projectGenerator.generateProject(request, this.commandOptions.isForce(options));
+			this.projectGenerator.generateProject(request, this.optionDefinitions.isForce(options));
 		}
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-			return this.commandOptions.createProjectGenerationRequest(options);
+			return this.requestFactory.create(options);
 		}
 
 	}

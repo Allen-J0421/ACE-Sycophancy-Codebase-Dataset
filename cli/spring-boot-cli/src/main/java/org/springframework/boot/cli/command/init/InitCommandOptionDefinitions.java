@@ -16,27 +16,23 @@
 
 package org.springframework.boot.cli.command.init;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.options.OptionHandler;
-import org.springframework.util.Assert;
 
 /**
- * Defines the command-line options supported by {@link InitCommand} and translates the
- * parsed options into a {@link ProjectGenerationRequest}.
+ * Declares the CLI options supported by {@link InitCommand}.
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Vignesh Thangavel Ilangovan
  */
-class InitCommandOptions {
+class InitCommandOptionDefinitions {
 
 	@SuppressWarnings("NullAway.Init")
 	private OptionSpec<String> target;
@@ -113,32 +109,68 @@ class InitCommandOptions {
 		return options.has(this.force);
 	}
 
-	ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-		List<?> nonOptionArguments = new ArrayList<>(options.nonOptionArguments());
-		Assert.state(nonOptionArguments.size() <= 1, "Only the target location may be specified");
-		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		request.setServiceUrl(options.valueOf(this.target));
-		applyConfiguredValue(options, this.bootVersion, request::setBootVersion);
-		applyConfiguredDependencies(options, request);
-		applyConfiguredValue(options, this.javaVersion, request::setJavaVersion);
-		applyConfiguredValue(options, this.packageName, request::setPackageName);
-		request.setBuild(options.valueOf(this.build));
-		request.setFormat(options.valueOf(this.format));
-		request.setDetectType(options.has(this.build) || options.has(this.format));
-		applyConfiguredValue(options, this.type, request::setType);
-		applyConfiguredValue(options, this.packaging, request::setPackaging);
-		applyConfiguredValue(options, this.language, request::setLanguage);
-		applyConfiguredValue(options, this.groupId, request::setGroupId);
-		applyConfiguredValue(options, this.artifactId, request::setArtifactId);
-		applyConfiguredValue(options, this.name, request::setName);
-		applyConfiguredValue(options, this.version, request::setVersion);
-		applyConfiguredValue(options, this.description, request::setDescription);
-		request.setExtract(options.has(this.extract));
-		if (nonOptionArguments.size() == 1) {
-			String output = (String) nonOptionArguments.get(0);
-			request.setOutput(output);
-		}
-		return request;
+	OptionSpec<String> getTargetOption() {
+		return this.target;
+	}
+
+	OptionSpec<String> getBuildOption() {
+		return this.build;
+	}
+
+	OptionSpec<String> getFormatOption() {
+		return this.format;
+	}
+
+	OptionSpec<String> getBootVersionOption() {
+		return this.bootVersion;
+	}
+
+	OptionSpec<String> getDependenciesOption() {
+		return this.dependencies;
+	}
+
+	OptionSpec<String> getJavaVersionOption() {
+		return this.javaVersion;
+	}
+
+	OptionSpec<String> getPackageNameOption() {
+		return this.packageName;
+	}
+
+	OptionSpec<String> getTypeOption() {
+		return this.type;
+	}
+
+	OptionSpec<String> getPackagingOption() {
+		return this.packaging;
+	}
+
+	OptionSpec<String> getLanguageOption() {
+		return this.language;
+	}
+
+	OptionSpec<String> getGroupIdOption() {
+		return this.groupId;
+	}
+
+	OptionSpec<String> getArtifactIdOption() {
+		return this.artifactId;
+	}
+
+	OptionSpec<String> getNameOption() {
+		return this.name;
+	}
+
+	OptionSpec<String> getVersionOption() {
+		return this.version;
+	}
+
+	OptionSpec<String> getDescriptionOption() {
+		return this.description;
+	}
+
+	OptionSpec<Void> getExtractOption() {
+		return this.extract;
 	}
 
 	private void projectGenerationOptions(OptionHandler optionHandler) {
@@ -175,21 +207,6 @@ class InitCommandOptions {
 		this.extract = flagOption(optionHandler, Arrays.asList("extract", "x"),
 				"Extract the project archive. Inferred if a location is specified without an extension");
 		this.force = flagOption(optionHandler, Arrays.asList("force", "f"), "Force overwrite of existing files");
-	}
-
-	private void applyConfiguredDependencies(OptionSet options, ProjectGenerationRequest request) {
-		if (!options.has(this.dependencies)) {
-			return;
-		}
-		for (String dependency : options.valueOf(this.dependencies).split(",")) {
-			request.getDependencies().add(dependency.trim());
-		}
-	}
-
-	private void applyConfiguredValue(OptionSet options, OptionSpec<String> option, Consumer<String> setter) {
-		if (options.has(option)) {
-			setter.accept(options.valueOf(option));
-		}
 	}
 
 	private ArgumentAcceptingOptionSpec<String> requiredOption(OptionHandler optionHandler, List<String> names,

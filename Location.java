@@ -28,18 +28,9 @@ public class Location
      */
     public boolean equals(Object object)
     {
-        // Check that the other object is also of type Location:
-        if (object instanceof Location)
-        {
-            Location other = (Location) object;
-            
-            // Chcek that the other object has the same row and column:
-            return row == other.getRow() && col == other.getCol();
-        }
-        else
-        {
-            return false;
-        }
+        return object instanceof Location other
+            && row == other.getRow()
+            && col == other.getCol();
     }
     
     /**

@@ -21,8 +21,7 @@ public class WeatherSystem
      */
     public static void changeToNextDay()
     {
-        if (rand.nextInt(2) == 1) isRaining = true;
-        else                      isRaining = false;
+        isRaining = rand.nextInt(2) == 1;
     }
     
     /**
@@ -30,7 +29,3 @@ public class WeatherSystem
      */
     public static boolean getIsRaining() { return isRaining; }
 }
-
-
-// The weather should change each day.
-// When the weather changes, 

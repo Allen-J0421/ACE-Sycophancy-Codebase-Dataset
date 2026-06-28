@@ -22,7 +22,7 @@ public class Pangolin extends Consumer
     //   Max sustenance level of the pangolin:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this pangolin hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(Termite.class,Impala.class));
 
     /**
@@ -41,14 +41,4 @@ public class Pangolin extends Consumer
         setStartingAge(randomAge);
     }
     
-    /**
-     * Make this pangolin act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newPangolins A list to return newly born pangolins.
-     */
-    public void act(List<Actor> newPangolins)
-    {
-        super.act(newPangolins);
-    }
 }

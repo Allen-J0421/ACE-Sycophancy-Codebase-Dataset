@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-
 /**
  * A simple model of star grass.
  *
@@ -18,27 +14,16 @@ public class StarGrass extends Producer
     private static final int CONSUMPTION_WORTH = 2;
     //   Max age of the star grass:
     private static final int MAX_AGE = 70;
-    
+
     /**
      * Create star grass.
-     * 
+     *
      * @param field    The field currently occupied.
      * @param location The location within the field.
      */
     public StarGrass(Field field, Location location)
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-    
-    /**
-     * Make this star grass act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newStarGrass A list to return newly born star grass.
-     */
-    public void act(List<Actor> newStarGrass)
-    {
-        super.act(newStarGrass);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE);
     }
 }

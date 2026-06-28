@@ -22,7 +22,7 @@ public class HarvesterAnt extends Consumer
     //   Max sustenance level of the termite:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this termite hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(RedOatGrass.class,StarGrass.class));
 
     /**
@@ -41,14 +41,4 @@ public class HarvesterAnt extends Consumer
         setStartingAge(randomAge);
     }
     
-    /**
-     * Make this harvester ant act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newHarvesterAnts A list to return newly born harvester ants.
-     */
-    public void act(List<Actor> newHarvesterAnts)
-    {
-        super.act(newHarvesterAnts);
-    }
 }

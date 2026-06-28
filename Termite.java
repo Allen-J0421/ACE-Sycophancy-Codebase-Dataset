@@ -22,7 +22,7 @@ public class Termite extends Consumer
     //   Max sustenance level of the termite:
     private static final int MAX_SUSTENANCE_LEVEL = 50;
     //   The prey this termite hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(RedOatGrass.class,StarGrass.class));
 
     /**
@@ -41,14 +41,4 @@ public class Termite extends Consumer
         setStartingAge(randomAge);
     }
     
-    /**
-     * Make this termite act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newTermites A list to return newly born termites.
-     */
-    public void act(List<Actor> newTermites)
-    {
-        super.act(newTermites);
-    }
 }

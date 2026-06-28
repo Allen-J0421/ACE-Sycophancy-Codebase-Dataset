@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,20 +20,20 @@ public class SimulatorView extends JFrame
 
     private final String STEP_PREFIX = "Step: ";
     private final String POPULATION_PREFIX = "Population: ";
-    private JLabel stepLabel, population, infoLabel, weatherPropertiesLabel,dayLabel;
+    private JLabel stepLabel, population, infoLabel, weatherPropertiesLabel, dayLabel;
     private FieldView fieldView;
-    
+
     // A map for storing colors for participants in the simulation:
     private Map<Class, Color> colors;
     // A statistics object computing and storing simulation information:
     private static FieldStats stats;
     private Simulator simulator;
-    
+
     // Threads for each method called by the buttons:
     private Thread runLongSimulationThread;
     private Thread resetThread;
     private Thread simulateOneStepThread;
-    
+
     /**
      * Create a view of the given width and height.
      *
@@ -50,68 +49,71 @@ public class SimulatorView extends JFrame
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        dayLabel = new JLabel("Day : 0",JLabel.CENTER);
+        dayLabel = new JLabel("Day : 0", JLabel.CENTER);
         JPanel buttonGrid = new JPanel();
-        buttonGrid.setLayout(new GridLayout(3,0));
+        buttonGrid.setLayout(new GridLayout(3, 0));
+
         JButton longSimButton = new JButton("4000 Steps");
-        longSimButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
-                if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
-                
-                runLongSimulationThread = new Thread(simulator::runLongSimulation);
-                runLongSimulationThread.start();
-            }
+        longSimButton.addActionListener(e -> {
+            if (anyAlive(runLongSimulationThread, simulateOneStepThread)) return;
+            runLongSimulationThread = startThread(simulator::runLongSimulation);
         });
+
         JButton resetButton = new JButton("Reset");
-        resetButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (resetThread != null && resetThread.isAlive()) return;
-                if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
-                if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
-                
-                resetThread = new Thread(simulator::reset);
-                resetThread.start();
-            }
+        resetButton.addActionListener(e -> {
+            if (anyAlive(resetThread, runLongSimulationThread, simulateOneStepThread)) return;
+            resetThread = startThread(simulator::reset);
         });
+
         JButton oneSimButton = new JButton("One Step");
-        oneSimButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
-                if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
-                
-                simulateOneStepThread = new Thread(simulator::simulateOneStep);
-                simulateOneStepThread.start();
-            }
+        oneSimButton.addActionListener(e -> {
+            if (anyAlive(simulateOneStepThread, runLongSimulationThread)) return;
+            simulateOneStepThread = startThread(simulator::simulateOneStep);
         });
 
         buttonGrid.add(longSimButton);
         buttonGrid.add(resetButton);
         buttonGrid.add(oneSimButton);
-        weatherPropertiesLabel = new JLabel(""); 
+        weatherPropertiesLabel = new JLabel("");
         updateWeatherPropertiesLabel();
         updateDayLabel();
 
         setLocation(100, 50);
-        
+
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        
+
         JPanel infoPane = new JPanel(new BorderLayout());
         infoPane.add(stepLabel, BorderLayout.WEST);
         infoPane.add(weatherPropertiesLabel, BorderLayout.EAST);
         infoPane.add(infoLabel, BorderLayout.CENTER);
         infoPane.add(dayLabel);
-        
+
         contents.add(infoPane, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
-        contents.add(buttonGrid,BorderLayout.WEST);
+        contents.add(buttonGrid, BorderLayout.WEST);
         pack();
         setVisible(true);
     }
-    
+
+    /** @return True if any of the given threads is non-null and alive. */
+    private static boolean anyAlive(Thread... threads)
+    {
+        for (Thread t : threads)
+            if (t != null && t.isAlive()) return true;
+        return false;
+    }
+
+    /** Start a new thread for the given task and return it. */
+    private static Thread startThread(Runnable task)
+    {
+        Thread t = new Thread(task);
+        t.start();
+        return t;
+    }
+
     /**
      * Update the text displayed in the weather properties
      * label to reflect the actual weather properties.
@@ -119,22 +121,23 @@ public class SimulatorView extends JFrame
     private void updateWeatherPropertiesLabel()
     {
         String text;
-        
+
         if (WeatherSystem.getIsRaining()) text = "RAINING";
         else                              text = "NOT RAINING";
-        
+
         weatherPropertiesLabel.setText(text);
     }
+
     public void updateDayLabel()
-    {   
+    {
         String text;
         text = "Day : " + TimeSystem.getCurrentDay();
         dayLabel.setText(text);
     }
-    
+
     /**
      * Define a color to be used for a given class of animal.
-     * 
+     *
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
@@ -144,20 +147,12 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Display a short information label at the top of the window.
-     */
-    public void setInfoText(String text)
-    {
-        infoLabel.setText(text);
-    }
-
-    /**
      * @return The color to be used for a given class of animal.
      */
     private Color getColor(Class animalClass)
     {
         Color col = colors.get(animalClass);
-        
+
         // No color defined for this class:
         if (col == null) return UNKNOWN_COLOR;
         else             return col;
@@ -165,26 +160,43 @@ public class SimulatorView extends JFrame
 
     /**
      * Show the current status of the field.
-     * 
+     *
      * @param step  Which iteration step it is.
      * @param field The field whose status is to be displayed.
      */
     public void showStatus(int step, Field field)
     {
         if (!isVisible()) setVisible(true);
-            
+
         stepLabel.setText(STEP_PREFIX + step);
         stats.reset();
-        
-        fieldView.preparePaint();
 
+        fieldView.preparePaint();
+        drawFieldContents(field);
+        stats.countFinished();
+
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+
+        updateWeatherPropertiesLabel();
+        updateDayLabel();
+        fieldView.repaint();
+    }
+
+    /**
+     * Draw every cell of the field into the field view, incrementing
+     * per-class counts as each occupied cell is visited.
+     *
+     * @param field The field to render.
+     */
+    private void drawFieldContents(Field field)
+    {
         for (int row = 0; row < field.getDepth(); row++)
         {
             for (int col = 0; col < field.getWidth(); col++)
             {
                 Object animal = field.getObjectAt(row, col);
-                
-                if(animal != null)
+
+                if (animal != null)
                 {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
@@ -195,32 +207,24 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        
-        stats.countFinished();
-
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
-        
-        updateWeatherPropertiesLabel();
-        updateDayLabel();
-        fieldView.repaint();
     }
 
     /**
      * Determine whether the simulation should continue to run.
-     * 
+     *
      * @return true If there is more than one species alive.
      */
     public static boolean isViable(Field field)
     {
         return stats.isViable(field);
     }
-    
+
     /**
-     * Provide a graphical view of a rectangular field. This is 
+     * Provide a graphical view of a rectangular field. This is
      * a nested class (a class defined inside a class) which
      * defines a custom component for the user interface. This
      * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
+     * This is rather advanced GUI stuff - you can ignore this
      * for your project if you like.
      */
     private class FieldView extends JPanel
@@ -266,15 +270,15 @@ public class SimulatorView extends JFrame
                 g = fieldImage.getGraphics();
 
                 xScale = size.width / gridWidth;
-                
+
                 if (xScale < 1) xScale = GRID_VIEW_SCALING_FACTOR;
-                
+
                 yScale = size.height / gridHeight;
-                
+
                 if (yScale < 1) yScale = GRID_VIEW_SCALING_FACTOR;
             }
         }
-        
+
         /**
          * Paint on grid location on this field in a given color.
          */
@@ -293,7 +297,7 @@ public class SimulatorView extends JFrame
             if (fieldImage != null)
             {
                 Dimension currentSize = getSize();
-                
+
                 if (size.equals(currentSize)) g.drawImage(fieldImage, 0, 0, null);
                 // Else, rescale the previous image:
                 else g.drawImage(fieldImage, 0, 0, currentSize.width, currentSize.height, null);

@@ -22,7 +22,7 @@ public class Mongoose extends Consumer
     //   Max sustenance level of the mongoose:
     private static final int MAX_SUSTENANCE_LEVEL = 40;
     //   The prey this mongoose hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(Grasshopper.class,HarvesterAnt.class));
 
     /**
@@ -41,14 +41,4 @@ public class Mongoose extends Consumer
         setStartingAge(randomAge);
     }
     
-    /**
-     * Make this mongoose act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newMongoose A list to return newly born mongoose.
-     */
-    public void act(List<Actor> newMongoose)
-    {
-        super.act(newMongoose);
-    }
 }

@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-
 /**
  * A simple model of red oat grass grass.
  *
@@ -18,27 +14,16 @@ public class RedOatGrass extends Producer
     private static final int CONSUMPTION_WORTH = 3;
     //   Max Age of the red oat grass:
     private static final int MAX_AGE = 70;
-    
+
     /**
      * Create red oat grass.
-     * 
+     *
      * @param field    The field currently occupied.
      * @param location The location within the field.
      */
     public RedOatGrass(Field field, Location location)
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-    
-    /**
-     * Make this red oat grass act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newRedOatGrass A list to return newly born red oat grass.
-     */
-    public void act(List<Actor> newRedOatGrass)
-    {
-        super.act(newRedOatGrass);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE);
     }
 }

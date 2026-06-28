@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.ArrayList;
-
 /**
  * A simple model of a grasshopper.
  *
@@ -22,7 +21,7 @@ public class Grasshopper extends Consumer
     //   Max sustenance level of the grasshopper:
     private static final int MAX_SUSTENANCE_LEVEL = 150;
     //   The prey this grasshopper hunts:
-    private static final ArrayList<Class> PREY
+    private static final List<Class<?>> PREY
     = new ArrayList<>(List.of(StarGrass.class));
     /**
      * Create a new grasshopper. A grasshopper may be created with age
@@ -40,14 +39,4 @@ public class Grasshopper extends Consumer
         setStartingAge(randomAge);
     }
     
-    /**
-     * Make this grasshopper act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newGrasshoppers A list to return newly born grasshoppers.
-     */
-    public void act(List<Actor> newGrasshoppers)
-    {
-        super.act(newGrasshoppers);
-    }
 }

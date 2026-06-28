@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-
 /**
  * A simple model of an acacia.
  *
@@ -18,27 +14,16 @@ public class Acacia extends Producer
     private static final int CONSUMPTION_WORTH = 40;
     //   Max Age of the Acacia tree:
     private static final int MAX_AGE = 30;
-    
+
     /**
      * Create an acacia.
-     * 
+     *
      * @param field    The field currently occupied.
      * @param location The location within the field.
      */
     public Acacia(Field field, Location location)
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-    
-    /**
-     * Make this acacia act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newAcacia A list to return newly born acacia.
-     */
-    public void act(List<Actor> newAcacia)
-    {
-        super.act(newAcacia);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE);
     }
 }

@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -20,7 +19,7 @@ public abstract class Consumer extends Actor
     private int breedingAge;
     private int sustenanceLevel;
     private int maxSustenanceLevel;
-    private ArrayList<Class> prey;
+    private List<Class<?>> prey;
     private Disease disease;
     private boolean ifCarcass;
     private Carcass newCarcass;
@@ -38,7 +37,7 @@ public abstract class Consumer extends Actor
      * @param maxAge              The age to which this consumer can live.
      * @param breedingAge         The age at which this consumer can start to breed.
      */
-    public Consumer(Field field, Location location, ArrayList<Class> prey, int consumptionWorth,
+    public Consumer(Field field, Location location, List<Class<?>> prey, int consumptionWorth,
                     double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,int maxSustenanceLevel,boolean canEatCarcass,boolean primaryConsumer)
     {
         super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,maxSustenanceLevel,maxAge);
@@ -295,7 +294,7 @@ public abstract class Consumer extends Actor
             Location where = it.next();
             Object object = field.getObjectAt(where);
             
-            for (Class preyClass : prey)
+            for (Class<?> preyClass : prey)
             {   
                 if (preyClass.isInstance(object))
                 {   

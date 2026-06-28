@@ -152,30 +152,35 @@ public final class SearchRequestAttributesExtractor {
         String pitOrScroll,
         String timeRangeFilterFrom
     ) {
-        Map<String, Object> attributes = new HashMap<>(5, 1.0f);
-        attributes.put(TARGET_ATTRIBUTE, target);
-        attributes.put(SORT_ATTRIBUTE, primarySort);
-        attributes.put(QUERY_TYPE_ATTRIBUTE, queryType);
-        if (pitOrScroll != null) {
-            attributes.put(PIT_SCROLL_ATTRIBUTE, pitOrScroll);
-        }
-        if (knn) {
-            attributes.put(KNN_ATTRIBUTE, knn);
-        }
+        Map<String, Object> attributes = new HashMap<>(7, 1.0f);
+        putAttribute(attributes, TARGET_ATTRIBUTE, target);
+        putAttribute(attributes, SORT_ATTRIBUTE, primarySort);
+        putAttribute(attributes, QUERY_TYPE_ATTRIBUTE, queryType);
+        putAttribute(attributes, PIT_SCROLL_ATTRIBUTE, pitOrScroll);
+        putAttribute(attributes, KNN_ATTRIBUTE, knn ? Boolean.TRUE : null);
+        putTimeRangeFieldAttribute(attributes, rangeOnTimestamp, rangeOnEventIngested);
+        putAttribute(attributes, TIME_RANGE_FILTER_FROM_ATTRIBUTE, timeRangeFilterFrom);
+        return attributes;
+    }
+
+    private static void putTimeRangeFieldAttribute(Map<String, Object> attributes, boolean rangeOnTimestamp, boolean rangeOnEventIngested) {
         if (rangeOnTimestamp && rangeOnEventIngested) {
-            attributes.put(
+            putAttribute(
+                attributes,
                 TIME_RANGE_FILTER_FIELD_ATTRIBUTE,
                 DataStream.TIMESTAMP_FIELD_NAME + "_AND_" + IndexMetadata.EVENT_INGESTED_FIELD_NAME
             );
         } else if (rangeOnEventIngested) {
-            attributes.put(TIME_RANGE_FILTER_FIELD_ATTRIBUTE, IndexMetadata.EVENT_INGESTED_FIELD_NAME);
+            putAttribute(attributes, TIME_RANGE_FILTER_FIELD_ATTRIBUTE, IndexMetadata.EVENT_INGESTED_FIELD_NAME);
         } else if (rangeOnTimestamp) {
-            attributes.put(TIME_RANGE_FILTER_FIELD_ATTRIBUTE, DataStream.TIMESTAMP_FIELD_NAME);
+            putAttribute(attributes, TIME_RANGE_FILTER_FIELD_ATTRIBUTE, DataStream.TIMESTAMP_FIELD_NAME);
         }
-        if (timeRangeFilterFrom != null) {
-            attributes.put(TIME_RANGE_FILTER_FROM_ATTRIBUTE, timeRangeFilterFrom);
+    }
+
+    private static void putAttribute(Map<String, Object> attributes, String key, Object value) {
+        if (value != null) {
+            attributes.put(key, value);
         }
-        return attributes;
     }
 
     private static final class QueryMetadataBuilder {

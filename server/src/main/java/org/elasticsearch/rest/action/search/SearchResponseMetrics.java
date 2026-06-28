@@ -122,7 +122,10 @@ public class SearchResponseMetrics {
     }
 
     public void incrementResponseCount(ResponseCountTotalStatus responseCountTotalStatus) {
-        incrementResponseCount(responseCountTotalStatus, Map.of());
+        responseCountTotalCounter.incrementBy(
+            1L,
+            Map.of(RESPONSE_COUNT_TOTAL_STATUS_ATTRIBUTE_NAME, responseCountTotalStatus.getDisplayName())
+        );
     }
 
     public void incrementResponseCount(ResponseCountTotalStatus responseCountTotalStatus, Map<String, Object> attributes) {

@@ -87,6 +87,17 @@ class InitializrServiceMetadataTests {
 		assertThat(projectType.getTags()).containsEntry("format", "project");
 	}
 
+	@Test
+	void exposeReadOnlyViews() throws Exception {
+		InitializrServiceMetadata metadata = createInstance("2.0.0");
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> metadata.getDependencies().clear());
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> metadata.getProjectTypes().clear());
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> metadata.getDefaults().put("foo", "bar"));
+	}
+
 	private static InitializrServiceMetadata createInstance(String version) throws JSONException {
 		try {
 			return new InitializrServiceMetadata(readJson(version));

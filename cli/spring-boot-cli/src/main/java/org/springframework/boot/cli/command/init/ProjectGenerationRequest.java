@@ -305,55 +305,21 @@ class ProjectGenerationRequest {
 	URI generateUrl(InitializrServiceMetadata metadata) {
 		try {
 			URIBuilder builder = new URIBuilder(this.serviceUrl);
-			StringBuilder sb = new StringBuilder();
-			if (builder.getPath() != null) {
-				sb.append(builder.getPath());
-			}
-
 			ProjectType projectType = determineProjectType(metadata);
-			this.type = projectType.getId();
-			sb.append(projectType.getAction());
-			builder.setPath(sb.toString());
-
-			if (!this.dependencies.isEmpty()) {
-				builder.setParameter("dependencies", StringUtils.collectionToCommaDelimitedString(this.dependencies));
-			}
-
-			if (this.groupId != null) {
-				builder.setParameter("groupId", this.groupId);
-			}
-			String resolvedArtifactId = resolveArtifactId();
-			if (resolvedArtifactId != null) {
-				builder.setParameter("artifactId", resolvedArtifactId);
-			}
-			if (this.version != null) {
-				builder.setParameter("version", this.version);
-			}
-			if (this.name != null) {
-				builder.setParameter("name", this.name);
-			}
-			if (this.description != null) {
-				builder.setParameter("description", this.description);
-			}
-			if (this.packageName != null) {
-				builder.setParameter("packageName", this.packageName);
-			}
-			if (this.type != null) {
-				builder.setParameter("type", projectType.getId());
-			}
-			if (this.packaging != null) {
-				builder.setParameter("packaging", this.packaging);
-			}
-			if (this.javaVersion != null) {
-				builder.setParameter("javaVersion", this.javaVersion);
-			}
-			if (this.language != null) {
-				builder.setParameter("language", this.language);
-			}
-			if (this.bootVersion != null) {
-				builder.setParameter("bootVersion", this.bootVersion);
-			}
-
+			builder.setPath(resolvePath(builder.getPath(), projectType.getAction()));
+			setParameter(builder, "dependencies", this.dependencies.isEmpty()
+					? null : StringUtils.collectionToCommaDelimitedString(this.dependencies));
+			setParameter(builder, "groupId", this.groupId);
+			setParameter(builder, "artifactId", resolveArtifactId());
+			setParameter(builder, "version", this.version);
+			setParameter(builder, "name", this.name);
+			setParameter(builder, "description", this.description);
+			setParameter(builder, "packageName", this.packageName);
+			builder.setParameter("type", projectType.getId());
+			setParameter(builder, "packaging", this.packaging);
+			setParameter(builder, "javaVersion", this.javaVersion);
+			setParameter(builder, "language", this.language);
+			setParameter(builder, "bootVersion", this.bootVersion);
 			return builder.build();
 		}
 		catch (URISyntaxException ex) {
@@ -370,7 +336,7 @@ class ProjectGenerationRequest {
 			}
 			return result;
 		}
-		else if (isDetectType()) {
+		if (isDetectType()) {
 			Map<String, ProjectType> types = new HashMap<>(metadata.getProjectTypes());
 			if (this.build != null) {
 				filter(types, "build", this.build);
@@ -381,23 +347,19 @@ class ProjectGenerationRequest {
 			if (types.size() == 1) {
 				return types.values().iterator().next();
 			}
-			else if (types.isEmpty()) {
+			if (types.isEmpty()) {
 				throw new ReportableException("No type found with build '" + this.build + "' and format '" + this.format
 						+ "' check the service capabilities (--list)");
 			}
-			else {
-				throw new ReportableException("Multiple types found with build '" + this.build + "' and format '"
-						+ this.format + "' use --type with a more specific value " + types.keySet());
-			}
+			throw new ReportableException("Multiple types found with build '" + this.build + "' and format '"
+					+ this.format + "' use --type with a more specific value " + types.keySet());
 		}
-		else {
-			ProjectType defaultType = metadata.getDefaultType();
-			if (defaultType == null) {
-				throw new ReportableException(("No project type is set and no default is defined. "
-						+ "Check the service capabilities (--list)"));
-			}
-			return defaultType;
+		ProjectType defaultType = metadata.getDefaultType();
+		if (defaultType == null) {
+			throw new ReportableException(("No project type is set and no default is defined. "
+					+ "Check the service capabilities (--list)"));
 		}
+		return defaultType;
 	}
 
 	/**
@@ -417,6 +379,21 @@ class ProjectGenerationRequest {
 
 	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
 		projects.entrySet().removeIf((entry) -> !tagValue.equals(entry.getValue().getTags().get(tag)));
+	}
+
+	private String resolvePath(@Nullable String path, String action) {
+		StringBuilder resolvedPath = new StringBuilder();
+		if (path != null) {
+			resolvedPath.append(path);
+		}
+		resolvedPath.append(action);
+		return resolvedPath.toString();
+	}
+
+	private void setParameter(URIBuilder builder, String name, @Nullable String value) {
+		if (value != null) {
+			builder.setParameter(name, value);
+		}
 	}
 
 }

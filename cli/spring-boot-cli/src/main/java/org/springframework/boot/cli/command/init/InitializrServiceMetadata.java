@@ -52,6 +52,8 @@ class InitializrServiceMetadata {
 
 	private static final String DEFAULT_ATTRIBUTE = "default";
 
+	private static final String TAGS_ELEMENT = "tags";
+
 	private final Map<String, Dependency> dependencies;
 
 	private final MetadataHolder<String, ProjectType> projectTypes;
@@ -74,7 +76,7 @@ class InitializrServiceMetadata {
 		this.projectTypes = new MetadataHolder<>();
 		this.projectTypes.getContent().put(defaultProjectType.getId(), defaultProjectType);
 		this.projectTypes.setDefaultItem(defaultProjectType);
-		this.defaults = new HashMap<>();
+		this.defaults = Collections.emptyMap();
 	}
 
 	/**
@@ -82,7 +84,7 @@ class InitializrServiceMetadata {
 	 * @return the supported dependencies
 	 */
 	Collection<Dependency> getDependencies() {
-		return this.dependencies.values();
+		return Collections.unmodifiableCollection(this.dependencies.values());
 	}
 
 	/**
@@ -100,7 +102,7 @@ class InitializrServiceMetadata {
 	 * @return the supported project types
 	 */
 	Map<String, ProjectType> getProjectTypes() {
-		return this.projectTypes.getContent();
+		return Collections.unmodifiableMap(this.projectTypes.getContent());
 	}
 
 	/**
@@ -200,7 +202,7 @@ class InitializrServiceMetadata {
 		boolean defaultType = id.equals(defaultId);
 		Map<String, String> tags = new HashMap<>();
 		if (object.has("tags")) {
-			JSONObject jsonTags = object.getJSONObject("tags");
+			JSONObject jsonTags = object.getJSONObject(TAGS_ELEMENT);
 			tags.putAll(parseStringItems(jsonTags));
 		}
 		Assert.state(name != null, "'name' must not be null");

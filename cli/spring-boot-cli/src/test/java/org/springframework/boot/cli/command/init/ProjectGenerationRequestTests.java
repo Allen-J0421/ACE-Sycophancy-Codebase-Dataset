@@ -53,6 +53,12 @@ class ProjectGenerationRequestTests {
 	}
 
 	@Test
+	void generateUrlDoesNotMutateType() {
+		this.request.generateUrl(createDefaultMetadata());
+		assertThat(this.request.getType()).isNull();
+	}
+
+	@Test
 	void customServer() throws URISyntaxException {
 		String customServerUrl = "https://foo:8080/initializr";
 		this.request.setServiceUrl(customServerUrl);

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * A class representing shared characteristics of animals.
@@ -7,6 +8,8 @@ import java.util.List;
  */
 public abstract class Animal
 {
+    // A shared random number generator used by legacy animal classes:
+    protected static final Random rand = Randomizer.getRandom();
     // Whether the animal is alive or not.
     private boolean alive;
     // The animal's field.
@@ -55,6 +58,42 @@ public abstract class Animal
             location = null;
             field = null;
         }
+    }
+
+    /**
+     * Move the animal to a new location, or die if there is nowhere to go.
+     *
+     * @param newLocation The target location, or null if none is available.
+     * @return True if the animal moved successfully.
+     */
+    protected boolean moveTo(Location newLocation)
+    {
+        if (newLocation == null)
+        {
+            setDead();
+            return false;
+        }
+
+        setLocation(newLocation);
+        return true;
+    }
+
+    /**
+     * Generate a birth count using the standard legacy animal breeding rules.
+     *
+     * @param age The animal's current age.
+     * @param breedingAge The minimum age required to breed.
+     * @param breedingProbability The probability of breeding.
+     * @param maxLitterSize The maximum number of births.
+     * @return The number of births to create.
+     */
+    protected int breed(int age, int breedingAge, double breedingProbability, int maxLitterSize)
+    {
+        if (age >= breedingAge && rand.nextDouble() <= breedingProbability)
+        {
+            return rand.nextInt(maxLitterSize) + 1;
+        }
+        return 0;
     }
 
     /**

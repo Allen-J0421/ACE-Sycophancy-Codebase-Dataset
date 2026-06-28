@@ -1,0 +1,23 @@
+public final class BinarySearchTest {
+    private BinarySearchTest() {
+    }
+
+    public static void main(String[] args) {
+        assertSearch(new int[] {}, 10, -1);
+        assertSearch(new int[] { 10 }, 10, 0);
+        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 2, 0);
+        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 10, 3);
+        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 40, 4);
+        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 5, -1);
+        assertSearch(new int[] { -8, -3, 0, 7, 11 }, -3, 1);
+    }
+
+    private static void assertSearch(int[] sortedValues, int target, int expectedIndex) {
+        int actualIndex = BinarySearch.binarySearch(sortedValues, target);
+
+        if (actualIndex != expectedIndex) {
+            throw new AssertionError(
+                    "Expected index " + expectedIndex + " for target " + target + ", but got " + actualIndex);
+        }
+    }
+}

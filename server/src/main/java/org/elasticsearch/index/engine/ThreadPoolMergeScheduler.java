@@ -365,7 +365,7 @@ public class ThreadPoolMergeScheduler extends MergeScheduler implements Elastics
 
     public void onTragicEvent(Throwable tragedy) {
         assert tragedy != null;
-        assert tragedy instanceof MergePolicy.MergeAbortedException == false;
+        assert !(tragedy instanceof MergePolicy.MergeAbortedException);
 
         TragicEvent tragicEvent;
         boolean shouldAbort = false;
@@ -485,7 +485,7 @@ public class ThreadPoolMergeScheduler extends MergeScheduler implements Elastics
             mergeSource.merge(oneMerge);
         } catch (Throwable t) {
             // OK to ignore MergeAbortedException. This is what Lucene's ConcurrentMergeScheduler does.
-            if (t instanceof MergePolicy.MergeAbortedException == false) {
+            if (!(t instanceof MergePolicy.MergeAbortedException)) {
                 // A merge thread that thrown a tragic exception that closed the IndexWriter causes other merge threads to be aborted, but
                 // it is not itself aborted: instead the current merge is just completed and the thrown exception is set in the package
                 // private OneMerge#error field. Here we set such merge as aborted too so that it is not considered as successful later.

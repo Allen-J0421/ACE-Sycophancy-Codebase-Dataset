@@ -107,10 +107,10 @@ public class SpanFirstQueryBuilder extends LeafQueryBuilder<SpanFirstQueryBuilde
             } else if (token == XContentParser.Token.START_OBJECT) {
                 if (MATCH_FIELD.match(currentFieldName, parser.getDeprecationHandler())) {
                     QueryBuilder query = parseInnerQueryBuilder(parser);
-                    if (query instanceof SpanQueryBuilder == false) {
+                    if (!(query instanceof SpanQueryBuilder matchClause)) {
                         throw new ParsingException(parser.getTokenLocation(), "span_first [match] must be of type span query");
                     }
-                    match = (SpanQueryBuilder) query;
+                    match = matchClause;
                     checkNoBoost(NAME, currentFieldName, parser, match);
                 } else {
                     throw new ParsingException(parser.getTokenLocation(), "[span_first] query does not support [" + currentFieldName + "]");

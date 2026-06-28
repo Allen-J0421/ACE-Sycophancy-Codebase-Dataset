@@ -2514,7 +2514,7 @@ public class IndexShard extends AbstractIndexShardComponent implements IndicesCl
             return ShardLongFieldRange.UNKNOWN; // no mapper service, no idea if the field even exists
         }
         final MappedFieldType mappedFieldType = mapperService().fieldType(fieldName);
-        if (mappedFieldType instanceof DateFieldMapper.DateFieldType == false || mappedFieldType.name().equals(fieldName) == false) {
+        if (!(mappedFieldType instanceof DateFieldMapper.DateFieldType) || mappedFieldType.name().equals(fieldName) == false) {
             return ShardLongFieldRange.UNKNOWN; // field is missing, an alias (as the field type has a different name) or not a date field
         }
         if (mappedFieldType.indexType().hasPoints() == false && mappedFieldType.indexType().hasDocValuesSkipper() == false) {

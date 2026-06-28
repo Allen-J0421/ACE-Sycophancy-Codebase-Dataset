@@ -134,7 +134,7 @@ public final class GeoPointScriptFieldType extends AbstractScriptFieldType<GeoPo
 
     @Override
     public Query geoShapeQuery(SearchExecutionContext context, String fieldName, ShapeRelation relation, LatLonGeometry... geometries) {
-        if (relation == ShapeRelation.CONTAINS && Arrays.stream(geometries).anyMatch(g -> (g instanceof Point) == false)) {
+        if (relation == ShapeRelation.CONTAINS && Arrays.stream(geometries).anyMatch(g -> !(g instanceof Point))) {
             return Queries.NO_DOCS_INSTANCE;
         }
         return new GeoPointScriptFieldGeoShapeQuery(script, leafFactory(context), fieldName, relation, geometries);

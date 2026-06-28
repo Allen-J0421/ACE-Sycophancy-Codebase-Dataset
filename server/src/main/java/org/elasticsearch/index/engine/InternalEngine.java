@@ -1344,7 +1344,7 @@ public class InternalEngine extends Engine {
             }
         } catch (RuntimeException | IOException e) {
             try {
-                if (e instanceof AlreadyClosedException == false && treatDocumentFailureAsTragicError(index)) {
+                if (!(e instanceof AlreadyClosedException) && treatDocumentFailureAsTragicError(index)) {
                     failEngine("index id[" + index.id() + "] origin[" + index.origin() + "] seq#[" + index.seqNo() + "]", e);
                 } else {
                     maybeFailEngine("index id[" + index.id() + "] origin[" + index.origin() + "] seq#[" + index.seqNo() + "]", e);
@@ -1423,7 +1423,7 @@ public class InternalEngine extends Engine {
         for (int i = 0; i < count; i++) {
             Index op = operations.get(startIdx + i);
             try {
-                if (e instanceof AlreadyClosedException == false && treatDocumentFailureAsTragicError(op)) {
+                if (!(e instanceof AlreadyClosedException) && treatDocumentFailureAsTragicError(op)) {
                     failEngine("index id[" + op.id() + "] origin[" + op.origin() + "] seq#[" + op.seqNo() + "]", e);
                 } else {
                     maybeFailEngine("index id[" + op.id() + "] origin[" + op.origin() + "] seq#[" + op.seqNo() + "]", e);
@@ -1898,7 +1898,7 @@ public class InternalEngine extends Engine {
             }
             return new IndexResult(plan.versionForIndexing, index.primaryTerm(), index.seqNo(), plan.currentNotFoundOrDeleted, index.id());
         } catch (Exception ex) {
-            if (ex instanceof AlreadyClosedException == false
+            if (!(ex instanceof AlreadyClosedException)
                 && indexWriter.getTragicException() == null
                 && treatDocumentFailureAsTragicError(index) == false) {
                 /* There is no tragic event recorded so this must be a document failure.
@@ -2354,7 +2354,7 @@ public class InternalEngine extends Engine {
              * Document level failures when deleting are unexpected, we likely hit something fatal such as the Lucene index being corrupt,
              * or the Lucene document limit. We have already issued a sequence number here so this is fatal, fail the engine.
              */
-            if (ex instanceof AlreadyClosedException == false && indexWriter.getTragicException() == null) {
+            if (!(ex instanceof AlreadyClosedException) && indexWriter.getTragicException() == null) {
                 final String reason = String.format(
                     Locale.ROOT,
                     "delete id[%s] origin [%s] seq#[%d] failed at the document level",
@@ -2546,7 +2546,7 @@ public class InternalEngine extends Engine {
                  * index being corrupt, or the Lucene document limit. We have already issued a sequence number here so this is
                  * fatal, fail the engine.
                  */
-                if (ex instanceof AlreadyClosedException == false && indexWriter.getTragicException() == null) {
+                if (!(ex instanceof AlreadyClosedException) && indexWriter.getTragicException() == null) {
                     failEngine("no-op origin[" + noOp.origin() + "] seq#[" + noOp.seqNo() + "] failed at document level", ex);
                 }
                 throw ex;

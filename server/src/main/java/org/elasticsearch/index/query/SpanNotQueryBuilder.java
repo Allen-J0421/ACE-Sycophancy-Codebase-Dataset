@@ -177,17 +177,17 @@ public class SpanNotQueryBuilder extends LeafQueryBuilder<SpanNotQueryBuilder> i
             } else if (token == XContentParser.Token.START_OBJECT) {
                 if (INCLUDE_FIELD.match(currentFieldName, parser.getDeprecationHandler())) {
                     QueryBuilder query = parseInnerQueryBuilder(parser);
-                    if (query instanceof SpanQueryBuilder == false) {
+                    if (!(query instanceof SpanQueryBuilder includeClause)) {
                         throw new ParsingException(parser.getTokenLocation(), "span_not [include] must be of type span query");
                     }
-                    include = (SpanQueryBuilder) query;
+                    include = includeClause;
                     checkNoBoost(NAME, currentFieldName, parser, include);
                 } else if (EXCLUDE_FIELD.match(currentFieldName, parser.getDeprecationHandler())) {
                     QueryBuilder query = parseInnerQueryBuilder(parser);
-                    if (query instanceof SpanQueryBuilder == false) {
+                    if (!(query instanceof SpanQueryBuilder excludeClause)) {
                         throw new ParsingException(parser.getTokenLocation(), "span_not [exclude] must be of type span query");
                     }
-                    exclude = (SpanQueryBuilder) query;
+                    exclude = excludeClause;
                     checkNoBoost(NAME, currentFieldName, parser, exclude);
                 } else {
                     throw new ParsingException(parser.getTokenLocation(), "[span_not] query does not support [" + currentFieldName + "]");

@@ -741,63 +741,35 @@ public final class SnapshotInfo implements Comparable<SnapshotInfo>, ToXContentF
             final String currentFieldName = parser.currentName();
             final XContentParser.Token token = parser.nextToken();
             switch (currentFieldName) {
-                case NAME:
-                    name = parser.text();
-                    break;
-                case UUID:
-                    uuid = parser.text();
-                    break;
-                case STATE:
-                    state = SnapshotState.valueOf(parser.text());
-                    break;
-                case REASON:
-                    reason = parser.text();
-                    break;
-                case START_TIME:
-                    startTime = parser.longValue();
-                    break;
-                case END_TIME:
-                    endTime = parser.longValue();
-                    break;
-                case TOTAL_SHARDS:
-                    totalShards = parser.intValue();
-                    break;
-                case SUCCESSFUL_SHARDS:
-                    successfulShards = parser.intValue();
-                    break;
-                case VERSION_ID:
-                    version = IndexVersion.fromId(parser.intValue());
-                    break;
-                case INCLUDE_GLOBAL_STATE:
-                    includeGlobalState = parser.booleanValue();
-                    break;
-                case DATA_STREAMS:
-                    dataStreams = XContentParserUtils.parseList(parser, XContentParser::text);
-                    break;
-                case INDICES:
-                    indices = XContentParserUtils.parseList(parser, XContentParser::text);
-                    break;
-                case FAILURES:
-                    shardFailures = XContentParserUtils.parseList(parser, SnapshotShardFailure::fromXContent);
-                    break;
-                case FEATURE_STATES:
-                    featureStates = XContentParserUtils.parseList(parser, SnapshotFeatureInfo::fromXContent);
-                    break;
-                case USER_METADATA:
+                case NAME -> name = parser.text();
+                case UUID -> uuid = parser.text();
+                case STATE -> state = SnapshotState.valueOf(parser.text());
+                case REASON -> reason = parser.text();
+                case START_TIME -> startTime = parser.longValue();
+                case END_TIME -> endTime = parser.longValue();
+                case TOTAL_SHARDS -> totalShards = parser.intValue();
+                case SUCCESSFUL_SHARDS -> successfulShards = parser.intValue();
+                case VERSION_ID -> version = IndexVersion.fromId(parser.intValue());
+                case INCLUDE_GLOBAL_STATE -> includeGlobalState = parser.booleanValue();
+                case DATA_STREAMS -> dataStreams = XContentParserUtils.parseList(parser, XContentParser::text);
+                case INDICES -> indices = XContentParserUtils.parseList(parser, XContentParser::text);
+                case FAILURES -> shardFailures = XContentParserUtils.parseList(parser, SnapshotShardFailure::fromXContent);
+                case FEATURE_STATES -> featureStates = XContentParserUtils.parseList(parser, SnapshotFeatureInfo::fromXContent);
+                case USER_METADATA -> {
                     if (token != XContentParser.Token.VALUE_NULL) {
                         // some older versions a redundant null value for this field
                         XContentParserUtils.ensureExpectedToken(XContentParser.Token.START_OBJECT, token, parser);
                         userMetadata = parser.map();
                     }
-                    break;
-                case INDEX_DETAILS:
+                }
+                case INDEX_DETAILS -> {
                     XContentParserUtils.ensureExpectedToken(XContentParser.Token.START_OBJECT, token, parser);
                     indexSnapshotDetails = parser.map(HashMap::new, p -> IndexSnapshotDetails.PARSER.parse(p, null));
-                    break;
-                default:
+                }
+                default -> {
                     // It was probably created by newer version - ignoring
                     parser.skipChildren();
-                    break;
+                }
             }
         }
         // closing bracket of the object containing the "snapshot" field should be there

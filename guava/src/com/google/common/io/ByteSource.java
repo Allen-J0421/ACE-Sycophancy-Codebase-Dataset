@@ -511,7 +511,7 @@ public abstract class ByteSource {
         if (skipped < offset) {
           // offset was beyond EOF
           in.close();
-          return new ByteArrayInputStream(new byte[0]);
+          return ByteSource.empty().openStream();
         }
       }
       return ByteStreams.limit(in, length);

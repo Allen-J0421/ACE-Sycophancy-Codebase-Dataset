@@ -202,10 +202,10 @@ public class MovingPercentilesPipelineAggregator extends PipelineAggregator {
     ) {
         List<String> aggPathsList = AggregationPath.parse(aggPath).getPathElementsAsStringList();
         Object propertyValue = bucket.getProperty(agg.getName(), aggPathsList);
-        if (propertyValue == null || (propertyValue instanceof InternalTDigestPercentiles) == false) {
+        if (!(propertyValue instanceof InternalTDigestPercentiles internalTDigestPercentiles)) {
             throw buildResolveError(agg, aggPathsList, propertyValue, "TDigest");
         }
-        return ((InternalTDigestPercentiles) propertyValue).getState();
+        return internalTDigestPercentiles.getState();
     }
 
     private static DoubleHistogram resolveHDRBucketValue(
@@ -215,10 +215,10 @@ public class MovingPercentilesPipelineAggregator extends PipelineAggregator {
     ) {
         List<String> aggPathsList = AggregationPath.parse(aggPath).getPathElementsAsStringList();
         Object propertyValue = bucket.getProperty(agg.getName(), aggPathsList);
-        if (propertyValue == null || (propertyValue instanceof InternalHDRPercentiles) == false) {
+        if (!(propertyValue instanceof InternalHDRPercentiles internalHDRPercentiles)) {
             throw buildResolveError(agg, aggPathsList, propertyValue, "HDR");
         }
-        return ((InternalHDRPercentiles) propertyValue).getState();
+        return internalHDRPercentiles.getState();
     }
 
     private static IllegalArgumentException buildResolveError(

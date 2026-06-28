@@ -39,12 +39,12 @@ public enum AnalyticsValuesSourceType implements ValuesSourceType {
         public ValuesSource getField(FieldContext fieldContext, AggregationScript.LeafFactory script) {
             final IndexFieldData<?> indexFieldData = fieldContext.indexFieldData();
 
-            if ((indexFieldData instanceof IndexHistogramFieldData) == false) {
+            if (!(indexFieldData instanceof IndexHistogramFieldData indexHistogramFieldData)) {
                 throw new IllegalArgumentException(
                     "Expected histogram type on field [" + fieldContext.field() + "], but got [" + fieldContext.fieldType().typeName() + "]"
                 );
             }
-            return new HistogramValuesSource.Histogram.Fielddata((IndexHistogramFieldData) indexFieldData);
+            return new HistogramValuesSource.Histogram.Fielddata(indexHistogramFieldData);
         }
 
         @Override
@@ -79,7 +79,7 @@ public enum AnalyticsValuesSourceType implements ValuesSourceType {
         public ValuesSource getField(FieldContext fieldContext, AggregationScript.LeafFactory script) {
             final IndexFieldData<?> indexFieldData = fieldContext.indexFieldData();
 
-            if ((indexFieldData instanceof IndexExponentialHistogramFieldData) == false) {
+            if (!(indexFieldData instanceof IndexExponentialHistogramFieldData indexExponentialHistogramFieldData)) {
                 throw new IllegalArgumentException(
                     "Expected "
                         + CONTENT_TYPE
@@ -90,7 +90,7 @@ public enum AnalyticsValuesSourceType implements ValuesSourceType {
                         + "]"
                 );
             }
-            return new ExponentialHistogramValuesSource.ExponentialHistogram.Fielddata((IndexExponentialHistogramFieldData) indexFieldData);
+            return new ExponentialHistogramValuesSource.ExponentialHistogram.Fielddata(indexExponentialHistogramFieldData);
         }
 
         @Override

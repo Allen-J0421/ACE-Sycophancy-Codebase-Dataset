@@ -116,11 +116,9 @@ public abstract class ExponentialHistogramBackedRangeAggregator extends RangeAgg
 
     @Override
     public LeafBucketCollector getLeafCollector(AggregationExecutionContext aggCtx, LeafBucketCollector sub) throws IOException {
-        if ((valuesSource instanceof ExponentialHistogramValuesSource.ExponentialHistogram) == false) {
+        if (!(this.valuesSource instanceof ExponentialHistogramValuesSource.ExponentialHistogram expHistoSource)) {
             return LeafBucketCollector.NO_OP_COLLECTOR;
         }
-        final ExponentialHistogramValuesSource.ExponentialHistogram expHistoSource =
-            (ExponentialHistogramValuesSource.ExponentialHistogram) this.valuesSource;
         final ExponentialHistogramValuesReader values = expHistoSource.getHistogramValues(aggCtx.getLeafReaderContext());
         return new LeafBucketCollectorBase(sub, values) {
             @Override

@@ -115,10 +115,9 @@ public abstract class HistoBackedRangeAggregator extends RangeAggregator {
 
     @Override
     public LeafBucketCollector getLeafCollector(AggregationExecutionContext aggCtx, LeafBucketCollector sub) throws IOException {
-        if ((valuesSource instanceof HistogramValuesSource.Histogram) == false) {
+        if (!(this.valuesSource instanceof HistogramValuesSource.Histogram valuesSource)) {
             return LeafBucketCollector.NO_OP_COLLECTOR;
         }
-        final HistogramValuesSource.Histogram valuesSource = (HistogramValuesSource.Histogram) this.valuesSource;
         final HistogramValues values = valuesSource.getHistogramValues(aggCtx.getLeafReaderContext());
         return new LeafBucketCollectorBase(sub, values) {
             @Override

@@ -24,12 +24,15 @@ import org.jkiss.dbeaver.model.runtime.DBRBlockingObject;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,6 +84,18 @@ public class ContentUtilsTest {
         Assertions.assertEquals(COPY_BUFFER_SIZE, output.size());
         Assertions.assertEquals(1, monitor.workedCalls);
         Assertions.assertEquals(1, monitor.doneCount);
+    }
+
+    @Test
+    public void saveBinaryContentDeletesOutputWhenMonitorIsCanceled(@TempDir Path tempDir) throws Exception {
+        byte[] content = "incomplete".getBytes(StandardCharsets.UTF_8);
+        File output = tempDir.resolve("content.bin").toFile();
+        RecordingProgressMonitor monitor = new RecordingProgressMonitor();
+        monitor.cancelAfterFirstWork = true;
+
+        ContentUtils.saveContentToFile(new ByteArrayInputStream(content), output, monitor);
+
+        Assertions.assertFalse(output.exists());
     }
 
     private static class RecordingProgressMonitor implements DBRProgressMonitor {

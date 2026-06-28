@@ -88,13 +88,7 @@ public class ContentUtils {
         try (OutputStream os = new FileOutputStream(file)) {
             copyStreams(contentStream, file.length(), os, monitor);
         }
-        // Check for cancel
-        if (monitor.isCanceled()) {
-            // Delete output file
-            if (!file.delete()) {
-                log.warn("Can't delete incomplete file '" + file.getAbsolutePath() + "'");
-            }
-        }
+        deleteIncompleteFileIfCanceled(file, monitor);
     }
 
     public static void saveContentToFile(Reader contentReader, File file, String charset, DBRProgressMonitor monitor)
@@ -102,12 +96,12 @@ public class ContentUtils {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), charset)) {
             copyStreams(contentReader, file.length(), writer, monitor);
         }
-        // Check for cancel
-        if (monitor.isCanceled()) {
-            // Delete output file
-            if (!file.delete()) {
-                log.warn("Can't delete incomplete file '" + file.getAbsolutePath() + "'");
-            }
+        deleteIncompleteFileIfCanceled(file, monitor);
+    }
+
+    private static void deleteIncompleteFileIfCanceled(@NotNull File file, @NotNull DBRProgressMonitor monitor) {
+        if (monitor.isCanceled() && !file.delete()) {
+            log.warn("Can't delete incomplete file '" + file.getAbsolutePath() + "'");
         }
     }
 

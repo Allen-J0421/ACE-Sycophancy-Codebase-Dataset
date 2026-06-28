@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * A class representing shared characteristics of consumers.
@@ -12,7 +11,6 @@ public abstract class Consumer extends Actor
     private static final int STARTING_SUSTENANCE_LEVEL = 20;
     private static final double NEW_DISEASE = 0.0005;
     private static final double NIGHT_PREY_MISS_PROBABILITY = 0.5;
-    private static Random rand = Randomizer.getRandom();
 
     // Properties unique to this consumer:
     private int breedingAge;
@@ -20,8 +18,6 @@ public abstract class Consumer extends Actor
     private int maxSustenanceLevel;
     private List<Class<?>> prey;
     private Disease disease;
-    private boolean ifCarcass;
-    private Carcass newCarcass;
     private boolean canEatCarcass;
     private boolean primaryConsumer;
 
@@ -72,13 +68,7 @@ public abstract class Consumer extends Actor
         if (getIsAlive())
         {
             giveBirth(newConsumers);
-            boolean wasPossibleToMove = huntForFood();
-            if (ifCarcass)
-            {
-                newConsumers.add(newCarcass);
-                ifCarcass = false;
-                newCarcass = null;
-            }
+            boolean wasPossibleToMove = huntForFood(newConsumers);
             if (hasDisease())
             {
                 diseaseEffect();
@@ -139,9 +129,9 @@ public abstract class Consumer extends Actor
     }
 
     /** Hunt for food by moving toward it. */
-    private boolean huntForFood()
+    private boolean huntForFood(List<Actor> newActors)
     {
-        Location newLocation = findFood();
+        Location newLocation = findFood(newActors);
 
         if (newLocation == null)
         {
@@ -200,7 +190,7 @@ public abstract class Consumer extends Actor
             if (object instanceof Consumer other
                 && other.getClass() == this.getClass()
                 && other.canBreed()
-                && other.getGender() != gender)
+                && other.getGender() != getGender())
             {
                 return true;
             }
@@ -249,7 +239,7 @@ public abstract class Consumer extends Actor
      *
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood()
+    private Location findFood(List<Actor> newActors)
     {
         Field field = getField();
 
@@ -267,7 +257,7 @@ public abstract class Consumer extends Actor
                         boolean canHit = !TimeSystem.isNightTime()
                                       || rand.nextDouble() <= 1.0 - NIGHT_PREY_MISS_PROBABILITY;
                         if (canHit)
-                            return eat(actor);
+                            return eat(actor, newActors);
                     }
                 }
             }
@@ -297,7 +287,7 @@ public abstract class Consumer extends Actor
      * Makes the animal eat the food and generate a carcass if necessary.
      * @param actor The actor who is to be eaten.
      */
-    private Location eat(Actor actor)
+    private Location eat(Actor actor, List<Actor> newActors)
     {
         Location location = actor.getLocation();
         int actorConsumptionWorth = actor.getConsumptionWorth();
@@ -306,10 +296,9 @@ public abstract class Consumer extends Actor
             actor.setDead();
             if ((sustenanceLevel + actorConsumptionWorth) > maxSustenanceLevel)
             {
-                int foodLeft = (sustenanceLevel + consumptionWorth) - maxSustenanceLevel;
-                sustenanceLevel = this.maxSustenanceLevel;
-                newCarcass = new Carcass(getField(), location, foodLeft);
-                ifCarcass = true;
+                int foodLeft = (sustenanceLevel + getConsumptionWorth()) - maxSustenanceLevel;
+                sustenanceLevel = maxSustenanceLevel;
+                newActors.add(new Carcass(getField(), location, foodLeft));
                 return getLocation();
             }
         }

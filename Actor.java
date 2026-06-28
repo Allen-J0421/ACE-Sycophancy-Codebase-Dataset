@@ -15,9 +15,9 @@ public abstract class Actor
     // The actor's position in the field:
     private Location location;
     // The worth of the actor if consumed:
-    protected int consumptionWorth;
+    private int consumptionWorth;
     // The gender of the actor:
-    protected Gender gender;
+    private Gender gender;
     // The probability of this actor breeding:
     private double breedingProbability;
     // The max number of births this actor can have in one step:
@@ -131,12 +131,7 @@ public abstract class Actor
     protected void incrementAge()
     {
         currentAge++;
-        
-        if (currentAge > maxAge) {
-           
-            setDead();
-        }
-        
+        if (currentAge > maxAge) setDead();
     }
     /**
      * Returns true if the actor becomes a carcass when eaten, false otherwise.

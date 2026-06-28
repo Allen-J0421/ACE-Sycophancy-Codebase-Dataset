@@ -215,12 +215,12 @@ public class Lz4TransportDecompressor extends TransportDecompressor {
 
                     try {
                         switch (blockType) {
-                            case BLOCK_TYPE_NON_COMPRESSED:
+                            case BLOCK_TYPE_NON_COMPRESSED -> {
                                 try (StreamInput streamInput = reference.streamInput()) {
                                     streamInput.readBytes(decompressed, 0, decompressedLength);
                                 }
-                                break;
-                            case BLOCK_TYPE_COMPRESSED:
+                            }
+                            case BLOCK_TYPE_COMPRESSED -> {
                                 BytesRef ref = reference.iterator().next();
                                 final byte[] compressed;
                                 final int compressedOffset;
@@ -235,17 +235,16 @@ public class Lz4TransportDecompressor extends TransportDecompressor {
                                     }
                                 }
                                 decompressor.decompress(compressed, compressedOffset, decompressed, 0, decompressedLength);
-                                break;
-                            default:
-                                throw new IllegalStateException(
-                                    String.format(
-                                        Locale.ROOT,
-                                        "unexpected blockType: %d (expected: %d or %d)",
-                                        blockType,
-                                        BLOCK_TYPE_NON_COMPRESSED,
-                                        BLOCK_TYPE_COMPRESSED
-                                    )
-                                );
+                            }
+                            default -> throw new IllegalStateException(
+                                String.format(
+                                    Locale.ROOT,
+                                    "unexpected blockType: %d (expected: %d or %d)",
+                                    blockType,
+                                    BLOCK_TYPE_NON_COMPRESSED,
+                                    BLOCK_TYPE_COMPRESSED
+                                )
+                            );
                         }
                         // Skip inbound bytes after we processed them.
                         bytesConsumed += compressedLength;

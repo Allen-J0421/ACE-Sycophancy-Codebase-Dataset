@@ -2115,7 +2115,7 @@ public class IndexNameExpressionResolver {
                 }
                 if (inPlaceHolder) {
                     switch (c) {
-                        case LEFT_BOUND:
+                        case LEFT_BOUND -> {
                             if (inDateFormat && escapedChar) {
                                 inPlaceHolderSb.append(c);
                             } else if (inDateFormat == false) {
@@ -2128,9 +2128,8 @@ public class IndexNameExpressionResolver {
                                     i
                                 );
                             }
-                            break;
-
-                        case RIGHT_BOUND:
+                        }
+                        case RIGHT_BOUND -> {
                             if (inDateFormat && escapedChar) {
                                 inPlaceHolderSb.append(c);
                             } else if (inDateFormat) {
@@ -2185,10 +2184,8 @@ public class IndexNameExpressionResolver {
                                 inPlaceHolderSb = new StringBuilder();
                                 inPlaceHolder = false;
                             }
-                            break;
-
-                        default:
-                            inPlaceHolderSb.append(c);
+                        }
+                        default -> inPlaceHolderSb.append(c);
                     }
                 } else {
                     switch (c) {

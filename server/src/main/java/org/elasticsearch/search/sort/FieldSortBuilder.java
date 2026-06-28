@@ -254,16 +254,10 @@ public final class FieldSortBuilder extends SortBuilder<FieldSortBuilder> {
     public FieldSortBuilder setNumericType(String numericType) {
         String lowerCase = numericType.toLowerCase(Locale.ENGLISH);
         switch (lowerCase) {
-            case "long":
-            case "double":
-            case "date":
-            case "date_nanos":
-                break;
-
-            default:
-                throw new IllegalArgumentException(
-                    "invalid value for [numeric_type], " + "must be [long, double, date, date_nanos], got " + lowerCase
-                );
+            case "long", "double", "date", "date_nanos" -> {}
+            default -> throw new IllegalArgumentException(
+                "invalid value for [numeric_type], " + "must be [long, double, date, date_nanos], got " + lowerCase
+            );
         }
         this.numericType = lowerCase;
         return this;

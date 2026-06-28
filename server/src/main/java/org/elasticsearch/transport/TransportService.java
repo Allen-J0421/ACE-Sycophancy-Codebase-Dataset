@@ -406,7 +406,7 @@ public class TransportService extends AbstractLifecycleComponent
                         tracerLog.trace("[{}][{}] pruning request for node [{}]", requestId, holderToNotify.action(), targetNode);
                     }
 
-                    assert transport instanceof TcpTransport == false
+                    assert !(transport instanceof TcpTransport)
                         /* other transports (used in tests) may not implement the proper close-connection behaviour. TODO fix this. */
                         || targetNode.equals(localNode)
                         /* local node connection cannot be closed so may still have pending handlers */

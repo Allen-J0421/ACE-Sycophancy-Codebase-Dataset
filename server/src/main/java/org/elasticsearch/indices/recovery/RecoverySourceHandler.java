@@ -680,7 +680,7 @@ public class RecoverySourceHandler {
                 .<List<StoreFileMetadata>>andThen(
                     l -> recoverSnapshotFiles(shardRecoveryPlan, l.delegateResponse((recoverSnapshotFilesListener, e) -> {
                         if (shardRecoveryPlan.canRecoverSnapshotFilesFromSourceNode() == false
-                            && e instanceof CancellableThreads.ExecutionCancelledException == false) {
+                            && !(e instanceof CancellableThreads.ExecutionCancelledException)) {
                             shardRecoveryPlan = shardRecoveryPlan.getFallbackPlan();
                             sendShardRecoveryPlanFileInfo(recoverSnapshotFilesListener.map(r -> Collections.emptyList()));
                         } else {

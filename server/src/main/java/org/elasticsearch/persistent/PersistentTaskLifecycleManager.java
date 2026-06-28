@@ -191,7 +191,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
                 logger.debug("Created [{}] task", reg.taskName());
             }, e -> {
                 final var t = ExceptionsHelper.unwrapCause(e);
-                if (t instanceof NodeClosedException == false && t instanceof ResourceAlreadyExistsException == false) {
+                if (!(t instanceof NodeClosedException) && !(t instanceof ResourceAlreadyExistsException)) {
                     logger.warn("Failed to create [{}] task", reg.taskName(), e);
                 }
             }), () -> {
@@ -259,7 +259,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
                 logger.debug("Created [{}] task for project [{}]", reg.taskName(), projectId);
             }, e -> {
                 final var t = ExceptionsHelper.unwrapCause(e);
-                if (t instanceof NodeClosedException == false && t instanceof ResourceAlreadyExistsException == false) {
+                if (!(t instanceof NodeClosedException) && !(t instanceof ResourceAlreadyExistsException)) {
                     logger.warn("Failed to create [{}] task for project [{}]", reg.taskName(), projectId, e);
                 }
             }), () -> {

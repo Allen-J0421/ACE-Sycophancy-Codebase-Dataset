@@ -1298,10 +1298,10 @@ public class Metadata implements Diffable<Metadata>, ChunkedToXContent {
                 combinedCustoms.add(persistentTasksCustomMetadata);
             }
             combinedCustoms.addAll(
-                customs.values().stream().filter(c -> c instanceof ClusterPersistentTasksCustomMetadata == false).toList()
+                customs.values().stream().filter(c -> !(c instanceof ClusterPersistentTasksCustomMetadata)).toList()
             );
             combinedCustoms.addAll(
-                singleProject.customs().values().stream().filter(c -> c instanceof PersistentTasksCustomMetadata == false).toList()
+                singleProject.customs().values().stream().filter(c -> !(c instanceof PersistentTasksCustomMetadata)).toList()
             );
             VersionedNamedWriteable.writeVersionedWriteables(out, combinedCustoms);
 

@@ -334,14 +334,14 @@ public class SystemIndexMappingUpdateService implements ClusterStateListener {
                 );
                 return -1;
             }
-            if (rawVersion instanceof Integer == false) {
+            if (!(rawVersion instanceof Integer rawVersionInt)) {
                 logger.warn(
                     "Value in [_meta.{}] was not an integer, assuming mappings update required",
                     SystemIndexDescriptor.VERSION_META_KEY
                 );
                 return -1;
             }
-            return (int) rawVersion;
+            return rawVersionInt;
         } catch (ElasticsearchParseException | IllegalArgumentException e) {
             logger.error("Cannot parse the mapping for index [{}]", indexName, e);
             return -1;

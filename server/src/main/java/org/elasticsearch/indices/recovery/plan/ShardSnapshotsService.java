@@ -122,12 +122,10 @@ public class ShardSnapshotsService {
             logger.debug("{} considering recovery from [{}][{}]", shardId, snapshot.getRepository(), snapshot.getSnapshotId());
 
             final Repository repository = repositoriesService.repository(snapshot.getRepository());
-            if (repository instanceof BlobStoreRepository == false) {
+            if (!(repository instanceof BlobStoreRepository blobStoreRepository)) {
                 logger.debug("{} not recovering from snapshot in non-blobstore repository [{}]", shardId, snapshot.getRepository());
                 return Optional.empty();
             }
-
-            BlobStoreRepository blobStoreRepository = (BlobStoreRepository) repository;
             BlobContainer blobContainer = blobStoreRepository.shardContainer(
                 latestShardSnapshot.getIndexId(),
                 latestShardSnapshot.getShardId().getId()

@@ -83,7 +83,7 @@ public final class StartupException extends Exception {
         }
         // if its a guice exception, the whole thing really will not be in the log, its megabytes.
         // refer to the hack in bootstrap, where we don't log it
-        if (originalCause instanceof CreationException == false) {
+        if (!(originalCause instanceof CreationException)) {
             final String basePath = System.getProperty("es.logs.base_path");
             // It's possible to fail before logging has been configured, in which case there's no point
             // suggested that the user look in the log file.

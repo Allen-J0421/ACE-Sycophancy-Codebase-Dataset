@@ -351,8 +351,8 @@ public class RemoteConnectionManager implements ConnectionManager {
         private final SecureString clusterCredentials;
 
         private InternalRemoteConnection(Transport.Connection connection, String clusterAlias, @Nullable SecureString clusterCredentials) {
-            assert false == connection instanceof InternalRemoteConnection : "should not double wrap";
-            assert false == connection instanceof ProxyConnection
+            assert !(connection instanceof InternalRemoteConnection) : "should not double wrap";
+            assert !(connection instanceof ProxyConnection)
                 : "proxy connection should wrap internal remote connection, not the other way around";
             this.connection = Objects.requireNonNull(connection);
             this.clusterAlias = Objects.requireNonNull(clusterAlias);

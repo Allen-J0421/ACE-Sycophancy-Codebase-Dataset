@@ -1027,7 +1027,7 @@ public class MasterService extends AbstractLifecycleComponent {
 
         @Override
         public void success(Runnable onPublicationSuccess) {
-            assert getTask() instanceof ClusterStateAckListener == false // see [HISTORICAL NOTE] above
+            assert !(getTask() instanceof ClusterStateAckListener) // see [HISTORICAL NOTE] above
                 : "tasks that implement ClusterStateAckListener must explicitly supply themselves as the ack listener";
             assert incomplete();
             this.onPublicationSuccess = Objects.requireNonNull(onPublicationSuccess);
@@ -1035,7 +1035,7 @@ public class MasterService extends AbstractLifecycleComponent {
 
         @Override
         public void success(Consumer<ClusterState> publishListener) {
-            assert getTask() instanceof ClusterStateAckListener == false // see [HISTORICAL NOTE] above
+            assert !(getTask() instanceof ClusterStateAckListener) // see [HISTORICAL NOTE] above
                 : "tasks that implement ClusterStateAckListener must explicitly supply themselves as the ack listener";
             assert incomplete();
             this.publishedStateConsumer = Objects.requireNonNull(publishListener);
@@ -1043,7 +1043,7 @@ public class MasterService extends AbstractLifecycleComponent {
 
         @Override
         public void success(Runnable onPublicationSuccess, ClusterStateAckListener clusterStateAckListener) {
-            assert getTask() == clusterStateAckListener || getTask() instanceof ClusterStateAckListener == false
+            assert getTask() == clusterStateAckListener || !(getTask() instanceof ClusterStateAckListener)
                 // see [HISTORICAL NOTE] above
                 : "tasks that implement ClusterStateAckListener must not supply a separate clusterStateAckListener";
             assert incomplete();
@@ -1053,7 +1053,7 @@ public class MasterService extends AbstractLifecycleComponent {
 
         @Override
         public void success(Consumer<ClusterState> publishListener, ClusterStateAckListener clusterStateAckListener) {
-            assert getTask() == clusterStateAckListener || getTask() instanceof ClusterStateAckListener == false
+            assert getTask() == clusterStateAckListener || !(getTask() instanceof ClusterStateAckListener)
                 // see [HISTORICAL NOTE] above
                 : "tasks that implement ClusterStateAckListener must not supply a separate clusterStateAckListener";
             assert incomplete();

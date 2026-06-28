@@ -124,7 +124,7 @@ public class TaskResultsService {
 
             @Override
             public void onFailure(Exception e) {
-                if (false == (e instanceof EsRejectedExecutionException) || false == backoff.hasNext()) {
+                if (!(e instanceof EsRejectedExecutionException) || backoff.hasNext() == false) {
                     listener.onFailure(e);
                 } else {
                     TimeValue wait = backoff.next();

@@ -272,8 +272,8 @@ public class XLRUQueryCache implements QueryCache, Accountable {
     }
 
     CacheAndCount get(Query key, IndexReader.CacheHelper cacheHelper) {
-        assert key instanceof BoostQuery == false;
-        assert key instanceof ConstantScoreQuery == false;
+        assert !(key instanceof BoostQuery);
+        assert !(key instanceof ConstantScoreQuery);
         final IndexReader.CacheKey readerKey = cacheHelper.getKey();
         final LeafCache leafCache = cache.get(readerKey);
         if (leafCache == null) {
@@ -296,8 +296,8 @@ public class XLRUQueryCache implements QueryCache, Accountable {
     }
 
     private void putIfAbsent(Query query, CacheAndCount cached, IndexReader.CacheHelper cacheHelper) {
-        assert query instanceof BoostQuery == false;
-        assert query instanceof ConstantScoreQuery == false;
+        assert !(query instanceof BoostQuery);
+        assert !(query instanceof ConstantScoreQuery);
         // under a lock to make sure that mostRecentlyUsedQueries and cache remain sync'ed
         writeLock.lock();
         try {

@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
-import static org.elasticsearch.core.Strings.format;
-
 public class TaskCancellationService {
     public static final String BAN_PARENT_ACTION_NAME = "internal:admin/tasks/ban";
     public static final String REMOTE_CLUSTER_BAN_PARENT_ACTION_NAME = "cluster:internal/admin/tasks/ban";
@@ -212,15 +210,19 @@ public class TaskCancellationService {
                     @Override
                     public void handleException(TransportException exp) {
                         final Throwable cause = ExceptionsHelper.unwrapCause(exp);
-                        assert cause instanceof ElasticsearchSecurityException == false : new AssertionError(exp);
+                        assert !(cause instanceof ElasticsearchSecurityException) : new AssertionError(exp);
                         if (isUnimportantBanFailure(cause)) {
                             logger.debug(
-                                () -> format("cannot send ban for tasks with the parent [%s] on connection [%s]", taskId, connection),
+                                "cannot send ban for tasks with the parent [{}] on connection [{}]",
+                                taskId,
+                                connection,
                                 exp
                             );
                         } else if (logger.isDebugEnabled()) {
                             logger.warn(
-                                () -> format("cannot send ban for tasks with the parent [%s] on connection [%s]", taskId, connection),
+                                "cannot send ban for tasks with the parent [{}] on connection [{}]",
+                                taskId,
+                                connection,
                                 exp
                             );
                         } else {
@@ -261,23 +263,19 @@ public class TaskCancellationService {
                     @Override
                     public void handleException(TransportException exp) {
                         final Throwable cause = ExceptionsHelper.unwrapCause(exp);
-                        assert cause instanceof ElasticsearchSecurityException == false : new AssertionError(exp);
+                        assert !(cause instanceof ElasticsearchSecurityException) : new AssertionError(exp);
                         if (isUnimportantBanFailure(cause)) {
                             logger.debug(
-                                () -> format(
-                                    "failed to remove ban for tasks with the parent [%s] on connection [%s]",
-                                    request.parentTaskId,
-                                    connection
-                                ),
+                                "failed to remove ban for tasks with the parent [{}] on connection [{}]",
+                                request.parentTaskId,
+                                connection,
                                 exp
                             );
                         } else if (logger.isDebugEnabled()) {
                             logger.warn(
-                                () -> format(
-                                    "failed to remove ban for tasks with the parent [%s] on connection [%s]",
-                                    request.parentTaskId,
-                                    connection
-                                ),
+                                "failed to remove ban for tasks with the parent [{}] on connection [{}]",
+                                request.parentTaskId,
+                                connection,
                                 exp
                             );
                         } else {

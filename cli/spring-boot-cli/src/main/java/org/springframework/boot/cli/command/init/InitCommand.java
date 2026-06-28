@@ -18,17 +18,13 @@ package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import joptsimple.OptionSet;
-import joptsimple.ArgumentAcceptingOptionSpec;
-import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.HelpExample;
@@ -36,7 +32,6 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
-import org.springframework.util.Assert;
 
 /**
  * {@link Command} that initializes a project using Spring initializr.
@@ -96,109 +91,24 @@ public class InitCommand extends OptionParsingCommand {
 
 		private final ProjectGenerator projectGenerator;
 
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> target;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<Void> listCapabilities;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> groupId;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> artifactId;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> version;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> name;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> description;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> packageName;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> type;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> packaging;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> build;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> format;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> javaVersion;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> language;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> bootVersion;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<String> dependencies;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<Void> extract;
-
-		@SuppressWarnings("NullAway.Init")
-		private OptionSpec<Void> force;
+		private final InitCommandOptions commandOptions;
 
 		InitOptionHandler(InitializrService initializrService) {
 			super(InitOptionHandler::processArgument);
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
 			this.projectGenerator = new ProjectGenerator(initializrService);
+			this.commandOptions = new InitCommandOptions();
 		}
 
 		@Override
 		protected void options() {
-			this.target = requiredOption(Arrays.asList("target"), "URL of the service to use")
-				.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
-			this.listCapabilities = flagOption(Arrays.asList("list"),
-					"List the capabilities of the service. Use it to discover the dependencies and the types that are available");
-			projectGenerationOptions();
-			otherOptions();
-		}
-
-		private void projectGenerationOptions() {
-			this.groupId = requiredOption(Arrays.asList("group-id", "g"), "Project coordinates (for example 'org.test')");
-			this.artifactId = requiredOption(Arrays.asList("artifact-id", "a"),
-					"Project coordinates; infer archive name (for example 'test')");
-			this.version = requiredOption(Arrays.asList("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')");
-			this.name = requiredOption(Arrays.asList("name", "n"), "Project name; infer application name");
-			this.description = requiredOption("description", "Project description");
-			this.packageName = requiredOption(Arrays.asList("package-name"), "Package name");
-			this.type = requiredOption(Arrays.asList("type", "t"),
-					"Project type. Not normally needed if you use --build and/or --format. Check the capabilities of the service (--list) for more details");
-			this.packaging = requiredOption(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')");
-			this.build = requiredOption("build", "Build system to use (for example 'maven' or 'gradle')")
-				.defaultsTo("gradle");
-			this.format = requiredOption("format", "Format of the generated content (for example 'build' for a build file, 'project' for a project archive)")
-				.defaultsTo("project");
-			this.javaVersion = requiredOption(Arrays.asList("java-version", "j"), "Language level (for example '1.8')");
-			this.language = requiredOption(Arrays.asList("language", "l"), "Programming language  (for example 'java')");
-			this.bootVersion = requiredOption(Arrays.asList("boot-version", "b"),
-					"Spring Boot version (for example '1.2.0.RELEASE')");
-			this.dependencies = requiredOption(Arrays.asList("dependencies", "d"),
-					"Comma-separated list of dependency identifiers to include in the generated project");
-		}
-
-		private void otherOptions() {
-			this.extract = flagOption(Arrays.asList("extract", "x"),
-					"Extract the project archive. Inferred if a location is specified without an extension");
-			this.force = flagOption(Arrays.asList("force", "f"), "Force overwrite of existing files");
+			this.commandOptions.configure(this);
 		}
 
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
 			try {
-				if (options.has(this.listCapabilities)) {
+				if (this.commandOptions.isListCapabilities(options)) {
 					generateReport(options);
 				}
 				else {
@@ -217,67 +127,16 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void generateReport(OptionSet options) throws IOException {
-			Log.info(this.serviceCapabilitiesReport.generate(options.valueOf(this.target)));
+			Log.info(this.serviceCapabilitiesReport.generate(this.commandOptions.getTarget(options)));
 		}
 
 		protected void generateProject(OptionSet options) throws IOException {
 			ProjectGenerationRequest request = createProjectGenerationRequest(options);
-			this.projectGenerator.generateProject(request, options.has(this.force));
+			this.projectGenerator.generateProject(request, this.commandOptions.isForce(options));
 		}
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
-			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
-			Assert.state(nonOptionArguments.size() <= 1, "Only the target location may be specified");
-			ProjectGenerationRequest request = new ProjectGenerationRequest();
-			request.setServiceUrl(options.valueOf(this.target));
-			applyConfiguredValue(options, this.bootVersion, request::setBootVersion);
-			applyConfiguredDependencies(options, request);
-			applyConfiguredValue(options, this.javaVersion, request::setJavaVersion);
-			applyConfiguredValue(options, this.packageName, request::setPackageName);
-			request.setBuild(options.valueOf(this.build));
-			request.setFormat(options.valueOf(this.format));
-			request.setDetectType(options.has(this.build) || options.has(this.format));
-			applyConfiguredValue(options, this.type, request::setType);
-			applyConfiguredValue(options, this.packaging, request::setPackaging);
-			applyConfiguredValue(options, this.language, request::setLanguage);
-			applyConfiguredValue(options, this.groupId, request::setGroupId);
-			applyConfiguredValue(options, this.artifactId, request::setArtifactId);
-			applyConfiguredValue(options, this.name, request::setName);
-			applyConfiguredValue(options, this.version, request::setVersion);
-			applyConfiguredValue(options, this.description, request::setDescription);
-			request.setExtract(options.has(this.extract));
-			if (nonOptionArguments.size() == 1) {
-				String output = (String) nonOptionArguments.get(0);
-				request.setOutput(output);
-			}
-			return request;
-		}
-
-		private void applyConfiguredDependencies(OptionSet options, ProjectGenerationRequest request) {
-			if (!options.has(this.dependencies)) {
-				return;
-			}
-			for (String dependency : options.valueOf(this.dependencies).split(",")) {
-				request.getDependencies().add(dependency.trim());
-			}
-		}
-
-		private void applyConfiguredValue(OptionSet options, OptionSpec<String> option, Consumer<String> setter) {
-			if (options.has(option)) {
-				setter.accept(options.valueOf(option));
-			}
-		}
-
-		private ArgumentAcceptingOptionSpec<String> requiredOption(List<String> names, String description) {
-			return option(names, description).withRequiredArg();
-		}
-
-		private ArgumentAcceptingOptionSpec<String> requiredOption(String name, String description) {
-			return option(name, description).withRequiredArg();
-		}
-
-		private OptionSpec<Void> flagOption(List<String> names, String description) {
-			return option(names, description);
+			return this.commandOptions.createProjectGenerationRequest(options);
 		}
 
 		private static String processArgument(String argument) {

@@ -29,12 +29,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
+import org.springframework.boot.cli.util.MockLog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link CommandRunner}.
@@ -59,15 +62,19 @@ class CommandRunnerTests {
 
 	private ClassLoader loader;
 
+	private MockLog log;
+
 	@AfterEach
 	void close() {
 		Thread.currentThread().setContextClassLoader(this.loader);
 		System.clearProperty("debug");
+		MockLog.clear();
 	}
 
 	@BeforeEach
 	void setup() {
 		this.loader = Thread.currentThread().getContextClassLoader();
+		this.log = MockLog.attach();
 		this.commandRunner = new CommandRunner("spring") {
 
 			@Override
@@ -177,6 +184,23 @@ class CommandRunnerTests {
 		this.commandRunner.setOptionCommands(this.regularCommand.getClass());
 		this.commandRunner.run("help", "--command");
 		then(this.regularCommand).should().getHelp();
+	}
+
+	@Test
+	void setOptionCommandsShouldCopyInputArray() {
+		Class<?>[] optionCommands = { this.regularCommand.getClass() };
+		this.commandRunner.setOptionCommands(optionCommands);
+		optionCommands[0] = HelpCommand.class;
+		assertThat(this.commandRunner.isOptionCommand(this.regularCommand)).isTrue();
+	}
+
+	@Test
+	void setHiddenCommandsShouldCopyInputArray() {
+		Class<?>[] hiddenCommands = { HintCommand.class };
+		this.commandRunner.setHiddenCommands(hiddenCommands);
+		hiddenCommands[0] = HelpCommand.class;
+		this.commandRunner.runAndHandleErrors();
+		then(this.log).should(never()).info(contains("Provides hints for shell auto-completion"));
 	}
 
 	@Test

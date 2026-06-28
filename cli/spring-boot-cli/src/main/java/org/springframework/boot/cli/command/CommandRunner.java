@@ -98,7 +98,7 @@ public class CommandRunner implements Iterable<Command> {
 	 */
 	public void setOptionCommands(Class<?>... commandClasses) {
 		Assert.notNull(commandClasses, "'commandClasses' must not be null");
-		this.optionCommandClasses = commandClasses;
+		this.optionCommandClasses = Arrays.copyOf(commandClasses, commandClasses.length);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class CommandRunner implements Iterable<Command> {
 	 */
 	public void setHiddenCommands(Class<?>... commandClasses) {
 		Assert.notNull(commandClasses, "'commandClasses' must not be null");
-		this.hiddenCommandClasses = commandClasses;
+		this.hiddenCommandClasses = Arrays.copyOf(commandClasses, commandClasses.length);
 	}
 
 	/**

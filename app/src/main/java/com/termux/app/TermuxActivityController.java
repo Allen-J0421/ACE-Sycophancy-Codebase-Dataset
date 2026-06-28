@@ -83,30 +83,32 @@ final class TermuxActivityController {
     private static final String ARG_TERMINAL_TOOLBAR_TEXT_INPUT = "terminal_toolbar_text_input";
     private static final String ARG_ACTIVITY_RECREATED = "activity_recreated";
 
-    private final TermuxActivity mActivity;
+    final TermuxActivity mActivity;
     private final BroadcastReceiver mTermuxActivityBroadcastReceiver = new TermuxActivityBroadcastReceiver();
+    private final TermuxActivityUiController mUiController;
 
-    private TermuxService mTermuxService;
-    private TerminalView mTerminalView;
-    private TermuxTerminalViewClient mTermuxTerminalViewClient;
-    private TermuxTerminalSessionActivityClient mTermuxTerminalSessionActivityClient;
-    private TermuxAppSharedPreferences mPreferences;
-    private TermuxAppSharedProperties mProperties;
-    private TermuxActivityRootView mTermuxActivityRootView;
-    private View mTermuxActivityBottomSpaceView;
-    private ExtraKeysView mExtraKeysView;
-    private TermuxTerminalExtraKeys mTermuxTerminalExtraKeys;
-    private TermuxSessionsListViewController mTermuxSessionListViewController;
-    private Toast mLastToast;
-    private boolean mIsVisible;
-    private boolean mIsOnResumeAfterOnCreate = true;
-    private boolean mIsActivityRecreated;
-    private boolean mIsInvalidState;
-    private int mNavBarHeight;
-    private float mTerminalToolbarDefaultHeight;
+    TermuxService mTermuxService;
+    TerminalView mTerminalView;
+    TermuxTerminalViewClient mTermuxTerminalViewClient;
+    TermuxTerminalSessionActivityClient mTermuxTerminalSessionActivityClient;
+    TermuxAppSharedPreferences mPreferences;
+    TermuxAppSharedProperties mProperties;
+    TermuxActivityRootView mTermuxActivityRootView;
+    View mTermuxActivityBottomSpaceView;
+    ExtraKeysView mExtraKeysView;
+    TermuxTerminalExtraKeys mTermuxTerminalExtraKeys;
+    TermuxSessionsListViewController mTermuxSessionListViewController;
+    Toast mLastToast;
+    boolean mIsVisible;
+    boolean mIsOnResumeAfterOnCreate = true;
+    boolean mIsActivityRecreated;
+    boolean mIsInvalidState;
+    int mNavBarHeight;
+    float mTerminalToolbarDefaultHeight;
 
     TermuxActivityController(TermuxActivity activity) {
         mActivity = activity;
+        mUiController = new TermuxActivityUiController(this);
     }
 
     void initializeActivityState(@Nullable Bundle savedInstanceState) {
@@ -131,7 +133,7 @@ final class TermuxActivityController {
             return;
         }
 
-        initializeViews(savedInstanceState);
+        mUiController.initializeViews(savedInstanceState);
         startAndBindService();
 
         if (mIsInvalidState) return;
@@ -140,31 +142,7 @@ final class TermuxActivityController {
     }
 
     private void initializeViews(@Nullable Bundle savedInstanceState) {
-        setMargins();
-
-        mTermuxActivityRootView = mActivity.findViewById(R.id.activity_termux_root_view);
-        mTermuxActivityRootView.setActivity(mActivity);
-        mTermuxActivityBottomSpaceView = mActivity.findViewById(R.id.activity_termux_bottom_space_view);
-        mTermuxActivityRootView.setOnApplyWindowInsetsListener(new TermuxActivityRootView.WindowInsetsListener());
-
-        View content = mActivity.findViewById(android.R.id.content);
-        content.setOnApplyWindowInsetsListener((v, insets) -> {
-            mNavBarHeight = insets.getSystemWindowInsetBottom();
-            return insets;
-        });
-
-        if (mProperties.isUsingFullScreen()) {
-            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-
-        setTermuxTerminalViewAndClients();
-        setTerminalToolbarView(savedInstanceState);
-        setSettingsButtonView();
-        setNewSessionButtonView();
-        setToggleKeyboardView();
-
-        mActivity.registerForContextMenu(mTerminalView);
-        FileReceiverActivity.updateFileReceiverActivityComponentsState(mActivity);
+        mUiController.initializeViews(savedInstanceState);
     }
 
     private void startAndBindService() {
@@ -195,11 +173,7 @@ final class TermuxActivityController {
         if (mTermuxTerminalViewClient != null) {
             mTermuxTerminalViewClient.onStart();
         }
-        if (mPreferences.isTerminalMarginAdjustmentEnabled()) {
-            addTermuxActivityRootViewGlobalLayoutListener();
-        }
-
-        registerTermuxActivityBroadcastReceiver();
+        mUiController.onStart();
     }
 
     void onResume() {
@@ -228,9 +202,7 @@ final class TermuxActivityController {
             mTermuxTerminalViewClient.onStop();
         }
 
-        removeTermuxActivityRootViewGlobalLayoutListener();
-        unregisterTermuxActivityBroadcastReceiver();
-        getDrawer().closeDrawers();
+        mUiController.onStop();
     }
 
     void onDestroy() {
@@ -249,13 +221,12 @@ final class TermuxActivityController {
     }
 
     void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
-        saveTerminalToolbarTextInput(savedInstanceState);
-        savedInstanceState.putBoolean(ARG_ACTIVITY_RECREATED, true);
+        mUiController.onSaveInstanceState(savedInstanceState);
     }
 
     void onServiceConnected(ComponentName componentName, IBinder service) {
         mTermuxService = ((TermuxService.LocalBinder) service).service;
-        setTermuxSessionsListView();
+        mUiController.setTermuxSessionsListView();
         handleServiceConnectedIntent(mActivity.getIntent());
         mTermuxService.setTermuxTerminalSessionClient(mTermuxTerminalSessionActivityClient);
     }
@@ -265,120 +236,39 @@ final class TermuxActivityController {
     }
 
     void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Logger.logVerbose(LOG_TAG, "onActivityResult: requestCode: " + requestCode + ", resultCode: " + resultCode +
-            ", data: " + IntentUtils.getIntentString(data));
-        if (requestCode == PermissionUtils.REQUEST_GRANT_STORAGE_PERMISSION) {
-            requestStoragePermission(true);
-        }
+        mUiController.onActivityResult(requestCode, resultCode, data);
     }
 
     void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Logger.logVerbose(LOG_TAG, "onRequestPermissionsResult: requestCode: " + requestCode + ", permissions: " +
-            Arrays.toString(permissions) + ", grantResults: " + Arrays.toString(grantResults));
-        if (requestCode == PermissionUtils.REQUEST_GRANT_STORAGE_PERMISSION) {
-            requestStoragePermission(true);
-        }
+        mUiController.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     void onBackPressed() {
-        if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
-            getDrawer().closeDrawers();
-        } else {
-            finishActivityIfNotFinishing();
-        }
+        mUiController.onBackPressed();
     }
 
     void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        TerminalSession currentSession = getCurrentSession();
-        if (currentSession == null) return;
-
-        boolean autoFillEnabled = mTerminalView.isAutoFillEnabled();
-
-        menu.add(Menu.NONE, CONTEXT_MENU_SELECT_URL_ID, Menu.NONE, R.string.action_select_url);
-        menu.add(Menu.NONE, CONTEXT_MENU_SHARE_TRANSCRIPT_ID, Menu.NONE, R.string.action_share_transcript);
-        if (!DataUtils.isNullOrEmpty(mTerminalView.getStoredSelectedText())) {
-            menu.add(Menu.NONE, CONTEXT_MENU_SHARE_SELECTED_TEXT, Menu.NONE, R.string.action_share_selected_text);
-        }
-        if (autoFillEnabled) {
-            menu.add(Menu.NONE, CONTEXT_MENU_AUTOFILL_USERNAME, Menu.NONE, R.string.action_autofill_username);
-            menu.add(Menu.NONE, CONTEXT_MENU_AUTOFILL_PASSWORD, Menu.NONE, R.string.action_autofill_password);
-        }
-        menu.add(Menu.NONE, CONTEXT_MENU_RESET_TERMINAL_ID, Menu.NONE, R.string.action_reset_terminal);
-        menu.add(Menu.NONE, CONTEXT_MENU_KILL_PROCESS_ID, Menu.NONE,
-            mActivity.getResources().getString(R.string.action_kill_process, getCurrentSession().getPid())).setEnabled(currentSession.isRunning());
-        menu.add(Menu.NONE, CONTEXT_MENU_STYLING_ID, Menu.NONE, R.string.action_style_terminal);
-        menu.add(Menu.NONE, CONTEXT_MENU_TOGGLE_KEEP_SCREEN_ON, Menu.NONE, R.string.action_toggle_keep_screen_on)
-            .setCheckable(true).setChecked(mPreferences.shouldKeepScreenOn());
-        menu.add(Menu.NONE, CONTEXT_MENU_HELP_ID, Menu.NONE, R.string.action_open_help);
-        menu.add(Menu.NONE, CONTEXT_MENU_SETTINGS_ID, Menu.NONE, R.string.action_open_settings);
-        menu.add(Menu.NONE, CONTEXT_MENU_REPORT_ID, Menu.NONE, R.string.action_report_issue);
+        mUiController.onCreateContextMenu(menu, v, menuInfo);
     }
 
     boolean onCreateOptionsMenu(Menu menu) {
-        mTerminalView.showContextMenu();
-        return false;
+        return mUiController.onCreateOptionsMenu(menu);
     }
 
     boolean onContextItemSelected(MenuItem item) {
-        TerminalSession session = getCurrentSession();
-        if (handleContextMenuSelection(item.getItemId(), session)) return true;
-        return false;
+        return mUiController.onContextItemSelected(item);
     }
 
     void onContextMenuClosed(Menu menu) {
-        mTerminalView.onContextMenuClosed(menu);
+        mUiController.onContextMenuClosed(menu);
     }
 
     void requestStoragePermission(boolean isPermissionCallback) {
-        new Thread() {
-            @Override
-            public void run() {
-                int requestCode = isPermissionCallback ? -1 : PermissionUtils.REQUEST_GRANT_STORAGE_PERMISSION;
-
-                if (PermissionUtils.checkAndRequestLegacyOrManageExternalStoragePermission(
-                    mActivity, requestCode, !isPermissionCallback)) {
-                    if (isPermissionCallback) {
-                        Logger.logInfoAndShowToast(mActivity, LOG_TAG,
-                            mActivity.getString(com.termux.shared.R.string.msg_storage_permission_granted_on_request));
-                    }
-
-                    TermuxInstaller.setupStorageSymlinks(mActivity);
-                } else if (isPermissionCallback) {
-                    Logger.logInfoAndShowToast(mActivity, LOG_TAG,
-                        mActivity.getString(com.termux.shared.R.string.msg_storage_permission_not_granted_on_request));
-                }
-            }
-        }.start();
+        mUiController.requestStoragePermission(isPermissionCallback);
     }
 
     void reloadActivityStyling(boolean recreateActivity) {
-        if (mProperties != null) {
-            reloadProperties();
-
-            if (mExtraKeysView != null) {
-                mExtraKeysView.setButtonTextAllCaps(mProperties.shouldExtraKeysTextBeAllCaps());
-                mExtraKeysView.reload(mTermuxTerminalExtraKeys.getExtraKeysInfo(), mTerminalToolbarDefaultHeight);
-            }
-
-            TermuxThemeUtils.setAppNightMode(mProperties.getNightMode());
-        }
-
-        setMargins();
-        setTerminalToolbarHeight();
-
-        FileReceiverActivity.updateFileReceiverActivityComponentsState(mActivity);
-
-        if (mTermuxTerminalSessionActivityClient != null) {
-            mTermuxTerminalSessionActivityClient.onReloadActivityStyling();
-        }
-        if (mTermuxTerminalViewClient != null) {
-            mTermuxTerminalViewClient.onReloadActivityStyling();
-        }
-
-        if (recreateActivity) {
-            Logger.logDebug(LOG_TAG, "Recreating activity");
-            mActivity.recreate();
-        }
+        mUiController.reloadActivityStyling(recreateActivity);
     }
 
     void reloadProperties() {
@@ -390,98 +280,76 @@ final class TermuxActivityController {
     }
 
     void toggleTerminalToolbar() {
-        final ViewPager terminalToolbarViewPager = getTerminalToolbarViewPager();
-        if (terminalToolbarViewPager == null) return;
-
-        final boolean showNow = mPreferences.toogleShowTerminalToolbar();
-        Logger.showToast(mActivity, (showNow ? mActivity.getString(R.string.msg_enabling_terminal_toolbar) :
-            mActivity.getString(R.string.msg_disabling_terminal_toolbar)), true);
-        terminalToolbarViewPager.setVisibility(showNow ? View.VISIBLE : View.GONE);
-        if (showNow && isTerminalToolbarTextInputViewSelected()) {
-            mActivity.findViewById(R.id.terminal_toolbar_text_input).requestFocus();
-        }
+        mUiController.toggleTerminalToolbar();
     }
 
     void showToast(String text, boolean longDuration) {
-        if (text == null || text.isEmpty()) return;
-        if (mLastToast != null) mLastToast.cancel();
-        mLastToast = Toast.makeText(mActivity, text, longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
-        mLastToast.setGravity(Gravity.TOP, 0, 0);
-        mLastToast.show();
+        mUiController.showToast(text, longDuration);
     }
 
     void finishActivityIfNotFinishing() {
-        if (!mActivity.isFinishing()) {
-            mActivity.finish();
-        }
+        mUiController.finishActivityIfNotFinishing();
     }
 
     void addTermuxActivityRootViewGlobalLayoutListener() {
-        getTermuxActivityRootView().getViewTreeObserver().addOnGlobalLayoutListener(getTermuxActivityRootView());
+        mUiController.addTermuxActivityRootViewGlobalLayoutListener();
     }
 
     void removeTermuxActivityRootViewGlobalLayoutListener() {
-        if (getTermuxActivityRootView() != null) {
-            getTermuxActivityRootView().getViewTreeObserver().removeOnGlobalLayoutListener(getTermuxActivityRootView());
-        }
+        mUiController.removeTermuxActivityRootViewGlobalLayoutListener();
     }
 
     void setExtraKeysView(ExtraKeysView extraKeysView) {
-        mExtraKeysView = extraKeysView;
+        mUiController.setExtraKeysView(extraKeysView);
     }
 
     @Nullable
     TerminalSession getCurrentSession() {
-        if (mTerminalView != null) {
-            return mTerminalView.getCurrentSession();
-        }
-        return null;
+        return mUiController.getCurrentSession();
     }
 
     int getNavBarHeight() {
-        return mNavBarHeight;
+        return mUiController.getNavBarHeight();
     }
 
     TermuxActivityRootView getTermuxActivityRootView() {
-        return mTermuxActivityRootView;
+        return mUiController.getTermuxActivityRootView();
     }
 
     View getTermuxActivityBottomSpaceView() {
-        return mTermuxActivityBottomSpaceView;
+        return mUiController.getTermuxActivityBottomSpaceView();
     }
 
     ExtraKeysView getExtraKeysView() {
-        return mExtraKeysView;
+        return mUiController.getExtraKeysView();
     }
 
     TermuxTerminalExtraKeys getTermuxTerminalExtraKeys() {
-        return mTermuxTerminalExtraKeys;
+        return mUiController.getTermuxTerminalExtraKeys();
     }
 
     DrawerLayout getDrawer() {
-        return (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
+        return mUiController.getDrawer();
     }
 
     ViewPager getTerminalToolbarViewPager() {
-        return (ViewPager) mActivity.findViewById(R.id.terminal_toolbar_view_pager);
+        return mUiController.getTerminalToolbarViewPager();
     }
 
     float getTerminalToolbarDefaultHeight() {
-        return mTerminalToolbarDefaultHeight;
+        return mUiController.getTerminalToolbarDefaultHeight();
     }
 
     boolean isTerminalViewSelected() {
-        return getTerminalToolbarViewPager().getCurrentItem() == 0;
+        return mUiController.isTerminalViewSelected();
     }
 
     boolean isTerminalToolbarTextInputViewSelected() {
-        return getTerminalToolbarViewPager().getCurrentItem() == 1;
+        return mUiController.isTerminalToolbarTextInputViewSelected();
     }
 
     void termuxSessionListNotifyUpdated() {
-        if (mTermuxSessionListViewController != null) {
-            mTermuxSessionListViewController.notifyDataSetChanged();
-        }
+        mUiController.termuxSessionListNotifyUpdated();
     }
 
     boolean isVisible() {

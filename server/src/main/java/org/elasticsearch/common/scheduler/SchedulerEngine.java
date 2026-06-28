@@ -181,7 +181,7 @@ public class SchedulerEngine {
             if (previousSchedule != null) {
                 previousSchedule.cancel();
             }
-            logger.debug(() -> "added job [" + job.id() + "]");
+            logger.debug("added job [{}]", job.id());
             return schedule;
         });
     }
@@ -189,7 +189,7 @@ public class SchedulerEngine {
     public boolean remove(String jobId) {
         ActiveSchedule removedSchedule = schedules.remove(jobId);
         if (removedSchedule != null) {
-            logger.debug(() -> "removed job [" + jobId + "]");
+            logger.debug("removed job [{}]", jobId);
             removedSchedule.cancel();
         }
         return removedSchedule != null;
@@ -239,7 +239,7 @@ public class SchedulerEngine {
         public void run() {
             final long triggeredTime = clock.millis();
             try {
-                logger.debug(() -> "job [" + name + "] triggered with triggeredTime=[" + triggeredTime + "]");
+                logger.debug("job [{}] triggered with triggeredTime=[{}]", name, triggeredTime);
                 notifyListeners(name, triggeredTime, scheduledTime);
             } catch (final Throwable t) {
                 /*

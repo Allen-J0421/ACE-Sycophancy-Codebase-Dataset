@@ -268,7 +268,7 @@ public abstract class Engine implements Closeable {
             try {
                 sizeInBytes += info.sizeInBytes();
             } catch (IOException e) {
-                logger.trace(() -> "failed to get size for [" + info.info.name + "]", e);
+                logger.trace("failed to get size for [{}]", info.info.name, e);
             }
         }
         return new DocsStats(numDocs, numDeletedDocs, sizeInBytes);
@@ -388,7 +388,7 @@ public abstract class Engine implements Closeable {
             try {
                 stats.add(getDenseVectorStats(readerContext.reader(), fields));
             } catch (IOException e) {
-                logger.trace(() -> "failed to get dense vector stats for [" + readerContext + "]", e);
+                logger.trace("failed to get dense vector stats for [{}]", readerContext, e);
             }
         }
         return stats;
@@ -453,7 +453,7 @@ public abstract class Engine implements Closeable {
             try {
                 valueCount += getSparseVectorValueCount(readerContext.reader(), fields);
             } catch (IOException e) {
-                logger.trace(() -> "failed to get sparse vector stats for [" + readerContext + "]", e);
+                logger.trace("failed to get sparse vector stats for [{}]", readerContext, e);
             }
         }
         return new SparseVectorStats(valueCount);
@@ -1410,7 +1410,7 @@ public abstract class Engine implements Closeable {
                     try {
                         segment.sizeInBytes = info.sizeInBytes();
                     } catch (IOException e) {
-                        logger.trace(() -> "failed to get size for [" + info.info.name + "]", e);
+                        logger.trace("failed to get size for [{}]", info.info.name, e);
                     }
                     segment.segmentSort = info.info.getIndexSort();
                     segment.attributes = info.info.getAttributes();
@@ -1443,7 +1443,7 @@ public abstract class Engine implements Closeable {
         try {
             segment.sizeInBytes = info.sizeInBytes();
         } catch (IOException e) {
-            logger.trace(() -> "failed to get size for [" + info.info.name + "]", e);
+            logger.trace("failed to get size for [{}]", info.info.name, e);
         }
         segment.segmentSort = info.info.getIndexSort();
         segment.attributes = new HashMap<>();

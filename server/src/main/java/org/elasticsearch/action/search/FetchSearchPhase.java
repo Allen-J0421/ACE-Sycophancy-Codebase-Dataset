@@ -224,7 +224,7 @@ class FetchSearchPhase extends SearchPhase {
             @Override
             public void onFailure(Exception e) {
                 try {
-                    logger.debug(() -> "[" + contextId + "] Failed to execute fetch phase", e);
+                    logger.debug("[{}] Failed to execute fetch phase", contextId, e);
                     progressListener.notifyFetchFailure(shardIndex, shardTarget, e);
                     counter.onFailure(shardIndex, shardTarget, e);
                 } finally {

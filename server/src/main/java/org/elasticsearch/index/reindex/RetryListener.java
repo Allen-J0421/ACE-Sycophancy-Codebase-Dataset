@@ -51,7 +51,7 @@ public class RetryListener<T> extends DelegatingActionListener<T, T> implements 
         if (retries.hasNext()) {
             retryCount += 1;
             TimeValue delay = retries.next();
-            logger.trace(() -> "retrying rejected search after [" + delay + "]", e);
+            logger.trace("retrying rejected search after [{}]", delay, e);
             schedule(() -> retryHandler.accept(this), delay);
         } else {
             logger.warn("giving up on search because we retried [{}] times without success", retryCount, e);

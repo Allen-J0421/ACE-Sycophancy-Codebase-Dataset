@@ -272,7 +272,7 @@ public class EsThreadPoolExecutor extends ThreadPoolExecutor {
 
     @Override
     public boolean remove(Runnable task) {
-        logger.trace(() -> "task is removed " + task);
+        logger.trace("task is removed {}", task);
         return super.remove(task);
     }
 

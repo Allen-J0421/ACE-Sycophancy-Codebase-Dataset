@@ -151,7 +151,7 @@ public class RankFeaturePhase extends SearchPhase {
             @Override
             public void onFailure(Exception e) {
                 try {
-                    logger.debug(() -> "[" + contextId + "] Failed to execute rank phase", e);
+                    logger.debug("[{}] Failed to execute rank phase", contextId, e);
                     progressListener.notifyRankFeatureFailure(shardIndex, shardTarget, e);
                     rankRequestCounter.onFailure(shardIndex, shardTarget, e);
                 } finally {

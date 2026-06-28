@@ -141,7 +141,7 @@ public abstract class AbstractScopedSettings {
                 settingUpdater.getValue(current, previous);
             } catch (RuntimeException ex) {
                 exceptions.add(ex);
-                logger.debug(() -> "failed to prepareCommit settings for [" + settingUpdater + "]", ex);
+                logger.debug("failed to prepareCommit settings for [{}]", settingUpdater, ex);
             }
         }
         // here we are exhaustive and record all settings that failed.

@@ -369,7 +369,7 @@ public class Store extends AbstractIndexShardComponent implements Closeable, Ref
                 try {
                     directory.deleteFile(origFile);
                 } catch (FileNotFoundException | NoSuchFileException e) {} catch (Exception ex) {
-                    logger.debug(() -> "failed to delete file [" + origFile + "]", ex);
+                    logger.debug("failed to delete file [{}]", origFile, ex);
                 }
                 // now, rename the files... and fail it it won't work
                 directory.rename(tempFile, origFile);
@@ -724,7 +724,7 @@ public class Store extends AbstractIndexShardComponent implements Closeable, Ref
                         // point around?
                         throw new IllegalStateException("Can't delete " + existingFile + " - cleanup failed", ex);
                     }
-                    logger.debug(() -> "failed to delete file [" + existingFile + "]", ex);
+                    logger.debug("failed to delete file [{}]", existingFile, ex);
                     // ignore, we don't really care, will get deleted later on
                 }
             }
@@ -1006,7 +1006,7 @@ public class Store extends AbstractIndexShardComponent implements Closeable, Ref
                 }
                 builder.put(file, new StoreFileMetadata(file, length, digestToString(footerChecksum), version, fileHash, writerUuid));
             } catch (Exception ex) {
-                logger.debug(() -> "Failed computing metadata for file [" + file + "]", ex);
+                logger.debug("Failed computing metadata for file [{}]", file, ex);
                 throw ex;
             }
         }

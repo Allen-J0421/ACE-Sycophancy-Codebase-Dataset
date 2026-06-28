@@ -707,7 +707,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
 
                         @Override
                         public void onFailure(Exception e) {
-                            logger.debug(() -> "[" + shardId + "] failed to close index shard", e);
+                            logger.debug("[{}] failed to close index shard", shardId, e);
                             onResponse(null); // otherwise ignore the exception
                         }
                     }, l -> indexShard.close(reason, flushEngine, closeExecutor, l));
@@ -743,7 +743,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
                 }
             } catch (IOException e) {
                 shardStoreDeleter.addPendingDelete(lock.getShardId(), indexSettings, IndexRemovalReason.DELETED);
-                logger.debug(() -> "[" + lock.getShardId().id() + "] failed to delete shard content - scheduled a retry", e);
+                logger.debug("[{}] failed to delete shard content - scheduled a retry", lock.getShardId().id(), e);
             }
         }
     }

@@ -43,10 +43,14 @@ final class BinarySearch {
     }
 
     private static String formatSearchResult(int result) {
-        if (result == NOT_FOUND) {
+        if (isNotFound(result)) {
             return "Element is not present in array";
         }
 
         return "Element is present at index " + result;
+    }
+
+    private static boolean isNotFound(int result) {
+        return result == NOT_FOUND;
     }
 }

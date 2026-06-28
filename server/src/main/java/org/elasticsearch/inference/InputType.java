@@ -95,7 +95,7 @@ public enum InputType {
             var key = entry.getKey();
             var value = entry.getValue();
 
-            if (value instanceof String == false || Strings.isNullOrEmpty((String) value)) {
+            if (!(value instanceof String s) || Strings.isNullOrEmpty(s)) {
                 validationException.addValidationError(
                     Strings.format(
                         "Input type translation value for key [%s] must be a String that is "

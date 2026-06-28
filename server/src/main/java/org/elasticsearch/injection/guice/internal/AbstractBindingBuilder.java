@@ -65,7 +65,7 @@ public abstract class AbstractBindingBuilder<T> {
     }
 
     protected void checkNotTargetted() {
-        if ((binding instanceof UntargettedBindingImpl) == false) {
+        if (!(binding instanceof UntargettedBindingImpl)) {
             binder.addError(IMPLEMENTATION_ALREADY_SET);
         }
     }

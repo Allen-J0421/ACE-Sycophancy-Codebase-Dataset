@@ -110,10 +110,9 @@ public final class Message implements Element {
 
     @Override
     public boolean equals(Object o) {
-        if ((o instanceof Message) == false) {
+        if (!(o instanceof Message e)) {
             return false;
         }
-        Message e = (Message) o;
         return message.equals(e.message) && Objects.equals(cause, e.cause) && sources.equals(e.sources);
     }
 

@@ -139,13 +139,13 @@ class InjectorImpl implements Injector, Lookups {
     private <T> BindingImpl<MembersInjector<T>> createMembersInjectorBinding(Key<MembersInjector<T>> key, Errors errors)
         throws ErrorsException {
         Type membersInjectorType = key.getTypeLiteral().getType();
-        if ((membersInjectorType instanceof ParameterizedType) == false) {
+        if (!(membersInjectorType instanceof ParameterizedType pt)) {
             throw errors.cannotInjectRawMembersInjector().toException();
         }
 
         @SuppressWarnings("unchecked") // safe because T came from Key<MembersInjector<T>>
         TypeLiteral<T> instanceType = (TypeLiteral<T>) TypeLiteral.get(
-            ((ParameterizedType) membersInjectorType).getActualTypeArguments()[0]
+            pt.getActualTypeArguments()[0]
         );
         MembersInjector<T> membersInjector = membersInjectorStore.get(instanceType, errors);
 
@@ -162,11 +162,11 @@ class InjectorImpl implements Injector, Lookups {
         Type providerType = key.getTypeLiteral().getType();
 
         // If the Provider has no type parameter (raw Provider)...
-        if ((providerType instanceof ParameterizedType) == false) {
+        if (!(providerType instanceof ParameterizedType pt)) {
             throw errors.cannotInjectRawProvider().toException();
         }
 
-        Type entryType = ((ParameterizedType) providerType).getActualTypeArguments()[0];
+        Type entryType = pt.getActualTypeArguments()[0];
 
         @SuppressWarnings("unchecked") // safe because T came from Key<Provider<T>>
         Key<T> providedKey = (Key<T>) key.ofType(entryType);
@@ -337,18 +337,16 @@ class InjectorImpl implements Injector, Lookups {
      */
     private <T> BindingImpl<TypeLiteral<T>> createTypeLiteralBinding(Key<TypeLiteral<T>> key, Errors errors) throws ErrorsException {
         Type typeLiteralType = key.getTypeLiteral().getType();
-        if ((typeLiteralType instanceof ParameterizedType) == false) {
+        if (!(typeLiteralType instanceof ParameterizedType parameterizedType)) {
             throw errors.cannotInjectRawTypeLiteral().toException();
         }
-
-        ParameterizedType parameterizedType = (ParameterizedType) typeLiteralType;
         Type innerType = parameterizedType.getActualTypeArguments()[0];
 
         // this is unfortunate. We don't support building TypeLiterals for type variable like 'T'. If
         // this proves problematic, we can probably fix TypeLiteral to support type variables
-        if ((innerType instanceof Class) == false
-            && (innerType instanceof GenericArrayType) == false
-            && (innerType instanceof ParameterizedType) == false) {
+        if (!(innerType instanceof Class)
+            && !(innerType instanceof GenericArrayType)
+            && !(innerType instanceof ParameterizedType)) {
             throw errors.cannotInjectTypeLiteralOf(innerType).toException();
         }
 

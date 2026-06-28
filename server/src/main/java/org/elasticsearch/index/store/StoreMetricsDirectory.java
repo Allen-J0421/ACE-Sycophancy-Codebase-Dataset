@@ -20,7 +20,7 @@ public class StoreMetricsDirectory extends ByteSizeDirectory {
     public StoreMetricsDirectory(ByteSizeDirectory in, PluggableDirectoryMetricsHolder<StoreMetrics> metricHolder) {
         super(in);
         this.metricHolder = metricHolder;
-        assert in instanceof StoreMetricsDirectory == false;
+        assert !(in instanceof StoreMetricsDirectory);
     }
 
     @Override

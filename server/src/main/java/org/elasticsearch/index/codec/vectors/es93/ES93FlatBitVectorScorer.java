@@ -39,7 +39,7 @@ class ES93FlatBitVectorScorer implements FlatVectorsScorer {
         assert vectorValues instanceof ByteVectorValues;
         assert vectorSimilarityFunction == VectorSimilarityFunction.EUCLIDEAN;
         if (vectorValues instanceof ByteVectorValues byteVectorValues) {
-            assert byteVectorValues instanceof QuantizedByteVectorValues == false;
+            assert !(byteVectorValues instanceof QuantizedByteVectorValues);
             return new HammingScorerSupplier(byteVectorValues);
         }
         throw new IllegalArgumentException("Unsupported vector type or similarity function");

@@ -142,10 +142,10 @@ public class MoreTypes {
             // Neal isn't either but suspects some pathological case related
             // to nested classes exists.
             Type rawType = parameterizedType.getRawType();
-            if ((rawType instanceof Class) == false) {
+            if (!(rawType instanceof Class<?> clazz)) {
                 throw new IllegalArgumentException("Expected a Class, but <" + type + "> is of type " + type.getClass().getName());
             }
-            return (Class<?>) rawType;
+            return clazz;
 
         } else if (type instanceof GenericArrayType) {
             // TODO: Is this sufficient?
@@ -176,37 +176,31 @@ public class MoreTypes {
             return a.equals(b);
 
         } else if (a instanceof ParameterizedType pa) {
-            if ((b instanceof ParameterizedType) == false) {
+            if (!(b instanceof ParameterizedType pb)) {
                 return false;
             }
 
             // TODO: save a .clone() call
-            ParameterizedType pb = (ParameterizedType) b;
             return Objects.equals(pa.getOwnerType(), pb.getOwnerType())
                 && pa.getRawType().equals(pb.getRawType())
                 && Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());
 
         } else if (a instanceof GenericArrayType ga) {
-            if ((b instanceof GenericArrayType) == false) {
+            if (!(b instanceof GenericArrayType gb)) {
                 return false;
             }
-
-            GenericArrayType gb = (GenericArrayType) b;
             return equals(ga.getGenericComponentType(), gb.getGenericComponentType());
 
         } else if (a instanceof WildcardType wa) {
-            if ((b instanceof WildcardType) == false) {
+            if (!(b instanceof WildcardType wb)) {
                 return false;
             }
-
-            WildcardType wb = (WildcardType) b;
             return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds()) && Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
 
         } else if (a instanceof TypeVariable<?> va) {
-            if ((b instanceof TypeVariable) == false) {
+            if (!(b instanceof TypeVariable<?> vb)) {
                 return false;
             }
-            TypeVariable<?> vb = (TypeVariable<?>) b;
             return va.getGenericDeclaration() == vb.getGenericDeclaration() && va.getName().equals(vb.getName());
 
         } else {

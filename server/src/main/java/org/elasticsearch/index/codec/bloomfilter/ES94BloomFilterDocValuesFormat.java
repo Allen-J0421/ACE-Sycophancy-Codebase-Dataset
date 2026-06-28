@@ -636,11 +636,9 @@ public class ES94BloomFilterDocValuesFormat extends DocValuesFormat {
                 }
                 DocValuesProducer docValuesProducer = mergeState.docValuesProducers[readerIdx];
                 var binaryDocValues = docValuesProducer.getBinary(fieldInfo);
-                if (binaryDocValues instanceof BloomFilterFieldReader == false) {
+                if (!(binaryDocValues instanceof BloomFilterFieldReader bloomFilterFieldReader)) {
                     throw new IllegalStateException("Expected a BloomFilterFieldReader but got " + binaryDocValues.getClass().getName());
                 }
-
-                BloomFilterFieldReader bloomFilterFieldReader = (BloomFilterFieldReader) binaryDocValues;
                 consumer.accept(bloomFilterFieldReader);
             }
         }
@@ -657,7 +655,7 @@ public class ES94BloomFilterDocValuesFormat extends DocValuesFormat {
                 }
                 DocValuesProducer docValuesProducer = mergeState.docValuesProducers[readerIdx];
                 var binaryDocValues = docValuesProducer.getBinary(fieldInfo);
-                if (binaryDocValues instanceof BloomFilterFieldReader == false) {
+                if (!(binaryDocValues instanceof BloomFilterFieldReader)) {
                     return false;
                 }
             }

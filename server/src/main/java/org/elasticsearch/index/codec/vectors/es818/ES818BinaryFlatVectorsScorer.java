@@ -117,7 +117,7 @@ public class ES818BinaryFlatVectorsScorer implements FlatVectorsScorer {
                 }
             };
         }
-        assert vectorValues instanceof BinarizedByteVectorValues == false
+        assert !(vectorValues instanceof BinarizedByteVectorValues)
             : "BinarizedByteVectorValues must be off-heap (implement OffHeapBinarizedVectorValues)";
 
         return nonQuantizedDelegate.getRandomVectorScorer(similarityFunction, vectorValues, target);

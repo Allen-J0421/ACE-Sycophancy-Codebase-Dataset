@@ -169,7 +169,7 @@ class Elasticsearch900AdaptivePointsWriter extends PointsWriter {
     @Override
     public void merge(MergeState mergeState) throws IOException {
         for (PointsReader reader : mergeState.pointsReaders) {
-            if (reader instanceof Lucene90PointsReader == false) {
+            if (!(reader instanceof Lucene90PointsReader)) {
                 super.merge(mergeState);
                 return;
             }

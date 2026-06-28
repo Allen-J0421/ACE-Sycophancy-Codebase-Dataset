@@ -41,7 +41,7 @@ public class StoreMetricsIndexInput extends FilterIndexInput implements DirectAc
     private StoreMetricsIndexInput(String resourceDescription, IndexInput in, PluggableDirectoryMetricsHolder<StoreMetrics> metricHolder) {
         super(resourceDescription, in);
         this.metricHolder = metricHolder;
-        assert in instanceof StoreMetricsIndexInput == false;
+        assert !(in instanceof StoreMetricsIndexInput);
     }
 
     @Override

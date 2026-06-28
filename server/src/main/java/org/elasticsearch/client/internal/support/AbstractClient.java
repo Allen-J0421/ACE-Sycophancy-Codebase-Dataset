@@ -110,7 +110,7 @@ public abstract class AbstractClient implements Client {
         // We create a dedicated project client for the default project to avoid having to reconstruct it on every invocation.
         // This aims to reduce the overhead of creating a project client when the client is used in a single-project context.
         // TODO: only create the default project client if the project resolver does not support multiple projects.
-        if (this instanceof ProjectClient == false) {
+        if (!(this instanceof ProjectClient)) {
             this.defaultProjectClient = new ProjectClientImpl(this, ProjectId.DEFAULT);
         } else {
             this.defaultProjectClient = null;

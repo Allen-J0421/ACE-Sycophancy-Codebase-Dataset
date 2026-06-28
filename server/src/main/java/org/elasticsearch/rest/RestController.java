@@ -168,7 +168,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
         String deprecationMessage,
         Level deprecationLevel
     ) {
-        assert (handler instanceof DeprecationRestHandler) == false;
+        assert !(handler instanceof DeprecationRestHandler);
         if (RestApiVersion.onOrAfter(RestApiVersion.minimumSupported()).test(version)) {
             registerHandler(
                 method,

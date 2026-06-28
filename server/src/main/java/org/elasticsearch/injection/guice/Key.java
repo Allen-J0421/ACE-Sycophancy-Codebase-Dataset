@@ -128,10 +128,9 @@ public class Key<T> {
         if (o == this) {
             return true;
         }
-        if ((o instanceof Key<?>) == false) {
+        if (!(o instanceof Key<?> other)) {
             return false;
         }
-        Key<?> other = (Key<?>) o;
         return annotationStrategy.equals(other.annotationStrategy) && typeLiteral.equals(other.typeLiteral);
     }
 
@@ -299,11 +298,9 @@ public class Key<T> {
 
         @Override
         public boolean equals(Object o) {
-            if ((o instanceof AnnotationInstanceStrategy) == false) {
+            if (!(o instanceof AnnotationInstanceStrategy other)) {
                 return false;
             }
-
-            AnnotationInstanceStrategy other = (AnnotationInstanceStrategy) o;
             return annotation.equals(other.annotation);
         }
 
@@ -352,11 +349,9 @@ public class Key<T> {
 
         @Override
         public boolean equals(Object o) {
-            if ((o instanceof AnnotationTypeStrategy) == false) {
+            if (!(o instanceof AnnotationTypeStrategy other)) {
                 return false;
             }
-
-            AnnotationTypeStrategy other = (AnnotationTypeStrategy) o;
             return annotationType.equals(other.annotationType);
         }
 

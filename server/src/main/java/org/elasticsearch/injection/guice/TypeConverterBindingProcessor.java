@@ -150,10 +150,9 @@ class TypeConverterBindingProcessor extends AbstractProcessor {
             @Override
             public boolean matches(TypeLiteral<?> typeLiteral) {
                 Type type = typeLiteral.getType();
-                if ((type instanceof Class) == false) {
+                if (!(type instanceof Class<?> clazz)) {
                     return false;
                 }
-                Class<?> clazz = (Class<?>) type;
                 return typeMatcher.matches(clazz);
             }
 

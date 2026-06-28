@@ -75,7 +75,7 @@ class ES815BitFlatVectorsFormat extends FlatVectorsFormat {
             assert vectorValues instanceof ByteVectorValues;
             assert vectorSimilarityFunction == VectorSimilarityFunction.EUCLIDEAN;
             if (vectorValues instanceof ByteVectorValues byteVectorValues) {
-                assert byteVectorValues instanceof QuantizedByteVectorValues == false;
+                assert !(byteVectorValues instanceof QuantizedByteVectorValues);
                 return switch (vectorSimilarityFunction) {
                     case DOT_PRODUCT, MAXIMUM_INNER_PRODUCT, COSINE, EUCLIDEAN -> new HammingScorerSupplier(byteVectorValues);
                 };

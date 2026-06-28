@@ -249,7 +249,7 @@ public final class OutboundHandler {
             );
             serializeSuccess = true;
         } catch (Exception e) {
-            logger.warn(() -> "failed to serialize outbound message [" + writeable + "]", e);
+            logger.warn("failed to serialize outbound message [{}]", writeable, e);
             throw e;
         } finally {
             if (serializeSuccess == false) {
@@ -415,7 +415,7 @@ public final class OutboundHandler {
                 public void onFailure(Exception e) {
                     final Level closeConnectionExceptionLevel = NetworkExceptionHelper.getCloseConnectionExceptionLevel(e, rstOnClose);
                     if (closeConnectionExceptionLevel == Level.OFF) {
-                        logger.warn(() -> "send message failed [channel: " + channel + "]", e);
+                        logger.warn("send message failed [channel: {}]", channel, e);
                     } else if (closeConnectionExceptionLevel == Level.INFO && logger.isDebugEnabled() == false) {
                         logger.info("send message failed [channel: {}]: {}", channel, e.getMessage());
                     } else {

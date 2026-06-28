@@ -373,7 +373,7 @@ public class PluginsService implements ReportingService<PluginsAndModules> {
 
     private void loadBundle(PluginLayer pluginLayer, Map<String, LoadedPlugin> loadedPlugins, Settings settings, Path configPath) {
         String name = pluginLayer.pluginBundle().plugin.getName();
-        logger.debug(() -> "Loading plugin bundle: " + name);
+        logger.debug("Loading plugin bundle: {}", name);
 
         // validate the list of extended plugins
         List<LoadedPlugin> extendedPlugins = new ArrayList<>();

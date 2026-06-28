@@ -484,11 +484,11 @@ final class BootstrapChecks {
                     try {
                         return parseProcSysVmMaxMapCount(rawProcSysVmMaxMapCount);
                     } catch (final NumberFormatException e) {
-                        logger.warn(() -> "unable to parse vm.max_map_count [" + rawProcSysVmMaxMapCount + "]", e);
+                        logger.warn("unable to parse vm.max_map_count [{}]", rawProcSysVmMaxMapCount, e);
                     }
                 }
             } catch (final IOException e) {
-                logger.warn(() -> "I/O exception while trying to read [" + path + "]", e);
+                logger.warn("I/O exception while trying to read [{}]", path, e);
             }
             return -1;
         }

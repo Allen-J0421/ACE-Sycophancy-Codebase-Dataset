@@ -141,7 +141,7 @@ public class SniffConnectionStrategy extends RemoteConnectionStrategy {
         if (seedNodesSuppliers.hasNext()) {
             final Consumer<Exception> onFailure = e -> {
                 if (isRetryableException(e) && seedNodesSuppliers.hasNext()) {
-                    logger.debug(() -> "fetching nodes from external cluster [" + clusterAlias + "] failed moving to next seed node", e);
+                    logger.debug("fetching nodes from external cluster [{}] failed moving to next seed node", clusterAlias, e);
                     collectRemoteNodes(seedNodesSuppliers, listener);
                 } else {
                     listener.onFailure(e);
@@ -368,7 +368,7 @@ public class SniffConnectionStrategy extends RemoteConnectionStrategy {
 
         @Override
         public void handleException(TransportException exp) {
-            logger.warn(() -> "fetching nodes from external cluster " + clusterAlias + " failed", exp);
+            logger.warn("fetching nodes from external cluster {} failed", clusterAlias, exp);
             try {
                 IOUtils.closeWhileHandlingException(connection);
             } finally {

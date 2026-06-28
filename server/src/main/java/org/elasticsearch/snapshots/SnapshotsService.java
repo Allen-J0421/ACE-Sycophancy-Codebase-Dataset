@@ -430,7 +430,7 @@ public final class SnapshotsService extends AbstractLifecycleComponent implement
         final Consumer<Exception> onFailure = e -> {
             endingSnapshots.add(targetSnapshot);
             initializingClones.remove(targetSnapshot);
-            logger.info(() -> "Failed to start snapshot clone [" + cloneEntry + "]", e);
+            logger.info("Failed to start snapshot clone [{}]", cloneEntry, e);
             removeFailedSnapshotFromClusterState(targetSnapshot, e, null, UpdatedShardGenerations.EMPTY);
         };
 
@@ -536,7 +536,7 @@ public final class SnapshotsService extends AbstractLifecycleComponent implement
                 @Override
                 public void onFailure(Exception e) {
                     initializingClones.remove(targetSnapshot);
-                    logger.info(() -> "Failed to start snapshot clone [" + cloneEntry + "]", e);
+                    logger.info("Failed to start snapshot clone [{}]", cloneEntry, e);
                     failAllListenersOnMasterFailOver(e);
                 }
 
@@ -1173,7 +1173,7 @@ public final class SnapshotsService extends AbstractLifecycleComponent implement
         if (ExceptionsHelper.unwrap(e, NotMasterException.class, FailedToCommitClusterStateException.class) != null) {
             // Failure due to not being master any more, don't try to remove snapshot from cluster state the next master
             // will try ending this snapshot again
-            logger.debug(() -> "[" + snapshot + "] failed to update cluster state during snapshot finalization", e);
+            logger.debug("[{}] failed to update cluster state during snapshot finalization", snapshot, e);
             failSnapshotCompletionListeners(
                 snapshot,
                 new SnapshotException(snapshot, "Failed to update cluster state during snapshot finalization", e),
@@ -1181,7 +1181,7 @@ public final class SnapshotsService extends AbstractLifecycleComponent implement
             );
             failAllListenersOnMasterFailOver(e);
         } else {
-            logger.warn(() -> "[" + snapshot + "] failed to finalize snapshot", e);
+            logger.warn("[{}] failed to finalize snapshot", snapshot, e);
             removeFailedSnapshotFromClusterState(snapshot, e, repositoryData, updatedShardGenerations);
         }
     }

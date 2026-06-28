@@ -782,9 +782,9 @@ public abstract class TcpTransport extends AbstractLifecycleComponent implements
 
     protected static void onServerException(TcpServerChannel channel, Exception e) {
         if (e instanceof BindException) {
-            logger.debug(() -> "bind exception from server channel caught on transport layer [" + channel + "]", e);
+            logger.debug("bind exception from server channel caught on transport layer [{}]", channel, e);
         } else {
-            logger.error(() -> "exception from server channel caught on transport layer [" + channel + "]", e);
+            logger.error("exception from server channel caught on transport layer [{}]", channel, e);
         }
     }
 

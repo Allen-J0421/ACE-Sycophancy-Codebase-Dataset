@@ -273,7 +273,7 @@ public class PluginsLoader {
         Set<String> modulesWithNativeAccess
     ) {
         String name = bundle.plugin.getName();
-        logger.debug(() -> "Loading bundle: " + name);
+        logger.debug("Loading bundle: {}", name);
 
         PluginsUtils.verifyCompatibility(bundle.plugin);
 
@@ -331,7 +331,7 @@ public class PluginsLoader {
     ) {
         final PluginDescriptor plugin = bundle.plugin;
         if (plugin.getModuleName().isPresent()) {
-            logger.debug(() -> "Loading bundle: " + plugin.getName() + ", creating spi, modular");
+            logger.debug("Loading bundle: {}, creating spi, modular", plugin.getName());
             return createSpiModuleLayer(
                 bundle.spiUrls,
                 parentLoader,

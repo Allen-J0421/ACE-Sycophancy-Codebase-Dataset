@@ -1782,7 +1782,7 @@ public final class RestoreService implements ClusterStateApplier {
 
         @Override
         public void onFailure(Exception e) {
-            logger.warn(() -> "[" + snapshot + "] failed to restore snapshot", e);
+            logger.warn("[{}] failed to restore snapshot", snapshot, e);
             listener.clusterStateUpdate().onFailure(e);
         }
 
@@ -1911,7 +1911,7 @@ public final class RestoreService implements ClusterStateApplier {
                 }
             } catch (Exception e) {
                 final var metadata = snapshotIndexMetadata;
-                logger.warn(() -> "could not import mappings for legacy index " + metadata.getIndex().getName(), e);
+                logger.warn("could not import mappings for legacy index {}", metadata.getIndex().getName(), e);
                 // put mapping into _meta/legacy_mappings instead without adding anything else
                 convertedIndexMetadataBuilder = IndexMetadata.builder(snapshotIndexMetadata);
 

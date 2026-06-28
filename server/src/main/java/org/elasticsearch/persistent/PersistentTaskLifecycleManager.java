@@ -192,7 +192,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
             }, e -> {
                 final var t = ExceptionsHelper.unwrapCause(e);
                 if (t instanceof NodeClosedException == false && t instanceof ResourceAlreadyExistsException == false) {
-                    logger.warn(() -> "Failed to create [" + reg.taskName() + "] task", e);
+                    logger.warn("Failed to create [{}] task", reg.taskName(), e);
                 }
             }), () -> {
                 reg.inFlight().set(false);
@@ -213,7 +213,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
             }, e -> {
                 final var t = ExceptionsHelper.unwrapCause(e);
                 if (t instanceof NodeClosedException == false && t instanceof ResourceNotFoundException == false) {
-                    logger.warn(() -> "Failed to remove [" + reg.taskName() + "] task", e);
+                    logger.warn("Failed to remove [{}] task", reg.taskName(), e);
                 }
             }), () -> {
                 reg.inFlight().set(false);
@@ -260,7 +260,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
             }, e -> {
                 final var t = ExceptionsHelper.unwrapCause(e);
                 if (t instanceof NodeClosedException == false && t instanceof ResourceAlreadyExistsException == false) {
-                    logger.warn(() -> "Failed to create [" + reg.taskName() + "] task for project [" + projectId + "]", e);
+                    logger.warn("Failed to create [{}] task for project [{}]", reg.taskName(), projectId, e);
                 }
             }), () -> {
                 reg.inFlightRequests().remove(projectId);
@@ -285,7 +285,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
                 if (t instanceof ResourceNotFoundException) {
                     reg.onRemove().accept(projectId);
                 } else if (t instanceof NodeClosedException == false) {
-                    logger.warn(() -> "Failed to remove [" + reg.taskName() + "] task for project [" + projectId + "]", e);
+                    logger.warn("Failed to remove [{}] task for project [{}]", reg.taskName(), projectId, e);
                 }
             }), () -> {
                 reg.inFlightRequests().remove(projectId);

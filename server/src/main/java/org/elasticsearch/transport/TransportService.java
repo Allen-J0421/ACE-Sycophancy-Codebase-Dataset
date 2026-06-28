@@ -1164,7 +1164,7 @@ public class TransportService extends AbstractLifecycleComponent
             channel.sendResponse(e);
         } catch (Exception inner) {
             inner.addSuppressed(e);
-            logger.warn(() -> "failed to notify channel of error message for action [" + action + "]", inner);
+            logger.warn("failed to notify channel of error message for action [{}]", action, inner);
         }
     }
 

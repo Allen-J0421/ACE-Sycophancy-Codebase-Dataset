@@ -219,7 +219,7 @@ public class AllocatedPersistentTask extends CancellableTask {
             }
         } else {
             if (failure != null) {
-                logger.warn(() -> "task [" + getPersistentTaskId() + "] failed with an exception", failure);
+                logger.warn("task [{}] failed with an exception", getPersistentTaskId(), failure);
             } else if (localAbortReason != null) {
                 logger.debug("task [{}] aborted locally: [{}]", getPersistentTaskId(), localAbortReason);
             }

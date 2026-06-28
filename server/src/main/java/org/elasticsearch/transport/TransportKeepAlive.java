@@ -111,10 +111,10 @@ final class TransportKeepAlive implements Closeable {
             @Override
             public void onFailure(Exception e) {
                 if (channel.isOpen()) {
-                    logger.debug(() -> "[" + channel + "] failed to send transport ping", e);
+                    logger.debug("[{}] failed to send transport ping", channel, e);
                     failedPings.inc();
                 } else {
-                    logger.trace(() -> "[" + channel + "] failed to send transport ping (channel closed)", e);
+                    logger.trace("[{}] failed to send transport ping (channel closed)", channel, e);
                 }
             }
         });

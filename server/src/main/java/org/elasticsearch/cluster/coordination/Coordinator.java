@@ -858,7 +858,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
 
     private void sendJoinValidate(DiscoveryNode discoveryNode, ActionListener<Void> listener) {
         joinValidationService.validateJoin(discoveryNode, listener.delegateResponse((delegate, e) -> {
-            logger.warn(() -> "failed to validate incoming join request from node [" + discoveryNode + "]", e);
+            logger.warn("failed to validate incoming join request from node [{}]", discoveryNode, e);
             delegate.onFailure(
                 new IllegalStateException(
                     String.format(
@@ -1574,7 +1574,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
             updateClusterFormationClusterStateView();
             return handleJoin;
         } catch (CoordinationStateRejectedException e) {
-            logger.debug(() -> "failed to add " + join + " - ignoring", e);
+            logger.debug("failed to add {} - ignoring", join, e);
             return false;
         }
     }
@@ -1711,7 +1711,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
                     publicationContextConstructionStartMillis = transportService.getThreadPool().rawRelativeTimeInMillis();
                     publicationContext = publicationHandler.newPublicationContext(clusterStatePublicationEvent);
                 } catch (Exception e) {
-                    logger.debug(() -> "[" + clusterStatePublicationEvent.getSummary() + "] publishing failed during context creation", e);
+                    logger.debug("[{}] publishing failed during context creation", clusterStatePublicationEvent.getSummary(), e);
                     // Calling becomeCandidate here means this node steps down from being master
                     becomeCandidate("publication context creation");
                     throw new NotMasterException("publishing failed during context creation", e);
@@ -1772,7 +1772,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
             publishListener.onFailure(e);
         } catch (Exception e) {
             assert false : e; // all exceptions should already be caught and wrapped in a FailedToCommitClusterStateException
-            logger.error(() -> "[" + clusterStatePublicationEvent.getSummary() + "] publishing unexpectedly failed", e);
+            logger.error("[{}] publishing unexpectedly failed", clusterStatePublicationEvent.getSummary(), e);
             publishListener.onFailure(new FailedToCommitClusterStateException("publishing unexpectedly failed", e));
         }
     }

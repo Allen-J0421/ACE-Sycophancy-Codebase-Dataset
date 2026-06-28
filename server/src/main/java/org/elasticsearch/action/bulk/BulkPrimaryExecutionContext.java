@@ -398,27 +398,27 @@ class BulkPrimaryExecutionContext {
         assert currentIndex >= 0 : currentIndex;
         assert updateRetryCounter >= 0 : updateRetryCounter;
         switch (currentItemState) {
-            case INITIAL:
+            case INITIAL -> {
                 assert requestToExecute == null : requestToExecute;
                 assert executionResult == null : executionResult;
-                break;
-            case TRANSLATED:
+            }
+            case TRANSLATED -> {
                 assert requestToExecute != null;
                 assert executionResult == null : executionResult;
-                break;
-            case WAIT_FOR_MAPPING_UPDATE:
+            }
+            case WAIT_FOR_MAPPING_UPDATE -> {
                 assert requestToExecute == null;
                 assert executionResult == null : executionResult;
-                break;
-            case EXECUTED:
+            }
+            case EXECUTED -> {
                 // requestToExecute can be null if the update ended up as NOOP
                 assert executionResult != null;
-                break;
-            case COMPLETED:
+            }
+            case COMPLETED -> {
                 // requestToExecute can be null if the primary is not searchable (serverless)
                 assert executionResult != null;
                 assert getCurrentItem().getPrimaryResponse() != null;
-                break;
+            }
         }
         return true;
     }

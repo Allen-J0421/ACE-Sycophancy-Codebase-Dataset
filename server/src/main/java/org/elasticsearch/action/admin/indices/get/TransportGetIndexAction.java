@@ -127,7 +127,7 @@ public class TransportGetIndexAction extends TransportLocalProjectMetadataAction
         for (Feature feature : features) {
             checkCancellation(task);
             switch (feature) {
-                case MAPPINGS:
+                case MAPPINGS -> {
                     if (doneMappings == false) {
                         mappingsResult = project.findMappings(
                             concreteIndices,
@@ -136,14 +136,14 @@ public class TransportGetIndexAction extends TransportLocalProjectMetadataAction
                         );
                         doneMappings = true;
                     }
-                    break;
-                case ALIASES:
+                }
+                case ALIASES -> {
                     if (doneAliases == false) {
                         aliasesResult = project.findAllAliases(concreteIndices);
                         doneAliases = true;
                     }
-                    break;
-                case SETTINGS:
+                }
+                case SETTINGS -> {
                     if (doneSettings == false) {
                         Map<String, Settings> settingsMapBuilder = new HashMap<>();
                         Map<String, Settings> defaultSettingsMapBuilder = new HashMap<>();
@@ -165,10 +165,7 @@ public class TransportGetIndexAction extends TransportLocalProjectMetadataAction
                         defaultSettings = Collections.unmodifiableMap(defaultSettingsMapBuilder);
                         doneSettings = true;
                     }
-                    break;
-
-                default:
-                    throw new IllegalStateException("feature [" + feature + "] is not valid");
+                }
             }
         }
         listener.onResponse(new GetIndexResponse(concreteIndices, mappingsResult, aliasesResult, settings, defaultSettings, dataStreams));

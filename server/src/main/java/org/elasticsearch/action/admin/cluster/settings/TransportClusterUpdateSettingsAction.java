@@ -207,7 +207,7 @@ public class TransportClusterUpdateSettingsAction extends TransportMasterNodeAct
 
                     @Override
                     public void onFailure(Exception e) {
-                        logger.debug(() -> "failed to perform [" + REROUTE_TASK_SOURCE + "]", e);
+                        logger.debug("failed to perform [{}]", REROUTE_TASK_SOURCE, e);
                         if (MasterService.isPublishFailureException(e)) {
                             listener.onResponse(
                                 new ClusterUpdateSettingsResponse(
@@ -225,7 +225,7 @@ public class TransportClusterUpdateSettingsAction extends TransportMasterNodeAct
 
             @Override
             public void onFailure(Exception e) {
-                logger.debug(() -> "failed to perform [" + UPDATE_TASK_SOURCE + "]", e);
+                logger.debug("failed to perform [{}]", UPDATE_TASK_SOURCE, e);
                 super.onFailure(e);
             }
         });

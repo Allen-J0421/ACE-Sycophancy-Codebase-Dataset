@@ -613,7 +613,7 @@ public class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<S
                             return;
                         }
                         Exception cause = (Exception) ExceptionsHelper.unwrapCause(e);
-                        logger.debug("handling node search exception coming from [" + nodeId + "]", cause);
+                        logger.debug("handling node search exception coming from [{}]", nodeId, cause);
                         onNodeQueryFailure(e, request, routing);
                     }
 
@@ -624,7 +624,7 @@ public class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<S
                      */
                     private void bwcHandleException(TransportException e) {
                         Exception cause = (Exception) ExceptionsHelper.unwrapCause(e);
-                        logger.debug("handling node search exception coming from [" + nodeId + "]", cause);
+                        logger.debug("handling node search exception coming from [{}]", nodeId, cause);
                         if (e instanceof SendRequestTransportException || cause instanceof TaskCancelledException) {
                             // two possible special cases here where we do not want to fail the phase:
                             // failure to send out the request -> handle things the same way a shard would fail with unbatched execution

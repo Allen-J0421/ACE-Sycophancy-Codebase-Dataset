@@ -55,10 +55,9 @@ public class SynonymsStats implements ToXContentObject, Writeable {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof SynonymsStats == false) {
+        if (!(other instanceof SynonymsStats that)) {
             return false;
         }
-        SynonymsStats that = (SynonymsStats) other;
         return count == that.count && indexCount == that.indexCount;
     }
 

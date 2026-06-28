@@ -95,19 +95,16 @@ final class InternalIndexingStats implements IndexingOperationListener {
     @Override
     public void postIndex(ShardId shardId, Engine.Index index, Engine.IndexResult result) {
         switch (result.getResultType()) {
-            case SUCCESS:
+            case SUCCESS -> {
                 if (index.origin().isRecovery() == false) {
                     long took = result.getTook();
                     totalStats.indexMetric.inc(took);
                     totalStats.recentIndexMetric.addIncrement(took, relativeTimeInNanosSupplier.getAsLong());
                     totalStats.indexCurrent.dec();
                 }
-                break;
-            case FAILURE:
-                postIndex(shardId, index, result.getFailure());
-                break;
-            default:
-                throw new IllegalArgumentException("unknown result type: " + result.getResultType());
+            }
+            case FAILURE -> postIndex(shardId, index, result.getFailure());
+            default -> throw new IllegalArgumentException("unknown result type: " + result.getResultType());
         }
     }
 
@@ -134,18 +131,15 @@ final class InternalIndexingStats implements IndexingOperationListener {
     @Override
     public void postDelete(ShardId shardId, Engine.Delete delete, Engine.DeleteResult result) {
         switch (result.getResultType()) {
-            case SUCCESS:
+            case SUCCESS -> {
                 if (delete.origin().isRecovery() == false) {
                     long took = result.getTook();
                     totalStats.deleteMetric.inc(took);
                     totalStats.deleteCurrent.dec();
                 }
-                break;
-            case FAILURE:
-                postDelete(shardId, delete, result.getFailure());
-                break;
-            default:
-                throw new IllegalArgumentException("unknown result type: " + result.getResultType());
+            }
+            case FAILURE -> postDelete(shardId, delete, result.getFailure());
+            default -> throw new IllegalArgumentException("unknown result type: " + result.getResultType());
         }
     }
 

@@ -305,19 +305,19 @@ public class PutIndexTemplateRequest extends MasterNodeRequest<PutIndexTemplateR
             } else if (name.equals("order")) {
                 order(XContentMapValues.nodeIntegerValue(entry.getValue(), order()));
             } else if ("version".equals(name)) {
-                if ((entry.getValue() instanceof Integer) == false) {
+                if (!(entry.getValue() instanceof Integer v)) {
                     throw new IllegalArgumentException("Malformed [version] value, should be an integer");
                 }
-                version((Integer) entry.getValue());
+                version(v);
             } else if (name.equals("settings")) {
-                if ((entry.getValue() instanceof Map) == false) {
+                if (!(entry.getValue() instanceof Map)) {
                     throw new IllegalArgumentException("Malformed [settings] section, should include an inner object");
                 }
                 settings((Map<String, Object>) entry.getValue());
             } else if (name.equals("mappings")) {
                 Map<String, Object> mappings = (Map<String, Object>) entry.getValue();
                 for (Map.Entry<String, Object> entry1 : mappings.entrySet()) {
-                    if ((entry1.getValue() instanceof Map) == false) {
+                    if (!(entry1.getValue() instanceof Map)) {
                         throw new IllegalArgumentException(
                             "Malformed [mappings] section for type ["
                                 + entry1.getKey()

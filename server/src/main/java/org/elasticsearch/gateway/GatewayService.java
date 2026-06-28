@@ -232,7 +232,7 @@ public class GatewayService extends AbstractLifecycleComponent implements Cluste
                     scheduledRecovery = threadPool.schedule(new AbstractRunnable() {
                         @Override
                         public void onFailure(Exception e) {
-                            logger.warn("delayed state recovery of term [" + expectedTerm + "] failed", e);
+                            logger.warn("delayed state recovery of term [{}] failed", expectedTerm, e);
                         }
 
                         @Override

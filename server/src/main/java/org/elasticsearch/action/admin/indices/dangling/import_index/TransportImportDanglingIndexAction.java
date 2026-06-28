@@ -81,7 +81,7 @@ public class TransportImportDanglingIndexAction extends HandledTransportAction<I
 
                     @Override
                     public void onFailure(Exception e) {
-                        logger.debug("Failed to import dangling index [" + indexName + "] [" + indexUUID + "]", e);
+                        logger.debug("Failed to import dangling index [{}] [{}]", indexName, indexUUID, e);
                         importListener.onFailure(e);
                     }
                 });
@@ -89,7 +89,7 @@ public class TransportImportDanglingIndexAction extends HandledTransportAction<I
 
             @Override
             public void onFailure(Exception e) {
-                logger.debug("Failed to find dangling index [" + importRequest.getIndexUUID() + "]", e);
+                logger.debug("Failed to find dangling index [{}]", importRequest.getIndexUUID(), e);
                 importListener.onFailure(e);
             }
         });
@@ -106,7 +106,7 @@ public class TransportImportDanglingIndexAction extends HandledTransportAction<I
                     ElasticsearchException e = new ElasticsearchException("Failed to query nodes [" + nodeIds + "]");
 
                     for (FailedNodeException failure : response.failures()) {
-                        logger.error("Failed to query node [" + failure.nodeId() + "]", failure);
+                        logger.error("Failed to query node [{}]", failure.nodeId(), failure);
                         e.addSuppressed(failure);
                     }
 

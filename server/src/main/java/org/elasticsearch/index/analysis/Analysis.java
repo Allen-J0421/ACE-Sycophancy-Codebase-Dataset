@@ -302,7 +302,7 @@ public class Analysis {
                             "Found duplicate term [" + values[0] + "] in user dictionary " + "at line [" + (lineNum + 1) + "]"
                         );
                     } else {
-                        logger.warn("Ignoring duplicate term [" + values[0] + "] in user dictionary " + "at line [" + (lineNum + 1) + "]");
+                        logger.warn("Ignoring duplicate term [{}] in user dictionary at line [{}]", values[0], lineNum + 1);
                     }
                 } else {
                     deduplicatedList.add(line);

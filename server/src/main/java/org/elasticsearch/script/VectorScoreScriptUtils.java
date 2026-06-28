@@ -78,7 +78,7 @@ public class VectorScoreScriptUtils {
             queryMagnitude = Math.sqrt(queryMagnitude);
 
             switch (Element.checkValidVector(floatValues, allowedTypes)) {
-                case FLOAT:
+                case FLOAT -> {
                     byteQueryVector = null;
                     floatQueryVector = floatValues;
                     qvMagnitude = -1;   // invalid valid, not used for float vectors
@@ -88,17 +88,16 @@ public class VectorScoreScriptUtils {
                             floatQueryVector[i] /= (float) queryMagnitude;
                         }
                     }
-                    break;
-                case BYTE:
+                }
+                case BYTE -> {
                     floatQueryVector = null;
                     byteQueryVector = new byte[floatValues.length];
                     for (int i = 0; i < floatValues.length; i++) {
                         byteQueryVector[i] = (byte) floatValues[i];
                     }
                     this.qvMagnitude = (float) queryMagnitude;
-                    break;
-                default:
-                    throw new AssertionError("Unexpected element type");
+                }
+                default -> throw new AssertionError("Unexpected element type");
             }
 
         }

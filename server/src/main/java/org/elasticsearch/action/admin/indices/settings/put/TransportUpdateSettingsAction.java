@@ -151,7 +151,7 @@ public class TransportUpdateSettingsAction extends AcknowledgedTransportMasterNo
                 concreteIndices
             ),
             listener.delegateResponse((l, e) -> {
-                logger.debug(() -> "failed to update settings on indices [" + Arrays.toString(concreteIndices) + "]", e);
+                logger.debug("failed to update settings on indices {}", Arrays.toString(concreteIndices), e);
                 l.onFailure(e);
             })
         );

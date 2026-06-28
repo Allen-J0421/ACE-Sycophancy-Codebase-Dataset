@@ -264,7 +264,7 @@ public class ClusterBootstrapService implements Coordinator.PeerFinderListener {
         try {
             votingConfigurationConsumer.accept(votingConfiguration);
         } catch (Exception e) {
-            logger.warn(() -> "exception when bootstrapping with " + votingConfiguration + ", rescheduling", e);
+            logger.warn("exception when bootstrapping with {}, rescheduling", votingConfiguration, e);
             transportService.getThreadPool()
                 .scheduleUnlessShuttingDown(TimeValue.timeValueSeconds(10), transportService.getThreadPool().generic(), new Runnable() {
                     @Override

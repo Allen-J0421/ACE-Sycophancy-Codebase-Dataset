@@ -187,10 +187,10 @@ public class PrioritizedEsThreadPoolExecutor extends EsThreadPoolExecutor {
         @Override
         public int compareTo(PrioritizedRunnable pr) {
             int res = super.compareTo(pr);
-            if (res != 0 || (pr instanceof TieBreakingPrioritizedRunnable) == false) {
+            if (res != 0 || !(pr instanceof TieBreakingPrioritizedRunnable tbpr)) {
                 return res;
             }
-            return insertionOrder < ((TieBreakingPrioritizedRunnable) pr).insertionOrder ? -1 : 1;
+            return insertionOrder < tbpr.insertionOrder ? -1 : 1;
         }
 
         public void scheduleTimeout(ScheduledExecutorService timer, final Runnable timeoutCallback, TimeValue timeValue) {

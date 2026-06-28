@@ -468,15 +468,15 @@ public class FunctionScoreQuery extends Query {
         protected double computeScore(int docId, float subQueryScore) throws IOException {
             double factor = 1d;
             switch (scoreMode) {
-                case FIRST:
+                case FIRST -> {
                     for (int i = 0; i < leafFunctions.length; i++) {
                         if (docSets[i].get(docId)) {
                             factor = leafFunctions[i].score(docId, subQueryScore);
                             break;
                         }
                     }
-                    break;
-                case MAX:
+                }
+                case MAX -> {
                     double maxFactor = Double.NEGATIVE_INFINITY;
                     for (int i = 0; i < leafFunctions.length; i++) {
                         if (docSets[i].get(docId)) {
@@ -486,8 +486,8 @@ public class FunctionScoreQuery extends Query {
                     if (maxFactor != Float.NEGATIVE_INFINITY) {
                         factor = maxFactor;
                     }
-                    break;
-                case MIN:
+                }
+                case MIN -> {
                     double minFactor = Double.POSITIVE_INFINITY;
                     for (int i = 0; i < leafFunctions.length; i++) {
                         if (docSets[i].get(docId)) {
@@ -497,15 +497,15 @@ public class FunctionScoreQuery extends Query {
                     if (minFactor != Float.POSITIVE_INFINITY) {
                         factor = minFactor;
                     }
-                    break;
-                case MULTIPLY:
+                }
+                case MULTIPLY -> {
                     for (int i = 0; i < leafFunctions.length; i++) {
                         if (docSets[i].get(docId)) {
                             factor *= leafFunctions[i].score(docId, subQueryScore);
                         }
                     }
-                    break;
-                default: // Avg / Total
+                }
+                case AVG, SUM -> {
                     double totalFactor = 0.0f;
                     double weightSum = 0;
                     for (int i = 0; i < leafFunctions.length; i++) {
@@ -520,7 +520,7 @@ public class FunctionScoreQuery extends Query {
                             factor /= weightSum;
                         }
                     }
-                    break;
+                }
             }
             return factor;
         }

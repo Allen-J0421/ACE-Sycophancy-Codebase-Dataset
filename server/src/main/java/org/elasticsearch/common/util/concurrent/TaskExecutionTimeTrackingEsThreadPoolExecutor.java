@@ -256,14 +256,10 @@ public final class TaskExecutionTimeTrackingEsThreadPoolExecutor extends EsThrea
      * earlier, contributing a larger execution time.
      */
     public double pollUtilization(UtilizationTrackingPurpose utilizationTrackingPurpose) {
-        switch (utilizationTrackingPurpose) {
-            case APM:
-                return apmUtilizationTracker.pollUtilization();
-            case ALLOCATION:
-                return allocationUtilizationTracker.pollUtilization();
-            default:
-                throw new IllegalStateException("No operation defined for [" + utilizationTrackingPurpose + "]");
-        }
+        return switch (utilizationTrackingPurpose) {
+            case APM -> apmUtilizationTracker.pollUtilization();
+            case ALLOCATION -> allocationUtilizationTracker.pollUtilization();
+        };
     }
 
     @Override

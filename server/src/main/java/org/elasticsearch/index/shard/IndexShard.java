@@ -2526,7 +2526,7 @@ public class IndexShard extends AbstractIndexShardComponent implements IndicesCl
             rawTimestampFieldRange = getEngine().getRawFieldRange(fieldName);
             assert rawTimestampFieldRange != null;
         } catch (IOException | AlreadyClosedException e) {
-            logger.debug("exception obtaining range for field " + fieldName, e);
+            logger.debug("exception obtaining range for field {}", fieldName, e);
             return ShardLongFieldRange.UNKNOWN;
         }
         if (rawTimestampFieldRange == ShardLongFieldRange.UNKNOWN) {

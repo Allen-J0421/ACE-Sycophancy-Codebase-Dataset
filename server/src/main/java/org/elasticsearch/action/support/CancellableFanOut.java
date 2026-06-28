@@ -135,7 +135,7 @@ public abstract class CancellableFanOut<Item, ItemResponse, FinalResponse> {
         } catch (Exception e) {
             // NB the listener may have been completed already (by exiting this try block) so this exception may not be sent to the caller,
             // but we cannot do anything else with it; an exception here is a bug anyway.
-            logger.error("unexpected failure in [" + this + "][" + listener + "]", e);
+            logger.error("unexpected failure in [{}][{}]", this, listener, e);
             assert false : e;
             throw e;
         }

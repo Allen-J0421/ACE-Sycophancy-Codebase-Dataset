@@ -248,7 +248,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
             connectionListener.addTimeout(forceConnectTimeoutSecs, transportService.getThreadPool(), EsExecutors.DIRECT_EXECUTOR_SERVICE);
 
             connectionListener.addListener(groupedListener.delegateResponse((l, failure) -> {
-                logger.info("failed to resolve indices on remote cluster [" + clusterAlias + "]", failure);
+                logger.info("failed to resolve indices on remote cluster [{}]", clusterAlias, failure);
                 l.onResponse(Map.entry(clusterAlias, new SearchPlanningPhaseResolutionResult(null, failure)));
             })
                 .delegateFailure(
@@ -258,7 +258,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
                         remoteRequest,
                         TransportRequestOptions.EMPTY,
                         new ActionListenerResponseHandler<>(groupedListener.delegateResponse((l, failure) -> {
-                            logger.info("Error occurred on remote cluster [" + clusterAlias + "]", failure);
+                            logger.info("Error occurred on remote cluster [{}]", clusterAlias, failure);
                             delegate.onResponse(Map.entry(clusterAlias, new SearchPlanningPhaseResolutionResult(null, failure)));
                         })
                             .map(

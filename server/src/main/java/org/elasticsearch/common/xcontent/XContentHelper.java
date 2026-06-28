@@ -523,10 +523,10 @@ public class XContentHelper {
 
     private static boolean allListValuesAreMapsOfOne(List<Object> list) {
         for (Object o : list) {
-            if ((o instanceof Map) == false) {
+            if (!(o instanceof Map m)) {
                 return false;
             }
-            if (((Map) o).size() != 1) {
+            if (m.size() != 1) {
                 return false;
             }
         }

@@ -48,8 +48,7 @@ public class NodePrevalidateShardPathRequest extends AbstractTransportRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof NodePrevalidateShardPathRequest == false) return false;
-        NodePrevalidateShardPathRequest other = (NodePrevalidateShardPathRequest) o;
+        if (!(o instanceof NodePrevalidateShardPathRequest other)) return false;
         return Objects.equals(shardIds, other.shardIds);
     }
 

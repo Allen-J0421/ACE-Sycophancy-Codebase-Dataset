@@ -98,7 +98,7 @@ public class TransportDeleteDanglingIndexAction extends AcknowledgedTransportMas
                 String indexUUID = indexToDelete.getUUID();
 
                 final ActionListener<AcknowledgedResponse> clusterStateUpdatedListener = deleteListener.delegateResponse((l, e) -> {
-                    logger.debug("Failed to delete dangling index [" + indexName + "] [" + indexUUID + "]", e);
+                    logger.debug("Failed to delete dangling index [{}] [{}]", indexName, indexUUID, e);
                     l.onFailure(e);
                 });
 
@@ -114,7 +114,7 @@ public class TransportDeleteDanglingIndexAction extends AcknowledgedTransportMas
 
             @Override
             public void onFailure(Exception e) {
-                logger.debug("Failed to find dangling index [" + deleteRequest.getIndexUUID() + "]", e);
+                logger.debug("Failed to find dangling index [{}]", deleteRequest.getIndexUUID(), e);
                 deleteListener.onFailure(e);
             }
         });
@@ -167,7 +167,7 @@ public class TransportDeleteDanglingIndexAction extends AcknowledgedTransportMas
                     ElasticsearchException e = new ElasticsearchException("Failed to query nodes [" + nodeIds + "]");
 
                     for (FailedNodeException failure : response.failures()) {
-                        logger.error("Failed to query node [" + failure.nodeId() + "]", failure);
+                        logger.error("Failed to query node [{}]", failure.nodeId(), failure);
                         e.addSuppressed(failure);
                     }
 

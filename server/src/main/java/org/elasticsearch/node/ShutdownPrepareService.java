@@ -144,7 +144,7 @@ public class ShutdownPrepareService {
                     try {
                         hook.action.run();
                     } catch (Exception ex) {
-                        logger.warn("unexpected exception in shutdown task [" + stopper.name() + "]", ex);
+                        logger.warn("unexpected exception in shutdown task [{}]", stopper.name(), ex);
                     } finally {
                         stopper.listener().onResponse(null);
                     }
@@ -168,9 +168,9 @@ public class ShutdownPrepareService {
             logger.warn("failed during graceful shutdown tasks", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.warn("interrupted while waiting for graceful shutdown tasks: " + incompleteStoppersDescriber.get(), e);
+            logger.warn("interrupted while waiting for graceful shutdown tasks: {}", incompleteStoppersDescriber.get(), e);
         } catch (TimeoutException e) {
-            logger.warn("timed out while waiting for graceful shutdown tasks: " + incompleteStoppersDescriber.get());
+            logger.warn("timed out while waiting for graceful shutdown tasks: {}", incompleteStoppersDescriber.get());
         }
     }
 

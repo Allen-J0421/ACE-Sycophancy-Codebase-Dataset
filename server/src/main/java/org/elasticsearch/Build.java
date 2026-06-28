@@ -170,26 +170,22 @@ public record Build(
         }
 
         public static Type fromDisplayName(final String displayName, final boolean strict) {
-            switch (displayName) {
-                case "deb":
-                    return Type.DEB;
-                case "docker":
-                    return Type.DOCKER;
-                case "rpm":
-                    return Type.RPM;
-                case "tar":
-                    return Type.TAR;
-                case "zip":
-                    return Type.ZIP;
-                case "unknown":
-                    return Type.UNKNOWN;
-                default:
+            return switch (displayName) {
+                case "deb" -> Type.DEB;
+                case "docker" -> Type.DOCKER;
+                case "rpm" -> Type.RPM;
+                case "tar" -> Type.TAR;
+                case "zip" -> Type.ZIP;
+                case "unknown" -> Type.UNKNOWN;
+                default -> {
                     if (strict) {
-                        throw new IllegalStateException("unexpected distribution type [" + displayName + "]; your distribution is broken");
-                    } else {
-                        return Type.UNKNOWN;
+                        throw new IllegalStateException(
+                            "unexpected distribution type [" + displayName + "]; your distribution is broken"
+                        );
                     }
-            }
+                    yield Type.UNKNOWN;
+                }
+            };
         }
     }
 

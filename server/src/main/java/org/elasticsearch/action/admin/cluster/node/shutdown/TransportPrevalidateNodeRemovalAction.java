@@ -163,7 +163,7 @@ public class TransportPrevalidateNodeRemovalAction extends TransportMasterNodeRe
     ) {
         assert requestNodes != null && requestNodes.isEmpty() == false;
 
-        logger.debug(() -> "prevalidate node removal for nodes " + requestNodes);
+        logger.debug("prevalidate node removal for nodes {}", requestNodes);
         final var projectMetadata = projectResolver.getProjectMetadata(clusterState);
         ClusterStateHealth clusterStateHealth = new ClusterStateHealth(
             clusterState,

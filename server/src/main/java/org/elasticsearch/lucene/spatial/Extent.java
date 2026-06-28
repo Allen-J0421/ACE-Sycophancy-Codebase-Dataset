@@ -155,28 +155,26 @@ public class Extent {
         }
         output.writeByte(type);
         switch (type) {
-            case NONE_SET:
-                break;
-            case POSITIVE_SET:
+            case NONE_SET -> {}
+            case POSITIVE_SET -> {
                 output.writeVInt(this.posLeft);
                 output.writeVLong((long) this.posRight - this.posLeft);
-                break;
-            case NEGATIVE_SET:
+            }
+            case NEGATIVE_SET -> {
                 output.writeVInt(-this.negRight);
                 output.writeVLong((long) this.negRight - this.negLeft);
-                break;
-            case CROSSES_LAT_AXIS:
+            }
+            case CROSSES_LAT_AXIS -> {
                 output.writeVInt(this.posRight);
                 output.writeVInt(-this.negLeft);
-                break;
-            case ALL_SET:
+            }
+            case ALL_SET -> {
                 output.writeVInt(this.posLeft);
                 output.writeVLong((long) this.posRight - this.posLeft);
                 output.writeVInt(-this.negRight);
                 output.writeVLong((long) this.negRight - this.negLeft);
-                break;
-            default:
-                throw new IllegalArgumentException("invalid extent values-set byte read [" + type + "]");
+            }
+            default -> throw new IllegalArgumentException("invalid extent values-set byte read [" + type + "]");
         }
     }
 

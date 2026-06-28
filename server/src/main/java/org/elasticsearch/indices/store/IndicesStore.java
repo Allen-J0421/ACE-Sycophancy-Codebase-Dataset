@@ -180,7 +180,7 @@ public final class IndicesStore implements ClusterStateListener, Closeable {
                             indexSettings
                         );
                         switch (shardDeletionCheckResult) {
-                            case FOLDER_FOUND_CAN_DELETE:
+                            case FOLDER_FOUND_CAN_DELETE -> {
                                 var clusterState = event.state();
                                 var clusterName = clusterState.getClusterName();
                                 var nodes = clusterState.nodes();
@@ -188,15 +188,9 @@ public final class IndicesStore implements ClusterStateListener, Closeable {
                                 indicesClusterStateService.onClusterStateShardsClosed(
                                     () -> deleteShardIfExistElseWhere(clusterName, nodes, clusterStateVersion, indexShardRoutingTable)
                                 );
-                                break;
-                            case NO_FOLDER_FOUND:
-                                folderNotFoundCache.add(shardId);
-                                break;
-                            case STILL_ALLOCATED:
-                                // nothing to do
-                                break;
-                            default:
-                                assert false : "unknown shard deletion check result: " + shardDeletionCheckResult;
+                            }
+                            case NO_FOLDER_FOUND -> folderNotFoundCache.add(shardId);
+                            case STILL_ALLOCATED -> {} // nothing to do
                         }
                     }
                 }

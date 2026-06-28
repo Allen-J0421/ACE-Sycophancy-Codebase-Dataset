@@ -250,7 +250,7 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
         final ByteSizeValue maxHeapUsed = slowGcEvent.maxHeapUsed;
 
         switch (threshold) {
-            case WARN:
+            case WARN -> {
                 if (logger.isWarnEnabled()) {
                     logger.warn(
                         SLOW_GC_LOG_MESSAGE,
@@ -268,8 +268,8 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
                         pools.apply(lastJvmStats, currentJvmStats)
                     );
                 }
-                break;
-            case INFO:
+            }
+            case INFO -> {
                 if (logger.isInfoEnabled()) {
                     logger.info(
                         SLOW_GC_LOG_MESSAGE,
@@ -287,8 +287,8 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
                         pools.apply(lastJvmStats, currentJvmStats)
                     );
                 }
-                break;
-            case DEBUG:
+            }
+            case DEBUG -> {
                 if (logger.isDebugEnabled()) {
                     logger.debug(
                         SLOW_GC_LOG_MESSAGE,
@@ -306,7 +306,7 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
                         pools.apply(lastJvmStats, currentJvmStats)
                     );
                 }
-                break;
+            }
         }
     }
 
@@ -343,21 +343,21 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
         final long seq
     ) {
         switch (threshold) {
-            case WARN:
+            case WARN -> {
                 if (logger.isWarnEnabled()) {
                     logger.warn(OVERHEAD_LOG_MESSAGE, seq, TimeValue.timeValueMillis(current), TimeValue.timeValueMillis(elapsed));
                 }
-                break;
-            case INFO:
+            }
+            case INFO -> {
                 if (logger.isInfoEnabled()) {
                     logger.info(OVERHEAD_LOG_MESSAGE, seq, TimeValue.timeValueMillis(current), TimeValue.timeValueMillis(elapsed));
                 }
-                break;
-            case DEBUG:
+            }
+            case DEBUG -> {
                 if (logger.isDebugEnabled()) {
                     logger.debug(OVERHEAD_LOG_MESSAGE, seq, TimeValue.timeValueMillis(current), TimeValue.timeValueMillis(elapsed));
                 }
-                break;
+            }
         }
     }
 

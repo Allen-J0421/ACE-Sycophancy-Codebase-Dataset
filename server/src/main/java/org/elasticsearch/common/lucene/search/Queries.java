@@ -111,10 +111,10 @@ public final class Queries {
     }
 
     static boolean isNegativeQuery(Query q) {
-        if ((q instanceof BooleanQuery) == false) {
+        if (!(q instanceof BooleanQuery bq)) {
             return false;
         }
-        List<BooleanClause> clauses = ((BooleanQuery) q).clauses();
+        List<BooleanClause> clauses = bq.clauses();
         return clauses.isEmpty() == false && clauses.stream().allMatch(BooleanClause::isProhibited);
     }
 

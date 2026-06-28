@@ -155,11 +155,10 @@ public final class TransportCleanupRepositoryAction extends TransportMasterNodeA
      */
     private void cleanupRepo(ProjectId projectId, String repositoryName, ActionListener<RepositoryCleanupResult> listener) {
         final Repository repository = repositoriesService.repository(projectId, repositoryName);
-        if (repository instanceof BlobStoreRepository == false) {
+        if (!(repository instanceof BlobStoreRepository blobStoreRepository)) {
             listener.onFailure(new IllegalArgumentException("Repository [" + repositoryName + "] does not support repository cleanup"));
             return;
         }
-        final BlobStoreRepository blobStoreRepository = (BlobStoreRepository) repository;
         final ListenableFuture<RepositoryData> repositoryDataListener = new ListenableFuture<>();
         repository.getRepositoryData(
             EsExecutors.DIRECT_EXECUTOR_SERVICE, // Listener is lightweight, only submits a cluster state update task, no need to fork
@@ -268,7 +267,7 @@ public final class TransportCleanupRepositoryAction extends TransportMasterNodeA
                                     if (failure != null) {
                                         e.addSuppressed(failure);
                                     }
-                                    logger.warn(() -> "[" + repositoryName + "] failed to remove repository cleanup task", e);
+                                    logger.warn("[{}] failed to remove repository cleanup task", repositoryName, e);
                                     delegate.onFailure(e);
                                 }
 

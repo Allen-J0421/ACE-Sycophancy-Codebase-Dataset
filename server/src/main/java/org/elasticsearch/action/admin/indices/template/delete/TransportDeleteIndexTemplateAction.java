@@ -81,7 +81,7 @@ public class TransportDeleteIndexTemplateAction extends AcknowledgedTransportMas
 
             @Override
             public void onFailure(Exception e) {
-                logger.debug(() -> "failed to delete templates [" + request.name() + "]", e);
+                logger.debug("failed to delete templates [{}]", request.name(), e);
                 listener.onFailure(e);
             }
         });

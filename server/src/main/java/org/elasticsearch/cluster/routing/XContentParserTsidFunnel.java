@@ -70,12 +70,12 @@ class XContentParserTsidFunnel implements TsidBuilder.ThrowingTsidFunnel<XConten
 
     private void extractItem(TsidBuilder tsidBuilder, String path, XContentParser source) throws IOException {
         switch (source.currentToken()) {
-            case START_OBJECT:
+            case START_OBJECT -> {
                 source.nextToken();
                 extractObject(tsidBuilder, path, source);
                 source.nextToken();
-                break;
-            case VALUE_NUMBER:
+            }
+            case VALUE_NUMBER -> {
                 switch (source.numberType()) {
                     case INT -> tsidBuilder.addIntDimension(path, source.intValue());
                     case LONG -> tsidBuilder.addLongDimension(path, source.longValue());
@@ -84,29 +84,26 @@ class XContentParserTsidFunnel implements TsidBuilder.ThrowingTsidFunnel<XConten
                     case BIG_DECIMAL, BIG_INTEGER -> tsidBuilder.addStringDimension(path, source.optimizedText().bytes());
                 }
                 source.nextToken();
-                break;
-            case VALUE_BOOLEAN:
+            }
+            case VALUE_BOOLEAN -> {
                 tsidBuilder.addBooleanDimension(path, source.booleanValue());
                 source.nextToken();
-                break;
-            case VALUE_STRING:
+            }
+            case VALUE_STRING -> {
                 tsidBuilder.addStringDimension(path, source.optimizedText().bytes());
                 source.nextToken();
-                break;
-            case START_ARRAY:
+            }
+            case START_ARRAY -> {
                 source.nextToken();
                 extractArray(tsidBuilder, path, source);
                 source.nextToken();
-                break;
-            case VALUE_NULL:
-                source.nextToken();
-                break;
-            default:
-                throw new ParsingException(
-                    source.getTokenLocation(),
-                    "Cannot extract dimension due to unexpected token [{}]",
-                    source.currentToken()
-                );
+            }
+            case VALUE_NULL -> source.nextToken();
+            default -> throw new ParsingException(
+                source.getTokenLocation(),
+                "Cannot extract dimension due to unexpected token [{}]",
+                source.currentToken()
+            );
         }
     }
 }

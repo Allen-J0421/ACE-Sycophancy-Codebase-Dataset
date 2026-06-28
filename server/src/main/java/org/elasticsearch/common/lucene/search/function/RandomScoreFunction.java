@@ -48,8 +48,7 @@ public class RandomScoreFunction extends ScoreFunction {
         final SortedBinaryDocValues values;
         if (fieldData != null) {
             LeafFieldData leafData = fieldData.load(ctx);
-            values = leafData.getBytesValues();
-            if (values == null) throw new NullPointerException("failed to get fielddata");
+            values = Objects.requireNonNull(leafData.getBytesValues(), "failed to get fielddata");
         } else {
             values = null;
         }

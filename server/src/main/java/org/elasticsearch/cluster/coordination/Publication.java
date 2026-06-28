@@ -423,7 +423,7 @@ public abstract class Publication {
                     return rootCause;
                 } else {
                     assert false : e;
-                    logger.error(() -> "PublishResponseHandler: [" + discoveryNode + "] failed", e);
+                    logger.error("PublishResponseHandler: [{}] failed", discoveryNode, e);
                 }
             }
             return e;
@@ -446,7 +446,7 @@ public abstract class Publication {
             public void onFailure(Exception e) {
                 assert e instanceof TransportException;
                 final TransportException exp = (TransportException) e;
-                logger.debug(() -> "ApplyCommitResponseHandler: [" + discoveryNode + "] failed", exp);
+                logger.debug("ApplyCommitResponseHandler: [{}] failed", discoveryNode, exp);
                 assert ((TransportException) e).getRootCause() instanceof Exception;
                 setFailed((Exception) exp.getRootCause());
                 onPossibleCompletion();

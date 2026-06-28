@@ -82,32 +82,27 @@ public class RoutingHashBuilder {
 
     private void extractItem(String path, XContentParser source) throws IOException {
         switch (source.currentToken()) {
-            case START_OBJECT:
+            case START_OBJECT -> {
                 source.nextToken();
                 extractObject(path, source);
                 source.nextToken();
-                break;
-            case VALUE_STRING:
-            case VALUE_NUMBER:
-            case VALUE_BOOLEAN:
+            }
+            case VALUE_STRING, VALUE_NUMBER, VALUE_BOOLEAN -> {
                 XContentString.UTF8Bytes utf8Bytes = source.optimizedText().bytes();
                 addHash(path, new BytesRef(utf8Bytes.bytes(), utf8Bytes.offset(), utf8Bytes.length()));
                 source.nextToken();
-                break;
-            case START_ARRAY:
+            }
+            case START_ARRAY -> {
                 source.nextToken();
                 extractArray(path, source);
                 source.nextToken();
-                break;
-            case VALUE_NULL:
-                source.nextToken();
-                break;
-            default:
-                throw new ParsingException(
-                    source.getTokenLocation(),
-                    "Cannot extract routing path due to unexpected token [{}]",
-                    source.currentToken()
-                );
+            }
+            case VALUE_NULL -> source.nextToken();
+            default -> throw new ParsingException(
+                source.getTokenLocation(),
+                "Cannot extract routing path due to unexpected token [{}]",
+                source.currentToken()
+            );
         }
     }
 

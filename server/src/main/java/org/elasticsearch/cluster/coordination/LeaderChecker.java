@@ -245,7 +245,7 @@ public class LeaderChecker {
                 }
 
                 if (exp instanceof ConnectTransportException || exp.getCause() instanceof ConnectTransportException) {
-                    logger.debug(() -> "leader [" + leader + "] disconnected during check", exp);
+                    logger.debug("leader [{}] disconnected during check", leader, exp);
                     leaderFailed(
                         () -> format(
                             "master node [%s] disconnected, restarting discovery [%s]",
@@ -256,7 +256,7 @@ public class LeaderChecker {
                     );
                     return;
                 } else if (exp.getCause() instanceof NodeHealthCheckFailureException) {
-                    logger.debug(() -> "leader [" + leader + "] health check failed", exp);
+                    logger.debug("leader [{}] health check failed", leader, exp);
                     leaderFailed(
                         () -> format(
                             "master node [%s] reported itself as unhealthy [%s], %s",

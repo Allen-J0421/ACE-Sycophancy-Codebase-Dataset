@@ -97,8 +97,7 @@ public class PrevalidateNodeRemovalRequest extends MasterNodeReadRequest<Prevali
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof PrevalidateNodeRemovalRequest == false) return false;
-        PrevalidateNodeRemovalRequest other = (PrevalidateNodeRemovalRequest) o;
+        if (!(o instanceof PrevalidateNodeRemovalRequest other)) return false;
         return Arrays.equals(names, other.names) && Arrays.equals(ids, other.ids) && Arrays.equals(externalIds, other.externalIds);
     }
 

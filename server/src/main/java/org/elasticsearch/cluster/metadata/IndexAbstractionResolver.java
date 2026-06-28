@@ -439,19 +439,12 @@ public class IndexAbstractionResolver {
 
     private static boolean isSystemIndexVisible(IndexNameExpressionResolver resolver, IndexAbstraction indexAbstraction) {
         final SystemIndexAccessLevel level = resolver.getSystemIndexAccessLevel();
-        switch (level) {
-            case ALL:
-                return true;
-            case NONE:
-                return false;
-            case RESTRICTED:
-                return resolver.getSystemIndexAccessPredicate().test(indexAbstraction.getName());
-            case BACKWARDS_COMPATIBLE_ONLY:
-                return resolver.getNetNewSystemIndexPredicate().test(indexAbstraction.getName());
-            default:
-                assert false : "unexpected system index access level [" + level + "]";
-                throw new IllegalStateException("unexpected system index access level [" + level + "]");
-        }
+        return switch (level) {
+            case ALL -> true;
+            case NONE -> false;
+            case RESTRICTED -> resolver.getSystemIndexAccessPredicate().test(indexAbstraction.getName());
+            case BACKWARDS_COMPATIBLE_ONLY -> resolver.getNetNewSystemIndexPredicate().test(indexAbstraction.getName());
+        };
     }
 
     private static boolean isVisibleDueToImplicitHidden(String expression, String index) {

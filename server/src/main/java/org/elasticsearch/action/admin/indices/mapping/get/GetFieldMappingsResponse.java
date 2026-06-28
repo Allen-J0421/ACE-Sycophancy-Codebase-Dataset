@@ -138,8 +138,7 @@ public class GetFieldMappingsResponse extends ActionResponse implements ToXConte
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof GetFieldMappingsResponse) == false) return false;
-        GetFieldMappingsResponse that = (GetFieldMappingsResponse) o;
+        if (!(o instanceof GetFieldMappingsResponse that)) return false;
         return Objects.equals(mappings, that.mappings);
     }
 

@@ -286,8 +286,7 @@ public class Metadata {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if ((o instanceof Metadata) == false) return false;
-        Metadata metadata = (Metadata) o;
+        if (!(o instanceof Metadata metadata)) return false;
         return map.equals(metadata.map);
     }
 

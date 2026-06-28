@@ -75,7 +75,7 @@ public abstract class TransportAction<Request extends ActionRequest, Response ex
             validationException = request.validate();
         } catch (Exception e) {
             assert false : new AssertionError("validating of request [" + request + "] threw exception", e);
-            logger.warn("validating of request [" + request + "] threw exception", e);
+            logger.warn("validating of request [{}] threw exception", request, e);
             listener.onFailure(e);
             return;
         }

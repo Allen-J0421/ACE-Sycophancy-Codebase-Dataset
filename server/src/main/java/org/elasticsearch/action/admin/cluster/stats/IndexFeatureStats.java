@@ -67,10 +67,9 @@ public class IndexFeatureStats implements ToXContentObject, Writeable {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof IndexFeatureStats == false) {
+        if (!(other instanceof IndexFeatureStats that)) {
             return false;
         }
-        IndexFeatureStats that = (IndexFeatureStats) other;
         return name.equals(that.name) && count == that.count && indexCount == that.indexCount;
     }
 

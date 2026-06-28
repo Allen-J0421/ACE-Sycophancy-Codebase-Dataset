@@ -229,7 +229,7 @@ public class TransportIndicesAliasesAction extends TransportMasterNodeAction<Ind
             long now = System.currentTimeMillis();
             for (final Index index : concreteIndices) {
                 switch (action.actionType()) {
-                    case ADD:
+                    case ADD -> {
                         for (String alias : concreteAliases(action, projectMetadata, index.getName())) {
                             String resolvedName = IndexNameExpressionResolver.resolveDateMathExpression(alias, now);
                             finalActions.add(
@@ -244,18 +244,14 @@ public class TransportIndicesAliasesAction extends TransportMasterNodeAction<Ind
                                 )
                             );
                         }
-                        break;
-                    case REMOVE:
+                    }
+                    case REMOVE -> {
                         for (String alias : concreteAliases(action, projectMetadata, index.getName())) {
                             finalActions.add(new AliasAction.Remove(index.getName(), alias, action.mustExist()));
                             numAliasesRemoved++;
                         }
-                        break;
-                    case REMOVE_INDEX:
-                        finalActions.add(new AliasAction.RemoveIndex(index.getName()));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unsupported action [" + action.actionType() + "]");
+                    }
+                    case REMOVE_INDEX -> finalActions.add(new AliasAction.RemoveIndex(index.getName()));
                 }
             }
 

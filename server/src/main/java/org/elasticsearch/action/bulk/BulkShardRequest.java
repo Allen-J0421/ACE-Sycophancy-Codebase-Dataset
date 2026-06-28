@@ -200,14 +200,9 @@ public final class BulkShardRequest extends ReplicatedWriteRequest<BulkShardRequ
         }
 
         switch (getRefreshPolicy()) {
-            case IMMEDIATE:
-                b.append(" and a refresh");
-                break;
-            case WAIT_UNTIL:
-                b.append(" blocking until refresh");
-                break;
-            case NONE:
-                break;
+            case IMMEDIATE -> b.append(" and a refresh");
+            case WAIT_UNTIL -> b.append(" blocking until refresh");
+            case NONE -> {}
         }
         if (isSimulated) {
             b.append(", simulated");

@@ -140,7 +140,7 @@ public class TransportCloseIndexAction extends TransportMasterNodeAction<CloseIn
             concreteIndices
         );
         indexStateService.closeIndices(closeRequest, listener.delegateResponse((delegatedListener, t) -> {
-            logger.debug(() -> "failed to close indices [" + Arrays.toString(concreteIndices) + "]", t);
+            logger.debug("failed to close indices {}", Arrays.toString(concreteIndices), t);
             delegatedListener.onFailure(t);
         }));
     }

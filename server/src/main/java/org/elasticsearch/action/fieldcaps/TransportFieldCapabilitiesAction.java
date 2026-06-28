@@ -525,7 +525,7 @@ public class TransportFieldCapabilitiesAction extends HandledTransportAction<Fie
                     abstractRunnable.onFailure(e);
                 } else {
                     // should be impossible, we should always submit an AbstractRunnable
-                    logger.error("unexpected failure running " + r, e);
+                    logger.error("unexpected failure running {}", r, e);
                     assert false : new AssertionError("unexpected failure running " + r, e);
                 }
             }

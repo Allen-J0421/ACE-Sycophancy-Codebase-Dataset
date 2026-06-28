@@ -471,7 +471,7 @@ public class BulkProcessor2 implements Closeable {
                 }
             });
         } catch (Exception e) {
-            logger.warn(() -> "Failed to execute bulk request " + executionId + ".", e);
+            logger.warn("Failed to execute bulk request {}.", executionId, e);
             totalBytesInFlight.addAndGet(-1 * bulkRequest.estimatedSizeInBytes());
             maybeNoLongerInExcessofMaxBytesInFlight();
             listener.afterBulk(executionId, bulkRequest, e);

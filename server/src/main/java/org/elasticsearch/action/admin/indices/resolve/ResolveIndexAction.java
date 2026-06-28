@@ -689,7 +689,7 @@ public class ResolveIndexAction extends ActionType<ResolveIndexAction.Response> 
                         remoteResponses.put(clusterAlias, response);
                         terminalHandler.run();
                     }, failure -> {
-                        logger.info("failed to resolve indices on remote cluster [" + clusterAlias + "]", failure);
+                        logger.info("failed to resolve indices on remote cluster [{}]", clusterAlias, failure);
                         remoteExceptions.put(clusterAlias, failure);
                         terminalHandler.run();
                     }));

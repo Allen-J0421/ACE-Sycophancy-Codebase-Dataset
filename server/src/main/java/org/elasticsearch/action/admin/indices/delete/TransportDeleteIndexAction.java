@@ -108,7 +108,7 @@ public class TransportDeleteIndexAction extends AcknowledgedTransportMasterNodeA
             request.ackTimeout(),
             concreteIndices,
             listener.delegateResponse((l, e) -> {
-                logger.debug(() -> "failed to delete indices [" + concreteIndices + "]", e);
+                logger.debug("failed to delete indices {}", concreteIndices, e);
                 listener.onFailure(e);
             })
         );

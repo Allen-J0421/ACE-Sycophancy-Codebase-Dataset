@@ -124,7 +124,7 @@ public class TransportAddIndexBlockAction extends TransportMasterNodeAction<AddI
                 concreteIndices
             ),
             listener.delegateResponse((delegatedListener, t) -> {
-                logger.debug(() -> "failed to mark indices as readonly [" + Arrays.toString(concreteIndices) + "]", t);
+                logger.debug("failed to mark indices as readonly {}", Arrays.toString(concreteIndices), t);
                 delegatedListener.onFailure(t);
             })
         );

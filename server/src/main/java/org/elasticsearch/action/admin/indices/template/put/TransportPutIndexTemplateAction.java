@@ -106,7 +106,7 @@ public class TransportPutIndexTemplateAction extends AcknowledgedTransportMaster
 
                 @Override
                 public void onFailure(Exception e) {
-                    logger.debug(() -> "failed to put template [" + request.name() + "]", e);
+                    logger.debug("failed to put template [{}]", request.name(), e);
                     listener.onFailure(e);
                 }
             }

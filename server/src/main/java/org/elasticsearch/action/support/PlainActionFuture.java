@@ -274,18 +274,15 @@ public class PlainActionFuture<T> implements ActionFuture<T>, ActionListener<T> 
         private V getValue() throws CancellationException, ExecutionException {
             int state = getState();
             switch (state) {
-                case COMPLETED:
+                case COMPLETED -> {
                     if (exception != null) {
                         throw new ExecutionException(exception);
                     } else {
                         return value;
                     }
-
-                case CANCELLED:
-                    throw new CancellationException("Task was cancelled.");
-
-                default:
-                    throw new IllegalStateException("Error, synchronizer in invalid state: " + state);
+                }
+                case CANCELLED -> throw new CancellationException("Task was cancelled.");
+                default -> throw new IllegalStateException("Error, synchronizer in invalid state: " + state);
             }
         }
 

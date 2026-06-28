@@ -137,7 +137,7 @@ public class TransportPutMappingAction extends AcknowledgedTransportMasterNodeAc
 
             performMappingUpdate(concreteIndices, request, listener, metadataMappingService, false);
         } catch (IndexNotFoundException ex) {
-            logger.debug(() -> "failed to put mappings on indices " + Arrays.toString(request.indices()), ex);
+            logger.debug("failed to put mappings on indices {}", Arrays.toString(request.indices()), ex);
             throw ex;
         }
     }
@@ -178,7 +178,7 @@ public class TransportPutMappingAction extends AcknowledgedTransportMasterNodeAc
         boolean autoUpdate
     ) {
         ActionListener.run(listener.delegateResponse((l, e) -> {
-            logger.debug(() -> "failed to put mappings on indices " + Arrays.toString(concreteIndices), e);
+            logger.debug("failed to put mappings on indices {}", Arrays.toString(concreteIndices), e);
             l.onFailure(e);
         }),
             wrappedListener -> metadataMappingService.putMapping(

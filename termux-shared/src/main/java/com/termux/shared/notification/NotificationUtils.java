@@ -63,7 +63,7 @@ public class NotificationUtils {
      * @return Returns the {@link Notification.Builder}.
      */
     @Nullable
-    public static Notification.Builder geNotificationBuilder(
+    public static Notification.Builder getNotificationBuilder(
         final Context context, final String channelId, final int priority, final CharSequence title,
         final CharSequence notificationText, final CharSequence notificationBigText,
         final PendingIntent contentIntent, final PendingIntent deleteIntent, final int notificationMode) {
@@ -85,6 +85,20 @@ public class NotificationUtils {
         builder = setNotificationDefaults(builder, notificationMode);
 
         return builder;
+    }
+
+    /**
+     * @deprecated Use {@link #getNotificationBuilder(Context, String, int, CharSequence, CharSequence,
+     * CharSequence, PendingIntent, PendingIntent, int)}.
+     */
+    @Deprecated
+    @Nullable
+    public static Notification.Builder geNotificationBuilder(
+        final Context context, final String channelId, final int priority, final CharSequence title,
+        final CharSequence notificationText, final CharSequence notificationBigText,
+        final PendingIntent contentIntent, final PendingIntent deleteIntent, final int notificationMode) {
+        return getNotificationBuilder(context, channelId, priority, title, notificationText, notificationBigText,
+            contentIntent, deleteIntent, notificationMode);
     }
 
     /**

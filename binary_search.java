@@ -4,13 +4,13 @@ final class BinarySearch {
     private BinarySearch() {
     }
 
-    static int indexOf(int[] values, int target) {
+    static int indexOf(int[] sortedValues, int target) {
         int low = 0;
-        int high = values.length - 1;
+        int high = sortedValues.length - 1;
 
         while (low <= high) {
             int mid = midpoint(low, high);
-            int candidate = values[mid];
+            int candidate = sortedValues[mid];
 
             if (candidate == target) {
                 return mid;
@@ -26,8 +26,8 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
-    static int binarySearch(int[] values, int target) {
-        return indexOf(values, target);
+    static int binarySearch(int[] sortedValues, int target) {
+        return indexOf(sortedValues, target);
     }
 
     static boolean isFound(int index) {

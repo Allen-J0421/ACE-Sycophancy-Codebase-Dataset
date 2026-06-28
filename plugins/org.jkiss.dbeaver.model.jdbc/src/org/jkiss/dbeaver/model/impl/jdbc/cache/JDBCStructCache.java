@@ -95,9 +95,8 @@ public abstract class JDBCStructCache<OWNER extends DBSObject, OBJECT extends DB
             try (JDBCStatement dbStat = prepareChildrenStatement(session, owner, forObject)) {
                 dbStat.setFetchSize(DBConstants.METADATA_FETCH_SIZE);
                 dbStat.executeStatement();
-                JDBCResultSet dbResult = dbStat.getResultSet();
-                if (dbResult != null) {
-                    try {
+                try (JDBCResultSet dbResult = dbStat.getResultSet()) {
+                    if (dbResult != null) {
                         while (dbResult.next()) {
                             if (monitor.isCanceled()) {
                                 return;
@@ -163,8 +162,6 @@ public abstract class JDBCStructCache<OWNER extends DBSObject, OBJECT extends DB
                         } else if (!objectMap.containsKey(forObject)) {
                             cacheChildren(forObject, new ArrayList<>());
                         }
-                    } finally {
-                        dbResult.close();
                     }
                 }
             }

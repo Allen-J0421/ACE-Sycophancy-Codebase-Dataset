@@ -138,7 +138,7 @@ public class CompositeRuntimeField implements RuntimeField {
     }
 
     private static Map<String, Object> parseFields(String name, Object fieldsObject) {
-        if (fieldsObject instanceof Map == false) {
+        if (!(fieldsObject instanceof Map)) {
             throw new MapperParsingException(
                 "[fields] must be an object, got "
                     + fieldsObject.getClass().getSimpleName()

@@ -271,13 +271,13 @@ public class RangeFieldMapper extends FieldMapper {
                 @SuppressWarnings("unchecked")
                 protected Object parseSourceValue(Object value) {
                     RangeType rangeType = rangeType();
-                    if ((value instanceof Map) == false) {
+                    if (!(value instanceof Map<?, ?> rangeMap)) {
                         assert rangeType == RangeType.IP;
                         Tuple<InetAddress, Integer> ipRange = InetAddresses.parseCidr(value.toString());
                         return InetAddresses.toCidrString(ipRange.v1(), ipRange.v2());
                     }
 
-                    Map<String, Object> range = (Map<String, Object>) value;
+                    Map<String, Object> range = (Map<String, Object>) rangeMap;
                     Map<String, Object> parsedRange = new HashMap<>();
                     for (Map.Entry<String, Object> entry : range.entrySet()) {
                         Object parsedValue = rangeType.parseValue(entry.getValue(), coerce, dateMathParser);

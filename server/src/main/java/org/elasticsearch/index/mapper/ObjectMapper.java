@@ -246,11 +246,11 @@ public class ObjectMapper extends Mapper {
         @Override
         public Mapper.Builder mergeWith(Mapper.Builder incoming, MapperMergeContext parentContext) {
             if (incoming instanceof ObjectMapper.Builder incomingObj) {
-                if (incoming instanceof NestedObjectMapper.Builder && this instanceof NestedObjectMapper.Builder == false) {
+                if (incoming instanceof NestedObjectMapper.Builder && !(this instanceof NestedObjectMapper.Builder)) {
                     MapperErrors.throwNestedMappingConflictError(parentContext.getMapperBuilderContext().buildFullName(leafName()));
                 }
                 if (incoming instanceof PassThroughObjectMapper.Builder ptIncoming
-                    && this instanceof PassThroughObjectMapper.Builder == false) {
+                    && !(this instanceof PassThroughObjectMapper.Builder)) {
                     // ObjectMapper -> PassThrough conversion: check eligibility
                     String fullPath = parentContext.getMapperBuilderContext().buildFullName(leafName());
                     if (this instanceof RootObjectMapper.Builder
@@ -620,7 +620,7 @@ public class ObjectMapper extends Mapper {
             } else if (fieldName.equals("properties")) {
                 if (fieldNode instanceof Collection && ((Collection) fieldNode).isEmpty()) {
                     // nothing to do here, empty (to support "properties: []" case)
-                } else if ((fieldNode instanceof Map) == false) {
+                } else if (!(fieldNode instanceof Map)) {
                     throw new ElasticsearchParseException("properties must be a map type");
                 } else {
                     parseProperties(builder, (Map<String, Object>) fieldNode, parserContext);
@@ -931,7 +931,7 @@ public class ObjectMapper extends Mapper {
 
         int count = 0;
         for (Mapper mapper : sortedMappers) {
-            if ((mapper instanceof MetadataFieldMapper) == false) {
+            if (!(mapper instanceof MetadataFieldMapper)) {
                 if (count++ == 0) {
                     builder.startObject("properties");
                 }

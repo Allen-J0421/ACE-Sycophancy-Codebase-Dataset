@@ -354,7 +354,7 @@ public final class MappingLookup {
     public String firstFieldNotReconstructableFromDocValues() {
         for (Mapper mapper : fieldMappers()) {
             if (mapper instanceof FieldMapper fieldMapper
-                && mapper instanceof MetadataFieldMapper == false
+                && !(mapper instanceof MetadataFieldMapper)
                 && isMultiField(fieldMapper.fullPath()) == false
                 && fieldMapper.syntheticSourceMode() == FieldMapper.SyntheticSourceMode.FALLBACK) {
                 return fieldMapper.fullPath();

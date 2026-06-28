@@ -32,7 +32,7 @@ public class TypeParsers {
      * Parse the {@code meta} key of the mapping.
      */
     public static Map<String, String> parseMeta(String name, Object metaObject) {
-        if (metaObject instanceof Map == false) {
+        if (!(metaObject instanceof Map)) {
             throw new MapperParsingException(
                 "[meta] must be an object, got " + metaObject.getClass().getSimpleName() + "[" + metaObject + "] for field [" + name + "]"
             );
@@ -146,7 +146,7 @@ public class TypeParsers {
                         "Field name [" + multiFieldName + "] which is a multi field of [" + name + "] cannot contain '.'"
                     );
                 }
-                if ((multiFieldEntry.getValue() instanceof Map) == false) {
+                if (!(multiFieldEntry.getValue() instanceof Map)) {
                     throw new MapperParsingException("illegal field [" + multiFieldName + "], only fields can be specified inside fields");
                 }
                 Map<String, Object> multiFieldNodes = (Map<String, Object>) multiFieldEntry.getValue();
@@ -171,11 +171,9 @@ public class TypeParsers {
                             + " Check the documentation."
                     );
                 }
-                if (typeParser instanceof FieldMapper.TypeParser == false) {
+                if (!(typeParser instanceof FieldMapper.TypeParser fieldTypeParser)) {
                     throw new MapperParsingException("Type [" + type + "] cannot be used in multi field");
                 }
-
-                FieldMapper.TypeParser fieldTypeParser = (FieldMapper.TypeParser) typeParser;
                 multiFieldsBuilder.accept(fieldTypeParser.parse(multiFieldName, multiFieldNodes, parserContext));
                 multiFieldNodes.remove("type");
                 MappingParser.checkNoRemainingFields(propName, multiFieldNodes);

@@ -185,7 +185,7 @@ public class TermVectorsService {
 
     private static boolean isValidField(MappedFieldType fieldType) {
         // must be a string
-        if (fieldType instanceof StringFieldType == false) {
+        if (!(fieldType instanceof StringFieldType)) {
             return false;
         }
         // and must be indexed

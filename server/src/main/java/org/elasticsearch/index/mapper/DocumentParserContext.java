@@ -502,7 +502,7 @@ public abstract class DocumentParserContext {
     public final DocumentParserContext maybeCloneForArray(Mapper mapper) {
         if (canAddIgnoredField()
             && mapper instanceof ObjectMapper
-            && mapper instanceof NestedObjectMapper == false
+            && !(mapper instanceof NestedObjectMapper)
             && currentScope != Scope.ARRAY) {
             DocumentParserContext subcontext = switchParser(parser());
             subcontext.currentScope = Scope.ARRAY;

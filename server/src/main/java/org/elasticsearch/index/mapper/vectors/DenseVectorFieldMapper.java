@@ -338,7 +338,7 @@ public class DenseVectorFieldMapper extends FieldMapper {
             // This is defined as updatable because it can be updated once, from [null] to a valid dim size,
             // by a dynamic mapping update. Once it has been set, however, the value cannot be changed.
             this.dims = new Parameter<>("dims", true, () -> null, (n, c, o) -> {
-                if (o instanceof Integer == false) {
+                if (!(o instanceof Integer)) {
                     throw new MapperParsingException("Property [dims] on field [" + n + "] must be an integer but got [" + o + "]");
                 }
 

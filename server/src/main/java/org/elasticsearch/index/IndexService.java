@@ -1137,7 +1137,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
 
                     @Override
                     public void onFailure(Exception e) {
-                        if (e instanceof IndexShardClosedException == false && e instanceof AlreadyClosedException == false) {
+                        if (!(e instanceof IndexShardClosedException) && !(e instanceof AlreadyClosedException)) {
                             logger.warn("unexpected exception while performing scheduled refresh", e);
                         }
                     }
@@ -1189,9 +1189,9 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
                     case STARTED:
                         try {
                             shard.runUnderPrimaryPermit(() -> sync.accept(shard), e -> {
-                                if (e instanceof AlreadyClosedException == false
-                                    && e instanceof IndexShardClosedException == false
-                                    && e instanceof ShardNotInPrimaryModeException == false) {
+                                if (!(e instanceof AlreadyClosedException)
+                                    && !(e instanceof IndexShardClosedException)
+                                    && !(e instanceof ShardNotInPrimaryModeException)) {
                                     logger.warn("{} failed to execute {} sync", shard.shardId(), source, e);
                                 }
                             }, EsExecutors.DIRECT_EXECUTOR_SERVICE);

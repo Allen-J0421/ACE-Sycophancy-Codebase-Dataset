@@ -1722,7 +1722,7 @@ public abstract class FieldMapper extends Mapper {
             if (builderContext.getMergeReason() == MapperService.MergeReason.INDEX_TEMPLATE) {
                 return incoming;
             }
-            if (incoming instanceof FieldMapper.Builder == false) {
+            if (!(incoming instanceof FieldMapper.Builder)) {
                 throw new IllegalArgumentException(
                     "mapper ["
                         + builderContext.buildFullName(leafName())

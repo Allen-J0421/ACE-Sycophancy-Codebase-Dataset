@@ -782,7 +782,7 @@ public final class DocumentParser {
             if (mapper instanceof ObjectMapper objectMapper) {
                 mode = getSourceKeepMode(context, objectMapper.sourceKeepMode());
                 objectWithFallbackSyntheticSource = mode == Mapper.SourceKeepMode.ALL
-                    || (mode == Mapper.SourceKeepMode.ARRAYS && objectMapper instanceof NestedObjectMapper == false);
+                    || (mode == Mapper.SourceKeepMode.ARRAYS && !(objectMapper instanceof NestedObjectMapper));
             }
             boolean fieldWithFallbackSyntheticSource = false;
             boolean fieldWithStoredArraySource = false;
@@ -869,7 +869,7 @@ public final class DocumentParser {
             || context.isCopyToDestinationField(fullFieldName)
             || builders.stream()
                 .anyMatch(
-                    b -> b instanceof NumberFieldMapper.Builder == false
+                    b -> !(b instanceof NumberFieldMapper.Builder)
                         || ((NumberFieldMapper.Builder) b).type() != NumberFieldMapper.NumberType.FLOAT
                 )) {
             return;

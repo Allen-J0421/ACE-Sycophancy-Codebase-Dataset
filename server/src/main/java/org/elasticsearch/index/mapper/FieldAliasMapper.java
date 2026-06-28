@@ -148,7 +148,7 @@ public final class FieldAliasMapper extends Mapper {
 
         @Override
         public Mapper.Builder mergeWith(Mapper.Builder incoming, MapperMergeContext mergeContext) {
-            if (incoming instanceof FieldAliasMapper.Builder == false) {
+            if (!(incoming instanceof FieldAliasMapper.Builder)) {
                 throw new IllegalArgumentException(
                     "Cannot merge a field alias mapping ["
                         + mergeContext.getMapperBuilderContext().buildFullName(leafName())

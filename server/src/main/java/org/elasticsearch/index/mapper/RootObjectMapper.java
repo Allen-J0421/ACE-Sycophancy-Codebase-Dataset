@@ -622,10 +622,9 @@ public class RootObjectMapper extends ObjectMapper {
                   }
               ]
             */
-            if ((fieldNode instanceof List) == false) {
+            if (!(fieldNode instanceof List<?> tmplNodes)) {
                 throw new MapperParsingException("Dynamic template syntax error. An array of named objects is expected.");
             }
-            List<?> tmplNodes = (List<?>) fieldNode;
             List<DynamicTemplate> templates = new ArrayList<>();
             for (Object tmplNode : tmplNodes) {
                 Map<String, Object> tmpl = (Map<String, Object>) tmplNode;
@@ -656,13 +655,13 @@ public class RootObjectMapper extends ObjectMapper {
                 throw new ElasticsearchParseException("runtime must be a map type");
             }
         } else if (fieldName.equals("prefix_properties")) {
-            if ((fieldNode instanceof Map) == false) {
+            if (!(fieldNode instanceof Map)) {
                 throw new MapperParsingException("[prefix_properties] must be an object");
             }
             for (Map.Entry<String, Object> prefixEntry : ((Map<String, Object>) fieldNode).entrySet()) {
                 String prefix = prefixEntry.getKey();
                 Object prefixNode = prefixEntry.getValue();
-                if ((prefixNode instanceof Map) == false) {
+                if (!(prefixNode instanceof Map)) {
                     throw new MapperParsingException("[prefix_properties." + prefix + "] must be an object");
                 }
                 Map<String, Object> facets = (Map<String, Object>) prefixNode;
@@ -694,10 +693,9 @@ public class RootObjectMapper extends ObjectMapper {
      * {@code runtime} is explicitly rejected because it is not supported in strict columnar mode.
      */
     private static Dynamic parsePrefixDynamic(String key, Object value) {
-        if (value instanceof String == false) {
+        if (!(value instanceof String str)) {
             throw new MapperParsingException("[prefix_properties." + key + ".dynamic] must be a string value");
         }
-        String str = (String) value;
         if (str.equalsIgnoreCase("runtime")) {
             throw new MapperParsingException("[prefix_properties." + key + ".dynamic] does not support [runtime]");
         }

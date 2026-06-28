@@ -50,7 +50,7 @@ public final class CustomNormalizerProvider extends AbstractIndexAnalyzerProvide
                     "Custom normalizer [" + name() + "] failed to find char_filter under name [" + charFilterName + "]"
                 );
             }
-            if (charFilter instanceof NormalizingCharFilterFactory == false) {
+            if (!(charFilter instanceof NormalizingCharFilterFactory)) {
                 throw new IllegalArgumentException("Custom normalizer [" + name() + "] may not use char filter [" + charFilterName + "]");
             }
             charFiltersList.add(charFilter);
@@ -65,7 +65,7 @@ public final class CustomNormalizerProvider extends AbstractIndexAnalyzerProvide
                     "Custom Analyzer [" + name() + "] failed to find filter under name [" + tokenFilterName + "]"
                 );
             }
-            if (tokenFilter instanceof NormalizingTokenFilterFactory == false) {
+            if (!(tokenFilter instanceof NormalizingTokenFilterFactory)) {
                 throw new IllegalArgumentException("Custom normalizer [" + name() + "] may not use filter [" + tokenFilterName + "]");
             }
             tokenFilterList.add(tokenFilter);

@@ -190,7 +190,7 @@ public enum IndexMode {
                 // but we'll add it automatically when the index is created through the default mapping
                 return;
             }
-            if (fieldType instanceof KeywordFieldMapper.KeywordFieldType == false) {
+            if (!(fieldType instanceof KeywordFieldMapper.KeywordFieldType)) {
                 throw new IllegalArgumentException(
                     "["
                         + IndexSettings.TIME_SERIES_TEMPORALITY_FIELD.getKey()

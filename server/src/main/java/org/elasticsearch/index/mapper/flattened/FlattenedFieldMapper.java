@@ -219,11 +219,11 @@ public final class FlattenedFieldMapper extends FieldMapper implements PassThrou
 
         private final Parameter<Map<String, Object>> passthrough = new Parameter<>("passthrough", true, () -> null, (n, c, o) -> {
             if (o == null) return null;
-            if ((o instanceof Map<?, ?>) == false) {
+            if (!(o instanceof Map<?, ?> rawMap)) {
                 throw new MapperParsingException("[passthrough] must be an object with a [priority] field, got [" + o + "]");
             }
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) o;
+            Map<String, Object> map = (Map<String, Object>) rawMap;
             if (map.containsKey("priority") == false) {
                 throw new MapperParsingException("[passthrough] requires a [priority] field");
             }
@@ -467,13 +467,13 @@ public final class FlattenedFieldMapper extends FieldMapper implements PassThrou
             if (propertiesNode instanceof Collection<?> c && c.isEmpty()) {
                 return propertyBuilders;
             }
-            if (propertiesNode instanceof Map == false) {
+            if (!(propertiesNode instanceof Map)) {
                 throw new MapperParsingException("[properties] on flattened field [" + flattenedName + "] must be a map");
             }
             Map<String, Object> propsMap = (Map<String, Object>) propertiesNode;
             for (Map.Entry<String, Object> entry : propsMap.entrySet()) {
                 String propertyName = entry.getKey();
-                if (entry.getValue() instanceof Map == false) {
+                if (!(entry.getValue() instanceof Map)) {
                     throw new MapperParsingException(
                         "Expected map for property [" + propertyName + "] in flattened field [" + flattenedName + "]"
                     );

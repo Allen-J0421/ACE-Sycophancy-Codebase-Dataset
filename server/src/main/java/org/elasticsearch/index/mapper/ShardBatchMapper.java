@@ -103,11 +103,10 @@ public final class ShardBatchMapper {
                 return null;
             }
 
-            if ((resolved instanceof FieldMapper) == false) {
+            if (!(resolved instanceof FieldMapper fieldMapper)) {
                 logger.debug("batch indexing disabled: non-field mapper at [{}]", fullPath);
                 return null;
             }
-            final FieldMapper fieldMapper = (FieldMapper) resolved;
 
             if (fieldMapper.supportsBatchIndexing() == false) {
                 logger.debug(

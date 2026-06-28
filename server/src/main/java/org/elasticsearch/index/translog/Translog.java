@@ -80,7 +80,6 @@ import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
-import static org.elasticsearch.core.Strings.format;
 import static org.elasticsearch.index.translog.TranslogConfig.EMPTY_TRANSLOG_BUFFER_SIZE;
 
 /**
@@ -349,7 +348,7 @@ public class Translog extends AbstractIndexShardComponent implements IndexShardC
                 try {
                     Files.delete(tempFile);
                 } catch (IOException ex) {
-                    logger.warn(() -> format("failed to delete temp file %s", tempFile), ex);
+                    logger.warn("failed to delete temp file {}", tempFile, ex);
                 }
             }
         }

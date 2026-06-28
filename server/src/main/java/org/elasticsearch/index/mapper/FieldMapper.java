@@ -1347,7 +1347,7 @@ public abstract class FieldMapper extends Mapper {
                 NamedAnalyzer a = c.getIndexAnalyzers().get(analyzerName);
                 if (a == null) {
                     if (indexCreatedVersion.isLegacyIndexVersion()) {
-                        logger.warn(() -> format("Could not find analyzer [%s] of legacy index, falling back to default", analyzerName));
+                        logger.warn("Could not find analyzer [{}] of legacy index, falling back to default", analyzerName);
                         a = defaultAnalyzer.get();
                     } else {
                         throw new IllegalArgumentException("analyzer [" + analyzerName + "] has not been configured in mappings");

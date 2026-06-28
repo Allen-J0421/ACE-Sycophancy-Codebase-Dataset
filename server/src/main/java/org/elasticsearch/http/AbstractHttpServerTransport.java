@@ -422,24 +422,15 @@ public abstract class AbstractHttpServerTransport extends AbstractLifecycleCompo
                 return;
             }
             if (NetworkExceptionHelper.getCloseConnectionExceptionLevel(e, false) != Level.OFF) {
-                logger.trace(
-                    () -> format("close connection exception caught while handling client http traffic, closing connection %s", channel),
-                    e
-                );
+                logger.trace("close connection exception caught while handling client http traffic, closing connection {}", channel, e);
             } else if (NetworkExceptionHelper.isConnectException(e)) {
-                logger.trace(
-                    () -> format("connect exception caught while handling client http traffic, closing connection %s", channel),
-                    e
-                );
+                logger.trace("connect exception caught while handling client http traffic, closing connection {}", channel, e);
             } else if (e instanceof HttpReadTimeoutException) {
-                logger.trace(() -> format("http read timeout, closing connection %s", channel), e);
+                logger.trace("http read timeout, closing connection {}", channel, e);
             } else if (e instanceof CancelledKeyException) {
-                logger.trace(
-                    () -> format("cancelled key exception caught while handling client http traffic, closing connection %s", channel),
-                    e
-                );
+                logger.trace("cancelled key exception caught while handling client http traffic, closing connection {}", channel, e);
             } else {
-                logger.warn(() -> format("caught exception while handling client http traffic, closing connection %s", channel), e);
+                logger.warn("caught exception while handling client http traffic, closing connection {}", channel, e);
             }
         } finally {
             CloseableChannel.closeChannel(channel);
@@ -469,7 +460,7 @@ public abstract class AbstractHttpServerTransport extends AbstractLifecycleCompo
         }));
         totalChannelsAccepted.incrementAndGet();
         httpClientStatsTracker.addClientStats(httpChannel);
-        logger.trace(() -> format("Http channel accepted: %s", httpChannel));
+        logger.trace("Http channel accepted: {}", httpChannel);
     }
 
     /**

@@ -121,7 +121,6 @@ import java.util.function.LongUnaryOperator;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyMap;
-import static org.elasticsearch.core.Strings.format;
 
 public class IndexService extends AbstractIndexComponent implements IndicesClusterStateService.AllocatedIndex<IndexShard> {
 
@@ -444,7 +443,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
         try {
             IndexMetadata.FORMAT.writeAndCleanup(getMetadata(), nodeEnv.indexPaths(index()));
         } catch (WriteStateException e) {
-            logger.warn(() -> format("failed to write dangling indices state for index %s", index()), e);
+            logger.warn("failed to write dangling indices state for index {}", index(), e);
         }
     }
 
@@ -456,7 +455,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
         try {
             MetadataStateFormat.deleteMetaState(nodeEnv.indexPaths(index()));
         } catch (IOException e) {
-            logger.warn(() -> format("failed to delete dangling indices state for index %s", index()), e);
+            logger.warn("failed to delete dangling indices state for index {}", index(), e);
         }
     }
 
@@ -723,7 +722,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
                     logger.trace("[{}] store not initialized prior to closing shard, nothing to close", shardId);
                 }
             } catch (Exception e) {
-                logger.warn(() -> format("[%s] failed to close store on shard removal (reason: [%s])", shardId, reason), e);
+                logger.warn("[{}] failed to close store on shard removal (reason: [{}])", shardId, reason, e);
             }
         }
     }
@@ -1193,7 +1192,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
                                 if (e instanceof AlreadyClosedException == false
                                     && e instanceof IndexShardClosedException == false
                                     && e instanceof ShardNotInPrimaryModeException == false) {
-                                    logger.warn(() -> format("%s failed to execute %s sync", shard.shardId(), source), e);
+                                    logger.warn("{} failed to execute {} sync", shard.shardId(), source, e);
                                 }
                             }, EsExecutors.DIRECT_EXECUTOR_SERVICE);
                         } catch (final AlreadyClosedException | IndexShardClosedException e) {

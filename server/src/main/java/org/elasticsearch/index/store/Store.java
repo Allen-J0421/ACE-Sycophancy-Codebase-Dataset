@@ -526,11 +526,11 @@ public class Store extends AbstractIndexShardComponent implements Closeable, Ref
         } catch (IndexNotFoundException ex) {
             // that's fine - happens all the time no need to log
         } catch (CorruptIndexException ex) {
-            logger.info(() -> format("%s: corrupted", shardId), ex);
+            logger.info("{}: corrupted", shardId, ex);
         } catch (FileNotFoundException | NoSuchFileException ex) {
             logger.info("Failed to open / find files while reading metadata snapshot", ex);
         } catch (ShardLockObtainFailedException ex) {
-            logger.info(() -> format("%s: failed to obtain shard lock", shardId), ex);
+            logger.info("{}: failed to obtain shard lock", shardId, ex);
         }
         return MetadataSnapshot.EMPTY;
     }

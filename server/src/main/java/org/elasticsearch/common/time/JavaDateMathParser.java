@@ -118,7 +118,7 @@ public class JavaDateMathParser implements DateMathParser {
             }
             char unit = mathString.charAt(i++);
             switch (unit) {
-                case 'y':
+                case 'y' -> {
                     if (round) {
                         dateTime = dateTime.withDayOfYear(1).with(LocalTime.MIN);
                         if (roundUpProperty) {
@@ -127,8 +127,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusYears(sign * num);
                     }
-                    break;
-                case 'M':
+                }
+                case 'M' -> {
                     if (round) {
                         dateTime = dateTime.withDayOfMonth(1).with(LocalTime.MIN);
                         if (roundUpProperty) {
@@ -137,8 +137,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusMonths(sign * num);
                     }
-                    break;
-                case 'w':
+                }
+                case 'w' -> {
                     if (round) {
                         dateTime = dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).with(LocalTime.MIN);
                         if (roundUpProperty) {
@@ -147,8 +147,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusWeeks(sign * num);
                     }
-                    break;
-                case 'd':
+                }
+                case 'd' -> {
                     if (round) {
                         dateTime = dateTime.with(LocalTime.MIN);
                         if (roundUpProperty) {
@@ -157,9 +157,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusDays(sign * num);
                     }
-                    break;
-                case 'h':
-                case 'H':
+                }
+                case 'h', 'H' -> {
                     if (round) {
                         dateTime = dateTime.withMinute(0).withSecond(0).withNano(0);
                         if (roundUpProperty) {
@@ -168,8 +167,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusHours(sign * num);
                     }
-                    break;
-                case 'm':
+                }
+                case 'm' -> {
                     if (round) {
                         dateTime = dateTime.withSecond(0).withNano(0);
                         if (roundUpProperty) {
@@ -178,8 +177,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusMinutes(sign * num);
                     }
-                    break;
-                case 's':
+                }
+                case 's' -> {
                     if (round) {
                         dateTime = dateTime.withNano(0);
                         if (roundUpProperty) {
@@ -188,9 +187,8 @@ public class JavaDateMathParser implements DateMathParser {
                     } else {
                         dateTime = dateTime.plusSeconds(sign * num);
                     }
-                    break;
-                default:
-                    throw new ElasticsearchParseException("unit [{}] not supported for date math [{}]", unit, mathString);
+                }
+                default -> throw new ElasticsearchParseException("unit [{}] not supported for date math [{}]", unit, mathString);
             }
             if (round && roundUpProperty) {
                 // subtract 1 millisecond to get the largest inclusive value

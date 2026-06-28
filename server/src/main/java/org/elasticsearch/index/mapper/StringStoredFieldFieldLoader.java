@@ -49,18 +49,18 @@ public abstract class StringStoredFieldFieldLoader implements SourceLoader.Synth
     @Override
     public final void write(XContentBuilder b) throws IOException {
         switch (values.size()) {
-            case 0:
-                return;
-            case 1:
+            case 0 -> { return; }
+            case 1 -> {
                 b.field(simpleName);
                 write(b, values.get(0));
-                break;
-            default:
+            }
+            default -> {
                 b.startArray(simpleName);
                 for (Object value : values) {
                     write(b, value);
                 }
                 b.endArray();
+            }
         }
         reset();
     }

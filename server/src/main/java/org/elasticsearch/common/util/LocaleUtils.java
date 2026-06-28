@@ -65,23 +65,23 @@ public class LocaleUtils {
     }
 
     private static Locale parseParts(String[] parts) {
-        switch (parts.length) {
-            case 3:
+        return switch (parts.length) {
+            case 3 ->
                 // lang, country, variant
-                return Locale.of(parts[0], parts[1], parts[2]);
-            case 2:
+                Locale.of(parts[0], parts[1], parts[2]);
+            case 2 ->
                 // lang, country
-                return Locale.of(parts[0], parts[1]);
-            case 1:
+                Locale.of(parts[0], parts[1]);
+            case 1 -> {
                 if ("ROOT".equalsIgnoreCase(parts[0])) {
-                    return Locale.ROOT;
+                    yield Locale.ROOT;
                 }
                 // lang
-                return Locale.of(parts[0]);
-            default:
-                throw new IllegalArgumentException(
-                    "Locales can have at most 3 parts but got " + parts.length + ": " + Arrays.asList(parts)
-                );
-        }
+                yield Locale.of(parts[0]);
+            }
+            default -> throw new IllegalArgumentException(
+                "Locales can have at most 3 parts but got " + parts.length + ": " + Arrays.asList(parts)
+            );
+        };
     }
 }

@@ -241,17 +241,16 @@ public record MinimalServiceSettings(
 
     private static void validate(TaskType taskType, Integer dimensions, SimilarityMeasure similarity, ElementType elementType) {
         switch (taskType) {
-            case TEXT_EMBEDDING, EMBEDDING:
+            case TEXT_EMBEDDING, EMBEDDING -> {
                 validateFieldPresent(DIMENSIONS_FIELD, dimensions, taskType);
                 validateFieldPresent(SIMILARITY_FIELD, similarity, taskType);
                 validateFieldPresent(ELEMENT_TYPE_FIELD, elementType, taskType);
-                break;
-
-            default:
+            }
+            default -> {
                 validateFieldNotPresent(DIMENSIONS_FIELD, dimensions, taskType);
                 validateFieldNotPresent(SIMILARITY_FIELD, similarity, taskType);
                 validateFieldNotPresent(ELEMENT_TYPE_FIELD, elementType, taskType);
-                break;
+            }
         }
     }
 

@@ -231,25 +231,16 @@ public final class NetworkService {
                 }
             }
             switch (interfaceSpec) {
-                case "local":
-                    return NetworkUtils.getLoopbackAddresses();
-                case "local:ipv4":
-                    return NetworkUtils.filterIPV4(NetworkUtils.getLoopbackAddresses());
-                case "local:ipv6":
-                    return NetworkUtils.filterIPV6(NetworkUtils.getLoopbackAddresses());
-                case "site":
-                    return NetworkUtils.getSiteLocalAddresses();
-                case "site:ipv4":
-                    return NetworkUtils.filterIPV4(NetworkUtils.getSiteLocalAddresses());
-                case "site:ipv6":
-                    return NetworkUtils.filterIPV6(NetworkUtils.getSiteLocalAddresses());
-                case "global":
-                    return NetworkUtils.getGlobalAddresses();
-                case "global:ipv4":
-                    return NetworkUtils.filterIPV4(NetworkUtils.getGlobalAddresses());
-                case "global:ipv6":
-                    return NetworkUtils.filterIPV6(NetworkUtils.getGlobalAddresses());
-                default:
+                case "local" -> { return NetworkUtils.getLoopbackAddresses(); }
+                case "local:ipv4" -> { return NetworkUtils.filterIPV4(NetworkUtils.getLoopbackAddresses()); }
+                case "local:ipv6" -> { return NetworkUtils.filterIPV6(NetworkUtils.getLoopbackAddresses()); }
+                case "site" -> { return NetworkUtils.getSiteLocalAddresses(); }
+                case "site:ipv4" -> { return NetworkUtils.filterIPV4(NetworkUtils.getSiteLocalAddresses()); }
+                case "site:ipv6" -> { return NetworkUtils.filterIPV6(NetworkUtils.getSiteLocalAddresses()); }
+                case "global" -> { return NetworkUtils.getGlobalAddresses(); }
+                case "global:ipv4" -> { return NetworkUtils.filterIPV4(NetworkUtils.getGlobalAddresses()); }
+                case "global:ipv6" -> { return NetworkUtils.filterIPV6(NetworkUtils.getGlobalAddresses()); }
+                default -> {
                     /* an interface specification */
                     if (interfaceSpec.endsWith(":ipv4")) {
                         return NetworkUtils.filterIPV4(
@@ -262,6 +253,7 @@ public final class NetworkService {
                     } else {
                         return NetworkUtils.getAddressesForInterface(host, "", interfaceSpec);
                     }
+                }
             }
         }
         return InetAddress.getAllByName(host);

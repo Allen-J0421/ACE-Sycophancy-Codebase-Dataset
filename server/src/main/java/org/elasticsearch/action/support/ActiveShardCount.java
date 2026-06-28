@@ -59,19 +59,16 @@ public record ActiveShardCount(int value) implements Writeable {
     }
 
     private static ActiveShardCount get(final int value) {
-        switch (value) {
-            case ACTIVE_SHARD_COUNT_DEFAULT:
-                return DEFAULT;
-            case ALL_ACTIVE_SHARDS:
-                return ALL;
-            case 1:
-                return ONE;
-            case 0:
-                return NONE;
-            default:
+        return switch (value) {
+            case ACTIVE_SHARD_COUNT_DEFAULT -> DEFAULT;
+            case ALL_ACTIVE_SHARDS -> ALL;
+            case 1 -> ONE;
+            case 0 -> NONE;
+            default -> {
                 assert value > 1;
-                return new ActiveShardCount(value);
-        }
+                yield new ActiveShardCount(value);
+            }
+        };
     }
 
     @Override

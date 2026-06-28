@@ -1149,20 +1149,15 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
     private void maybeTrimTranslog() {
         for (IndexShard shard : this.shards.values()) {
             switch (shard.state()) {
-                case CREATED:
-                case RECOVERING:
-                case CLOSED:
-                    continue;
-                case POST_RECOVERY:
-                case STARTED:
+                case CREATED, RECOVERING, CLOSED -> {}
+                case POST_RECOVERY, STARTED -> {
                     try {
                         shard.trimTranslog();
                     } catch (IndexShardClosedException | AlreadyClosedException ex) {
                         // fine - continue;
                     }
-                    continue;
-                default:
-                    throw new IllegalStateException("unknown state: " + shard.state());
+                }
+                default -> throw new IllegalStateException("unknown state: " + shard.state());
             }
         }
     }
@@ -1179,14 +1174,11 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
         for (final IndexShard shard : this.shards.values()) {
             if (shard.routingEntry().active() && shard.routingEntry().primary()) {
                 switch (shard.state()) {
-                    case CLOSED:
-                    case CREATED:
-                    case RECOVERING:
-                        continue;
-                    case POST_RECOVERY:
+                    case CLOSED, CREATED, RECOVERING -> {}
+                    case POST_RECOVERY -> {
                         assert false : "shard " + shard.shardId() + " is in post-recovery but marked as active";
-                        continue;
-                    case STARTED:
+                    }
+                    case STARTED -> {
                         try {
                             shard.runUnderPrimaryPermit(() -> sync.accept(shard), e -> {
                                 if (!(e instanceof AlreadyClosedException)
@@ -1198,9 +1190,8 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
                         } catch (final AlreadyClosedException | IndexShardClosedException e) {
                             // the shard was closed concurrently, continue
                         }
-                        continue;
-                    default:
-                        throw new IllegalStateException("unknown state [" + shard.state() + "]");
+                    }
+                    default -> throw new IllegalStateException("unknown state [" + shard.state() + "]");
                 }
             }
         }

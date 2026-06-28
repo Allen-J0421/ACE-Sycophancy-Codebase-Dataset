@@ -138,13 +138,10 @@ public final class TextParams {
     public static Parameter<String> keywordIndexOptions(Function<FieldMapper, String> initializer) {
         return Parameter.stringParam("index_options", false, initializer, "docs").addValidator(v -> {
             switch (v) {
-                case "docs":
-                case "freqs":
-                    return;
-                default:
-                    throw new MapperParsingException(
-                        "Unknown value [" + v + "] for field [index_options] - accepted values are [docs, freqs]"
-                    );
+                case "docs", "freqs" -> {}
+                default -> throw new MapperParsingException(
+                    "Unknown value [" + v + "] for field [index_options] - accepted values are [docs, freqs]"
+                );
             }
         });
     }
@@ -152,15 +149,10 @@ public final class TextParams {
     public static Parameter<String> textIndexOptions(Function<FieldMapper, String> initializer) {
         return Parameter.stringParam("index_options", false, initializer, "positions").addValidator(v -> {
             switch (v) {
-                case "positions":
-                case "docs":
-                case "freqs":
-                case "offsets":
-                    return;
-                default:
-                    throw new MapperParsingException(
-                        "Unknown value [" + v + "] for field [index_options] - accepted values are [positions, docs, freqs, offsets]"
-                    );
+                case "positions", "docs", "freqs", "offsets" -> {}
+                default -> throw new MapperParsingException(
+                    "Unknown value [" + v + "] for field [index_options] - accepted values are [positions, docs, freqs, offsets]"
+                );
             }
         });
     }
@@ -186,37 +178,26 @@ public final class TextParams {
         if (indexed == false) {
             return IndexOptions.NONE;
         }
-        switch (indexOptions) {
-            case "docs":
-                return IndexOptions.DOCS;
-            case "freqs":
-                return IndexOptions.DOCS_AND_FREQS;
-            case "positions":
-                return IndexOptions.DOCS_AND_FREQS_AND_POSITIONS;
-            case "offsets":
-                return IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS;
-        }
-        throw new IllegalArgumentException("Unknown [index_options] value: [" + indexOptions + "]");
+        return switch (indexOptions) {
+            case "docs" -> IndexOptions.DOCS;
+            case "freqs" -> IndexOptions.DOCS_AND_FREQS;
+            case "positions" -> IndexOptions.DOCS_AND_FREQS_AND_POSITIONS;
+            case "offsets" -> IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS;
+            default -> throw new IllegalArgumentException("Unknown [index_options] value: [" + indexOptions + "]");
+        };
     }
 
     public static Parameter<String> termVectors(Function<FieldMapper, String> initializer) {
         return Parameter.stringParam("term_vector", false, initializer, "no").addValidator(v -> {
             switch (v) {
-                case "no":
-                case "yes":
-                case "with_positions":
-                case "with_offsets":
-                case "with_positions_offsets":
-                case "with_positions_payloads":
-                case "with_positions_offsets_payloads":
-                    return;
-                default:
-                    throw new MapperParsingException(
-                        "Unknown value ["
-                            + v
-                            + "] for field [term_vector] - accepted values are [no, yes, with_positions, with_offsets, "
-                            + "with_positions_offsets, with_positions_payloads, with_positions_offsets_payloads]"
-                    );
+                case "no", "yes", "with_positions", "with_offsets",
+                    "with_positions_offsets", "with_positions_payloads", "with_positions_offsets_payloads" -> {}
+                default -> throw new MapperParsingException(
+                    "Unknown value ["
+                        + v
+                        + "] for field [term_vector] - accepted values are [no, yes, with_positions, with_offsets, "
+                        + "with_positions_offsets, with_positions_payloads, with_positions_offsets_payloads]"
+                );
             }
         });
     }

@@ -506,18 +506,18 @@ public class RangeFieldMapper extends FieldMapper {
                     List<Range> ranges = type.decodeRanges(value);
 
                     switch (ranges.size()) {
-                        case 0:
-                            return;
-                        case 1:
+                        case 0 -> { return; }
+                        case 1 -> {
                             b.field(leafName());
                             ranges.get(0).toXContent(b, fieldType().dateTimeFormatter);
-                            break;
-                        default:
+                        }
+                        default -> {
                             b.startArray(leafName());
                             for (var range : ranges) {
                                 range.toXContent(b, fieldType().dateTimeFormatter);
                             }
                             b.endArray();
+                        }
                     }
                 }
             });

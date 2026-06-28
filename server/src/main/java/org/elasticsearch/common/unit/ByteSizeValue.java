@@ -253,18 +253,12 @@ public class ByteSizeValue implements Writeable, Comparable<ByteSizeValue>, ToXC
             return defaultValue;
         }
         switch (sValue) {
-            case "0":
-            case "0b":
-            case "0B":
-                return ZERO;
-            case "1b":
-            case "1B":
+            case "0", "0b", "0B" -> { return ZERO; }
+            case "1b", "1B" -> {
                 // "1" is deliberately omitted, the units are required for all values except "0" and "-1"
                 return ONE;
-            case "-1":
-            case "-1b":
-            case "-1B":
-                return MINUS_ONE;
+            }
+            case "-1", "-1b", "-1B" -> { return MINUS_ONE; }
         }
         String lowerSValue = sValue.toLowerCase(Locale.ROOT).trim();
         if (lowerSValue.endsWith("k")) {

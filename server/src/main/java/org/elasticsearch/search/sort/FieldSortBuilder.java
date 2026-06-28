@@ -554,13 +554,8 @@ public final class FieldSortBuilder extends SortBuilder<FieldSortBuilder> {
             return null;
         }
         switch (IndexSortConfig.getSortFieldType(sortField)) {
-            case LONG:
-            case INT:
-            case DOUBLE:
-            case FLOAT:
-                return extractNumericMinAndMax(reader, sortField, fieldType, sortBuilder);
-            case STRING:
-            case STRING_VAL:
+            case LONG, INT, DOUBLE, FLOAT -> { return extractNumericMinAndMax(reader, sortField, fieldType, sortBuilder); }
+            case STRING, STRING_VAL -> {
                 if (fieldType instanceof KeywordFieldMapper.KeywordFieldType) {
                     Terms terms = MultiTerms.getTerms(reader, fieldType.name());
                     if (terms == null) {
@@ -568,7 +563,7 @@ public final class FieldSortBuilder extends SortBuilder<FieldSortBuilder> {
                     }
                     return terms.getMin() != null ? new MinAndMax<>(terms.getMin(), terms.getMax()) : null;
                 }
-                break;
+            }
         }
         return null;
     }

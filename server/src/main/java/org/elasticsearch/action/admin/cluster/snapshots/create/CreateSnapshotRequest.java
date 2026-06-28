@@ -419,7 +419,7 @@ public class CreateSnapshotRequest extends MasterNodeRequest<CreateSnapshotReque
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             String name = entry.getKey();
             switch (name) {
-                case "indices":
+                case "indices" -> {
                     if (entry.getValue() instanceof String) {
                         indices(Strings.splitStringByCommaToArray((String) entry.getValue()));
                     } else if (entry.getValue() instanceof List) {
@@ -427,26 +427,22 @@ public class CreateSnapshotRequest extends MasterNodeRequest<CreateSnapshotReque
                     } else {
                         throw new IllegalArgumentException("malformed indices section, should be an array of strings");
                     }
-                    break;
-                case "feature_states":
+                }
+                case "feature_states" -> {
                     if (entry.getValue() instanceof List) {
                         featureStates((List<String>) entry.getValue());
                     } else {
                         throw new IllegalArgumentException("malformed feature_states section, should be an array of strings");
                     }
-                    break;
-                case "partial":
-                    partial(nodeBooleanValue(entry.getValue(), "partial"));
-                    break;
-                case "include_global_state":
-                    includeGlobalState = nodeBooleanValue(entry.getValue(), "include_global_state");
-                    break;
-                case "metadata":
+                }
+                case "partial" -> partial(nodeBooleanValue(entry.getValue(), "partial"));
+                case "include_global_state" -> includeGlobalState = nodeBooleanValue(entry.getValue(), "include_global_state");
+                case "metadata" -> {
                     if (entry.getValue() != null && !(entry.getValue() instanceof Map)) {
                         throw new IllegalArgumentException("malformed metadata, should be an object");
                     }
                     userMetadata((Map<String, Object>) entry.getValue());
-                    break;
+                }
             }
         }
         indicesOptions(IndicesOptions.fromMap(source, indicesOptions));

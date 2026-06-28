@@ -459,35 +459,32 @@ public abstract class InternalOrder extends BucketOrder {
 
         private static BucketOrder readOrder(StreamInput in, boolean dedupe) throws IOException {
             byte id = in.readByte();
-            switch (id) {
-                case COUNT_DESC_ID:
-                    return COUNT_DESC;
-                case COUNT_ASC_ID:
-                    return COUNT_ASC;
-                case KEY_DESC_ID:
-                    return KEY_DESC;
-                case KEY_ASC_ID:
-                    return KEY_ASC;
-                case Aggregation.ID:
+            return switch (id) {
+                case COUNT_DESC_ID -> COUNT_DESC;
+                case COUNT_ASC_ID -> COUNT_ASC;
+                case KEY_DESC_ID -> KEY_DESC;
+                case KEY_ASC_ID -> KEY_ASC;
+                case Aggregation.ID -> {
                     boolean asc = in.readBoolean();
                     String key = in.readString();
                     if (dedupe && in instanceof DelayableWriteable.Deduplicator bo) {
-                        return bo.deduplicate(new Aggregation(key, asc));
+                        yield bo.deduplicate(new Aggregation(key, asc));
                     }
-                    return new Aggregation(key, asc);
-                case CompoundOrder.ID:
+                    yield new Aggregation(key, asc);
+                }
+                case CompoundOrder.ID -> {
                     int size = in.readVInt();
                     List<BucketOrder> compoundOrder = new ArrayList<>(size);
                     for (int i = 0; i < size; i++) {
                         compoundOrder.add(Streams.readOrder(in, false));
                     }
                     if (dedupe && in instanceof DelayableWriteable.Deduplicator bo) {
-                        return bo.deduplicate(new CompoundOrder(compoundOrder, false));
+                        yield bo.deduplicate(new CompoundOrder(compoundOrder, false));
                     }
-                    return new CompoundOrder(compoundOrder, false);
-                default:
-                    throw new RuntimeException("unknown order id [" + id + "]");
-            }
+                    yield new CompoundOrder(compoundOrder, false);
+                }
+                default -> throw new RuntimeException("unknown order id [" + id + "]");
+            };
         }
 
         /**

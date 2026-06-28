@@ -6,11 +6,10 @@ class BinarySearch {
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
 
     static int binarySearch(int[] sortedArray, int target) {
-        int low = 0;
-        int high = sortedArray.length - 1;
+        SearchBounds bounds = SearchBounds.forArray(sortedArray);
 
-        while (low <= high) {
-            int mid = midpoint(low, high);
+        while (bounds.hasCandidates()) {
+            int mid = bounds.midpoint();
             int comparison = compareAt(sortedArray, mid, target);
 
             if (comparison == 0) {
@@ -18,9 +17,9 @@ class BinarySearch {
             }
 
             if (comparison < 0) {
-                low = mid + 1;
+                bounds.discardLowerHalf(mid);
             } else {
-                high = mid - 1;
+                bounds.discardUpperHalf(mid);
             }
         }
 
@@ -29,10 +28,6 @@ class BinarySearch {
 
     public static void main(String[] args) {
         runDemo();
-    }
-
-    private static int midpoint(int low, int high) {
-        return low + (high - low) / 2;
     }
 
     private static int compareAt(int[] sortedArray, int index, int target) {
@@ -51,5 +46,35 @@ class BinarySearch {
         }
 
         return FOUND_MESSAGE_PREFIX + result;
+    }
+
+    private static final class SearchBounds {
+        private int low;
+        private int high;
+
+        private SearchBounds(int low, int high) {
+            this.low = low;
+            this.high = high;
+        }
+
+        private static SearchBounds forArray(int[] array) {
+            return new SearchBounds(0, array.length - 1);
+        }
+
+        private boolean hasCandidates() {
+            return low <= high;
+        }
+
+        private int midpoint() {
+            return low + (high - low) / 2;
+        }
+
+        private void discardLowerHalf(int mid) {
+            low = mid + 1;
+        }
+
+        private void discardUpperHalf(int mid) {
+            high = mid - 1;
+        }
     }
 }

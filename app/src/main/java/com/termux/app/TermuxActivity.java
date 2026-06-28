@@ -542,7 +542,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         final ViewPager terminalToolbarViewPager = getTerminalToolbarViewPager();
         if (terminalToolbarViewPager == null) return;
 
-        final boolean showNow = mPreferences.toogleShowTerminalToolbar();
+        final boolean showNow = mPreferences.toggleShowTerminalToolbar();
         Logger.showToast(this, (showNow ? getString(R.string.msg_enabling_terminal_toolbar) : getString(R.string.msg_disabling_terminal_toolbar)), true);
         terminalToolbarViewPager.setVisibility(showNow ? View.VISIBLE : View.GONE);
         if (showNow && isTerminalToolbarTextInputViewSelected()) {

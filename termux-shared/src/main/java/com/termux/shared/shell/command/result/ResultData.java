@@ -23,7 +23,7 @@ public class ResultData implements Serializable {
     public Integer exitCode;
 
     /** The internal errors list of command. */
-    public List<Error> errorsList =  new ArrayList<>();
+    public List<Error> errorsList = new ArrayList<>();
 
 
     public ResultData() {
@@ -97,7 +97,7 @@ public class ResultData implements Serializable {
 
     public synchronized boolean setStateFailed(String type, int code, String message, List<Throwable> throwablesList) {
         if (errorsList == null)
-            errorsList =  new ArrayList<>();
+            errorsList = new ArrayList<>();
 
         Error error = new Error();
         errorsList.add(error);

@@ -226,7 +226,7 @@ public class LocalServerSocket implements Closeable {
                 continue;
             }
 
-            LocalClientSocket clientSocket =  new LocalClientSocket(mLocalSocketManager, clientFD, peerCred);
+            LocalClientSocket clientSocket = new LocalClientSocket(mLocalSocketManager, clientFD, peerCred);
             Logger.logVerbose(LOG_TAG, "Client socket accept for \"" + mLocalSocketRunConfig.getTitle() + "\" server\n" + clientSocket.getLogString());
 
             // Only allow connection if the peer has the same uid as server app's user id or root user id

@@ -346,7 +346,7 @@ public class TermuxUtils {
             case TERMUX_AND_PLUGIN_PACKAGES:
                 appInfo.append(TermuxUtils.getAppInfoMarkdownString(currentPackageContext, false));
 
-                String termuxPluginAppsInfo =  TermuxUtils.getTermuxPluginAppsInfoMarkdownString(currentPackageContext);
+                String termuxPluginAppsInfo = TermuxUtils.getTermuxPluginAppsInfoMarkdownString(currentPackageContext);
                 if (termuxPluginAppsInfo != null)
                     appInfo.append("\n\n").append(termuxPluginAppsInfo);
                 return appInfo.toString();

@@ -76,10 +76,18 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
         SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_SHOW_TERMINAL_TOOLBAR, value, false);
     }
 
-    public boolean toogleShowTerminalToolbar() {
+    public boolean toggleShowTerminalToolbar() {
         boolean currentValue = shouldShowTerminalToolbar();
         setShowTerminalToolbar(!currentValue);
         return !currentValue;
+    }
+
+    /**
+     * @deprecated Use {@link #toggleShowTerminalToolbar()}.
+     */
+    @Deprecated
+    public boolean toogleShowTerminalToolbar() {
+        return toggleShowTerminalToolbar();
     }
 
 
@@ -128,7 +136,7 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
         int[] sizes = new int[3];
 
         // This is a bit arbitrary and sub-optimal. We want to give a sensible default for minimum font size
-        // to prevent invisible text due to zoom be mistake:
+        // to prevent invisible text due to zoom by mistake:
         sizes[1] = (int) (4f * dipInPixels); // min
 
         // http://www.google.com/design/spec/style/typography.html#typography-line-height

@@ -383,14 +383,14 @@ public class Logger {
         if (object != null)
             return label + ": `" + object + "`";
         else
-            return  label + ": "  +  def;
+            return label + ": " + def;
     }
 
     public static String getMultiLineLogStringEntry(String label, Object object, String def) {
         if (object != null)
             return label + ":\n```\n" + object + "\n```\n";
         else
-            return  label + ": "  +  def;
+            return label + ": " + def;
     }
 
 

@@ -71,11 +71,11 @@ public class TermuxNotificationUtils {
                                                                                  final PendingIntent contentIntent,
                                                                                  final PendingIntent deleteIntent,
                                                                                  final int notificationMode) {
-        Notification.Builder builder =  NotificationUtils.geNotificationBuilder(termuxPackageContext,
+        Notification.Builder builder = NotificationUtils.geNotificationBuilder(termuxPackageContext,
             channelId, priority,
             title, notificationText, notificationBigText, contentIntent, deleteIntent, notificationMode);
 
-        if (builder == null)  return null;
+        if (builder == null) return null;
 
         // Enable timestamp
         builder.setShowWhen(true);

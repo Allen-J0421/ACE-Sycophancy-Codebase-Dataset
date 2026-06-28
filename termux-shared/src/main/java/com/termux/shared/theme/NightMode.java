@@ -83,7 +83,7 @@ public enum NightMode {
     @NonNull
     public static NightMode getAppNightMode() {
         if (APP_NIGHT_MODE == null)
-            APP_NIGHT_MODE =  SYSTEM;
+            APP_NIGHT_MODE = SYSTEM;
 
         return APP_NIGHT_MODE;
     }

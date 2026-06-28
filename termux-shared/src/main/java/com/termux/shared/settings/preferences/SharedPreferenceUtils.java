@@ -396,7 +396,7 @@ public class SharedPreferenceUtils {
         try {
             stringValue = sharedPreferences.getString(key, Integer.toString(def));
             if (stringValue != null)
-                intValue =  Integer.parseInt(stringValue);
+                intValue = Integer.parseInt(stringValue);
             else
                 intValue = def;
         } catch (NumberFormatException | ClassCastException e) {

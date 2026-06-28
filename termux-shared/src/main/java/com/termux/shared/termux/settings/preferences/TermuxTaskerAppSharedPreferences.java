@@ -17,7 +17,7 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
 
     private static final String LOG_TAG = "TermuxTaskerAppSharedPreferences";
 
-    private  TermuxTaskerAppSharedPreferences(@NonNull Context context) {
+    private TermuxTaskerAppSharedPreferences(@NonNull Context context) {
         super(context,
             SharedPreferenceUtils.getPrivateSharedPreferences(context,
                 TermuxConstants.TERMUX_TASKER_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION),
@@ -50,7 +50,7 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
      *                       be shown which when dismissed will exit the app.
      * @return Returns the {@link TermuxTaskerAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
-    public static  TermuxTaskerAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
+    public static TermuxTaskerAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
         Context termuxTaskerPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME, exitAppOnError);
         if (termuxTaskerPackageContext == null)
             return null;

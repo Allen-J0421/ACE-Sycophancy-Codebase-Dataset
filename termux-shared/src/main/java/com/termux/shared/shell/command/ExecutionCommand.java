@@ -275,7 +275,7 @@ public class ExecutionCommand {
             previousState = currentState;
 
         currentState = newState;
-        return  true;
+        return true;
     }
 
     public synchronized boolean hasExecuted() {

@@ -69,7 +69,7 @@ public class TermuxWidgetAppSharedPreferences extends AppSharedPreferences {
     }
 
     public String getGeneratedToken() {
-        String token =  SharedPreferenceUtils.getString(mSharedPreferences, TERMUX_WIDGET_APP.KEY_TOKEN, null, true);
+        String token = SharedPreferenceUtils.getString(mSharedPreferences, TERMUX_WIDGET_APP.KEY_TOKEN, null, true);
         if (token == null) {
             token = UUID.randomUUID().toString();
             SharedPreferenceUtils.setString(mSharedPreferences, TERMUX_WIDGET_APP.KEY_TOKEN, token, true);

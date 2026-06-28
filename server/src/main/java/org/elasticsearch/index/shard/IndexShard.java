@@ -2283,14 +2283,12 @@ public class IndexShard extends AbstractIndexShardComponent implements IndicesCl
                 logger.trace("[translog] recover op {}", operation);
                 Engine.Result result = applyTranslogOperation(engine, operation, origin);
                 switch (result.getResultType()) {
-                    case FAILURE:
-                        throw result.getFailure();
-                    case MAPPING_UPDATE_REQUIRED:
-                        throw new IllegalArgumentException("unexpected mapping update: " + result.getRequiredMappingUpdate());
-                    case SUCCESS:
-                        break;
-                    default:
-                        throw new AssertionError("Unknown result type [" + result.getResultType() + "]");
+                    case FAILURE -> throw result.getFailure();
+                    case MAPPING_UPDATE_REQUIRED -> throw new IllegalArgumentException(
+                        "unexpected mapping update: " + result.getRequiredMappingUpdate()
+                    );
+                    case SUCCESS -> {}
+                    default -> throw new AssertionError("Unknown result type [" + result.getResultType() + "]");
                 }
 
                 opsRecovered++;

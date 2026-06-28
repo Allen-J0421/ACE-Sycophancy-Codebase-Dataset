@@ -102,14 +102,11 @@ public class ProvidedIdFieldMapper extends IdFieldMapper {
         @Override
         public MetadataFieldMapper build() {
             var mode = this.mode.getValue();
-            switch (mode) {
-                case COLUMNAR:
-                    return columnarIdByDefault ? COLUMNAR_ID_DEFAULT_COLUMNAR : COLUMNAR_ID;
-                case DOCUMENT:
-                    return columnarIdByDefault ? DOCUMENT_ID_DEFAULT_COLUMNAR : DOCUMENT_ID;
-                default:
-                    throw new IllegalArgumentException("Unsupported id field mode [" + mode + "]");
-            }
+            return switch (mode) {
+                case COLUMNAR -> columnarIdByDefault ? COLUMNAR_ID_DEFAULT_COLUMNAR : COLUMNAR_ID;
+                case DOCUMENT -> columnarIdByDefault ? DOCUMENT_ID_DEFAULT_COLUMNAR : DOCUMENT_ID;
+                default -> throw new IllegalArgumentException("Unsupported id field mode [" + mode + "]");
+            };
         }
 
         @Override

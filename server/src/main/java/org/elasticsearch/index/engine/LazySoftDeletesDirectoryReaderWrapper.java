@@ -284,28 +284,15 @@ public final class LazySoftDeletesDirectoryReaderWrapper extends FilterDirectory
         FieldInfo fieldInfo = reader.getFieldInfos().fieldInfo(field);
         final DocIdSetIterator iterator;
         if (fieldInfo != null) {
-            switch (fieldInfo.getDocValuesType()) {
-                case NONE:
-                    iterator = null;
-                    break;
-                case NUMERIC:
-                    iterator = reader.getNumericDocValues(field);
-                    break;
-                case BINARY:
-                    iterator = reader.getBinaryDocValues(field);
-                    break;
-                case SORTED:
-                    iterator = reader.getSortedDocValues(field);
-                    break;
-                case SORTED_NUMERIC:
-                    iterator = reader.getSortedNumericDocValues(field);
-                    break;
-                case SORTED_SET:
-                    iterator = reader.getSortedSetDocValues(field);
-                    break;
-                default:
-                    throw new AssertionError();
-            }
+            iterator = switch (fieldInfo.getDocValuesType()) {
+                case NONE -> null;
+                case NUMERIC -> reader.getNumericDocValues(field);
+                case BINARY -> reader.getBinaryDocValues(field);
+                case SORTED -> reader.getSortedDocValues(field);
+                case SORTED_NUMERIC -> reader.getSortedNumericDocValues(field);
+                case SORTED_SET -> reader.getSortedSetDocValues(field);
+                default -> throw new AssertionError();
+            };
             return iterator;
         }
         return null;

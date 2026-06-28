@@ -67,30 +67,22 @@ public abstract class IntervalsSourceProvider implements NamedWriteable, ToXCont
 
     public static IntervalsSourceProvider fromXContent(XContentParser parser) throws IOException {
         assert parser.currentToken() == XContentParser.Token.FIELD_NAME;
-        switch (parser.currentName()) {
-            case "match":
-                return Match.fromXContent(parser);
-            case "any_of":
-                return Disjunction.fromXContent(parser);
-            case "all_of":
-                return Combine.fromXContent(parser);
-            case "prefix":
-                return Prefix.fromXContent(parser);
-            case "wildcard":
-                return Wildcard.fromXContent(parser);
-            case "fuzzy":
-                return Fuzzy.fromXContent(parser);
-            case "regexp":
-                return Regexp.fromXContent(parser);
-            case "range":
-                return Range.fromXContent(parser);
-        }
-        throw new ParsingException(
-            parser.getTokenLocation(),
-            "Unknown interval type ["
-                + parser.currentName()
-                + "], expecting one of [match, any_of, all_of, prefix, wildcard, regexp, range]"
-        );
+        return switch (parser.currentName()) {
+            case "match" -> Match.fromXContent(parser);
+            case "any_of" -> Disjunction.fromXContent(parser);
+            case "all_of" -> Combine.fromXContent(parser);
+            case "prefix" -> Prefix.fromXContent(parser);
+            case "wildcard" -> Wildcard.fromXContent(parser);
+            case "fuzzy" -> Fuzzy.fromXContent(parser);
+            case "regexp" -> Regexp.fromXContent(parser);
+            case "range" -> Range.fromXContent(parser);
+            default -> throw new ParsingException(
+                parser.getTokenLocation(),
+                "Unknown interval type ["
+                    + parser.currentName()
+                    + "], expecting one of [match, any_of, all_of, prefix, wildcard, regexp, range]"
+            );
+        };
     }
 
     private static IntervalsSourceProvider parseInnerIntervals(XContentParser parser) throws IOException {

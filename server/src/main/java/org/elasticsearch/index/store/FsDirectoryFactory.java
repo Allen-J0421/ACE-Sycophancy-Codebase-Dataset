@@ -104,25 +104,24 @@ public class FsDirectoryFactory implements IndexStorePlugin.DirectoryFactory {
             type = IndexModule.Type.fromSettingsKey(storeType);
         }
         Set<String> preLoadExtensions = new HashSet<>(indexSettings.getValue(IndexModule.INDEX_STORE_PRE_LOAD_SETTING));
-        switch (type) {
-            case HYBRIDFS:
+        return switch (type) {
+            case HYBRIDFS -> {
                 // Use Lucene defaults
                 final FSDirectory primaryDirectory = FSDirectory.open(location, lockFactory);
                 if (primaryDirectory instanceof MMapDirectory mMapDirectory) {
                     mMapDirectory = adjustSharedArenaGrouping(mMapDirectory);
-                    return new HybridDirectory(lockFactory, setMMapFunctions(mMapDirectory, preLoadExtensions), asyncPrefetchLimit);
+                    yield new HybridDirectory(lockFactory, setMMapFunctions(mMapDirectory, preLoadExtensions), asyncPrefetchLimit);
                 } else {
-                    return primaryDirectory;
+                    yield primaryDirectory;
                 }
-            case MMAPFS:
+            }
+            case MMAPFS -> {
                 MMapDirectory mMapDirectory = adjustSharedArenaGrouping(new MMapDirectory(location, lockFactory));
-                return setMMapFunctions(mMapDirectory, preLoadExtensions);
-            case SIMPLEFS:
-            case NIOFS:
-                return new NIOFSDirectory(location, lockFactory);
-            default:
-                throw new AssertionError("unexpected built-in store type [" + type + "]");
-        }
+                yield setMMapFunctions(mMapDirectory, preLoadExtensions);
+            }
+            case SIMPLEFS, NIOFS -> new NIOFSDirectory(location, lockFactory);
+            default -> throw new AssertionError("unexpected built-in store type [" + type + "]");
+        };
     }
 
     /** Sets the preload, if any, on the given directory based on the extensions. Returns the same directory instance. */

@@ -217,13 +217,9 @@ public class BinaryFieldMapper extends FieldMapper {
 
                     int count = in.readVInt();
                     switch (count) {
-                        case 0:
-                            return;
-                        case 1:
-                            b.field(leafName());
-                            break;
-                        default:
-                            b.startArray(leafName());
+                        case 0 -> { return; }
+                        case 1 -> b.field(leafName());
+                        default -> b.startArray(leafName());
                     }
 
                     for (int i = 0; i < count; i++) {

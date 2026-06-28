@@ -54,12 +54,9 @@ public enum SimpleQueryStringFlag {
             try {
                 SimpleQueryStringFlag flag = SimpleQueryStringFlag.valueOf(s.toUpperCase(Locale.ROOT));
                 switch (flag) {
-                    case NONE:
-                        return 0;
-                    case ALL:
-                        return -1;
-                    default:
-                        magic |= flag.value();
+                    case NONE -> { return 0; }
+                    case ALL -> { return -1; }
+                    default -> magic |= flag.value();
                 }
             } catch (IllegalArgumentException iae) {
                 throw new IllegalArgumentException("Unknown " + SimpleQueryStringBuilder.NAME + " flag [" + s + "]");

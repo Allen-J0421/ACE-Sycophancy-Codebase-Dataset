@@ -302,7 +302,7 @@ public final class SearchRequestAttributesExtractor {
             return;
         }
         switch (queryBuilder) {
-            case BoolQueryBuilder bool:
+            case BoolQueryBuilder bool -> {
                 for (QueryBuilder must : bool.must()) {
                     introspectQueryBuilder(must, queryMetadataBuilder, ++level);
                 }
@@ -314,25 +314,23 @@ public final class SearchRequestAttributesExtractor {
                 }
                 // Note that should clauses are ignored unless there's only one that becomes mandatory
                 // must_not clauses are also ignored for now
-                break;
-            case ConstantScoreQueryBuilder constantScore:
-                introspectQueryBuilder(constantScore.innerQuery(), queryMetadataBuilder, ++level);
-                break;
-            case BoostingQueryBuilder boosting:
-                introspectQueryBuilder(boosting.positiveQuery(), queryMetadataBuilder, ++level);
-                break;
-            case NestedQueryBuilder nested:
-                introspectQueryBuilder(nested.query(), queryMetadataBuilder, ++level);
-                break;
-            case RankDocsQueryBuilder rankDocs:
+            }
+            case ConstantScoreQueryBuilder constantScore -> introspectQueryBuilder(
+                constantScore.innerQuery(),
+                queryMetadataBuilder,
+                ++level
+            );
+            case BoostingQueryBuilder boosting -> introspectQueryBuilder(boosting.positiveQuery(), queryMetadataBuilder, ++level);
+            case NestedQueryBuilder nested -> introspectQueryBuilder(nested.query(), queryMetadataBuilder, ++level);
+            case RankDocsQueryBuilder rankDocs -> {
                 QueryBuilder[] queryBuilders = rankDocs.getQueryBuilders();
                 if (queryBuilders != null) {
                     for (QueryBuilder builder : queryBuilders) {
                         introspectQueryBuilder(builder, queryMetadataBuilder, level + 1);
                     }
                 }
-                break;
-            case RangeQueryBuilder range:
+            }
+            case RangeQueryBuilder range -> {
                 // Note that the outcome of this switch differs depending on whether it is executed on the coord node, or data node.
                 // Data nodes perform query rewrite on each shard. That means that a query that reports a certain time range filter at the
                 // coordinator, may not report the same for all the shards it targets, but rather only for those that do end up executing
@@ -351,11 +349,9 @@ public final class SearchRequestAttributesExtractor {
                         }
                     }
                 }
-                break;
-            case KnnVectorQueryBuilder knn:
-                queryMetadataBuilder.knnQuery = true;
-                break;
-            default:
+            }
+            case KnnVectorQueryBuilder knn -> queryMetadataBuilder.knnQuery = true;
+            default -> {}
         }
     }
 
@@ -364,18 +360,14 @@ public final class SearchRequestAttributesExtractor {
             return;
         }
         switch (retrieverBuilder) {
-            case KnnRetrieverBuilder knn:
-                queryMetadataBuilder.knnQuery = true;
-                break;
-            case StandardRetrieverBuilder standard:
-                introspectQueryBuilder(standard.topDocsQuery(), queryMetadataBuilder, level + 1);
-                break;
-            case CompoundRetrieverBuilder<?> compound:
+            case KnnRetrieverBuilder knn -> queryMetadataBuilder.knnQuery = true;
+            case StandardRetrieverBuilder standard -> introspectQueryBuilder(standard.topDocsQuery(), queryMetadataBuilder, level + 1);
+            case CompoundRetrieverBuilder<?> compound -> {
                 for (CompoundRetrieverBuilder.RetrieverSource retrieverSource : compound.innerRetrievers()) {
                     introspectRetriever(retrieverSource.retriever(), queryMetadataBuilder, level + 1);
                 }
-                break;
-            default:
+            }
+            default -> {}
         }
     }
 

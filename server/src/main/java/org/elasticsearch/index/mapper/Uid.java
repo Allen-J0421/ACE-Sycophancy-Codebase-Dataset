@@ -33,22 +33,20 @@ public final class Uid {
         // 'xxx=' and 'xxx' could be considered the same id
         final int length = id.length();
         switch (length & 0x03) {
-            case 0:
-                break;
-            case 1:
-                return false;
-            case 2:
+            case 0 -> {}
+            case 1 -> { return false; }
+            case 2 -> {
                 // the last 2 symbols (12 bits) are encoding 1 byte (8 bits)
                 // so the last symbol only actually uses 8-6=2 bits and can only take 4 values
                 char last = id.charAt(length - 1);
                 if (last != 'A' && last != 'Q' && last != 'g' && last != 'w') {
                     return false;
                 }
-                break;
-            case 3:
+            }
+            case 3 -> {
                 // The last 3 symbols (18 bits) are encoding 2 bytes (16 bits)
                 // so the last symbol only actually uses 16-12=4 bits and can only take 16 values
-                last = id.charAt(length - 1);
+                char last = id.charAt(length - 1);
                 if (last != 'A'
                     && last != 'E'
                     && last != 'I'
@@ -67,10 +65,9 @@ public final class Uid {
                     && last != '8') {
                     return false;
                 }
-                break;
-            default:
-                // number & 0x03 is always in [0,3]
-                throw new AssertionError("Impossible case");
+            }
+            // number & 0x03 is always in [0,3]
+            default -> throw new AssertionError("Impossible case");
         }
         for (int i = 0; i < length; ++i) {
             final char c = id.charAt(i);

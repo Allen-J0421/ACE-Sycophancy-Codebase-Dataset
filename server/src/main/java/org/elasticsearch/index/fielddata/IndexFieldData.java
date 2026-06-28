@@ -196,43 +196,46 @@ public interface IndexFieldData<FD extends LeafFieldData> {
                     default -> throw new UnsupportedOperationException("Unsupported reduced type: " + reducedType());
                 };
             } else {
-                switch (reducedType()) {
-                    case INT:
+                return switch (reducedType()) {
+                    case INT -> {
                         if (missingValue instanceof Number) {
-                            return ((Number) missingValue).intValue();
+                            yield ((Number) missingValue).intValue();
                         } else {
-                            return Integer.parseInt(missingValue.toString());
+                            yield Integer.parseInt(missingValue.toString());
                         }
-                    case LONG:
+                    }
+                    case LONG -> {
                         if (missingValue instanceof Number) {
-                            return ((Number) missingValue).longValue();
+                            yield ((Number) missingValue).longValue();
                         } else {
-                            return Long.parseLong(missingValue.toString());
+                            yield Long.parseLong(missingValue.toString());
                         }
-                    case FLOAT:
+                    }
+                    case FLOAT -> {
                         if (missingValue instanceof Number) {
-                            return ((Number) missingValue).floatValue();
+                            yield ((Number) missingValue).floatValue();
                         } else {
-                            return Float.parseFloat(missingValue.toString());
+                            yield Float.parseFloat(missingValue.toString());
                         }
-                    case DOUBLE:
+                    }
+                    case DOUBLE -> {
                         if (missingValue instanceof Number) {
-                            return ((Number) missingValue).doubleValue();
+                            yield ((Number) missingValue).doubleValue();
                         } else {
-                            return Double.parseDouble(missingValue.toString());
+                            yield Double.parseDouble(missingValue.toString());
                         }
-                    case STRING:
-                    case STRING_VAL:
+                    }
+                    case STRING, STRING_VAL -> {
                         if (missingValue instanceof BytesRef) {
-                            return missingValue;
+                            yield missingValue;
                         } else if (missingValue instanceof byte[]) {
-                            return new BytesRef((byte[]) missingValue);
+                            yield new BytesRef((byte[]) missingValue);
                         } else {
-                            return new BytesRef(missingValue.toString());
+                            yield new BytesRef(missingValue.toString());
                         }
-                    default:
-                        throw new UnsupportedOperationException("Unsupported reduced type: " + reducedType());
-                }
+                    }
+                    default -> throw new UnsupportedOperationException("Unsupported reduced type: " + reducedType());
+                };
             }
         }
 

@@ -114,21 +114,21 @@ public final class EngineConfig {
         IndexMode indexMode = IndexSettings.MODE.get(settings);
         return indexMode.getDefaultCodec();
     }, s -> {
-        switch (s) {
-            case CodecService.DEFAULT_CODEC:
-            case CodecService.LEGACY_DEFAULT_CODEC:
-            case CodecService.BEST_COMPRESSION_CODEC:
-            case CodecService.LEGACY_BEST_COMPRESSION_CODEC:
-            case CodecService.LUCENE_DEFAULT_CODEC:
-                return s;
-            default:
+        return switch (s) {
+            case CodecService.DEFAULT_CODEC,
+                CodecService.LEGACY_DEFAULT_CODEC,
+                CodecService.BEST_COMPRESSION_CODEC,
+                CodecService.LEGACY_BEST_COMPRESSION_CODEC,
+                CodecService.LUCENE_DEFAULT_CODEC -> s;
+            default -> {
                 if (Codec.availableCodecs().contains(s) == false) { // we don't error message the not officially supported ones
                     throw new IllegalArgumentException(
                         "unknown value for [index.codec] must be one of [default, best_compression] but was: " + s
                     );
                 }
-                return s;
-        }
+                yield s;
+            }
+        };
     }, Property.IndexScope, Property.NodeScope, Property.ServerlessPublic);
 
     // don't convert to Setting<> and register... we only set this in tests and register via a test plugin

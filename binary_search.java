@@ -1,7 +1,7 @@
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
-    private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
-    private static final int SAMPLE_TARGET = 10;
+    private static final int[] SORTED_SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
+    private static final int TARGET_VALUE = 10;
 
     private BinarySearch() {
     }
@@ -37,7 +37,7 @@ final class BinarySearch {
     }
 
     private static void runDemo() {
-        int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
+        int result = binarySearch(SORTED_SAMPLE_VALUES, TARGET_VALUE);
 
         System.out.println(formatSearchResult(result));
     }

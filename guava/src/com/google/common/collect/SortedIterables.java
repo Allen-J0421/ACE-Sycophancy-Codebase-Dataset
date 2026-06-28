@@ -37,15 +37,8 @@ final class SortedIterables {
   public static boolean hasSameComparator(Comparator<?> comparator, Iterable<?> elements) {
     checkNotNull(comparator);
     checkNotNull(elements);
-    Comparator<?> comparator2;
-    if (elements instanceof SortedSet) {
-      comparator2 = comparator((SortedSet<?>) elements);
-    } else if (elements instanceof SortedIterable) {
-      comparator2 = ((SortedIterable<?>) elements).comparator();
-    } else {
-      return false;
-    }
-    return comparator.equals(comparator2);
+    Comparator<?> comparator2 = comparatorOf(elements);
+    return comparator2 != null && comparator.equals(comparator2);
   }
 
   @SuppressWarnings("unchecked")
@@ -57,5 +50,14 @@ final class SortedIterables {
       result = (Comparator<? super E>) Ordering.natural();
     }
     return result;
+  }
+
+  private static @Nullable Comparator<?> comparatorOf(Iterable<?> elements) {
+    if (elements instanceof SortedSet) {
+      return comparator((SortedSet<?>) elements);
+    } else if (elements instanceof SortedIterable) {
+      return ((SortedIterable<?>) elements).comparator();
+    }
+    return null;
   }
 }

@@ -66,21 +66,7 @@ final class SortedLists {
           @ParametricNullness E key,
           List<? extends E> list,
           int foundIndex) {
-        // Of course, we have to use binary search to find the precise
-        // breakpoint...
-        int lower = foundIndex;
-        int upper = list.size() - 1;
-        // Everything between lower and upper inclusive compares at >= 0.
-        while (lower < upper) {
-          int middle = (lower + upper + 1) >>> 1;
-          int c = comparator.compare(list.get(middle), key);
-          if (c > 0) {
-            upper = middle - 1;
-          } else { // c == 0
-            lower = middle;
-          }
-        }
-        return lower;
+        return lastPresentIndex(comparator, key, list, foundIndex);
       }
     },
     /** Return the index of the first list element that compares as equal to the key. */
@@ -91,22 +77,7 @@ final class SortedLists {
           @ParametricNullness E key,
           List<? extends E> list,
           int foundIndex) {
-        // Of course, we have to use binary search to find the precise
-        // breakpoint...
-        int lower = 0;
-        int upper = foundIndex;
-        // Of course, we have to use binary search to find the precise breakpoint...
-        // Everything between lower and upper inclusive compares at <= 0.
-        while (lower < upper) {
-          int middle = (lower + upper) >>> 1;
-          int c = comparator.compare(list.get(middle), key);
-          if (c < 0) {
-            lower = middle + 1;
-          } else { // c == 0
-            upper = middle;
-          }
-        }
-        return lower;
+        return firstPresentIndex(comparator, key, list, foundIndex);
       }
     },
     /**
@@ -143,6 +114,48 @@ final class SortedLists {
         @ParametricNullness E key,
         List<? extends E> list,
         int foundIndex);
+  }
+
+  private static <E extends @Nullable Object> int lastPresentIndex(
+      Comparator<? super E> comparator,
+      @ParametricNullness E key,
+      List<? extends E> list,
+      int foundIndex) {
+    // Of course, we have to use binary search to find the precise breakpoint...
+    int lower = foundIndex;
+    int upper = list.size() - 1;
+    // Everything between lower and upper inclusive compares at >= 0.
+    while (lower < upper) {
+      int middle = (lower + upper + 1) >>> 1;
+      int c = comparator.compare(list.get(middle), key);
+      if (c > 0) {
+        upper = middle - 1;
+      } else { // c == 0
+        lower = middle;
+      }
+    }
+    return lower;
+  }
+
+  private static <E extends @Nullable Object> int firstPresentIndex(
+      Comparator<? super E> comparator,
+      @ParametricNullness E key,
+      List<? extends E> list,
+      int foundIndex) {
+    // Of course, we have to use binary search to find the precise breakpoint...
+    int lower = 0;
+    int upper = foundIndex;
+    // Everything between lower and upper inclusive compares at <= 0.
+    while (lower < upper) {
+      int middle = (lower + upper) >>> 1;
+      int c = comparator.compare(list.get(middle), key);
+      if (c < 0) {
+        lower = middle + 1;
+      } else { // c == 0
+        upper = middle;
+      }
+    }
+    return lower;
   }
 
   /**

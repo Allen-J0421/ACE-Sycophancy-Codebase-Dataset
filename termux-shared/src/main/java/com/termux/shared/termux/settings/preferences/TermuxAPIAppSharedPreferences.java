@@ -5,11 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_API_APP;
 import com.termux.shared.termux.TermuxConstants;
 
-public class TermuxAPIAppSharedPreferences extends TermuxPackageAppSharedPreferences {
+public class TermuxAPIAppSharedPreferences extends TermuxPendingIntentRequestCodeAppSharedPreferences {
 
     private TermuxAPIAppSharedPreferences(@NonNull Context context) {
         super(context, TermuxConstants.TERMUX_API_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION);
@@ -47,13 +46,19 @@ public class TermuxAPIAppSharedPreferences extends TermuxPackageAppSharedPrefere
         return TERMUX_API_APP.KEY_LOG_LEVEL;
     }
 
-
-    public int getLastPendingIntentRequestCode() {
-        return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_API_APP.KEY_LAST_PENDING_INTENT_REQUEST_CODE, TERMUX_API_APP.DEFAULT_VALUE_KEY_LAST_PENDING_INTENT_REQUEST_CODE);
+    @Override
+    protected String getLastPendingIntentRequestCodePreferenceKey() {
+        return TERMUX_API_APP.KEY_LAST_PENDING_INTENT_REQUEST_CODE;
     }
 
-    public void setLastPendingIntentRequestCode(int lastPendingIntentRequestCode) {
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_API_APP.KEY_LAST_PENDING_INTENT_REQUEST_CODE, lastPendingIntentRequestCode, true);
+    @Override
+    protected int getDefaultLastPendingIntentRequestCode() {
+        return TERMUX_API_APP.DEFAULT_VALUE_KEY_LAST_PENDING_INTENT_REQUEST_CODE;
+    }
+
+    @Override
+    protected boolean shouldCommitLastPendingIntentRequestCodeToFile() {
+        return true;
     }
 
 }

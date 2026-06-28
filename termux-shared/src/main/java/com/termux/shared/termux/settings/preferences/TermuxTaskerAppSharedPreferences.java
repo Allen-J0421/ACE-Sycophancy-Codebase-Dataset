@@ -5,11 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_TASKER_APP;
 
-public class TermuxTaskerAppSharedPreferences extends TermuxPackageAppSharedPreferences {
+public class TermuxTaskerAppSharedPreferences extends TermuxPendingIntentRequestCodeAppSharedPreferences {
 
     private  TermuxTaskerAppSharedPreferences(@NonNull Context context) {
         super(context, TermuxConstants.TERMUX_TASKER_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION);
@@ -47,14 +46,19 @@ public class TermuxTaskerAppSharedPreferences extends TermuxPackageAppSharedPref
         return TERMUX_TASKER_APP.KEY_LOG_LEVEL;
     }
 
-
-
-    public int getLastPendingIntentRequestCode() {
-        return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_TASKER_APP.KEY_LAST_PENDING_INTENT_REQUEST_CODE, TERMUX_TASKER_APP.DEFAULT_VALUE_KEY_LAST_PENDING_INTENT_REQUEST_CODE);
+    @Override
+    protected String getLastPendingIntentRequestCodePreferenceKey() {
+        return TERMUX_TASKER_APP.KEY_LAST_PENDING_INTENT_REQUEST_CODE;
     }
 
-    public void setLastPendingIntentRequestCode(int lastPendingIntentRequestCode) {
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_TASKER_APP.KEY_LAST_PENDING_INTENT_REQUEST_CODE, lastPendingIntentRequestCode, false);
+    @Override
+    protected int getDefaultLastPendingIntentRequestCode() {
+        return TERMUX_TASKER_APP.DEFAULT_VALUE_KEY_LAST_PENDING_INTENT_REQUEST_CODE;
+    }
+
+    @Override
+    protected boolean shouldCommitLastPendingIntentRequestCodeToFile() {
+        return false;
     }
 
 }

@@ -223,33 +223,19 @@ public class GeneralUtils {
                 return value;
             } else if (valueType == Boolean.class || valueType == Boolean.TYPE) {
                 return Boolean.valueOf(value);
-            } else if (valueType == Long.class) {
-                return Long.valueOf(normalizeIntegerString(value));
-            } else if (valueType == Long.TYPE) {
-                return Long.parseLong(normalizeIntegerString(value));
-            } else if (valueType == Integer.class) {
-                return Integer.valueOf(normalizeIntegerString(value));
-            } else if (valueType == Integer.TYPE) {
-                return Integer.parseInt(normalizeIntegerString(value));
-            } else if (valueType == Short.class) {
-                return Short.valueOf(normalizeIntegerString(value));
-            } else if (valueType == Short.TYPE) {
-                return Short.parseShort(normalizeIntegerString(value));
-            } else if (valueType == Byte.class) {
-                return Byte.valueOf(normalizeIntegerString(value));
-            } else if (valueType == Byte.TYPE) {
-                return Byte.parseByte(normalizeIntegerString(value));
-            } else if (valueType == Double.class) {
-                return Double.valueOf(value);
-            } else if (valueType == Double.TYPE) {
-                return Double.parseDouble(value);
-            } else if (valueType == Float.class) {
-                return Float.valueOf(value);
-            } else if (valueType == Float.TYPE) {
-                return Float.parseFloat(value);
-            } else if (valueType == BigInteger.class) {
-                return new BigInteger(normalizeIntegerString(value));
-            } else if (valueType == BigDecimal.class) {
+            }
+
+            Object integerValue = convertIntegerString(value, valueType);
+            if (integerValue != null) {
+                return integerValue;
+            }
+
+            Object decimalValue = convertDecimalString(value, valueType);
+            if (decimalValue != null) {
+                return decimalValue;
+            }
+
+            if (valueType == BigDecimal.class) {
                 return new BigDecimal(value);
             } else {
                 return value;
@@ -257,6 +243,35 @@ public class GeneralUtils {
         } catch (RuntimeException e) {
             log.error("Error converting value", e);
             return value;
+        }
+    }
+
+    @Nullable
+    private static Object convertIntegerString(@NotNull String value, @NotNull Class<?> valueType) {
+        String integerValue = normalizeIntegerString(value);
+        if (valueType == Long.class || valueType == Long.TYPE) {
+            return Long.valueOf(integerValue);
+        } else if (valueType == Integer.class || valueType == Integer.TYPE) {
+            return Integer.valueOf(integerValue);
+        } else if (valueType == Short.class || valueType == Short.TYPE) {
+            return Short.valueOf(integerValue);
+        } else if (valueType == Byte.class || valueType == Byte.TYPE) {
+            return Byte.valueOf(integerValue);
+        } else if (valueType == BigInteger.class) {
+            return new BigInteger(integerValue);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static Object convertDecimalString(@NotNull String value, @NotNull Class<?> valueType) {
+        if (valueType == Double.class || valueType == Double.TYPE) {
+            return Double.valueOf(value);
+        } else if (valueType == Float.class || valueType == Float.TYPE) {
+            return Float.valueOf(value);
+        } else {
+            return null;
         }
     }
 

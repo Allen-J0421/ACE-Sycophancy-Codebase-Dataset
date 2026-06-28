@@ -22,6 +22,7 @@ import org.jkiss.junit.DBeaverUnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -41,6 +42,20 @@ public class GeneralUtilsTest extends DBeaverUnitTest {
         Assertions.assertEquals(
             "[[alpha], [beta, gamma]]",
             GeneralUtils.makeDisplayString(new String[][]{{"alpha"}, {"beta", "gamma"}}));
+    }
+
+    @Test
+    public void testConvertStringHandlesPrimitiveAndBoxedTypes() {
+        Assertions.assertNull(GeneralUtils.convertString("", Integer.class));
+        Assertions.assertEquals("value", GeneralUtils.convertString("value", null));
+        Assertions.assertEquals(Boolean.TRUE, GeneralUtils.convertString("true", Boolean.TYPE));
+        Assertions.assertEquals(42L, GeneralUtils.convertString("42.7", Long.TYPE));
+        Assertions.assertEquals(42, GeneralUtils.convertString("42.7", Integer.class));
+        Assertions.assertEquals((short) 7, GeneralUtils.convertString("7.2", Short.TYPE));
+        Assertions.assertEquals((byte) 3, GeneralUtils.convertString("3.9", Byte.class));
+        Assertions.assertEquals(new BigInteger("123"), GeneralUtils.convertString("123.45", BigInteger.class));
+        Assertions.assertEquals(Double.valueOf("1.25"), GeneralUtils.convertString("1.25", Double.TYPE));
+        Assertions.assertEquals(Float.valueOf("1.5"), GeneralUtils.convertString("1.5", Float.class));
     }
 
     @Test

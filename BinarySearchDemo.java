@@ -1,6 +1,5 @@
 public final class BinarySearchDemo {
     private BinarySearchDemo() {
-        // Utility class.
     }
 
     public static void main(String[] args) {

@@ -1,19 +1,14 @@
+import java.util.Objects;
+
 public final class BinarySearch {
     public static final int NOT_FOUND = -1;
 
     private BinarySearch() {
-        // Utility class.
-    }
-
-    public static int binarySearch(int[] sortedValues, int target) {
-        return indexOf(sortedValues, target);
-    }
-
-    public static void main(String[] args) {
-        BinarySearchDemo.main(args);
     }
 
     public static int indexOf(int[] sortedValues, int target) {
+        Objects.requireNonNull(sortedValues, "sortedValues");
+
         int low = 0;
         int high = sortedValues.length - 1;
 
@@ -33,5 +28,13 @@ public final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    public static int binarySearch(int[] sortedValues, int target) {
+        return indexOf(sortedValues, target);
+    }
+
+    public static void main(String[] args) {
+        BinarySearchDemo.main(args);
     }
 }

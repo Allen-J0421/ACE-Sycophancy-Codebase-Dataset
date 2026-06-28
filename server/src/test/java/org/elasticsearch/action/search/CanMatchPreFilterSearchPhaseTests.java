@@ -115,6 +115,10 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
         }
     }
 
+    private static SearchTelemetryContext telemetryContext() {
+        return new SearchTelemetryContext(Map.of(), 0L);
+    }
+
     public void testFilterShards() throws InterruptedException {
 
         final TransportSearchAction.SearchTimeProvider timeProvider = new TransportSearchAction.SearchTimeProvider(
@@ -177,7 +181,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
             false,
             EMPTY_CONTEXT_PROVIDER,
             new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-            Map.of(),
+            telemetryContext(),
             false
         ).addListener(ActionTestUtils.assertNoFailureListener(iter -> {
             result.set(iter);
@@ -230,7 +234,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
             false,
             EMPTY_CONTEXT_PROVIDER,
             new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-            Map.of(),
+            telemetryContext(),
             randomBoolean()
         );
         listener.addListener(ActionTestUtils.assertNoFailureListener(result::set));
@@ -304,7 +308,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
             false,
             EMPTY_CONTEXT_PROVIDER,
             new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-            Map.of(),
+            telemetryContext(),
             true
         ).addListener(ActionTestUtils.assertNoFailureListener(iter -> {
             result.set(iter);
@@ -393,7 +397,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
             true,
             EMPTY_CONTEXT_PROVIDER,
             new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-            Map.of(),
+            telemetryContext(),
             false
         ).addListener(ActionTestUtils.assertNoFailureListener(iter -> {
             result.set(iter);
@@ -494,13 +498,13 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
                 searchRequest,
                 shardsIter,
                 timeProvider,
-                null,
-                true,
-                EMPTY_CONTEXT_PROVIDER,
-                new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-                Map.of(),
-                false
-            ).addListener(ActionTestUtils.assertNoFailureListener(iter -> {
+            null,
+            true,
+            EMPTY_CONTEXT_PROVIDER,
+            new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
+            telemetryContext(),
+            false
+        ).addListener(ActionTestUtils.assertNoFailureListener(iter -> {
                 result.set(iter);
                 latch.countDown();
             }));
@@ -604,7 +608,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
                 shardsIter.size() > shardToSkip.size(),
                 EMPTY_CONTEXT_PROVIDER,
                 new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-                Map.of(),
+                telemetryContext(),
                 false
             ).addListener(ActionTestUtils.assertNoFailureListener(iter -> {
                 result.set(iter);
@@ -1593,7 +1597,7 @@ public class CanMatchPreFilterSearchPhaseTests extends ESTestCase {
                 true,
                 contextProvider,
                 new SearchResponseMetrics(TelemetryProvider.NOOP.getMeterRegistry()),
-                Map.of(),
+                telemetryContext(),
                 false
             ),
             requests

@@ -12,9 +12,11 @@ package org.elasticsearch.action.search;
 import java.util.Map;
 
 /**
- * Immutable telemetry data that needs to be threaded through multiple search listeners.
+ * Immutable bundle of search telemetry attributes and the request's absolute start time.
+ * This keeps phase listeners from rebuilding or mutating attribute maps as telemetry flows
+ * through the search pipeline.
  */
-record SearchTelemetryContext(Map<String, Object> attributes, long absoluteStartMillis) {
+public record SearchTelemetryContext(Map<String, Object> attributes, long absoluteStartMillis) {
     SearchTelemetryContext {
         attributes = Map.copyOf(attributes);
     }

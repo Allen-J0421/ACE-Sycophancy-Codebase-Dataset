@@ -159,7 +159,7 @@ final class CanMatchPreFilterSearchPhase {
         boolean requireAtLeastOneMatch,
         CoordinatorRewriteContextProvider coordinatorRewriteContextProvider,
         SearchResponseMetrics searchResponseMetrics,
-        Map<String, Object> searchRequestAttributes,
+        SearchTelemetryContext telemetryContext,
         boolean includeSkippedShardsInIterators
     ) {
         if (shardsIts.isEmpty()) {
@@ -175,7 +175,7 @@ final class CanMatchPreFilterSearchPhase {
                 searchResponseMetrics.recordSearchPhaseDuration(
                     PHASE_NAME,
                     System.nanoTime() - phaseStartTimeInNanos,
-                    searchRequestAttributes
+                    telemetryContext.attributes()
                 );
             }
 

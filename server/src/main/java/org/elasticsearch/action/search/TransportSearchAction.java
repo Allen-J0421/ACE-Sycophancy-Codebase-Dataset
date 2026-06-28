@@ -1980,7 +1980,11 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
             iteratorsForSearchPhase = shardIterators;
         }
 
-        final SearchTelemetryContext telemetryContext = createTelemetryContext(searchRequest, concreteLocalIndices, timeProvider);
+        final SearchTelemetryContext telemetryContext = createTelemetryContext(
+            searchRequest,
+            concreteLocalIndices,
+            timeProvider
+        );
         searchPhaseProvider.runNewSearchPhase(
             task,
             searchRequest,
@@ -2170,7 +2174,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                     requireAtLeastOneMatch,
                     searchService.getCoordinatorRewriteContextProvider(timeProvider::absoluteStartMillis),
                     searchResponseMetrics,
-                    telemetryContext.attributes(),
+                    telemetryContext,
                     false
                 ).addListener(listener.delegateFailureAndWrap((l, canMatchResult) -> {
                     skippedByClusterAlias.forEach(

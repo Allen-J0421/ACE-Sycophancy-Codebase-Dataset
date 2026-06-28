@@ -10,6 +10,7 @@
 package org.elasticsearch.index.search.stats;
 
 import org.elasticsearch.action.search.SearchRequestAttributesExtractor;
+import org.elasticsearch.action.search.SearchTelemetryContext;
 import org.elasticsearch.index.query.SearchExecutionContext;
 import org.elasticsearch.index.shard.SearchOperationListener;
 import org.elasticsearch.search.internal.SearchContext;
@@ -17,7 +18,6 @@ import org.elasticsearch.search.internal.ShardSearchRequest;
 import org.elasticsearch.telemetry.metric.LongHistogram;
 import org.elasticsearch.telemetry.metric.MeterRegistry;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public final class ShardSearchPhaseAPMMetrics implements SearchOperationListener {
@@ -57,8 +57,8 @@ public final class ShardSearchPhaseAPMMetrics implements SearchOperationListener
     }
 
     @Override
-    public void onCanMatchPhase(Map<String, Object> searchRequestAttributes, long tookInNanos) {
-        canMatchPhaseMetric.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), searchRequestAttributes);
+    public void onCanMatchPhase(SearchTelemetryContext telemetryContext, long tookInNanos) {
+        canMatchPhaseMetric.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), telemetryContext.attributes());
     }
 
     @Override
@@ -88,11 +88,10 @@ public final class ShardSearchPhaseAPMMetrics implements SearchOperationListener
         ShardSearchRequest request,
         Long timeRangeFilterFromMillis
     ) {
-        Map<String, Object> attributes = SearchRequestAttributesExtractor.extractAttributes(
-            request,
-            timeRangeFilterFromMillis,
+        SearchTelemetryContext telemetryContext = new SearchTelemetryContext(
+            SearchRequestAttributesExtractor.extractAttributes(request, timeRangeFilterFromMillis, request.nowInMillis()),
             request.nowInMillis()
         );
-        histogramMetric.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), attributes);
+        histogramMetric.record(TimeUnit.NANOSECONDS.toMillis(tookInNanos), telemetryContext.attributes());
     }
 }

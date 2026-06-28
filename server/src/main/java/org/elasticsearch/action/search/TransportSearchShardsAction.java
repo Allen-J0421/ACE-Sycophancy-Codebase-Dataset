@@ -197,9 +197,10 @@ public class TransportSearchShardsAction extends TransportAction<SearchShardsReq
                         )
                     );
                 } else {
-                    final Map<String, Object> searchRequestAttributes = SearchRequestAttributesExtractor.extractAttributes(
+                    final SearchTelemetryContext telemetryContext = createTelemetryContext(
                         searchRequest,
-                        concreteIndexNames
+                        concreteIndexNames,
+                        timeProvider
                     );
                     CanMatchPreFilterSearchPhase.execute(logger, searchTransportService, (clusterAlias, node) -> {
                         assert Objects.equals(clusterAlias, searchShardsRequest.clusterAlias());
@@ -215,7 +216,7 @@ public class TransportSearchShardsAction extends TransportAction<SearchShardsReq
                         false,
                         searchService.getCoordinatorRewriteContextProvider(timeProvider::absoluteStartMillis),
                         searchResponseMetrics,
-                        searchRequestAttributes,
+                        telemetryContext,
                         searchShardsRequest.includeSkippedShardsInIterators()
                     )
                         .addListener(
@@ -242,5 +243,16 @@ public class TransportSearchShardsAction extends TransportAction<SearchShardsReq
             );
         }
         return groups;
+    }
+
+    private static SearchTelemetryContext createTelemetryContext(
+        SearchRequest searchRequest,
+        String[] localIndices,
+        TransportSearchAction.SearchTimeProvider timeProvider
+    ) {
+        return new SearchTelemetryContext(
+            SearchRequestAttributesExtractor.extractAttributes(searchRequest, localIndices),
+            timeProvider.absoluteStartMillis()
+        );
     }
 }

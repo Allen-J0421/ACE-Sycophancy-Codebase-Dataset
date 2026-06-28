@@ -25,6 +25,7 @@ import org.elasticsearch.action.search.CanMatchNodeRequest;
 import org.elasticsearch.action.search.CanMatchNodeResponse;
 import org.elasticsearch.action.search.OnlinePrewarmingService;
 import org.elasticsearch.action.search.SearchRequestAttributesExtractor;
+import org.elasticsearch.action.search.SearchTelemetryContext;
 import org.elasticsearch.action.search.SearchShardTask;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.action.support.TransportActions;
@@ -2495,8 +2496,12 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
                     );
                 }
 
+                SearchTelemetryContext telemetryContext = new SearchTelemetryContext(
+                    searchRequestAttributes,
+                    shardSearchRequest.nowInMillis()
+                );
                 indexShard.getSearchOperationListener()
-                    .onCanMatchPhase(searchRequestAttributes, System.nanoTime() - shardCanMatchStartTimeInNanos);
+                    .onCanMatchPhase(telemetryContext, System.nanoTime() - shardCanMatchStartTimeInNanos);
             } catch (Exception e) {
                 responses.add(new CanMatchNodeResponse.ResponseOrFailure(e));
             }

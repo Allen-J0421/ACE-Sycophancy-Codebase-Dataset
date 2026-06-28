@@ -321,7 +321,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
             boolean preFilter,
             ThreadPool threadPool,
             SearchResponse.Clusters clusters,
-            Map<String, Object> searchRequestAttributes
+            SearchTelemetryContext telemetryContext
         ) {
             // Note: remote shards are prefiltered via can match as part of search shards. They don't need additional pre-filtering and
             // that is signaled to the local can match through the SearchShardIterator#prefiltered flag. Local shards do need to go
@@ -341,7 +341,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
                     false,
                     searchService.getCoordinatorRewriteContextProvider(timeProvider::absoluteStartMillis),
                     searchResponseMetrics,
-                    searchRequestAttributes,
+                    telemetryContext,
                     false
                 ).addListener(listener.delegateFailureAndWrap((searchResponseActionListener, canMatchResult) -> {
                     skippedByClusterAlias.forEach(
@@ -360,7 +360,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
                         aliasFilter,
                         concreteIndexBoosts,
                         clusters,
-                        searchRequestAttributes
+                        telemetryContext
                     );
                 }));
             } else {
@@ -376,7 +376,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
                     aliasFilter,
                     concreteIndexBoosts,
                     clusters,
-                    searchRequestAttributes
+                    telemetryContext
                 );
             }
         }
@@ -393,7 +393,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
             Map<String, AliasFilter> aliasFilter,
             Map<String, Float> concreteIndexBoosts,
             SearchResponse.Clusters clusters,
-            Map<String, Object> searchRequestAttributes
+            SearchTelemetryContext telemetryContext
         ) {
             assert searchRequest.getMaxConcurrentShardRequests() == pitRequest.maxConcurrentShardRequests()
                 : searchRequest.getMaxConcurrentShardRequests() + " != " + pitRequest.maxConcurrentShardRequests();
@@ -419,7 +419,7 @@ public class TransportOpenPointInTimeAction extends HandledTransportAction<OpenP
                 searchRequest.getMaxConcurrentShardRequests(),
                 clusters,
                 searchResponseMetrics,
-                searchRequestAttributes,
+                telemetryContext,
                 false
             ) {
                 @Override

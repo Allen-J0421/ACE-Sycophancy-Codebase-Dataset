@@ -17,6 +17,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.termux.app.terminal.TermuxActivityRootView;
 import com.termux.app.terminal.TermuxTerminalSessionActivityClient;
 import com.termux.app.terminal.TermuxTerminalViewClient;
+import com.termux.app.terminal.TermuxTerminalViewClientHost;
 import com.termux.app.terminal.io.TermuxTerminalExtraKeys;
 import com.termux.shared.activity.ActivityUtils;
 import com.termux.shared.logger.Logger;
@@ -27,7 +28,7 @@ import com.termux.shared.termux.extrakeys.ExtraKeysView;
 import com.termux.terminal.TerminalSession;
 import com.termux.view.TerminalView;
 
-public final class TermuxActivity extends AppCompatActivity implements android.content.ServiceConnection {
+public final class TermuxActivity extends AppCompatActivity implements android.content.ServiceConnection, TermuxTerminalViewClientHost {
 
     private static final String LOG_TAG = "TermuxActivity";
 
@@ -261,5 +262,10 @@ public final class TermuxActivity extends AppCompatActivity implements android.c
         Intent intent = new Intent(context, TermuxActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
+    }
+
+    @Override
+    public android.app.Activity getActivity() {
+        return this;
     }
 }

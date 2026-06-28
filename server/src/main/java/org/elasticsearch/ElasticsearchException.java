@@ -1033,50 +1033,45 @@ public class ElasticsearchException extends RuntimeException implements ToXConte
     public static <T extends Throwable> T readException(StreamInput input) throws IOException {
         if (input.readBoolean()) {
             int key = input.readVInt();
-            switch (key) {
-                case 0:
+            return switch (key) {
+                case 0 -> {
                     int ord = input.readVInt();
-                    return (T) readException(input, ord);
-                case 1:
+                    yield (T) readException(input, ord);
+                }
+                case 1 -> {
                     String msg1 = input.readOptionalString();
                     String resource1 = input.readOptionalString();
-                    return (T) readStackTrace(new CorruptIndexException(msg1, resource1, readException(input)), input);
-                case 2:
+                    yield (T) readStackTrace(new CorruptIndexException(msg1, resource1, readException(input)), input);
+                }
+                case 2 -> {
                     String resource2 = input.readOptionalString();
                     int version2 = input.readInt();
                     int minVersion2 = input.readInt();
                     int maxVersion2 = input.readInt();
-                    return (T) readStackTrace(new IndexFormatTooNewException(resource2, version2, minVersion2, maxVersion2), input);
-                case 3:
+                    yield (T) readStackTrace(new IndexFormatTooNewException(resource2, version2, minVersion2, maxVersion2), input);
+                }
+                case 3 -> {
                     String resource3 = input.readOptionalString();
                     if (input.readBoolean()) {
                         int version3 = input.readInt();
                         int minVersion3 = input.readInt();
                         int maxVersion3 = input.readInt();
-                        return (T) readStackTrace(new IndexFormatTooOldException(resource3, version3, minVersion3, maxVersion3), input);
+                        yield (T) readStackTrace(new IndexFormatTooOldException(resource3, version3, minVersion3, maxVersion3), input);
                     } else {
                         String version3 = input.readOptionalString();
-                        return (T) readStackTrace(new IndexFormatTooOldException(resource3, version3), input);
+                        yield (T) readStackTrace(new IndexFormatTooOldException(resource3, version3), input);
                     }
-                case 4:
-                    return (T) readStackTrace(new NullPointerException(input.readOptionalString()), input);
-                case 5:
-                    return (T) readStackTrace(new NumberFormatException(input.readOptionalString()), input);
-                case 6:
-                    return (T) readStackTrace(new IllegalArgumentException(input.readOptionalString(), readException(input)), input);
-                case 7:
-                    return (T) readStackTrace(new AlreadyClosedException(input.readOptionalString(), readException(input)), input);
-                case 8:
-                    return (T) readStackTrace(new EOFException(input.readOptionalString()), input);
-                case 9:
-                    return (T) readStackTrace(new SecurityException(input.readOptionalString(), readException(input)), input);
-                case 10:
-                    return (T) readStackTrace(new StringIndexOutOfBoundsException(input.readOptionalString()), input);
-                case 11:
-                    return (T) readStackTrace(new ArrayIndexOutOfBoundsException(input.readOptionalString()), input);
-                case 12:
-                    return (T) readStackTrace(new FileNotFoundException(input.readOptionalString()), input);
-                case 13:
+                }
+                case 4 -> (T) readStackTrace(new NullPointerException(input.readOptionalString()), input);
+                case 5 -> (T) readStackTrace(new NumberFormatException(input.readOptionalString()), input);
+                case 6 -> (T) readStackTrace(new IllegalArgumentException(input.readOptionalString(), readException(input)), input);
+                case 7 -> (T) readStackTrace(new AlreadyClosedException(input.readOptionalString(), readException(input)), input);
+                case 8 -> (T) readStackTrace(new EOFException(input.readOptionalString()), input);
+                case 9 -> (T) readStackTrace(new SecurityException(input.readOptionalString(), readException(input)), input);
+                case 10 -> (T) readStackTrace(new StringIndexOutOfBoundsException(input.readOptionalString()), input);
+                case 11 -> (T) readStackTrace(new ArrayIndexOutOfBoundsException(input.readOptionalString()), input);
+                case 12 -> (T) readStackTrace(new FileNotFoundException(input.readOptionalString()), input);
+                case 13 -> {
                     int subclass = input.readVInt();
                     String file = input.readOptionalString();
                     String other = input.readOptionalString();
@@ -1093,21 +1088,18 @@ public class ElasticsearchException extends RuntimeException implements ToXConte
                         case 7 -> new FileSystemException(file, other, reason);
                         default -> throw new IllegalStateException("unknown FileSystemException with index " + subclass);
                     };
-                    return (T) readStackTrace(exception, input);
-                case 14:
-                    return (T) readStackTrace(new IllegalStateException(input.readOptionalString(), readException(input)), input);
-                case 15:
-                    return (T) readStackTrace(new LockObtainFailedException(input.readOptionalString(), readException(input)), input);
-                case 16:
-                    return (T) readStackTrace(new InterruptedException(input.readOptionalString()), input);
-                case 17:
-                    return (T) readStackTrace(new IOException(input.readOptionalString(), readException(input)), input);
-                case 18:
+                    yield (T) readStackTrace(exception, input);
+                }
+                case 14 -> (T) readStackTrace(new IllegalStateException(input.readOptionalString(), readException(input)), input);
+                case 15 -> (T) readStackTrace(new LockObtainFailedException(input.readOptionalString(), readException(input)), input);
+                case 16 -> (T) readStackTrace(new InterruptedException(input.readOptionalString()), input);
+                case 17 -> (T) readStackTrace(new IOException(input.readOptionalString(), readException(input)), input);
+                case 18 -> {
                     boolean isExecutorShutdown = input.readBoolean();
-                    return (T) readStackTrace(new EsRejectedExecutionException(input.readOptionalString(), isExecutorShutdown), input);
-                default:
-                    throw new IOException("no such exception for id: " + key);
-            }
+                    yield (T) readStackTrace(new EsRejectedExecutionException(input.readOptionalString(), isExecutorShutdown), input);
+                }
+                default -> throw new IOException("no such exception for id: " + key);
+            };
         }
         return null;
     }

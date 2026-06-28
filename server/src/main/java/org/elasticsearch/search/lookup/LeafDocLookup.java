@@ -105,7 +105,7 @@ public class LeafDocLookup implements Map<String, ScriptDocValues<?>> {
         // if this field has already been accessed via the doc-access API and the field-access API
         // uses doc values then we share to avoid double-loading
         FieldFactoryWrapper fieldFactory;
-        if (docFactory != null && indexFieldData instanceof SourceValueFetcherIndexFieldData == false) {
+        if (docFactory != null && !(indexFieldData instanceof SourceValueFetcherIndexFieldData)) {
             fieldFactory = docFactory;
         } else {
             fieldFactory = new FieldFactoryWrapper(indexFieldData.load(reader).getScriptFieldFactory(fieldName));
@@ -147,7 +147,7 @@ public class LeafDocLookup implements Map<String, ScriptDocValues<?>> {
 
             // if this field has already been accessed via the field-access API and the field-access API
             // uses doc values then we share to avoid double-loading
-            if (fieldIndexFieldData instanceof SourceValueFetcherIndexFieldData == false) {
+            if (!(fieldIndexFieldData instanceof SourceValueFetcherIndexFieldData)) {
                 docFactory = fieldFactory;
             }
         }

@@ -95,12 +95,11 @@ public class ExactKnnQueryBuilder extends LeafQueryBuilder<ExactKnnQueryBuilder>
         if (fieldType == null) {
             throw new IllegalArgumentException("field [" + field + "] does not exist in the mapping");
         }
-        if (fieldType instanceof DenseVectorFieldMapper.DenseVectorFieldType == false) {
+        if (!(fieldType instanceof DenseVectorFieldMapper.DenseVectorFieldType vectorFieldType)) {
             throw new IllegalArgumentException(
                 "[" + NAME + "] queries are only supported on [" + DenseVectorFieldMapper.CONTENT_TYPE + "] fields"
             );
         }
-        final DenseVectorFieldMapper.DenseVectorFieldType vectorFieldType = (DenseVectorFieldMapper.DenseVectorFieldType) fieldType;
         return vectorFieldType.createExactKnnQuery(query, vectorSimilarity);
     }
 

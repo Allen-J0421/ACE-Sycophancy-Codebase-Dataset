@@ -212,7 +212,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
                 logger.debug("Removed [{}] task", reg.taskName());
             }, e -> {
                 final var t = ExceptionsHelper.unwrapCause(e);
-                if (t instanceof NodeClosedException == false && t instanceof ResourceNotFoundException == false) {
+                if (!(t instanceof NodeClosedException) && !(t instanceof ResourceNotFoundException)) {
                     logger.warn("Failed to remove [{}] task", reg.taskName(), e);
                 }
             }), () -> {
@@ -284,7 +284,7 @@ public final class PersistentTaskLifecycleManager extends AbstractLifecycleCompo
                 final var t = ExceptionsHelper.unwrapCause(e);
                 if (t instanceof ResourceNotFoundException) {
                     reg.onRemove().accept(projectId);
-                } else if (t instanceof NodeClosedException == false) {
+                } else if (!(t instanceof NodeClosedException)) {
                     logger.warn("Failed to remove [{}] task for project [{}]", reg.taskName(), projectId, e);
                 }
             }), () -> {

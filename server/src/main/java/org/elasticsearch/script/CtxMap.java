@@ -104,7 +104,7 @@ public class CtxMap<T extends Metadata> extends AbstractMap<String, Object> {
     }
 
     private Object replaceSource(Object value) {
-        if (value instanceof Map == false) {
+        if (!(value instanceof Map)) {
             throw new IllegalArgumentException(
                 "Expected ["
                     + SOURCE

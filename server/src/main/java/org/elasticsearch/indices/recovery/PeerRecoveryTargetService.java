@@ -335,7 +335,7 @@ public class PeerRecoveryTargetService implements IndexEventListener {
                             final var sendShardFailure =
                                 // these indicate the source shard has already failed, which will independently notify the master and fail
                                 // the target shard
-                                false == (cause instanceof ShardNotFoundException
+                                !(cause instanceof ShardNotFoundException
                                     || cause instanceof IndexNotFoundException
                                     || cause instanceof AlreadyClosedException);
 

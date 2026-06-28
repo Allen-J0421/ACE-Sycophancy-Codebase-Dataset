@@ -664,15 +664,15 @@ public class XLRUQueryCache implements QueryCache, Accountable {
         }
 
         CacheAndCount get(Query query) {
-            assert query instanceof BoostQuery == false;
-            assert query instanceof ConstantScoreQuery == false;
+            assert !(query instanceof BoostQuery);
+            assert !(query instanceof ConstantScoreQuery);
             return cache.get(query);
         }
 
         void putIfAbsent(Query query, CacheAndCount cached) {
             assert writeLock.isHeldByCurrentThread();
-            assert query instanceof BoostQuery == false;
-            assert query instanceof ConstantScoreQuery == false;
+            assert !(query instanceof BoostQuery);
+            assert !(query instanceof ConstantScoreQuery);
             if (cache.putIfAbsent(query, cached) == null) {
                 // the set was actually put
                 onDocIdSetCache(HASHTABLE_RAM_BYTES_PER_ENTRY + cached.ramBytesUsed());
@@ -681,8 +681,8 @@ public class XLRUQueryCache implements QueryCache, Accountable {
 
         void remove(Query query) {
             assert writeLock.isHeldByCurrentThread();
-            assert query instanceof BoostQuery == false;
-            assert query instanceof ConstantScoreQuery == false;
+            assert !(query instanceof BoostQuery);
+            assert !(query instanceof ConstantScoreQuery);
             CacheAndCount removed = cache.remove(query);
             if (removed != null) {
                 onDocIdSetEviction(HASHTABLE_RAM_BYTES_PER_ENTRY + removed.ramBytesUsed());

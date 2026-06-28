@@ -949,7 +949,7 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
                             } else {
                                 assert e != null;
                                 // Ignore TimeoutException, our scheduled timeout task will handle this
-                                if (e instanceof TimeoutException == false) {
+                                if (!(e instanceof TimeoutException)) {
                                     onFailure(e);
                                 }
                             }
@@ -2676,7 +2676,7 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
         }
         final var source = request.source();
         return canRewriteToMatchNone(source) == false
-            || source.subSearches().stream().anyMatch(sqwb -> sqwb.getQueryBuilder() instanceof MatchNoneQueryBuilder == false);
+            || source.subSearches().stream().anyMatch(sqwb -> !(sqwb.getQueryBuilder() instanceof MatchNoneQueryBuilder));
     }
 
     /**

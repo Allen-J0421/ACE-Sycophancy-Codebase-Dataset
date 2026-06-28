@@ -26,7 +26,7 @@ public class DelegateDocValuesField extends AbstractScriptFieldFactory<Object> i
     public DelegateDocValuesField(ScriptDocValues<?> scriptDocValues, String name) {
         // Suppliers provided via ScriptDocValues should never be a Field
         // as we expect DelegateDocValuesField to only support old-style ScriptDocValues
-        assert scriptDocValues.getSupplier() instanceof Field == false;
+        assert !(scriptDocValues.getSupplier() instanceof Field);
         this.scriptDocValues = scriptDocValues;
         this.name = name;
     }

@@ -845,7 +845,7 @@ final class DefaultSearchContext extends SearchContext {
     }
 
     private void maybeMarkAsMatchTail() {
-        if (rewriteQuery instanceof MatchAllDocsQuery == false || this.searchAfter() != null || this.size == 0) {
+        if (!(rewriteQuery instanceof MatchAllDocsQuery) || this.searchAfter() != null || this.size == 0) {
             return;
         }
         if (indexService.getIndexSettings().getIndexSortConfig().containsDescendingTimestampSort() == false) {

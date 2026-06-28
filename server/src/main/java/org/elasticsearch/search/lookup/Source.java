@@ -89,7 +89,7 @@ public interface Source {
         Map<String, Object> map = source();
         if (map == null) {
             map = new LinkedHashMap<>();
-        } else if (map instanceof HashMap == false) {
+        } else if (!(map instanceof HashMap)) {
             // bit of a hack to test for mutability...there aren't great options
             map = new LinkedHashMap<>(map);
         }

@@ -112,7 +112,7 @@ class ExitableDirectoryReader extends FilterDirectoryReader {
             // If we have a suggest CompletionQuery then the CompletionWeight#bulkScorer() will check that
             // the terms are instanceof CompletionTerms (not generic FilterTerms) and will throw an exception
             // if that's not the case.
-            return (queryCancellation.isEnabled() && terms instanceof CompletionTerms == false)
+            return (queryCancellation.isEnabled() && !(terms instanceof CompletionTerms))
                 ? new ExitableTerms(terms, queryCancellation)
                 : terms;
         }

@@ -766,11 +766,9 @@ public interface DocValueFormat extends NamedWriteable {
          * @return a {@link BytesRef} representing a map of key/value pairs
          */
         private BytesRef parseBytesRefMap(Object value) {
-            if (value instanceof Map<?, ?> == false) {
+            if (!(value instanceof Map<?, ?> m)) {
                 throw new IllegalArgumentException("Cannot parse tsid object [" + value + "]");
             }
-
-            Map<?, ?> m = (Map<?, ?>) value;
             RoutingPathFields routingPathFields = new RoutingPathFields(null);
             for (Map.Entry<?, ?> entry : m.entrySet()) {
                 String f = entry.getKey().toString();

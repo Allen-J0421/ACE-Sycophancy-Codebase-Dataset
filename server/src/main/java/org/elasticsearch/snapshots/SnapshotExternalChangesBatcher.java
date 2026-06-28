@@ -157,7 +157,7 @@ final class SnapshotExternalChangesBatcher {
     }
 
     private void onTaskFailure(Exception e) {
-        if (e instanceof FailedToCommitClusterStateException == false && e instanceof NotMasterException == false) {
+        if (!(e instanceof FailedToCommitClusterStateException) && !(e instanceof NotMasterException)) {
             assert false;
             logger.error("Failed to update snapshot state after shards or node configuration changed", e);
         }

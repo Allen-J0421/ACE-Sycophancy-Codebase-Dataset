@@ -274,10 +274,9 @@ public class CompletionSuggestionBuilder extends SuggestionBuilder<CompletionSug
             suggestionContext.setShardSize(shardSize);
         }
         MappedFieldType mappedFieldType = context.getFieldType(suggestionContext.getField());
-        if (mappedFieldType instanceof CompletionFieldMapper.CompletionFieldType == false) {
+        if (!(mappedFieldType instanceof CompletionFieldMapper.CompletionFieldType type)) {
             throw new IllegalArgumentException("Field [" + suggestionContext.getField() + "] is not a completion suggest field");
         }
-        CompletionFieldMapper.CompletionFieldType type = (CompletionFieldMapper.CompletionFieldType) mappedFieldType;
         suggestionContext.setFieldType(type);
         if (type.hasContextMappings() && contextBytes != null) {
             Map<String, List<ContextMapping.InternalQueryContext>> queryContexts = parseContextBytes(

@@ -342,20 +342,19 @@ public final class FieldSortBuilder extends SortBuilder<FieldSortBuilder> {
         }
 
         IndexFieldData<?> fieldData = context.getForField(fieldType, MappedFieldType.FielddataOperation.SEARCH);
-        if (fieldData instanceof IndexNumericFieldData == false
+        if (!(fieldData instanceof IndexNumericFieldData)
             && (sortMode == SortMode.SUM || sortMode == SortMode.AVG || sortMode == SortMode.MEDIAN)) {
             throw new QueryShardException(context, "we only support AVG, MEDIAN and SUM on number based fields");
         }
         final SortField field;
         boolean isNanosecond = false;
         if (numericType != null) {
-            if (fieldData instanceof IndexNumericFieldData == false) {
+            if (!(fieldData instanceof IndexNumericFieldData numericFieldData)) {
                 throw new QueryShardException(
                     context,
                     "[numeric_type] option cannot be set on a non-numeric field, got " + fieldType.typeName()
                 );
             }
-            IndexNumericFieldData numericFieldData = (IndexNumericFieldData) fieldData;
             NumericType resolvedType = resolveNumericType(numericType);
             field = numericFieldData.sortField(false, resolvedType, missing, localSortMode(), nested, reverse);
             isNanosecond = resolvedType == NumericType.DATE_NANOSECONDS;
@@ -447,18 +446,17 @@ public final class FieldSortBuilder extends SortBuilder<FieldSortBuilder> {
         }
 
         IndexFieldData<?> fieldData = context.getForField(fieldType, MappedFieldType.FielddataOperation.SEARCH);
-        if (fieldData instanceof IndexNumericFieldData == false
+        if (!(fieldData instanceof IndexNumericFieldData)
             && (sortMode == SortMode.SUM || sortMode == SortMode.AVG || sortMode == SortMode.MEDIAN)) {
             throw new QueryShardException(context, "we only support AVG, MEDIAN and SUM on number based fields");
         }
         if (numericType != null) {
-            if (fieldData instanceof IndexNumericFieldData == false) {
+            if (!(fieldData instanceof IndexNumericFieldData numericFieldData)) {
                 throw new QueryShardException(
                     context,
                     "[numeric_type] option cannot be set on a non-numeric field, got " + fieldType.typeName()
                 );
             }
-            IndexNumericFieldData numericFieldData = (IndexNumericFieldData) fieldData;
             NumericType resolvedType = resolveNumericType(numericType);
             return numericFieldData.newBucketedSort(
                 resolvedType,

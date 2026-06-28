@@ -511,7 +511,7 @@ public final class PersistentTasksClusterService implements ClusterStateListener
             public void onFailure(Exception e) {
                 reassigningTasks.set(false);
                 logger.warn("failed to reassign persistent tasks", e);
-                if (e instanceof NotMasterException == false) {
+                if (!(e instanceof NotMasterException)) {
                     // There must be a task that's worth rechecking because there was one
                     // that caused this method to be called and the method failed to assign it,
                     // but only do this if the node is still the master

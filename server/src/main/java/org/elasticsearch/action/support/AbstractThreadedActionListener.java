@@ -59,7 +59,7 @@ public abstract class AbstractThreadedActionListener<Response> implements Action
 
             @Override
             public void onFailure(Exception e) {
-                logger.error(() -> "failed to execute failure callback on [" + AbstractThreadedActionListener.this + "]", e);
+                logger.error("failed to execute failure callback on [{}]", AbstractThreadedActionListener.this, e);
                 assert false : e;
             }
 

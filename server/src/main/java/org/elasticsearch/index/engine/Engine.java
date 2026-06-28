@@ -1343,9 +1343,9 @@ public abstract class Engine implements Closeable {
                         long fileLength = segmentReader.directory().fileLength(fileName);
                         files.put(fileExtension, new SegmentsStats.FileStats(fileExtension, fileLength, 1L, fileLength, fileLength));
                     } catch (IOException ioe) {
-                        logger.warn(() -> "Error when retrieving file length for [" + fileName + "]", ioe);
+                        logger.warn("Error when retrieving file length for [{}]", fileName, ioe);
                     } catch (AlreadyClosedException ace) {
-                        logger.warn(() -> "Error when retrieving file length for [" + fileName + "], directory is closed", ace);
+                        logger.warn("Error when retrieving file length for [{}], directory is closed", fileName, ace);
                         return Map.of();
                     }
                 }
@@ -1353,11 +1353,9 @@ public abstract class Engine implements Closeable {
             return Collections.unmodifiableMap(files);
         } catch (IOException e) {
             logger.warn(
-                () -> format(
-                    "Error when listing files for segment reader [%s] and segment info [%s]",
-                    segmentReader,
-                    segmentReader.getSegmentInfo()
-                ),
+                "Error when listing files for segment reader [{}] and segment info [{}]",
+                segmentReader,
+                segmentReader.getSegmentInfo(),
                 e
             );
             return Map.of();
@@ -1694,7 +1692,7 @@ public abstract class Engine implements Closeable {
         if (failEngineLock.tryLock()) {
             try {
                 if (failedEngine.get() != null) {
-                    logger.warn(() -> "tried to fail engine but engine is already failed. ignoring. [" + reason + "]", failure);
+                    logger.warn("tried to fail engine but engine is already failed. ignoring. [{}]", reason, failure);
                     return;
                 }
                 // this must happen before we close IW or Translog such that we can check this state to opt out of failing the engine
@@ -1704,7 +1702,7 @@ public abstract class Engine implements Closeable {
                     // we just go and close this engine - no way to recover
                     closeNoLock("engine failed on: [" + reason + "]", closedLatch);
                 } finally {
-                    logger.warn(() -> "failed engine [" + reason + "]", failure);
+                    logger.warn("failed engine [{}]", reason, failure);
                     // we must set a failure exception, generate one if not supplied
                     // we first mark the store as corrupted before we notify any listeners
                     // this must happen first otherwise we might try to reallocate so quickly

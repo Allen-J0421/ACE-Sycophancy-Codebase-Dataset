@@ -81,7 +81,7 @@ public interface IndexingOperationListener {
                 try {
                     listener.preIndex(shardId, operation);
                 } catch (Exception e) {
-                    logger.warn(() -> "preIndex listener [" + listener + "] failed", e);
+                    logger.warn("preIndex listener [{}] failed", listener, e);
                 }
             }
             return operation;
@@ -94,7 +94,7 @@ public interface IndexingOperationListener {
                 try {
                     listener.postIndex(shardId, index, result);
                 } catch (Exception e) {
-                    logger.warn(() -> "postIndex listener [" + listener + "] failed", e);
+                    logger.warn("postIndex listener [{}] failed", listener, e);
                 }
             }
         }
@@ -107,7 +107,7 @@ public interface IndexingOperationListener {
                     listener.postIndex(shardId, index, ex);
                 } catch (Exception inner) {
                     inner.addSuppressed(ex);
-                    logger.warn(() -> "postIndex listener [" + listener + "] failed", inner);
+                    logger.warn("postIndex listener [{}] failed", listener, inner);
                 }
             }
         }
@@ -119,7 +119,7 @@ public interface IndexingOperationListener {
                 try {
                     listener.preDelete(shardId, delete);
                 } catch (Exception e) {
-                    logger.warn(() -> "preDelete listener [" + listener + "] failed", e);
+                    logger.warn("preDelete listener [{}] failed", listener, e);
                 }
             }
             return delete;
@@ -132,7 +132,7 @@ public interface IndexingOperationListener {
                 try {
                     listener.postDelete(shardId, delete, result);
                 } catch (Exception e) {
-                    logger.warn(() -> "postDelete listener [" + listener + "] failed", e);
+                    logger.warn("postDelete listener [{}] failed", listener, e);
                 }
             }
         }
@@ -145,7 +145,7 @@ public interface IndexingOperationListener {
                     listener.postDelete(shardId, delete, ex);
                 } catch (Exception inner) {
                     inner.addSuppressed(ex);
-                    logger.warn(() -> "postDelete listener [" + listener + "] failed", inner);
+                    logger.warn("postDelete listener [{}] failed", listener, inner);
                 }
             }
         }

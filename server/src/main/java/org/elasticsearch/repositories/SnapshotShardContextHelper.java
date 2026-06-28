@@ -209,7 +209,7 @@ public class SnapshotShardContextHelper {
 
             @Override
             public void onFailure(Exception e) {
-                logger.error(() -> Strings.format("unexpected failure in %s", description()), e);
+                logger.error("unexpected failure in {}", description(), e);
                 assert false : e;
             }
 

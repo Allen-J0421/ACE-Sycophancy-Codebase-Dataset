@@ -377,7 +377,7 @@ public abstract class AbstractFileWatchingService extends AbstractLifecycleCompo
      * Called for checked exceptions only.
      */
     protected void onProcessFileChangesException(Path file, Exception e) {
-        logger.error(() -> "Error processing file notification: " + file, e);
+        logger.error("Error processing file notification: {}", file, e);
     }
 
     // package private for testing

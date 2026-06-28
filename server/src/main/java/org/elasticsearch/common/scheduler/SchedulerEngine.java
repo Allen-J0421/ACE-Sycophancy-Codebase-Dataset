@@ -209,7 +209,7 @@ public class SchedulerEngine {
                 listener.triggered(event);
             } catch (final Exception e) {
                 // do not allow exceptions to escape this method; we should continue to notify listeners and schedule the next run
-                logger.warn(() -> "listener failed while handling triggered event [" + name + "]", e);
+                logger.warn("listener failed while handling triggered event [{}]", name, e);
             }
         }
     }

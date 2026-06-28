@@ -65,7 +65,7 @@ public class VerifyNodeRepositoryAction {
                 repository.verify(request.verificationToken, localNode);
                 listener.onResponse(ActionResponse.Empty.INSTANCE);
             } catch (Exception e) {
-                logger.warn(() -> "[" + request.repository + "] failed to verify repository", e);
+                logger.warn("[{}] failed to verify repository", request.repository, e);
                 listener.onFailure(e);
             }
         }

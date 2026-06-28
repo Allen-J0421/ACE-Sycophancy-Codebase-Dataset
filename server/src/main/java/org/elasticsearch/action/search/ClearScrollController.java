@@ -130,7 +130,7 @@ public final class ClearScrollController implements Runnable {
     }
 
     private void onFailedFreedContext(Throwable e, DiscoveryNode node) {
-        logger.warn(() -> "Clear SC failed on node[" + node + "]", e);
+        logger.warn("Clear SC failed on node[{}]", node, e);
         hasFailed.set(true);
     }
 

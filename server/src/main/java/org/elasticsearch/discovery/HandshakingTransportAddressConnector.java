@@ -37,8 +37,6 @@ import java.util.Locale;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
-import static org.elasticsearch.core.Strings.format;
-
 public class HandshakingTransportAddressConnector implements TransportAddressConnector {
 
     private static final Logger logger = LogManager.getLogger(HandshakingTransportAddressConnector.class);
@@ -185,16 +183,14 @@ public class HandshakingTransportAddressConnector implements TransportAddressCon
                     // failed; a common reason is that the remote node is listening on 0.0.0.0 but has made an inappropriate choice for its
                     // publish address.
                     logger.warn(
-                        () -> format(
-                            """
-                                Successfully discovered master-eligible node [%s] at address [%s] but could not connect to it at its \
-                                publish address of [%s]. Each node in a cluster must be accessible at its publish address by all other \
-                                nodes in the cluster. See %s for more information.""",
-                            remoteNode.descriptionWithoutAttributes(),
-                            transportAddress,
-                            remoteNode.getAddress(),
-                            ReferenceDocs.NETWORK_BINDING_AND_PUBLISHING
-                        ),
+                        """
+                            Successfully discovered master-eligible node [{}] at address [{}] but could not connect to it at its \
+                            publish address of [{}]. Each node in a cluster must be accessible at its publish address by all other \
+                            nodes in the cluster. See {} for more information.""",
+                        remoteNode.descriptionWithoutAttributes(),
+                        transportAddress,
+                        remoteNode.getAddress(),
+                        ReferenceDocs.NETWORK_BINDING_AND_PUBLISHING,
                         e
                     );
                     listener.onFailure(e);

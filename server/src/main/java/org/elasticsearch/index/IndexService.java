@@ -1029,7 +1029,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
                 try {
                     shard.onSettingsChanged();
                 } catch (Exception e) {
-                    logger.warn(() -> "[" + shard.shardId().id() + "] failed to notify shard about setting change", e);
+                    logger.warn("[{}] failed to notify shard about setting change", shard.shardId().id(), e);
                 }
             }
             if (refreshTask.getInterval().equals(indexSettings.getRefreshInterval()) == false) {

@@ -147,7 +147,7 @@ public abstract class SearchProgressListener {
         try {
             onQueryResult(shardIndex, queryResult);
         } catch (Exception e) {
-            logger.warn(() -> "[" + shards.get(shardIndex) + "] Failed to execute progress listener on query result", e);
+            logger.warn("[{}] Failed to execute progress listener on query result", shards.get(shardIndex), e);
         }
     }
 
@@ -155,7 +155,7 @@ public abstract class SearchProgressListener {
         try {
             onQueryFailure(shardIndex, shardTarget, exc);
         } catch (Exception e) {
-            logger.warn(() -> "[" + shards.get(shardIndex) + "] Failed to execute progress listener on query failure", e);
+            logger.warn("[{}] Failed to execute progress listener on query failure", shards.get(shardIndex), e);
         }
     }
 
@@ -179,7 +179,7 @@ public abstract class SearchProgressListener {
         try {
             onRankFeatureResult(shardIndex);
         } catch (Exception e) {
-            logger.warn(() -> "[" + shards.get(shardIndex) + "] Failed to execute progress listener on rank-feature result", e);
+            logger.warn("[{}] Failed to execute progress listener on rank-feature result", shards.get(shardIndex), e);
         }
     }
 
@@ -187,7 +187,7 @@ public abstract class SearchProgressListener {
         try {
             onRankFeatureFailure(shardIndex, shardTarget, exc);
         } catch (Exception e) {
-            logger.warn(() -> "[" + shards.get(shardIndex) + "] Failed to execute progress listener on rank-feature failure", e);
+            logger.warn("[{}] Failed to execute progress listener on rank-feature failure", shards.get(shardIndex), e);
         }
     }
 
@@ -195,7 +195,7 @@ public abstract class SearchProgressListener {
         try {
             onFetchResult(shardIndex);
         } catch (Exception e) {
-            logger.warn(() -> "[" + shards.get(shardIndex) + "] Failed to execute progress listener on fetch result", e);
+            logger.warn("[{}] Failed to execute progress listener on fetch result", shards.get(shardIndex), e);
         }
     }
 
@@ -203,7 +203,7 @@ public abstract class SearchProgressListener {
         try {
             onFetchFailure(shardIndex, shardTarget, exc);
         } catch (Exception e) {
-            logger.warn(() -> "[" + shards.get(shardIndex) + "] Failed to execute progress listener on fetch failure", e);
+            logger.warn("[{}] Failed to execute progress listener on fetch failure", shards.get(shardIndex), e);
         }
     }
 
@@ -211,7 +211,7 @@ public abstract class SearchProgressListener {
         try {
             onClusterResponseMinimizeRoundtrips(clusterAlias, searchResponse);
         } catch (Exception e) {
-            logger.warn(() -> "[" + clusterAlias + "] Failed to execute progress listener onResponseMinimizeRoundtrips", e);
+            logger.warn("[{}] Failed to execute progress listener onResponseMinimizeRoundtrips", clusterAlias, e);
         }
     }
 

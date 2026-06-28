@@ -438,7 +438,7 @@ public abstract class AbstractHttpServerTransport extends AbstractLifecycleCompo
     }
 
     protected static void onServerException(HttpServerChannel channel, Exception e) {
-        logger.error(() -> "exception from http server channel caught on transport layer [channel=" + channel + "]", e);
+        logger.error("exception from http server channel caught on transport layer [channel={}]", channel, e);
     }
 
     protected void serverAcceptedChannel(HttpChannel httpChannel) {
@@ -521,7 +521,7 @@ public abstract class AbstractHttpServerTransport extends AbstractLifecycleCompo
                         dispatcher.dispatchBadRequest(channel, threadContext, e);
                     } catch (Exception inner) {
                         inner.addSuppressed(e);
-                        logger.error(() -> "failed to send failure response for uri [" + restRequest.uri() + "]", inner);
+                        logger.error("failed to send failure response for uri [{}]", restRequest.uri(), inner);
                     }
                     return;
                 }

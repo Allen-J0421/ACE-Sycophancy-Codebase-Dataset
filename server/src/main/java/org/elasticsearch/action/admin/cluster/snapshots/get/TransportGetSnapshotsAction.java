@@ -189,7 +189,7 @@ public class TransportGetSnapshotsAction extends TransportMasterNodeAction<GetSn
         if (ExceptionsHelper.isTaskCancelledException(e)) {
             logger.debug(() -> Strings.format("failed to fetch snapshot info after cancellation for [%s]", asyncSnapshotInfo), e);
         } else {
-            logger.warn(() -> Strings.format("failed to fetch snapshot info for [%s]", asyncSnapshotInfo), e);
+            logger.warn("failed to fetch snapshot info for [{}]", asyncSnapshotInfo, e);
         }
     }
 

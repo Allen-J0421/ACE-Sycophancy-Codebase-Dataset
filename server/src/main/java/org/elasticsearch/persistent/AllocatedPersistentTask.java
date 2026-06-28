@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
-import static org.elasticsearch.core.Strings.format;
 
 /**
  * Represents a executor node operation that corresponds to a persistent task
@@ -241,10 +240,7 @@ public class AllocatedPersistentTask extends CancellableTask {
 
                             @Override
                             public void onFailure(Exception e) {
-                                logger.warn(
-                                    () -> format("notification for task [%s] with id [%s] failed", getAction(), getPersistentTaskId()),
-                                    e
-                                );
+                                logger.warn("notification for task [{}] with id [{}] failed", getAction(), getPersistentTaskId(), e);
                             }
                         }
                     );

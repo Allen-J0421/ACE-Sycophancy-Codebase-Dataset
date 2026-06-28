@@ -34,7 +34,7 @@ public final class ChannelActionListener<Response extends TransportResponse> imp
         } catch (RuntimeException e) {
             final String message = format("channel [%s] threw exceptions on sendResponse", channel);
             assert false : new AssertionError(message, e);
-            logger.error(() -> message, e);
+            logger.error(message, e);
             throw e;
         }
     }
@@ -47,7 +47,7 @@ public final class ChannelActionListener<Response extends TransportResponse> imp
             sendException.addSuppressed(e);
             final String message = format("channel [%s] threw exceptions on sendResponse", channel);
             assert false : new AssertionError(message, sendException);
-            logger.error(() -> message, sendException);
+            logger.error(message, sendException);
             throw sendException;
         }
     }

@@ -433,7 +433,7 @@ public class RestController implements HttpServerTransport.Dispatcher {
                 sendFailure(channel, e);
             } catch (Exception inner) {
                 inner.addSuppressed(e);
-                logger.error(() -> "failed to send failure response for uri [" + request.uri() + "]", inner);
+                logger.error("failed to send failure response for uri [{}]", request.uri(), inner);
             }
         }
     }

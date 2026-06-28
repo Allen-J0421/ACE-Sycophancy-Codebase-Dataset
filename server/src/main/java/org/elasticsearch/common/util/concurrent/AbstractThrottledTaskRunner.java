@@ -130,7 +130,7 @@ public class AbstractThrottledTaskRunner<T extends ActionListener<Releasable>> {
                     @Override
                     public void onFailure(Exception e) {
                         // should not happen
-                        logger.error(() -> Strings.format("[%s] task %s failed", taskRunnerName, task), e);
+                        logger.error("[{}] task {} failed", taskRunnerName, task, e);
                         assert false : e;
                         task.onFailure(e);
                     }

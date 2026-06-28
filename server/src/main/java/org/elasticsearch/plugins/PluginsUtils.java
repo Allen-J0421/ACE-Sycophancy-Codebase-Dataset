@@ -253,7 +253,7 @@ public class PluginsUtils {
 
         logger.trace(() -> "findBundles(" + type + ") returning: " + bundles.stream().map(b -> b.plugin.getName()).sorted().toList());
         if (excludedBundles.size() > 0) {
-            logger.info(() -> Strings.format("Excluded incompatible %s bundles: %s", type, excludedBundles.stream().sorted().toList()));
+            logger.info("Excluded incompatible {} bundles: {}", type, excludedBundles.stream().sorted().toList());
         }
 
         return bundles;

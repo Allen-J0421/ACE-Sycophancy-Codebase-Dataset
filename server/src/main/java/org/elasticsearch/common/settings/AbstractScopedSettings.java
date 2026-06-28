@@ -169,7 +169,7 @@ public abstract class AbstractScopedSettings {
                 try {
                     applyRunnables.add(settingUpdater.updater(current, previous));
                 } catch (Exception ex) {
-                    logger.warn(() -> "failed to prepareCommit settings for [" + settingUpdater + "]", ex);
+                    logger.warn("failed to prepareCommit settings for [{}]", settingUpdater, ex);
                     throw ex;
                 }
             }

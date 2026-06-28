@@ -357,7 +357,7 @@ public final class DateFieldMapper extends FieldMapper {
                 return DateFormatter.forPattern(format.getValue(), indexCreatedVersion).withLocale(locale.getValue());
             } catch (IllegalArgumentException e) {
                 if (indexCreatedVersion.isLegacyIndexVersion()) {
-                    logger.warn(() -> "Error parsing format [" + format.getValue() + "] of legacy index, falling back to default", e);
+                    logger.warn("Error parsing format [{}] of legacy index, falling back to default", format.getValue(), e);
                     return DateFormatter.forPattern(format.getDefaultValue()).withLocale(locale.getValue());
                 } else {
                     throw new IllegalArgumentException("Error parsing [format] on field [" + leafName() + "]: " + e.getMessage(), e);

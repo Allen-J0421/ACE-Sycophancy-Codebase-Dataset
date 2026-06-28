@@ -154,7 +154,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onPreQueryPhase(searchContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onPreQueryPhase listener [" + listener + "] failed", e);
+                    logger.warn("onPreQueryPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -165,7 +165,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onFailedQueryPhase(searchContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onFailedQueryPhase listener [" + listener + "] failed", e);
+                    logger.warn("onFailedQueryPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -176,7 +176,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onQueryPhase(searchContext, tookInNanos);
                 } catch (Exception e) {
-                    logger.warn(() -> "onQueryPhase listener [" + listener + "] failed", e);
+                    logger.warn("onQueryPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -187,7 +187,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onPreFetchPhase(searchContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onPreFetchPhase listener [" + listener + "] failed", e);
+                    logger.warn("onPreFetchPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -198,7 +198,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onFailedFetchPhase(searchContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onFailedFetchPhase listener [" + listener + "] failed", e);
+                    logger.warn("onFailedFetchPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -209,7 +209,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onFetchPhase(searchContext, tookInNanos);
                 } catch (Exception e) {
-                    logger.warn(() -> "onFetchPhase listener [" + listener + "] failed", e);
+                    logger.warn("onFetchPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -220,7 +220,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onPreDfsPhase(searchContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onPreDfsPhase listener [" + listener + "] failed", e);
+                    logger.warn("onPreDfsPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -231,7 +231,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onFailedDfsPhase(searchContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onFailedDfsPhase listener [" + listener + "] failed", e);
+                    logger.warn("onFailedDfsPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -242,7 +242,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onDfsPhase(searchContext, tookInNanos);
                 } catch (Exception e) {
-                    logger.warn(() -> "onDfsPhase listener [" + listener + "] failed", e);
+                    logger.warn("onDfsPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -253,7 +253,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onCanMatchPhase(searchRequestAttributes, tookInNanos);
                 } catch (Exception e) {
-                    logger.warn(() -> "onCanMatchPhase listener [" + listener + "] failed", e);
+                    logger.warn("onCanMatchPhase listener [{}] failed", listener, e);
                 }
             }
         }
@@ -264,7 +264,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onNewReaderContext(readerContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onNewContext listener [" + listener + "] failed", e);
+                    logger.warn("onNewContext listener [{}] failed", listener, e);
                 }
             }
         }
@@ -275,7 +275,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onFreeReaderContext(readerContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onFreeContext listener [" + listener + "] failed", e);
+                    logger.warn("onFreeContext listener [{}] failed", listener, e);
                 }
             }
         }
@@ -286,7 +286,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onNewScrollContext(readerContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onNewScrollContext listener [" + listener + "] failed", e);
+                    logger.warn("onNewScrollContext listener [{}] failed", listener, e);
                 }
             }
         }
@@ -297,7 +297,7 @@ public interface SearchOperationListener {
                 try {
                     listener.onFreeScrollContext(readerContext);
                 } catch (Exception e) {
-                    logger.warn(() -> "onFreeScrollContext listener [" + listener + "] failed", e);
+                    logger.warn("onFreeScrollContext listener [{}] failed", listener, e);
                 }
             }
         }

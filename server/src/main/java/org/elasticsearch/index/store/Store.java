@@ -492,7 +492,7 @@ public class Store extends AbstractIndexShardComponent implements Closeable, Ref
             }
         } catch (IOException e) {
             assert false : e;
-            logger.warn(() -> "exception on closing store for [" + shardId + "]", e);
+            logger.warn("exception on closing store for [{}]", shardId, e);
         }
     }
 

@@ -101,7 +101,7 @@ public class HotThreads {
         ) {
             new HotThreads().busiestThreads(500).ignoreIdleThreads(false).detect(writer);
         } catch (Exception e) {
-            logger.error(() -> org.elasticsearch.common.Strings.format("failed to write local hot threads with prefix [%s]", prefix), e);
+            logger.error("failed to write local hot threads with prefix [{}]", prefix, e);
         }
     }
 

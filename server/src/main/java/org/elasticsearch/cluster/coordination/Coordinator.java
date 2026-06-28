@@ -1051,7 +1051,7 @@ public class Coordinator extends AbstractLifecycleComponent implements ClusterSt
                 @Override
                 public void onFailure(Exception e) {
                     // TODO tests for heartbeat failures
-                    logger.warn(() -> Strings.format("failed to write heartbeat for term [%s]", leaderTerm), e);
+                    logger.warn("failed to write heartbeat for term [{}]", leaderTerm, e);
                     synchronized (mutex) {
                         if (getCurrentTerm() == leaderTerm) {
                             becomeCandidate("leaderHeartbeatService");

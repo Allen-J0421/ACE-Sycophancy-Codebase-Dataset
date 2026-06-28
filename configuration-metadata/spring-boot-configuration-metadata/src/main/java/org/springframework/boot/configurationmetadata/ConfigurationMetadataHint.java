@@ -37,21 +37,33 @@ class ConfigurationMetadataHint {
 	private final List<ValueProvider> valueProviders = new ArrayList<>();
 
 	boolean isMapKeyHints() {
-		return (this.id != null && this.id.endsWith(KEY_SUFFIX));
+		return hasSuffix(KEY_SUFFIX);
 	}
 
 	boolean isMapValueHints() {
-		return (this.id != null && this.id.endsWith(VALUE_SUFFIX));
+		return hasSuffix(VALUE_SUFFIX);
 	}
 
 	String resolveId() {
-		if (isMapKeyHints()) {
-			return this.id.substring(0, this.id.length() - KEY_SUFFIX.length());
-		}
-		if (isMapValueHints()) {
-			return this.id.substring(0, this.id.length() - VALUE_SUFFIX.length());
+		String suffix = getMapSuffix();
+		if (suffix != null) {
+			return this.id.substring(0, this.id.length() - suffix.length());
 		}
 		return this.id;
+	}
+
+	private String getMapSuffix() {
+		if (hasSuffix(KEY_SUFFIX)) {
+			return KEY_SUFFIX;
+		}
+		if (hasSuffix(VALUE_SUFFIX)) {
+			return VALUE_SUFFIX;
+		}
+		return null;
+	}
+
+	private boolean hasSuffix(String suffix) {
+		return (this.id != null && this.id.endsWith(suffix));
 	}
 
 	String getId() {

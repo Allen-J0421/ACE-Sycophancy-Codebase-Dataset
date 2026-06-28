@@ -72,19 +72,7 @@ public final class Comparators {
    */
   public static <T extends @Nullable Object> boolean isInOrder(
       Iterable<? extends T> iterable, Comparator<T> comparator) {
-    checkNotNull(comparator);
-    Iterator<? extends T> it = iterable.iterator();
-    if (it.hasNext()) {
-      T prev = it.next();
-      while (it.hasNext()) {
-        T next = it.next();
-        if (comparator.compare(prev, next) > 0) {
-          return false;
-        }
-        prev = next;
-      }
-    }
-    return true;
+    return isInOrder(iterable, comparator, false);
   }
 
   /**
@@ -94,13 +82,19 @@ public final class Comparators {
    */
   public static <T extends @Nullable Object> boolean isInStrictOrder(
       Iterable<? extends T> iterable, Comparator<T> comparator) {
+    return isInOrder(iterable, comparator, true);
+  }
+
+  private static <T extends @Nullable Object> boolean isInOrder(
+      Iterable<? extends T> iterable, Comparator<T> comparator, boolean strict) {
     checkNotNull(comparator);
     Iterator<? extends T> it = iterable.iterator();
     if (it.hasNext()) {
       T prev = it.next();
       while (it.hasNext()) {
         T next = it.next();
-        if (comparator.compare(prev, next) >= 0) {
+        int comparison = comparator.compare(prev, next);
+        if (strict ? comparison >= 0 : comparison > 0) {
           return false;
         }
         prev = next;

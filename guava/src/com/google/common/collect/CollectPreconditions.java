@@ -29,16 +29,16 @@ final class CollectPreconditions {
 
   static void checkEntryNotNull(@Nullable Object key, @Nullable Object value) {
     if (key == null) {
-      throw new NullPointerException("null key in entry: null=" + value);
+      throw nullKeyInEntry(value);
     } else if (value == null) {
-      throw new NullPointerException("null value in entry: " + key + "=null");
+      throw nullValueInEntry(key);
     }
   }
 
   @CanIgnoreReturnValue
   static int checkNonnegative(int value, String name) {
     if (value < 0) {
-      throw new IllegalArgumentException(name + " cannot be negative but was: " + value);
+      throw nonnegative(name, value);
     }
     return value;
   }
@@ -46,7 +46,7 @@ final class CollectPreconditions {
   @CanIgnoreReturnValue
   static long checkNonnegative(long value, String name) {
     if (value < 0) {
-      throw new IllegalArgumentException(name + " cannot be negative but was: " + value);
+      throw nonnegative(name, value);
     }
     return value;
   }
@@ -55,14 +55,14 @@ final class CollectPreconditions {
   @CanIgnoreReturnValue
   static int checkNonnegativeIndex(int value, String name) {
     if (value < 0) {
-      throw new IndexOutOfBoundsException(name + " cannot be negative but was: " + value);
+      throw nonnegativeIndex(name, value);
     }
     return value;
   }
 
   static void checkPositive(int value, String name) {
     if (value <= 0) {
-      throw new IllegalArgumentException(name + " must be positive but was: " + value);
+      throw positive(name, value);
     }
   }
 
@@ -75,4 +75,24 @@ final class CollectPreconditions {
   }
 
   private CollectPreconditions() {}
+
+  private static NullPointerException nullKeyInEntry(@Nullable Object value) {
+    return new NullPointerException("null key in entry: null=" + value);
+  }
+
+  private static NullPointerException nullValueInEntry(@Nullable Object key) {
+    return new NullPointerException("null value in entry: " + key + "=null");
+  }
+
+  private static IllegalArgumentException nonnegative(String name, long value) {
+    return new IllegalArgumentException(name + " cannot be negative but was: " + value);
+  }
+
+  private static IndexOutOfBoundsException nonnegativeIndex(String name, int value) {
+    return new IndexOutOfBoundsException(name + " cannot be negative but was: " + value);
+  }
+
+  private static IllegalArgumentException positive(String name, int value) {
+    return new IllegalArgumentException(name + " must be positive but was: " + value);
+  }
 }

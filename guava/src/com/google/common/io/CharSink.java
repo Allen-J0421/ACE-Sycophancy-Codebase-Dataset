@@ -102,7 +102,7 @@ public abstract class CharSink {
   /**
    * Writes the given lines of text to this sink with each line (including the last) terminated with
    * the operating system's default line separator. This method is equivalent to {@code
-   * writeLines(lines, System.getProperty("line.separator"))}.
+   * writeLines(lines, LINE_SEPARATOR.value())}.
    *
    * @throws IOException if an I/O error occurs while writing to this sink
    */
@@ -124,7 +124,7 @@ public abstract class CharSink {
   /**
    * Writes the given lines of text to this sink with each line (including the last) terminated with
    * the operating system's default line separator. This method is equivalent to {@code
-   * writeLines(lines, System.getProperty("line.separator"))}.
+   * writeLines(lines, LINE_SEPARATOR.value())}.
    *
    * @throws IOException if an I/O error occurs while writing to this sink
    * @since 22.0 (but only since 33.4.0 in the Android flavor)

@@ -11,6 +11,7 @@ import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.app.fragments.settings.LogLevelPreferenceDataStore;
 import com.termux.app.fragments.settings.LogLevelPreferenceUtils;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP;
 
 @Keep
 public class DebuggingPreferencesFragment extends BasePreferenceFragment {
@@ -36,15 +37,12 @@ public class DebuggingPreferencesFragment extends BasePreferenceFragment {
 
 }
 
-class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
-
-    private final TermuxAppSharedPreferences mPreferences;
+class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore<TermuxAppSharedPreferences> {
 
     private static DebuggingPreferencesDataStore mInstance;
 
     private DebuggingPreferencesDataStore(Context context) {
-        super(context);
-        mPreferences = TermuxAppSharedPreferences.build(context, true);
+        super(context, TermuxAppSharedPreferences.build(context, true));
     }
 
     public static synchronized DebuggingPreferencesDataStore getInstance(Context context) {
@@ -52,13 +50,6 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
             mInstance = new DebuggingPreferencesDataStore(context);
         }
         return mInstance;
-    }
-
-
-
-    @Override
-    protected boolean hasPreferences() {
-        return mPreferences != null;
     }
 
     @Override
@@ -71,20 +62,19 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
         mPreferences.setLogLevel(mContext, logLevel);
     }
 
-
     @Override
     public void putBoolean(String key, boolean value) {
         if (mPreferences == null) return;
         if (key == null) return;
 
         switch (key) {
-            case "terminal_view_key_logging_enabled":
-                    mPreferences.setTerminalViewKeyLoggingEnabled(value);
+            case TERMUX_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED:
+                mPreferences.setTerminalViewKeyLoggingEnabled(value);
                 break;
-            case "plugin_error_notifications_enabled":
+            case TERMUX_APP.KEY_PLUGIN_ERROR_NOTIFICATIONS_ENABLED:
                 mPreferences.setPluginErrorNotificationsEnabled(value);
                 break;
-            case "crash_report_notifications_enabled":
+            case TERMUX_APP.KEY_CRASH_REPORT_NOTIFICATIONS_ENABLED:
                 mPreferences.setCrashReportNotificationsEnabled(value);
                 break;
             default:
@@ -96,11 +86,11 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
     public boolean getBoolean(String key, boolean defValue) {
         if (mPreferences == null) return defValue;
         switch (key) {
-            case "terminal_view_key_logging_enabled":
+            case TERMUX_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED:
                 return mPreferences.isTerminalViewKeyLoggingEnabled();
-            case "plugin_error_notifications_enabled":
+            case TERMUX_APP.KEY_PLUGIN_ERROR_NOTIFICATIONS_ENABLED:
                 return mPreferences.arePluginErrorNotificationsEnabled(false);
-            case "crash_report_notifications_enabled":
+            case TERMUX_APP.KEY_CRASH_REPORT_NOTIFICATIONS_ENABLED:
                 return mPreferences.areCrashReportNotificationsEnabled(false);
             default:
                 return defValue;

@@ -9,6 +9,7 @@ import androidx.preference.PreferenceDataStore;
 import com.termux.R;
 import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP;
 
 @Keep
 public class TerminalIOPreferencesFragment extends BasePreferenceFragment {
@@ -42,18 +43,16 @@ class TerminalIOPreferencesDataStore extends PreferenceDataStore {
         return mInstance;
     }
 
-
-
     @Override
     public void putBoolean(String key, boolean value) {
         if (mPreferences == null) return;
         if (key == null) return;
 
         switch (key) {
-            case "soft_keyboard_enabled":
+            case TERMUX_APP.KEY_SOFT_KEYBOARD_ENABLED:
                 mPreferences.setSoftKeyboardEnabled(value);
                 break;
-            case "soft_keyboard_enabled_only_if_no_hardware":
+            case TERMUX_APP.KEY_SOFT_KEYBOARD_ENABLED_ONLY_IF_NO_HARDWARE:
                 mPreferences.setSoftKeyboardEnabledOnlyIfNoHardware(value);
                 break;
             default:
@@ -66,9 +65,9 @@ class TerminalIOPreferencesDataStore extends PreferenceDataStore {
         if (mPreferences == null) return defValue;
 
         switch (key) {
-            case "soft_keyboard_enabled":
+            case TERMUX_APP.KEY_SOFT_KEYBOARD_ENABLED:
                 return mPreferences.isSoftKeyboardEnabled();
-            case "soft_keyboard_enabled_only_if_no_hardware":
+            case TERMUX_APP.KEY_SOFT_KEYBOARD_ENABLED_ONLY_IF_NO_HARDWARE:
                 return mPreferences.isSoftKeyboardEnabledOnlyIfNoHardware();
             default:
                 return defValue;

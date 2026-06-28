@@ -7,11 +7,11 @@ import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.termux.shared.logger.Logger;
+import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP;
 
 public final class LogLevelPreferenceUtils {
 
     private static final String LOGGING_CATEGORY_KEY = "logging";
-    private static final String LOG_LEVEL_KEY = "log_level";
 
     private LogLevelPreferenceUtils() {
     }
@@ -21,7 +21,7 @@ public final class LogLevelPreferenceUtils {
                                                    int logLevel) {
         if (fragment.findPreference(LOGGING_CATEGORY_KEY) == null) return;
 
-        ListPreference logLevelListPreference = fragment.findPreference(LOG_LEVEL_KEY);
+        ListPreference logLevelListPreference = fragment.findPreference(TERMUX_APP.KEY_LOG_LEVEL);
         if (logLevelListPreference == null) return;
 
         setLogLevelListPreferenceData(logLevelListPreference, context, logLevel);

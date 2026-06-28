@@ -5,32 +5,36 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
 
-public abstract class LogLevelPreferenceDataStore extends PreferenceDataStore {
+import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP;
 
-    private static final String LOG_LEVEL_KEY = "log_level";
+public abstract class LogLevelPreferenceDataStore<T> extends PreferenceDataStore {
 
     protected final Context mContext;
+    protected final T mPreferences;
 
-    protected LogLevelPreferenceDataStore(Context context) {
+    protected LogLevelPreferenceDataStore(Context context, T preferences) {
         mContext = context;
+        mPreferences = preferences;
     }
 
     @Override
     @Nullable
     public String getString(String key, @Nullable String defValue) {
-        if (!LOG_LEVEL_KEY.equals(key) || !hasPreferences()) return defValue;
+        if (!TERMUX_APP.KEY_LOG_LEVEL.equals(key) || !hasPreferences()) return defValue;
 
         return String.valueOf(getLogLevel());
     }
 
     @Override
     public void putString(String key, @Nullable String value) {
-        if (!LOG_LEVEL_KEY.equals(key) || value == null || !hasPreferences()) return;
+        if (!TERMUX_APP.KEY_LOG_LEVEL.equals(key) || value == null || !hasPreferences()) return;
 
         setLogLevel(Integer.parseInt(value));
     }
 
-    protected abstract boolean hasPreferences();
+    private boolean hasPreferences() {
+        return mPreferences != null;
+    }
 
     protected abstract int getLogLevel();
 

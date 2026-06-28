@@ -35,15 +35,12 @@ public class DebuggingPreferencesFragment extends BasePreferenceFragment {
     }
 }
 
-class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
-
-    private final TermuxTaskerAppSharedPreferences mPreferences;
+class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore<TermuxTaskerAppSharedPreferences> {
 
     private static DebuggingPreferencesDataStore mInstance;
 
     private DebuggingPreferencesDataStore(Context context) {
-        super(context);
-        mPreferences = TermuxTaskerAppSharedPreferences.build(context, true);
+        super(context, TermuxTaskerAppSharedPreferences.build(context, true));
     }
 
     public static synchronized DebuggingPreferencesDataStore getInstance(Context context) {
@@ -51,13 +48,6 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
             mInstance = new DebuggingPreferencesDataStore(context);
         }
         return mInstance;
-    }
-
-
-
-    @Override
-    protected boolean hasPreferences() {
-        return mPreferences != null;
     }
 
     @Override

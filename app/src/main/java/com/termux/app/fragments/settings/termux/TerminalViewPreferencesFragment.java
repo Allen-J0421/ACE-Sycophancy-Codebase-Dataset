@@ -9,6 +9,7 @@ import androidx.preference.PreferenceDataStore;
 import com.termux.R;
 import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_APP;
 
 @Keep
 public class TerminalViewPreferencesFragment extends BasePreferenceFragment {
@@ -42,15 +43,13 @@ class TerminalViewPreferencesDataStore extends PreferenceDataStore {
         return mInstance;
     }
 
-
-
     @Override
     public void putBoolean(String key, boolean value) {
         if (mPreferences == null) return;
         if (key == null) return;
 
         switch (key) {
-            case "terminal_margin_adjustment":
+            case TERMUX_APP.KEY_TERMINAL_MARGIN_ADJUSTMENT:
                 mPreferences.setTerminalMarginAdjustment(value);
                 break;
             default:
@@ -63,7 +62,7 @@ class TerminalViewPreferencesDataStore extends PreferenceDataStore {
         if (mPreferences == null) return defValue;
 
         switch (key) {
-            case "terminal_margin_adjustment":
+            case TERMUX_APP.KEY_TERMINAL_MARGIN_ADJUSTMENT:
                 return mPreferences.isTerminalMarginAdjustmentEnabled();
             default:
                 return defValue;

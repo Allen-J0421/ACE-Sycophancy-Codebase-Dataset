@@ -11,6 +11,7 @@ import com.termux.app.fragments.settings.BasePreferenceFragment;
 import com.termux.app.fragments.settings.LogLevelPreferenceDataStore;
 import com.termux.app.fragments.settings.LogLevelPreferenceUtils;
 import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
+import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_FLOAT_APP;
 
 @Keep
 public class DebuggingPreferencesFragment extends BasePreferenceFragment {
@@ -35,15 +36,12 @@ public class DebuggingPreferencesFragment extends BasePreferenceFragment {
     }
 }
 
-class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
-
-    private final TermuxFloatAppSharedPreferences mPreferences;
+class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore<TermuxFloatAppSharedPreferences> {
 
     private static DebuggingPreferencesDataStore mInstance;
 
     private DebuggingPreferencesDataStore(Context context) {
-        super(context);
-        mPreferences = TermuxFloatAppSharedPreferences.build(context, true);
+        super(context, TermuxFloatAppSharedPreferences.build(context, true));
     }
 
     public static synchronized DebuggingPreferencesDataStore getInstance(Context context) {
@@ -51,13 +49,6 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
             mInstance = new DebuggingPreferencesDataStore(context);
         }
         return mInstance;
-    }
-
-
-
-    @Override
-    protected boolean hasPreferences() {
-        return mPreferences != null;
     }
 
     @Override
@@ -76,7 +67,7 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
         if (key == null) return;
 
         switch (key) {
-            case "terminal_view_key_logging_enabled":
+            case TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED:
                 mPreferences.setTerminalViewKeyLoggingEnabled(value, true);
                 break;
             default:
@@ -88,7 +79,7 @@ class DebuggingPreferencesDataStore extends LogLevelPreferenceDataStore {
     public boolean getBoolean(String key, boolean defValue) {
         if (mPreferences == null) return defValue;
         switch (key) {
-            case "terminal_view_key_logging_enabled":
+            case TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED:
                 return mPreferences.isTerminalViewKeyLoggingEnabled(true);
             default:
                 return defValue;

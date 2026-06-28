@@ -18,6 +18,12 @@ public abstract class Organism
     private Field field;
     // The organism's position in the field.
     private Location location;
+    // Species-specific lifecycle characteristics.
+    private final int breedingAge;
+    private final int maxAge;
+    private final double breedingProbability;
+    private final int maxLitterSize;
+    private final boolean isDiurnal;
     
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -25,25 +31,25 @@ public abstract class Organism
     /**
      * Constructor for objects of class Organism
      */
-    public Organism(boolean randomAge, Field field, Location location)
+    public Organism(boolean randomAge, Field field, Location location,
+            int breedingAge, int maxAge, double breedingProbability,
+            int maxLitterSize, boolean isDiurnal)
     {
         age = 0;
         if (randomAge) {
-            age = rand.nextInt(getMaxAge());
+            age = rand.nextInt(maxAge);
         }
         alive = true;
         this.field = field;
+        this.breedingAge = breedingAge;
+        this.maxAge = maxAge;
+        this.breedingProbability = breedingProbability;
+        this.maxLitterSize = maxLitterSize;
+        this.isDiurnal = isDiurnal;
         setLocation(location);
     }
-    
+
     // Abstract methods
-    
-    /**
-     * Abstract method that returns whether the animal is diurnal or nocturnal
-     * 
-     * @return boolean True if the animal is diurnal, false if nocturnal
-     */
-    abstract protected boolean getIsDiurnal();
     
     /**
     * Make this organism act - that is: make it do
@@ -53,39 +59,11 @@ public abstract class Organism
     abstract public void act(List<Organism> newOrganisms);
     
     /**
-     * Abstract method that returns the max age of the organism
-     * 
-     * @return the organism's max age
-     */
-    abstract protected int getMaxAge();
-    
-    /**
-     * Abstract method that returns whether the organism can breed
-     * 
-     * @return boolean True if the organism can breed
+     * Returns whether the organism can breed.
+     *
+     * @return True if the organism can breed.
      */
     abstract protected boolean canBreed();
-    
-    /**
-     * Abstract method that returns the breeding age for the animal
-     * 
-     * @return the animal's breeding age
-     */
-    abstract protected int getBreedingAge();
-    
-    /**
-     * Abstract methohd that returns the litter size of the animal
-     * 
-     * @return the animal's max litter size
-     */
-    abstract protected int getMaxLitterSize();
-    
-    /**
-     * Abstract method that returns the breeding probability of the animal
-     * 
-     * @return the animal's breeding probability
-     */
-    abstract protected double getBreedingProbability();
     
     /**
      * Abstract method that returns an organism object of a specific subclass of organism
@@ -122,6 +100,15 @@ public abstract class Organism
     protected Random getRand() {
         return rand;
     }
+
+    /**
+     * Returns whether the organism is diurnal.
+     *
+     * @return True if the organism is diurnal, false if nocturnal.
+     */
+    protected boolean getIsDiurnal() {
+        return isDiurnal;
+    }
     
     /**
      * Returns the age of the organism
@@ -139,6 +126,46 @@ public abstract class Organism
     protected void setAge(int age)
     {
         this.age = age;
+    }
+
+    /**
+     * Returns the breeding age for the organism.
+     *
+     * @return the breeding age.
+     */
+    protected int getBreedingAge()
+    {
+        return breedingAge;
+    }
+
+    /**
+     * Returns the max age for the organism.
+     *
+     * @return the max age.
+     */
+    protected int getMaxAge()
+    {
+        return maxAge;
+    }
+
+    /**
+     * Returns the breeding probability for the organism.
+     *
+     * @return the breeding probability.
+     */
+    protected double getBreedingProbability()
+    {
+        return breedingProbability;
+    }
+
+    /**
+     * Returns the maximum litter size for the organism.
+     *
+     * @return the maximum litter size.
+     */
+    protected int getMaxLitterSize()
+    {
+        return maxLitterSize;
     }
     
     /**

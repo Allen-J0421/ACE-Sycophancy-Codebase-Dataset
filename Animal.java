@@ -1,7 +1,5 @@
 import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -14,12 +12,20 @@ public abstract class Animal extends Organism
 {
     // A singleton shared weather object between all organisms and the simulator
     private static final Weather weather = Weather.getWeather();
+    // The concrete species this animal instance belongs to.
+    private final Class<? extends Animal> animalClass;
+    // The animal's maximum health.
+    private final int maxHealth;
     // Gender of the animal
     private boolean isMale;
     // Current health of the animal
     private int currentHealth;
     // Whether the animal is infected
     private boolean isInfected;
+    // The food sources available to this animal.
+    private final HashSet<Class> foodSources;
+    // The classes this animal is willing to kill.
+    private final HashSet<Class> killable;
     
     /**
      * Create a new animal at location in field.
@@ -27,12 +33,21 @@ public abstract class Animal extends Organism
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(boolean randomAge, Field field, Location location)
+    public Animal(boolean randomAge, Field field, Location location,
+            int breedingAge, int maxAge, double breedingProbability,
+            int maxLitterSize, boolean isDiurnal, int maxHealth,
+            Class<? extends Animal> animalClass, HashSet<Class> foodSources,
+            HashSet<Class> killable)
     {
-        super(randomAge, field, location);
+        super(randomAge, field, location, breedingAge, maxAge, breedingProbability,
+                maxLitterSize, isDiurnal);
+        this.maxHealth = maxHealth;
+        this.animalClass = animalClass;
+        this.foodSources = new HashSet<>(foodSources);
+        this.killable = new HashSet<>(killable);
         
         if (randomAge) {
-            currentHealth = getRand().nextInt(getMaxHealth());
+            currentHealth = getRand().nextInt(maxHealth);
         }
         if (getRand().nextInt(2) == 0) {
             isMale = true;
@@ -44,36 +59,6 @@ public abstract class Animal extends Organism
         isInfected = false;
     }
     
-    // Abstract methods
-    
-    /**
-     * Abstract method that returns the max health of the animal
-     * 
-     * @return the animal's max health
-     */
-    abstract protected int getMaxHealth();
-    
-    /**
-     * Abstract method to return whether the target object is of a specific subclass of animal
-     * 
-     * @param target The object being compared
-     * @return boolean True if target is of type of a specific animal subclass
-     */
-    abstract protected boolean getAnimalClass(Object thing);
-    
-    /**
-     * Abstract method to return the list of food sources of a specific subclass of animal
-     * 
-     * @return ArrayList<Class> of class types that a subclass of animal is allowed to eat.
-     */
-    abstract protected HashSet<Class> getFoodSources();
-    
-    /**
-     * Abstract method to return the list of killable classes of a specific subclass of animal
-     * 
-     * @return ArrayList<Class> of class types that a subclass of animal is allowed to kill.
-     */
-    abstract protected HashSet<Class> getKillable();
     // Accessor and mutator methods
     
     /**
@@ -103,6 +88,45 @@ public abstract class Animal extends Organism
     protected boolean getIsInfected() {
         return isInfected;
     }
+
+    /**
+     * Returns the animal's max health.
+     *
+     * @return the animal's max health.
+     */
+    protected int getMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    /**
+     * Returns whether the supplied object is the same species as this animal.
+     *
+     * @param thing The object being compared.
+     * @return True if the object is of this animal's species.
+     */
+    protected boolean getAnimalClass(Object thing)
+    {
+        return animalClass.isInstance(thing);
+    }
+
+    /**
+     * Returns the food sources available to this animal.
+     *
+     * @return The animal's food sources.
+     */
+    protected HashSet<Class> getFoodSources() {
+        return foodSources;
+    }
+
+    /**
+     * Returns the classes this animal can kill.
+     *
+     * @return The animal's killable classes.
+     */
+    protected HashSet<Class> getKillable() {
+        return killable;
+    }
     
     /**
      * Sets the animal to infected state
@@ -110,7 +134,7 @@ public abstract class Animal extends Organism
     protected void infect() {
         isInfected = true;
     }
-    
+
     // Functional methods
     
     /**
@@ -137,6 +161,26 @@ public abstract class Animal extends Organism
             }
         }
         return false;
+    }
+    
+    /**
+     * Handles the standard post-survival behavior shared by most animals.
+     *
+     * @param newOrganisms A list to receive newborn animals.
+     */
+    protected void performStandardAct(List<Organism> newOrganisms)
+    {
+        giveBirth(newOrganisms);
+        Location newLocation = findFood();
+        if(newLocation == null) { 
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
     }
     
     /**
@@ -173,5 +217,20 @@ public abstract class Animal extends Organism
         if(currentHealth == 0) {
             setDead();
         }
+    }
+
+    /**
+     * Helper for species constructors to create a set of classes.
+     *
+     * @param classes The classes to include.
+     * @return A HashSet containing the supplied classes.
+     */
+    protected static HashSet<Class> classSet(Class... classes)
+    {
+        HashSet<Class> set = new HashSet<>();
+        for(Class clazz : classes) {
+            set.add(clazz);
+        }
+        return set;
     }
 }

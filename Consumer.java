@@ -200,15 +200,13 @@ public abstract class Consumer extends Actor
             
             try
             {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(boolean.class,
-                                                      Field.class,
-                                                      Location.class)
-                              .newInstance(true, field, location);
+                Actor child = createOffspring(getClass().asSubclass(Actor.class),
+                                              new Class<?>[] { boolean.class, Field.class, Location.class },
+                                              true, field, location);
                 
                 newConsumers.add(child);
             }
-            catch (java.lang.Exception e)
+            catch (ReflectiveOperationException e)
             {
                 System.out.println("Error!");
                 

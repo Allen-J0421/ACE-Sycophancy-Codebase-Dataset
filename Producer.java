@@ -61,14 +61,13 @@ public abstract class Producer extends Actor
             
             try
             {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(Field.class,
-                                                      Location.class)
-                              .newInstance(field, location);
+                Actor child = createOffspring(getClass().asSubclass(Actor.class),
+                                              new Class<?>[] { Field.class, Location.class },
+                                              field, location);
                 
                 newProducers.add(child);
             }
-            catch (java.lang.Exception e)
+            catch (ReflectiveOperationException e)
             {
                 continue;
             }

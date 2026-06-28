@@ -123,6 +123,23 @@ public abstract class Actor
      * @return The actor's field.
      */
     protected Field getField() { return field; }
+
+    /**
+     * Create a new actor of the given runtime type using reflection.
+     *
+     * @param actorType The concrete actor class to instantiate.
+     * @param parameterTypes The constructor parameter types.
+     * @param args The constructor arguments.
+     * @return A newly created actor instance.
+     * @throws ReflectiveOperationException If construction fails.
+     */
+    protected Actor createOffspring(Class<? extends Actor> actorType,
+                                    Class<?>[] parameterTypes,
+                                    Object... args)
+        throws ReflectiveOperationException
+    {
+        return actorType.getDeclaredConstructor(parameterTypes).newInstance(args);
+    }
     
     /**
      * Increase the age.

@@ -15,13 +15,11 @@ final class BinarySearch {
             int mid = bounds.midpoint();
             SearchDecision decision = decideAt(sortedArray, mid, target);
 
-            switch (decision) {
-                case FOUND -> {
-                    return mid;
-                }
-                case TARGET_AFTER_MIDPOINT -> bounds.discardLowerHalf(mid);
-                case TARGET_BEFORE_MIDPOINT -> bounds.discardUpperHalf(mid);
+            if (decision.isFound()) {
+                return mid;
             }
+
+            bounds.discardHalf(decision, mid);
         }
 
         return NOT_FOUND;
@@ -69,6 +67,10 @@ final class BinarySearch {
 
             return TARGET_BEFORE_MIDPOINT;
         }
+
+        private boolean isFound() {
+            return this == FOUND;
+        }
     }
 
     private static final class SearchBounds {
@@ -90,6 +92,14 @@ final class BinarySearch {
 
         private int midpoint() {
             return low + (high - low) / 2;
+        }
+
+        private void discardHalf(SearchDecision decision, int mid) {
+            switch (decision) {
+                case TARGET_AFTER_MIDPOINT -> discardLowerHalf(mid);
+                case TARGET_BEFORE_MIDPOINT -> discardUpperHalf(mid);
+                case FOUND -> throw new IllegalArgumentException("Cannot discard bounds for a found target");
+            }
         }
 
         private void discardLowerHalf(int mid) {

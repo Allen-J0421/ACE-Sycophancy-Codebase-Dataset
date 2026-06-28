@@ -626,16 +626,8 @@ public class JDBCUtils {
 
     @Nullable
     public static <T> T queryObject(Connection session, String sql, Object... args) throws SQLException {
-        try (PreparedStatement dbStat = session.prepareStatement(sql)) {
-            bindParameters(dbStat, args);
-            try (ResultSet resultSet = dbStat.executeQuery()) {
-                if (resultSet.next()) {
-                    return (T) resultSet.getObject(1);
-                } else {
-                    return null;
-                }
-            }
-        }
+        // Identical semantics to executeQuery (prepare, bind, read first column of first row)
+        return executeQuery(session, sql, args);
     }
 
     /**

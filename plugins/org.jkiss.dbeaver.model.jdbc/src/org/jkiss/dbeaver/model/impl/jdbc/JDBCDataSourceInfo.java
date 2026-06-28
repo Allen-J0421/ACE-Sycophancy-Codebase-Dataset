@@ -94,17 +94,9 @@ public class JDBCDataSourceInfo extends AbstractDataSourceInfo {
         } else {
             this.readOnly = false;
         }
-        try {
-            this.databaseProductName = metaData.getDatabaseProductName();
-        } catch (Throwable e) {
-            debugError(e);
-            this.databaseProductName = "?"; //$NON-NLS-1$
-        }
-        try {
-            this.databaseProductVersion = metaData.getDatabaseProductVersion();
-        } catch (Throwable e) {
-            debugError(e);
-        }
+        this.databaseProductName = readMetaProperty(metaData::getDatabaseProductName, "?"); //$NON-NLS-1$
+        this.databaseProductVersion = readMetaProperty(metaData::getDatabaseProductVersion, null);
+        // Driver name is kept only when the driver actually reports one (non-null), so it stays special-cased.
         try {
             String name = metaData.getDriverName();
             if (name != null) {
@@ -114,42 +106,12 @@ public class JDBCDataSourceInfo extends AbstractDataSourceInfo {
             debugError(e);
             this.driverName = "?"; //$NON-NLS-1$
         }
-        try {
-            this.driverVersion = metaData.getDriverVersion();
-        } catch (Throwable e) {
-            debugError(e);
-            this.driverVersion = "?"; //$NON-NLS-1$
-        }
-        try {
-            this.schemaTerm = makeTermString(metaData.getSchemaTerm(), TERM_SCHEMA);
-        } catch (Throwable e) {
-            debugError(e);
-            this.schemaTerm = TERM_SCHEMA;
-        }
-        try {
-            this.procedureTerm = makeTermString(metaData.getProcedureTerm(), TERM_PROCEDURE);
-        } catch (Throwable e) {
-            debugError(e);
-            this.procedureTerm = TERM_PROCEDURE;
-        }
-        try {
-            this.catalogTerm = makeTermString(metaData.getCatalogTerm(), TERM_CATALOG);
-        } catch (Throwable e) {
-            debugError(e);
-            this.catalogTerm = TERM_CATALOG;
-        }
-        try {
-            supportsBatchUpdates = metaData.supportsBatchUpdates();
-        } catch (Throwable e) {
-            debugError(e);
-        }
-
-        try {
-            supportsTransactions = metaData.supportsTransactions();
-        } catch (Throwable e) {
-            debugError(e);
-            supportsTransactions = true;
-        }
+        this.driverVersion = readMetaProperty(metaData::getDriverVersion, "?"); //$NON-NLS-1$
+        this.schemaTerm = readMetaProperty(() -> makeTermString(metaData.getSchemaTerm(), TERM_SCHEMA), TERM_SCHEMA);
+        this.procedureTerm = readMetaProperty(() -> makeTermString(metaData.getProcedureTerm(), TERM_PROCEDURE), TERM_PROCEDURE);
+        this.catalogTerm = readMetaProperty(() -> makeTermString(metaData.getCatalogTerm(), TERM_CATALOG), TERM_CATALOG);
+        supportsBatchUpdates = readMetaProperty(metaData::supportsBatchUpdates, false);
+        supportsTransactions = readMetaProperty(metaData::supportsTransactions, true);
 
         supportedIsolations = new ArrayList<>();
         if (supportsTransactions) {
@@ -359,6 +321,26 @@ public class JDBCDataSourceInfo extends AbstractDataSourceInfo {
             log.debug(e.getClass().getName());
         } else {
             log.debug(e.getClass().getName() + ": " + e.getMessage());
+        }
+    }
+
+    @FunctionalInterface
+    private interface MetaPropertyReader<T> {
+        T read() throws Throwable;
+    }
+
+    /**
+     * Reads a single property from the JDBC metadata, falling back to {@code defaultValue}
+     * (and logging at debug level) if the driver throws. Many drivers fail or return
+     * unsupported-operation errors for individual {@link JDBCDatabaseMetaData} methods, so
+     * each property is read defensively and independently.
+     */
+    private static <T> T readMetaProperty(MetaPropertyReader<T> reader, T defaultValue) {
+        try {
+            return reader.read();
+        } catch (Throwable e) {
+            debugError(e);
+            return defaultValue;
         }
     }
 

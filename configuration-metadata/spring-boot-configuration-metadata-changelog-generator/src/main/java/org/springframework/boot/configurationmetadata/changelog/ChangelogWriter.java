@@ -25,7 +25,7 @@ import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -84,7 +84,7 @@ class ChangelogWriter implements AutoCloseable {
 	}
 
 	private Map<DifferenceType, List<Difference>> collateByType(Changelog differences) {
-		Map<DifferenceType, List<Difference>> byType = new HashMap<>();
+		Map<DifferenceType, List<Difference>> byType = new EnumMap<>(DifferenceType.class);
 		for (DifferenceType type : DifferenceType.values()) {
 			byType.put(type, new ArrayList<>());
 		}

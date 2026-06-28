@@ -29,13 +29,12 @@ import org.jkiss.dbeaver.model.exec.DBCExecutionContext;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
 import org.jkiss.dbeaver.model.sql.SQLQuery;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzerSupport;
 import org.jkiss.dbeaver.model.sql.SQLSyntaxManager;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzer;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
 import org.jkiss.dbeaver.model.sql.parser.SQLRuleManager;
-import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionAnalyzer;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionProposal;
 import org.jkiss.utils.Pair;
@@ -64,11 +63,7 @@ public class RequestResult {
     @NotNull
     public List<SQLCompletionProposalBase> request(@NotNull String sql, boolean simpleMode) throws DBException {
         final SQLCompletionRequest request = prepareCompletionRequest(sql, simpleMode);
-
-        final SQLCompletionAnalyzer analyzer = new SQLCompletionAnalyzer(request);
-        analyzer.setCheckNavigatorNodes(false);
-        analyzer.runAnalyzer(new VoidProgressMonitor());
-        return analyzer.getProposals();
+        return SQLCompletionAnalyzerSupport.collectLegacyProposals(new VoidProgressMonitor(), request, false);
     }
 
     /**
@@ -109,27 +104,24 @@ public class RequestResult {
     ) throws DBException {
         final SQLCompletionRequest request = prepareCompletionRequest(sql, simpleMode);
         final DBRProgressMonitor monitor = new VoidProgressMonitor();
-        final SQLQueryCompletionAnalyzer analyzer = getSqlQueryCompletionAnalyzer(request);
         try {
-            analyzer.run(monitor);
+            return Pair.of(
+                request,
+                SQLCompletionAnalyzerSupport.collectSemanticProposals(
+                    monitor,
+                    progressMonitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
+                        progressMonitor,
+                        request,
+                        request.getDocument().get(),
+                        request.getDocumentOffset()
+                    ),
+                    request,
+                    request::getDocumentOffset
+                )
+            );
         } catch (InvocationTargetException | InterruptedException e) {
             throw new DBException("Error while preparing completion proposals", e);
         }
-        return Pair.of(request, analyzer.getResult());
-    }
-
-    @NotNull
-    private static SQLQueryCompletionAnalyzer getSqlQueryCompletionAnalyzer(SQLCompletionRequest request) {
-        return new SQLQueryCompletionAnalyzer(
-            monitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
-                monitor,
-                request,
-                request.getDocument().get(),
-                request.getDocumentOffset()
-            ),
-            request,
-            request::getDocumentOffset
-        );
     }
 
     @NotNull

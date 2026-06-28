@@ -33,6 +33,7 @@ import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.runtime.AbstractJob;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.runtime.DBRRunnableParametrized;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzerSupport;
 import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
 import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionActivityTracker;
@@ -206,7 +207,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                         if (dataSource != null) {
                             completionJobSuppliers.add(() -> {
                                 // old analyzer is not reusable, but it doesn't matter because see the next comment below
-                                SQLCompletionAnalyzer analyzer = new SQLCompletionAnalyzer(request);
+                                SQLCompletionAnalyzer analyzer = SQLCompletionAnalyzerSupport.createLegacyAnalyzer(request, false);
                                 return new ProposalsComputationJobHolder(new ProposalSearchJob(analyzer)) {
                                     @Override
                                     public List<?> getProposals() {

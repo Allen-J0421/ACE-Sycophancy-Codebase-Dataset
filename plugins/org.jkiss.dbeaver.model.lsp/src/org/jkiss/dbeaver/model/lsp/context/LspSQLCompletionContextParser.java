@@ -25,12 +25,11 @@ import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
 import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
 import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
-import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzer;
+import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzerSupport;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionContext;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionRequest;
 import org.jkiss.dbeaver.model.sql.parser.SQLParserContext;
 import org.jkiss.dbeaver.model.sql.parser.SQLScriptParser;
-import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionAnalyzer;
 import org.jkiss.dbeaver.model.sql.semantics.completion.SQLQueryCompletionContextProvider;
 import org.jkiss.dbeaver.runtime.DBWorkbench;
 
@@ -103,7 +102,8 @@ public class LspSQLCompletionContextParser {
         @NotNull SQLCompletionRequest request,
         @NotNull List<CompletionProposalBase> proposals
     ) throws InterruptedException, InvocationTargetException, DBException {
-        SQLQueryCompletionAnalyzer analyzer = new SQLQueryCompletionAnalyzer(
+        proposals.addAll(SQLCompletionAnalyzerSupport.collectSemanticProposals(
+            new VoidProgressMonitor(),
             monitor -> SQLQueryCompletionContextProvider.prepareCompletionContext(
                 monitor,
                 request,
@@ -112,18 +112,17 @@ public class LspSQLCompletionContextParser {
             ),
             request,
             request::getDocumentOffset
-        );
-        analyzer.run(new VoidProgressMonitor());
-        proposals.addAll(analyzer.getResult());
+        ));
     }
 
     private static void collectLegacyCompletionProposals(
         @NotNull SQLCompletionRequest request,
         @NotNull List<CompletionProposalBase> proposals
-    ) {
-        SQLCompletionAnalyzer analyzer = new SQLCompletionAnalyzer(request);
-        analyzer.setCheckNavigatorNodes(false);
-        analyzer.runAnalyzer(new VoidProgressMonitor());
-        proposals.addAll(analyzer.getProposals());
+    ) throws DBException {
+        proposals.addAll(SQLCompletionAnalyzerSupport.collectLegacyProposals(
+            new VoidProgressMonitor(),
+            request,
+            false
+        ));
     }
 }

@@ -86,12 +86,102 @@ public abstract class Animal implements Actor
     /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
-     * 
+     *
+     * This is a template method capturing the life cycle every animal shares
+     * during a step: it ages, gets hungrier, attempts to breed, then either
+     * moves towards food / a free cell or dies from overcrowding. Species
+     * customise the steps through the hooks below rather than reimplementing
+     * the whole skeleton.
+     *
      * @param newAnimals A list to receive newly born animals.
      * @param weather The current weather
      * @param dayState The different state of the day
      */
-    abstract public void act(List<Actor> newAnimals, Weather weather, DayState dayState);
+    public final void act(List<Actor> newAnimals, Weather weather, DayState dayState)
+    {
+        // Some animals (e.g. diurnal predators) do not act at night.
+        if(!actsAtNight() && dayState == DayState.NIGHT) {
+            return;
+        }
+        incrementAge(getMaxAge());
+        incrementHunger();
+        if(!isAlive()) {
+            return;
+        }
+        meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
+        Location newLocation = seekFood();
+        if(newLocation != null) {
+            onFoodFound();
+        }
+        else {
+            // No food found - try to move to a free location.
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        // See if it was possible to move.
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            // Overcrowding.
+            setDead();
+        }
+    }
+
+    /*///////////////////////////////////////////////////////////////
+                            TEMPLATE METHOD HOOKS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * Look for and consume food in an adjacent location, returning the
+     * location moved into to feed. Carnivores and herbivores supply their own
+     * search by overriding this hook.
+     *
+     * @return the location fed at, or null if no food was found.
+     */
+    protected abstract Location seekFood();
+
+    /**
+     * @return the maximum age this species can reach before dying.
+     */
+    protected abstract int getMaxAge();
+
+    /**
+     * @return the minimum age at which this species can start breeding.
+     */
+    protected abstract int getBreedingAge();
+
+    /**
+     * @return the maximum number of offspring produced in a single litter.
+     */
+    protected abstract int getMaxLitterSize();
+
+    /**
+     * Breeding likelihood, possibly adjusted for the current weather.
+     *
+     * @param weather The current weather.
+     * @return the probability of breeding this step.
+     */
+    protected abstract double getBreedingProbability(Weather weather);
+
+    /**
+     * Whether this animal is active during the night. Defaults to true;
+     * nocturnally-inactive species override this to return false.
+     *
+     * @return true if the animal acts at night.
+     */
+    protected boolean actsAtNight()
+    {
+        return true;
+    }
+
+    /**
+     * Hook invoked after {@link #seekFood()} successfully located and consumed
+     * food. Defaults to doing nothing; species that need to react (e.g. to
+     * record statistics) override it.
+     */
+    protected void onFoodFound()
+    {
+    }
     
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.

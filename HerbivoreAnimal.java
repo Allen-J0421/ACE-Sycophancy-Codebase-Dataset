@@ -53,4 +53,20 @@ public abstract class HerbivoreAnimal extends Animal
         }
         return null;
     }
+
+    /**
+     * @return the set of plant types this herbivore grazes on.
+     */
+    protected abstract List<Class<? extends Plant>> getTargetPlants();
+
+    /**
+     * Herbivores feed by grazing on the plants in their target diet.
+     *
+     * @return the location moved into to feed, or null if no plant was found.
+     */
+    @Override
+    protected Location seekFood()
+    {
+        return findFood(getTargetPlants());
+    }
 }

@@ -50,42 +50,29 @@ public class Bear extends CarnivoreAnimal
                             ANIMAL BEHAVIOUR LOGIC
     //////////////////////////////////////////////////////////////*/
     
+    @Override protected int getMaxAge() { return MAX_AGE; }
+
+    @Override protected int getBreedingAge() { return BREEDING_AGE; }
+
+    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    @Override protected List<Class<? extends Animal>> getPreyDiet() { return PREY_DIET; }
+
+    // Bears hibernate, so they do not act at night.
+    @Override protected boolean actsAtNight() { return false; }
+
     /**
-     * Method in charge of the bear's action's during a step. During a step
-     * a bear will age, increase in hunger, seek to mate as well as look for food.
-     * 
-     * @param newBears the new bears to be born in case the sheep succesfully mates.
+     * Bears breed less readily while hibernating through the snow.
      */
-    public void act(List<Actor> newBears, Weather weather, DayState dayState)
+    @Override
+    protected double getBreedingProbability(Weather weather)
     {
-        // Bear will not act at night.
-        if(dayState == DayState.NIGHT) {
-                return;
+        if(weather == Weather.SNOW) {
+            return HIBERNATION_BREEDING_FACTOR * BREEDING_PROBABILITY;
         }
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive()) {
-            if(weather == Weather.SNOW) {
-                meet(newBears, MAX_LITTER_SIZE,HIBERNATION_BREEDING_FACTOR * BREEDING_PROBABILITY, BREEDING_AGE);
-            } else {
-                meet(newBears, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);
-            }       
-            Location newLocation = findFood(PREY_DIET);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {  
-                // Overcrowding.
-                setDead();
-            }
-        }
+        return BREEDING_PROBABILITY;
     }
-    
+
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten.
      * 

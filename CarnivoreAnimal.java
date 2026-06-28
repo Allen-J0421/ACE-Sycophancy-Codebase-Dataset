@@ -45,7 +45,7 @@ public abstract class CarnivoreAnimal extends Animal
      * @return the location traveled to in order to access the food.
      */
     public Location findFood(List<Class<? extends Animal>> preys)
-    {   
+    {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
@@ -57,13 +57,29 @@ public abstract class CarnivoreAnimal extends Animal
                 if(preys.contains(animal.getClass())) {
                     if(animal.isAlive()) {
                         animal.setDead();
-                        
+
                         this.foodLevel = animal.getFeedingValue();
                         return where;
                     }
                 }
             }
         }
-        return null; 
+        return null;
+    }
+
+    /**
+     * @return the set of animal types this carnivore preys upon.
+     */
+    protected abstract List<Class<? extends Animal>> getPreyDiet();
+
+    /**
+     * Carnivores feed by hunting the animals in their prey diet.
+     *
+     * @return the location moved into to feed, or null if no prey was found.
+     */
+    @Override
+    protected Location seekFood()
+    {
+        return findFood(getPreyDiet());
     }
 }

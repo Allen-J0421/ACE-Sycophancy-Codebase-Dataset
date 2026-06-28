@@ -42,35 +42,16 @@ public class Sheep extends HerbivoreAnimal
                             ANIMAL BEHAVIOUR LOGIC
     //////////////////////////////////////////////////////////////*/
     
-    /**
-     * Method in charge of the sheep's action's during a step. During a step,
-     * a sheep will age, increase in hunger, seek to mate as well as look for food.
-     * 
-     * @param newSheeps the new sheeps to be born in case the sheep succesfully mates.
-     */
-    public void act(List<Actor> newSheeps, Weather weather, DayState dayState) 
-    {
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(!isAlive()) {
-            return;
-        }
-        meet(newSheeps, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);
-        Location newLocation = findFood(TARGET_PLANTS);
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.     
-            setDead();
-        }
-    }
-    
+    @Override protected int getMaxAge() { return MAX_AGE; }
+
+    @Override protected int getBreedingAge() { return BREEDING_AGE; }
+
+    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    @Override protected double getBreedingProbability(Weather weather) { return BREEDING_PROBABILITY; }
+
+    @Override protected List<Class<? extends Plant>> getTargetPlants() { return TARGET_PLANTS; }
+
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value

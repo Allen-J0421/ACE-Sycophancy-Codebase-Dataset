@@ -50,41 +50,22 @@ public class CarnivoreFox extends CarnivoreAnimal
                             ANIMAL BEHAVIOUR LOGIC
     //////////////////////////////////////////////////////////////*/
     
-    /**
-     * Method in charge of the fox's action's during a step. During a step
-     * a fox will age, increase in hunger, seek to mate as well as look for food.
-     * 
-     * @param newFoxes the new sheeps to be born in case the sheep succesfully mates.
-     */
-    public void act(List<Actor> newFoxes, Weather weather, DayState dayState)
-    {
-        // Fox will not act at night.
-        if(dayState == DayState.NIGHT) {
-            return;
-        }
-        incrementAge(MAX_AGE);
-        incrementHunger();
-        if(isAlive()) {
-            meet(newFoxes, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);          
-            Location newLocation = findFood(PREY_DIET);
-            if(newLocation != null) {
-                FOUND_FOOD++;
-            }
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-        }
-    }
-    
+    @Override protected int getMaxAge() { return MAX_AGE; }
+
+    @Override protected int getBreedingAge() { return BREEDING_AGE; }
+
+    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+
+    @Override protected double getBreedingProbability(Weather weather) { return BREEDING_PROBABILITY; }
+
+    @Override protected List<Class<? extends Animal>> getPreyDiet() { return PREY_DIET; }
+
+    // Foxes are diurnal hunters and do not act at night.
+    @Override protected boolean actsAtNight() { return false; }
+
+    // Track how often foxes successfully find food.
+    @Override protected void onFoodFound() { FOUND_FOOD++; }
+
     /**
      * Returns the amount by which the hungerlevel would increment by if the animal were to be eaten
      * @return the feeding value

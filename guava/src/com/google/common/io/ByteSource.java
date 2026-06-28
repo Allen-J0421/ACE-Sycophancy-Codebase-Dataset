@@ -210,7 +210,7 @@ public abstract class ByteSource {
     Closer closer = Closer.create();
     try {
       InputStream in = closer.register(openStream());
-      return countBySkipping(in);
+      return skipUpTo(in, Long.MAX_VALUE);
     } catch (IOException e) {
       // skip may not be supported... at any rate, try reading
     } finally {
@@ -226,16 +226,6 @@ public abstract class ByteSource {
     } finally {
       closer.close();
     }
-  }
-
-  /** Counts the bytes in the given input stream using skip if possible. */
-  private static long countBySkipping(InputStream in) throws IOException {
-    long count = 0;
-    long skipped;
-    while ((skipped = skipUpTo(in, Integer.MAX_VALUE)) > 0) {
-      count += skipped;
-    }
-    return count;
   }
 
   /**

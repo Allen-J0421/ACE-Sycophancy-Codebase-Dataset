@@ -5,24 +5,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.android.PackageUtils;
-import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.TermuxConstants;
-import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_TASKER_APP;
-import com.termux.shared.logger.Logger;
 
-public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
-
-    private static final String LOG_TAG = "TermuxTaskerAppSharedPreferences";
+public class TermuxTaskerAppSharedPreferences extends TermuxPackageAppSharedPreferences {
 
     private  TermuxTaskerAppSharedPreferences(@NonNull Context context) {
-        super(context,
-            SharedPreferenceUtils.getPrivateSharedPreferences(context,
-                TermuxConstants.TERMUX_TASKER_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION),
-            SharedPreferenceUtils.getPrivateAndMultiProcessSharedPreferences(context,
-                TermuxConstants.TERMUX_TASKER_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION));
+        super(context, TermuxConstants.TERMUX_TASKER_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION);
     }
 
     /**
@@ -34,11 +24,8 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
      */
     @Nullable
     public static TermuxTaskerAppSharedPreferences build(@NonNull final Context context) {
-        Context termuxTaskerPackageContext = PackageUtils.getContextForPackage(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME);
-        if (termuxTaskerPackageContext == null)
-            return null;
-        else
-            return new TermuxTaskerAppSharedPreferences(termuxTaskerPackageContext);
+        return buildPreferences(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME, false,
+            TermuxTaskerAppSharedPreferences::new);
     }
 
     /**
@@ -51,25 +38,18 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
      * @return Returns the {@link TermuxTaskerAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
     public static  TermuxTaskerAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
-        Context termuxTaskerPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME, exitAppOnError);
-        if (termuxTaskerPackageContext == null)
-            return null;
-        else
-            return new TermuxTaskerAppSharedPreferences(termuxTaskerPackageContext);
+        return buildPreferences(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME, exitAppOnError,
+            TermuxTaskerAppSharedPreferences::new);
     }
 
 
 
     public int getLogLevel(boolean readFromFile) {
-        if (readFromFile)
-            return SharedPreferenceUtils.getInt(mMultiProcessSharedPreferences, TERMUX_TASKER_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-        else
-            return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_TASKER_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
+        return getStoredLogLevel(TERMUX_TASKER_APP.KEY_LOG_LEVEL, readFromFile);
     }
 
     public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        logLevel = Logger.setLogLevel(context, logLevel);
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_TASKER_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
+        setStoredLogLevel(context, TERMUX_TASKER_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
     }
 
 

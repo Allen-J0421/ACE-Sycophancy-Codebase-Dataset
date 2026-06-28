@@ -5,31 +5,14 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.data.DataUtils;
-import com.termux.shared.logger.Logger;
-import com.termux.shared.android.PackageUtils;
-import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
-import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_FLOAT_APP;
 import com.termux.shared.termux.TermuxConstants;
 
-public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
-
-    private int MIN_FONTSIZE;
-    private int MAX_FONTSIZE;
-    private int DEFAULT_FONTSIZE;
-
-    private static final String LOG_TAG = "TermuxFloatAppSharedPreferences";
+public class TermuxFloatAppSharedPreferences extends TermuxFontSizeAppSharedPreferences {
 
     private TermuxFloatAppSharedPreferences(@NonNull Context context) {
-        super(context,
-            SharedPreferenceUtils.getPrivateSharedPreferences(context,
-                TermuxConstants.TERMUX_FLOAT_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION),
-            SharedPreferenceUtils.getPrivateAndMultiProcessSharedPreferences(context,
-                TermuxConstants.TERMUX_FLOAT_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION));
-
-        setFontVariables(context);
+        super(context, TermuxConstants.TERMUX_FLOAT_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION);
     }
 
     /**
@@ -41,11 +24,8 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
      */
     @Nullable
     public static TermuxFloatAppSharedPreferences build(@NonNull final Context context) {
-        Context termuxFloatPackageContext = PackageUtils.getContextForPackage(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME);
-        if (termuxFloatPackageContext == null)
-            return null;
-        else
-            return new TermuxFloatAppSharedPreferences(termuxFloatPackageContext);
+        return buildPreferences(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME, false,
+            TermuxFloatAppSharedPreferences::new);
     }
 
     /**
@@ -58,11 +38,8 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
      * @return Returns the {@link TermuxFloatAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
     public static TermuxFloatAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
-        Context termuxFloatPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME, exitAppOnError);
-        if (termuxFloatPackageContext == null)
-            return null;
-        else
-            return new TermuxFloatAppSharedPreferences(termuxFloatPackageContext);
+        return buildPreferences(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME, exitAppOnError,
+            TermuxFloatAppSharedPreferences::new);
     }
 
 
@@ -105,57 +82,28 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
         SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_FLOAT_APP.KEY_WINDOW_HEIGHT, value, false);
     }
 
-
-
-    public void setFontVariables(Context context) {
-        int[] sizes = TermuxAppSharedPreferences.getDefaultFontSizes(context);
-
-        DEFAULT_FONTSIZE = sizes[0];
-        MIN_FONTSIZE = sizes[1];
-        MAX_FONTSIZE = sizes[2];
-    }
-
-    public int getFontSize() {
-        int fontSize = SharedPreferenceUtils.getIntStoredAsString(mSharedPreferences, TERMUX_FLOAT_APP.KEY_FONTSIZE, DEFAULT_FONTSIZE);
-        return DataUtils.clamp(fontSize, MIN_FONTSIZE, MAX_FONTSIZE);
-    }
-
-    public void setFontSize(int value) {
-        SharedPreferenceUtils.setIntStoredAsString(mSharedPreferences, TERMUX_FLOAT_APP.KEY_FONTSIZE, value, false);
-    }
-
-    public void changeFontSize(boolean increase) {
-        int fontSize = getFontSize();
-
-        fontSize += (increase ? 1 : -1) * 2;
-        fontSize = Math.max(MIN_FONTSIZE, Math.min(fontSize, MAX_FONTSIZE));
-
-        setFontSize(fontSize);
+    @Override
+    protected String getFontSizePreferenceKey() {
+        return TERMUX_FLOAT_APP.KEY_FONTSIZE;
     }
 
 
     public int getLogLevel(boolean readFromFile) {
-        if (readFromFile)
-            return SharedPreferenceUtils.getInt(mMultiProcessSharedPreferences, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-        else
-            return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
+        return getStoredLogLevel(TERMUX_FLOAT_APP.KEY_LOG_LEVEL, readFromFile);
     }
 
     public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        logLevel = Logger.setLogLevel(context, logLevel);
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
+        setStoredLogLevel(context, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
     }
 
 
     public boolean isTerminalViewKeyLoggingEnabled(boolean readFromFile) {
-        if (readFromFile)
-            return SharedPreferenceUtils.getBoolean(mMultiProcessSharedPreferences, TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED, TERMUX_FLOAT_APP.DEFAULT_VALUE_TERMINAL_VIEW_KEY_LOGGING_ENABLED);
-        else
-            return SharedPreferenceUtils.getBoolean(mSharedPreferences, TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED, TERMUX_FLOAT_APP.DEFAULT_VALUE_TERMINAL_VIEW_KEY_LOGGING_ENABLED);
+        return getStoredBoolean(TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED,
+            TERMUX_FLOAT_APP.DEFAULT_VALUE_TERMINAL_VIEW_KEY_LOGGING_ENABLED, readFromFile);
     }
 
     public void setTerminalViewKeyLoggingEnabled(boolean value, boolean commitToFile) {
-        SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED, value, commitToFile);
+        setStoredBoolean(TERMUX_FLOAT_APP.KEY_TERMINAL_VIEW_KEY_LOGGING_ENABLED, value, commitToFile);
     }
 
 }

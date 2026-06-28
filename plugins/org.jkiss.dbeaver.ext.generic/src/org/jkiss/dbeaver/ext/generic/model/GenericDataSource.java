@@ -114,10 +114,10 @@ public class GenericDataSource extends JDBCDataSource implements DBPTermProvider
             this.supportsStructCache = CommonUtils.toBoolean(supportsStructCacheParam);
         }
 
-        if (dialect instanceof JDBCSQLDialect) {
+        if (dialect instanceof JDBCSQLDialect jdbcDialect) {
             final Object supportsSubqueries = getContainer().getDriver().getDriverParameter(GenericConstants.PARAM_SUPPORTS_SUBQUERIES);
             if (supportsSubqueries != null) {
-                ((JDBCSQLDialect) dialect).setSupportsSubqueries(CommonUtils.toBoolean(supportsSubqueries));
+                jdbcDialect.setSupportsSubqueries(CommonUtils.toBoolean(supportsSubqueries));
             }
         }
 
@@ -518,13 +518,16 @@ public class GenericDataSource extends JDBCDataSource implements DBPTermProvider
                         this.schemas.setCaseSensitive(getSQLDialect().storesUnquotedCase() != DBPIdentifierCase.MIXED);
                         this.schemas.setCache(tmpSchemas);
                     }
+                } catch (DBException e) {
+                    if (metaModel.isSchemasOptional()) {
+                        log.warn("Can't read schema list", e);
+                    } else {
+                        throw e;
+                    }
                 } catch (Throwable e) {
                     if (metaModel.isSchemasOptional()) {
                         log.warn("Can't read schema list", e);
                     } else {
-                        if (e instanceof DBException) {
-                            throw (DBException) e;
-                        }
                         throw new DBDatabaseException("Error reading schema list", e, this);
                     }
                 }
@@ -533,10 +536,9 @@ public class GenericDataSource extends JDBCDataSource implements DBPTermProvider
                     this.structureContainer = new GenericDataSourceObjectContainer(this);
                 }
             }
+        } catch (DBException ex) {
+            throw ex;
         } catch (Throwable ex) {
-            if (ex instanceof DBException) {
-                throw (DBException) ex;
-            }
             throw new DBDatabaseException("Error reading metadata", ex, this);
         }
     }
@@ -626,8 +628,8 @@ public class GenericDataSource extends JDBCDataSource implements DBPTermProvider
     @Nullable
     @Override
     public DBCQueryTransformer createQueryTransformer(@NotNull DBCQueryTransformType type) {
-        if (metaModel instanceof DBCQueryTransformProvider) {
-            DBCQueryTransformer transformer = ((DBCQueryTransformProvider) metaModel).createQueryTransformer(type);
+        if (metaModel instanceof DBCQueryTransformProvider qtp) {
+            DBCQueryTransformer transformer = qtp.createQueryTransformer(type);
             if (transformer != null) {
                 return transformer;
             }

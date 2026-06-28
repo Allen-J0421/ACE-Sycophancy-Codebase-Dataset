@@ -75,10 +75,10 @@ public class GenericViewManager extends SQLObjectEditor<GenericTableBase, Generi
 
     @Override
     public boolean canCreateObject(@NotNull Object container) {
-        if (container instanceof DBSObject) {
-            DBPDataSource dataSource = ((DBSObject) container).getDataSource();
-            if (dataSource instanceof GenericDataSource) {
-                return ((GenericDataSource) dataSource).getMetaModel().supportsViews((GenericDataSource) dataSource);
+        if (container instanceof DBSObject dbsObject) {
+            DBPDataSource dataSource = dbsObject.getDataSource();
+            if (dataSource instanceof GenericDataSource gds) {
+                return gds.getMetaModel().supportsViews(gds);
             }
         }
         return super.canCreateObject(container);
@@ -94,8 +94,8 @@ public class GenericViewManager extends SQLObjectEditor<GenericTableBase, Generi
         GenericTableBase viewImpl = structContainer.getDataSource().getMetaModel().createTableOrViewImpl(structContainer, tableName,
                 GenericConstants.TABLE_TYPE_VIEW,
                 null);
-        if (viewImpl instanceof GenericView) {
-            ((GenericView) viewImpl).setObjectDefinitionText("CREATE VIEW " + viewImpl.getFullyQualifiedName(DBPEvaluationContext.DDL) + " AS SELECT 1 as A\n");
+        if (viewImpl instanceof GenericView gv) {
+            gv.setObjectDefinitionText("CREATE VIEW " + viewImpl.getFullyQualifiedName(DBPEvaluationContext.DDL) + " AS SELECT 1 as A\n");
         }
         return viewImpl;
     }

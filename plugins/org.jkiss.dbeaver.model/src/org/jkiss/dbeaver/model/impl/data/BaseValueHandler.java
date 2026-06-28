@@ -47,8 +47,8 @@ public abstract class BaseValueHandler implements DBDValueHandler {
     @Override
     public void releaseValueObject(Object value)
     {
-        if (value instanceof DBDValue) {
-            ((DBDValue)value).release();
+        if (value instanceof DBDValue dbdValue) {
+            dbdValue.release();
         }
     }
 

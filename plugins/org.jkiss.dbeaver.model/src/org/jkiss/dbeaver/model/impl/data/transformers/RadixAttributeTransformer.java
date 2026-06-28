@@ -93,8 +93,8 @@ public class RadixAttributeTransformer implements DBDAttributeTransformer {
         @NotNull
         @Override
         public String getValueDisplayString(@NotNull DBSTypedObject column, @Nullable Object value, @NotNull DBDDisplayFormat format) {
-            if (value instanceof Number) {
-                final long longValue = ((Number) value).longValue();
+            if (value instanceof Number num) {
+                final long longValue = num.longValue();
                 final String strValue;
                 final StringBuilder sb = new StringBuilder();
                 if (unsigned || longValue >= 0) {
@@ -125,8 +125,7 @@ public class RadixAttributeTransformer implements DBDAttributeTransformer {
         @Nullable
         @Override
         public Object getValueFromObject(@NotNull DBCSession session, @NotNull DBSTypedObject type, @Nullable Object object, boolean copy, boolean validateValue) throws DBCException {
-            if (object instanceof String) {
-                String strValue = (String) object;
+            if (object instanceof String strValue) {
                 String strValueSign = "";
                 if (strValue.isEmpty()) {
                     return 0;

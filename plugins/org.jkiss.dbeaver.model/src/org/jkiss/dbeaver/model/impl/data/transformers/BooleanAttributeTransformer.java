@@ -74,8 +74,8 @@ public class BooleanAttributeTransformer implements DBDAttributeTransformer {
         @NotNull
         @Override
         public String getValueDisplayString(@NotNull DBSTypedObject column, @Nullable Object value, @NotNull DBDDisplayFormat format) {
-            if (value instanceof Number) {
-                return Boolean.valueOf(((Number) value).byteValue() != 0).toString();
+            if (value instanceof Number n) {
+                return Boolean.valueOf(n.byteValue() != 0).toString();
             }
             return DBValueFormatting.getDefaultValueDisplayString(value, format);
         }
@@ -83,8 +83,8 @@ public class BooleanAttributeTransformer implements DBDAttributeTransformer {
         @Nullable
         @Override
         public Object getValueFromObject(@NotNull DBCSession session, @NotNull DBSTypedObject type, @Nullable Object object, boolean copy, boolean validateValue) throws DBCException {
-            if (object instanceof Number) {
-                return ((Number) object).byteValue() != 0;
+            if (object instanceof Number n) {
+                return n.byteValue() != 0;
             }
             return super.getValueFromObject(session, type, object, copy, validateValue);
         }

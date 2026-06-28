@@ -30,6 +30,10 @@ final class BinarySearch {
         return indexOf(sortedValues, target);
     }
 
+    static boolean contains(int[] sortedValues, int target) {
+        return isFound(indexOf(sortedValues, target));
+    }
+
     static boolean isFound(int index) {
         return index != NOT_FOUND;
     }

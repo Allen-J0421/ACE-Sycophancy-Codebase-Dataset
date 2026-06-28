@@ -14,8 +14,8 @@ public final class BinarySearchTest {
         };
 
         for (SearchCase searchCase : cases) {
-            assertIndexOf(searchCase);
-            assertCompatibilityMethod(searchCase);
+            assertSearchMethods(searchCase);
+            assertContains(searchCase);
         }
 
         assertFoundFlag();
@@ -23,14 +23,32 @@ public final class BinarySearchTest {
         System.out.println("All binary search tests passed.");
     }
 
-    private static void assertIndexOf(SearchCase searchCase) {
-        int actual = BinarySearch.indexOf(searchCase.values, searchCase.target);
-        assertEquals(searchCase.expectedIndex, actual, "indexOf", searchCase.target);
+    private static void assertSearchMethods(SearchCase searchCase) {
+        assertEquals(
+            searchCase.expectedIndex,
+            BinarySearch.indexOf(searchCase.values, searchCase.target),
+            "indexOf",
+            searchCase.target
+        );
+        assertEquals(
+            searchCase.expectedIndex,
+            BinarySearch.binarySearch(searchCase.values, searchCase.target),
+            "binarySearch",
+            searchCase.target
+        );
     }
 
-    private static void assertCompatibilityMethod(SearchCase searchCase) {
-        int actual = BinarySearch.binarySearch(searchCase.values, searchCase.target);
-        assertEquals(searchCase.expectedIndex, actual, "binarySearch", searchCase.target);
+    private static void assertContains(SearchCase searchCase) {
+        boolean expected = searchCase.expectedIndex != -1;
+        boolean actual = BinarySearch.contains(searchCase.values, searchCase.target);
+
+        if (actual != expected) {
+            throw new AssertionError(
+                "contains expected " + expected
+                    + " for target " + searchCase.target
+                    + " but got " + actual
+            );
+        }
     }
 
     private static void assertFoundFlag() {

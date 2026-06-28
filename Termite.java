@@ -1,5 +1,5 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple model of a termite.
@@ -39,16 +39,5 @@ public class Termite extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,false,true);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this termite act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newTermites A list to return newly born termites.
-     */
-    public void act(List<Actor> newTermites)
-    {
-        super.act(newTermites);
     }
 }

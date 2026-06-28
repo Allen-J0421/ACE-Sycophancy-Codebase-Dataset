@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-
 /**
  * A simple model of star grass.
  *
@@ -29,16 +25,5 @@ public class StarGrass extends Producer
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
               MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-    
-    /**
-     * Make this star grass act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newStarGrass A list to return newly born star grass.
-     */
-    public void act(List<Actor> newStarGrass)
-    {
-        super.act(newStarGrass);
     }
 }

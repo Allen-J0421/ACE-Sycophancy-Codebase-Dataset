@@ -1,7 +1,3 @@
-import java.util.List;
-import java.util.Iterator;
-import java.util.Random;
-
 /**
  * A simple model of an acacia.
  *
@@ -29,16 +25,5 @@ public class Acacia extends Producer
     {
         super(field, location, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
               MAX_BIRTHS_AT_ONCE,MAX_AGE);
-    }
-    
-    /**
-     * Make this acacia act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newAcacia A list to return newly born acacia.
-     */
-    public void act(List<Actor> newAcacia)
-    {
-        super.act(newAcacia);
     }
 }

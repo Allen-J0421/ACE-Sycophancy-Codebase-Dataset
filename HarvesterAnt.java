@@ -1,5 +1,5 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple model of a harvester ant.
@@ -39,16 +39,5 @@ public class HarvesterAnt extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,false,true);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this harvester ant act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newHarvesterAnts A list to return newly born harvester ants.
-     */
-    public void act(List<Actor> newHarvesterAnts)
-    {
-        super.act(newHarvesterAnts);
     }
 }

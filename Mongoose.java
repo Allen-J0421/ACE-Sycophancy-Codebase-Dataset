@@ -1,5 +1,5 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple model of a mongoose.
@@ -39,16 +39,5 @@ public class Mongoose extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,true,false);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this mongoose act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newMongoose A list to return newly born mongoose.
-     */
-    public void act(List<Actor> newMongoose)
-    {
-        super.act(newMongoose);
     }
 }

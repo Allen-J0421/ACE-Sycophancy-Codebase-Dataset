@@ -1,5 +1,5 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple model of a pangolin.
@@ -39,16 +39,5 @@ public class Pangolin extends Consumer
               MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,true,false);
         
         setStartingAge(randomAge);
-    }
-    
-    /**
-     * Make this pangolin act - that is: make it do
-     * whatever it wants/needs to do.
-     * 
-     * @param newPangolins A list to return newly born pangolins.
-     */
-    public void act(List<Actor> newPangolins)
-    {
-        super.act(newPangolins);
     }
 }

@@ -6,7 +6,10 @@ public final class BinarySearch {
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] numbers, int target) {
+    /**
+     * Returns the index of {@code target} in a sorted array, or {@code -1} when absent.
+     */
+    public static int binarySearch(int[] numbers, int target) {
         int low = 0;
         int high = numbers.length - 1;
 

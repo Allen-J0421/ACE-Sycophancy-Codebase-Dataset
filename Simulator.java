@@ -90,9 +90,7 @@ public class Simulator
         view.setColor(Carcass.class, CARCASS_COLOR);
 
         // Show the statistics window:
-        new Thread(() -> {
-            Application.launch(StatisticsView.class);
-        }).start();
+        new Thread(() -> Application.launch(StatisticsView.class)).start();
 
         // Setup a valid starting point:
         reset();
@@ -140,10 +138,7 @@ public class Simulator
         step++;
 
         // Update the weather:
-        if (TimeSystem.hasDayChanged())
-        {
-            WeatherSystem.changeToNextDay();
-        }
+        if (TimeSystem.hasDayChanged()) WeatherSystem.changeToNextDay();
 
         // Provide space for newborn actors:
         List<Actor> newActors = new ArrayList<>();

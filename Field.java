@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,13 +38,7 @@ public class Field
      */
     public void clear()
     {
-        for (int row = 0; row < depth; row++)
-        {
-            for (int col = 0; col < width; col++)
-            {
-                field[row][col] = null;
-            }
-        }
+        for (Object[] row : field) Arrays.fill(row, null);
     }
     
     /**
@@ -99,14 +94,9 @@ public class Field
      */
     public List<Location> getFreeAdjacentLocations(Location searchLocation)
     {
-        // The list of free locations to be returned:
         List<Location> free = new LinkedList<>();
-        
-        List<Location> adjacentLocations = adjacentLocations(searchLocation);
-        
-        for (Location location : adjacentLocations)
+        for (Location location : adjacentLocations(searchLocation))
             if (getObjectAt(location) == null) free.add(location);
-        
         return free;
     }
     
@@ -139,38 +129,30 @@ public class Field
     public List<Location> adjacentLocations(Location location)
     {
         assert location != null : "Null location passed to adjacentLocations";
-        
-        // The list of locations to be returned:
+
         List<Location> locations = new LinkedList<>();
-        
-        if (location != null)
+        int row = location.getRow();
+        int col = location.getCol();
+
+        for (int roffset = -1; roffset <= 1; roffset++)
         {
-            int row = location.getRow();
-            int col = location.getCol();
-            
-            for (int roffset = -1; roffset <= 1; roffset++)
+            int nextRow = row + roffset;
+            if (nextRow >= 0 && nextRow < depth)
             {
-                int nextRow = row + roffset;
-                
-                if (nextRow >= 0 && nextRow < depth)
+                for (int coffset = -1; coffset <= 1; coffset++)
                 {
-                    for (int coffset = -1; coffset <= 1; coffset++)
+                    int nextCol = col + coffset;
+                    // Exclude invalid locations and the original location:
+                    if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0))
                     {
-                        int nextCol = col + coffset;
-                        
-                        // Exclude invalid locations and the original location:
-                        if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0))
-                        {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
+                        locations.add(new Location(nextRow, nextCol));
                     }
                 }
             }
-            
-            // Shuffle the list. Several other methods rely on the list
-            // being in a random order:
-            Collections.shuffle(locations, rand);
         }
+
+        // Shuffle the list. Several other methods rely on the list being in a random order:
+        Collections.shuffle(locations, rand);
         return locations;
     }
 

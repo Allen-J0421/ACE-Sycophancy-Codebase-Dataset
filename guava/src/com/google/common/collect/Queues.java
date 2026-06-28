@@ -26,6 +26,8 @@ import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -48,6 +50,18 @@ import org.jspecify.annotations.Nullable;
 @GwtCompatible
 public final class Queues {
   private Queues() {}
+
+  private static <E, Q extends Collection<E>> Q newQueue(
+      Iterable<? extends E> elements,
+      Supplier<? extends Q> emptyQueueSupplier,
+      Function<Collection<? extends E>, ? extends Q> collectionFactory) {
+    if (elements instanceof Collection) {
+      return collectionFactory.apply((Collection<? extends E>) elements);
+    }
+    Q queue = emptyQueueSupplier.get();
+    Iterables.addAll(queue, elements);
+    return queue;
+  }
 
   // ArrayBlockingQueue
 
@@ -79,12 +93,7 @@ public final class Queues {
    * @since 12.0
    */
   public static <E> ArrayDeque<E> newArrayDeque(Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new ArrayDeque<>((Collection<? extends E>) elements);
-    }
-    ArrayDeque<E> deque = new ArrayDeque<>();
-    Iterables.addAll(deque, elements);
-    return deque;
+    return newQueue(elements, ArrayDeque::new, ArrayDeque::new);
   }
 
   // ConcurrentLinkedQueue
@@ -104,12 +113,7 @@ public final class Queues {
   @GwtIncompatible // ConcurrentLinkedQueue
   public static <E> ConcurrentLinkedQueue<E> newConcurrentLinkedQueue(
       Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new ConcurrentLinkedQueue<>((Collection<? extends E>) elements);
-    }
-    ConcurrentLinkedQueue<E> queue = new ConcurrentLinkedQueue<>();
-    Iterables.addAll(queue, elements);
-    return queue;
+    return newQueue(elements, ConcurrentLinkedQueue::new, ConcurrentLinkedQueue::new);
   }
 
   // LinkedBlockingDeque
@@ -147,12 +151,7 @@ public final class Queues {
   @J2ktIncompatible
   @GwtIncompatible // LinkedBlockingDeque
   public static <E> LinkedBlockingDeque<E> newLinkedBlockingDeque(Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new LinkedBlockingDeque<>((Collection<? extends E>) elements);
-    }
-    LinkedBlockingDeque<E> deque = new LinkedBlockingDeque<>();
-    Iterables.addAll(deque, elements);
-    return deque;
+    return newQueue(elements, LinkedBlockingDeque::new, LinkedBlockingDeque::new);
   }
 
   // LinkedBlockingQueue
@@ -186,12 +185,7 @@ public final class Queues {
   @J2ktIncompatible
   @GwtIncompatible // LinkedBlockingQueue
   public static <E> LinkedBlockingQueue<E> newLinkedBlockingQueue(Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new LinkedBlockingQueue<>((Collection<? extends E>) elements);
-    }
-    LinkedBlockingQueue<E> queue = new LinkedBlockingQueue<>();
-    Iterables.addAll(queue, elements);
-    return queue;
+    return newQueue(elements, LinkedBlockingQueue::new, LinkedBlockingQueue::new);
   }
 
   // LinkedList: see {@link com.google.common.collect.Lists}
@@ -226,12 +220,7 @@ public final class Queues {
   @GwtIncompatible // PriorityBlockingQueue
   public static <E extends Comparable> PriorityBlockingQueue<E> newPriorityBlockingQueue(
       Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new PriorityBlockingQueue<>((Collection<? extends E>) elements);
-    }
-    PriorityBlockingQueue<E> queue = new PriorityBlockingQueue<>();
-    Iterables.addAll(queue, elements);
-    return queue;
+    return newQueue(elements, PriorityBlockingQueue::new, PriorityBlockingQueue::new);
   }
 
   // PriorityQueue
@@ -260,12 +249,7 @@ public final class Queues {
   @SuppressWarnings("rawtypes") // https://github.com/google/guava/issues/989
   public static <E extends Comparable> PriorityQueue<E> newPriorityQueue(
       Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new PriorityQueue<>((Collection<? extends E>) elements);
-    }
-    PriorityQueue<E> queue = new PriorityQueue<>();
-    Iterables.addAll(queue, elements);
-    return queue;
+    return newQueue(elements, PriorityQueue::new, PriorityQueue::new);
   }
 
   // SynchronousQueue

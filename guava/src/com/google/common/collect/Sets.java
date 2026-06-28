@@ -67,6 +67,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
@@ -87,6 +88,18 @@ import org.jspecify.annotations.Nullable;
 @GwtCompatible
 public final class Sets {
   private Sets() {}
+
+  private static <E, S extends Set<E>> S newSet(
+      Iterable<? extends E> elements,
+      Supplier<? extends S> emptySetSupplier,
+      java.util.function.Function<Collection<? extends E>, ? extends S> collectionFactory) {
+    if (elements instanceof Collection) {
+      return collectionFactory.apply((Collection<? extends E>) elements);
+    }
+    S set = emptySetSupplier.get();
+    Iterables.addAll(set, elements);
+    return set;
+  }
 
   /**
    * {@link AbstractSet} substitute without the potentially-quadratic {@code removeAll}
@@ -235,9 +248,7 @@ public final class Sets {
    */
   @SuppressWarnings("NonApiType") // acts as a direct substitute for a constructor call
   public static <E extends @Nullable Object> HashSet<E> newHashSet(Iterable<? extends E> elements) {
-    return (elements instanceof Collection)
-        ? new HashSet<>((Collection<? extends E>) elements)
-        : newHashSet(elements.iterator());
+    return newSet(elements, HashSet::new, HashSet::new);
   }
 
   /**
@@ -348,12 +359,7 @@ public final class Sets {
   @SuppressWarnings("NonApiType") // acts as a direct substitute for a constructor call
   public static <E extends @Nullable Object> LinkedHashSet<E> newLinkedHashSet(
       Iterable<? extends E> elements) {
-    if (elements instanceof Collection) {
-      return new LinkedHashSet<>((Collection<? extends E>) elements);
-    }
-    LinkedHashSet<E> set = new LinkedHashSet<>();
-    Iterables.addAll(set, elements);
-    return set;
+    return newSet(elements, LinkedHashSet::new, LinkedHashSet::new);
   }
 
   /**

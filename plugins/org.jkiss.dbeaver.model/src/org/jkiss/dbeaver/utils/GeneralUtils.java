@@ -184,29 +184,33 @@ public class GeneralUtils {
         if (object instanceof Number) {
             return NumberFormat.getInstance().format(object);
         }
-        Class<?> eClass = object.getClass();
-        if (eClass.isArray()) {
-            if (eClass == byte[].class)
-                return Arrays.toString((byte[]) object);
-            else if (eClass == short[].class)
-                return Arrays.toString((short[]) object);
-            else if (eClass == int[].class)
-                return Arrays.toString((int[]) object);
-            else if (eClass == long[].class)
-                return Arrays.toString((long[]) object);
-            else if (eClass == char[].class)
-                return Arrays.toString((char[]) object);
-            else if (eClass == float[].class)
-                return Arrays.toString((float[]) object);
-            else if (eClass == double[].class)
-                return Arrays.toString((double[]) object);
-            else if (eClass == boolean[].class)
-                return Arrays.toString((boolean[]) object);
-            else { // element is an array of object references
-                return Arrays.deepToString((Object[]) object);
-            }
+        if (object.getClass().isArray()) {
+            return makeArrayDisplayString(object);
         }
         return object;
+    }
+
+    @NotNull
+    private static Object makeArrayDisplayString(@NotNull Object object) {
+        if (object instanceof byte[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof short[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof int[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof long[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof char[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof float[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof double[] array) {
+            return Arrays.toString(array);
+        } else if (object instanceof boolean[] array) {
+            return Arrays.toString(array);
+        } else {
+            return Arrays.deepToString((Object[]) object);
+        }
     }
 
     @Nullable

@@ -33,7 +33,16 @@ public class GeneralUtilsTest extends DBeaverUnitTest {
     public static final String VARIABLE_DAY = "day";
     public static final String VARIABLE_HOUR = "hour";
     public static final String VARIABLE_MINUTE = "minute";
-    
+
+    @Test
+    public void testMakeDisplayStringFormatsArrays() {
+        Assertions.assertEquals("[1, 2, 3]", GeneralUtils.makeDisplayString(new int[]{1, 2, 3}));
+        Assertions.assertEquals("[true, false]", GeneralUtils.makeDisplayString(new boolean[]{true, false}));
+        Assertions.assertEquals(
+            "[[alpha], [beta, gamma]]",
+            GeneralUtils.makeDisplayString(new String[][]{{"alpha"}, {"beta", "gamma"}}));
+    }
+
     @Test
     public void testVariablesSubstitution() {
         @SuppressWarnings("deprecation")
@@ -43,7 +52,7 @@ public class GeneralUtilsTest extends DBeaverUnitTest {
             "${minute}", getVariableValue(VARIABLE_MINUTE, ts),
             "abracadabra${hour}", "abracadabra" + getVariableValue(VARIABLE_HOUR, ts),
             "hour${month}day", "hour" + getVariableValue(VARIABLE_MONTH, ts) + "day",
-            "${year}${year}-${month}${year}-${month}${day}-${day}${month}", 
+            "${year}${year}-${month}${year}-${month}${day}-${day}${month}",
                 getVariableValue(VARIABLE_YEAR, ts) + getVariableValue(VARIABLE_YEAR, ts) + "-"
                 + getVariableValue(VARIABLE_MONTH, ts) + getVariableValue(VARIABLE_YEAR, ts) + "-"
                 + getVariableValue(VARIABLE_MONTH, ts) + getVariableValue(VARIABLE_DAY, ts) + "-"
@@ -56,7 +65,7 @@ public class GeneralUtilsTest extends DBeaverUnitTest {
             Assertions.assertEquals(expectedResult, actualResult);
         }
     }
-    
+
     @NotNull
     private static String getVariableValue(@NotNull String name, @NotNull Date ts) {
         switch (name) {
@@ -73,5 +82,5 @@ public class GeneralUtilsTest extends DBeaverUnitTest {
             default:
                 return name;
         }
-    }   
+    }
 }

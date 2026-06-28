@@ -1,5 +1,4 @@
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * A model of a leopard. Leopards will eat sloths,
@@ -33,21 +32,6 @@ public class Leopard extends Animal
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
                 Leopard.class, FOOD_SOURCES);
-    }
-
-    /**
-     * This is what the leopard does most of the time: it hunts for
-     * sloths. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newLeopards A list to return newly born leopards.
-     */
-    public void act(List<Organism> newLeopards)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            performStandardAct(newLeopards);
-        }
     }
 
     /**

@@ -1,5 +1,4 @@
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * A model of a Sloth. Sloths will eat plants.
@@ -32,20 +31,6 @@ public class Sloth extends InfectableAnimal
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
                 Sloth.class, FOOD_SOURCES);
-    }
-
-    /**
-     * This is what the sloth does most of the time - it runs
-     * around. Sometimes it will breed or die of old age.
-     * @param newsloths A list to return newly born sloths.
-     */
-    public void act(List<Organism> newsloths)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            performInfectableAct(newsloths);
-        }
     }
 
     /**

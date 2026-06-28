@@ -64,12 +64,13 @@ public abstract class InfectableAnimal extends Animal implements Infectable
      *
      * @param newOrganisms A list to receive newborn animals.
      */
-    protected void performInfectableAct(List<Organism> newOrganisms)
+    @Override
+    protected void performAliveActions(List<Organism> newOrganisms)
     {
         illness();
         if (isAlive()) {
             spreadDisease();
-            performStandardAct(newOrganisms);
+            super.performAliveActions(newOrganisms);
         }
     }
 }

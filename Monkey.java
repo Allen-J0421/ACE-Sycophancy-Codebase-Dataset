@@ -1,5 +1,4 @@
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * A model of a monkey. Monkeys will eat plants.
@@ -33,20 +32,6 @@ public class Monkey extends Animal
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
                 Monkey.class, FOOD_SOURCES);
-    }
-
-    /**
-     * This is what the monkey does most of the time - it runs
-     * around. Sometimes it will breed or die of old age.
-     * @param newmonkeys A list to return newly born monkeys.
-     */
-    public void act(List<Organism> newmonkeys)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            performStandardAct(newmonkeys);
-        }
     }
 
     /**

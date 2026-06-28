@@ -123,6 +123,21 @@ public abstract class Animal extends Organism
     }
 
     // Functional methods
+
+    /**
+     * Runs the shared animal lifecycle: age, hunger, then normal movement
+     * and feeding if the animal survives.
+     *
+     * @param newOrganisms A list to receive newborn animals.
+     */
+    public final void act(List<Organism> newOrganisms)
+    {
+        incrementAge();
+        incrementHealth();
+        if(isAlive()) {
+            performAliveActions(newOrganisms);
+        }
+    }
     
     /**
      * Checks if the animal can breed
@@ -168,6 +183,16 @@ public abstract class Animal extends Organism
         else {
             setDead();
         }
+    }
+
+    /**
+     * Hook for subclasses to customize the survival portion of a turn.
+     *
+     * @param newOrganisms A list to receive newborn animals.
+     */
+    protected void performAliveActions(List<Organism> newOrganisms)
+    {
+        performStandardAct(newOrganisms);
     }
     
     /**

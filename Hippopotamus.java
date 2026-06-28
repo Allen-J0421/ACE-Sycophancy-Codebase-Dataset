@@ -1,5 +1,4 @@
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * A model of a hippopotamus. Hippopotamus will eat monkeys and plants,
@@ -33,21 +32,6 @@ public class Hippopotamus extends Animal
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
                 Hippopotamus.class, FOOD_SOURCES);
-    }
-
-    /**
-     * This is what the hippo does most of the time: it hunts for
-     * monkeys and plants. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newHippopotamuss A list to return newly born hippopotamuses.
-     */
-    public void act(List<Organism> newHippopotamuss)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            performStandardAct(newHippopotamuss);
-        }
     }
 
     /**

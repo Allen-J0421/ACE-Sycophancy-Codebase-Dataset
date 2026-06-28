@@ -1,5 +1,4 @@
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * A model of a bear. Bears will eat monkeys,
@@ -33,21 +32,6 @@ public class Bear extends InfectableAnimal
         super(randomAge, field, location, BREEDING_AGE, MAX_AGE,
                 BREEDING_PROBABILITY, MAX_LITTER_SIZE, IS_DIURNAL, MAX_HEALTH,
                 Bear.class, FOOD_SOURCES);
-    }
-
-    /**
-     * This is what the bear does most of the time: it hunts for
-     * monkeys. In the process, it might breed, die of hunger,
-     * or die of old age.
-     * @param newBears A list to return newly born bears.
-     */
-    public void act(List<Organism> newBears)
-    {
-        incrementAge();
-        incrementHealth();
-        if(isAlive()) {
-            performInfectableAct(newBears);
-        }
     }
 
     /**

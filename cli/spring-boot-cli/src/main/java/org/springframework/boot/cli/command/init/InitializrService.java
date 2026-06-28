@@ -125,8 +125,8 @@ class InitializrService {
 		ClassicHttpResponse httpResponse = execute(request, URI.create(serviceUrl), "retrieve help");
 		validateResponse(httpResponse, serviceUrl);
 		HttpEntity httpEntity = httpResponse.getEntity();
-		ContentType contentType = ContentType.create(httpEntity.getContentType());
-		if (contentType.getMimeType().equals("text/plain")) {
+		ContentType contentType = parseContentType(httpEntity.getContentType());
+		if (contentType != null && contentType.getMimeType().equals("text/plain")) {
 			return getContent(httpEntity);
 		}
 		return parseJsonMetadata(httpEntity);
@@ -152,8 +152,7 @@ class InitializrService {
 
 	private ProjectGenerationResponse createResponse(ClassicHttpResponse httpResponse, HttpEntity httpEntity)
 			throws IOException {
-		ProjectGenerationResponse response = new ProjectGenerationResponse(
-				ContentType.create(httpEntity.getContentType()));
+		ProjectGenerationResponse response = new ProjectGenerationResponse(parseContentType(httpEntity.getContentType()));
 		response.setContent(FileCopyUtils.copyToByteArray(httpEntity.getContent()));
 		String fileName = extractFileName(httpResponse.getFirstHeader("Content-Disposition"));
 		if (fileName != null) {
@@ -229,11 +228,15 @@ class InitializrService {
 	}
 
 	private String getContent(HttpEntity entity) throws IOException {
-		ContentType contentType = ContentType.create(entity.getContentType());
-		Charset charset = contentType.getCharset();
+		ContentType contentType = parseContentType(entity.getContentType());
+		Charset charset = (contentType != null) ? contentType.getCharset() : null;
 		charset = (charset != null) ? charset : StandardCharsets.UTF_8;
 		byte[] content = FileCopyUtils.copyToByteArray(entity.getContent());
 		return new String(content, charset);
+	}
+
+	private @Nullable ContentType parseContentType(@Nullable String contentType) {
+		return (contentType != null) ? ContentType.create(contentType) : null;
 	}
 
 	private @Nullable String extractFileName(@Nullable Header header) {

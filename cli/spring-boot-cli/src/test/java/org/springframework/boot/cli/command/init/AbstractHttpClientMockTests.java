@@ -169,7 +169,7 @@ public abstract class AbstractHttpClientMockTests {
 		}
 
 		MockHttpProjectGenerationRequest(@Nullable String contentType, @Nullable String fileName, byte[] content) {
-			this.contentType = (contentType != null) ? contentType : "application/text";
+			this.contentType = contentType;
 			this.fileName = fileName;
 			this.content = content;
 		}

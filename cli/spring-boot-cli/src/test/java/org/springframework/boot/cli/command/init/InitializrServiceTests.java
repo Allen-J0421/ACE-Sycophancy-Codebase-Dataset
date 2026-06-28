@@ -75,6 +75,14 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
+	void generateProjectNoContentType() throws Exception {
+		ProjectGenerationRequest request = new ProjectGenerationRequest();
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(null, "foo.zip");
+		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
+		assertProjectEntity(entity, null, "foo.zip");
+	}
+
+	@Test
 	void generateProjectBadRequest() throws Exception {
 		String jsonMessage = "Unknown dependency foo:bar";
 		mockProjectGenerationError(400, jsonMessage);

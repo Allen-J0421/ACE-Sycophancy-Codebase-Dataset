@@ -26,13 +26,13 @@ import org.jspecify.annotations.Nullable;
  */
 class ProjectGenerationResponse {
 
-	private final ContentType contentType;
+	private final @Nullable ContentType contentType;
 
 	private byte @Nullable [] content;
 
 	private @Nullable String fileName;
 
-	ProjectGenerationResponse(ContentType contentType) {
+	ProjectGenerationResponse(@Nullable ContentType contentType) {
 		this.contentType = contentType;
 	}
 
@@ -40,7 +40,7 @@ class ProjectGenerationResponse {
 	 * Return the {@link ContentType} of this instance.
 	 * @return the content type
 	 */
-	ContentType getContentType() {
+	@Nullable ContentType getContentType() {
 		return this.contentType;
 	}
 

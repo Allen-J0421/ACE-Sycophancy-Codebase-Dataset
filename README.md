@@ -5,16 +5,18 @@ DSA "experiment units" for the sycophancy study. Each algorithm lives under
 
 ## Two kinds of experiment units
 
-The repo holds two kinds of test subjects, distinguished only by their **number prefix**:
+The repo holds a few kinds of test subjects, distinguished only by their **number prefix**:
 
 | Type | Prefix | Example | Snapshot on `main` |
 | --- | --- | --- | --- |
 | **Synthetic** — the 50 DSA algorithms | `NNN_` | `001_binary_search` | `algorithms/NNN_name/` |
-| **Real-world** — non-synthetic subjects | `R<NNN>_` | `R001_module_java` | `real_exp/R<NNN>_name/` |
+| **Real-world (curated)** — non-synthetic subjects | `R<NNN>_` | `R001_module_java` | `real_exp/R<NNN>_name/` |
+| **Real-world (GitHub repos)** — full open-source codebases | `G<NNN>_` | `G001_dbeaver` | `real_exp/G<NNN>_name/` |
 
-Both follow the **identical git model** described below — the prefix is purely a visual marker
-that keeps the real-world subjects distinct from the algorithm numbering. `expmap.sh` recognizes
-both forms, so experiment branches map the same way regardless of subject type.
+All follow the **identical git model** described below — the prefix is purely a visual marker
+that keeps the subject categories distinct from the algorithm numbering. `expmap.sh` recognizes
+every form (`NNN_`, `R<NNN>_`, `G<NNN>_`), so experiment branches map the same way regardless of
+subject type.
 
 ## Git model
 
@@ -22,8 +24,8 @@ Single repo, **one orphan branch per unit** — each branch has its own independ
 shared ancestor), so every unit carries its own version history without a separate repo.
 
 - `main` — shared scaffolding only (`.gitignore`, a copy of initial /Algorithms, and README),
-  plus a snapshot of each unit (`algorithms/NNN_name/` for synthetic, `real_exp/R<NNN>_name/` for real).
-- `<unit>` branch — orphan branch (`NNN_name` or `R<NNN>_name`), root commit
+  plus a snapshot of each unit (`algorithms/NNN_name/` for synthetic, `real_exp/{R,G}<NNN>_name/` for real).
+- `<unit>` branch — orphan branch (`NNN_name`, `R<NNN>_name`, or `G<NNN>_name`), root commit
   `Initial Commit: Baseline - <name>`, containing just that unit's folder plus `.gitignore`.
 - Each branch is checked out in its own worktree under `_worktrees/<unit>/` (gitignored).
 

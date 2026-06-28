@@ -32,7 +32,7 @@ algo_of() {
   [ -n "${root:-}" ] || root=$(git rev-list --max-parents=0 "origin/$1" 2>/dev/null | tail -1) || true
   [ -n "${root:-}" ] || return 0
   git for-each-ref --points-at "$root" --format='%(refname:short)' "${REFSCOPE[@]}" \
-    | norm | grep -E '^(R?[0-9]{3})_' | sort -u | head -1 || true
+    | norm | grep -E '^([RG]?[0-9]{3})_' | sort -u | head -1 || true
 }
 
 # all experiment branch refs (full short-names, e.g. "origin/claude-exp/...").

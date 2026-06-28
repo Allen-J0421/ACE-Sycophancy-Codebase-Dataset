@@ -1,29 +1,61 @@
-class BinarySearch {
-    static int binarySearch(int arr[], int x) {
-        int low = 0, high = arr.length - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
+final class BinarySearch {
+    private static final int NOT_FOUND = -1;
 
-            if (arr[mid] == x)
-                return mid;
-
-            if (arr[mid] < x)
-                low = mid + 1;
-
-            else
-                high = mid - 1;
-        }
-
-        return -1;
+    private BinarySearch() {
     }
 
-    public static void main(String args[]) {
-        int arr[] = { 2, 3, 4, 10, 40 };
-        int x = 10;
-        int result = binarySearch(arr, x);
-        if (result == -1)
-            System.out.println("Element is not present in array");
-        else
+    static int indexOf(int[] values, int target) {
+        int low = 0;
+        int high = values.length - 1;
+
+        while (low <= high) {
+            int mid = midpoint(low, high);
+            int candidate = values[mid];
+
+            if (candidate == target) {
+                return mid;
+            }
+
+            if (candidate < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        return NOT_FOUND;
+    }
+
+    static int binarySearch(int[] values, int target) {
+        return indexOf(values, target);
+    }
+
+    static boolean isFound(int index) {
+        return index != NOT_FOUND;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
+    public static void main(String[] args) {
+        BinarySearchDemo.run();
+    }
+}
+
+final class BinarySearchDemo {
+    private BinarySearchDemo() {
+    }
+
+    static void run() {
+        int[] values = {2, 3, 4, 10, 40};
+        int target = 10;
+        int result = BinarySearch.indexOf(values, target);
+
+        if (BinarySearch.isFound(result)) {
             System.out.println("Element is present at index " + result);
+        } else {
+            System.out.println("Element is not present in array");
+        }
     }
 }

@@ -70,25 +70,33 @@ final class RotationAwareReuseStrategy implements ConnectionReuseStrategy {
         if (!fallback.keepAlive(response, context)) {
             return false;
         }
+        return keepAliveForRotationEpoch(context);
+    }
+
+    private boolean keepAliveForRotationEpoch(HttpContext context) {
         final Object connObj = context.getAttribute(HttpCoreContext.HTTP_CONNECTION);
-        if (connObj instanceof ManagedNHttpClientConnection conn) {
-            final Object stamped = conn.getIOSession().getAttribute(ReloadableSchemeIoSessionStrategy.ROTATION_EPOCH_ATTR);
-            if (stamped instanceof Integer stampedEpoch) {
-                final int currentEpoch = strategy.currentEpoch();
-                if (stampedEpoch == currentEpoch) {
-                    return true;
-                }
-                logger.debug(
-                    "retiring workload-identity HTTP connection: stamped epoch [{}] differs from current [{}]",
-                    stampedEpoch,
-                    currentEpoch
-                );
-                return false;
-            }
-            // Unstamped connection — not ours to manage, leave it alone (defer to fallback).
+        if (connObj instanceof ManagedNHttpClientConnection conn == false) {
+            // No managed connection in context (defensive) — defer to fallback's "keep".
             return true;
         }
-        // No managed connection in context (defensive) — defer to fallback's "keep".
+        final Object stamped = conn.getIOSession().getAttribute(ReloadableSchemeIoSessionStrategy.ROTATION_EPOCH_ATTR);
+        if (stamped instanceof Integer stampedEpoch) {
+            return keepAliveForStampedEpoch(stampedEpoch);
+        }
+        // Unstamped connection — not ours to manage, leave it alone (defer to fallback).
         return true;
+    }
+
+    private boolean keepAliveForStampedEpoch(int stampedEpoch) {
+        final int currentEpoch = strategy.currentEpoch();
+        if (stampedEpoch == currentEpoch) {
+            return true;
+        }
+        logger.debug(
+            "retiring workload-identity HTTP connection: stamped epoch [{}] differs from current [{}]",
+            stampedEpoch,
+            currentEpoch
+        );
+        return false;
     }
 }

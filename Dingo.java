@@ -62,56 +62,33 @@ public class Dingo extends Animal
      * @return where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        if (getFog()){
-            if (rand.nextInt(2) == 0) {
-                Field field = getField();
-                List<Location> adjacent = field.adjacentLocations(getLocation());
-                Iterator<Location> it = adjacent.iterator();
-                while (it.hasNext()) {
-                    Location where = it.next();
-                    Object animal = field.getObjectAt(where);
-                    if (animal instanceof Snake) {
-                        Snake snake = (Snake) animal;
-                        if (snake.isAlive()) {
-                            snake.setDead();
-                            setFoodLevel(SNAKE_FOOD_VALUE);
-                            return where;
-                        }
-                    } else if (animal instanceof Plant) {
-                        Plant plant = (Plant) animal;
-                        if (plant.isAlive()) {
-                            plant.setDead();
-                            return where;
-                        }
-                    }
-                }
-            }
+        // In fog a dingo only manages to hunt half of the time; otherwise it
+        // always searches its surroundings.
+        if (getFog() && rand.nextInt(2) != 0) {
             return null;
         }
-        else {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while (it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if (animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if (snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant){
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if (animal instanceof Snake) {
+                Snake snake = (Snake) animal;
+                if (snake.isAlive()) {
+                    snake.setDead();
+                    setFoodLevel(SNAKE_FOOD_VALUE);
+                    return where;
                 }
             }
-            return null;
+            else if (animal instanceof Plant) {
+                Plant plant = (Plant) animal;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    return where;
+                }
+            }
         }
+        return null;
     }
 }

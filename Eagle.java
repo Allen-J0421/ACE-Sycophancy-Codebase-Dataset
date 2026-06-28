@@ -66,71 +66,39 @@ public class Eagle extends Animal
      * @return Where food was found, or null if it wasn't.
      */
     protected Location findFood() {
-        if (getFog() && (rand.nextInt(2) == 0)) {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while(it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if(animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if(snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if(animal instanceof Rat) {
-                    Rat rat = (Rat) animal;
-                    if(rat.isAlive()) {
-                        rat.setDead();
-                        setFoodLevel(RAT_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant) {
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
+        // NOTE: the eagle searches whether or not there is fog. The previous
+        // fog/non-fog branches ran the identical search, so fog had no effect
+        // on the outcome; the redundant branch has been removed.
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            Object animal = field.getObjectAt(where);
+            if (animal instanceof Snake) {
+                Snake snake = (Snake) animal;
+                if (snake.isAlive()) {
+                    snake.setDead();
+                    setFoodLevel(SNAKE_FOOD_VALUE);
+                    return where;
                 }
             }
-            return null;
-        }
-        else {
-            Field field = getField();
-            List<Location> adjacent = field.adjacentLocations(getLocation());
-            Iterator<Location> it = adjacent.iterator();
-            while (it.hasNext()) {
-                Location where = it.next();
-                Object animal = field.getObjectAt(where);
-                if (animal instanceof Snake) {
-                    Snake snake = (Snake) animal;
-                    if (snake.isAlive()) {
-                        snake.setDead();
-                        setFoodLevel(SNAKE_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if(animal instanceof Rat) {
-                    Rat rat = (Rat) animal;
-                    if(rat.isAlive()) {
-                        rat.setDead();
-                        setFoodLevel(RAT_FOOD_VALUE);
-                        return where;
-                    }
-                }
-                else if (animal instanceof Plant){
-                    Plant plant = (Plant) animal;
-                    if(plant.isAlive()) {
-                        plant.setDead();
-                        return where;
-                    }
+            else if (animal instanceof Rat) {
+                Rat rat = (Rat) animal;
+                if (rat.isAlive()) {
+                    rat.setDead();
+                    setFoodLevel(RAT_FOOD_VALUE);
+                    return where;
                 }
             }
-            return null;
+            else if (animal instanceof Plant) {
+                Plant plant = (Plant) animal;
+                if (plant.isAlive()) {
+                    plant.setDead();
+                    return where;
+                }
+            }
         }
+        return null;
     }
 }

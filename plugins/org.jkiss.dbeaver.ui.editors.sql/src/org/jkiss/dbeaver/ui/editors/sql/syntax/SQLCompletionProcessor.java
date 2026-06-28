@@ -29,12 +29,11 @@ import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.Log;
 import org.jkiss.dbeaver.model.DBPDataSource;
 import org.jkiss.dbeaver.model.exec.DBExecUtils;
-import org.jkiss.dbeaver.model.impl.sql.BasicSQLDialect;
 import org.jkiss.dbeaver.model.preferences.DBPPreferenceStore;
 import org.jkiss.dbeaver.model.runtime.AbstractJob;
 import org.jkiss.dbeaver.model.runtime.DBRProgressMonitor;
 import org.jkiss.dbeaver.model.runtime.DBRRunnableParametrized;
-import org.jkiss.dbeaver.model.sql.SQLCompletionMode;
+import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
 import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionActivityTracker;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzer;
@@ -177,17 +176,13 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                     DBPDataSource dataSource = editor.getDataSource();
 
                     DBPPreferenceStore store = this.editor.getActivePreferenceStore();
-                    SQLCompletionMode mode = SQLCompletionMode.fromPreferences(store);
-                    boolean useNewCompletionEngine = mode.usesSemanticAnalyzer()
-                        && store.getBoolean(SQLPreferenceConstants.ADVANCED_HIGHLIGHTING_ENABLE)
-                        && store.getBoolean(SQLPreferenceConstants.READ_METADATA_FOR_SEMANTIC_ANALYSIS)
-                        && dataSource != null && dataSource.getSQLDialect() instanceof BasicSQLDialect;
+                    SQLCompletionEngineDecider.Decision engineDecision = SQLCompletionEngineDecider.resolve(store, dataSource);
 
                     // UIUtils.waitJobCompletion(..) uses job.isFinished() which is not dropped on reschedule,
                     // so we should be able to recreate the whole job object including all its non-reusable dependencies.
                     List<Supplier<ProposalsComputationJobHolder>> completionJobSuppliers = new ArrayList<>();
 
-                    if (useNewCompletionEngine) {
+                    if (engineDecision.semanticEnabled()) {
                         // new analyzer is reusable
                         SQLEditorQueryCompletionAnalyzer newAnalyzer = new SQLEditorQueryCompletionAnalyzer(
                             monitor -> this.editor.obtainCompletionContext(monitor, completionRequestPosition),
@@ -207,7 +202,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                         });
                     }
 
-                    if ((request.getWordPart() != null && mode.usesLegacyAnalyzer()) || !useNewCompletionEngine) {
+                    if (engineDecision.legacyEnabled() && (!engineDecision.legacyRequiresWordPart() || request.getWordPart() != null)) {
                         if (dataSource != null) {
                             completionJobSuppliers.add(() -> {
                                 // old analyzer is not reusable, but it doesn't matter because see the next comment below

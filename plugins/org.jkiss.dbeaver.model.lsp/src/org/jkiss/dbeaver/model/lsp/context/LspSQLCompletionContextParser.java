@@ -20,8 +20,9 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.lsp4j.CompletionItem;
 import org.jkiss.code.NotNull;
 import org.jkiss.dbeaver.DBException;
+import org.jkiss.dbeaver.model.DBPDataSource;
 import org.jkiss.dbeaver.model.runtime.VoidProgressMonitor;
-import org.jkiss.dbeaver.model.sql.SQLCompletionMode;
+import org.jkiss.dbeaver.model.sql.SQLCompletionEngineDecider;
 import org.jkiss.dbeaver.model.sql.SQLScriptElement;
 import org.jkiss.dbeaver.model.sql.completion.CompletionProposalBase;
 import org.jkiss.dbeaver.model.sql.completion.SQLCompletionAnalyzer;
@@ -78,16 +79,22 @@ public class LspSQLCompletionContextParser {
         @NotNull SQLCompletionRequest request
     ) throws InterruptedException, InvocationTargetException, DBException {
         List<CompletionProposalBase> proposals = new ArrayList<>();
-        if (useLegacyCompletionEngine()) {
-            collectLegacyCompletionProposals(request, proposals);
-        } else {
+        SQLCompletionEngineDecider.Decision engineDecision = resolveCompletionEngines(document.getDataSource());
+        if (engineDecision.semanticEnabled()) {
             collectSemanticCompletionProposals(document, offset, request, proposals);
+        }
+        if (engineDecision.legacyEnabled() && (!engineDecision.legacyRequiresWordPart() || request.getWordPart() != null)) {
+            collectLegacyCompletionProposals(request, proposals);
         }
         return proposals;
     }
 
-    private static boolean useLegacyCompletionEngine() {
-        return !SQLCompletionMode.fromPreferences(DBWorkbench.getPlatform().getPreferenceStore()).usesSemanticAnalyzer();
+    @NotNull
+    private static SQLCompletionEngineDecider.Decision resolveCompletionEngines(@NotNull DBPDataSource dataSource) {
+        return SQLCompletionEngineDecider.resolve(
+            DBWorkbench.getPlatform().getPreferenceStore(),
+            dataSource
+        );
     }
 
     private static void collectSemanticCompletionProposals(

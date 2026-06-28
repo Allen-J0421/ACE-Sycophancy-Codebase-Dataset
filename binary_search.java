@@ -22,7 +22,7 @@ final class BinarySearch {
                 return midpoint;
             }
 
-            if (isBeforeTarget(value, target)) {
+            if (value < target) {
                 low = midpoint + 1;
             } else {
                 high = midpoint - 1;
@@ -40,10 +40,6 @@ final class BinarySearch {
         if (sortedValues == null) {
             throw new IllegalArgumentException("sortedValues must not be null");
         }
-    }
-
-    private static boolean isBeforeTarget(int value, int target) {
-        return value < target;
     }
 
     public static void main(String[] args) {

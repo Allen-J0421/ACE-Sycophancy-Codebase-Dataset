@@ -2,6 +2,8 @@ final class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
+    private static final int[] DEMO_VALUES = { 2, 3, 4, 10, 40 };
+    private static final int DEMO_TARGET = 10;
 
     private BinarySearch() {
     }
@@ -37,9 +39,7 @@ final class BinarySearch {
     }
 
     private static void runDemo() {
-        int[] values = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(values, target);
+        int result = binarySearch(DEMO_VALUES, DEMO_TARGET);
 
         printSearchResult(result);
     }

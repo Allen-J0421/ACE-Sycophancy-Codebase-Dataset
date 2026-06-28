@@ -26,6 +26,8 @@ import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.activity.media.AppCompatActivityUtils;
 import com.termux.shared.theme.NightMode;
 
+import java.util.function.Supplier;
+
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
@@ -59,54 +61,36 @@ public class SettingsActivity extends AppCompatActivity {
             if (context == null) return;
 
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
-
-            new Thread() {
-                @Override
-                public void run() {
-                    configureTermuxAPIPreference(context);
-                    configureTermuxFloatPreference(context);
-                    configureTermuxTaskerPreference(context);
-                    configureTermuxWidgetPreference(context);
-                    configureAboutPreference(context);
-                    configureDonatePreference(context);
-                }
-            }.start();
+            configureTermuxAPIPreference(context);
+            configureTermuxFloatPreference(context);
+            configureTermuxTaskerPreference(context);
+            configureTermuxWidgetPreference(context);
+            configureAboutPreference(context);
+            configureDonatePreference(context);
         }
 
         private void configureTermuxAPIPreference(@NonNull Context context) {
-            Preference termuxAPIPreference = findPreference("termux_api");
-            if (termuxAPIPreference != null) {
-                TermuxAPIAppSharedPreferences preferences = TermuxAPIAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxAPIPreference.setVisible(preferences != null);
-            }
+            configurePackagePreference("termux_api", () -> TermuxAPIAppSharedPreferences.build(context, false));
         }
 
         private void configureTermuxFloatPreference(@NonNull Context context) {
-            Preference termuxFloatPreference = findPreference("termux_float");
-            if (termuxFloatPreference != null) {
-                TermuxFloatAppSharedPreferences preferences = TermuxFloatAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxFloatPreference.setVisible(preferences != null);
-            }
+            configurePackagePreference("termux_float", () -> TermuxFloatAppSharedPreferences.build(context, false));
         }
 
         private void configureTermuxTaskerPreference(@NonNull Context context) {
-            Preference termuxTaskerPreference = findPreference("termux_tasker");
-            if (termuxTaskerPreference != null) {
-                TermuxTaskerAppSharedPreferences preferences = TermuxTaskerAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxTaskerPreference.setVisible(preferences != null);
-            }
+            configurePackagePreference("termux_tasker", () -> TermuxTaskerAppSharedPreferences.build(context, false));
         }
 
         private void configureTermuxWidgetPreference(@NonNull Context context) {
-            Preference termuxWidgetPreference = findPreference("termux_widget");
-            if (termuxWidgetPreference != null) {
-                TermuxWidgetAppSharedPreferences preferences = TermuxWidgetAppSharedPreferences.build(context, false);
-                // If failed to get app preferences, then likely app is not installed, so do not show its preference
-                termuxWidgetPreference.setVisible(preferences != null);
-            }
+            configurePackagePreference("termux_widget", () -> TermuxWidgetAppSharedPreferences.build(context, false));
+        }
+
+        private void configurePackagePreference(@NonNull String preferenceKey, @NonNull Supplier<?> preferencesSupplier) {
+            Preference preference = findPreference(preferenceKey);
+            if (preference == null) return;
+
+            // If failed to get app preferences, then likely the plugin is not installed, so hide its entry.
+            preference.setVisible(preferencesSupplier.get() != null);
         }
 
         private void configureAboutPreference(@NonNull Context context) {

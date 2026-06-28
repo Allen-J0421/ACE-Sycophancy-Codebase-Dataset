@@ -1,49 +1,24 @@
 package com.termux.app.fragments.settings;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
-import com.termux.shared.termux.settings.preferences.TermuxFloatAppSharedPreferences;
+import com.termux.app.fragments.settings.base.TermuxPreferenceFragment;
 
 @Keep
-public class TermuxFloatPreferencesFragment extends PreferenceFragmentCompat {
+public class TermuxFloatPreferencesFragment extends TermuxPreferenceFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
-
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(TermuxFloatPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_float_preferences, rootKey);
+    protected int getPreferencesResourceId() {
+        return R.xml.termux_float_preferences;
     }
 
-}
-
-class TermuxFloatPreferencesDataStore extends PreferenceDataStore {
-
-    private final Context mContext;
-    private final TermuxFloatAppSharedPreferences mPreferences;
-
-    private static TermuxFloatPreferencesDataStore mInstance;
-
-    private TermuxFloatPreferencesDataStore(Context context) {
-        mContext = context;
-        mPreferences = TermuxFloatAppSharedPreferences.build(context, true);
+    @Override
+    protected PreferenceDataStore createPreferenceDataStore(@NonNull Context context) {
+        return null;
     }
-
-    public static synchronized TermuxFloatPreferencesDataStore getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new TermuxFloatPreferencesDataStore(context);
-        }
-        return mInstance;
-    }
-
 }

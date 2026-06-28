@@ -107,7 +107,7 @@ public abstract class Animal implements Actor
             return;
         }
         meet(newAnimals, getMaxLitterSize(), getBreedingProbability(weather), getBreedingAge());
-        Location newLocation = seekFood();
+        Location newLocation = findFood();
         if(newLocation != null) {
             onFoodFound();
         }
@@ -130,13 +130,37 @@ public abstract class Animal implements Actor
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * Look for and consume food in an adjacent location, returning the
-     * location moved into to feed. Carnivores and herbivores supply their own
-     * search by overriding this hook.
+     * Look for food in the adjacent locations, consuming and moving onto the
+     * first edible thing found. The search skeleton is shared; carnivores and
+     * herbivores differ only in what counts as food and how it is consumed,
+     * which they supply by overriding {@link #eatAt(Location)}.
      *
      * @return the location fed at, or null if no food was found.
      */
-    protected abstract Location seekFood();
+    protected Location findFood()
+    {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while(it.hasNext()) {
+            Location where = it.next();
+            if(eatAt(where)) {
+                return where;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Attempt to consume food at the given adjacent location. Implementations
+     * inspect the location, and if it holds something this animal can and
+     * does eat, update this animal's food level, remove the food and return
+     * true.
+     *
+     * @param where the adjacent location to inspect.
+     * @return true if food was found and consumed, false otherwise.
+     */
+    protected abstract boolean eatAt(Location where);
 
     /**
      * @return the maximum age this species can reach before dying.
@@ -173,7 +197,7 @@ public abstract class Animal implements Actor
     }
 
     /**
-     * Hook invoked after {@link #seekFood()} successfully located and consumed
+     * Hook invoked after {@link #findFood()} successfully located and consumed
      * food. Defaults to doing nothing; species that need to react (e.g. to
      * record statistics) override it.
      */

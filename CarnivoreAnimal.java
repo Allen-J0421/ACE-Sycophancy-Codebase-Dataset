@@ -39,47 +39,32 @@ public abstract class CarnivoreAnimal extends Animal
     }
     
     /**
-     * Seek for the food in adjacent locations that are of type of plant.
-     * 
-     * @param preys The preys of the animal.
-     * @return the location traveled to in order to access the food.
-     */
-    public Location findFood(List<Class<? extends Animal>> preys)
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object obj = field.getObjectAt(where);
-            if(obj instanceof Animal) {
-                Animal animal = (Animal) obj;
-                if(preys.contains(animal.getClass())) {
-                    if(animal.isAlive()) {
-                        animal.setDead();
-
-                        this.foodLevel = animal.getFeedingValue();
-                        return where;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * @return the set of animal types this carnivore preys upon.
      */
     protected abstract List<Class<? extends Animal>> getPreyDiet();
 
     /**
-     * Carnivores feed by hunting the animals in their prey diet.
+     * Carnivores feed by hunting a live animal of their prey diet at the
+     * given location.
      *
-     * @return the location moved into to feed, or null if no prey was found.
+     * @param where the adjacent location to inspect.
+     * @return true if prey was found and eaten.
      */
     @Override
-    protected Location seekFood()
+    protected boolean eatAt(Location where)
     {
-        return findFood(getPreyDiet());
+        Object obj = getField().getObjectAt(where);
+        if(obj instanceof Animal) {
+            Animal animal = (Animal) obj;
+            if(getPreyDiet().contains(animal.getClass())) {
+                if(animal.isAlive()) {
+                    animal.setDead();
+
+                    this.foodLevel = animal.getFeedingValue();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

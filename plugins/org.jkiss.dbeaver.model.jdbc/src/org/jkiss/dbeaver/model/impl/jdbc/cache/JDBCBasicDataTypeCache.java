@@ -80,10 +80,9 @@ public class JDBCBasicDataTypeCache<OWNER extends DBSObject, OBJECT extends JDBC
         return makeDataType(dbResult, name, valueType);
     }
 
-    @SuppressWarnings("unchecked")
     @NotNull
     protected OBJECT makeDataType(@NotNull JDBCResultSet dbResult, String name, int valueType) {
-        return (OBJECT) new JDBCDataType(
+        return makeDataType(
             this.owner,
             valueType,
             name,

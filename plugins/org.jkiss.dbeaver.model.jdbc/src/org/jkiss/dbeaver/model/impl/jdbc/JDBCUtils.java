@@ -858,7 +858,7 @@ public class JDBCUtils {
         } else if (value instanceof Integer) {
             return Types.INTEGER;
         } else if (value instanceof Long) {
-            return Types.SMALLINT;
+            return Types.BIGINT;
         } else if (value instanceof Float) {
             return Types.FLOAT;
         } else if (value instanceof Double) {
@@ -884,6 +884,7 @@ public class JDBCUtils {
             case Types.TINYINT -> "TINYINT";
             case Types.INTEGER -> "INTEGER";
             case Types.SMALLINT -> "SMALLINT";
+            case Types.BIGINT -> "BIGINT";
             case Types.FLOAT -> "FLOAT";
             case Types.DOUBLE -> "DOUBLE";
             case Types.DATE -> "DATE";

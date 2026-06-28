@@ -284,7 +284,7 @@ public class SQLQueryCompletionTextProvider implements SQLQueryCompletionItemVis
     @Nullable
     @Override
     public String visitBuiltinFunction(@NotNull SQLBuiltinFunctionCompletionItem function) {
-        return function.name + "()";
+        return function.text + "()";
     }
 
     @Nullable

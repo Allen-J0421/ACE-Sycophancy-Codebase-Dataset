@@ -379,12 +379,19 @@ public abstract class SQLQueryCompletionItem {
         }
     }
     
-    public static class SQLReservedWordCompletionItem extends SQLQueryCompletionItem {
+    public abstract static class SQLTextCompletionItem extends SQLQueryCompletionItem {
+        @NotNull
         public final String text;
 
-        SQLReservedWordCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String text) {
+        SQLTextCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String text) {
             super(score, filterKey);
             this.text = text;
+        }
+    }
+
+    public static class SQLReservedWordCompletionItem extends SQLTextCompletionItem {
+        SQLReservedWordCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String text) {
+            super(score, filterKey, text);
         }
     
         @NotNull
@@ -399,8 +406,7 @@ public abstract class SQLQueryCompletionItem {
         }
     }
 
-    public static class SQLSpecialTextCompletionItem extends SQLQueryCompletionItem {
-        public final String text;
+    public static class SQLSpecialTextCompletionItem extends SQLTextCompletionItem {
         public final String description;
 
         SQLSpecialTextCompletionItem(
@@ -409,8 +415,7 @@ public abstract class SQLQueryCompletionItem {
             @NotNull String text,
             @Nullable String description
         ) {
-            super(score, filterKey);
-            this.text = text;
+            super(score, filterKey, text);
             this.description = description;
         }
 
@@ -550,14 +555,10 @@ public abstract class SQLQueryCompletionItem {
     public record ContextObjectInfo(@NotNull String string, @NotNull DBSObject object, boolean preventFullName) {
     }
 
-    public static class SQLBuiltinFunctionCompletionItem extends SQLQueryCompletionItem {
-
-        @NotNull
-        public final String name;
+    public static class SQLBuiltinFunctionCompletionItem extends SQLTextCompletionItem {
 
         private SQLBuiltinFunctionCompletionItem(int score, @NotNull SQLQueryWordEntry filterKey, @NotNull String name) {
-            super(score, filterKey);
-            this.name = name;
+            super(score, filterKey, name);
         }
 
         @NotNull

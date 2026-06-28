@@ -64,4 +64,24 @@ public class SQLQueryCompletionItemFactoryTest extends DBeaverUnitTest {
         assertEquals(SQLQueryCompletionItemKind.PROCEDURE, item.getKind());
         assertTrue(item instanceof SQLQueryCompletionItem.SQLProcedureCompletionItem);
     }
+
+    @Test
+    public void shouldCreateTextBackedItemsWithSharedTextPayload() {
+        SQLQueryWordEntry filterKey = new SQLQueryWordEntry(0, "txt");
+
+        SQLQueryCompletionItem reserved = SQLQueryCompletionItem.forReservedWord(1, filterKey, "select");
+        SQLQueryCompletionItem special = SQLQueryCompletionItem.forSpecialText(2, filterKey, "case", "desc");
+        SQLQueryCompletionItem builtin = SQLQueryCompletionItem.forBuiltinFunction(3, filterKey, "coalesce");
+
+        assertTrue(reserved instanceof SQLQueryCompletionItem.SQLTextCompletionItem);
+        assertTrue(special instanceof SQLQueryCompletionItem.SQLTextCompletionItem);
+        assertTrue(builtin instanceof SQLQueryCompletionItem.SQLTextCompletionItem);
+        assertEquals("select", ((SQLQueryCompletionItem.SQLTextCompletionItem) reserved).text);
+        assertEquals("case", ((SQLQueryCompletionItem.SQLTextCompletionItem) special).text);
+        assertEquals("coalesce", ((SQLQueryCompletionItem.SQLTextCompletionItem) builtin).text);
+        assertEquals("desc", ((SQLQueryCompletionItem.SQLSpecialTextCompletionItem) special).description);
+        assertEquals(SQLQueryCompletionItemKind.RESERVED, reserved.getKind());
+        assertEquals(SQLQueryCompletionItemKind.UNKNOWN, special.getKind());
+        assertEquals(SQLQueryCompletionItemKind.PROCEDURE, builtin.getKind());
+    }
 }

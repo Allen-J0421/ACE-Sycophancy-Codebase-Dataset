@@ -34,7 +34,7 @@ public class HarvesterAnt extends Consumer
     public HarvesterAnt(boolean randomAge, Field field, Location location)
     {
         super(field, location, PREY, CONSUMPTION_WORTH, BREEDING_PROBABILITY,
-              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE,MAX_SUSTENANCE_LEVEL,false,true);
+              MAX_BIRTHS_AT_ONCE, MAX_AGE, BREEDING_AGE, MAX_SUSTENANCE_LEVEL, false);
         
         setStartingAge(randomAge);
     }

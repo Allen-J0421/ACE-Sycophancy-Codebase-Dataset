@@ -18,13 +18,11 @@ public abstract class Consumer extends Actor
     // Properties unique to this consumer:
     private int breedingAge;
     private int sustenanceLevel;
-    private int maxSustenanceLevel;
     private final List<Class<?>> prey;
     private Disease disease;
     private boolean ifCarcass;
     private Carcass newCarcass;
     private boolean canEatCarcass;
-    private boolean primaryConsumer;
     
     /**
      * Create a new consumer at a location in the field.
@@ -38,14 +36,13 @@ public abstract class Consumer extends Actor
      * @param breedingAge         The age at which this consumer can start to breed.
      */
     public Consumer(Field field, Location location, List<Class<?>> prey, int consumptionWorth,
-                    double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,int maxSustenanceLevel,boolean canEatCarcass,boolean primaryConsumer)
+                    double breedingProbability, int maxBirthsAtOnce, int maxAge, int breedingAge,
+                    int maxSustenanceLevel, boolean canEatCarcass)
     {
         super(field, location, consumptionWorth, breedingProbability, maxBirthsAtOnce,maxSustenanceLevel,maxAge);
         this.canEatCarcass = canEatCarcass;
         this.prey = prey;
-        this.maxAge = maxAge;
         this.breedingAge = breedingAge;
-        this.primaryConsumer = primaryConsumer;
         sustenanceLevel = 30;
     }
     
@@ -350,13 +347,13 @@ public abstract class Consumer extends Actor
         if(actor.becomeCarcass())
         {   
             actor.setDead();
-            if((sustenanceLevel + actorConsumptionWorth) > maxSustenanceLevel)
-            {   
-                int foodLeft = (sustenanceLevel + consumptionWorth) - maxSustenanceLevel;
-                sustenanceLevel = this.maxSustenanceLevel;
-                Carcass carcass = new Carcass(getField(),location,foodLeft);
-                newCarcass = carcass;
-                ifCarcass = true;
+                if((sustenanceLevel + actorConsumptionWorth) > maxSustenanceLevel)
+                {   
+                    int foodLeft = (sustenanceLevel + consumptionWorth) - maxSustenanceLevel;
+                    sustenanceLevel = maxSustenanceLevel;
+                    Carcass carcass = new Carcass(getField(),location,foodLeft);
+                    newCarcass = carcass;
+                    ifCarcass = true;
                 return getLocation();
             }  
         }

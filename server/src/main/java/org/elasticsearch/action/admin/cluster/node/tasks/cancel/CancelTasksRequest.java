@@ -61,7 +61,7 @@ public class CancelTasksRequest extends BaseTasksRequest<CancelTasksRequest> {
     @Override
     public boolean match(Task task) {
         // Matching by target task ID is deferred to TransportCancelTasksAction
-        if ((task instanceof CancellableTask) == false || matchesActionAndParent(task) == false) {
+        if (!(task instanceof CancellableTask) || matchesActionAndParent(task) == false) {
             return false;
         }
         if (excludeChildTasks && task.getParentTaskId().isSet()) {

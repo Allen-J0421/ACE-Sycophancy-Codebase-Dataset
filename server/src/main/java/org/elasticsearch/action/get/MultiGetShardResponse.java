@@ -85,8 +85,7 @@ public class MultiGetShardResponse extends ActionResponse {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof MultiGetShardResponse == false) return false;
-        MultiGetShardResponse other = (MultiGetShardResponse) o;
+        if (!(o instanceof MultiGetShardResponse other)) return false;
         return Objects.equals(locations, other.locations) && Objects.equals(responses, other.responses);
     }
 

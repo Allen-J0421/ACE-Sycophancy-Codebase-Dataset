@@ -637,7 +637,7 @@ public final class BulkRequestParser {
         }
 
         private void parseAndConsumeDocumentLine(BytesReference data, int from, int to) throws IOException {
-            assert currentRequest != null && currentRequest instanceof DeleteRequest == false;
+            assert currentRequest != null && !(currentRequest instanceof DeleteRequest);
             if (currentRequest instanceof IndexRequest indexRequest) {
                 indexRequest.source(sliceTrimmingCarriageReturn(data, from, to, xContentType), xContentType);
                 indexRequestConsumer.accept(indexRequest, currentType);

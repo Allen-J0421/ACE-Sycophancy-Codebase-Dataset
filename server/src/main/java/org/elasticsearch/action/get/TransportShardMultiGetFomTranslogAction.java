@@ -151,8 +151,7 @@ public class TransportShardMultiGetFomTranslogAction extends HandledTransportAct
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o instanceof Request == false) return false;
-            Request other = (Request) o;
+            if (!(o instanceof Request other)) return false;
             return Objects.equals(shardId, other.shardId) && Objects.equals(multiGetShardRequest, other.multiGetShardRequest);
         }
 
@@ -212,8 +211,7 @@ public class TransportShardMultiGetFomTranslogAction extends HandledTransportAct
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o instanceof Response == false) return false;
-            Response response = (Response) o;
+            if (!(o instanceof Response response)) return false;
             return segmentGeneration == response.segmentGeneration
                 && Objects.equals(multiGetShardResponse, response.multiGetShardResponse)
                 && primaryTerm == response.primaryTerm;

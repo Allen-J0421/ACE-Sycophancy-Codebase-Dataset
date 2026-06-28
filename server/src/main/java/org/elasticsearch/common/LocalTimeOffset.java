@@ -551,7 +551,7 @@ public abstract class LocalTimeOffset {
             long utcStart = transition.toEpochSecond() * 1000;
             long offsetBeforeMillis = transition.getOffsetBefore().getTotalSeconds() * 1000;
             long offsetAfterMillis = transition.getOffsetAfter().getTotalSeconds() * 1000;
-            assert (false == previous instanceof Transition) || ((Transition) previous).startUtcMillis < utcStart
+            assert !(previous instanceof Transition t) || t.startUtcMillis < utcStart
                 : "transition list out of order at [" + previous + "] and [" + transition + "]";
             assert previous.millis != offsetAfterMillis
                 : "transition list is has a duplicate at [" + previous + "] and [" + transition + "]";

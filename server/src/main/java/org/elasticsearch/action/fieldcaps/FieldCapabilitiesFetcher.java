@@ -199,7 +199,7 @@ class FieldCapabilitiesFetcher {
             // Check the ancestor of the field to find nested and object fields.
             // Runtime fields are excluded since they can override any path.
             // TODO find a way to do this that does not require an instanceof check
-            if (ft instanceof RuntimeField == false && includeParentObjects) {
+            if (!(ft instanceof RuntimeField) && includeParentObjects) {
                 int dotIndex = ft.name().lastIndexOf('.');
                 while (dotIndex > -1) {
                     String parentField = ft.name().substring(0, dotIndex);

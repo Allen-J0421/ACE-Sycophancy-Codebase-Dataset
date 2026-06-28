@@ -58,8 +58,7 @@ public class MultiGetShardRequest extends SingleShardRequest<MultiGetShardReques
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof MultiGetShardRequest == false) return false;
-        MultiGetShardRequest other = (MultiGetShardRequest) o;
+        if (!(o instanceof MultiGetShardRequest other)) return false;
         return shardId == other.shardId
             && realtime == other.realtime
             && refresh == other.refresh

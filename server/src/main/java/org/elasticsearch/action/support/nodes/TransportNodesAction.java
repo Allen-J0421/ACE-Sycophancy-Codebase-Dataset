@@ -147,7 +147,7 @@ public abstract class TransportNodesAction<
             protected void onItemResponse(DiscoveryNode discoveryNode, NodeResponse nodeResponse) {
                 nodeResponse.mustIncRef();
                 synchronized (responses) {
-                    if ((task instanceof CancellableTask cancellableTask && cancellableTask.isCancelled()) == false) {
+                    if (!(task instanceof CancellableTask cancellableTask && cancellableTask.isCancelled())) {
                         responses.add(nodeResponse);
                         return;
                     }

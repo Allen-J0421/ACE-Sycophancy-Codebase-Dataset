@@ -209,9 +209,7 @@ public class MultiGetRequest extends LegacyActionRequest
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if ((o instanceof Item) == false) return false;
-
-            Item item = (Item) o;
+            if (!(o instanceof Item item)) return false;
 
             if (version != item.version) return false;
             if (fetchSourceContext != null ? fetchSourceContext.equals(item.fetchSourceContext) == false : item.fetchSourceContext != null)

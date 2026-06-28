@@ -99,7 +99,7 @@ public class TransportForceMergeAction extends TransportBroadcastByNodeAction<
         Void nodeContext,
         ActionListener<EmptyResult> listener
     ) {
-        assert (task instanceof CancellableTask) == false; // TODO: add cancellation handling here once the task supports it
+        assert !(task instanceof CancellableTask); // TODO: add cancellation handling here once the task supports it
         SubscribableListener.<IndexShard>newForked(l -> {
             IndexShard indexShard = indicesService.indexServiceSafe(shardRouting.shardId().getIndex())
                 .getShard(shardRouting.shardId().id());

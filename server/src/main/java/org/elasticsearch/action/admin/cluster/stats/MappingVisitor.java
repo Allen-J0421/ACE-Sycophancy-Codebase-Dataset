@@ -75,14 +75,14 @@ public final class MappingVisitor {
 
     public static void visitRuntimeMapping(Map<String, ?> mapping, BiConsumer<String, Map<String, ?>> runtimeFieldMappingConsumer) {
         Object runtimeObject = mapping.get("runtime");
-        if (runtimeObject instanceof Map == false) {
+        if (!(runtimeObject instanceof Map)) {
             return;
         }
         @SuppressWarnings("unchecked")
         Map<String, ?> runtimeMappings = (Map<String, ?>) runtimeObject;
         for (Map.Entry<String, ?> entry : runtimeMappings.entrySet()) {
             final Object runtimeFieldMappingObject = entry.getValue();
-            if (runtimeFieldMappingObject instanceof Map == false) {
+            if (!(runtimeFieldMappingObject instanceof Map)) {
                 continue;
             }
             @SuppressWarnings("unchecked")

@@ -413,7 +413,7 @@ public class CreateIndexRequest extends AcknowledgedRequest<CreateIndexRequest> 
     }
 
     static void validateIsMap(String key, Object value) {
-        if (value instanceof Map == false) {
+        if (!(value instanceof Map)) {
             throw new ElasticsearchParseException("key [{}] must be an object", key);
         }
     }

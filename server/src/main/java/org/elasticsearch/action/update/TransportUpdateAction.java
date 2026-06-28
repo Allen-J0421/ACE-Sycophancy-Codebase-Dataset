@@ -508,7 +508,7 @@ public class TransportUpdateAction extends TransportInstanceSingleOperationActio
         Object fieldValue = sourceAsMap.get(fullPath);
         if (fieldValue == null) {
             return null;
-        } else if (fieldValue instanceof Map<?, ?> == false) {
+        } else if (!(fieldValue instanceof Map<?, ?>)) {
             // Don't try to further validate the non-map value, that will be handled when the source is fully parsed
             return fieldValue;
         }

@@ -572,7 +572,7 @@ public abstract class StreamOutput extends OutputStream {
             writeByte((byte) -1);
             return;
         }
-        assert false == (map instanceof LinkedHashMap);
+        assert !(map instanceof LinkedHashMap);
         this.writeByte((byte) 10);
         this.writeVInt(map.size());
         Iterator<? extends Map.Entry<String, ?>> iterator = map.entrySet().stream().sorted(Map.Entry.comparingByKey()).iterator();
@@ -1193,7 +1193,7 @@ public abstract class StreamOutput extends OutputStream {
      * which uses {@code EnumSerializationTestUtils#assertEnumSerialization} to fix the wire protocol.
      */
     public <E extends Enum<E>> void writeEnum(E enumValue) throws IOException {
-        assert enumValue instanceof XContentType == false : "XContentHelper#writeTo should be used for XContentType serialisation";
+        assert !(enumValue instanceof XContentType) : "XContentHelper#writeTo should be used for XContentType serialisation";
         writeVInt(enumValue.ordinal());
     }
 
@@ -1206,7 +1206,7 @@ public abstract class StreamOutput extends OutputStream {
             writeBoolean(false);
         } else {
             writeBoolean(true);
-            assert enumValue instanceof XContentType == false : "XContentHelper#writeTo should be used for XContentType serialisation";
+            assert !(enumValue instanceof XContentType) : "XContentHelper#writeTo should be used for XContentType serialisation";
             writeVInt(enumValue.ordinal());
         }
     }

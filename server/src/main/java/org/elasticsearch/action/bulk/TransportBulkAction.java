@@ -230,7 +230,7 @@ public class TransportBulkAction extends TransportAbstractBulkAction {
         ActionListener<BulkResponse> listener,
         long relativeStartTimeNanos
     ) throws IOException {
-        assert (bulkRequest instanceof SimulateBulkRequest) == false
+        assert !(bulkRequest instanceof SimulateBulkRequest)
             : "TransportBulkAction should never be called with a SimulateBulkRequest";
         assert bulkRequest.getComponentTemplateSubstitutions().isEmpty()
             : "Component template substitutions are not allowed in a non-simulated bulk";
@@ -268,7 +268,7 @@ public class TransportBulkAction extends TransportAbstractBulkAction {
             if (validateSliceRouting) {
                 requireSliceRoutingWhenEnabled(request, indexAbstraction, indexMetadataProvider);
             }
-            if (request instanceof IndexRequest == false) {
+            if (!(request instanceof IndexRequest)) {
                 continue;
             }
             DataStream dataStream = DataStream.resolveDataStream(indexAbstraction, project);
@@ -429,7 +429,7 @@ public class TransportBulkAction extends TransportAbstractBulkAction {
                 @Override
                 public void onFailure(Exception e) {
                     final Throwable cause = ExceptionsHelper.unwrapCause(e);
-                    if ((cause instanceof ResourceAlreadyExistsException) == false) {
+                    if (!(cause instanceof ResourceAlreadyExistsException)) {
                         // fail all requests involving this index, if create didn't work
                         indicesExceptions.put(index, e);
                     }

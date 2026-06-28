@@ -736,7 +736,7 @@ public class TransportFieldCapabilitiesAction extends HandledTransportAction<Fie
         // (Clusters marked with skip_unavailable=false return a different error that is considered a 4xx error.)
         // In such a case, the field-caps endpoint returns a 200 (unless all clusters failed).
         // To keep the logs from being too noisy, we choose not to log the ConnectTransportException here.
-        return e instanceof org.elasticsearch.transport.ConnectTransportException == false
+        return !(e instanceof org.elasticsearch.transport.ConnectTransportException)
             && ExceptionsHelper.status(e).getStatus() >= 500
             && ExceptionsHelper.isNodeOrShardUnavailableTypeException(e) == false;
     }

@@ -257,10 +257,9 @@ public class DownsampleConfig implements NamedWriteable, ToXContentObject {
         if (this == other) {
             return true;
         }
-        if (other == null || other instanceof DownsampleConfig == false) {
+        if (!(other instanceof DownsampleConfig that)) {
             return false;
         }
-        final DownsampleConfig that = (DownsampleConfig) other;
         return Objects.equals(fixedInterval, that.fixedInterval)
             && Objects.equals(intervalType, that.intervalType)
             && ZoneId.of(timeZone, ZoneId.SHORT_IDS).getRules().equals(ZoneId.of(that.timeZone, ZoneId.SHORT_IDS).getRules())

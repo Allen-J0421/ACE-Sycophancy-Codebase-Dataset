@@ -442,7 +442,7 @@ public class CreateSnapshotRequest extends MasterNodeRequest<CreateSnapshotReque
                     includeGlobalState = nodeBooleanValue(entry.getValue(), "include_global_state");
                     break;
                 case "metadata":
-                    if (entry.getValue() != null && (entry.getValue() instanceof Map == false)) {
+                    if (entry.getValue() != null && !(entry.getValue() instanceof Map)) {
                         throw new IllegalArgumentException("malformed metadata, should be an object");
                     }
                     userMetadata((Map<String, Object>) entry.getValue());

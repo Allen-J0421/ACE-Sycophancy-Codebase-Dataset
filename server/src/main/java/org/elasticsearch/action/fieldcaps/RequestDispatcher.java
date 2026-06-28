@@ -95,7 +95,7 @@ final class RequestDispatcher {
         this.originalIndices = originalIndices;
         this.nowInMillis = nowInMillis;
         this.clusterState = clusterService.state();
-        this.hasFilter = fieldCapsRequest.indexFilter() != null && fieldCapsRequest.indexFilter() instanceof MatchAllQueryBuilder == false;
+        this.hasFilter = fieldCapsRequest.indexFilter() != null && !(fieldCapsRequest.indexFilter() instanceof MatchAllQueryBuilder);
         this.executor = executor;
         this.onIndexResponse = onIndexResponse;
         this.onIndexFailure = onIndexFailure;
@@ -278,7 +278,7 @@ final class RequestDispatcher {
             for (SearchShardRouting searchShardRouting : shards) {
                 boolean canMatch = true;
                 final ShardId shardId = searchShardRouting.shardId();
-                if (indexFilter != null && indexFilter instanceof MatchAllQueryBuilder == false) {
+                if (indexFilter != null && !(indexFilter instanceof MatchAllQueryBuilder)) {
                     var coordinatorRewriteContext = coordinatorRewriteContextProvider.getCoordinatorRewriteContext(shardId.getIndex());
                     if (coordinatorRewriteContext != null) {
                         var shardRequest = new ShardSearchRequest(

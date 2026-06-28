@@ -180,7 +180,7 @@ public class SimulatePipelineRequest extends LegacyActionRequest implements ToXC
         }
         List<IngestDocument> ingestDocumentList = new ArrayList<>();
         for (Object object : docs) {
-            if ((object instanceof Map) == false) {
+            if (!(object instanceof Map)) {
                 throw new IllegalArgumentException("malformed [docs] section, should include an inner object");
             }
             @SuppressWarnings("unchecked")

@@ -86,12 +86,11 @@ public class Simulator
         advanceClocks();
 
         // the following variables are read once here to reduce method calls:
-        boolean isSpring = simulationHabitat.getIsSpring();
         boolean isNight = time.getIsNight();
         int currentTemperature = simulationHabitat.getCurrentTemperature();
         boolean yearPassed = simulationHabitat.yearPassed();
 
-        List<Species> newSpecies = letAllSpeciesAct(isSpring, isNight, currentTemperature, yearPassed);
+        List<Species> newSpecies = letAllSpeciesAct(isNight, currentTemperature, yearPassed);
         // Add the newly born species to the main list.
         species.addAll(newSpecies);
 
@@ -112,45 +111,24 @@ public class Simulator
      * Let every species act for one step, removing any that died, and collect the species born
      * during this step.
      *
-     * @param isSpring (boolean) true if the current season is spring.
      * @param isNight (boolean) true if it is currently night.
      * @param currentTemperature (int) the current temperature of the habitat.
      * @param yearPassed (boolean) true if a year has passed in the simulation.
      * @return (List<Species>) the species newly born during this step.
      */
-    private List<Species> letAllSpeciesAct(boolean isSpring, boolean isNight, int currentTemperature, boolean yearPassed)
+    private List<Species> letAllSpeciesAct(boolean isNight, int currentTemperature, boolean yearPassed)
     {
         // Provide space for newborn species.
         List<Species> newSpecies = new ArrayList<>();
         for(Iterator<Species> it = species.iterator(); it.hasNext(); )
         {
             Species specie = it.next();
-            synchronizePlantSeason(specie, isSpring);
-
             specie.act(newSpecies, isNight, currentTemperature, yearPassed);
             if(! specie.isAlive()) {
                 it.remove();
             }
         }
         return newSpecies;
-    }
-
-    /**
-     * Keep a plant's notion of the current season in sync with the habitat. Done here, on the
-     * Simulator side, to reduce coupling between the plants and the habitat.
-     *
-     * @param specie (Species) the species to update; only plants are affected.
-     * @param isSpring (boolean) true if the current season is spring.
-     */
-    private void synchronizePlantSeason(Species specie, boolean isSpring)
-    {
-        if (specie instanceof Plant)
-        {
-            Plant plant = (Plant) specie;
-            if (plant.getIsSpring() != isSpring) {
-                plant.toggleIsSpring();
-            }
-        }
     }
 
     /**

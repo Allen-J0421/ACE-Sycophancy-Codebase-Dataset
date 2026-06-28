@@ -102,7 +102,7 @@ public class Initializer
         }
         view = new SimulatorView(DEFAULT_DEPTH, DEFAULT_WIDTH, handler);
         populateWithAnimals(animalsToCreate, field);
-        populateWithPlants(field);
+        populateWithPlants(field, simulationHabitat);
         Time timeObject = new Time(simulatorStepCounter, DEFAULT_START_TIME);
         return new Simulator(simulationHabitat, timeObject ,speciesToEvolveInSimulation, field, simulatorStepCounter, view);
     }
@@ -246,8 +246,9 @@ public class Initializer
      * Populate the simulation with the appropriate number of plants.
      *
      * @param field (Field) The simulation's field.
+     * @param habitat (Habitat) The simulation's habitat, handed to each plant so it can read the current season.
      */
-    private void populateWithPlants(Field field)
+    private void populateWithPlants(Field field, Habitat habitat)
     {
         Location freeLocationToPlacePlant;
         plantReader.extractDataFor(DEFAULT_PLANT_NAME);
@@ -259,7 +260,7 @@ public class Initializer
         int maxHealth = plantReader.getMaxHealth();
         for (int i = 0; i< getNumberOfPlants(); i++) {
             freeLocationToPlacePlant = findAvailableLocation(field);
-            Plant createdPlant = new Plant(field, freeLocationToPlacePlant, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxHealth);
+            Plant createdPlant = new Plant(field, freeLocationToPlacePlant, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability, maxHealth, habitat);
             speciesToEvolveInSimulation.add(createdPlant);
         }
         view.setColor(name, DEFAULT_PLANT_COLOR);

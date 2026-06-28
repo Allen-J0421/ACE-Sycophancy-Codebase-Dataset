@@ -14,8 +14,10 @@ public class Plant extends Species
     private static final double GROWING_PROBABILITY = 0.1;
     // Keep track of the plant's health
     private int currentHealth;
-    // true if the current season is Spring
-    private boolean isSpring;
+    // The habitat the plant lives in, queried directly for the current season.
+    private final Habitat habitat;
+    // The habitat's spring state observed on the plant's previous step, used to detect season changes.
+    private boolean springStateLastSeen;
     // true if the plant can regrow, needs at least one season till it is true again
     private boolean canRegrow;
     // true if plant appears dead due to temperature circumstances
@@ -32,13 +34,15 @@ public class Plant extends Species
      * @param nutritionalValue (int) The nutritional value given to the specie that eats this plant
      * @param reproductionProbability (double) The probability that this plant will reproduce
      * @param maxHealth (int) The plant's maximum health
+     * @param habitat (Habitat) The habitat the plant lives in, used to read the current season.
      */
-    public Plant(Field field, Location location, String name, int maximumTemperature, int minimumTemperature, int nutritionalValue, double reproductionProbability, int maxHealth)
+    public Plant(Field field, Location location, String name, int maximumTemperature, int minimumTemperature, int nutritionalValue, double reproductionProbability, int maxHealth, Habitat habitat)
     {
         super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability);
         this.maxHealth = maxHealth;
         currentHealth = maxHealth;
-        isSpring = true;
+        this.habitat = habitat;
+        springStateLastSeen = habitat.getIsSpring();
         canRegrow = true;
         deadDueTemperature = false;
     }
@@ -60,6 +64,9 @@ public class Plant extends Species
      */
     public void act(List<Species> newPlants, boolean isNight, int temperature, boolean yearPassed)
     {
+        // Keep the plant's regrowth ability in step with the habitat's season.
+        refreshSeasonState();
+
         // 1)
         if (! deadDueTemperature && ! survivesTemperature(temperature))
         {
@@ -69,7 +76,7 @@ public class Plant extends Species
         else if (! isNight)
         {
             // i)
-            if (deadDueTemperature && survivesTemperature(temperature) && isSpring) {
+            if (deadDueTemperature && survivesTemperature(temperature) && habitat.getIsSpring()) {
                 regrow();
             }
             // ii)
@@ -104,8 +111,7 @@ public class Plant extends Species
 
                 if (free.size() > 0) {
                     Location loc = free.remove(0);
-                    Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth);
-                    newPlant.setIsSpring(isSpring);
+                    Plant newPlant = new Plant(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxHealth, habitat);
                     newPlants.add(newPlant);
                 }
             }
@@ -162,30 +168,18 @@ public class Plant extends Species
     }
 
     /**
-     * If isSpring is true, then change it to false, vice versa.
-     *Also, set canRegrow as true because at least a season has passed since the plant died.
-     */
-    public void toggleIsSpring()
-    {
-        isSpring = ! isSpring;
-        canRegrow = true;
-    }
-
-    /**
-     * @return (boolean) true if the current season is spring, false otherwise.
-     */
-    public boolean getIsSpring()
-    {
-        return isSpring;
-    }
-
-    /**
-     * Set the isSpring value to the given parameter
+     * Keep the plant's regrowth ability in step with the habitat's season. The plant reads the
+     * current season directly from the habitat: whenever the habitat moves into or out of spring,
+     * at least one season has passed since the plant died, so it becomes able to regrow again.
      *
-     * @param spring (boolean) true if it is spring, false otherwise.
+     * This replaces the previous arrangement where the Simulator pushed the season into each plant.
      */
-    private void setIsSpring(boolean spring)
+    private void refreshSeasonState()
     {
-        isSpring = spring;
+        boolean isSpringNow = habitat.getIsSpring();
+        if (isSpringNow != springStateLastSeen) {
+            canRegrow = true;
+            springStateLastSeen = isSpringNow;
+        }
     }
 }

@@ -19,10 +19,7 @@ package org.springframework.boot.cli.command.init;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import joptsimple.OptionSet;
 
@@ -72,21 +69,6 @@ public class InitCommand extends OptionParsingCommand {
 	 */
 	static class InitOptionHandler extends OptionHandler {
 
-		/**
-		 * Mapping from camelCase options advertised by the service to our kebab-case
-		 * options.
-		 */
-		private static final Map<String, String> CAMEL_CASE_OPTIONS;
-		static {
-			Map<String, String> options = new HashMap<>();
-			options.put("--groupId", "--group-id");
-			options.put("--artifactId", "--artifact-id");
-			options.put("--packageName", "--package-name");
-			options.put("--javaVersion", "--java-version");
-			options.put("--bootVersion", "--boot-version");
-			CAMEL_CASE_OPTIONS = Collections.unmodifiableMap(options);
-		}
-
 		private final ServiceCapabilitiesReportGenerator serviceCapabilitiesReport;
 
 		private final ProjectGenerator projectGenerator;
@@ -94,7 +76,7 @@ public class InitCommand extends OptionParsingCommand {
 		private final InitCommandOptions commandOptions;
 
 		InitOptionHandler(InitializrService initializrService) {
-			super(InitOptionHandler::processArgument);
+			super(new InitCommandArgumentProcessor());
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(initializrService);
 			this.projectGenerator = new ProjectGenerator(initializrService);
 			this.commandOptions = new InitCommandOptions();
@@ -137,16 +119,6 @@ public class InitCommand extends OptionParsingCommand {
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
 			return this.commandOptions.createProjectGenerationRequest(options);
-		}
-
-		private static String processArgument(String argument) {
-			for (Map.Entry<String, String> entry : CAMEL_CASE_OPTIONS.entrySet()) {
-				String name = entry.getKey();
-				if (argument.startsWith(name + " ") || argument.startsWith(name + "=")) {
-					return entry.getValue() + argument.substring(name.length());
-				}
-			}
-			return argument;
 		}
 
 	}

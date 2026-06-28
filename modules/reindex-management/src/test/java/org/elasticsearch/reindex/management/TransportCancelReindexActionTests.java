@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.elasticsearch.reindex.management.TransportCancelReindexAction.notFoundException;
+import static org.elasticsearch.reindex.management.ReindexCancellation.notFoundException;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;

@@ -179,7 +179,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
   /** Returns an immutable map containing a single entry. */
   private static <K, V> ImmutableSortedMap<K, V> of(Comparator<? super K> comparator, K k1, V v1) {
     return new ImmutableSortedMap<>(
-        new RegularImmutableSortedSet<K>(ImmutableList.of(k1), checkNotNull(comparator)),
+        new RegularImmutableSortedSet<K>(ImmutableList.of(k1), checkNotNull(comparator, "comparator")),
         ImmutableList.of(v1));
   }
 
@@ -415,7 +415,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
    */
   public static <K, V> ImmutableSortedMap<K, V> copyOf(
       Map<? extends K, ? extends V> map, Comparator<? super K> comparator) {
-    return copyOfInternal(map, checkNotNull(comparator));
+    return copyOfInternal(map, checkNotNull(comparator, "comparator"));
   }
 
   /**
@@ -449,7 +449,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
   public static <K, V> ImmutableSortedMap<K, V> copyOf(
       Iterable<? extends Entry<? extends K, ? extends V>> entries,
       Comparator<? super K> comparator) {
-    return fromEntries(checkNotNull(comparator), false, entries);
+    return fromEntries(checkNotNull(comparator, "comparator"), false, entries);
   }
 
   /**
@@ -647,7 +647,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
      * ImmutableSortedMap#orderedBy}.
      */
     public Builder(Comparator<? super K> comparator) {
-      this.comparator = checkNotNull(comparator);
+      this.comparator = checkNotNull(comparator, "comparator");
     }
 
     /**
@@ -811,7 +811,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
 
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    checkNotNull(action);
+    checkNotNull(action, "action");
     ImmutableList<K> keyList = keySet.asList();
     for (int i = 0; i < size(); i++) {
       action.accept(keyList.get(i), valueList.get(i));
@@ -984,7 +984,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
    */
   @Override
   public ImmutableSortedMap<K, V> headMap(K toKey, boolean inclusive) {
-    return getSubMap(0, keySet.headIndex(checkNotNull(toKey), inclusive));
+    return getSubMap(0, keySet.headIndex(checkNotNull(toKey, "toKey"), inclusive));
   }
 
   /**
@@ -1018,8 +1018,8 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
   @Override
   public ImmutableSortedMap<K, V> subMap(
       K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
-    checkNotNull(fromKey);
-    checkNotNull(toKey);
+    checkNotNull(fromKey, "fromKey");
+    checkNotNull(toKey, "toKey");
     checkArgument(
         comparator().compare(fromKey, toKey) <= 0,
         "expected fromKey <= toKey but %s > %s",
@@ -1055,7 +1055,7 @@ public final class ImmutableSortedMap<K, V> extends ImmutableMap<K, V>
    */
   @Override
   public ImmutableSortedMap<K, V> tailMap(K fromKey, boolean inclusive) {
-    return getSubMap(keySet.tailIndex(checkNotNull(fromKey), inclusive), size());
+    return getSubMap(keySet.tailIndex(checkNotNull(fromKey, "fromKey"), inclusive), size());
   }
 
   @Override

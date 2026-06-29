@@ -237,6 +237,8 @@ public final class MoreExecutors {
   @VisibleForTesting
   static class Application {
 
+    private static final long DEFAULT_SHUTDOWN_TIMEOUT_SECS = 120;
+
     final ExecutorService getExitingExecutorService(
         ThreadPoolExecutor executor, long terminationTimeout, TimeUnit timeUnit) {
       useDaemonThreadFactory(executor);
@@ -246,7 +248,7 @@ public final class MoreExecutors {
     }
 
     final ExecutorService getExitingExecutorService(ThreadPoolExecutor executor) {
-      return getExitingExecutorService(executor, 120, SECONDS);
+      return getExitingExecutorService(executor, DEFAULT_SHUTDOWN_TIMEOUT_SECS, SECONDS);
     }
 
     final ScheduledExecutorService getExitingScheduledExecutorService(
@@ -259,13 +261,13 @@ public final class MoreExecutors {
 
     final ScheduledExecutorService getExitingScheduledExecutorService(
         ScheduledThreadPoolExecutor executor) {
-      return getExitingScheduledExecutorService(executor, 120, SECONDS);
+      return getExitingScheduledExecutorService(executor, DEFAULT_SHUTDOWN_TIMEOUT_SECS, SECONDS);
     }
 
     final void addDelayedShutdownHook(
         ExecutorService service, long terminationTimeout, TimeUnit timeUnit) {
-      checkNotNull(service);
-      checkNotNull(timeUnit);
+      checkNotNull(service, "service");
+      checkNotNull(timeUnit, "timeUnit");
       addShutdownHook(
           newThread(
               "DelayedShutdownHook-for-" + service,

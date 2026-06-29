@@ -8,16 +8,17 @@ class BinarySearch {
             throw new IllegalArgumentException("Array must not be null");
         }
 
+        SearchInput input = new SearchInput(sortedNumbers, target);
         SearchBounds bounds = SearchBounds.forArray(sortedNumbers);
 
         while (bounds.hasRemainingValues()) {
             int middle = bounds.midpoint();
 
-            if (targetMatchesMiddle(sortedNumbers, target, middle)) {
+            if (input.matches(middle)) {
                 return middle;
             }
 
-            if (targetIsAfterMiddle(sortedNumbers, target, middle)) {
+            if (input.targetIsAfter(middle)) {
                 bounds = bounds.after(middle);
             } else {
                 bounds = bounds.before(middle);
@@ -25,14 +26,6 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
-    }
-
-    private static boolean targetMatchesMiddle(int[] sortedNumbers, int target, int middle) {
-        return sortedNumbers[middle] == target;
-    }
-
-    private static boolean targetIsAfterMiddle(int[] sortedNumbers, int target, int middle) {
-        return sortedNumbers[middle] < target;
     }
 
     private static String formatSearchResult(int index) {
@@ -50,6 +43,24 @@ class BinarySearch {
     private static void runDemo() {
         int result = binarySearch(SAMPLE_NUMBERS, SAMPLE_TARGET);
         System.out.println(formatSearchResult(result));
+    }
+
+    private static final class SearchInput {
+        private final int[] sortedNumbers;
+        private final int target;
+
+        private SearchInput(int[] sortedNumbers, int target) {
+            this.sortedNumbers = sortedNumbers;
+            this.target = target;
+        }
+
+        private boolean matches(int index) {
+            return sortedNumbers[index] == target;
+        }
+
+        private boolean targetIsAfter(int index) {
+            return sortedNumbers[index] < target;
+        }
     }
 
     private static final class SearchBounds {

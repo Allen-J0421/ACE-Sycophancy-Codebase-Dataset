@@ -60,9 +60,17 @@ final class BinarySearch {
     }
 
     private static void validateArguments(String[] args) {
-        if (args.length > 1 || (args.length == 1 && !SELF_TEST_FLAG.equals(args[0]))) {
-            throw new IllegalArgumentException("Usage: java BinarySearch [" + SELF_TEST_FLAG + "]");
+        if (hasInvalidArguments(args)) {
+            throw new IllegalArgumentException(formatUsage());
         }
+    }
+
+    private static boolean hasInvalidArguments(String[] args) {
+        return args.length > 1 || (args.length == 1 && !SELF_TEST_FLAG.equals(args[0]));
+    }
+
+    private static String formatUsage() {
+        return "Usage: java BinarySearch [" + SELF_TEST_FLAG + "]";
     }
 
     private static void runDemo() {

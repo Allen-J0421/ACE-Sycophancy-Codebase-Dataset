@@ -19,14 +19,11 @@ final class ByteQueue {
 
     public synchronized int read(byte[] buffer, boolean block) {
         while (mStoredBytes == 0 && mOpen) {
-            if (block) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    // Ignore.
-                }
-            } else {
-                return 0;
+            if (!block) return 0;
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                // Ignore.
             }
         }
         if (!mOpen) return -1;
@@ -57,11 +54,10 @@ final class ByteQueue {
      * Returns whether the output was totally written, false if it was closed before.
      */
     public boolean write(byte[] buffer, int offset, int lengthToWrite) {
-        if (lengthToWrite + offset > buffer.length) {
+        if (lengthToWrite + offset > buffer.length)
             throw new IllegalArgumentException("length + offset > buffer.length");
-        } else if (lengthToWrite <= 0) {
+        if (lengthToWrite <= 0)
             throw new IllegalArgumentException("length <= 0");
-        }
 
         final int bufferLength = mBuffer.length;
 
@@ -89,7 +85,7 @@ final class ByteQueue {
                         // Buffer: [.............]
                         // ___________T____H
                         // onRun= _____----_
-                        tail = tail - bufferLength;
+                        tail -= bufferLength;
                         oneRun = mHead - tail;
                     } else {
                         oneRun = bufferLength - tail;

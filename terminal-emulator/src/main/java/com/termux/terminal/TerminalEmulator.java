@@ -2099,74 +2099,12 @@ public final class TerminalEmulator {
                 setTitle(textParameter);
                 break;
             case 4:
-                // P s = 4 ; c ; spec → Change Color Number c to the color specified by spec. This can be a name or RGB
-                // specification as per XParseColor. Any number of c name pairs may be given. The color numbers correspond
-                // to the ANSI colors 0-7, their bright versions 8-15, and if supported, the remainder of the 88-color or
-                // 256-color table.
-                // If a "?" is given rather than a name or RGB specification, xterm replies with a control sequence of the
-                // same form which can be used to set the corresponding color. Because more than one pair of color number
-                // and specification can be given in one control sequence, xterm can make more than one reply.
-                int colorIndex = -1;
-                int parsingPairStart = -1;
-                for (int i = 0; ; i++) {
-                    boolean endOfInput = i == textParameter.length();
-                    char b = endOfInput ? ';' : textParameter.charAt(i);
-                    if (b == ';') {
-                        if (parsingPairStart < 0) {
-                            parsingPairStart = i + 1;
-                        } else {
-                            if (colorIndex < 0 || colorIndex > 255) {
-                                unknownSequence(b);
-                                return;
-                            } else {
-                                mColors.tryParseColor(colorIndex, textParameter.substring(parsingPairStart, i));
-                                mSession.onColorsChanged();
-                                colorIndex = -1;
-                                parsingPairStart = -1;
-                            }
-                        }
-                    } else if (parsingPairStart >= 0) {
-                        // We have passed a color index and are now going through color spec.
-                    } else if (parsingPairStart < 0 && (b >= '0' && b <= '9')) {
-                        colorIndex = ((colorIndex < 0) ? 0 : colorIndex * 10) + (b - '0');
-                    } else {
-                        unknownSequence(b);
-                        return;
-                    }
-                    if (endOfInput) break;
-                }
+                if (!oscChangeColors(textParameter)) return;
                 break;
             case 10: // Set foreground color.
             case 11: // Set background color.
             case 12: // Set cursor color.
-                int specialIndex = TextStyle.COLOR_INDEX_FOREGROUND + (value - 10);
-                int lastSemiIndex = 0;
-                for (int charIndex = 0; ; charIndex++) {
-                    boolean endOfInput = charIndex == textParameter.length();
-                    if (endOfInput || textParameter.charAt(charIndex) == ';') {
-                        try {
-                            String colorSpec = textParameter.substring(lastSemiIndex, charIndex);
-                            if ("?".equals(colorSpec)) {
-                                // Report current color in the same format xterm and gnome-terminal does.
-                                int rgb = mColors.mCurrentColors[specialIndex];
-                                int r = (65535 * ((rgb & 0x00FF0000) >> 16)) / 255;
-                                int g = (65535 * ((rgb & 0x0000FF00) >> 8)) / 255;
-                                int b = (65535 * ((rgb & 0x000000FF))) / 255;
-                                mSession.write("\033]" + value + ";rgb:" + String.format(Locale.US, "%04x", r) + "/" + String.format(Locale.US, "%04x", g) + "/"
-                                    + String.format(Locale.US, "%04x", b) + bellOrStringTerminator);
-                            } else {
-                                mColors.tryParseColor(specialIndex, colorSpec);
-                                mSession.onColorsChanged();
-                            }
-                            specialIndex++;
-                            if (endOfInput || (specialIndex > TextStyle.COLOR_INDEX_CURSOR) || ++charIndex >= textParameter.length())
-                                break;
-                            lastSemiIndex = charIndex;
-                        } catch (NumberFormatException e) {
-                            // Ignore.
-                        }
-                    }
-                }
+                oscSetOrReportSpecialColors(value, textParameter, bellOrStringTerminator);
                 break;
             case 52: // Manipulate Selection Data. Skip the optional first selection parameter(s).
                 int startIndex = textParameter.indexOf(";") + 1;
@@ -2178,31 +2116,7 @@ public final class TerminalEmulator {
                 }
                 break;
             case 104:
-                // "104;$c" → Reset Color Number $c. It is reset to the color specified by the corresponding X
-                // resource. Any number of c parameters may be given. These parameters correspond to the ANSI colors 0-7,
-                // their bright versions 8-15, and if supported, the remainder of the 88-color or 256-color table. If no
-                // parameters are given, the entire table will be reset.
-                if (textParameter.isEmpty()) {
-                    mColors.reset();
-                    mSession.onColorsChanged();
-                } else {
-                    int lastIndex = 0;
-                    for (int charIndex = 0; ; charIndex++) {
-                        boolean endOfInput = charIndex == textParameter.length();
-                        if (endOfInput || textParameter.charAt(charIndex) == ';') {
-                            try {
-                                int colorToReset = Integer.parseInt(textParameter.substring(lastIndex, charIndex));
-                                mColors.reset(colorToReset);
-                                mSession.onColorsChanged();
-                                if (endOfInput) break;
-                                charIndex++;
-                                lastIndex = charIndex;
-                            } catch (NumberFormatException e) {
-                                // Ignore.
-                            }
-                        }
-                    }
-                }
+                oscResetColors(textParameter);
                 break;
             case 110: // Reset foreground color.
             case 111: // Reset background color.
@@ -2217,6 +2131,111 @@ public final class TerminalEmulator {
                 break;
         }
         finishSequence();
+    }
+
+    /**
+     * OSC 4 — change indexed color. Returns false (and calls unknownSequence) if the color index is invalid, so
+     * the caller can return early to skip finishSequence().
+     */
+    private boolean oscChangeColors(String text) {
+        // P s = 4 ; c ; spec → Change Color Number c to the color specified by spec. This can be a name or RGB
+        // specification as per XParseColor. Any number of c name pairs may be given. The color numbers correspond
+        // to the ANSI colors 0-7, their bright versions 8-15, and if supported, the remainder of the 88-color or
+        // 256-color table.
+        // If a "?" is given rather than a name or RGB specification, xterm replies with a control sequence of the
+        // same form which can be used to set the corresponding color. Because more than one pair of color number
+        // and specification can be given in one control sequence, xterm can make more than one reply.
+        int colorIndex = -1;
+        int parsingPairStart = -1;
+        for (int i = 0; ; i++) {
+            boolean endOfInput = i == text.length();
+            char b = endOfInput ? ';' : text.charAt(i);
+            if (b == ';') {
+                if (parsingPairStart < 0) {
+                    parsingPairStart = i + 1;
+                } else {
+                    if (colorIndex < 0 || colorIndex > 255) {
+                        unknownSequence(b);
+                        return false;
+                    } else {
+                        mColors.tryParseColor(colorIndex, text.substring(parsingPairStart, i));
+                        mSession.onColorsChanged();
+                        colorIndex = -1;
+                        parsingPairStart = -1;
+                    }
+                }
+            } else if (parsingPairStart >= 0) {
+                // We have passed a color index and are now going through color spec.
+            } else if (parsingPairStart < 0 && (b >= '0' && b <= '9')) {
+                colorIndex = ((colorIndex < 0) ? 0 : colorIndex * 10) + (b - '0');
+            } else {
+                unknownSequence(b);
+                return false;
+            }
+            if (endOfInput) break;
+        }
+        return true;
+    }
+
+    /** OSC 10/11/12 — set or report foreground/background/cursor color. */
+    private void oscSetOrReportSpecialColors(int value, String text, String bellOrStringTerminator) {
+        int specialIndex = TextStyle.COLOR_INDEX_FOREGROUND + (value - 10);
+        int lastSemiIndex = 0;
+        for (int charIndex = 0; ; charIndex++) {
+            boolean endOfInput = charIndex == text.length();
+            if (endOfInput || text.charAt(charIndex) == ';') {
+                try {
+                    String colorSpec = text.substring(lastSemiIndex, charIndex);
+                    if ("?".equals(colorSpec)) {
+                        // Report current color in the same format xterm and gnome-terminal does.
+                        int rgb = mColors.mCurrentColors[specialIndex];
+                        int r = (65535 * ((rgb & 0x00FF0000) >> 16)) / 255;
+                        int g = (65535 * ((rgb & 0x0000FF00) >> 8)) / 255;
+                        int b = (65535 * ((rgb & 0x000000FF))) / 255;
+                        mSession.write("\033]" + value + ";rgb:" + String.format(Locale.US, "%04x", r) + "/" + String.format(Locale.US, "%04x", g) + "/"
+                            + String.format(Locale.US, "%04x", b) + bellOrStringTerminator);
+                    } else {
+                        mColors.tryParseColor(specialIndex, colorSpec);
+                        mSession.onColorsChanged();
+                    }
+                    specialIndex++;
+                    if (endOfInput || (specialIndex > TextStyle.COLOR_INDEX_CURSOR) || ++charIndex >= text.length())
+                        break;
+                    lastSemiIndex = charIndex;
+                } catch (NumberFormatException e) {
+                    // Ignore.
+                }
+            }
+        }
+    }
+
+    /** OSC 104 — reset one or all indexed colors. */
+    private void oscResetColors(String text) {
+        // "104;$c" → Reset Color Number $c. It is reset to the color specified by the corresponding X
+        // resource. Any number of c parameters may be given. These parameters correspond to the ANSI colors 0-7,
+        // their bright versions 8-15, and if supported, the remainder of the 88-color or 256-color table. If no
+        // parameters are given, the entire table will be reset.
+        if (text.isEmpty()) {
+            mColors.reset();
+            mSession.onColorsChanged();
+        } else {
+            int lastIndex = 0;
+            for (int charIndex = 0; ; charIndex++) {
+                boolean endOfInput = charIndex == text.length();
+                if (endOfInput || text.charAt(charIndex) == ';') {
+                    try {
+                        int colorToReset = Integer.parseInt(text.substring(lastIndex, charIndex));
+                        mColors.reset(colorToReset);
+                        mSession.onColorsChanged();
+                        if (endOfInput) break;
+                        charIndex++;
+                        lastIndex = charIndex;
+                    } catch (NumberFormatException e) {
+                        // Ignore.
+                    }
+                }
+            }
+        }
     }
 
     private void blockClear(int sx, int sy, int w) {

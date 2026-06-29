@@ -251,24 +251,29 @@ final class PemPrivateKeyParser {
 		private @Nullable PrivateKey parse(byte[] bytes, @Nullable String password) {
 			PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes, password);
 			if (keySpec.getAlgorithm() != null) {
-				try {
-					KeyFactory keyFactory = KeyFactory.getInstance(keySpec.getAlgorithm());
-					return keyFactory.generatePrivate(keySpec);
-				}
-				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
-					// Ignore
+				PrivateKey privateKey = generatePrivateKey(keySpec, keySpec.getAlgorithm());
+				if (privateKey != null) {
+					return privateKey;
 				}
 			}
 			for (String algorithm : this.algorithms) {
-				try {
-					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-					return keyFactory.generatePrivate(keySpec);
-				}
-				catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
-					// Ignore
+				PrivateKey privateKey = generatePrivateKey(keySpec, algorithm);
+				if (privateKey != null) {
+					return privateKey;
 				}
 			}
 			return null;
+		}
+
+		private @Nullable PrivateKey generatePrivateKey(PKCS8EncodedKeySpec keySpec, String algorithm) {
+			try {
+				KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+				return keyFactory.generatePrivate(keySpec);
+			}
+			catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+				// Ignore
+				return null;
+			}
 		}
 
 	}

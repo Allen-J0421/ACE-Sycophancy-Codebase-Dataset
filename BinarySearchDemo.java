@@ -15,13 +15,7 @@ final class BinarySearchDemo {
     }
 
     private static void printSearchResult(int index) {
-        System.out.println(formatSearchResult(index));
-    }
-
-    private static String formatSearchResult(int index) {
-        return index == BinarySearch.NOT_FOUND
-                ? "Element is not present in array"
-                : "Element is present at index " + index;
+        System.out.println(SearchResultFormatter.format(index));
     }
 
     private static int[] sampleValues() {

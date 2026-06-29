@@ -846,18 +846,15 @@ public final class TerminalEmulator {
 
     /** DECSCA — select character attribute protection (ESC_CSI_DOUBLE_QUOTE). */
     private void doCsiDoubleQuote(int b) {
-        if (b == 'q') {
-            // http://www.vt100.net/docs/vt510-rm/DECSCA
-            int arg = getArg0(0);
-            if (arg == 0 || arg == 2) {
-                // DECSED and DECSEL can erase characters.
-                mEffect &= ~TextStyle.CHARACTER_ATTRIBUTE_PROTECTED;
-            } else if (arg == 1) {
-                // DECSED and DECSEL cannot erase characters.
-                mEffect |= TextStyle.CHARACTER_ATTRIBUTE_PROTECTED;
-            } else {
-                unknownSequence(b);
-            }
+        if (b != 'q') { unknownSequence(b); return; }
+        // http://www.vt100.net/docs/vt510-rm/DECSCA
+        int arg = getArg0(0);
+        if (arg == 0 || arg == 2) {
+            // DECSED and DECSEL can erase characters.
+            mEffect &= ~TextStyle.CHARACTER_ATTRIBUTE_PROTECTED;
+        } else if (arg == 1) {
+            // DECSED and DECSEL cannot erase characters.
+            mEffect |= TextStyle.CHARACTER_ATTRIBUTE_PROTECTED;
         } else {
             unknownSequence(b);
         }

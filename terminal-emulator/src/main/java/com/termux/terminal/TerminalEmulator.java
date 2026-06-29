@@ -986,8 +986,7 @@ public final class TerminalEmulator {
     private void doDeviceControlRequestStatusString(String dcs) {
         if (dcs.equals("$q\"p")) {
             // DECSCL, conformance level, http://www.vt100.net/docs/vt510-rm/DECSCL:
-            String csiString = "64;1\"p";
-            mSession.write("\033P1$r" + csiString + "\033\\");
+            mSession.write("\033P1$r64;1\"p\033\\");
         } else {
             finishSequenceAndLogError("Unrecognized DECRQSS string: '" + dcs + "'");
         }

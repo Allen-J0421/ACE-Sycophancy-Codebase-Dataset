@@ -29,12 +29,15 @@ class BinarySearch {
 
     private static void printSearchResult(int[] values, int target) {
         int result = binarySearch(values, target);
+        System.out.println(formatSearchResult(result));
+    }
 
+    private static String formatSearchResult(int result) {
         if (result == NOT_FOUND) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + result);
+            return "Element is not present in array";
         }
+
+        return "Element is present at index " + result;
     }
 
     private static void assertSearchResult(int[] values, int target, int expectedIndex) {

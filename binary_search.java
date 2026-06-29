@@ -9,11 +9,10 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
-        int low = 0;
-        int high = values.length - 1;
+        SearchRange range = SearchRange.from(values);
 
-        while (low <= high) {
-            int mid = midpoint(low, high);
+        while (range.hasCandidates()) {
+            int mid = range.midpoint();
             int currentValue = values[mid];
             int comparison = compare(currentValue, target);
 
@@ -22,9 +21,9 @@ final class BinarySearch {
             }
 
             if (comparison < 0) {
-                low = mid + 1;
+                range.discardAtOrBelow(mid);
             } else {
-                high = mid - 1;
+                range.discardAtOrAbove(mid);
             }
         }
 
@@ -33,10 +32,6 @@ final class BinarySearch {
 
     public static void main(String[] args) {
         runDemo();
-    }
-
-    private static int midpoint(int low, int high) {
-        return low + (high - low) / 2;
     }
 
     private static int compare(int value, int target) {
@@ -63,5 +58,35 @@ final class BinarySearch {
 
     private static boolean isFound(int result) {
         return result != NOT_FOUND;
+    }
+
+    private static final class SearchRange {
+        private int low;
+        private int high;
+
+        private SearchRange(int low, int high) {
+            this.low = low;
+            this.high = high;
+        }
+
+        private static SearchRange from(int[] values) {
+            return new SearchRange(0, values.length - 1);
+        }
+
+        private boolean hasCandidates() {
+            return low <= high;
+        }
+
+        private int midpoint() {
+            return low + (high - low) / 2;
+        }
+
+        private void discardAtOrBelow(int index) {
+            low = index + 1;
+        }
+
+        private void discardAtOrAbove(int index) {
+            high = index - 1;
+        }
     }
 }

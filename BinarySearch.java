@@ -26,12 +26,12 @@ public final class BinarySearch {
         return NOT_FOUND;
     }
 
-    private static void printSearchResult(int result) {
+    private static String formatSearchResult(int result) {
         if (result == NOT_FOUND) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + result);
+            return "Element is not present in array";
         }
+
+        return "Element is present at index " + result;
     }
 
     public static void main(String[] args) {
@@ -39,6 +39,6 @@ public final class BinarySearch {
         int target = 10;
         int result = binarySearch(values, target);
 
-        printSearchResult(result);
+        System.out.println(formatSearchResult(result));
     }
 }

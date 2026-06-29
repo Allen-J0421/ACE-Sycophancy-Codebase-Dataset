@@ -1,4 +1,4 @@
-class BinarySearch {
+final class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int DEMO_TARGET = 10;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";

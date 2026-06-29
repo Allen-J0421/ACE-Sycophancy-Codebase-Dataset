@@ -11,19 +11,23 @@ final class BinarySearchTest {
     }
 
     private static void testFindsExistingValue() {
-        assertSearchResult(new int[] { 2, 3, 4, 10, 40 }, 10, 3, "finds an existing value");
+        assertSearchResult(sampleArray(), 10, 3, "finds an existing value");
     }
 
     private static void testReturnsNotFoundForMissingValue() {
         assertSearchResult(
-                new int[] { 2, 3, 4, 10, 40 },
+                sampleArray(),
                 5,
                 BinarySearch.NOT_FOUND,
                 "returns the not-found value when a value is missing");
     }
 
     private static void testHandlesEmptyArray() {
-        assertSearchResult(new int[] {}, 10, BinarySearch.NOT_FOUND, "returns the not-found value for an empty array");
+        assertSearchResult(
+                new int[] {},
+                10,
+                BinarySearch.NOT_FOUND,
+                "returns the not-found value for an empty array");
     }
 
     private static void testFormatsFoundResult() {
@@ -47,6 +51,10 @@ final class BinarySearchTest {
         String result = BinarySearch.formatSearchResult(searchResult);
 
         assertEquals(expected, result, description);
+    }
+
+    private static int[] sampleArray() {
+        return new int[] { 2, 3, 4, 10, 40 };
     }
 
     private static void assertEquals(int expected, int actual, String description) {

@@ -28,6 +28,9 @@ final class BinarySearch {
 }
 
 final class BinarySearchDemo {
+    private BinarySearchDemo() {
+    }
+
     public static void main(String[] args) {
         for (SearchCase searchCase : searchCases()) {
             searchCase.verify();

@@ -30,20 +30,41 @@ public class TerminalBufferCharacterizationTest extends TestCase {
         EXPECTED.put("resizeFast/shrink", -1839959978485033550L);
         EXPECTED.put("resizeFast/expand", 1213315745879384306L);
         EXPECTED.put("resizeReflow/done", 4224870245243769065L);
+        EXPECTED.put("resizeReflow/blankAndScroll", 8335931869241220076L);
+        EXPECTED.put("resizeReflow/expandCols", 5730689743749656787L);
+        // Cursor-placement checkpoints (fingerprint above ignores cursor[]).
+        EXPECTED.put("resizeFast/shrink.cur", 12884901890L);
+        EXPECTED.put("resizeFast/expand.cur", 12884901893L);
+        EXPECTED.put("resizeReflow/done.cur", 17179869187L);
+        EXPECTED.put("resizeReflow/blankAndScroll.cur", 8589934592L);
+        EXPECTED.put("resizeReflow/expandCols.cur", 21474836480L);
+        EXPECTED.put("resizeReflow/scrollFlush", 1337946018642690756L);
+        EXPECTED.put("resizeReflow/scrollFlush.cur", 0L);
     }
 
     /** When true the tests only print observed fingerprints (used to capture the golden baseline) and assert nothing. */
     private static final boolean CAPTURE = Boolean.getBoolean("characterization.capture");
 
-    private void check(String name, TerminalBuffer buffer) {
-        long fp = fingerprint(buffer);
+    private void check(String name, long value) {
         if (CAPTURE) {
-            System.out.println("FP " + name + " " + fp);
+            System.out.println("FP " + name + " " + value);
             return;
         }
         Long expected = EXPECTED.get(name);
         assertNotNull("No expected fingerprint registered for " + name, expected);
-        assertEquals("Fingerprint changed for checkpoint " + name, (long) expected, fp);
+        assertEquals("Fingerprint changed for checkpoint " + name, (long) expected, value);
+    }
+
+    private void check(String name, TerminalBuffer buffer) {
+        check(name, fingerprint(buffer));
+    }
+
+    /**
+     * Pin the (column,row) cursor pair produced by a resize. The fingerprint hashes cell state only, so cursor
+     * placement (which the reflow's cursor-adjustment logic affects) needs its own checkpoint.
+     */
+    private void checkCursor(String name, int[] cursor) {
+        check(name, ((long) cursor[0] << 32) ^ (cursor[1] & 0xffffffffL));
     }
 
     /** Hash the full internal cell state of every active line (transcript + screen). */
@@ -134,10 +155,12 @@ public class TerminalBufferCharacterizationTest extends TestCase {
         // Same columns, fewer rows -> fast path (shrink).
         b.resize(10, 4, 50, cursor, TextStyle.NORMAL, false);
         check("resizeFast/shrink", b);
+        checkCursor("resizeFast/shrink.cur", cursor);
 
         // Same columns, more rows -> fast path (expand, pulls from transcript).
         b.resize(10, 7, 50, cursor, TextStyle.NORMAL, false);
         check("resizeFast/expand", b);
+        checkCursor("resizeFast/expand.cur", cursor);
     }
 
     public void testFingerprintResizeReflow() {
@@ -151,6 +174,62 @@ public class TerminalBufferCharacterizationTest extends TestCase {
         // Column change -> full reflow path.
         b.resize(6, 5, 50, cursor, TextStyle.NORMAL, false);
         check("resizeReflow/done", b);
+        checkCursor("resizeReflow/done.cur", cursor);
+    }
+
+    /**
+     * Reflow with a blank line in the middle (exercising the skipped-blank-line flush) and enough wrapped content to
+     * overflow the small screen, forcing scrolling while the cursor has already been placed on an early row.
+     */
+    public void testFingerprintResizeReflowBlankAndScroll() {
+        TerminalBuffer b = new TerminalBuffer(8, 50, 4);
+        writeString(b, 0, 0, "12345678");
+        b.setLineWrap(0);
+        // Row 1 left blank on purpose (blank line between non-blank rows).
+        writeString(b, 2, 0, "ABCDEFGH");
+        b.setLineWrap(2);
+        writeString(b, 3, 0, "xy");
+
+        int[] cursor = {2, 0}; // cursor on the first (early) row
+        b.resize(4, 4, 50, cursor, TextStyle.NORMAL, false);
+        check("resizeReflow/blankAndScroll", b);
+        checkCursor("resizeReflow/blankAndScroll.cur", cursor);
+    }
+
+    /**
+     * Reflow where the cursor is placed on an early row, output is then driven down to the last row by a long
+     * wrapped line, and a blank line sits just before more content -- so the skipped-blank-line flush scrolls the
+     * screen <em>while the cursor is already placed</em>. This is the exact case the {@code adjustPlacedCursor=false}
+     * argument in {@code advanceReflowRow} governs, so the cursor checkpoint pins it.
+     */
+    public void testFingerprintResizeReflowScrollDuringFlush() {
+        TerminalBuffer b = new TerminalBuffer(8, 50, 2);
+        writeString(b, 0, 0, "12345678"); // wraps to fill both new rows on reflow to 4 columns
+        b.setLineWrap(0);
+        // Row 1 left blank; the blank flush happens once the next content row is reached after scrolling occurs.
+        // Build a transcript row of content below so there is a non-blank row after the blank.
+        b.scrollDownOneLine(0, 2, TextStyle.NORMAL);
+        writeString(b, 1, 0, "ABCD");
+
+        int[] cursor = {0, -1}; // cursor on the (now transcript) wrapped row, column 0
+        b.resize(4, 2, 50, cursor, TextStyle.NORMAL, false);
+        check("resizeReflow/scrollFlush", b);
+        checkCursor("resizeReflow/scrollFlush.cur", cursor);
+    }
+
+    /** Reflow that widens the columns, re-joining previously wrapped lines. */
+    public void testFingerprintResizeReflowExpandCols() {
+        TerminalBuffer b = new TerminalBuffer(4, 50, 6);
+        writeString(b, 0, 0, "abcd");
+        b.setLineWrap(0);
+        writeString(b, 1, 0, "efgh");
+        b.setLineWrap(1);
+        writeString(b, 2, 0, "ij");
+
+        int[] cursor = {1, 1};
+        b.resize(8, 6, 50, cursor, TextStyle.NORMAL, false);
+        check("resizeReflow/expandCols", b);
+        checkCursor("resizeReflow/expandCols.cur", cursor);
     }
 
     // ---- Readable behaviour assertions ---------------------------------------------------------

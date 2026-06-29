@@ -103,19 +103,9 @@ public final class TerminalRow {
             if (wcwidth > 0) {
                 currentColumn += wcwidth;
                 if (currentColumn == column) {
-                    while (newCharIndex < mSpaceUsed) {
-                        // Skip combining chars.
-                        if (Character.isHighSurrogate(mText[newCharIndex])) {
-                            if (WcWidth.width(Character.toCodePoint(mText[newCharIndex], mText[newCharIndex + 1])) <= 0) {
-                                newCharIndex += 2;
-                            } else {
-                                break;
-                            }
-                        } else if (WcWidth.width(mText[newCharIndex]) <= 0) {
-                            newCharIndex++;
-                        } else {
-                            break;
-                        }
+                    // Skip any zero-width (e.g. combining) chars that belong to this column.
+                    while (newCharIndex < mSpaceUsed && WcWidth.width(mText, newCharIndex) <= 0) {
+                        newCharIndex += Character.isHighSurrogate(mText[newCharIndex]) ? 2 : 1;
                     }
                     return newCharIndex;
                 } else if (currentColumn > column) {

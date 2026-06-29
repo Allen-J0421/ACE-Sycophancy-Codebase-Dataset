@@ -6,11 +6,11 @@ class BinarySearch {
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] numbers, int target) {
+    public static int binarySearch(int[] numbers, int target) {
         return indexOf(numbers, target);
     }
 
-    static int indexOf(int[] numbers, int target) {
+    public static int indexOf(int[] numbers, int target) {
         int low = 0;
         int high = numbers.length - 1;
 

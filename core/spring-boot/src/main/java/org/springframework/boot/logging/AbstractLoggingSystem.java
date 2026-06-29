@@ -132,11 +132,13 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @see #getSpringInitializationConfig()
 	 */
 	protected String[] getSpringConfigLocations() {
-		String[] locations = getStandardConfigLocations();
-		for (int i = 0; i < locations.length; i++) {
-			String extension = StringUtils.getFilenameExtension(locations[i]);
+		String[] standardLocations = getStandardConfigLocations();
+		String[] locations = new String[standardLocations.length];
+		for (int i = 0; i < standardLocations.length; i++) {
+			String location = standardLocations[i];
+			String extension = StringUtils.getFilenameExtension(location);
 			int extensionLength = (extension != null) ? (extension.length() + 1) : 0;
-			locations[i] = locations[i].substring(0, locations[i].length() - extensionLength) + "-spring." + extension;
+			locations[i] = location.substring(0, location.length() - extensionLength) + "-spring." + extension;
 		}
 		return locations;
 	}

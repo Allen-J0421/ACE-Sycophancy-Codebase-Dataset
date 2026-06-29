@@ -533,7 +533,7 @@ public class SpringApplication {
 				sources.addFirst(new SimpleCommandLinePropertySource(args));
 			}
 		}
-		environment.getPropertySources().addLast(new ApplicationInfoPropertySource(this.mainApplicationClass));
+		sources.addLast(new ApplicationInfoPropertySource(this.mainApplicationClass));
 	}
 
 	/**
@@ -649,9 +649,10 @@ public class SpringApplication {
 	protected void logStartupProfileInfo(ConfigurableApplicationContext context) {
 		Log log = getApplicationLog();
 		if (log.isInfoEnabled()) {
-			List<String> activeProfiles = quoteProfiles(context.getEnvironment().getActiveProfiles());
+			Environment env = context.getEnvironment();
+			List<String> activeProfiles = quoteProfiles(env.getActiveProfiles());
 			if (ObjectUtils.isEmpty(activeProfiles)) {
-				List<String> defaultProfiles = quoteProfiles(context.getEnvironment().getDefaultProfiles());
+				List<String> defaultProfiles = quoteProfiles(env.getDefaultProfiles());
 				String message = String.format("%s default %s: ", defaultProfiles.size(),
 						(defaultProfiles.size() <= 1) ? "profile" : "profiles");
 				log.info("No active profile set, falling back to " + message
@@ -718,12 +719,8 @@ public class SpringApplication {
 	 * @return a ClassLoader (never null)
 	 */
 	public ClassLoader getClassLoader() {
-		if (this.resourceLoader != null) {
-			ClassLoader classLoader = this.resourceLoader.getClassLoader();
-			Assert.state(classLoader != null, "No classloader found");
-			return classLoader;
-		}
-		ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
+		ClassLoader classLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
+				: ClassUtils.getDefaultClassLoader();
 		Assert.state(classLoader != null, "No classloader found");
 		return classLoader;
 	}

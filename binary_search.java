@@ -1,5 +1,4 @@
 final class BinarySearch {
-    private static final int NOT_FOUND = -1;
     private static final int DEMO_TARGET = 10;
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
@@ -68,38 +67,39 @@ final class BinarySearch {
 
         return FOUND_MESSAGE_PREFIX + result.index();
     }
+}
 
-    static final class SearchResult {
-        private static final SearchResult NOT_FOUND_RESULT = new SearchResult(NOT_FOUND);
+final class SearchResult {
+    private static final int NOT_FOUND_INDEX = -1;
+    private static final SearchResult NOT_FOUND_RESULT = new SearchResult(NOT_FOUND_INDEX);
 
-        private final int index;
+    private final int index;
 
-        private SearchResult(int index) {
-            this.index = index;
+    private SearchResult(int index) {
+        this.index = index;
+    }
+
+    static SearchResult found(int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException("index must not be negative");
         }
 
-        private static SearchResult found(int index) {
-            if (index < 0) {
-                throw new IllegalArgumentException("index must not be negative");
-            }
+        return new SearchResult(index);
+    }
 
-            return new SearchResult(index);
-        }
+    static SearchResult notFound() {
+        return NOT_FOUND_RESULT;
+    }
 
-        private static SearchResult notFound() {
-            return NOT_FOUND_RESULT;
-        }
+    boolean isFound() {
+        return index != NOT_FOUND_INDEX;
+    }
 
-        boolean isFound() {
-            return index != NOT_FOUND;
-        }
+    int index() {
+        return index;
+    }
 
-        int index() {
-            return index;
-        }
-
-        int indexOrNotFound() {
-            return index;
-        }
+    int indexOrNotFound() {
+        return index;
     }
 }

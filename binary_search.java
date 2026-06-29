@@ -1,5 +1,4 @@
 final class BinarySearch {
-    private static final int[] DEMO_VALUES = { 2, 3, 4, 10, 40 };
     private static final int DEMO_TARGET = 10;
     private static final int NOT_FOUND = -1;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
@@ -38,9 +37,13 @@ final class BinarySearch {
     }
 
     private static void runDemo() {
-        int index = binarySearch(DEMO_VALUES, DEMO_TARGET);
+        int index = binarySearch(demoValues(), DEMO_TARGET);
 
         System.out.println(formatSearchResult(index));
+    }
+
+    private static int[] demoValues() {
+        return new int[] { 2, 3, 4, 10, 40 };
     }
 
     private static String formatSearchResult(int index) {

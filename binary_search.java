@@ -2,8 +2,6 @@ import java.util.Objects;
 
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
-    private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
-    private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
 
     private BinarySearch() {
     }
@@ -36,15 +34,32 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
-        final int[] numbers = {2, 3, 4, 10, 40};
-        final int target = 10;
-        final int result = binarySearch(numbers, target);
-
-        System.out.println(formatSearchResult(result));
+        BinarySearchDemo.run();
     }
 
     private static int midpoint(int low, int high) {
         return low + (high - low) / 2;
+    }
+}
+
+final class BinarySearchDemo {
+    private static final int NOT_FOUND = -1;
+    private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
+    private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
+
+    private BinarySearchDemo() {
+    }
+
+    public static void main(String[] args) {
+        run();
+    }
+
+    static void run() {
+        final int[] numbers = {2, 3, 4, 10, 40};
+        final int target = 10;
+        final int result = BinarySearch.binarySearch(numbers, target);
+
+        System.out.println(formatSearchResult(result));
     }
 
     private static String formatSearchResult(int index) {

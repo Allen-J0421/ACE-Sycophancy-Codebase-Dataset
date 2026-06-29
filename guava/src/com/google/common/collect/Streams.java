@@ -333,9 +333,9 @@ public final class Streams {
   public static <A extends @Nullable Object, B extends @Nullable Object, R extends @Nullable Object>
       Stream<R> zip(
           Stream<A> streamA, Stream<B> streamB, BiFunction<? super A, ? super B, R> function) {
-    checkNotNull(streamA);
-    checkNotNull(streamB);
-    checkNotNull(function);
+    checkNotNull(streamA, "streamA");
+    checkNotNull(streamB, "streamB");
+    checkNotNull(function, "function");
     boolean isParallel = streamA.isParallel() || streamB.isParallel(); // same as Stream.concat
     Spliterator<A> splitrA = streamA.spliterator();
     Spliterator<B> splitrB = streamB.spliterator();
@@ -395,7 +395,7 @@ public final class Streams {
   @Beta
   public static <A extends @Nullable Object, B extends @Nullable Object> void forEachPair(
       Stream<A> streamA, Stream<B> streamB, BiConsumer<? super A, ? super B> consumer) {
-    checkNotNull(consumer);
+    checkNotNull(consumer, "consumer");
 
     if (streamA.isParallel() || streamB.isParallel()) {
       zip(streamA, streamB, TemporaryPair::new).forEach(pair -> consumer.accept(pair.a, pair.b));
@@ -443,8 +443,8 @@ public final class Streams {
    */
   public static <T extends @Nullable Object, R extends @Nullable Object> Stream<R> mapWithIndex(
       Stream<T> stream, FunctionWithIndex<? super T, ? extends R> function) {
-    checkNotNull(stream);
-    checkNotNull(function);
+    checkNotNull(stream, "stream");
+    checkNotNull(function, "function");
     boolean isParallel = stream.isParallel();
     Spliterator<T> fromSpliterator = stream.spliterator();
 
@@ -527,8 +527,8 @@ public final class Streams {
    */
   public static <R extends @Nullable Object> Stream<R> mapWithIndex(
       IntStream stream, IntFunctionWithIndex<R> function) {
-    checkNotNull(stream);
-    checkNotNull(function);
+    checkNotNull(stream, "stream");
+    checkNotNull(function, "function");
     boolean isParallel = stream.isParallel();
     Spliterator.OfInt fromSpliterator = stream.spliterator();
 
@@ -606,8 +606,8 @@ public final class Streams {
    */
   public static <R extends @Nullable Object> Stream<R> mapWithIndex(
       LongStream stream, LongFunctionWithIndex<R> function) {
-    checkNotNull(stream);
-    checkNotNull(function);
+    checkNotNull(stream, "stream");
+    checkNotNull(function, "function");
     boolean isParallel = stream.isParallel();
     Spliterator.OfLong fromSpliterator = stream.spliterator();
 
@@ -685,8 +685,8 @@ public final class Streams {
    */
   public static <R extends @Nullable Object> Stream<R> mapWithIndex(
       DoubleStream stream, DoubleFunctionWithIndex<R> function) {
-    checkNotNull(stream);
-    checkNotNull(function);
+    checkNotNull(stream, "stream");
+    checkNotNull(function, "function");
     boolean isParallel = stream.isParallel();
     Spliterator.OfDouble fromSpliterator = stream.spliterator();
 

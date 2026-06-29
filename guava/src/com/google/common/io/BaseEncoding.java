@@ -178,7 +178,7 @@ public abstract class BaseEncoding {
   @J2ktIncompatible
   @GwtIncompatible // ByteSink,CharSink
   public final ByteSink encodingSink(CharSink encodedSink) {
-    checkNotNull(encodedSink);
+    checkNotNull(encodedSink, "encodedSink");
     return new ByteSink() {
       @Override
       public OutputStream openStream() throws IOException {
@@ -251,7 +251,7 @@ public abstract class BaseEncoding {
   @J2ktIncompatible
   @GwtIncompatible // ByteSource,CharSource
   public final ByteSource decodingSource(CharSource encodedSource) {
-    checkNotNull(encodedSource);
+    checkNotNull(encodedSource, "encodedSource");
     return new ByteSource() {
       @Override
       public InputStream openStream() throws IOException {
@@ -271,7 +271,7 @@ public abstract class BaseEncoding {
   abstract int decodeTo(byte[] target, CharSequence chars) throws DecodingException;
 
   CharSequence trimTrailingPadding(CharSequence chars) {
-    return checkNotNull(chars);
+    return checkNotNull(chars, "chars");
   }
 
   // Modified encoding generators
@@ -450,8 +450,8 @@ public abstract class BaseEncoding {
     }
 
     private Alphabet(String name, char[] chars, byte[] decodabet, boolean ignoreCase) {
-      this.name = checkNotNull(name);
-      this.chars = checkNotNull(chars);
+      this.name = checkNotNull(name, "name");
+      this.chars = checkNotNull(chars, "chars");
       try {
         this.bitsPerChar = log2(chars.length, UNNECESSARY);
       } catch (ArithmeticException e) {
@@ -624,7 +624,7 @@ public abstract class BaseEncoding {
     }
 
     StandardBaseEncoding(Alphabet alphabet, @Nullable Character paddingChar) {
-      this.alphabet = checkNotNull(alphabet);
+      this.alphabet = checkNotNull(alphabet, "alphabet");
       checkArgument(
           paddingChar == null || !alphabet.matches(paddingChar),
           "Padding character %s was already in alphabet",
@@ -641,7 +641,7 @@ public abstract class BaseEncoding {
     @GwtIncompatible // Writer,OutputStream
     @Override
     public OutputStream encodingStream(Writer out) {
-      checkNotNull(out);
+      checkNotNull(out, "out");
       return new OutputStream() {
         int bitBuffer = 0;
         int bitBufferLength = 0;
@@ -685,7 +685,7 @@ public abstract class BaseEncoding {
 
     @Override
     void encodeTo(Appendable target, byte[] bytes, int off, int len) throws IOException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       checkPositionIndexes(off, off + len, bytes.length);
       for (int i = 0; i < len; i += alphabet.bytesPerChunk) {
         encodeChunkTo(target, bytes, off + i, min(alphabet.bytesPerChunk, len - i));
@@ -693,7 +693,7 @@ public abstract class BaseEncoding {
     }
 
     void encodeChunkTo(Appendable target, byte[] bytes, int off, int len) throws IOException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       checkPositionIndexes(off, off + len, bytes.length);
       checkArgument(len <= alphabet.bytesPerChunk);
       long bitBuffer = 0;
@@ -724,7 +724,7 @@ public abstract class BaseEncoding {
 
     @Override
     CharSequence trimTrailingPadding(CharSequence chars) {
-      checkNotNull(chars);
+      checkNotNull(chars, "chars");
       if (paddingChar == null) {
         return chars;
       }
@@ -740,7 +740,7 @@ public abstract class BaseEncoding {
 
     @Override
     public boolean canDecode(CharSequence chars) {
-      checkNotNull(chars);
+      checkNotNull(chars, "chars");
       chars = trimTrailingPadding(chars);
       if (!alphabet.isValidPaddingStartPosition(chars.length())) {
         return false;
@@ -755,7 +755,7 @@ public abstract class BaseEncoding {
 
     @Override
     int decodeTo(byte[] target, CharSequence chars) throws DecodingException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       chars = trimTrailingPadding(chars);
       if (!alphabet.isValidPaddingStartPosition(chars.length())) {
         throw new DecodingException("Invalid input length " + chars.length());
@@ -782,7 +782,7 @@ public abstract class BaseEncoding {
     @J2ktIncompatible
     @GwtIncompatible // Reader,InputStream
     public InputStream decodingStream(Reader reader) {
-      checkNotNull(reader);
+      checkNotNull(reader, "reader");
       return new InputStream() {
         int bitBuffer = 0;
         int bitBufferLength = 0;
@@ -968,7 +968,7 @@ public abstract class BaseEncoding {
 
     @Override
     void encodeTo(Appendable target, byte[] bytes, int off, int len) throws IOException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       checkPositionIndexes(off, off + len, bytes.length);
       for (int i = 0; i < len; ++i) {
         int b = bytes[off + i] & 0xFF;
@@ -979,7 +979,7 @@ public abstract class BaseEncoding {
 
     @Override
     int decodeTo(byte[] target, CharSequence chars) throws DecodingException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       if (chars.length() % 2 == 1) {
         throw new DecodingException("Invalid input length " + chars.length());
       }
@@ -1009,7 +1009,7 @@ public abstract class BaseEncoding {
 
     @Override
     void encodeTo(Appendable target, byte[] bytes, int off, int len) throws IOException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       checkPositionIndexes(off, off + len, bytes.length);
       int i = off;
       for (int remaining = len; remaining >= 3; remaining -= 3) {
@@ -1026,7 +1026,7 @@ public abstract class BaseEncoding {
 
     @Override
     int decodeTo(byte[] target, CharSequence chars) throws DecodingException {
-      checkNotNull(target);
+      checkNotNull(target, "target");
       chars = trimTrailingPadding(chars);
       if (!alphabet.isValidPaddingStartPosition(chars.length())) {
         throw new DecodingException("Invalid input length " + chars.length());
@@ -1057,8 +1057,8 @@ public abstract class BaseEncoding {
   @J2ktIncompatible
   @GwtIncompatible
   static Reader ignoringReader(Reader delegate, String toIgnore) {
-    checkNotNull(delegate);
-    checkNotNull(toIgnore);
+    checkNotNull(delegate, "delegate");
+    checkNotNull(toIgnore, "toIgnore");
     return new Reader() {
       @Override
       public int read() throws IOException {
@@ -1083,8 +1083,8 @@ public abstract class BaseEncoding {
 
   static Appendable separatingAppendable(
       Appendable delegate, String separator, int afterEveryChars) {
-    checkNotNull(delegate);
-    checkNotNull(separator);
+    checkNotNull(delegate, "delegate");
+    checkNotNull(separator, "separator");
     checkArgument(afterEveryChars > 0);
     return new Appendable() {
       int charsUntilSeparator = afterEveryChars;
@@ -1145,8 +1145,8 @@ public abstract class BaseEncoding {
     private final int afterEveryChars;
 
     SeparatedBaseEncoding(BaseEncoding delegate, String separator, int afterEveryChars) {
-      this.delegate = checkNotNull(delegate);
-      this.separator = checkNotNull(separator);
+      this.delegate = checkNotNull(delegate, "delegate");
+      this.separator = checkNotNull(separator, "separator");
       this.afterEveryChars = afterEveryChars;
       checkArgument(
           afterEveryChars > 0, "Cannot add a separator after every %s chars", afterEveryChars);

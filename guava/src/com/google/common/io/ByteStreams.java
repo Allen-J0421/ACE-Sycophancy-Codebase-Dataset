@@ -108,8 +108,8 @@ public final class ByteStreams {
    */
   @CanIgnoreReturnValue
   public static long copy(InputStream from, OutputStream to) throws IOException {
-    checkNotNull(from);
-    checkNotNull(to);
+    checkNotNull(from, "from");
+    checkNotNull(to, "to");
     byte[] buf = createBuffer();
     long total = 0;
     while (true) {
@@ -135,8 +135,8 @@ public final class ByteStreams {
   @J2ktIncompatible
   @CanIgnoreReturnValue
   public static long copy(ReadableByteChannel from, WritableByteChannel to) throws IOException {
-    checkNotNull(from);
-    checkNotNull(to);
+    checkNotNull(from, "from");
+    checkNotNull(to, "to");
     if (from instanceof FileChannel) {
       FileChannel sourceChannel = (FileChannel) from;
       long oldPosition = sourceChannel.position();
@@ -239,7 +239,7 @@ public final class ByteStreams {
    * @throws IOException if an I/O error occurs
    */
   public static byte[] toByteArray(InputStream in) throws IOException {
-    checkNotNull(in);
+    checkNotNull(in, "in");
     return toByteArrayInternal(in, new ArrayDeque<byte[]>(TO_BYTE_ARRAY_DEQUE_SIZE), 0);
   }
 
@@ -667,13 +667,13 @@ public final class ByteStreams {
         /** Discards the specified byte array. */
         @Override
         public void write(byte[] b) {
-          checkNotNull(b);
+          checkNotNull(b, "b");
         }
 
         /** Discards the specified byte array. */
         @Override
         public void write(byte[] b, int off, int len) {
-          checkNotNull(b);
+          checkNotNull(b, "b");
           checkPositionIndexes(off, off + len, b.length);
         }
 
@@ -718,7 +718,7 @@ public final class ByteStreams {
 
     LimitedInputStream(InputStream in, long limit) {
       super(in);
-      checkNotNull(in);
+      checkNotNull(in, "in");
       checkArgument(limit >= 0, "limit must be non-negative");
       left = limit;
     }
@@ -896,8 +896,8 @@ public final class ByteStreams {
   @J2ktIncompatible
   public static <T extends @Nullable Object> T readBytes(
       InputStream input, ByteProcessor<T> processor) throws IOException {
-    checkNotNull(input);
-    checkNotNull(processor);
+    checkNotNull(input, "input");
+    checkNotNull(processor, "processor");
 
     byte[] buf = createBuffer();
     int read;
@@ -935,8 +935,8 @@ public final class ByteStreams {
   // Sometimes you don't care how many bytes you actually read, I guess.
   // (You know that it's either going to read len bytes or stop at EOF.)
   public static int read(InputStream in, byte[] b, int off, int len) throws IOException {
-    checkNotNull(in);
-    checkNotNull(b);
+    checkNotNull(in, "in");
+    checkNotNull(b, "b");
     if (len < 0) {
       throw new IndexOutOfBoundsException(String.format("len (%s) cannot be negative", len));
     }

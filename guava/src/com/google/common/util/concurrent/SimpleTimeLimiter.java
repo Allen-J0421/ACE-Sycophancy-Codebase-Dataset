@@ -54,7 +54,7 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   private final ExecutorService executor;
 
   private SimpleTimeLimiter(ExecutorService executor) {
-    this.executor = checkNotNull(executor);
+    this.executor = checkNotNull(executor, "executor");
   }
 
   /**
@@ -75,9 +75,9 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   @Override
   public <T> T newProxy(
       T target, Class<T> interfaceType, long timeoutDuration, TimeUnit timeoutUnit) {
-    checkNotNull(target);
-    checkNotNull(interfaceType);
-    checkNotNull(timeoutUnit);
+    checkNotNull(target, "target");
+    checkNotNull(interfaceType, "interfaceType");
+    checkNotNull(timeoutUnit, "timeoutUnit");
     checkPositiveTimeout(timeoutDuration);
     checkArgument(interfaceType.isInterface(), "interfaceType must be an interface type");
 
@@ -111,8 +111,8 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   private <T extends @Nullable Object> T callWithTimeout(
       Callable<T> callable, long timeoutDuration, TimeUnit timeoutUnit, boolean amInterruptible)
       throws Exception {
-    checkNotNull(callable);
-    checkNotNull(timeoutUnit);
+    checkNotNull(callable, "callable");
+    checkNotNull(timeoutUnit, "timeoutUnit");
     checkPositiveTimeout(timeoutDuration);
 
     Future<T> future = executor.submit(callable);
@@ -138,8 +138,8 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   public <T extends @Nullable Object> T callWithTimeout(
       Callable<T> callable, long timeoutDuration, TimeUnit timeoutUnit)
       throws TimeoutException, InterruptedException, ExecutionException {
-    checkNotNull(callable);
-    checkNotNull(timeoutUnit);
+    checkNotNull(callable, "callable");
+    checkNotNull(timeoutUnit, "timeoutUnit");
     checkPositiveTimeout(timeoutDuration);
 
     Future<T> future = executor.submit(callable);
@@ -161,8 +161,8 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   public <T extends @Nullable Object> T callUninterruptiblyWithTimeout(
       Callable<T> callable, long timeoutDuration, TimeUnit timeoutUnit)
       throws TimeoutException, ExecutionException {
-    checkNotNull(callable);
-    checkNotNull(timeoutUnit);
+    checkNotNull(callable, "callable");
+    checkNotNull(timeoutUnit, "timeoutUnit");
     checkPositiveTimeout(timeoutDuration);
 
     Future<T> future = executor.submit(callable);
@@ -181,8 +181,8 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   @Override
   public void runWithTimeout(Runnable runnable, long timeoutDuration, TimeUnit timeoutUnit)
       throws TimeoutException, InterruptedException {
-    checkNotNull(runnable);
-    checkNotNull(timeoutUnit);
+    checkNotNull(runnable, "runnable");
+    checkNotNull(timeoutUnit, "timeoutUnit");
     checkPositiveTimeout(timeoutDuration);
 
     Future<?> future = executor.submit(runnable);
@@ -201,8 +201,8 @@ public final class SimpleTimeLimiter implements TimeLimiter {
   @Override
   public void runUninterruptiblyWithTimeout(
       Runnable runnable, long timeoutDuration, TimeUnit timeoutUnit) throws TimeoutException {
-    checkNotNull(runnable);
-    checkNotNull(timeoutUnit);
+    checkNotNull(runnable, "runnable");
+    checkNotNull(timeoutUnit, "timeoutUnit");
     checkPositiveTimeout(timeoutDuration);
 
     Future<?> future = executor.submit(runnable);

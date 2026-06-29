@@ -40,15 +40,15 @@ final class BinarySearchDemo {
     }
 
     private static SearchCase[] searchCases() {
-        int[] sampleValues = { 2, 3, 4, 10, 40 };
-        int[] singleValue = { 7 };
+        int[] sortedValues = { 2, 3, 4, 10, 40 };
+        int[] singleSortedValue = { 7 };
 
         return new SearchCase[] {
-            SearchCase.expect(sampleValues, 10, 3),
-            SearchCase.expect(sampleValues, 5, BinarySearch.NOT_FOUND),
+            SearchCase.expect(sortedValues, 10, 3),
+            SearchCase.expect(sortedValues, 5, BinarySearch.NOT_FOUND),
             SearchCase.expect(new int[] {}, 10, BinarySearch.NOT_FOUND),
-            SearchCase.expect(singleValue, 7, 0),
-            SearchCase.expect(singleValue, 3, BinarySearch.NOT_FOUND)
+            SearchCase.expect(singleSortedValue, 7, 0),
+            SearchCase.expect(singleSortedValue, 3, BinarySearch.NOT_FOUND)
         };
     }
 }

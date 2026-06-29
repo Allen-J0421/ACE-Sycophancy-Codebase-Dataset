@@ -50,7 +50,7 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
         Property.NodeScope
     );
 
-    private static String GC_COLLECTOR_PREFIX = "monitor.jvm.gc.collector.";
+    private static final String GC_COLLECTOR_PREFIX = "monitor.jvm.gc.collector.";
     public static final Setting<Settings> GC_SETTING = Setting.groupSetting(GC_COLLECTOR_PREFIX, Property.NodeScope);
 
     public static final Setting<Integer> GC_OVERHEAD_WARN_SETTING = Setting.intSetting(
@@ -136,34 +136,33 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
         gcThresholds.putIfAbsent("default", new GcThreshold("default", 10000, 5000, 2000));
         this.gcThresholds = unmodifiableMap(gcThresholds);
 
-        if (GC_OVERHEAD_WARN_SETTING.get(settings) <= GC_OVERHEAD_INFO_SETTING.get(settings)) {
+        final int warnOverhead = GC_OVERHEAD_WARN_SETTING.get(settings);
+        final int infoOverhead = GC_OVERHEAD_INFO_SETTING.get(settings);
+        final int debugOverhead = GC_OVERHEAD_DEBUG_SETTING.get(settings);
+        if (warnOverhead <= infoOverhead) {
             final String message = String.format(
                 Locale.ROOT,
                 "[%s] must be greater than [%s] [%d] but was [%d]",
                 GC_OVERHEAD_WARN_SETTING.getKey(),
                 GC_OVERHEAD_INFO_SETTING.getKey(),
-                GC_OVERHEAD_INFO_SETTING.get(settings),
-                GC_OVERHEAD_WARN_SETTING.get(settings)
+                infoOverhead,
+                warnOverhead
             );
             throw new IllegalArgumentException(message);
         }
-        if (GC_OVERHEAD_INFO_SETTING.get(settings) <= GC_OVERHEAD_DEBUG_SETTING.get(settings)) {
+        if (infoOverhead <= debugOverhead) {
             final String message = String.format(
                 Locale.ROOT,
                 "[%s] must be greater than [%s] [%d] but was [%d]",
                 GC_OVERHEAD_INFO_SETTING.getKey(),
                 GC_OVERHEAD_DEBUG_SETTING.getKey(),
-                GC_OVERHEAD_DEBUG_SETTING.get(settings),
-                GC_OVERHEAD_INFO_SETTING.get(settings)
+                debugOverhead,
+                infoOverhead
             );
             throw new IllegalArgumentException(message);
         }
 
-        this.gcOverheadThreshold = new GcOverheadThreshold(
-            GC_OVERHEAD_WARN_SETTING.get(settings),
-            GC_OVERHEAD_INFO_SETTING.get(settings),
-            GC_OVERHEAD_DEBUG_SETTING.get(settings)
-        );
+        this.gcOverheadThreshold = new GcOverheadThreshold(warnOverhead, infoOverhead, debugOverhead);
 
         logger.debug(
             "enabled [{}], interval [{}], gc_threshold [{}], overhead [{}, {}, {}]",
@@ -447,9 +446,11 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
         }
 
         final void monitorSlowGc(JvmStats currentJvmStats, long elapsed) {
-            for (int i = 0; i < currentJvmStats.getGc().getCollectors().length; i++) {
-                GarbageCollector gc = currentJvmStats.getGc().getCollectors()[i];
-                GarbageCollector prevGc = lastJvmStats.getGc().getCollectors()[i];
+            GarbageCollector[] collectors = currentJvmStats.getGc().getCollectors();
+            GarbageCollector[] prevCollectors = lastJvmStats.getGc().getCollectors();
+            for (int i = 0; i < collectors.length; i++) {
+                GarbageCollector gc = collectors[i];
+                GarbageCollector prevGc = prevCollectors[i];
 
                 // no collection has happened
                 long collections = gc.getCollectionCount() - prevGc.getCollectionCount();
@@ -496,9 +497,11 @@ public class JvmGcMonitorService extends AbstractLifecycleComponent {
 
         final void monitorGcOverhead(final JvmStats currentJvmStats, final long elapsed) {
             long current = 0;
-            for (int i = 0; i < currentJvmStats.getGc().getCollectors().length; i++) {
-                GarbageCollector gc = currentJvmStats.getGc().getCollectors()[i];
-                GarbageCollector prevGc = lastJvmStats.getGc().getCollectors()[i];
+            GarbageCollector[] collectors = currentJvmStats.getGc().getCollectors();
+            GarbageCollector[] prevCollectors = lastJvmStats.getGc().getCollectors();
+            for (int i = 0; i < collectors.length; i++) {
+                GarbageCollector gc = collectors[i];
+                GarbageCollector prevGc = prevCollectors[i];
                 current += gc.getCollectionTime().millis() - prevGc.getCollectionTime().millis();
             }
             checkGcOverhead(current, elapsed, seq);

@@ -31,7 +31,7 @@ class BinarySearch {
     }
 
     /**
-     * Returns the index of {@code target} in a sorted array, or {@code -1} when absent.
+     * @see #indexOf(int[], int)
      */
     public static int binarySearch(int[] numbers, int target) {
         return indexOf(numbers, target);

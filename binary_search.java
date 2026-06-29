@@ -29,6 +29,10 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
+        runSampleSearch();
+    }
+
+    private static void runSampleSearch() {
         int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(formatResultMessage(result));
@@ -38,11 +42,15 @@ final class BinarySearch {
         return lowerBound + (upperBound - lowerBound) / 2;
     }
 
-    private static String formatResultMessage(int result) {
-        if (result == NOT_FOUND) {
+    private static String formatResultMessage(int index) {
+        if (!isFound(index)) {
             return "Element is not present in array";
         }
 
-        return "Element is present at index " + result;
+        return "Element is present at index " + index;
+    }
+
+    private static boolean isFound(int index) {
+        return index != NOT_FOUND;
     }
 }

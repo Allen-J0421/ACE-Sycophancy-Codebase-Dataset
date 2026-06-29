@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.server.servlet.context;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -174,7 +174,7 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses, "'annotatedClasses' must not be empty");
-		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
+		Collections.addAll(this.annotatedClasses, annotatedClasses);
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		super.postProcessBeanFactory(beanFactory);
-		if (this.basePackages != null && this.basePackages.length > 0) {
+		if (this.basePackages != null) {
 			this.scanner.scan(this.basePackages);
 		}
 		if (!this.annotatedClasses.isEmpty()) {

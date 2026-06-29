@@ -437,7 +437,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 		private boolean matchesTargetType(ResolvableType targetType) {
 			ResolvableType ours = this.types.target();
 			return targetType.getType() instanceof Class || targetType.isAssignableFrom(ours)
-					|| this.types.target().hasUnresolvableGenerics();
+					|| ours.hasUnresolvableGenerics();
 		}
 
 		protected final boolean conditionalConverterCandidateMatches(Object conditionalConverterCandidate,

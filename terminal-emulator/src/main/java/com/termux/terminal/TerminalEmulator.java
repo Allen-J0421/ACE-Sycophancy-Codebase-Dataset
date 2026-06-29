@@ -758,12 +758,12 @@ public final class TerminalEmulator {
         int bottomSource = Math.min(Math.max(getArg(2, mRows, true) + effectiveTopMargin, topSource), mRows);
         int rightSource = Math.min(Math.max(getArg(3, mColumns, true) + effectiveLeftMargin, leftSource), mColumns);
         // int sourcePage = getArg(4, 1, true);
-        int destionationTop = Math.min(getArg(5, 1, true) - 1 + effectiveTopMargin, mRows);
+        int destinationTop = Math.min(getArg(5, 1, true) - 1 + effectiveTopMargin, mRows);
         int destinationLeft = Math.min(getArg(6, 1, true) - 1 + effectiveLeftMargin, mColumns);
         // int destinationPage = getArg(7, 1, true);
-        int heightToCopy = Math.min(mRows - destionationTop, bottomSource - topSource);
+        int heightToCopy = Math.min(mRows - destinationTop, bottomSource - topSource);
         int widthToCopy = Math.min(mColumns - destinationLeft, rightSource - leftSource);
-        mScreen.blockCopy(leftSource, topSource, widthToCopy, heightToCopy, destinationLeft, destionationTop);
+        mScreen.blockCopy(leftSource, topSource, widthToCopy, heightToCopy, destinationLeft, destinationTop);
     }
 
     /** DECSERA (${{), DECFRA ($x), DECERA ($z): selectively erase, fill, or erase a rectangular area. */

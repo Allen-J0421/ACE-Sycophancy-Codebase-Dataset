@@ -1,25 +1,27 @@
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
+    private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
+    private static final int SAMPLE_TARGET = 10;
 
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] array, int target) {
-        int low = 0;
-        int high = array.length - 1;
+    static int binarySearch(int[] sortedValues, int target) {
+        int lowerBound = 0;
+        int upperBound = sortedValues.length - 1;
 
-        while (low <= high) {
-            int middle = low + (high - low) / 2;
-            int middleValue = array[middle];
+        while (lowerBound <= upperBound) {
+            int candidateIndex = midpoint(lowerBound, upperBound);
+            int candidateValue = sortedValues[candidateIndex];
 
-            if (middleValue == target) {
-                return middle;
+            if (candidateValue == target) {
+                return candidateIndex;
             }
 
-            if (middleValue < target) {
-                low = middle + 1;
+            if (candidateValue < target) {
+                lowerBound = candidateIndex + 1;
             } else {
-                high = middle - 1;
+                upperBound = candidateIndex - 1;
             }
         }
 
@@ -27,11 +29,13 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int[] array = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(array, target);
+        int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(formatResultMessage(result));
+    }
+
+    private static int midpoint(int lowerBound, int upperBound) {
+        return lowerBound + (upperBound - lowerBound) / 2;
     }
 
     private static String formatResultMessage(int result) {

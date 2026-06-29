@@ -15,11 +15,11 @@ final class BinarySearch {
             int middle = midpoint(left, right);
             int comparison = Integer.compare(values[middle], target);
 
-            if (comparison == 0) {
+            if (isMatch(comparison)) {
                 return middle;
             }
 
-            if (comparison < 0) {
+            if (shouldSearchRight(comparison)) {
                 left = middle + 1;
             } else {
                 right = middle - 1;
@@ -31,6 +31,14 @@ final class BinarySearch {
 
     private static int midpoint(int left, int right) {
         return left + (right - left) / 2;
+    }
+
+    private static boolean isMatch(int comparison) {
+        return comparison == 0;
+    }
+
+    private static boolean shouldSearchRight(int comparison) {
+        return comparison < 0;
     }
 
     private static String formatSearchResult(int result) {

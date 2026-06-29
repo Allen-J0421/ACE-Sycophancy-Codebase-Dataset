@@ -1,5 +1,5 @@
 class BinarySearch {
-    private static final int[] SAMPLE_NUMBERS = {2, 3, 4, 10, 40};
+    private static final int[] SORTED_SAMPLE_NUMBERS = {2, 3, 4, 10, 40};
     private static final int SAMPLE_TARGET = 10;
     private static final int NOT_FOUND = -1;
 
@@ -7,6 +7,10 @@ class BinarySearch {
     }
 
     static int indexOf(int[] numbers, int target) {
+        if (numbers == null) {
+            throw new IllegalArgumentException("numbers must not be null");
+        }
+
         int low = 0;
         int high = numbers.length - 1;
 
@@ -41,7 +45,7 @@ class BinarySearch {
     }
 
     private static void runDemo() {
-        int result = indexOf(SAMPLE_NUMBERS, SAMPLE_TARGET);
+        int result = indexOf(SORTED_SAMPLE_NUMBERS, SAMPLE_TARGET);
         System.out.println(formatSearchResult(result));
     }
 }

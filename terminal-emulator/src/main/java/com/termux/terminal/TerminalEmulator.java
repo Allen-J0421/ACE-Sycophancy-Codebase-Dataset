@@ -2215,13 +2215,7 @@ public final class TerminalEmulator {
                 oscSetOrReportSpecialColors(value, textParameter, bellOrStringTerminator);
                 break;
             case 52: // Manipulate Selection Data. Skip the optional first selection parameter(s).
-                int startIndex = textParameter.indexOf(";") + 1;
-                try {
-                    String clipboardText = new String(Base64.decode(textParameter.substring(startIndex), 0), StandardCharsets.UTF_8);
-                    mSession.onCopyTextToClipboard(clipboardText);
-                } catch (Exception e) {
-                    Logger.logError(mClient, LOG_TAG, "OSC Manipulate selection, invalid string '" + textParameter + "");
-                }
+                oscManipulateSelection(textParameter);
                 break;
             case 104:
                 oscResetColors(textParameter);
@@ -2239,6 +2233,17 @@ public final class TerminalEmulator {
                 break;
         }
         finishSequence();
+    }
+
+    /** OSC 52 — copy base64-decoded text to clipboard. Skips the optional selection-type prefix before ';'. */
+    private void oscManipulateSelection(String textParameter) {
+        int startIndex = textParameter.indexOf(";") + 1;
+        try {
+            String clipboardText = new String(Base64.decode(textParameter.substring(startIndex), 0), StandardCharsets.UTF_8);
+            mSession.onCopyTextToClipboard(clipboardText);
+        } catch (Exception e) {
+            Logger.logError(mClient, LOG_TAG, "OSC Manipulate selection, invalid string '" + textParameter + "");
+        }
     }
 
     /**

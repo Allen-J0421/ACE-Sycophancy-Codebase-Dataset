@@ -15,7 +15,7 @@ class BinarySearch {
         int right = arr.length - 1;
 
         while (left <= right) {
-            int mid = left + (right - left) / 2;
+            int mid = midpoint(left, right);
             int value = arr[mid];
 
             if (value == target) {
@@ -30,6 +30,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int left, int right) {
+        return left + (right - left) / 2;
     }
 
     private static String formatSearchResult(int target, int result) {

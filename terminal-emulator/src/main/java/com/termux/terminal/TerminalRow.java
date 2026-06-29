@@ -207,16 +207,7 @@ public final class TerminalRow {
         final int javaCharDifference = newCharactersUsedForColumn - oldCharactersUsedForColumn;
         if (javaCharDifference > 0) {
             // Shift the rest of the line right.
-            int oldCharactersAfterColumn = mSpaceUsed - oldNextColumnIndex;
-            if (mSpaceUsed + javaCharDifference > text.length) {
-                // We need to grow the array
-                char[] newText = new char[text.length + mColumns];
-                System.arraycopy(text, 0, newText, 0, oldNextColumnIndex);
-                System.arraycopy(text, oldNextColumnIndex, newText, newNextColumnIndex, oldCharactersAfterColumn);
-                mText = text = newText;
-            } else {
-                System.arraycopy(text, oldNextColumnIndex, text, newNextColumnIndex, oldCharactersAfterColumn);
-            }
+            text = shiftTail(text, oldNextColumnIndex, javaCharDifference);
         } else if (javaCharDifference < 0) {
             // Shift the rest of the line left.
             System.arraycopy(text, oldNextColumnIndex, text, newNextColumnIndex, mSpaceUsed - oldNextColumnIndex);
@@ -229,14 +220,7 @@ public final class TerminalRow {
 
         if (oldCodePointDisplayWidth == 2 && newCodePointDisplayWidth == 1) {
             // Replace second half of wide char with a space. Which mean that we actually add a ' ' java character.
-            if (mSpaceUsed + 1 > text.length) {
-                char[] newText = new char[text.length + mColumns];
-                System.arraycopy(text, 0, newText, 0, newNextColumnIndex);
-                System.arraycopy(text, newNextColumnIndex, newText, newNextColumnIndex + 1, mSpaceUsed - newNextColumnIndex);
-                mText = text = newText;
-            } else {
-                System.arraycopy(text, newNextColumnIndex, text, newNextColumnIndex + 1, mSpaceUsed - newNextColumnIndex);
-            }
+            text = shiftTail(text, newNextColumnIndex, 1);
             text[newNextColumnIndex] = ' ';
 
             ++mSpaceUsed;
@@ -257,6 +241,25 @@ public final class TerminalRow {
                 mSpaceUsed -= nextLen;
             }
         }
+    }
+
+    /**
+     * Shift the tail of mText (chars from {@code splitAt} onward) right by {@code count} positions,
+     * growing the backing array by {@code mColumns} slots if needed. Updates {@code mText} in place.
+     * Returns the (possibly reallocated) array so callers can update their local reference.
+     */
+    private char[] shiftTail(char[] text, int splitAt, int count) {
+        int charsAfter = mSpaceUsed - splitAt;
+        int newSplitAt = splitAt + count;
+        if (mSpaceUsed + count > text.length) {
+            char[] newText = new char[text.length + mColumns];
+            System.arraycopy(text, 0, newText, 0, splitAt);
+            System.arraycopy(text, splitAt, newText, newSplitAt, charsAfter);
+            mText = text = newText;
+        } else {
+            System.arraycopy(text, splitAt, text, newSplitAt, charsAfter);
+        }
+        return text;
     }
 
     boolean isBlank() {

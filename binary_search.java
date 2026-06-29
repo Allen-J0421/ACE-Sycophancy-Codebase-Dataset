@@ -12,7 +12,7 @@ final class BinarySearch {
         int right = values.length - 1;
 
         while (left <= right) {
-            int midpoint = left + (right - left) / 2;
+            int midpoint = midpoint(left, right);
             int midpointValue = values[midpoint];
 
             if (midpointValue == target) {
@@ -31,6 +31,10 @@ final class BinarySearch {
 
     static boolean isFound(int resultIndex) {
         return SearchResult.fromIndex(resultIndex).isFound();
+    }
+
+    private static int midpoint(int left, int right) {
+        return left + (right - left) / 2;
     }
 
     public static void main(String[] args) {
@@ -86,7 +90,11 @@ final class SearchResult {
             throw new IllegalArgumentException("index must be -1 or non-negative");
         }
 
-        return new SearchResult(index);
+        if (index == NOT_FOUND_INDEX) {
+            return notFound();
+        }
+
+        return foundAt(index);
     }
 
     boolean isFound() {

@@ -16,7 +16,7 @@ final class BinarySearch {
         int high = sortedNumbers.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
             int current = sortedNumbers[mid];
 
             if (current == target) {
@@ -31,6 +31,10 @@ final class BinarySearch {
         }
 
         return NOT_FOUND_INDEX;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
     }
 
     public static void main(String[] args) {

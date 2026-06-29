@@ -19,13 +19,13 @@ final class BinarySearchTest {
     private static void testReturnsNotFoundForMissingValue() {
         int result = BinarySearch.binarySearch(new int[] { 2, 3, 4, 10, 40 }, 5);
 
-        assertEquals(-1, result, "returns -1 when a value is missing");
+        assertEquals(BinarySearch.NOT_FOUND, result, "returns the not-found value when a value is missing");
     }
 
     private static void testHandlesEmptyArray() {
         int result = BinarySearch.binarySearch(new int[] {}, 10);
 
-        assertEquals(-1, result, "returns -1 for an empty array");
+        assertEquals(BinarySearch.NOT_FOUND, result, "returns the not-found value for an empty array");
     }
 
     private static void testFormatsFoundResult() {
@@ -35,7 +35,7 @@ final class BinarySearchTest {
     }
 
     private static void testFormatsMissingResult() {
-        String result = BinarySearch.formatSearchResult(-1);
+        String result = BinarySearch.formatSearchResult(BinarySearch.NOT_FOUND);
 
         assertEquals("Element is not present in array", result, "formats a missing result");
     }

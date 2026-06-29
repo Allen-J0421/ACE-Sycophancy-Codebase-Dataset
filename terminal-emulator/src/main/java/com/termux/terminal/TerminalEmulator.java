@@ -2205,7 +2205,7 @@ public final class TerminalEmulator {
                 textParameter = mOSCOrDeviceControlArgs.substring(mOSCArgTokenizerIndex + 1);
                 break;
             } else if (b >= '0' && b <= '9') {
-                value = ((value < 0) ? 0 : value * 10) + (b - '0');
+                value = Math.max(0, value) * 10 + (b - '0');
             } else {
                 unknownSequence(b);
                 return;
@@ -2291,8 +2291,8 @@ public final class TerminalEmulator {
                 }
             } else if (parsingPairStart >= 0) {
                 // We have passed a color index and are now going through color spec.
-            } else if (parsingPairStart < 0 && (b >= '0' && b <= '9')) {
-                colorIndex = ((colorIndex < 0) ? 0 : colorIndex * 10) + (b - '0');
+            } else if (b >= '0' && b <= '9') {
+                colorIndex = Math.max(0, colorIndex) * 10 + (b - '0');
             } else {
                 unknownSequence(b);
                 return false;
@@ -2317,8 +2317,7 @@ public final class TerminalEmulator {
                         int r = (65535 * ((rgb & 0x00FF0000) >> 16)) / 255;
                         int g = (65535 * ((rgb & 0x0000FF00) >> 8)) / 255;
                         int b = (65535 * ((rgb & 0x000000FF))) / 255;
-                        mSession.write("\033]" + value + ";rgb:" + String.format(Locale.US, "%04x", r) + "/" + String.format(Locale.US, "%04x", g) + "/"
-                            + String.format(Locale.US, "%04x", b) + bellOrStringTerminator);
+                        mSession.write(String.format(Locale.US, "\033]%d;rgb:%04x/%04x/%04x%s", value, r, g, b, bellOrStringTerminator));
                     } else {
                         mColors.tryParseColor(specialIndex, colorSpec);
                         mSession.onColorsChanged();

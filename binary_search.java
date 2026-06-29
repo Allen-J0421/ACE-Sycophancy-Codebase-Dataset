@@ -64,6 +64,7 @@ final class BinarySearch {
 
 final class SearchResult {
     private static final int NOT_FOUND_INDEX = -1;
+    private static final SearchResult NOT_FOUND = new SearchResult(NOT_FOUND_INDEX, false);
 
     private final int index;
     private final boolean found;
@@ -78,7 +79,7 @@ final class SearchResult {
     }
 
     static SearchResult notFound() {
-        return new SearchResult(NOT_FOUND_INDEX, false);
+        return NOT_FOUND;
     }
 
     static SearchResult fromIndex(int index) {

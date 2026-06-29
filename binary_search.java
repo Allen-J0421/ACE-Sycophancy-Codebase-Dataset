@@ -1,10 +1,15 @@
-class BinarySearch {
+final class BinarySearch {
+    private static final int NOT_FOUND = -1;
+
+    private BinarySearch() {
+    }
+
     static int binarySearch(int[] values, int target) {
         int low = 0;
         int high = values.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
             int current = values[mid];
 
             if (current == target) {
@@ -18,11 +23,15 @@ class BinarySearch {
             }
         }
 
-        return -1;
+        return NOT_FOUND;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
     }
 
     private static String formatSearchResult(int result) {
-        if (result == -1) {
+        if (result == NOT_FOUND) {
             return "Element is not present in array";
         }
 

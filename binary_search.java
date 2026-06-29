@@ -1,18 +1,22 @@
-class BinarySearch {
+final class BinarySearch {
     private static final int NOT_FOUND = -1;
+
+    private BinarySearch() {
+    }
 
     static int binarySearch(int[] sortedNumbers, int target) {
         int low = 0;
         int high = sortedNumbers.length - 1;
 
         while (low <= high) {
-            int middle = low + (high - low) / 2;
+            final int middle = midpoint(low, high);
+            final int middleValue = sortedNumbers[middle];
 
-            if (sortedNumbers[middle] == target) {
+            if (middleValue == target) {
                 return middle;
             }
 
-            if (sortedNumbers[middle] < target) {
+            if (middleValue < target) {
                 low = middle + 1;
             } else {
                 high = middle - 1;
@@ -20,6 +24,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
     }
 
     private static String formatSearchResult(int index) {

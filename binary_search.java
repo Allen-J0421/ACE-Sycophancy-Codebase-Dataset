@@ -4,11 +4,7 @@ class BinarySearch {
     private static final int SAMPLE_TARGET = 10;
 
     static int binarySearch(int[] sortedNumbers, int target) {
-        if (sortedNumbers == null) {
-            throw new IllegalArgumentException("Array must not be null");
-        }
-
-        SearchInput input = new SearchInput(sortedNumbers, target);
+        SearchInput input = SearchInput.from(sortedNumbers, target);
         SearchBounds bounds = input.bounds();
 
         while (bounds.hasRemainingValues()) {
@@ -64,6 +60,14 @@ class BinarySearch {
         private SearchInput(int[] sortedNumbers, int target) {
             this.sortedNumbers = sortedNumbers;
             this.target = target;
+        }
+
+        private static SearchInput from(int[] sortedNumbers, int target) {
+            if (sortedNumbers == null) {
+                throw new IllegalArgumentException("Array must not be null");
+            }
+
+            return new SearchInput(sortedNumbers, target);
         }
 
         private boolean matches(int index) {

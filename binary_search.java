@@ -1,6 +1,5 @@
 final class BinarySearch {
-    private static final int NOT_FOUND = -1;
-    private static final int DEMO_TARGET = 10;
+    static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
@@ -33,24 +32,8 @@ final class BinarySearch {
         }
     }
 
-    private static String formatSearchResult(int index) {
-        if (index == NOT_FOUND) {
-            return "Element is not present in array";
-        }
-
-        return "Element is present at index " + index;
-    }
-
-    private static void printSearchResult(int index) {
-        System.out.println(formatSearchResult(index));
-    }
-
-    private static int[] demoValues() {
-        return new int[] {2, 3, 4, 10, 40};
-    }
-
     public static void main(String[] args) {
-        printSearchResult(binarySearch(demoValues(), DEMO_TARGET));
+        BinarySearchDemo.main(args);
     }
 
     private static final class SearchBounds {
@@ -77,5 +60,29 @@ final class BinarySearch {
         private void discardUpperHalf(int midpoint) {
             high = midpoint - 1;
         }
+    }
+}
+
+final class BinarySearchDemo {
+    private static final int TARGET = 10;
+
+    private BinarySearchDemo() {
+    }
+
+    static String formatSearchResult(int index) {
+        if (index == BinarySearch.NOT_FOUND) {
+            return "Element is not present in array";
+        }
+
+        return "Element is present at index " + index;
+    }
+
+    public static void main(String[] args) {
+        int result = BinarySearch.binarySearch(demoValues(), TARGET);
+        System.out.println(formatSearchResult(result));
+    }
+
+    private static int[] demoValues() {
+        return new int[] {2, 3, 4, 10, 40};
     }
 }

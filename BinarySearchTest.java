@@ -3,11 +3,15 @@ final class BinarySearchTest {
     }
 
     public static void main(String[] args) {
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 10, 3);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 2, 0);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 40, 4);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 5, -1);
+        assertSearch(sortedValues(), 10, 3);
+        assertSearch(sortedValues(), 2, 0);
+        assertSearch(sortedValues(), 40, 4);
+        assertSearch(sortedValues(), 5, -1);
         assertSearch(new int[] {}, 10, -1);
+    }
+
+    private static int[] sortedValues() {
+        return new int[] { 2, 3, 4, 10, 40 };
     }
 
     private static void assertSearch(int[] sortedValues, int target, int expectedIndex) {

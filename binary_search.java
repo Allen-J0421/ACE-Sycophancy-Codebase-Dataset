@@ -13,7 +13,7 @@ final class BinarySearch {
     }
 
     private static int findTargetIndex(final int[] values, final int target) {
-        final SearchRange range = new SearchRange(values.length);
+        final SearchRange range = SearchRange.forSize(values.length);
 
         while (range.hasCandidates()) {
             final int mid = range.midpoint();
@@ -52,9 +52,13 @@ final class BinarySearch {
         private int left;
         private int right;
 
-        private SearchRange(final int size) {
-            left = 0;
-            right = size - 1;
+        private static SearchRange forSize(final int size) {
+            return new SearchRange(0, size - 1);
+        }
+
+        private SearchRange(final int left, final int right) {
+            this.left = left;
+            this.right = right;
         }
 
         private boolean hasCandidates() {

@@ -8,6 +8,16 @@ final class BinarySearch {
     private BinarySearch() {
     }
 
+    public static void main(String[] args) {
+        runSampleSearch();
+    }
+
+    private static void runSampleSearch() {
+        int result = binarySearch(SAMPLE_ARRAY, SAMPLE_TARGET);
+
+        System.out.println(formatSearchResult(result));
+    }
+
     static int binarySearch(int[] array, int target) {
         int low = 0;
         int high = array.length - 1;
@@ -40,16 +50,6 @@ final class BinarySearch {
 
     private static boolean isBeforeTarget(int value, int target) {
         return value < target;
-    }
-
-    public static void main(String[] args) {
-        runSampleSearch();
-    }
-
-    private static void runSampleSearch() {
-        int result = binarySearch(SAMPLE_ARRAY, SAMPLE_TARGET);
-
-        System.out.println(formatSearchResult(result));
     }
 
     private static String formatSearchResult(int result) {

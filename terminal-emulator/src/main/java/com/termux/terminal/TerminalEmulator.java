@@ -638,79 +638,84 @@ public final class TerminalEmulator {
                 }
                 break;
             default:
-                mContinueSequence = false;
-                switch (mEscapeState) {
-                    case ESC_NONE:
-                        if (b >= 32) emitCodePoint(b);
-                        break;
-                    case ESC:
-                        doEsc(b);
-                        break;
-                    case ESC_POUND:
-                        doEscPound(b);
-                        break;
-                    case ESC_SELECT_LEFT_PAREN: // Designate G0 Character Set (ISO 2022, VT100).
-                        mUseLineDrawingG0 = (b == '0');
-                        break;
-                    case ESC_SELECT_RIGHT_PAREN: // Designate G1 Character Set (ISO 2022, VT100).
-                        mUseLineDrawingG1 = (b == '0');
-                        break;
-                    case ESC_CSI:
-                        doCsi(b);
-                        break;
-                    case ESC_CSI_UNSUPPORTED_PARAMETER_BYTE:
-                    case ESC_CSI_UNSUPPORTED_INTERMEDIATE_BYTE:
-                        doCsiUnsupportedParameterOrIntermediateByte(b);
-                        break;
-                    case ESC_CSI_EXCLAMATION:
-                        if (b == 'p') { // Soft terminal reset (DECSTR, http://vt100.net/docs/vt510-rm/DECSTR).
-                            reset();
-                        } else {
-                            unknownSequence(b);
-                        }
-                        break;
-                    case ESC_CSI_QUESTIONMARK:
-                        doCsiQuestionMark(b);
-                        break;
-                    case ESC_CSI_BIGGERTHAN:
-                        doCsiBiggerThan(b);
-                        break;
-                    case ESC_CSI_DOLLAR:
-                        doCsiDollar(b);
-                        break;
-                    case ESC_CSI_DOUBLE_QUOTE:
-                        doCsiDoubleQuote(b);
-                        break;
-                    case ESC_CSI_SINGLE_QUOTE:
-                        doCsiSingleQuote(b);
-                        break;
-                    case ESC_PERCENT:
-                        break;
-                    case ESC_OSC:
-                        doOsc(b);
-                        break;
-                    case ESC_OSC_ESC:
-                        doOscEsc(b);
-                        break;
-                    case ESC_P:
-                        doDeviceControl(b);
-                        break;
-                    case ESC_CSI_QUESTIONMARK_ARG_DOLLAR:
-                        doCsiQuestionMarkArgDollar(b);
-                        break;
-                    case ESC_CSI_ARGS_SPACE:
-                        doCsiArgsSpace(b);
-                        break;
-                    case ESC_CSI_ARGS_ASTERIX:
-                        doCsiArgsAsterix(b);
-                        break;
-                    default:
-                        unknownSequence(b);
-                        break;
-                }
-                if (!mContinueSequence) mEscapeState = ESC_NONE;
+                doEscapeStateDispatch(b);
                 break;
         }
+    }
+
+    /** Dispatch a printable or control byte to the current escape-sequence handler, then reset state if sequence is complete. */
+    private void doEscapeStateDispatch(int b) {
+        mContinueSequence = false;
+        switch (mEscapeState) {
+            case ESC_NONE:
+                if (b >= 32) emitCodePoint(b);
+                break;
+            case ESC:
+                doEsc(b);
+                break;
+            case ESC_POUND:
+                doEscPound(b);
+                break;
+            case ESC_SELECT_LEFT_PAREN: // Designate G0 Character Set (ISO 2022, VT100).
+                mUseLineDrawingG0 = (b == '0');
+                break;
+            case ESC_SELECT_RIGHT_PAREN: // Designate G1 Character Set (ISO 2022, VT100).
+                mUseLineDrawingG1 = (b == '0');
+                break;
+            case ESC_CSI:
+                doCsi(b);
+                break;
+            case ESC_CSI_UNSUPPORTED_PARAMETER_BYTE:
+            case ESC_CSI_UNSUPPORTED_INTERMEDIATE_BYTE:
+                doCsiUnsupportedParameterOrIntermediateByte(b);
+                break;
+            case ESC_CSI_EXCLAMATION:
+                if (b == 'p') { // Soft terminal reset (DECSTR, http://vt100.net/docs/vt510-rm/DECSTR).
+                    reset();
+                } else {
+                    unknownSequence(b);
+                }
+                break;
+            case ESC_CSI_QUESTIONMARK:
+                doCsiQuestionMark(b);
+                break;
+            case ESC_CSI_BIGGERTHAN:
+                doCsiBiggerThan(b);
+                break;
+            case ESC_CSI_DOLLAR:
+                doCsiDollar(b);
+                break;
+            case ESC_CSI_DOUBLE_QUOTE:
+                doCsiDoubleQuote(b);
+                break;
+            case ESC_CSI_SINGLE_QUOTE:
+                doCsiSingleQuote(b);
+                break;
+            case ESC_PERCENT:
+                break;
+            case ESC_OSC:
+                doOsc(b);
+                break;
+            case ESC_OSC_ESC:
+                doOscEsc(b);
+                break;
+            case ESC_P:
+                doDeviceControl(b);
+                break;
+            case ESC_CSI_QUESTIONMARK_ARG_DOLLAR:
+                doCsiQuestionMarkArgDollar(b);
+                break;
+            case ESC_CSI_ARGS_SPACE:
+                doCsiArgsSpace(b);
+                break;
+            case ESC_CSI_ARGS_ASTERIX:
+                doCsiArgsAsterix(b);
+                break;
+            default:
+                unknownSequence(b);
+                break;
+        }
+        if (!mContinueSequence) mEscapeState = ESC_NONE;
     }
 
     /** DECCRA/DECFRA/DECERA/DECSERA/DECCARA/DECRARA — rectangular area operations (ESC_CSI_DOLLAR). */

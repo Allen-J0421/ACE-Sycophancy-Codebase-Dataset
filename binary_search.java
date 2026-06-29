@@ -8,6 +8,10 @@ class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
+        return search(values, target).indexOrNotFound();
+    }
+
+    private static SearchResult search(int[] values, int target) {
         SearchRange range = new SearchRange(values.length);
 
         while (range.hasValues()) {
@@ -15,7 +19,7 @@ class BinarySearch {
             int midValue = values[mid];
 
             if (isMatch(midValue, target)) {
-                return mid;
+                return SearchResult.foundAt(mid);
             }
 
             if (isBelowTarget(midValue, target)) {
@@ -25,7 +29,7 @@ class BinarySearch {
             }
         }
 
-        return NOT_FOUND;
+        return SearchResult.notFound();
     }
 
     private static boolean isMatch(int value, int target) {
@@ -41,7 +45,7 @@ class BinarySearch {
     }
 
     private static void runDemo() {
-        SearchResult result = SearchResult.fromIndex(binarySearch(demoValues(), DEMO_TARGET));
+        SearchResult result = search(demoValues(), DEMO_TARGET);
         System.out.println(formatSearchResult(result));
     }
 
@@ -64,8 +68,12 @@ class BinarySearch {
             this.index = index;
         }
 
-        static SearchResult fromIndex(int index) {
+        static SearchResult foundAt(int index) {
             return new SearchResult(index);
+        }
+
+        static SearchResult notFound() {
+            return new SearchResult(NOT_FOUND);
         }
 
         boolean isFound() {
@@ -73,6 +81,10 @@ class BinarySearch {
         }
 
         int index() {
+            return index;
+        }
+
+        int indexOrNotFound() {
             return index;
         }
     }

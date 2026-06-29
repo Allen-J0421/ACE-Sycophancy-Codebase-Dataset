@@ -15,18 +15,10 @@ final class BinarySearch {
                 return mid;
             }
 
-            if (isBeforeTarget(currentValue, target)) {
-                bounds.moveRightOf(mid);
-            } else {
-                bounds.moveLeftOf(mid);
-            }
+            bounds.movePast(mid, currentValue, target);
         }
 
         return NOT_FOUND;
-    }
-
-    private static boolean isBeforeTarget(int value, int target) {
-        return value < target;
     }
 
     private static final class SearchBounds {
@@ -50,12 +42,12 @@ final class BinarySearch {
             return low + (high - low) / 2;
         }
 
-        void moveRightOf(int index) {
-            low = index + 1;
-        }
-
-        void moveLeftOf(int index) {
-            high = index - 1;
+        void movePast(int index, int value, int target) {
+            if (value < target) {
+                low = index + 1;
+            } else {
+                high = index - 1;
+            }
         }
     }
 

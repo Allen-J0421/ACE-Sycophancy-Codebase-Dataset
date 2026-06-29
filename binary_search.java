@@ -25,11 +25,7 @@ class BinarySearch {
     }
 
     private static String formatSearchResult(int index) {
-        if (index == NOT_FOUND) {
-            return "Element is not present in array";
-        }
-
-        return "Element is present at index " + index;
+        return SearchResult.fromIndex(index).message();
     }
 
     public static void main(String[] args) {
@@ -39,6 +35,26 @@ class BinarySearch {
     private static void runDemo() {
         int result = binarySearch(SAMPLE_NUMBERS, SAMPLE_TARGET);
         System.out.println(formatSearchResult(result));
+    }
+
+    private static final class SearchResult {
+        private final int index;
+
+        private SearchResult(int index) {
+            this.index = index;
+        }
+
+        private static SearchResult fromIndex(int index) {
+            return new SearchResult(index);
+        }
+
+        private String message() {
+            if (index == NOT_FOUND) {
+                return "Element is not present in array";
+            }
+
+            return "Element is present at index " + index;
+        }
     }
 
     private static final class SearchInput {

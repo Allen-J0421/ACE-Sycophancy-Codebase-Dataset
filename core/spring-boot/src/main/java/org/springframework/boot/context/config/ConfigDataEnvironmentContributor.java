@@ -203,10 +203,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @return if there are unprocessed imports
 	 */
 	boolean hasUnprocessedImports(ImportPhase importPhase) {
-		if (getImports().isEmpty()) {
-			return false;
-		}
-		return !this.children.containsKey(importPhase);
+		return !getImports().isEmpty() && !this.children.containsKey(importPhase);
 	}
 
 	/**
@@ -374,13 +371,10 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		builder.append(" ");
 		builder.append(this.configDataOptions);
 		builder.append("\n");
-		for (ConfigDataEnvironmentContributor child : this.children.getOrDefault(ImportPhase.BEFORE_PROFILE_ACTIVATION,
-				Collections.emptyList())) {
-			child.buildToString(prefix + "    ", builder);
-		}
-		for (ConfigDataEnvironmentContributor child : this.children.getOrDefault(ImportPhase.AFTER_PROFILE_ACTIVATION,
-				Collections.emptyList())) {
-			child.buildToString(prefix + "    ", builder);
+		for (ImportPhase phase : ImportPhase.values()) {
+			for (ConfigDataEnvironmentContributor child : this.children.getOrDefault(phase, Collections.emptyList())) {
+				child.buildToString(prefix + "    ", builder);
+			}
 		}
 	}
 

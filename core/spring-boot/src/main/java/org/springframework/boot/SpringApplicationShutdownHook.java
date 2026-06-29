@@ -97,7 +97,7 @@ class SpringApplicationShutdownHook implements Runnable {
 	void deregisterFailedApplicationContext(ConfigurableApplicationContext applicationContext) {
 		synchronized (SpringApplicationShutdownHook.class) {
 			Assert.state(!applicationContext.isActive(), "Cannot unregister active application context");
-			SpringApplicationShutdownHook.this.contexts.remove(applicationContext);
+			this.contexts.remove(applicationContext);
 		}
 	}
 
@@ -165,7 +165,7 @@ class SpringApplicationShutdownHook implements Runnable {
 	}
 
 	private void assertNotInProgress() {
-		Assert.state(!SpringApplicationShutdownHook.this.inProgress, "Shutdown in progress");
+		Assert.state(!this.inProgress, "Shutdown in progress");
 	}
 
 	/**

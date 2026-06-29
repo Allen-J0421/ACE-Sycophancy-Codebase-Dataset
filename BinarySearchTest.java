@@ -1,20 +1,19 @@
 final class BinarySearchTest {
+    private static final SearchCase[] SEARCH_CASES = {
+            new SearchCase(3, new int[] { 2, 3, 4, 10, 40 }, 10),
+            new SearchCase(BinarySearch.NOT_FOUND_INDEX, new int[] { 2, 3, 4, 10, 40 }, 5),
+            new SearchCase(0, new int[] { 7 }, 7),
+            new SearchCase(BinarySearch.NOT_FOUND_INDEX, new int[] {}, 7)
+    };
+
     private BinarySearchTest() {
     }
 
     public static void main(String[] args) {
-        assertIndex(3, new int[] { 2, 3, 4, 10, 40 }, 10);
-        assertIndex(BinarySearch.NOT_FOUND_INDEX, new int[] { 2, 3, 4, 10, 40 }, 5);
-        assertIndex(0, new int[] { 7 }, 7);
-        assertIndex(BinarySearch.NOT_FOUND_INDEX, new int[] {}, 7);
-        assertThrowsNullPointer(new ThrowingRunnable() {
-            public void run() {
-                BinarySearch.binarySearch(null, 7);
-            }
-        });
+        assertSearchCases();
+        assertThrowsNullPointer(() -> BinarySearch.binarySearch(null, 7));
 
-        assertSearchResultFound(3, new int[] { 2, 3, 4, 10, 40 }, 10);
-        assertSearchResultNotFound(new int[] { 2, 3, 4, 10, 40 }, 5);
+        assertSearchResultFromIndex();
 
         assertEquals(
                 "Element is present at index 3",
@@ -26,26 +25,34 @@ final class BinarySearchTest {
         System.out.println("All tests passed");
     }
 
-    private static void assertIndex(int expected, int[] sortedValues, int target) {
-        assertEquals(expected, BinarySearch.binarySearch(sortedValues, target));
+    private static void assertSearchCases() {
+        for (SearchCase searchCase : SEARCH_CASES) {
+            int actualIndex = BinarySearch.binarySearch(searchCase.sortedValues, searchCase.target);
+            SearchResult result = BinarySearch.search(searchCase.sortedValues, searchCase.target);
+
+            assertEquals(searchCase.expectedIndex, actualIndex);
+            assertSearchResult(searchCase.expectedIndex, result);
+        }
     }
 
-    private static void assertSearchResultFound(int expectedIndex, int[] sortedValues, int target) {
-        SearchResult result = BinarySearch.search(sortedValues, target);
+    private static void assertSearchResultFromIndex() {
+        assertSearchResult(3, SearchResult.fromIndex(3));
+        assertSearchResult(BinarySearch.NOT_FOUND_INDEX, SearchResult.fromIndex(BinarySearch.NOT_FOUND_INDEX));
+    }
+
+    private static void assertSearchResult(int expectedIndex, SearchResult result) {
+        if (expectedIndex == BinarySearch.NOT_FOUND_INDEX) {
+            if (result.isFound()) {
+                throw new AssertionError("Expected search result to be not found.");
+            }
+            return;
+        }
 
         if (!result.isFound()) {
             throw new AssertionError("Expected search result to be found.");
         }
 
         assertEquals(expectedIndex, result.index());
-    }
-
-    private static void assertSearchResultNotFound(int[] sortedValues, int target) {
-        SearchResult result = BinarySearch.search(sortedValues, target);
-
-        if (result.isFound()) {
-            throw new AssertionError("Expected search result to be not found.");
-        }
     }
 
     private static void assertEquals(int expected, int actual) {
@@ -71,5 +78,17 @@ final class BinarySearchTest {
 
     private interface ThrowingRunnable {
         void run();
+    }
+
+    private static final class SearchCase {
+        private final int expectedIndex;
+        private final int[] sortedValues;
+        private final int target;
+
+        private SearchCase(int expectedIndex, int[] sortedValues, int target) {
+            this.expectedIndex = expectedIndex;
+            this.sortedValues = sortedValues;
+            this.target = target;
+        }
     }
 }

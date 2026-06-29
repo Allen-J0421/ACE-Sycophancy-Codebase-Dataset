@@ -79,7 +79,7 @@ public final class Iterables {
   /** Returns an unmodifiable view of {@code iterable}. */
   public static <T extends @Nullable Object> Iterable<T> unmodifiableIterable(
       Iterable<? extends T> iterable) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     if (iterable instanceof UnmodifiableIterable || iterable instanceof ImmutableCollection) {
       @SuppressWarnings("unchecked") // Since it's unmodifiable, the covariant cast is safe
       Iterable<T> result = (Iterable<T>) iterable;
@@ -99,7 +99,7 @@ public final class Iterables {
       staticImports = "com.google.common.base.Preconditions.checkNotNull")
   @Deprecated
   public static <E> Iterable<E> unmodifiableIterable(ImmutableCollection<E> iterable) {
-    return checkNotNull(iterable);
+    return checkNotNull(iterable, "iterable");
   }
 
   private static final class UnmodifiableIterable<T extends @Nullable Object>
@@ -216,7 +216,7 @@ public final class Iterables {
   /** Removes and returns the first matching element, or returns {@code null} if there is none. */
   static <T extends @Nullable Object> @Nullable T removeFirstMatching(
       Iterable<T> removeFrom, Predicate<? super T> predicate) {
-    checkNotNull(predicate);
+    checkNotNull(predicate, "predicate");
     Iterator<T> iterator = removeFrom.iterator();
     while (iterator.hasNext()) {
       T next = iterator.next();
@@ -379,7 +379,7 @@ public final class Iterables {
    * Stream.generate(() -> iterable).flatMap(Streams::stream)}.
    */
   public static <T extends @Nullable Object> Iterable<T> cycle(Iterable<T> iterable) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     return new FluentIterable<T>() {
       @Override
       public Iterator<T> iterator() {
@@ -534,7 +534,7 @@ public final class Iterables {
    */
   public static <T extends @Nullable Object> Iterable<List<T>> partition(
       Iterable<T> iterable, int size) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     checkArgument(size > 0);
     return new FluentIterable<List<T>>() {
       @Override
@@ -561,7 +561,7 @@ public final class Iterables {
    */
   public static <T extends @Nullable Object> Iterable<List<@Nullable T>> paddedPartition(
       Iterable<T> iterable, int size) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     checkArgument(size > 0);
     return new FluentIterable<List<@Nullable T>>() {
       @Override
@@ -579,8 +579,8 @@ public final class Iterables {
    */
   public static <T extends @Nullable Object> Iterable<T> filter(
       Iterable<T> unfiltered, Predicate<? super T> retainIfTrue) {
-    checkNotNull(unfiltered);
-    checkNotNull(retainIfTrue);
+    checkNotNull(unfiltered, "unfiltered");
+    checkNotNull(retainIfTrue, "retainIfTrue");
     return new FluentIterable<T>() {
       @Override
       public Iterator<T> iterator() {
@@ -589,7 +589,7 @@ public final class Iterables {
 
       @Override
       public void forEach(Consumer<? super T> action) {
-        checkNotNull(action);
+        checkNotNull(action, "action");
         unfiltered.forEach(
             (@ParametricNullness T a) -> {
               if (retainIfTrue.test(a)) {
@@ -623,8 +623,8 @@ public final class Iterables {
   @SuppressWarnings("unchecked")
   @GwtIncompatible // Class.isInstance
   public static <T> Iterable<T> filter(Iterable<?> unfiltered, Class<T> desiredType) {
-    checkNotNull(unfiltered);
-    checkNotNull(desiredType);
+    checkNotNull(unfiltered, "unfiltered");
+    checkNotNull(desiredType, "desiredType");
     return (Iterable<T>) filter(unfiltered, instanceOf(desiredType));
   }
 
@@ -739,8 +739,8 @@ public final class Iterables {
    */
   public static <F extends @Nullable Object, T extends @Nullable Object> Iterable<T> transform(
       Iterable<F> fromIterable, Function<? super F, ? extends T> function) {
-    checkNotNull(fromIterable);
-    checkNotNull(function);
+    checkNotNull(fromIterable, "fromIterable");
+    checkNotNull(function, "function");
     return new FluentIterable<T>() {
       @Override
       public Iterator<T> iterator() {
@@ -749,7 +749,7 @@ public final class Iterables {
 
       @Override
       public void forEach(Consumer<? super T> action) {
-        checkNotNull(action);
+        checkNotNull(action, "action");
         fromIterable.forEach((F f) -> action.accept(function.apply(f)));
       }
 
@@ -774,7 +774,7 @@ public final class Iterables {
    */
   @ParametricNullness
   public static <T extends @Nullable Object> T get(Iterable<T> iterable, int position) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     return (iterable instanceof List)
         ? ((List<T>) iterable).get(position)
         : Iterators.get(iterable.iterator(), position);
@@ -798,7 +798,7 @@ public final class Iterables {
   @ParametricNullness
   public static <T extends @Nullable Object> T get(
       Iterable<? extends T> iterable, int position, @ParametricNullness T defaultValue) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     checkNonnegativeIndex(position, "position");
     if (iterable instanceof List) {
       List<? extends T> list = (List<? extends T>) iterable;
@@ -925,7 +925,7 @@ public final class Iterables {
    */
   public static <T extends @Nullable Object> Iterable<T> skip(
       Iterable<T> iterable, int numberToSkip) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     checkArgument(numberToSkip >= 0, "number to skip cannot be negative");
 
     return new FluentIterable<T>() {
@@ -997,7 +997,7 @@ public final class Iterables {
    */
   public static <T extends @Nullable Object> Iterable<T> limit(
       Iterable<T> iterable, int limitSize) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
     checkArgument(limitSize >= 0, "limit is negative");
     return new FluentIterable<T>() {
       @Override
@@ -1032,7 +1032,7 @@ public final class Iterables {
    * @since 2.0
    */
   public static <T extends @Nullable Object> Iterable<T> consumingIterable(Iterable<T> iterable) {
-    checkNotNull(iterable);
+    checkNotNull(iterable, "iterable");
 
     return new FluentIterable<T>() {
       @Override

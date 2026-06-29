@@ -235,7 +235,7 @@ public final class Multimaps {
 
     CustomMultimap(Map<K, Collection<V>> map, Supplier<? extends Collection<V>> factory) {
       super(map);
-      this.factory = checkNotNull(factory);
+      this.factory = checkNotNull(factory, "factory");
     }
 
     @Override
@@ -356,7 +356,7 @@ public final class Multimaps {
 
     CustomListMultimap(Map<K, Collection<V>> map, Supplier<? extends List<V>> factory) {
       super(map);
-      this.factory = checkNotNull(factory);
+      this.factory = checkNotNull(factory, "factory");
     }
 
     @Override
@@ -442,7 +442,7 @@ public final class Multimaps {
 
     CustomSetMultimap(Map<K, Collection<V>> map, Supplier<? extends Set<V>> factory) {
       super(map);
-      this.factory = checkNotNull(factory);
+      this.factory = checkNotNull(factory, "factory");
     }
 
     @Override
@@ -550,7 +550,7 @@ public final class Multimaps {
 
     CustomSortedSetMultimap(Map<K, Collection<V>> map, Supplier<? extends SortedSet<V>> factory) {
       super(map);
-      this.factory = checkNotNull(factory);
+      this.factory = checkNotNull(factory, "factory");
       valueComparator = factory.get().comparator();
     }
 
@@ -613,7 +613,7 @@ public final class Multimaps {
   @CanIgnoreReturnValue
   public static <K extends @Nullable Object, V extends @Nullable Object, M extends Multimap<K, V>>
       M invertFrom(Multimap<? extends V, ? extends K> source, M dest) {
-    checkNotNull(dest);
+    checkNotNull(dest, "dest");
     for (Map.Entry<? extends V, ? extends K> entry : source.entries()) {
       dest.put(entry.getValue(), entry.getKey());
     }
@@ -1345,7 +1345,7 @@ public final class Multimaps {
           K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
       Multimap<K, V2> transformValues(
           Multimap<K, V1> fromMultimap, Function<? super V1, V2> function) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     EntryTransformer<K, V1, V2> transformer = (key, value) -> function.apply(value);
     return transformEntries(fromMultimap, transformer);
   }
@@ -1387,7 +1387,7 @@ public final class Multimaps {
           K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
       ListMultimap<K, V2> transformValues(
           ListMultimap<K, V1> fromMultimap, Function<? super V1, V2> function) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     EntryTransformer<K, V1, V2> transformer = (key, value) -> function.apply(value);
     return transformEntries(fromMultimap, transformer);
   }

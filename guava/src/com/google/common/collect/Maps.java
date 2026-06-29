@@ -525,7 +525,7 @@ public final class Maps {
           Map<? extends K, ? extends V> left,
           Map<? extends K, ? extends V> right,
           Equivalence<? super @NonNull V> valueEquivalence) {
-    Preconditions.checkNotNull(valueEquivalence);
+    Preconditions.checkNotNull(valueEquivalence, "valueEquivalence");
 
     Map<K, V> onlyOnLeft = new LinkedHashMap<>();
     Map<K, V> onlyOnRight = new LinkedHashMap<>(right); // will whittle it down
@@ -555,8 +555,8 @@ public final class Maps {
   public static <K extends @Nullable Object, V extends @Nullable Object>
       SortedMapDifference<K, V> difference(
           SortedMap<K, ? extends V> left, Map<? extends K, ? extends V> right) {
-    checkNotNull(left);
-    checkNotNull(right);
+    checkNotNull(left, "left");
+    checkNotNull(right, "right");
     Comparator<? super K> comparator = orNaturalOrder(left.comparator());
     SortedMap<K, V> onlyOnLeft = newTreeMap(comparator);
     SortedMap<K, V> onlyOnRight = newTreeMap(comparator);
@@ -960,7 +960,7 @@ public final class Maps {
 
     @Override
     public void forEach(BiConsumer<? super K, ? super V> action) {
-      checkNotNull(action);
+      checkNotNull(action, "action");
       // avoids allocation of entries
       backingSet().forEach(k -> action.accept(k, function.apply(k)));
     }
@@ -1291,7 +1291,7 @@ public final class Maps {
    */
   public static <K, V> ImmutableMap<K, V> toMap(
       Iterator<K> keys, Function<? super K, V> valueFunction) {
-    checkNotNull(valueFunction);
+    checkNotNull(valueFunction, "valueFunction");
     ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
     while (keys.hasNext()) {
       K key = keys.next();
@@ -1393,7 +1393,7 @@ public final class Maps {
 
   private static <K, V> ImmutableMap<K, V> uniqueIndex(
       Iterator<V> values, Function<? super V, K> keyFunction, ImmutableMap.Builder<K, V> builder) {
-    checkNotNull(keyFunction);
+    checkNotNull(keyFunction, "keyFunction");
     while (values.hasNext()) {
       V value = values.next();
       builder.put(keyFunction.apply(value), value);
@@ -1497,7 +1497,7 @@ public final class Maps {
    */
   static <K extends @Nullable Object, V extends @Nullable Object> Entry<K, V> unmodifiableEntry(
       Entry<? extends K, ? extends V> entry) {
-    checkNotNull(entry);
+    checkNotNull(entry, "entry");
     return new AbstractMapEntry<K, V>() {
       @Override
       @ParametricNullness
@@ -1826,7 +1826,7 @@ public final class Maps {
   public static <
           K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
       Map<K, V2> transformValues(Map<K, V1> fromMap, Function<? super V1, V2> function) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     return transformEntries(fromMap, (key, value) -> function.apply(value));
   }
 
@@ -1864,7 +1864,7 @@ public final class Maps {
           K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
       SortedMap<K, V2> transformValues(
           SortedMap<K, V1> fromMap, Function<? super V1, V2> function) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     return transformEntries(fromMap, (key, value) -> function.apply(value));
   }
 
@@ -1905,7 +1905,7 @@ public final class Maps {
           K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
       NavigableMap<K, V2> transformValues(
           NavigableMap<K, V1> fromMap, Function<? super V1, V2> function) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     return transformEntries(fromMap, (key, value) -> function.apply(value));
   }
 
@@ -2091,8 +2091,8 @@ public final class Maps {
   static <V2 extends @Nullable Object, K extends @Nullable Object, V1 extends @Nullable Object>
       Entry<K, V2> transformEntry(
           EntryTransformer<? super K, ? super V1, V2> transformer, Entry<K, V1> entry) {
-    checkNotNull(transformer);
-    checkNotNull(entry);
+    checkNotNull(transformer, "transformer");
+    checkNotNull(entry, "entry");
     return new AbstractMapEntry<K, V2>() {
       @Override
       @ParametricNullness
@@ -2112,7 +2112,7 @@ public final class Maps {
   static <K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
       Function<Entry<K, V1>, Entry<K, V2>> asEntryToEntryFunction(
           EntryTransformer<? super K, ? super V1, V2> transformer) {
-    checkNotNull(transformer);
+    checkNotNull(transformer, "transformer");
     return entry -> transformEntry(transformer, entry);
   }
 
@@ -2125,7 +2125,7 @@ public final class Maps {
     TransformedEntriesMap(
         Map<K, V1> fromMap, EntryTransformer<? super K, ? super V1, V2> transformer) {
       this.fromMap = checkNotNull(fromMap);
-      this.transformer = checkNotNull(transformer);
+      this.transformer = checkNotNull(transformer, "transformer");
     }
 
     @Override
@@ -2191,7 +2191,7 @@ public final class Maps {
 
     @Override
     public void forEach(BiConsumer<? super K, ? super V2> action) {
-      checkNotNull(action);
+      checkNotNull(action, "action");
       // avoids creating new Entry<K, V2> objects
       fromMap.forEach((k, v1) -> action.accept(k, transformer.transformEntry(k, v1)));
     }
@@ -2413,7 +2413,7 @@ public final class Maps {
    */
   public static <K extends @Nullable Object, V extends @Nullable Object> Map<K, V> filterKeys(
       Map<K, V> unfiltered, Predicate<? super K> keyPredicate) {
-    checkNotNull(keyPredicate);
+    checkNotNull(keyPredicate, "keyPredicate");
     Predicate<Entry<K, ?>> entryPredicate = keyPredicateOnEntries(keyPredicate);
     return (unfiltered instanceof AbstractFilteredMap)
         ? filterFiltered((AbstractFilteredMap<K, V>) unfiltered, entryPredicate)
@@ -2512,7 +2512,7 @@ public final class Maps {
    */
   public static <K extends @Nullable Object, V extends @Nullable Object> BiMap<K, V> filterKeys(
       BiMap<K, V> unfiltered, Predicate<? super K> keyPredicate) {
-    checkNotNull(keyPredicate);
+    checkNotNull(keyPredicate, "keyPredicate");
     return filterEntries(unfiltered, keyPredicateOnEntries(keyPredicate));
   }
 
@@ -2667,7 +2667,7 @@ public final class Maps {
    */
   public static <K extends @Nullable Object, V extends @Nullable Object> Map<K, V> filterEntries(
       Map<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-    checkNotNull(entryPredicate);
+    checkNotNull(entryPredicate, "entryPredicate");
     return (unfiltered instanceof AbstractFilteredMap)
         ? filterFiltered((AbstractFilteredMap<K, V>) unfiltered, entryPredicate)
         : new FilteredEntryMap<K, V>(checkNotNull(unfiltered), entryPredicate);
@@ -2702,7 +2702,7 @@ public final class Maps {
   public static <K extends @Nullable Object, V extends @Nullable Object>
       SortedMap<K, V> filterEntries(
           SortedMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-    checkNotNull(entryPredicate);
+    checkNotNull(entryPredicate, "entryPredicate");
     return (unfiltered instanceof FilteredEntrySortedMap)
         ? filterFiltered((FilteredEntrySortedMap<K, V>) unfiltered, entryPredicate)
         : new FilteredEntrySortedMap<K, V>(checkNotNull(unfiltered), entryPredicate);
@@ -2738,7 +2738,7 @@ public final class Maps {
   public static <K extends @Nullable Object, V extends @Nullable Object>
       NavigableMap<K, V> filterEntries(
           NavigableMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-    checkNotNull(entryPredicate);
+    checkNotNull(entryPredicate, "entryPredicate");
     return (unfiltered instanceof FilteredEntryNavigableMap)
         ? filterFiltered((FilteredEntryNavigableMap<K, V>) unfiltered, entryPredicate)
         : new FilteredEntryNavigableMap<K, V>(checkNotNull(unfiltered), entryPredicate);
@@ -2774,7 +2774,7 @@ public final class Maps {
   public static <K extends @Nullable Object, V extends @Nullable Object> BiMap<K, V> filterEntries(
       BiMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
     checkNotNull(unfiltered);
-    checkNotNull(entryPredicate);
+    checkNotNull(entryPredicate, "entryPredicate");
     return (unfiltered instanceof FilteredEntryBiMap)
         ? filterFiltered((FilteredEntryBiMap<K, V>) unfiltered, entryPredicate)
         : new FilteredEntryBiMap<K, V>(unfiltered, entryPredicate);
@@ -3415,7 +3415,7 @@ public final class Maps {
   @GwtIncompatible // NavigableMap
   public static <K extends @Nullable Object, V extends @Nullable Object>
       NavigableMap<K, V> unmodifiableNavigableMap(NavigableMap<K, ? extends V> map) {
-    checkNotNull(map);
+    checkNotNull(map, "map");
     if (map instanceof UnmodifiableNavigableMap) {
       @SuppressWarnings("unchecked") // covariant
       NavigableMap<K, V> result = (NavigableMap<K, V>) map;
@@ -3778,7 +3778,7 @@ public final class Maps {
    * NullPointerException}.
    */
   static <V extends @Nullable Object> @Nullable V safeGet(Map<?, V> map, @Nullable Object key) {
-    checkNotNull(map);
+    checkNotNull(map, "map");
     try {
       return map.get(key);
     } catch (ClassCastException | NullPointerException e) {
@@ -3791,7 +3791,7 @@ public final class Maps {
    * {@code NullPointerException}.
    */
   static boolean safeContainsKey(Map<?, ?> map, @Nullable Object key) {
-    checkNotNull(map);
+    checkNotNull(map, "map");
     try {
       return map.containsKey(key);
     } catch (ClassCastException | NullPointerException e) {
@@ -3804,7 +3804,7 @@ public final class Maps {
    * NullPointerException}.
    */
   static <V extends @Nullable Object> @Nullable V safeRemove(Map<?, V> map, @Nullable Object key) {
-    checkNotNull(map);
+    checkNotNull(map, "map");
     try {
       return map.remove(key);
     } catch (ClassCastException | NullPointerException e) {
@@ -3900,7 +3900,7 @@ public final class Maps {
     @Weak final Map<K, V> map;
 
     KeySet(Map<K, V> map) {
-      this.map = checkNotNull(map);
+      this.map = checkNotNull(map, "map");
     }
 
     Map<K, V> map() {
@@ -3914,7 +3914,7 @@ public final class Maps {
 
     @Override
     public void forEach(Consumer<? super K> action) {
-      checkNotNull(action);
+      checkNotNull(action, "action");
       // avoids entry allocation for those maps that allocate entries on iteration
       map.forEach((k, v) -> action.accept(k));
     }
@@ -4093,7 +4093,7 @@ public final class Maps {
     @Weak final Map<K, V> map;
 
     Values(Map<K, V> map) {
-      this.map = checkNotNull(map);
+      this.map = checkNotNull(map, "map");
     }
 
     final Map<K, V> map() {
@@ -4107,7 +4107,7 @@ public final class Maps {
 
     @Override
     public void forEach(Consumer<? super V> action) {
-      checkNotNull(action);
+      checkNotNull(action, "action");
       // avoids allocation of entries for those maps that generate fresh entries on iteration
       map.forEach((k, v) -> action.accept(v));
     }
@@ -4499,6 +4499,6 @@ public final class Maps {
     } else if (range.hasUpperBound()) {
       return map.headMap(range.upperEndpoint(), range.upperBoundType() == BoundType.CLOSED);
     }
-    return checkNotNull(map);
+    return checkNotNull(map, "map");
   }
 }

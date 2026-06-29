@@ -84,8 +84,8 @@ public final class Files {
    * @return the buffered reader
    */
   public static BufferedReader newReader(File file, Charset charset) throws FileNotFoundException {
-    checkNotNull(file);
-    checkNotNull(charset);
+    checkNotNull(file, "file");
+    checkNotNull(charset, "charset");
     return new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
   }
 
@@ -102,8 +102,8 @@ public final class Files {
    * @return the buffered writer
    */
   public static BufferedWriter newWriter(File file, Charset charset) throws FileNotFoundException {
-    checkNotNull(file);
-    checkNotNull(charset);
+    checkNotNull(file, "file");
+    checkNotNull(charset, "charset");
     return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
   }
 
@@ -123,7 +123,7 @@ public final class Files {
     private final File file;
 
     private FileByteSource(File file) {
-      this.file = checkNotNull(file);
+      this.file = checkNotNull(file, "file");
     }
 
     @Override
@@ -185,7 +185,7 @@ public final class Files {
     private final ImmutableSet<FileWriteMode> modes;
 
     private FileByteSink(File file, FileWriteMode... modes) {
-      this.file = checkNotNull(file);
+      this.file = checkNotNull(file, "file");
       this.modes = ImmutableSet.copyOf(modes);
     }
 
@@ -371,8 +371,8 @@ public final class Files {
   // performance optimization to avoid lexicographical comparison in File.equals
   @SuppressWarnings("ReferenceEquality")
   public static boolean equal(File file1, File file2) throws IOException {
-    checkNotNull(file1);
-    checkNotNull(file2);
+    checkNotNull(file1, "file1");
+    checkNotNull(file2, "file2");
     if (file1 == file2 || file1.equals(file2)) {
       return true;
     }
@@ -445,7 +445,7 @@ public final class Files {
    */
   @SuppressWarnings("GoodTime") // reading system time without TimeSource
   public static void touch(File file) throws IOException {
-    checkNotNull(file);
+    checkNotNull(file, "file");
     if (!file.createNewFile() && !file.setLastModified(System.currentTimeMillis())) {
       throw new IOException("Unable to update modification time of " + file);
     }
@@ -461,7 +461,7 @@ public final class Files {
    * @since 4.0
    */
   public static void createParentDirs(File file) throws IOException {
-    checkNotNull(file);
+    checkNotNull(file, "file");
     File parent = file.getCanonicalFile().getParentFile();
     if (parent == null) {
       /*
@@ -491,8 +491,8 @@ public final class Files {
    * @throws IllegalArgumentException if {@code from.equals(to)}
    */
   public static void move(File from, File to) throws IOException {
-    checkNotNull(from);
-    checkNotNull(to);
+    checkNotNull(from, "from");
+    checkNotNull(to, "to");
     checkArgument(!from.equals(to), "Source %s and destination %s must be different", from, to);
 
     if (!from.renameTo(to)) {
@@ -645,7 +645,7 @@ public final class Files {
    * @since 2.0
    */
   public static MappedByteBuffer map(File file) throws IOException {
-    checkNotNull(file);
+    checkNotNull(file, "file");
     return map(file, MapMode.READ_ONLY);
   }
 
@@ -696,8 +696,8 @@ public final class Files {
 
   private static MappedByteBuffer mapInternal(File file, MapMode mode, long size)
       throws IOException {
-    checkNotNull(file);
-    checkNotNull(mode);
+    checkNotNull(file, "file");
+    checkNotNull(mode, "mode");
 
     Closer closer = Closer.create();
     try {
@@ -733,7 +733,7 @@ public final class Files {
    * @since 11.0
    */
   public static String simplifyPath(String pathname) {
-    checkNotNull(pathname);
+    checkNotNull(pathname, "pathname");
     if (pathname.isEmpty()) {
       return ".";
     }
@@ -795,7 +795,7 @@ public final class Files {
    * @since 11.0
    */
   public static String getFileExtension(String fullName) {
-    checkNotNull(fullName);
+    checkNotNull(fullName, "fullName");
     String fileName = new File(fullName).getName();
     int dotIndex = fileName.lastIndexOf('.');
     return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
@@ -812,7 +812,7 @@ public final class Files {
    * @since 14.0
    */
   public static String getNameWithoutExtension(String file) {
-    checkNotNull(file);
+    checkNotNull(file, "file");
     String fileName = new File(file).getName();
     int dotIndex = fileName.lastIndexOf('.');
     return (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex);

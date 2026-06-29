@@ -6,30 +6,40 @@ final class BinarySearch {
     private BinarySearch() {
     }
 
+    /**
+     * Returns the index of the target in a sorted array, or {@link #NOT_FOUND}.
+     * When duplicates exist, this returns the first matching index.
+     */
     static int indexOf(int[] sortedArray, int target) {
-        Objects.requireNonNull(sortedArray, "sortedArray");
+        int firstCandidate = insertionPoint(sortedArray, target);
 
-        int left = 0;
-        int right = sortedArray.length - 1;
-
-        while (left <= right) {
-            int middle = left + (right - left) / 2;
-            int middleValue = sortedArray[middle];
-
-            if (middleValue == target) {
-                return middle;
-            }
-            if (middleValue < target) {
-                left = middle + 1;
-            } else {
-                right = middle - 1;
-            }
+        if (firstCandidate == sortedArray.length || sortedArray[firstCandidate] != target) {
+            return NOT_FOUND;
         }
-
-        return NOT_FOUND;
+        return firstCandidate;
     }
 
     static boolean contains(int[] sortedArray, int target) {
         return indexOf(sortedArray, target) != NOT_FOUND;
+    }
+
+    static int insertionPoint(int[] sortedArray, int target) {
+        Objects.requireNonNull(sortedArray, "sortedArray");
+
+        int left = 0;
+        int right = sortedArray.length;
+
+        while (left < right) {
+            int middle = left + (right - left) / 2;
+            int middleValue = sortedArray[middle];
+
+            if (middleValue < target) {
+                left = middle + 1;
+            } else {
+                right = middle;
+            }
+        }
+
+        return left;
     }
 }

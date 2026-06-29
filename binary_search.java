@@ -5,6 +5,10 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] sortedValues, int target) {
+        return search(sortedValues, target).index();
+    }
+
+    static SearchResult search(int[] sortedValues, int target) {
         validateInput(sortedValues);
 
         int low = 0;
@@ -14,7 +18,7 @@ final class BinarySearch {
             int mid = midpoint(low, high);
 
             if (sortedValues[mid] == target) {
-                return mid;
+                return SearchResult.foundAt(mid);
             }
 
             if (sortedValues[mid] < target) {
@@ -24,7 +28,7 @@ final class BinarySearch {
             }
         }
 
-        return NOT_FOUND;
+        return SearchResult.notFound();
     }
 
     static boolean found(int index) {
@@ -44,6 +48,30 @@ final class BinarySearch {
     public static void main(String[] args) {
         BinarySearchDemo.main(args);
     }
+
+    static final class SearchResult {
+        private final int index;
+
+        private SearchResult(int index) {
+            this.index = index;
+        }
+
+        static SearchResult foundAt(int index) {
+            return new SearchResult(index);
+        }
+
+        static SearchResult notFound() {
+            return new SearchResult(NOT_FOUND);
+        }
+
+        boolean isFound() {
+            return found(index);
+        }
+
+        int index() {
+            return index;
+        }
+    }
 }
 
 final class BinarySearchDemo {
@@ -52,16 +80,16 @@ final class BinarySearchDemo {
     private BinarySearchDemo() {
     }
 
-    static String formatSearchResult(int index) {
-        if (BinarySearch.found(index)) {
-            return "Element is present at index " + index;
+    static String formatSearchResult(BinarySearch.SearchResult result) {
+        if (result.isFound()) {
+            return "Element is present at index " + result.index();
         }
 
         return "Element is not present in array";
     }
 
     public static void main(String[] args) {
-        int result = BinarySearch.binarySearch(demoValues(), TARGET);
+        BinarySearch.SearchResult result = BinarySearch.search(demoValues(), TARGET);
         System.out.println(formatSearchResult(result));
     }
 

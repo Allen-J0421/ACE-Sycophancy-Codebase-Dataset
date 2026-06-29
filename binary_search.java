@@ -12,13 +12,13 @@ final class BinarySearch {
 
         while (low <= high) {
             int mid = midpoint(low, high);
-            int current = values[mid];
+            int comparison = Integer.compare(values[mid], target);
 
-            if (current == target) {
+            if (comparison == 0) {
                 return mid;
             }
 
-            if (current < target) {
+            if (comparison < 0) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -33,11 +33,7 @@ final class BinarySearch {
     }
 
     private static String formatSearchResult(int result) {
-        if (result == NOT_FOUND) {
-            return NOT_FOUND_MESSAGE;
-        }
-
-        return FOUND_MESSAGE_PREFIX + result;
+        return result == NOT_FOUND ? NOT_FOUND_MESSAGE : FOUND_MESSAGE_PREFIX + result;
     }
 
     public static void main(String[] args) {

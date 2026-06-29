@@ -75,10 +75,8 @@ public class StandardValidator implements GeometryValidator {
 
                 @Override
                 public Void visit(LinearRing ring) throws RuntimeException {
-                    for (int i = 0; i < ring.length(); i++) {
-                        checkZ(ring.getZ(i));
-                    }
-                    return null;
+                    // A LinearRing is a Line, and is validated identically vertex-by-vertex.
+                    return visit((Line) ring);
                 }
 
                 @Override

@@ -1,7 +1,7 @@
-class BinarySearch {
-    static final int NOT_FOUND = -1;
+public class BinarySearch {
+    public static final int NOT_FOUND = -1;
 
-    static int binarySearch(int[] sortedArray, int target) {
+    public static int binarySearch(int[] sortedArray, int target) {
         java.util.Objects.requireNonNull(sortedArray, "sortedArray");
 
         int left = 0;

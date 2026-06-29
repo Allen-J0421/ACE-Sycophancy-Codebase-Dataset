@@ -1,4 +1,4 @@
-final class BinarySearchTest {
+public final class BinarySearchTest {
     private BinarySearchTest() {
     }
 

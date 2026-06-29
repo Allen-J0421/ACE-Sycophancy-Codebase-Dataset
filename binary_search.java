@@ -44,8 +44,16 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
-        runSelfTest();
+        if (isSelfTestMode(args)) {
+            runSelfTest();
+            return;
+        }
+
         runDemo();
+    }
+
+    private static boolean isSelfTestMode(String[] args) {
+        return args.length == 1 && "--self-test".equals(args[0]);
     }
 
     private static void runDemo() {

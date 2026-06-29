@@ -1,4 +1,6 @@
 final class BinarySearch {
+    static final int NOT_FOUND = -1;
+
     private BinarySearch() {
     }
 
@@ -21,7 +23,7 @@ final class BinarySearch {
             }
         }
 
-        return -1;
+        return NOT_FOUND;
     }
 }
 
@@ -40,10 +42,10 @@ final class BinarySearchDemo {
 
         return new SearchCase[] {
             SearchCase.expectIndex(sampleValues, 10, 3),
-            SearchCase.expectIndex(sampleValues, 5, -1),
-            SearchCase.expectIndex(new int[] {}, 10, -1),
+            SearchCase.expectIndex(sampleValues, 5, BinarySearch.NOT_FOUND),
+            SearchCase.expectIndex(new int[] {}, 10, BinarySearch.NOT_FOUND),
             SearchCase.expectIndex(singleValue, 7, 0),
-            SearchCase.expectIndex(singleValue, 3, -1)
+            SearchCase.expectIndex(singleValue, 3, BinarySearch.NOT_FOUND)
         };
     }
 }

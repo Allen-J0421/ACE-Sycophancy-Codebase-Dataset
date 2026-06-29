@@ -215,12 +215,10 @@ public final class TerminalRow {
 
     /** Returns how many java chars the given column occupies in mText, starting at {@code startIndex}. */
     private int countCharsUsedByColumn(int column, int displayWidth, int startIndex) {
-        if (column + displayWidth < mColumns) {
+        if (column + displayWidth < mColumns)
             return findStartOfColumn(column + displayWidth) - startIndex;
-        } else {
-            // Last character.
-            return mSpaceUsed - startIndex;
-        }
+        // Last character.
+        return mSpaceUsed - startIndex;
     }
 
     /**
@@ -234,9 +232,9 @@ public final class TerminalRow {
             mText[newNextColumnIndex] = ' ';
             ++mSpaceUsed;
         } else if (oldWidth == 1 && newWidth == 2) {
-            if (columnToSet == mColumns - 1) {
+            if (columnToSet == mColumns - 1)
                 throw new IllegalArgumentException("Cannot put wide character in last column");
-            } else if (columnToSet == mColumns - 2) {
+            if (columnToSet == mColumns - 2) {
                 // Truncate the line to the second part of this wide char:
                 mSpaceUsed = (short) newNextColumnIndex;
             } else {

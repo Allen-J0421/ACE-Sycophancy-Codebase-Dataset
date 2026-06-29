@@ -1,0 +1,39 @@
+public final class BinarySearchTest {
+    private BinarySearchTest() {
+    }
+
+    public static void main(String[] args) {
+        findsExistingValue();
+        returnsNotFoundForMissingValue();
+        returnsNotFoundForEmptyArray();
+        rejectsNullArray();
+    }
+
+    private static void findsExistingValue() {
+        assertEquals(3, BinarySearch.indexOf(new int[] {2, 3, 4, 10, 40}, 10));
+    }
+
+    private static void returnsNotFoundForMissingValue() {
+        assertEquals(BinarySearch.NOT_FOUND, BinarySearch.indexOf(new int[] {2, 3, 4, 10, 40}, 5));
+    }
+
+    private static void returnsNotFoundForEmptyArray() {
+        assertEquals(BinarySearch.NOT_FOUND, BinarySearch.indexOf(new int[] {}, 10));
+    }
+
+    private static void rejectsNullArray() {
+        try {
+            BinarySearch.indexOf(null, 10);
+        } catch (NullPointerException expected) {
+            return;
+        }
+
+        throw new AssertionError("Expected NullPointerException");
+    }
+
+    private static void assertEquals(int expected, int actual) {
+        if (expected != actual) {
+            throw new AssertionError("Expected " + expected + " but got " + actual);
+        }
+    }
+}

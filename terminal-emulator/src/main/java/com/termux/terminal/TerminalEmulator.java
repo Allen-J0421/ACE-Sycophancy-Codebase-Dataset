@@ -515,7 +515,8 @@ public final class TerminalEmulator {
         if ((byteToProcess & 0b10000000) == 0) { // The leading bit is not set so it is a 7-bit ASCII character.
             processCodePoint(byteToProcess);
             return;
-        } else if ((byteToProcess & 0b11100000) == 0b11000000) { // 110xxxxx, a two-byte sequence.
+        }
+        if ((byteToProcess & 0b11100000) == 0b11000000) { // 110xxxxx, a two-byte sequence.
             mUtf8ToFollow = 1;
         } else if ((byteToProcess & 0b11110000) == 0b11100000) { // 1110xxxx, a three-byte sequence.
             mUtf8ToFollow = 2;

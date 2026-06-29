@@ -8,6 +8,13 @@ public final class BinarySearch {
     private BinarySearch() {
     }
 
+    /**
+     * Searches a sorted array for the target value.
+     *
+     * @param values sorted values to search
+     * @param target value to find
+     * @return index of the target, or -1 when the target is not present
+     */
     public static int binarySearch(int[] values, int target) {
         Objects.requireNonNull(values, "values");
 

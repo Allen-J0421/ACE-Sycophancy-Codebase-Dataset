@@ -1148,43 +1148,7 @@ public final class TerminalEmulator {
         switch (b) {
             case 'J': // Selective erase in display (DECSED) - http://www.vt100.net/docs/vt510-rm/DECSED.
             case 'K': // Selective erase in line (DECSEL) - http://vt100.net/docs/vt510-rm/DECSEL.
-                mAboutToAutoWrap = false;
-                int fillChar = ' ';
-                int startCol = -1;
-                int startRow = -1;
-                int endCol = -1;
-                int endRow = -1;
-                boolean justRow = (b == 'K');
-                switch (getArg0(0)) {
-                    case 0: // Erase from the active position to the end, inclusive (default).
-                        startCol = mCursorCol;
-                        startRow = mCursorRow;
-                        endCol = mColumns;
-                        endRow = justRow ? (mCursorRow + 1) : mRows;
-                        break;
-                    case 1: // Erase from start to the active position, inclusive.
-                        startCol = 0;
-                        startRow = justRow ? mCursorRow : 0;
-                        endCol = mCursorCol + 1;
-                        endRow = mCursorRow + 1;
-                        break;
-                    case 2: // Erase all of the display/line.
-                        startCol = 0;
-                        startRow = justRow ? mCursorRow : 0;
-                        endCol = mColumns;
-                        endRow = justRow ? (mCursorRow + 1) : mRows;
-                        break;
-                    default:
-                        unknownSequence(b);
-                        break;
-                }
-                long style = getStyle();
-                for (int row = startRow; row < endRow; row++) {
-                    for (int col = startCol; col < endCol; col++) {
-                        if ((TextStyle.decodeEffect(mScreen.getStyleAt(row, col)) & TextStyle.CHARACTER_ATTRIBUTE_PROTECTED) == 0)
-                            mScreen.setChar(col, row, fillChar, style);
-                    }
-                }
+                doCsiSelectiveErase(b);
                 break;
             case 'h':
             case 'l':
@@ -1225,6 +1189,47 @@ public final class TerminalEmulator {
                 return;
             default:
                 parseArg(b);
+        }
+    }
+
+    /** DECSED (J) / DECSEL (K): selective erase, skipping cells with the PROTECTED attribute. */
+    private void doCsiSelectiveErase(int b) {
+        mAboutToAutoWrap = false;
+        int fillChar = ' ';
+        int startCol = -1;
+        int startRow = -1;
+        int endCol = -1;
+        int endRow = -1;
+        boolean justRow = (b == 'K');
+        switch (getArg0(0)) {
+            case 0: // Erase from the active position to the end, inclusive (default).
+                startCol = mCursorCol;
+                startRow = mCursorRow;
+                endCol = mColumns;
+                endRow = justRow ? (mCursorRow + 1) : mRows;
+                break;
+            case 1: // Erase from start to the active position, inclusive.
+                startCol = 0;
+                startRow = justRow ? mCursorRow : 0;
+                endCol = mCursorCol + 1;
+                endRow = mCursorRow + 1;
+                break;
+            case 2: // Erase all of the display/line.
+                startCol = 0;
+                startRow = justRow ? mCursorRow : 0;
+                endCol = mColumns;
+                endRow = justRow ? (mCursorRow + 1) : mRows;
+                break;
+            default:
+                unknownSequence(b);
+                break;
+        }
+        long style = getStyle();
+        for (int row = startRow; row < endRow; row++) {
+            for (int col = startCol; col < endCol; col++) {
+                if ((TextStyle.decodeEffect(mScreen.getStyleAt(row, col)) & TextStyle.CHARACTER_ATTRIBUTE_PROTECTED) == 0)
+                    mScreen.setChar(col, row, fillChar, style);
+            }
         }
     }
 
@@ -1293,38 +1298,42 @@ public final class TerminalEmulator {
                 break;
             case 47:
             case 1047:
-            case 1049: {
-                // Set: Save cursor as in DECSC and use Alternate Screen Buffer, clearing it first.
-                // Reset: Use Normal Screen Buffer and restore cursor as in DECRC.
-                TerminalBuffer newScreen = setting ? mAltBuffer : mMainBuffer;
-                if (newScreen != mScreen) {
-                    boolean resized = !(newScreen.mColumns == mColumns && newScreen.mScreenRows == mRows);
-                    if (setting) saveCursor();
-                    mScreen = newScreen;
-                    if (!setting) {
-                        int col = mSavedStateMain.mSavedCursorCol;
-                        int row = mSavedStateMain.mSavedCursorRow;
-                        restoreCursor();
-                        if (resized) {
-                            // Restore cursor position _not_ clipped to current screen (let resizeScreen() handle that):
-                            mCursorCol = col;
-                            mCursorRow = row;
-                        }
-                    }
-                    // Check if buffer size needs to be updated:
-                    if (resized) resizeScreen();
-                    // Clear new screen if alt buffer:
-                    if (newScreen == mAltBuffer)
-                        newScreen.blockSet(0, 0, mColumns, mRows, ' ', getStyle());
-                }
+            case 1049:
+                doDecSetSwitchAltScreen(setting);
                 break;
-            }
             case 2004:
                 // Bracketed paste mode - setting bit is enough.
                 break;
             default:
                 unknownParameter(externalBit);
                 break;
+        }
+    }
+
+    /** Switch to/from alternate screen buffer (DECSET 47/1047/1049). */
+    private void doDecSetSwitchAltScreen(boolean setting) {
+        // Set: Save cursor as in DECSC and use Alternate Screen Buffer, clearing it first.
+        // Reset: Use Normal Screen Buffer and restore cursor as in DECRC.
+        TerminalBuffer newScreen = setting ? mAltBuffer : mMainBuffer;
+        if (newScreen != mScreen) {
+            boolean resized = !(newScreen.mColumns == mColumns && newScreen.mScreenRows == mRows);
+            if (setting) saveCursor();
+            mScreen = newScreen;
+            if (!setting) {
+                int col = mSavedStateMain.mSavedCursorCol;
+                int row = mSavedStateMain.mSavedCursorRow;
+                restoreCursor();
+                if (resized) {
+                    // Restore cursor position _not_ clipped to current screen (let resizeScreen() handle that):
+                    mCursorCol = col;
+                    mCursorRow = row;
+                }
+            }
+            // Check if buffer size needs to be updated:
+            if (resized) resizeScreen();
+            // Clear new screen if alt buffer:
+            if (newScreen == mAltBuffer)
+                newScreen.blockSet(0, 0, mColumns, mRows, ' ', getStyle());
         }
     }
 

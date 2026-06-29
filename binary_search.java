@@ -1,4 +1,4 @@
-class BinarySearch {
+final class BinarySearch {
     private static final int[] SORTED_SAMPLE_NUMBERS = {2, 3, 4, 10, 40};
     private static final int SAMPLE_TARGET = 10;
     private static final int NOT_FOUND = -1;
@@ -6,6 +6,9 @@ class BinarySearch {
     private BinarySearch() {
     }
 
+    /**
+     * Returns the index of {@code target} in sorted {@code numbers}, or {@code -1} when absent.
+     */
     static int indexOf(int[] numbers, int target) {
         if (numbers == null) {
             throw new IllegalArgumentException("numbers must not be null");

@@ -226,7 +226,7 @@ public final class AnalysisStats implements ToXContentFragment, Writeable {
         if (mappingMetadata == null) {
             return;
         }
-        mappingCounts.compute(mappingMetadata, (k, count) -> count == null ? 1 : count + 1);
+        mappingCounts.merge(mappingMetadata, 1, Integer::sum);
     }
 
     private static void aggregateAnalysisTypes(

@@ -627,19 +627,22 @@ public final class TerminalEmulator {
                 }
                 break;
             case 27: // ESC
-                // Starts an escape sequence unless we're parsing a string
-                if (mEscapeState == ESC_P) {
-                    // XXX: Ignore escape when reading device control sequence, since it may be part of string terminator.
-                    return;
-                } else if (mEscapeState != ESC_OSC) {
-                    startEscapeSequence();
-                } else {
-                    doOsc(b);
-                }
+                doEscByte();
                 break;
             default:
                 doEscapeStateDispatch(b);
                 break;
+        }
+    }
+
+    /** Handle the ESC (0x1B) byte: start a new escape sequence, or pass to the current OSC/DCS handler. */
+    private void doEscByte() {
+        if (mEscapeState == ESC_P) {
+            // Ignore escape when reading device control sequence — it may be part of the string terminator.
+        } else if (mEscapeState != ESC_OSC) {
+            startEscapeSequence();
+        } else {
+            doOsc(27);
         }
     }
 
@@ -1333,7 +1336,7 @@ public final class TerminalEmulator {
         setDecsetinternalBit(DECSET_BIT_LEFTRIGHT_MARGIN_MODE, false);
         // "Erases all data in page memory":
         blockClear(0, 0, mColumns, mRows);
-        setCursorRowCol(0, 0);
+        setCursorRowColAbsolute(0, 0);
     }
 
     /** Switch to/from alternate screen buffer (DECSET 47/1047/1049). */
@@ -1449,7 +1452,7 @@ public final class TerminalEmulator {
             int previousRow = mCursorRow - 1;
             if (previousRow >= 0 && mScreen.getLineWrap(previousRow)) {
                 mScreen.clearLineWrap(previousRow);
-                setCursorRowCol(previousRow, mRightMargin - 1);
+                setCursorRowColAbsolute(previousRow, mRightMargin - 1);
             }
         } else {
             setCursorCol(mCursorCol - 1);
@@ -1569,7 +1572,7 @@ public final class TerminalEmulator {
                 doLinefeed();
                 break;
             case 'F': // Cursor to lower-left corner of screen
-                setCursorRowCol(0, mBottomMargin - 1);
+                setCursorRowColAbsolute(0, mBottomMargin - 1);
                 break;
             case 'H': // Tab set
                 mTabStop[mCursorCol] = true;
@@ -1623,7 +1626,7 @@ public final class TerminalEmulator {
     /** DECRS restore cursor - http://www.vt100.net/docs/vt510-rm/DECRC. See {@link #saveCursor()}. */
     private void restoreCursor() {
         SavedScreenState state = (mScreen == mMainBuffer) ? mSavedStateMain : mSavedStateAlt;
-        setCursorRowCol(state.mSavedCursorRow, state.mSavedCursorCol);
+        setCursorRowColAbsolute(state.mSavedCursorRow, state.mSavedCursorCol);
         mEffect = state.mSavedEffect;
         mForeColor = state.mSavedForeColor;
         mBackColor = state.mSavedBackColor;
@@ -2395,7 +2398,7 @@ public final class TerminalEmulator {
 
     /**
      * NOTE: The parameters of this function respect the {@link #DECSET_BIT_ORIGIN_MODE}. Use
-     * {@link #setCursorRowCol(int, int)} for absolute pos.
+     * {@link #setCursorRowColAbsolute(int, int)} for absolute pos.
      */
     private void setCursorPosition(int x, int y) {
         boolean originMode = isDecsetInternalBitSet(DECSET_BIT_ORIGIN_MODE);
@@ -2405,7 +2408,7 @@ public final class TerminalEmulator {
         int effectiveRightMargin = originMode ? mRightMargin : mColumns;
         int newRow = Math.max(effectiveTopMargin, Math.min(effectiveTopMargin + y, effectiveBottomMargin - 1));
         int newCol = Math.max(effectiveLeftMargin, Math.min(effectiveLeftMargin + x, effectiveRightMargin - 1));
-        setCursorRowCol(newRow, newCol);
+        setCursorRowColAbsolute(newRow, newCol);
     }
 
     private void scrollDownOneLine() {
@@ -2660,8 +2663,8 @@ public final class TerminalEmulator {
         setCursorPosition(col, mCursorRow);
     }
 
-    /** TODO: Better name, distinguished from {@link #setCursorPosition(int, int)} by not regarding origin mode. */
-    private void setCursorRowCol(int row, int col) {
+    /** Sets the cursor to an absolute (row, col) position, ignoring {@link #DECSET_BIT_ORIGIN_MODE}. */
+    private void setCursorRowColAbsolute(int row, int col) {
         mCursorRow = Math.max(0, Math.min(row, mRows - 1));
         mCursorCol = Math.max(0, Math.min(col, mColumns - 1));
         mAboutToAutoWrap = false;

@@ -284,20 +284,19 @@ public final class TerminalBuffer {
                 skippedBlankLines = 0;
             }
 
-            int lastNonSpaceIndex = 0;
-            boolean justToCursor = false;
+            int lastNonSpaceIndex;
             if (cursorAtThisRow || oldLine.mLineWrap) {
                 // Take the whole line, either because of cursor on it, or if line wrapping.
                 lastNonSpaceIndex = oldLine.getSpaceUsed();
-                if (cursorAtThisRow) justToCursor = true;
             } else {
+                lastNonSpaceIndex = 0;
                 for (int i = 0; i < oldLine.getSpaceUsed(); i++)
                     // NEWLY INTRODUCED BUG! Should not index oldLine.mStyle with char indices
                     if (oldLine.mText[i] != ' '/* || oldLine.mStyle[i] != currentStyle */)
                         lastNonSpaceIndex = i + 1;
             }
 
-            reflowOldRow(oldLine, lastNonSpaceIndex, justToCursor, externalOldRow, oldCursorRow, oldCursorColumn, state, currentStyle);
+            reflowOldRow(oldLine, lastNonSpaceIndex, cursorAtThisRow, externalOldRow, oldCursorRow, oldCursorColumn, state, currentStyle);
 
             // Old row has been copied. Check if we need to insert newline if old line was not wrapping:
             if (externalOldRow != (oldScreenRows - 1) && !oldLine.mLineWrap)

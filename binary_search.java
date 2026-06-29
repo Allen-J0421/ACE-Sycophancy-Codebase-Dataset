@@ -4,6 +4,9 @@ class BinarySearch {
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
 
+    private BinarySearch() {
+    }
+
     static int binarySearch(int[] sortedValues, int target) {
         int lowIndex = 0;
         int highIndex = sortedValues.length - 1;

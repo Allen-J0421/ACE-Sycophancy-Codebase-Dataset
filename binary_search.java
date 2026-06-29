@@ -44,11 +44,15 @@ final class BinarySearch {
     }
 
     private static void printSearchResult(int result) {
+        System.out.println(formatSearchResult(result));
+    }
+
+    private static String formatSearchResult(int result) {
         if (isFound(result)) {
-            System.out.println(FOUND_MESSAGE_PREFIX + result);
-        } else {
-            System.out.println(NOT_FOUND_MESSAGE);
+            return FOUND_MESSAGE_PREFIX + result;
         }
+
+        return NOT_FOUND_MESSAGE;
     }
 
     private static boolean isFound(int result) {

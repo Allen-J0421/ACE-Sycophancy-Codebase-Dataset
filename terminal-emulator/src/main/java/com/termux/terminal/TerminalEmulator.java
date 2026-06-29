@@ -850,8 +850,6 @@ public final class TerminalEmulator {
                         effectiveLeftMargin, effectiveRightMargin, top, left, bottom, right);
                 }
             }
-        } else {
-            // Do nothing.
         }
     }
 

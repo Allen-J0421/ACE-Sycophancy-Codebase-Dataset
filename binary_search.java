@@ -1,12 +1,17 @@
-class BinarySearch {
+final class BinarySearch {
+    private static final int[] DEMO_VALUES = { 2, 3, 4, 10, 40 };
+    private static final int DEMO_TARGET = 10;
     private static final int NOT_FOUND = -1;
+
+    private BinarySearch() {
+    }
 
     static int binarySearch(int[] arr, int target) {
         int low = 0;
         int high = arr.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
 
             if (arr[mid] == target) {
                 return mid;
@@ -23,9 +28,15 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int[] values = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(values, target);
+        runDemo();
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
+    private static void runDemo() {
+        int result = binarySearch(DEMO_VALUES, DEMO_TARGET);
 
         printSearchResult(result);
     }

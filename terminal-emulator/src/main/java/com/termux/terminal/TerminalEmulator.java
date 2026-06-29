@@ -508,32 +508,7 @@ public final class TerminalEmulator {
                 // 10xxxxxx, a continuation byte.
                 mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
                 if (--mUtf8ToFollow == 0) {
-                    byte firstByteMask = (byte) (mUtf8Index == 2 ? 0b00011111 : (mUtf8Index == 3 ? 0b00001111 : 0b00000111));
-                    int codePoint = (mUtf8InputBuffer[0] & firstByteMask);
-                    for (int i = 1; i < mUtf8Index; i++)
-                        codePoint = ((codePoint << 6) | (mUtf8InputBuffer[i] & 0b00111111));
-                    if (((codePoint <= 0b1111111) && mUtf8Index > 1) || (codePoint < 0b11111111111 && mUtf8Index > 2)
-                        || (codePoint < 0b1111111111111111 && mUtf8Index > 3)) {
-                        // Overlong encoding.
-                        codePoint = UNICODE_REPLACEMENT_CHAR;
-                    }
-
-                    mUtf8Index = mUtf8ToFollow = 0;
-
-                    if (codePoint >= 0x80 && codePoint <= 0x9F) {
-                        // Sequence decoded to a C1 control character which we ignore. They are
-                        // not used nowadays and increases the risk of messing up the terminal state
-                        // on binary input. XTerm does not allow them in utf-8:
-                        // "It is not possible to use a C1 control obtained from decoding the
-                        // UTF-8 text" - http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
-                    } else {
-                        switch (Character.getType(codePoint)) {
-                            case Character.UNASSIGNED:
-                            case Character.SURROGATE:
-                                codePoint = UNICODE_REPLACEMENT_CHAR;
-                        }
-                        processCodePoint(codePoint);
-                    }
+                    decodeCompletedUtf8Sequence();
                 }
             } else {
                 // Not a UTF-8 continuation byte so replace the entire sequence up to now with the replacement char:
@@ -564,6 +539,36 @@ public final class TerminalEmulator {
                 return;
             }
             mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
+        }
+    }
+
+    /** Called when mUtf8ToFollow reaches 0: decode mUtf8InputBuffer[0..mUtf8Index) and dispatch. */
+    private void decodeCompletedUtf8Sequence() {
+        byte firstByteMask = (byte) (mUtf8Index == 2 ? 0b00011111 : (mUtf8Index == 3 ? 0b00001111 : 0b00000111));
+        int codePoint = (mUtf8InputBuffer[0] & firstByteMask);
+        for (int i = 1; i < mUtf8Index; i++)
+            codePoint = ((codePoint << 6) | (mUtf8InputBuffer[i] & 0b00111111));
+        if (((codePoint <= 0b1111111) && mUtf8Index > 1) || (codePoint < 0b11111111111 && mUtf8Index > 2)
+            || (codePoint < 0b1111111111111111 && mUtf8Index > 3)) {
+            // Overlong encoding.
+            codePoint = UNICODE_REPLACEMENT_CHAR;
+        }
+
+        mUtf8Index = mUtf8ToFollow = 0;
+
+        if (codePoint >= 0x80 && codePoint <= 0x9F) {
+            // Sequence decoded to a C1 control character which we ignore. They are
+            // not used nowadays and increases the risk of messing up the terminal state
+            // on binary input. XTerm does not allow them in utf-8:
+            // "It is not possible to use a C1 control obtained from decoding the
+            // UTF-8 text" - http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+        } else {
+            switch (Character.getType(codePoint)) {
+                case Character.UNASSIGNED:
+                case Character.SURROGATE:
+                    codePoint = UNICODE_REPLACEMENT_CHAR;
+            }
+            processCodePoint(codePoint);
         }
     }
 
@@ -725,56 +730,13 @@ public final class TerminalEmulator {
         int effectiveLeftMargin = originMode ? mLeftMargin : 0;
         int effectiveRightMargin = originMode ? mRightMargin : mColumns;
         switch (b) {
-            case 'v': // ${CSI}${SRC_TOP}${SRC_LEFT}${SRC_BOTTOM}${SRC_RIGHT}${SRC_PAGE}${DST_TOP}${DST_LEFT}${DST_PAGE}$v"
-                // Copy rectangular area (DECCRA - http://vt100.net/docs/vt510-rm/DECCRA):
-                // "If Pbs is greater than Pts, or Pls is greater than Prs, the terminal ignores DECCRA.
-                // The coordinates of the rectangular area are affected by the setting of origin mode (DECOM).
-                // DECCRA is not affected by the page margins.
-                // The copied text takes on the line attributes of the destination area.
-                // If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the active page, then the value
-                // is treated as the width or height of that page.
-                // If the destination area is partially off the page, then DECCRA clips the off-page data.
-                // DECCRA does not change the active cursor position."
-                int topSource = Math.min(getArg(0, 1, true) - 1 + effectiveTopMargin, mRows);
-                int leftSource = Math.min(getArg(1, 1, true) - 1 + effectiveLeftMargin, mColumns);
-                // Inclusive, so do not subtract one:
-                int bottomSource = Math.min(Math.max(getArg(2, mRows, true) + effectiveTopMargin, topSource), mRows);
-                int rightSource = Math.min(Math.max(getArg(3, mColumns, true) + effectiveLeftMargin, leftSource), mColumns);
-                // int sourcePage = getArg(4, 1, true);
-                int destionationTop = Math.min(getArg(5, 1, true) - 1 + effectiveTopMargin, mRows);
-                int destinationLeft = Math.min(getArg(6, 1, true) - 1 + effectiveLeftMargin, mColumns);
-                // int destinationPage = getArg(7, 1, true);
-                int heightToCopy = Math.min(mRows - destionationTop, bottomSource - topSource);
-                int widthToCopy = Math.min(mColumns - destinationLeft, rightSource - leftSource);
-                mScreen.blockCopy(leftSource, topSource, widthToCopy, heightToCopy, destinationLeft, destionationTop);
+            case 'v': // DECCRA — Copy rectangular area (http://vt100.net/docs/vt510-rm/DECCRA).
+                doCsiRectCopy(effectiveTopMargin, effectiveLeftMargin);
                 break;
-            case '{': // ${CSI}${TOP}${LEFT}${BOTTOM}${RIGHT}${"
-                // Selective erase rectangular area (DECSERA - http://www.vt100.net/docs/vt510-rm/DECSERA).
-            case 'x': // ${CSI}${CHAR};${TOP}${LEFT}${BOTTOM}${RIGHT}$x"
-                // Fill rectangular area (DECFRA - http://www.vt100.net/docs/vt510-rm/DECFRA).
-            case 'z': // ${CSI}$${TOP}${LEFT}${BOTTOM}${RIGHT}$z"
-                // Erase rectangular area (DECERA - http://www.vt100.net/docs/vt510-rm/DECERA).
-                boolean erase = b != 'x';
-                boolean selective = b == '{';
-                // Only DECSERA keeps visual attributes, DECERA does not:
-                boolean keepVisualAttributes = erase && selective;
-                int argIndex = 0;
-                int fillChar = erase ? ' ' : getArg(argIndex++, -1, true);
-                // "Pch can be any value from 32 to 126 or from 160 to 255. If Pch is not in this range, then the
-                // terminal ignores the DECFRA command":
-                if ((fillChar >= 32 && fillChar <= 126) || (fillChar >= 160 && fillChar <= 255)) {
-                    // "If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the active page, the value
-                    // is treated as the width or height of that page."
-                    int top = Math.min(getArg(argIndex++, 1, true) + effectiveTopMargin, effectiveBottomMargin + 1);
-                    int left = Math.min(getArg(argIndex++, 1, true) + effectiveLeftMargin, effectiveRightMargin + 1);
-                    int bottom = Math.min(getArg(argIndex++, mRows, true) + effectiveTopMargin, effectiveBottomMargin);
-                    int right = Math.min(getArg(argIndex, mColumns, true) + effectiveLeftMargin, effectiveRightMargin);
-                    long style = getStyle();
-                    for (int row = top - 1; row < bottom; row++)
-                        for (int col = left - 1; col < right; col++)
-                            if (!selective || (TextStyle.decodeEffect(mScreen.getStyleAt(row, col)) & TextStyle.CHARACTER_ATTRIBUTE_PROTECTED) == 0)
-                                mScreen.setChar(col, row, fillChar, keepVisualAttributes ? mScreen.getStyleAt(row, col) : style);
-                }
+            case '{': // DECSERA — Selective erase rectangular area.
+            case 'x': // DECFRA — Fill rectangular area.
+            case 'z': // DECERA — Erase rectangular area.
+                doCsiRectFillOrErase(b, effectiveTopMargin, effectiveBottomMargin, effectiveLeftMargin, effectiveRightMargin);
                 break;
             case 'r': // "${CSI}${TOP}${LEFT}${BOTTOM}${RIGHT}${ATTRIBUTES}$r"
                 // Change attributes in rectangular area (DECCARA - http://vt100.net/docs/vt510-rm/DECCARA).
@@ -784,6 +746,58 @@ public final class TerminalEmulator {
                 break;
             default:
                 unknownSequence(b);
+        }
+    }
+
+    /**
+     * DECCRA ($v): copy rectangular area.
+     * "If Pbs is greater than Pts, or Pls is greater than Prs, the terminal ignores DECCRA.
+     * The coordinates of the rectangular area are affected by the setting of origin mode (DECOM).
+     * DECCRA is not affected by the page margins.
+     * The copied text takes on the line attributes of the destination area.
+     * If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the active page, then the value
+     * is treated as the width or height of that page.
+     * If the destination area is partially off the page, then DECCRA clips the off-page data.
+     * DECCRA does not change the active cursor position."
+     */
+    private void doCsiRectCopy(int effectiveTopMargin, int effectiveLeftMargin) {
+        int topSource = Math.min(getArg(0, 1, true) - 1 + effectiveTopMargin, mRows);
+        int leftSource = Math.min(getArg(1, 1, true) - 1 + effectiveLeftMargin, mColumns);
+        // Inclusive, so do not subtract one:
+        int bottomSource = Math.min(Math.max(getArg(2, mRows, true) + effectiveTopMargin, topSource), mRows);
+        int rightSource = Math.min(Math.max(getArg(3, mColumns, true) + effectiveLeftMargin, leftSource), mColumns);
+        // int sourcePage = getArg(4, 1, true);
+        int destionationTop = Math.min(getArg(5, 1, true) - 1 + effectiveTopMargin, mRows);
+        int destinationLeft = Math.min(getArg(6, 1, true) - 1 + effectiveLeftMargin, mColumns);
+        // int destinationPage = getArg(7, 1, true);
+        int heightToCopy = Math.min(mRows - destionationTop, bottomSource - topSource);
+        int widthToCopy = Math.min(mColumns - destinationLeft, rightSource - leftSource);
+        mScreen.blockCopy(leftSource, topSource, widthToCopy, heightToCopy, destinationLeft, destionationTop);
+    }
+
+    /** DECSERA (${{), DECFRA ($x), DECERA ($z): selectively erase, fill, or erase a rectangular area. */
+    private void doCsiRectFillOrErase(int b, int effectiveTopMargin, int effectiveBottomMargin,
+                                       int effectiveLeftMargin, int effectiveRightMargin) {
+        boolean erase = b != 'x';
+        boolean selective = b == '{';
+        // Only DECSERA keeps visual attributes, DECERA does not:
+        boolean keepVisualAttributes = erase && selective;
+        int argIndex = 0;
+        int fillChar = erase ? ' ' : getArg(argIndex++, -1, true);
+        // "Pch can be any value from 32 to 126 or from 160 to 255. If Pch is not in this range, then the
+        // terminal ignores the DECFRA command":
+        if ((fillChar >= 32 && fillChar <= 126) || (fillChar >= 160 && fillChar <= 255)) {
+            // "If the value of Pt, Pl, Pb, or Pr exceeds the width or height of the active page, the value
+            // is treated as the width or height of that page."
+            int top = Math.min(getArg(argIndex++, 1, true) + effectiveTopMargin, effectiveBottomMargin + 1);
+            int left = Math.min(getArg(argIndex++, 1, true) + effectiveLeftMargin, effectiveRightMargin + 1);
+            int bottom = Math.min(getArg(argIndex++, mRows, true) + effectiveTopMargin, effectiveBottomMargin);
+            int right = Math.min(getArg(argIndex, mColumns, true) + effectiveLeftMargin, effectiveRightMargin);
+            long style = getStyle();
+            for (int row = top - 1; row < bottom; row++)
+                for (int col = left - 1; col < right; col++)
+                    if (!selective || (TextStyle.decodeEffect(mScreen.getStyleAt(row, col)) & TextStyle.CHARACTER_ATTRIBUTE_PROTECTED) == 0)
+                        mScreen.setChar(col, row, fillChar, keepVisualAttributes ? mScreen.getStyleAt(row, col) : style);
         }
     }
 

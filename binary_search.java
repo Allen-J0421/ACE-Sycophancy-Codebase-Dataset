@@ -16,13 +16,13 @@ final class BinarySearch {
 
         while (left <= right) {
             int middle = midpoint(left, right);
-            int middleValue = values[middle];
+            int comparison = Integer.compare(values[middle], target);
 
-            if (middleValue == target) {
+            if (comparison == 0) {
                 return middle;
             }
 
-            if (middleValue < target) {
+            if (comparison < 0) {
                 left = middle + 1;
             } else {
                 right = middle - 1;

@@ -1,13 +1,15 @@
 final class BinarySearchTest {
+    private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
+
     private BinarySearchTest() {
     }
 
     public static void main(String[] args) {
-        assertIndex("finds middle value", new int[] { 2, 3, 4, 10, 40 }, 10, 3);
-        assertIndex("finds first value", new int[] { 2, 3, 4, 10, 40 }, 2, 0);
-        assertIndex("finds last value", new int[] { 2, 3, 4, 10, 40 }, 40, 4);
-        assertIndex("returns not found for empty array", new int[] {}, 10, -1);
-        assertIndex("returns not found for missing value", new int[] { 2, 3, 4, 10, 40 }, 5, -1);
+        assertIndex("finds middle value", SAMPLE_VALUES, 10, 3);
+        assertIndex("finds first value", SAMPLE_VALUES, 2, 0);
+        assertIndex("finds last value", SAMPLE_VALUES, 40, 4);
+        assertNotFound("returns not found for empty array", new int[] {}, 10);
+        assertNotFound("returns not found for missing value", SAMPLE_VALUES, 5);
         assertFoundValue("finds a duplicate value", new int[] { 1, 2, 2, 2, 3 }, 2);
         assertIsFound("detects found index", 0, true);
         assertIsFound("detects missing index", -1, false);
@@ -20,6 +22,14 @@ final class BinarySearchTest {
 
         if (actual != expected) {
             fail(name, "expected index " + expected + " but got " + actual);
+        }
+    }
+
+    private static void assertNotFound(String name, int[] values, int target) {
+        int actual = BinarySearch.binarySearch(values, target);
+
+        if (BinarySearch.isFound(actual)) {
+            fail(name, "expected not found but got index " + actual);
         }
     }
 

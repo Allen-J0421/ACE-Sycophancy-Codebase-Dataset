@@ -22,9 +22,9 @@ class BinarySearch {
             }
 
             if (numbers[mid] < target) {
-                low = nextLowerBound(mid);
+                low = mid + 1;
             } else {
-                high = nextUpperBound(mid);
+                high = mid - 1;
             }
         }
 
@@ -33,14 +33,6 @@ class BinarySearch {
 
     private static int midpoint(int low, int high) {
         return low + (high - low) / 2;
-    }
-
-    private static int nextLowerBound(int mid) {
-        return mid + 1;
-    }
-
-    private static int nextUpperBound(int mid) {
-        return mid - 1;
     }
 
     private static String formatSearchResult(int index) {

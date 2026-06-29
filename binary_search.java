@@ -8,29 +8,29 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
-        int low = 0;
-        int high = values.length - 1;
+        int left = 0;
+        int right = values.length - 1;
 
-        while (low <= high) {
-            int mid = midpoint(low, high);
-            int comparison = Integer.compare(values[mid], target);
+        while (left <= right) {
+            int middle = midpoint(left, right);
+            int comparison = Integer.compare(values[middle], target);
 
             if (comparison == 0) {
-                return mid;
+                return middle;
             }
 
             if (comparison < 0) {
-                low = mid + 1;
+                left = middle + 1;
             } else {
-                high = mid - 1;
+                right = middle - 1;
             }
         }
 
         return NOT_FOUND;
     }
 
-    private static int midpoint(int low, int high) {
-        return low + (high - low) / 2;
+    private static int midpoint(int left, int right) {
+        return left + (right - left) / 2;
     }
 
     private static String formatSearchResult(int result) {

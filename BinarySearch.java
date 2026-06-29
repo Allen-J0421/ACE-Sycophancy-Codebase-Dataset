@@ -3,6 +3,8 @@ import java.util.Objects;
 public final class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int SAMPLE_TARGET = 10;
+    private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
+    private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
 
     private BinarySearch() {
     }
@@ -38,10 +40,10 @@ public final class BinarySearch {
 
     private static String formatSearchResult(int result) {
         if (result == NOT_FOUND) {
-            return "Element is not present in array";
+            return NOT_FOUND_MESSAGE;
         }
 
-        return "Element is present at index " + result;
+        return FOUND_MESSAGE_PREFIX + result;
     }
 
     private static int[] sampleValues() {

@@ -828,12 +828,9 @@ public final class TerminalEmulator {
                         setOrClear = false;
                         break;
                 }
-                if (reverse && !setOrClear) {
-                    // Reverse attributes in rectangular area ignores non-(1,4,5,7) bits.
-                } else {
-                    mScreen.setOrClearEffect(bits, setOrClear, reverse, isDecsetInternalBitSet(DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE),
-                        effectiveLeftMargin, effectiveRightMargin, top, left, bottom, right);
-                }
+                if (reverse && !setOrClear) continue; // Reverse ignores non-(1,4,5,7) bits.
+                mScreen.setOrClearEffect(bits, setOrClear, reverse, isDecsetInternalBitSet(DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE),
+                    effectiveLeftMargin, effectiveRightMargin, top, left, bottom, right);
             }
         }
     }

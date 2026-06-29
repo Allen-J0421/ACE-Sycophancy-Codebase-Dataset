@@ -71,14 +71,25 @@ class BinarySearchTest {
     }
 
     private static void assertSearch(SearchCase testCase) {
-        int actual = BinarySearch.binarySearch(testCase.values(), testCase.target());
+        int actual = BinarySearch.binarySearch(testCase.values, testCase.target);
 
-        if (actual != testCase.expected()) {
+        if (actual != testCase.expected) {
             throw new AssertionError(
-                    testCase.name() + ": expected " + testCase.expected() + " but got " + actual);
+                    testCase.name + ": expected " + testCase.expected + " but got " + actual);
         }
     }
 
-    private record SearchCase(String name, int[] values, int target, int expected) {
+    private static final class SearchCase {
+        private final String name;
+        private final int[] values;
+        private final int target;
+        private final int expected;
+
+        private SearchCase(String name, int[] values, int target, int expected) {
+            this.name = name;
+            this.values = values;
+            this.target = target;
+            this.expected = expected;
+        }
     }
 }

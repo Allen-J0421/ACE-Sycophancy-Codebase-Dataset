@@ -53,16 +53,10 @@ public final class VersionStats implements ToXContentFragment, Writeable {
         for (ClusterStatsNodeResponse r : nodeResponses) {
             for (ShardStats shardStats : r.shardsStats()) {
                 if (shardStats.getShardRouting().primary()) {
-                    indexPrimaryShardStats.compute(shardStats.getShardRouting().getIndexName(), (name, stats) -> {
-                        if (stats == null) {
-                            List<ShardStats> newStats = new ArrayList<>();
-                            newStats.add(shardStats);
-                            return newStats;
-                        } else {
-                            stats.add(shardStats);
-                            return stats;
-                        }
-                    });
+                    indexPrimaryShardStats.computeIfAbsent(
+                        shardStats.getShardRouting().getIndexName(),
+                        name -> new ArrayList<>()
+                    ).add(shardStats);
                 }
             }
         }
@@ -132,13 +126,9 @@ public final class VersionStats implements ToXContentFragment, Writeable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
         VersionStats other = (VersionStats) obj;
         return versionStats.equals(other.versionStats);
     }
@@ -207,13 +197,9 @@ public final class VersionStats implements ToXContentFragment, Writeable {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) {
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-
             SingleVersionStats other = (SingleVersionStats) obj;
             return version.equals(other.version)
                 && indexCount == other.indexCount

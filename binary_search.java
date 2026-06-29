@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 final class BinarySearch {
     private static final int DEMO_TARGET = 10;
     private static final int NOT_FOUND_INDEX = -1;
@@ -12,6 +14,8 @@ final class BinarySearch {
      * {@link #NOT_FOUND_INDEX} when the target is absent.
      */
     static int binarySearch(int[] sortedNumbers, int target) {
+        Objects.requireNonNull(sortedNumbers, "sortedNumbers");
+
         int low = 0;
         int high = sortedNumbers.length - 1;
 

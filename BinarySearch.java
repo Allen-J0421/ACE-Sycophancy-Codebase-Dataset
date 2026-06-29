@@ -5,6 +5,10 @@ public class BinarySearch {
     }
 
     public static int binarySearch(int[] values, int target) {
+        return search(values, target).index();
+    }
+
+    public static SearchResult search(int[] values, int target) {
         int low = 0;
         int high = values.length - 1;
 
@@ -12,7 +16,7 @@ public class BinarySearch {
             int mid = midpoint(low, high);
 
             if (values[mid] == target) {
-                return mid;
+                return SearchResult.foundAt(mid);
             }
 
             if (values[mid] < target) {
@@ -22,7 +26,7 @@ public class BinarySearch {
             }
         }
 
-        return NOT_FOUND;
+        return SearchResult.notFound();
     }
 
     private static int midpoint(int low, int high) {

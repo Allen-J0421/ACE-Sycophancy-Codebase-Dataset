@@ -5,7 +5,7 @@ final class BinarySearchDemo {
     }
 
     static void run() {
-        int result = BinarySearch.binarySearch(sampleValues(), SAMPLE_TARGET);
+        SearchResult result = BinarySearch.search(sampleValues(), SAMPLE_TARGET);
 
         printSearchResult(result);
     }
@@ -14,8 +14,8 @@ final class BinarySearchDemo {
         run();
     }
 
-    private static void printSearchResult(int index) {
-        System.out.println(SearchResultFormatter.format(index));
+    private static void printSearchResult(SearchResult result) {
+        System.out.println(SearchResultFormatter.format(result));
     }
 
     private static int[] sampleValues() {

@@ -20,11 +20,7 @@ final class BinarySearch {
                 return mid;
             }
 
-            if (isBelowTarget(comparison)) {
-                range.discardAtOrBelow(mid);
-            } else {
-                range.discardAtOrAbove(mid);
-            }
+            narrowSearchRange(range, mid, comparison);
         }
 
         return NOT_FOUND;
@@ -44,6 +40,14 @@ final class BinarySearch {
 
     private static boolean isBelowTarget(int comparison) {
         return comparison < 0;
+    }
+
+    private static void narrowSearchRange(SearchRange range, int midpoint, int comparison) {
+        if (isBelowTarget(comparison)) {
+            range.discardAtOrBelow(midpoint);
+        } else {
+            range.discardAtOrAbove(midpoint);
+        }
     }
 
     private static void runDemo() {

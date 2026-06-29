@@ -97,37 +97,67 @@ final class SearchResult {
 }
 
 final class BinarySearchTest {
+    private static final int NOT_FOUND = -1;
+
     private BinarySearchTest() {
     }
 
     public static void main(String[] args) {
-        assertSearch(new int[] {}, 10, -1);
-        assertSearch(new int[] {10}, 10, 0);
-        assertSearch(new int[] {10}, 5, -1);
-        assertSearch(new int[] {2, 3, 4, 10, 40}, 2, 0);
-        assertSearch(new int[] {2, 3, 4, 10, 40}, 10, 3);
-        assertSearch(new int[] {2, 3, 4, 10, 40}, 40, 4);
-        assertSearch(new int[] {2, 3, 4, 10, 40}, 5, -1);
+        for (SearchCase searchCase : searchCases()) {
+            assertSearch(searchCase);
+        }
 
         System.out.println("BinarySearchTest passed");
     }
 
-    private static void assertSearch(int[] sortedValues, int target, int expectedIndex) {
-        int actualIndex = BinarySearch.binarySearch(sortedValues, target);
-        SearchResult result = BinarySearch.search(sortedValues, target);
+    private static SearchCase[] searchCases() {
+        return new SearchCase[] {
+                new SearchCase(new int[] {}, 10, NOT_FOUND),
+                new SearchCase(new int[] {10}, 10, 0),
+                new SearchCase(new int[] {10}, 5, NOT_FOUND),
+                new SearchCase(new int[] {2, 3, 4, 10, 40}, 2, 0),
+                new SearchCase(new int[] {2, 3, 4, 10, 40}, 10, 3),
+                new SearchCase(new int[] {2, 3, 4, 10, 40}, 40, 4),
+                new SearchCase(new int[] {2, 3, 4, 10, 40}, 5, NOT_FOUND),
+        };
+    }
 
-        if (actualIndex != expectedIndex) {
+    private static void assertSearch(SearchCase searchCase) {
+        int actualIndex = BinarySearch.binarySearch(searchCase.sortedValues, searchCase.target);
+        SearchResult result = BinarySearch.search(searchCase.sortedValues, searchCase.target);
+
+        if (actualIndex != searchCase.expectedIndex) {
             throw new AssertionError(
-                    "Expected binarySearch to return " + expectedIndex + " but got " + actualIndex);
+                    "Expected binarySearch to return " + searchCase.expectedIndex + " but got " + actualIndex);
         }
 
-        if (result.indexOrNotFound() != expectedIndex) {
+        if (result.indexOrNotFound() != searchCase.expectedIndex) {
             throw new AssertionError(
-                    "Expected search result index to be " + expectedIndex + " but got " + result.indexOrNotFound());
+                    "Expected search result index to be "
+                            + searchCase.expectedIndex
+                            + " but got "
+                            + result.indexOrNotFound());
         }
 
-        if (result.isFound() != (expectedIndex != -1)) {
-            throw new AssertionError("SearchResult found state did not match expected index " + expectedIndex);
+        if (result.isFound() != searchCase.expectsFoundResult()) {
+            throw new AssertionError(
+                    "SearchResult found state did not match expected index " + searchCase.expectedIndex);
+        }
+    }
+
+    private static final class SearchCase {
+        private final int[] sortedValues;
+        private final int target;
+        private final int expectedIndex;
+
+        private SearchCase(int[] sortedValues, int target, int expectedIndex) {
+            this.sortedValues = sortedValues;
+            this.target = target;
+            this.expectedIndex = expectedIndex;
+        }
+
+        private boolean expectsFoundResult() {
+            return expectedIndex != NOT_FOUND;
         }
     }
 }

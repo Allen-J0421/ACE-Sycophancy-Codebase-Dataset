@@ -70,6 +70,8 @@ final class BinarySearch {
     }
 
     static final class SearchResult {
+        private static final SearchResult NOT_FOUND_RESULT = new SearchResult(NOT_FOUND);
+
         private final int index;
 
         private SearchResult(int index) {
@@ -77,11 +79,15 @@ final class BinarySearch {
         }
 
         private static SearchResult found(int index) {
+            if (index < 0) {
+                throw new IllegalArgumentException("index must not be negative");
+            }
+
             return new SearchResult(index);
         }
 
         private static SearchResult notFound() {
-            return new SearchResult(NOT_FOUND);
+            return NOT_FOUND_RESULT;
         }
 
         boolean isFound() {

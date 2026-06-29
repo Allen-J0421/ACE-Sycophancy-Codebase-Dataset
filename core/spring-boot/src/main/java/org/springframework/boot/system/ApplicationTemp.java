@@ -142,30 +142,33 @@ public class ApplicationTemp {
 				Files.createDirectory(path, asFileAttributes(fileSystem, DIRECTORY_PERMISSIONS));
 			}
 			else {
-				if (supportsPosixView(fileSystem)) {
-					PosixFileAttributes attributes = Files.readAttributes(path, PosixFileAttributes.class,
-							LinkOption.NOFOLLOW_LINKS);
-					Assert.state(attributes.isDirectory(),
-							() -> "'" + path + "' already exists but it is not a directory");
-					Assert.state(DIRECTORY_PERMISSIONS.equals(attributes.permissions()), () -> "Existing directory '"
-							+ path + "' does not have the permissions " + DIRECTORY_PERMISSIONS);
-					assertDirectoryOwnership(attributes.owner(), path);
-				}
-				else {
-					Assert.state(Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS),
-							() -> "'" + path + "' already exists but it is not a directory");
-					try {
-						assertDirectoryOwnership(Files.getOwner(path, LinkOption.NOFOLLOW_LINKS), path);
-					}
-					catch (UnsupportedOperationException ex) {
-						// Ownership check not supported. Continue.
-					}
-				}
+				assertExistingDirectory(path, fileSystem);
 			}
 			return path;
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Unable to create application temp directory " + path, ex);
+		}
+	}
+
+	private void assertExistingDirectory(Path path, FileSystem fileSystem) throws IOException {
+		if (supportsPosixView(fileSystem)) {
+			PosixFileAttributes attributes = Files.readAttributes(path, PosixFileAttributes.class,
+					LinkOption.NOFOLLOW_LINKS);
+			Assert.state(attributes.isDirectory(), () -> "'" + path + "' already exists but it is not a directory");
+			Assert.state(DIRECTORY_PERMISSIONS.equals(attributes.permissions()), () -> "Existing directory '" + path
+					+ "' does not have the permissions " + DIRECTORY_PERMISSIONS);
+			assertDirectoryOwnership(attributes.owner(), path);
+		}
+		else {
+			Assert.state(Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS),
+					() -> "'" + path + "' already exists but it is not a directory");
+			try {
+				assertDirectoryOwnership(Files.getOwner(path, LinkOption.NOFOLLOW_LINKS), path);
+			}
+			catch (UnsupportedOperationException ex) {
+				// Ownership check not supported. Continue.
+			}
 		}
 	}
 

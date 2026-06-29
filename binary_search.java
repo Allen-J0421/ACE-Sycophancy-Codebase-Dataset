@@ -15,17 +15,17 @@ final class BinarySearch {
         int right = values.length - 1;
 
         while (left <= right) {
-            int mid = midpoint(left, right);
-            int midValue = values[mid];
+            int middle = midpoint(left, right);
+            int middleValue = values[middle];
 
-            if (midValue == target) {
-                return mid;
+            if (middleValue == target) {
+                return middle;
             }
 
-            if (midValue < target) {
-                left = mid + 1;
+            if (middleValue < target) {
+                left = middle + 1;
             } else {
-                right = mid - 1;
+                right = middle - 1;
             }
         }
 

@@ -128,20 +128,6 @@ class CompactHashSet<E extends @Nullable Object> extends AbstractSet<E> implemen
     return new CompactHashSet<>(expectedSize);
   }
 
-  /**
-   * Maximum allowed false positive probability of detecting a hash flooding attack given random
-   * input.
-   */
-  @VisibleForTesting(
-      )
-  static final double HASH_FLOODING_FPP = 0.001;
-
-  /**
-   * Maximum allowed length of a hash table bucket before falling back to a j.u.LinkedHashSet based
-   * implementation. Experimentally determined.
-   */
-  private static final int MAX_HASH_BUCKET_LENGTH = 9;
-
   // See CompactHashMap for a detailed description of how the following fields work. That
   // description talks about `keys`, `values`, and `entries`; here the `keys` and `values` arrays
   // are replaced by a single `elements` array but everything else works similarly.
@@ -333,7 +319,7 @@ class CompactHashSet<E extends @Nullable Object> extends AbstractSet<E> implemen
         bucketLength++;
       } while (next != UNSET);
 
-      if (bucketLength >= MAX_HASH_BUCKET_LENGTH) {
+      if (bucketLength >= CompactHashing.MAX_HASH_BUCKET_LENGTH) {
         return convertToHashFloodingResistantImplementation().add(object);
       }
 

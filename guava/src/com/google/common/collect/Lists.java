@@ -1077,17 +1077,9 @@ public final class Lists {
 
   private static int indexOfRandomAccess(List<?> list, @Nullable Object element) {
     int size = list.size();
-    if (element == null) {
-      for (int i = 0; i < size; i++) {
-        if (list.get(i) == null) {
-          return i;
-        }
-      }
-    } else {
-      for (int i = 0; i < size; i++) {
-        if (element.equals(list.get(i))) {
-          return i;
-        }
+    for (int i = 0; i < size; i++) {
+      if (Objects.equals(element, list.get(i))) {
+        return i;
       }
     }
     return -1;
@@ -1109,17 +1101,9 @@ public final class Lists {
   }
 
   private static int lastIndexOfRandomAccess(List<?> list, @Nullable Object element) {
-    if (element == null) {
-      for (int i = list.size() - 1; i >= 0; i--) {
-        if (list.get(i) == null) {
-          return i;
-        }
-      }
-    } else {
-      for (int i = list.size() - 1; i >= 0; i--) {
-        if (element.equals(list.get(i))) {
-          return i;
-        }
+    for (int i = list.size() - 1; i >= 0; i--) {
+      if (Objects.equals(element, list.get(i))) {
+        return i;
       }
     }
     return -1;

@@ -21,6 +21,7 @@ import static com.google.common.collect.Hashing.smearedHash;
 import static java.lang.Math.max;
 
 import com.google.common.annotations.GwtIncompatible;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.primitives.Ints;
 import java.util.Arrays;
 import java.util.Objects;
@@ -52,6 +53,20 @@ final class CompactHashing {
 
   /** Default size of a compact hash-based collection. */
   static final int DEFAULT_SIZE = 3;
+
+  /**
+   * Maximum allowed false positive probability of detecting a hash flooding attack given random
+   * input.
+   */
+  @VisibleForTesting(
+      )
+  static final double HASH_FLOODING_FPP = 0.001;
+
+  /**
+   * Maximum allowed length of a hash table bucket before falling back to a JDK hash-based
+   * implementation. Experimentally determined.
+   */
+  static final int MAX_HASH_BUCKET_LENGTH = 9;
 
   /**
    * Minimum size of the hash table of a compact hash-based collection. Because small hash tables

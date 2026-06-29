@@ -115,20 +115,6 @@ class CompactHashMap<K extends @Nullable Object, V extends @Nullable Object>
 
   private static final Object NOT_FOUND = new Object();
 
-  /**
-   * Maximum allowed false positive probability of detecting a hash flooding attack given random
-   * input.
-   */
-  @VisibleForTesting(
-      )
-  static final double HASH_FLOODING_FPP = 0.001;
-
-  /**
-   * Maximum allowed length of a hash table bucket before falling back to a j.u.LinkedHashMap-based
-   * implementation. Experimentally determined.
-   */
-  private static final int MAX_HASH_BUCKET_LENGTH = 9;
-
   // The way the `table`, `entries`, `keys`, and `values` arrays work together is as follows.
   //
   // The `table` array always has a size that is a power of 2. The hashcode of a key in the map
@@ -379,7 +365,7 @@ class CompactHashMap<K extends @Nullable Object, V extends @Nullable Object>
         bucketLength++;
       } while (next != UNSET);
 
-      if (bucketLength >= MAX_HASH_BUCKET_LENGTH) {
+      if (bucketLength >= CompactHashing.MAX_HASH_BUCKET_LENGTH) {
         return convertToHashFloodingResistantImplementation().put(key, value);
       }
 

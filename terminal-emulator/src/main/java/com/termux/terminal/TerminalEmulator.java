@@ -780,65 +780,71 @@ public final class TerminalEmulator {
                 // Change attributes in rectangular area (DECCARA - http://vt100.net/docs/vt510-rm/DECCARA).
             case 't': // "${CSI}${TOP}${LEFT}${BOTTOM}${RIGHT}${ATTRIBUTES}$t"
                 // Reverse attributes in rectangular area (DECRARA - http://www.vt100.net/docs/vt510-rm/DECRARA).
-                boolean reverse = b == 't';
-                // FIXME: "coordinates of the rectangular area are affected by the setting of origin mode (DECOM)".
-                int top = Math.min(getArg(0, 1, true) - 1, effectiveBottomMargin) + effectiveTopMargin;
-                int left = Math.min(getArg(1, 1, true) - 1, effectiveRightMargin) + effectiveLeftMargin;
-                int bottom = Math.min(getArg(2, mRows, true) + 1, effectiveBottomMargin - 1) + effectiveTopMargin;
-                int right = Math.min(getArg(3, mColumns, true) + 1, effectiveRightMargin - 1) + effectiveLeftMargin;
-                if (mArgIndex >= 4) {
-                    if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
-                    for (int i = 4; i <= mArgIndex; i++) {
-                        int bits = 0;
-                        boolean setOrClear = true; // True if setting, false if clearing.
-                        switch (getArg(i, 0, false)) {
-                            case 0: // Attributes off (no bold, no underline, no blink, positive image).
-                                bits = (TextStyle.CHARACTER_ATTRIBUTE_BOLD | TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE | TextStyle.CHARACTER_ATTRIBUTE_BLINK
-                                    | TextStyle.CHARACTER_ATTRIBUTE_INVERSE);
-                                if (!reverse) setOrClear = false;
-                                break;
-                            case 1: // Bold.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_BOLD;
-                                break;
-                            case 4: // Underline.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
-                                break;
-                            case 5: // Blink.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_BLINK;
-                                break;
-                            case 7: // Negative image.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_INVERSE;
-                                break;
-                            case 22: // No bold.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_BOLD;
-                                setOrClear = false;
-                                break;
-                            case 24: // No underline.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
-                                setOrClear = false;
-                                break;
-                            case 25: // No blink.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_BLINK;
-                                setOrClear = false;
-                                break;
-                            case 27: // Positive image.
-                                bits = TextStyle.CHARACTER_ATTRIBUTE_INVERSE;
-                                setOrClear = false;
-                                break;
-                        }
-                        if (reverse && !setOrClear) {
-                            // Reverse attributes in rectangular area ignores non-(1,4,5,7) bits.
-                        } else {
-                            mScreen.setOrClearEffect(bits, setOrClear, reverse, isDecsetInternalBitSet(DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE),
-                                effectiveLeftMargin, effectiveRightMargin, top, left, bottom, right);
-                        }
-                    }
-                } else {
-                    // Do nothing.
-                }
+                doCsiRectAttrChange(b, effectiveTopMargin, effectiveBottomMargin, effectiveLeftMargin, effectiveRightMargin);
                 break;
             default:
                 unknownSequence(b);
+        }
+    }
+
+    /** DECCARA ($r) / DECRARA ($t): change or reverse visual attributes in a rectangular area. */
+    private void doCsiRectAttrChange(int b, int effectiveTopMargin, int effectiveBottomMargin,
+                                      int effectiveLeftMargin, int effectiveRightMargin) {
+        boolean reverse = b == 't';
+        // FIXME: "coordinates of the rectangular area are affected by the setting of origin mode (DECOM)".
+        int top = Math.min(getArg(0, 1, true) - 1, effectiveBottomMargin) + effectiveTopMargin;
+        int left = Math.min(getArg(1, 1, true) - 1, effectiveRightMargin) + effectiveLeftMargin;
+        int bottom = Math.min(getArg(2, mRows, true) + 1, effectiveBottomMargin - 1) + effectiveTopMargin;
+        int right = Math.min(getArg(3, mColumns, true) + 1, effectiveRightMargin - 1) + effectiveLeftMargin;
+        if (mArgIndex >= 4) {
+            if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+            for (int i = 4; i <= mArgIndex; i++) {
+                int bits = 0;
+                boolean setOrClear = true; // True if setting, false if clearing.
+                switch (getArg(i, 0, false)) {
+                    case 0: // Attributes off (no bold, no underline, no blink, positive image).
+                        bits = (TextStyle.CHARACTER_ATTRIBUTE_BOLD | TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE | TextStyle.CHARACTER_ATTRIBUTE_BLINK
+                            | TextStyle.CHARACTER_ATTRIBUTE_INVERSE);
+                        if (!reverse) setOrClear = false;
+                        break;
+                    case 1: // Bold.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_BOLD;
+                        break;
+                    case 4: // Underline.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
+                        break;
+                    case 5: // Blink.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_BLINK;
+                        break;
+                    case 7: // Negative image.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_INVERSE;
+                        break;
+                    case 22: // No bold.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_BOLD;
+                        setOrClear = false;
+                        break;
+                    case 24: // No underline.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
+                        setOrClear = false;
+                        break;
+                    case 25: // No blink.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_BLINK;
+                        setOrClear = false;
+                        break;
+                    case 27: // Positive image.
+                        bits = TextStyle.CHARACTER_ATTRIBUTE_INVERSE;
+                        setOrClear = false;
+                        break;
+                }
+                if (reverse && !setOrClear) {
+                    // Reverse attributes in rectangular area ignores non-(1,4,5,7) bits.
+                } else {
+                    mScreen.setOrClearEffect(bits, setOrClear, reverse, isDecsetInternalBitSet(DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE),
+                        effectiveLeftMargin, effectiveRightMargin, top, left, bottom, right);
+                }
+            }
+        } else {
+            // Do nothing.
         }
     }
 

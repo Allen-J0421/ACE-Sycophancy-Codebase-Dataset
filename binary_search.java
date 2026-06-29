@@ -23,7 +23,7 @@ final class BinarySearch {
                 return mid;
             }
 
-            if (shouldSearchRight(current, target)) {
+            if (current < target) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -37,18 +37,14 @@ final class BinarySearch {
         return low + (high - low) / 2;
     }
 
-    private static boolean shouldSearchRight(int current, int target) {
-        return current < target;
-    }
-
     public static void main(String[] args) {
-        runDemo();
+        System.out.println(demoSearchResult());
     }
 
-    private static void runDemo() {
+    private static String demoSearchResult() {
         int[] numbers = { 2, 3, 4, 10, 40 };
         int result = binarySearch(numbers, DEMO_TARGET);
-        System.out.println(formatSearchResult(result));
+        return formatSearchResult(result);
     }
 
     private static String formatSearchResult(int result) {

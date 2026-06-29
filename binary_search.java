@@ -18,7 +18,7 @@ class BinarySearch {
                 return middle;
             }
 
-            if (sortedNumbers[middle] < target) {
+            if (targetIsAfterMiddle(sortedNumbers, target, middle)) {
                 left = middle + 1;
             } else {
                 right = middle - 1;
@@ -26,6 +26,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static boolean targetIsAfterMiddle(int[] sortedNumbers, int target, int middle) {
+        return sortedNumbers[middle] < target;
     }
 
     private static String formatSearchResult(int index) {

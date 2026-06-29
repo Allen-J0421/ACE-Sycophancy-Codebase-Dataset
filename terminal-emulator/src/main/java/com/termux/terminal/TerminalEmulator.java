@@ -1603,16 +1603,9 @@ public final class TerminalEmulator {
             case '*':
                 continueSequence(ESC_CSI_ARGS_ASTERIX);
                 break;
-            case '@': {
-                // "CSI{n}@" - Insert ${n} space characters (ICH) - http://www.vt100.net/docs/vt510-rm/ICH.
-                mAboutToAutoWrap = false;
-                int columnsAfterCursor = mColumns - mCursorCol;
-                int spacesToInsert = Math.min(getArg0(1), columnsAfterCursor);
-                int charsToMove = columnsAfterCursor - spacesToInsert;
-                mScreen.blockCopy(mCursorCol, mCursorRow, charsToMove, 1, mCursorCol + spacesToInsert, mCursorRow);
-                blockClear(mCursorCol, mCursorRow, spacesToInsert);
-            }
-            break;
+            case '@': // "CSI{n}@" - Insert ${n} space characters (ICH) - http://www.vt100.net/docs/vt510-rm/ICH.
+                doCsiInsertChars();
+                break;
             case 'A': // "CSI${n}A" - Cursor up (CUU) ${n} rows.
                 setCursorRow(Math.max(0, mCursorRow - getArg0(1)));
                 break;
@@ -1649,39 +1642,14 @@ public final class TerminalEmulator {
                 doCsiEraseInLine(b);
                 break;
             case 'L': // "${CSI}{N}L" - insert ${N} lines (IL).
-            {
-                int linesAfterCursor = mBottomMargin - mCursorRow;
-                int linesToInsert = Math.min(getArg0(1), linesAfterCursor);
-                int linesToMove = linesAfterCursor - linesToInsert;
-                mScreen.blockCopy(0, mCursorRow, mColumns, linesToMove, 0, mCursorRow + linesToInsert);
-                blockClear(0, mCursorRow, mColumns, linesToInsert);
-            }
-            break;
+                doCsiInsertLines();
+                break;
             case 'M': // "${CSI}${N}M" - delete N lines (DL).
-            {
-                mAboutToAutoWrap = false;
-                int linesAfterCursor = mBottomMargin - mCursorRow;
-                int linesToDelete = Math.min(getArg0(1), linesAfterCursor);
-                int linesToMove = linesAfterCursor - linesToDelete;
-                mScreen.blockCopy(0, mCursorRow + linesToDelete, mColumns, linesToMove, 0, mCursorRow);
-                blockClear(0, mCursorRow + linesToMove, mColumns, linesToDelete);
-            }
-            break;
+                doCsiDeleteLines();
+                break;
             case 'P': // "${CSI}{N}P" - delete ${N} characters (DCH).
-            {
-                // http://www.vt100.net/docs/vt510-rm/DCH: "If ${N} is greater than the number of characters between the
-                // cursor and the right margin, then DCH only deletes the remaining characters.
-                // As characters are deleted, the remaining characters between the cursor and right margin move to the left.
-                // Character attributes move with the characters. The terminal adds blank spaces with no visual character
-                // attributes at the right margin. DCH has no effect outside the scrolling margins."
-                mAboutToAutoWrap = false;
-                int cellsAfterCursor = mColumns - mCursorCol;
-                int cellsToDelete = Math.min(getArg0(1), cellsAfterCursor);
-                int cellsToMove = cellsAfterCursor - cellsToDelete;
-                mScreen.blockCopy(mCursorCol + cellsToDelete, mCursorRow, cellsToMove, 1, mCursorCol, mCursorRow);
-                blockClear(mCursorCol + cellsToMove, mCursorRow, cellsToDelete);
-            }
-            break;
+                doCsiDeleteChars();
+                break;
             case 'S': { // "${CSI}${N}S" - scroll up ${N} lines (default = 1) (SU).
                 final int linesToScroll = getArg0(1);
                 for (int i = 0; i < linesToScroll; i++)
@@ -1788,6 +1756,50 @@ public final class TerminalEmulator {
     }
 
     /** ED — erase in display (J). Note: default: case uses return to skip mAboutToAutoWrap=false. */
+    /** ICH — insert N space characters at cursor, shifting existing chars right. */
+    private void doCsiInsertChars() {
+        mAboutToAutoWrap = false;
+        int columnsAfterCursor = mColumns - mCursorCol;
+        int spacesToInsert = Math.min(getArg0(1), columnsAfterCursor);
+        int charsToMove = columnsAfterCursor - spacesToInsert;
+        mScreen.blockCopy(mCursorCol, mCursorRow, charsToMove, 1, mCursorCol + spacesToInsert, mCursorRow);
+        blockClear(mCursorCol, mCursorRow, spacesToInsert);
+    }
+
+    /** IL — insert N blank lines at cursor row, scrolling lines below down. */
+    private void doCsiInsertLines() {
+        int linesAfterCursor = mBottomMargin - mCursorRow;
+        int linesToInsert = Math.min(getArg0(1), linesAfterCursor);
+        int linesToMove = linesAfterCursor - linesToInsert;
+        mScreen.blockCopy(0, mCursorRow, mColumns, linesToMove, 0, mCursorRow + linesToInsert);
+        blockClear(0, mCursorRow, mColumns, linesToInsert);
+    }
+
+    /** DL — delete N lines at cursor row, scrolling lines below up. */
+    private void doCsiDeleteLines() {
+        mAboutToAutoWrap = false;
+        int linesAfterCursor = mBottomMargin - mCursorRow;
+        int linesToDelete = Math.min(getArg0(1), linesAfterCursor);
+        int linesToMove = linesAfterCursor - linesToDelete;
+        mScreen.blockCopy(0, mCursorRow + linesToDelete, mColumns, linesToMove, 0, mCursorRow);
+        blockClear(0, mCursorRow + linesToMove, mColumns, linesToDelete);
+    }
+
+    /** DCH — delete N characters at cursor, shifting remaining chars on the line left. */
+    private void doCsiDeleteChars() {
+        // http://www.vt100.net/docs/vt510-rm/DCH: "If ${N} is greater than the number of characters between the
+        // cursor and the right margin, then DCH only deletes the remaining characters.
+        // As characters are deleted, the remaining characters between the cursor and right margin move to the left.
+        // Character attributes move with the characters. The terminal adds blank spaces with no visual character
+        // attributes at the right margin. DCH has no effect outside the scrolling margins."
+        mAboutToAutoWrap = false;
+        int cellsAfterCursor = mColumns - mCursorCol;
+        int cellsToDelete = Math.min(getArg0(1), cellsAfterCursor);
+        int cellsToMove = cellsAfterCursor - cellsToDelete;
+        mScreen.blockCopy(mCursorCol + cellsToDelete, mCursorRow, cellsToMove, 1, mCursorCol, mCursorRow);
+        blockClear(mCursorCol + cellsToMove, mCursorRow, cellsToDelete);
+    }
+
     private void doCsiEraseInDisplay(int b) {
         // ED ignores the scrolling margins.
         switch (getArg0(0)) {

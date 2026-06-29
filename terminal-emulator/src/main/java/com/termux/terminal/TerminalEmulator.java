@@ -807,7 +807,7 @@ public final class TerminalEmulator {
         int bottom = Math.min(getArg(2, mRows, true) + 1, effectiveBottomMargin - 1) + effectiveTopMargin;
         int right = Math.min(getArg(3, mColumns, true) + 1, effectiveRightMargin - 1) + effectiveLeftMargin;
         if (mArgIndex >= 4) {
-            if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+            clampArgIndex();
             for (int i = 4; i <= mArgIndex; i++) {
                 int bits = 0;
                 boolean setOrClear = true; // True if setting, false if clearing.
@@ -1049,7 +1049,7 @@ public final class TerminalEmulator {
             char c;
             for (int i = 0; i < part.length(); i += 2) {
                 try {
-                    c = (char) Long.decode("0x" + part.charAt(i) + "" + part.charAt(i + 1)).longValue();
+                    c = (char) Integer.parseInt(part.substring(i, i + 2), 16);
                 } catch (NumberFormatException e) {
                     Logger.logStackTraceWithMessage(mClient, LOG_TAG, "Invalid device termcap/terminfo encoded name \"" + part + "\"", e);
                     continue;
@@ -1168,7 +1168,7 @@ public final class TerminalEmulator {
                 break;
             case 'h':
             case 'l':
-                if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+                clampArgIndex();
                 for (int i = 0; i <= mArgIndex; i++)
                     doDecSetOrReset(b == 'h', mArgs[i]);
                 break;
@@ -1197,7 +1197,7 @@ public final class TerminalEmulator {
 
     /** DECDMSR — save ('s') or restore ('r') a list of DEC private mode bits. */
     private void doCsiDecModesSaveOrRestore(int b) {
-        if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+        clampArgIndex();
         for (int i = 0; i <= mArgIndex; i++) {
             int externalBit = mArgs[i];
             int internalBit = mapDecSetBitToInternalBit(externalBit);
@@ -2012,7 +2012,7 @@ public final class TerminalEmulator {
 
     /** Select Graphic Rendition (SGR) - see http://en.wikipedia.org/wiki/ANSI_escape_code#graphics. */
     private void selectGraphicRendition() {
-        if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+        clampArgIndex();
         for (int i = 0; i <= mArgIndex; i++) {
             // Skip leading sub parameters:
             if ((mArgsSubParamsBitSet & (1 << i)) != 0) {
@@ -2470,6 +2470,11 @@ public final class TerminalEmulator {
         return getArg(1, defaultValue, true);
     }
 
+    /** Guard before iterating over mArgs[0..mArgIndex]: ensures mArgIndex stays within array bounds. */
+    private void clampArgIndex() {
+        if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+    }
+
     private int getArg(int index, int defaultValue, boolean treatZeroAsDefault) {
         int result = mArgs[index];
         if (result < 0 || (result == 0 && treatZeroAsDefault)) {
@@ -2509,7 +2514,7 @@ public final class TerminalEmulator {
             buf.append(", escapeState=");
             buf.append(mEscapeState);
             boolean firstArg = true;
-            if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+            clampArgIndex();
             for (int i = 0; i <= mArgIndex; i++) {
                 int value = mArgs[i];
                 if (value >= 0) {

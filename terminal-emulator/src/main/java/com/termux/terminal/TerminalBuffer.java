@@ -274,7 +274,7 @@ public final class TerminalBuffer {
             TerminalRow oldLine = oldLines[internalOldRow];
             boolean cursorAtThisRow = externalOldRow == oldCursorRow;
             // The cursor may only be on a non-null line, which we should not skip:
-            if (oldLine == null || (!(!state.cursorPlaced && cursorAtThisRow)) && oldLine.isBlank()) {
+            if (oldLine == null || (state.cursorPlaced || !cursorAtThisRow) && oldLine.isBlank()) {
                 skippedBlankLines++;
                 continue;
             } else if (skippedBlankLines > 0) {

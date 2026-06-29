@@ -543,20 +543,16 @@ public final class TerminalEmulator {
 
         mUtf8Index = mUtf8ToFollow = 0;
 
-        if (codePoint >= 0x80 && codePoint <= 0x9F) {
-            // Sequence decoded to a C1 control character which we ignore. They are
-            // not used nowadays and increases the risk of messing up the terminal state
-            // on binary input. XTerm does not allow them in utf-8:
-            // "It is not possible to use a C1 control obtained from decoding the
-            // UTF-8 text" - http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
-        } else {
-            switch (Character.getType(codePoint)) {
-                case Character.UNASSIGNED:
-                case Character.SURROGATE:
-                    codePoint = UNICODE_REPLACEMENT_CHAR;
-            }
-            processCodePoint(codePoint);
+        // C1 control characters (0x80–0x9F) are ignored: not used nowadays, risk of messing up terminal
+        // state on binary input. XTerm does not allow them in UTF-8 ("It is not possible to use a C1
+        // control obtained from decoding the UTF-8 text" - http://invisible-island.net/xterm/ctlseqs/).
+        if (codePoint >= 0x80 && codePoint <= 0x9F) return;
+        switch (Character.getType(codePoint)) {
+            case Character.UNASSIGNED:
+            case Character.SURROGATE:
+                codePoint = UNICODE_REPLACEMENT_CHAR;
         }
+        processCodePoint(codePoint);
     }
 
     public void processCodePoint(int b) {

@@ -29,10 +29,6 @@ final class BinarySearch {
         return SearchResult.notFound();
     }
 
-    static boolean isFound(int resultIndex) {
-        return SearchResult.fromIndex(resultIndex).isFound();
-    }
-
     private static int midpoint(int left, int right) {
         return left + (right - left) / 2;
     }
@@ -83,18 +79,6 @@ final class SearchResult {
 
     static SearchResult notFound() {
         return NOT_FOUND;
-    }
-
-    static SearchResult fromIndex(int index) {
-        if (index < NOT_FOUND_INDEX) {
-            throw new IllegalArgumentException("index must be -1 or non-negative");
-        }
-
-        if (index == NOT_FOUND_INDEX) {
-            return notFound();
-        }
-
-        return foundAt(index);
     }
 
     boolean isFound() {

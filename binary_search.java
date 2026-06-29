@@ -1,5 +1,9 @@
-class BinarySearch {
+final class BinarySearch {
     private static final int NOT_FOUND = -1;
+    private static final int DEMO_TARGET = 10;
+
+    private BinarySearch() {
+    }
 
     static int binarySearch(int[] sortedValues, int target) {
         validateInput(sortedValues);
@@ -34,19 +38,23 @@ class BinarySearch {
         return low + (high - low) / 2;
     }
 
-    private static void printSearchResult(int index) {
+    private static String formatSearchResult(int index) {
         if (index == NOT_FOUND) {
-            System.out.println("Element is not present in array");
-            return;
+            return "Element is not present in array";
         }
 
-        System.out.println("Element is present at index " + index);
+        return "Element is present at index " + index;
+    }
+
+    private static void printSearchResult(int index) {
+        System.out.println(formatSearchResult(index));
+    }
+
+    private static int[] demoValues() {
+        return new int[] {2, 3, 4, 10, 40};
     }
 
     public static void main(String[] args) {
-        int[] values = {2, 3, 4, 10, 40};
-        int target = 10;
-
-        printSearchResult(binarySearch(values, target));
+        printSearchResult(binarySearch(demoValues(), DEMO_TARGET));
     }
 }

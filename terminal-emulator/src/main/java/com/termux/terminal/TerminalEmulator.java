@@ -1900,13 +1900,13 @@ public final class TerminalEmulator {
     private void doCsiCursorBackwardTabulation() {
         int numberOfTabs = getArg0(1);
         int newCol = mLeftMargin;
-        for (int i = mCursorCol - 1; i >= 0; i--)
-            if (mTabStop[i]) {
-                if (--numberOfTabs == 0) {
-                    newCol = Math.max(i, mLeftMargin);
-                    break;
-                }
+        for (int i = mCursorCol - 1; i >= 0; i--) {
+            if (!mTabStop[i]) continue;
+            if (--numberOfTabs == 0) {
+                newCol = Math.max(i, mLeftMargin);
+                break;
             }
+        }
         mCursorCol = newCol;
     }
 
@@ -2442,12 +2442,9 @@ public final class TerminalEmulator {
     }
 
     private void collectOSCArgs(int b) {
-        if (mOSCOrDeviceControlArgs.length() < MAX_OSC_STRING_LENGTH) {
-            mOSCOrDeviceControlArgs.appendCodePoint(b);
-            continueSequence(mEscapeState);
-        } else {
-            unknownSequence(b);
-        }
+        if (mOSCOrDeviceControlArgs.length() >= MAX_OSC_STRING_LENGTH) { unknownSequence(b); return; }
+        mOSCOrDeviceControlArgs.appendCodePoint(b);
+        continueSequence(mEscapeState);
     }
 
     private void unimplementedSequence(int b) {

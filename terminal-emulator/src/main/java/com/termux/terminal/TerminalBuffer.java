@@ -488,8 +488,7 @@ public final class TerminalBuffer {
                 int backColor = TextStyle.decodeBackColor(currentStyle);
                 int effect = TextStyle.decodeEffect(currentStyle);
                 if (reverse) {
-                    // Clear out the bits to reverse and add them back in reversed:
-                    effect = (effect & ~bits) | (bits & ~effect);
+                    effect ^= bits;
                 } else if (setOrClear) {
                     effect |= bits;
                 } else {

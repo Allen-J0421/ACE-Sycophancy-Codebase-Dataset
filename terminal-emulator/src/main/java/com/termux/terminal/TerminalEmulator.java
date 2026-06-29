@@ -1928,9 +1928,7 @@ public final class TerminalEmulator {
                 mTabStop[mCursorCol] = false;
                 break;
             case 3:
-                for (int i = 0; i < mColumns; i++) {
-                    mTabStop[i] = false;
-                }
+                Arrays.fill(mTabStop, false);
                 break;
             default:
                 // Specified to have no effect.
@@ -2032,15 +2030,7 @@ public final class TerminalEmulator {
                 mEffect |= TextStyle.CHARACTER_ATTRIBUTE_ITALIC;
             } else if (code == 4) {
                 if (i + 1 <= mArgIndex && ((mArgsSubParamsBitSet & (1 << (i + 1))) != 0)) {
-                    // Sub parameter, see https://sw.kovidgoyal.net/kitty/underlines/
-                    i++;
-                    if (mArgs[i] == 0) {
-                        // No underline.
-                        mEffect &= ~TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
-                    } else {
-                        // Different variations of underlines: https://sw.kovidgoyal.net/kitty/underlines/
-                        mEffect |= TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
-                    }
+                    i = applySgrUnderlineSubParam(i);
                 } else {
                     mEffect |= TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
                 }
@@ -2127,6 +2117,20 @@ public final class TerminalEmulator {
             }
         } else {
             finishSequenceAndLogError("Invalid ISO-8613-3 SGR first argument: " + firstArg);
+        }
+        return i;
+    }
+
+    /** Handles SGR 4 kitty underline sub-parameter: advances past it, sets or clears underline. Returns new index. */
+    private int applySgrUnderlineSubParam(int i) {
+        // Sub parameter, see https://sw.kovidgoyal.net/kitty/underlines/
+        i++;
+        if (mArgs[i] == 0) {
+            // No underline.
+            mEffect &= ~TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
+        } else {
+            // Different variations of underlines: https://sw.kovidgoyal.net/kitty/underlines/
+            mEffect |= TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;
         }
         return i;
     }

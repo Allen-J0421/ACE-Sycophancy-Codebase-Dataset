@@ -211,7 +211,7 @@ public abstract class TerminalTestCase extends TestCase {
 
 	public TerminalTestCase assertLineWraps(boolean... lines) {
 		for (int i = 0; i < lines.length; i++)
-			assertEquals("line=" + i, lines[i], mTerminal.getScreen().mLines[mTerminal.getScreen().externalToInternalRow(i)].mLineWrap);
+			assertEquals("line=" + i, lines[i], mTerminal.getScreen().getLineWrap(i));
 		return this;
 	}
 
@@ -300,13 +300,11 @@ public abstract class TerminalTestCase extends TestCase {
 	}
 
 	public void assertForegroundColorAt(int externalRow, int column, int color) {
-		long style = mTerminal.getScreen().mLines[mTerminal.getScreen().externalToInternalRow(externalRow)].getStyle(column);
-		assertEquals(color, TextStyle.decodeForeColor(style));
+		assertEquals(color, TextStyle.decodeForeColor(getStyleAt(externalRow, column)));
 	}
 
 	public void assertBackgroundColorAt(int externalRow, int column, int color) {
-		long style = mTerminal.getScreen().mLines[mTerminal.getScreen().externalToInternalRow(externalRow)].getStyle(column);
-		assertEquals(color, TextStyle.decodeBackColor(style));
+		assertEquals(color, TextStyle.decodeBackColor(getStyleAt(externalRow, column)));
 	}
 
 	public TerminalTestCase assertColor(int colorIndex, int expected) {

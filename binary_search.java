@@ -30,11 +30,15 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
+        System.out.println(demoSearchResult());
+    }
+
+    private static String demoSearchResult() {
         int[] values = { 2, 3, 4, 10, 40 };
         int target = 10;
 
         int result = binarySearch(values, target);
-        System.out.println(formatSearchResult(result));
+        return formatSearchResult(result);
     }
 
     private static String formatSearchResult(int result) {

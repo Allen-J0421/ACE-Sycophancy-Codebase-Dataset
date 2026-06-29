@@ -1,29 +1,44 @@
-class BinarySearch {
-    static int binarySearch(int arr[], int x) {
-        int low = 0, high = arr.length - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
+final class BinarySearch {
+    private static final int NOT_FOUND = -1;
 
-            if (arr[mid] == x)
-                return mid;
-
-            if (arr[mid] < x)
-                low = mid + 1;
-
-            else
-                high = mid - 1;
-        }
-
-        return -1;
+    private BinarySearch() {
     }
 
-    public static void main(String args[]) {
-        int arr[] = { 2, 3, 4, 10, 40 };
-        int x = 10;
-        int result = binarySearch(arr, x);
-        if (result == -1)
+    static int binarySearch(int[] sortedValues, int target) {
+        int left = 0;
+        int right = sortedValues.length - 1;
+
+        while (left <= right) {
+            int middle = left + (right - left) / 2;
+            int value = sortedValues[middle];
+
+            if (value == target) {
+                return middle;
+            }
+
+            if (value < target) {
+                left = middle + 1;
+            } else {
+                right = middle - 1;
+            }
+        }
+
+        return NOT_FOUND;
+    }
+
+    public static void main(String[] args) {
+        int[] values = { 2, 3, 4, 10, 40 };
+        int target = 10;
+        int result = binarySearch(values, target);
+
+        printResult(result);
+    }
+
+    private static void printResult(int index) {
+        if (index == NOT_FOUND) {
             System.out.println("Element is not present in array");
-        else
-            System.out.println("Element is present at index " + result);
+        } else {
+            System.out.println("Element is present at index " + index);
+        }
     }
 }

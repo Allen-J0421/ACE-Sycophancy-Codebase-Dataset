@@ -2247,7 +2247,7 @@ public final class TerminalEmulator {
             String clipboardText = new String(Base64.decode(textParameter.substring(startIndex), 0), StandardCharsets.UTF_8);
             mSession.onCopyTextToClipboard(clipboardText);
         } catch (Exception e) {
-            Logger.logError(mClient, LOG_TAG, "OSC Manipulate selection, invalid string '" + textParameter + "");
+            Logger.logError(mClient, LOG_TAG, "OSC Manipulate selection, invalid string '" + textParameter + "'");
         }
     }
 

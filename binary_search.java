@@ -1,6 +1,5 @@
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
-    private static final int[] SAMPLE_ARRAY = {2, 3, 4, 10, 40};
     private static final int SAMPLE_TARGET = 10;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
@@ -13,9 +12,13 @@ final class BinarySearch {
     }
 
     private static void runSampleSearch() {
-        int result = binarySearch(SAMPLE_ARRAY, SAMPLE_TARGET);
+        int result = binarySearch(sampleArray(), SAMPLE_TARGET);
 
         System.out.println(formatSearchResult(result));
+    }
+
+    private static int[] sampleArray() {
+        return new int[] {2, 3, 4, 10, 40};
     }
 
     static int binarySearch(int[] array, int target) {

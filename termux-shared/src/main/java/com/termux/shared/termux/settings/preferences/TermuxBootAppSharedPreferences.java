@@ -5,17 +5,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.logger.Logger;
 import com.termux.shared.android.PackageUtils;
 import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.TermuxUtils;
-import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_BOOT_APP;
 import com.termux.shared.termux.TermuxConstants;
 
 public class TermuxBootAppSharedPreferences extends AppSharedPreferences {
-
-    private static final String LOG_TAG = "TermuxBootAppSharedPreferences";
 
     private TermuxBootAppSharedPreferences(@NonNull Context context) {
         super(context,
@@ -59,17 +55,5 @@ public class TermuxBootAppSharedPreferences extends AppSharedPreferences {
     }
 
 
-
-    public int getLogLevel(boolean readFromFile) {
-        if (readFromFile)
-            return SharedPreferenceUtils.getInt(mMultiProcessSharedPreferences, TERMUX_BOOT_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-        else
-            return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_BOOT_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-    }
-
-    public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        logLevel = Logger.setLogLevel(context, logLevel);
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_BOOT_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
-    }
 
 }

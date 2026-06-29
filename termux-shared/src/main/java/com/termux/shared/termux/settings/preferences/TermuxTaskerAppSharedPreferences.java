@@ -11,11 +11,8 @@ import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_TASKER_APP;
-import com.termux.shared.logger.Logger;
 
 public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
-
-    private static final String LOG_TAG = "TermuxTaskerAppSharedPreferences";
 
     private  TermuxTaskerAppSharedPreferences(@NonNull Context context) {
         super(context,
@@ -56,20 +53,6 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
             return null;
         else
             return new TermuxTaskerAppSharedPreferences(termuxTaskerPackageContext);
-    }
-
-
-
-    public int getLogLevel(boolean readFromFile) {
-        if (readFromFile)
-            return SharedPreferenceUtils.getInt(mMultiProcessSharedPreferences, TERMUX_TASKER_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-        else
-            return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_TASKER_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-    }
-
-    public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        logLevel = Logger.setLogLevel(context, logLevel);
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_TASKER_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
     }
 
 

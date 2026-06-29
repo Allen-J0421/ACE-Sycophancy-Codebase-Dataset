@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.termux.shared.data.DataUtils;
-import com.termux.shared.logger.Logger;
 import com.termux.shared.android.PackageUtils;
 import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
@@ -19,8 +18,6 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
     private int MIN_FONTSIZE;
     private int MAX_FONTSIZE;
     private int DEFAULT_FONTSIZE;
-
-    private static final String LOG_TAG = "TermuxFloatAppSharedPreferences";
 
     private TermuxFloatAppSharedPreferences(@NonNull Context context) {
         super(context,
@@ -131,19 +128,6 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
         fontSize = Math.max(MIN_FONTSIZE, Math.min(fontSize, MAX_FONTSIZE));
 
         setFontSize(fontSize);
-    }
-
-
-    public int getLogLevel(boolean readFromFile) {
-        if (readFromFile)
-            return SharedPreferenceUtils.getInt(mMultiProcessSharedPreferences, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-        else
-            return SharedPreferenceUtils.getInt(mSharedPreferences, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
-    }
-
-    public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
-        logLevel = Logger.setLogLevel(context, logLevel);
-        SharedPreferenceUtils.setInt(mSharedPreferences, TERMUX_FLOAT_APP.KEY_LOG_LEVEL, logLevel, commitToFile);
     }
 
 

@@ -6,8 +6,12 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.termux.shared.logger.Logger;
+
 /** A class that holds {@link SharedPreferences} objects for apps. */
 public class AppSharedPreferences {
+
+    private static final String KEY_LOG_LEVEL = "log_level";
 
     /** The {@link Context} for operations. */
     protected final Context mContext;
@@ -44,6 +48,20 @@ public class AppSharedPreferences {
     /** Get {@link #mMultiProcessSharedPreferences}. */
     public SharedPreferences getMultiProcessSharedPreferences() {
         return mMultiProcessSharedPreferences;
+    }
+
+
+
+    public int getLogLevel(boolean readFromFile) {
+        if (readFromFile)
+            return SharedPreferenceUtils.getInt(mMultiProcessSharedPreferences, KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
+        else
+            return SharedPreferenceUtils.getInt(mSharedPreferences, KEY_LOG_LEVEL, Logger.DEFAULT_LOG_LEVEL);
+    }
+
+    public void setLogLevel(Context context, int logLevel, boolean commitToFile) {
+        logLevel = Logger.setLogLevel(context, logLevel);
+        SharedPreferenceUtils.setInt(mSharedPreferences, KEY_LOG_LEVEL, logLevel, commitToFile);
     }
 
 }

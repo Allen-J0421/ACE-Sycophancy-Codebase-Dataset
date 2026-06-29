@@ -7,24 +7,28 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] array, int target) {
-        int low = 0;
-        int high = array.length - 1;
+        int lowerBound = 0;
+        int upperBound = array.length - 1;
 
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
+        while (lowerBound <= upperBound) {
+            int middleIndex = midpoint(lowerBound, upperBound);
 
-            if (array[mid] == target) {
-                return mid;
+            if (array[middleIndex] == target) {
+                return middleIndex;
             }
 
-            if (array[mid] < target) {
-                low = mid + 1;
+            if (array[middleIndex] < target) {
+                lowerBound = middleIndex + 1;
             } else {
-                high = mid - 1;
+                upperBound = middleIndex - 1;
             }
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int lowerBound, int upperBound) {
+        return lowerBound + (upperBound - lowerBound) / 2;
     }
 
     static String formatSearchResult(int result) {

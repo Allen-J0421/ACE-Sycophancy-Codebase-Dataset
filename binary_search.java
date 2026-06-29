@@ -3,7 +3,10 @@ class BinarySearch {
     private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
     private static final int SAMPLE_TARGET = 10;
 
-    static int binarySearch(int[] arr, int target) {
+    private BinarySearch() {
+    }
+
+    public static int binarySearch(int[] arr, int target) {
         if (arr == null || arr.length == 0) {
             return NOT_FOUND;
         }

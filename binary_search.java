@@ -39,18 +39,18 @@ class BinarySearch {
         return left + (right - left) / 2;
     }
 
+    public static void main(String[] args) {
+        int[] sampleValues = { 2, 3, 4, 10, 40 };
+        int result = binarySearch(sampleValues, SAMPLE_TARGET);
+
+        System.out.println(formatSearchResult(SAMPLE_TARGET, result));
+    }
+
     private static String formatSearchResult(int target, int result) {
         if (result == NOT_FOUND) {
             return target + " is not present in array";
         }
 
         return target + " is present at index " + result;
-    }
-
-    public static void main(String[] args) {
-        int[] sampleValues = { 2, 3, 4, 10, 40 };
-        int result = binarySearch(sampleValues, SAMPLE_TARGET);
-
-        System.out.println(formatSearchResult(SAMPLE_TARGET, result));
     }
 }

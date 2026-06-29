@@ -16,11 +16,11 @@ final class BinarySearch {
             int currentValue = values[mid];
             int comparison = compare(currentValue, target);
 
-            if (comparison == 0) {
+            if (matchesTarget(comparison)) {
                 return mid;
             }
 
-            if (comparison < 0) {
+            if (isBelowTarget(comparison)) {
                 range.discardAtOrBelow(mid);
             } else {
                 range.discardAtOrAbove(mid);
@@ -36,6 +36,14 @@ final class BinarySearch {
 
     private static int compare(int value, int target) {
         return Integer.compare(value, target);
+    }
+
+    private static boolean matchesTarget(int comparison) {
+        return comparison == 0;
+    }
+
+    private static boolean isBelowTarget(int comparison) {
+        return comparison < 0;
     }
 
     private static void runDemo() {

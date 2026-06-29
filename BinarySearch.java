@@ -1,6 +1,6 @@
 import java.util.Objects;
 
-final class BinarySearch {
+public final class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int SAMPLE_TARGET = 10;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
@@ -12,7 +12,7 @@ final class BinarySearch {
     /**
      * Searches an ascending sorted array and returns the target index, or -1 when absent.
      */
-    static int binarySearch(int[] sortedValues, int target) {
+    public static int binarySearch(int[] sortedValues, int target) {
         Objects.requireNonNull(sortedValues, "sortedValues");
 
         int left = 0;

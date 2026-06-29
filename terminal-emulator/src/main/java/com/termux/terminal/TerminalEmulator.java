@@ -1482,6 +1482,13 @@ public final class TerminalEmulator {
         }
     }
 
+    private void doEscFullReset() {
+        reset();
+        mMainBuffer.clearTranscript();
+        blockClear(0, 0, mColumns, mRows);
+        setCursorPosition(0, 0);
+    }
+
     private void startEscapeSequence() {
         mEscapeState = ESC;
         mArgIndex = 0;
@@ -1547,10 +1554,7 @@ public final class TerminalEmulator {
                 doEscForwardIndex();
                 break;
             case 'c': // RIS - Reset to Initial State (http://vt100.net/docs/vt510-rm/RIS).
-                reset();
-                mMainBuffer.clearTranscript();
-                blockClear(0, 0, mColumns, mRows);
-                setCursorPosition(0, 0);
+                doEscFullReset();
                 break;
             case 'D': // INDEX
                 doLinefeed();

@@ -3,7 +3,7 @@ public final class SearchResultFormatter {
     }
 
     public static String format(final int index) {
-        if (index == BinarySearch.NOT_FOUND) {
+        if (index == BinarySearch.NOT_FOUND_INDEX) {
             return "Element is not present in array";
         }
 

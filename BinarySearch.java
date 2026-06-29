@@ -1,7 +1,10 @@
 import java.util.Objects;
 
 public final class BinarySearch {
-    public static final int NOT_FOUND = -1;
+    public static final int NOT_FOUND_INDEX = -1;
+
+    @Deprecated
+    public static final int NOT_FOUND = NOT_FOUND_INDEX;
 
     private BinarySearch() {
     }
@@ -27,7 +30,7 @@ public final class BinarySearch {
             }
         }
 
-        return NOT_FOUND;
+        return NOT_FOUND_INDEX;
     }
 
     public static void main(final String[] args) {

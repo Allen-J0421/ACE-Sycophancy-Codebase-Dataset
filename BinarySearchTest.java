@@ -14,10 +14,10 @@ public final class BinarySearchTest {
     private static void runsSearchCases() {
         final SearchCase[] cases = {
             new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
-            new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 5, BinarySearch.NOT_FOUND),
-            new SearchCase(new int[] {}, 10, BinarySearch.NOT_FOUND),
+            new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 5, BinarySearch.NOT_FOUND_INDEX),
+            new SearchCase(new int[] {}, 10, BinarySearch.NOT_FOUND_INDEX),
             new SearchCase(new int[] { 10 }, 10, 0),
-            new SearchCase(new int[] { 10 }, 5, BinarySearch.NOT_FOUND),
+            new SearchCase(new int[] { 10 }, 5, BinarySearch.NOT_FOUND_INDEX),
         };
 
         for (final SearchCase searchCase : cases) {
@@ -40,7 +40,7 @@ public final class BinarySearchTest {
     }
 
     private static void formatsMissingResult() {
-        assertEquals("Element is not present in array", SearchResultFormatter.format(BinarySearch.NOT_FOUND));
+        assertEquals("Element is not present in array", SearchResultFormatter.format(BinarySearch.NOT_FOUND_INDEX));
     }
 
     private static void assertEquals(final int expected, final int actual) {

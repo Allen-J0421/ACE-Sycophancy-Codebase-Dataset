@@ -1,5 +1,5 @@
 public class BinarySearch {
-    public static final int NOT_FOUND = -1;
+    public static final int NOT_FOUND = SearchResult.NOT_FOUND_INDEX;
 
     private BinarySearch() {
     }

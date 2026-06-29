@@ -1,4 +1,6 @@
 public final class SearchResult {
+    public static final int NOT_FOUND_INDEX = -1;
+
     private final int index;
 
     private SearchResult(int index) {
@@ -10,7 +12,7 @@ public final class SearchResult {
     }
 
     public static SearchResult notFound() {
-        return new SearchResult(BinarySearch.NOT_FOUND);
+        return new SearchResult(NOT_FOUND_INDEX);
     }
 
     public int index() {
@@ -18,6 +20,6 @@ public final class SearchResult {
     }
 
     public boolean isFound() {
-        return index != BinarySearch.NOT_FOUND;
+        return index != NOT_FOUND_INDEX;
     }
 }

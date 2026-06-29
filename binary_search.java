@@ -8,20 +8,19 @@ final class BinarySearch {
     static int binarySearch(int[] sortedValues, int target) {
         validateInput(sortedValues);
 
-        int low = 0;
-        int high = sortedValues.length - 1;
+        SearchBounds bounds = new SearchBounds(sortedValues.length);
 
-        while (low <= high) {
-            int mid = midpoint(low, high);
+        while (bounds.hasCandidates()) {
+            int mid = bounds.midpoint();
 
             if (sortedValues[mid] == target) {
                 return mid;
             }
 
             if (sortedValues[mid] < target) {
-                low = mid + 1;
+                bounds.discardLowerHalf(mid);
             } else {
-                high = mid - 1;
+                bounds.discardUpperHalf(mid);
             }
         }
 
@@ -32,10 +31,6 @@ final class BinarySearch {
         if (sortedValues == null) {
             throw new IllegalArgumentException("Input array cannot be null");
         }
-    }
-
-    private static int midpoint(int low, int high) {
-        return low + (high - low) / 2;
     }
 
     private static String formatSearchResult(int index) {
@@ -56,5 +51,31 @@ final class BinarySearch {
 
     public static void main(String[] args) {
         printSearchResult(binarySearch(demoValues(), DEMO_TARGET));
+    }
+
+    private static final class SearchBounds {
+        private int low;
+        private int high;
+
+        private SearchBounds(int size) {
+            low = 0;
+            high = size - 1;
+        }
+
+        private boolean hasCandidates() {
+            return low <= high;
+        }
+
+        private int midpoint() {
+            return low + (high - low) / 2;
+        }
+
+        private void discardLowerHalf(int midpoint) {
+            low = midpoint + 1;
+        }
+
+        private void discardUpperHalf(int midpoint) {
+            high = midpoint - 1;
+        }
     }
 }

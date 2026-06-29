@@ -627,13 +627,8 @@ public final class TerminalEmulator {
 
     /** Handle the ESC (0x1B) byte: start a new escape sequence, or pass to the current OSC/DCS handler. */
     private void doEscByte() {
-        if (mEscapeState == ESC_P) {
-            // Ignore escape when reading device control sequence — it may be part of the string terminator.
-        } else if (mEscapeState != ESC_OSC) {
-            startEscapeSequence();
-        } else {
-            doOsc(27);
-        }
+        if (mEscapeState == ESC_P) return; // Ignore — may be part of the string terminator.
+        if (mEscapeState == ESC_OSC) doOsc(27); else startEscapeSequence();
     }
 
     /** Dispatch a printable or control byte to the current escape-sequence handler, then reset state if sequence is complete. */

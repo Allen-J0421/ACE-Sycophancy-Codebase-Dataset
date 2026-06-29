@@ -108,14 +108,9 @@ public final class TerminalColorScheme {
      * above (too bright), we use black cursor.
      */
     public void setCursorColorForBackground() {
-        int backgroundColor = mDefaultColors[TextStyle.COLOR_INDEX_BACKGROUND];
-        int brightness = TerminalColors.getPerceivedBrightnessOfColor(backgroundColor);
-        if (brightness > 0) {
-            if (brightness < 130)
-                mDefaultColors[TextStyle.COLOR_INDEX_CURSOR] = 0xffffffff;
-            else
-                mDefaultColors[TextStyle.COLOR_INDEX_CURSOR] = 0xff000000;
-        }
+        int brightness = TerminalColors.getPerceivedBrightnessOfColor(mDefaultColors[TextStyle.COLOR_INDEX_BACKGROUND]);
+        if (brightness > 0)
+            mDefaultColors[TextStyle.COLOR_INDEX_CURSOR] = (brightness < 130) ? 0xffffffff : 0xff000000;
     }
 
 }

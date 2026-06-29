@@ -1,10 +1,13 @@
 final class SearchResultFormatter {
+    private static final String NOT_PRESENT_MESSAGE = "Element is not present in array";
+    private static final String PRESENT_MESSAGE_PREFIX = "Element is present at index ";
+
     private SearchResultFormatter() {
     }
 
     static String format(SearchResult result) {
         return result.isFound()
-                ? "Element is present at index " + result.index()
-                : "Element is not present in array";
+                ? PRESENT_MESSAGE_PREFIX + result.index()
+                : NOT_PRESENT_MESSAGE;
     }
 }

@@ -7,15 +7,11 @@ final class BinarySearchDemo {
     static void run() {
         SearchResult result = BinarySearch.search(sampleValues(), SAMPLE_TARGET);
 
-        printSearchResult(result);
+        System.out.println(SearchResultFormatter.format(result));
     }
 
     public static void main(String[] args) {
         run();
-    }
-
-    private static void printSearchResult(SearchResult result) {
-        System.out.println(SearchResultFormatter.format(result));
     }
 
     private static int[] sampleValues() {

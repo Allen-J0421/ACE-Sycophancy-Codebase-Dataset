@@ -18,6 +18,8 @@ final class BinarySearchTest {
         reportsInsertionPoints();
         reportsFoundResult();
         reportsMissingResult();
+        comparesResultsByValue();
+        formatsResultsForDebugging();
         handlesEmptyArray();
         rejectsNullArray();
 
@@ -71,6 +73,22 @@ final class BinarySearchTest {
                 result.index();
             }
         });
+    }
+
+    private static void comparesResultsByValue() {
+        SearchResult found = BinarySearch.search(SORTED_VALUES, 10);
+        SearchResult sameFound = BinarySearch.search(SORTED_VALUES, 10);
+        SearchResult missing = BinarySearch.search(SORTED_VALUES, 5);
+
+        assertTrue(found.equals(sameFound));
+        assertEquals(found.hashCode(), sameFound.hashCode());
+        assertFalse(found.equals(missing));
+        assertFalse(found.equals("not a result"));
+    }
+
+    private static void formatsResultsForDebugging() {
+        assertEquals("SearchResult{index=3}", BinarySearch.search(SORTED_VALUES, 10).toString());
+        assertEquals("SearchResult{not found}", BinarySearch.search(SORTED_VALUES, 5).toString());
     }
 
     private static void handlesEmptyArray() {

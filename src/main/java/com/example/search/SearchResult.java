@@ -1,5 +1,7 @@
 package com.example.search;
 
+import java.util.Objects;
+
 public final class SearchResult {
     private final int index;
 
@@ -31,5 +33,30 @@ public final class SearchResult {
 
     public int indexOrDefault(int defaultIndex) {
         return found() ? index : defaultIndex;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof SearchResult)) {
+            return false;
+        }
+        SearchResult that = (SearchResult) other;
+        return index == that.index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(index);
+    }
+
+    @Override
+    public String toString() {
+        if (!found()) {
+            return "SearchResult{not found}";
+        }
+        return "SearchResult{index=" + index + "}";
     }
 }

@@ -23,7 +23,7 @@ final class BinarySearch {
                 return mid;
             }
 
-            if (current < target) {
+            if (shouldSearchRight(current, target)) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -35,6 +35,10 @@ final class BinarySearch {
 
     private static int midpoint(int low, int high) {
         return low + (high - low) / 2;
+    }
+
+    private static boolean shouldSearchRight(int current, int target) {
+        return current < target;
     }
 
     public static void main(String[] args) {

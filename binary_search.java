@@ -1,5 +1,5 @@
 final class BinarySearch {
-    static final int NOT_FOUND = -1;
+    private static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
@@ -27,6 +27,10 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
+    static boolean found(int index) {
+        return index != NOT_FOUND;
+    }
+
     private static void validateInput(int[] sortedValues) {
         if (sortedValues == null) {
             throw new IllegalArgumentException("Input array cannot be null");
@@ -49,11 +53,11 @@ final class BinarySearchDemo {
     }
 
     static String formatSearchResult(int index) {
-        if (index == BinarySearch.NOT_FOUND) {
-            return "Element is not present in array";
+        if (BinarySearch.found(index)) {
+            return "Element is present at index " + index;
         }
 
-        return "Element is present at index " + index;
+        return "Element is not present in array";
     }
 
     public static void main(String[] args) {

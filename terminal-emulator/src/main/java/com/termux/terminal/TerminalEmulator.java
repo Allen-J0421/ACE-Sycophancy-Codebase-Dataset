@@ -2002,45 +2002,7 @@ public final class TerminalEmulator {
                 mForeColor = code - 30;
             } else if (code == 38 || code == 48 || code == 58) {
                 // Extended set foreground(38)/background(48)/underline(58) color.
-                // This is followed by either "2;$R;$G;$B" to set a 24-bit color or
-                // "5;$INDEX" to set an indexed color.
-                if (i + 2 > mArgIndex) continue;
-                int firstArg = mArgs[i + 1];
-                if (firstArg == 2) {
-                    if (i + 4 > mArgIndex) {
-                        Logger.logWarn(mClient, LOG_TAG, "Too few CSI" + code + ";2 RGB arguments");
-                    } else {
-                        int red = getArg(i + 2, 0, false);
-                        int green = getArg(i + 3, 0, false);
-                        int blue = getArg(i + 4, 0, false);
-
-                        if (red < 0 || green < 0 || blue < 0 || red > 255 || green > 255 || blue > 255) {
-                            finishSequenceAndLogError("Invalid RGB: " + red + "," + green + "," + blue);
-                        } else {
-                            int argbColor = 0xff_00_00_00 | (red << 16) | (green << 8) | blue;
-                            switch (code) {
-                                case 38: mForeColor = argbColor; break;
-                                case 48: mBackColor = argbColor; break;
-                                case 58: mUnderlineColor = argbColor; break;
-                            }
-                        }
-                        i += 4; // "2;P_r;P_g;P_r"
-                    }
-                } else if (firstArg == 5) {
-                    int color = getArg(i + 2, 0, false);
-                    i += 2; // "5;P_s"
-                    if (color >= 0 && color < TextStyle.NUM_INDEXED_COLORS) {
-                        switch (code) {
-                            case 38: mForeColor = color; break;
-                            case 48: mBackColor = color; break;
-                            case 58: mUnderlineColor = color; break;
-                        }
-                    } else {
-                        if (LOG_ESCAPE_SEQUENCES) Logger.logWarn(mClient, LOG_TAG, "Invalid color index: " + color);
-                    }
-                } else {
-                    finishSequenceAndLogError("Invalid ISO-8613-3 SGR first argument: " + firstArg);
-                }
+                i = applyExtendedColorSgr(code, i);
             } else if (code == 39) { // Set default foreground color.
                 mForeColor = TextStyle.COLOR_INDEX_FOREGROUND;
             } else if (code >= 40 && code <= 47) { // Set background color.
@@ -2057,6 +2019,52 @@ public final class TerminalEmulator {
                 if (LOG_ESCAPE_SEQUENCES)
                     Logger.logWarn(mClient, LOG_TAG, String.format("SGR unknown code %d", code));
             }
+        }
+    }
+
+    /**
+     * Handles SGR extended color introduction (codes 38=fg, 48=bg, 58=underline). Returns the new loop
+     * index after consuming sub-parameters ("2;r;g;b" → +4, "5;idx" → +2). The "continue" case (too few
+     * args) returns i unchanged; the outer for-loop's i++ advances past the introducer code.
+     */
+    private int applyExtendedColorSgr(int code, int i) {
+        // This is followed by either "2;$R;$G;$B" to set a 24-bit color or "5;$INDEX" to set an indexed color.
+        if (i + 2 > mArgIndex) return i;
+        int firstArg = mArgs[i + 1];
+        if (firstArg == 2) {
+            if (i + 4 > mArgIndex) {
+                Logger.logWarn(mClient, LOG_TAG, "Too few CSI" + code + ";2 RGB arguments");
+            } else {
+                int red = getArg(i + 2, 0, false);
+                int green = getArg(i + 3, 0, false);
+                int blue = getArg(i + 4, 0, false);
+                if (red < 0 || green < 0 || blue < 0 || red > 255 || green > 255 || blue > 255) {
+                    finishSequenceAndLogError("Invalid RGB: " + red + "," + green + "," + blue);
+                } else {
+                    setSgrColor(code, 0xff_00_00_00 | (red << 16) | (green << 8) | blue);
+                }
+                i += 4; // "2;P_r;P_g;P_b"
+            }
+        } else if (firstArg == 5) {
+            int color = getArg(i + 2, 0, false);
+            i += 2; // "5;P_s"
+            if (color >= 0 && color < TextStyle.NUM_INDEXED_COLORS) {
+                setSgrColor(code, color);
+            } else {
+                if (LOG_ESCAPE_SEQUENCES) Logger.logWarn(mClient, LOG_TAG, "Invalid color index: " + color);
+            }
+        } else {
+            finishSequenceAndLogError("Invalid ISO-8613-3 SGR first argument: " + firstArg);
+        }
+        return i;
+    }
+
+    /** Routes code 38→mForeColor, 48→mBackColor, 58→mUnderlineColor. */
+    private void setSgrColor(int code, int color) {
+        switch (code) {
+            case 38: mForeColor = color; break;
+            case 48: mBackColor = color; break;
+            case 58: mUnderlineColor = color; break;
         }
     }
 

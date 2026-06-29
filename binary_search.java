@@ -13,7 +13,7 @@ final class BinarySearch {
 
         while (left <= right) {
             int middle = midpoint(left, right);
-            int comparison = Integer.compare(values[middle], target);
+            int comparison = compareValueAt(values, middle, target);
 
             if (isMatch(comparison)) {
                 return middle;
@@ -31,6 +31,10 @@ final class BinarySearch {
 
     private static int midpoint(int left, int right) {
         return left + (right - left) / 2;
+    }
+
+    private static int compareValueAt(int[] values, int index, int target) {
+        return Integer.compare(values[index], target);
     }
 
     private static boolean isMatch(int comparison) {

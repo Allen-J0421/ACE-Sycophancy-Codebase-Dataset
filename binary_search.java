@@ -13,7 +13,7 @@ final class BinarySearch {
         int high = array.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
             int value = array[mid];
 
             if (value == target) {
@@ -30,12 +30,20 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
     static String formatSearchResult(int result) {
-        if (result == NOT_FOUND) {
+        if (isNotFound(result)) {
             return NOT_FOUND_MESSAGE;
         }
 
         return FOUND_MESSAGE_PREFIX + result;
+    }
+
+    private static boolean isNotFound(int result) {
+        return result == NOT_FOUND;
     }
 
     private static void printSearchResult(int result) {

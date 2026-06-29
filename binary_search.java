@@ -8,28 +8,23 @@ class BinarySearch {
             throw new IllegalArgumentException("Array must not be null");
         }
 
-        int left = 0;
-        int right = sortedNumbers.length - 1;
+        SearchBounds bounds = SearchBounds.forArray(sortedNumbers);
 
-        while (left <= right) {
-            int middle = midpoint(left, right);
+        while (bounds.hasRemainingValues()) {
+            int middle = bounds.midpoint();
 
             if (targetMatchesMiddle(sortedNumbers, target, middle)) {
                 return middle;
             }
 
             if (targetIsAfterMiddle(sortedNumbers, target, middle)) {
-                left = middle + 1;
+                bounds = bounds.after(middle);
             } else {
-                right = middle - 1;
+                bounds = bounds.before(middle);
             }
         }
 
         return NOT_FOUND;
-    }
-
-    private static int midpoint(int left, int right) {
-        return left + (right - left) / 2;
     }
 
     private static boolean targetMatchesMiddle(int[] sortedNumbers, int target, int middle) {
@@ -55,5 +50,35 @@ class BinarySearch {
     private static void runDemo() {
         int result = binarySearch(SAMPLE_NUMBERS, SAMPLE_TARGET);
         System.out.println(formatSearchResult(result));
+    }
+
+    private static final class SearchBounds {
+        private final int left;
+        private final int right;
+
+        private SearchBounds(int left, int right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        private static SearchBounds forArray(int[] sortedNumbers) {
+            return new SearchBounds(0, sortedNumbers.length - 1);
+        }
+
+        private boolean hasRemainingValues() {
+            return left <= right;
+        }
+
+        private int midpoint() {
+            return left + (right - left) / 2;
+        }
+
+        private SearchBounds after(int middle) {
+            return new SearchBounds(middle + 1, right);
+        }
+
+        private SearchBounds before(int middle) {
+            return new SearchBounds(left, middle - 1);
+        }
     }
 }

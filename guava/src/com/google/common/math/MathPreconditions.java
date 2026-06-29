@@ -26,10 +26,13 @@ import java.math.RoundingMode;
  */
 @GwtCompatible
 final class MathPreconditions {
+  private static final String MUST_BE_POSITIVE = ") must be > 0";
+  private static final String MUST_BE_NON_NEGATIVE = ") must be >= 0";
+
   @CanIgnoreReturnValue
   static int checkPositive(String role, int x) {
     if (x <= 0) {
-      throw new IllegalArgumentException(role + " (" + x + ") must be > 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_POSITIVE);
     }
     return x;
   }
@@ -37,7 +40,7 @@ final class MathPreconditions {
   @CanIgnoreReturnValue
   static long checkPositive(String role, long x) {
     if (x <= 0) {
-      throw new IllegalArgumentException(role + " (" + x + ") must be > 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_POSITIVE);
     }
     return x;
   }
@@ -45,7 +48,7 @@ final class MathPreconditions {
   @CanIgnoreReturnValue
   static BigInteger checkPositive(String role, BigInteger x) {
     if (x.signum() <= 0) {
-      throw new IllegalArgumentException(role + " (" + x + ") must be > 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_POSITIVE);
     }
     return x;
   }
@@ -53,7 +56,7 @@ final class MathPreconditions {
   @CanIgnoreReturnValue
   static int checkNonNegative(String role, int x) {
     if (x < 0) {
-      throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_NON_NEGATIVE);
     }
     return x;
   }
@@ -61,7 +64,7 @@ final class MathPreconditions {
   @CanIgnoreReturnValue
   static long checkNonNegative(String role, long x) {
     if (x < 0) {
-      throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_NON_NEGATIVE);
     }
     return x;
   }
@@ -69,7 +72,7 @@ final class MathPreconditions {
   @CanIgnoreReturnValue
   static BigInteger checkNonNegative(String role, BigInteger x) {
     if (x.signum() < 0) {
-      throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_NON_NEGATIVE);
     }
     return x;
   }
@@ -77,7 +80,7 @@ final class MathPreconditions {
   @CanIgnoreReturnValue
   static double checkNonNegative(String role, double x) {
     if (!(x >= 0)) { // not x < 0, to work with NaN.
-      throw new IllegalArgumentException(role + " (" + x + ") must be >= 0");
+      throw new IllegalArgumentException(role + " (" + x + MUST_BE_NON_NEGATIVE);
     }
     return x;
   }

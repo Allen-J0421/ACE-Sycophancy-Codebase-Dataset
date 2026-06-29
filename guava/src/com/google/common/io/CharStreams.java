@@ -110,14 +110,7 @@ public final class CharStreams {
   static long copyReaderToBuilder(Reader from, StringBuilder to) throws IOException {
     checkNotNull(from);
     checkNotNull(to);
-    char[] buf = new char[DEFAULT_BUF_SIZE];
-    int nRead;
-    long total = 0;
-    while ((nRead = from.read(buf)) != -1) {
-      to.append(buf, 0, nRead);
-      total += nRead;
-    }
-    return total;
+    return doCopy(from, to::append);
   }
 
   /**
@@ -138,11 +131,20 @@ public final class CharStreams {
   static long copyReaderToWriter(Reader from, Writer to) throws IOException {
     checkNotNull(from);
     checkNotNull(to);
+    return doCopy(from, to::write);
+  }
+
+  @FunctionalInterface
+  private interface CharArraySink {
+    void write(char[] buf, int offset, int len) throws IOException;
+  }
+
+  private static long doCopy(Reader from, CharArraySink sink) throws IOException {
     char[] buf = new char[DEFAULT_BUF_SIZE];
     int nRead;
     long total = 0;
     while ((nRead = from.read(buf)) != -1) {
-      to.write(buf, 0, nRead);
+      sink.write(buf, 0, nRead);
       total += nRead;
     }
     return total;

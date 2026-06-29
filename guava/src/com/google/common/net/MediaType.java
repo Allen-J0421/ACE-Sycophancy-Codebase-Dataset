@@ -1217,8 +1217,8 @@ public final class MediaType {
   }
 
   private static String normalizeToken(String token) {
-    checkArgument(TOKEN_MATCHER.matchesAllOf(token));
-    checkArgument(!token.isEmpty());
+    checkArgument(TOKEN_MATCHER.matchesAllOf(token), "Invalid token: %s", token);
+    checkArgument(!token.isEmpty(), "Token must not be empty");
     return Ascii.toLowerCase(token);
   }
 

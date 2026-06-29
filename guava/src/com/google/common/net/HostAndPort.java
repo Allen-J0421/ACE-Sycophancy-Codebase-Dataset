@@ -110,7 +110,7 @@ public final class HostAndPort implements Serializable {
    *     to prevent this from occurring.
    */
   public int getPort() {
-    checkState(hasPort());
+    checkState(hasPort(), "No port is defined");
     return port;
   }
 
@@ -248,7 +248,7 @@ public final class HostAndPort implements Serializable {
    * @return a HostAndPort instance, guaranteed to have a defined port.
    */
   public HostAndPort withDefaultPort(int defaultPort) {
-    checkArgument(isValidPort(defaultPort));
+    checkArgument(isValidPort(defaultPort), "Port out of range: %s", defaultPort);
     if (hasPort()) {
       return this;
     }

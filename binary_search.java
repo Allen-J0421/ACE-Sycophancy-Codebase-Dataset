@@ -41,8 +41,6 @@ final class BinarySearch {
 
 final class BinarySearchDemo {
     private static final int DEMO_TARGET = 10;
-    private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
-    private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
 
     private BinarySearchDemo() {
     }
@@ -58,10 +56,18 @@ final class BinarySearchDemo {
     private static void printSearchResult(int[] sortedValues, int target) {
         int index = BinarySearch.binarySearch(sortedValues, target);
 
-        System.out.println(formatSearchResult(index));
+        System.out.println(SearchResultFormatter.format(index));
+    }
+}
+
+final class SearchResultFormatter {
+    private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
+    private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
+
+    private SearchResultFormatter() {
     }
 
-    private static String formatSearchResult(int index) {
+    static String format(int index) {
         if (!BinarySearch.isFound(index)) {
             return NOT_FOUND_MESSAGE;
         }

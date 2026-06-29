@@ -539,7 +539,7 @@ public final class Sets {
   @GwtIncompatible // EnumSet.complementOf
   public static <E extends Enum<E>> EnumSet<E> complementOf(
       Collection<E> collection, Class<E> type) {
-    checkNotNull(collection);
+    checkNotNull(collection, "collection");
     return (collection instanceof EnumSet)
         ? EnumSet.complementOf((EnumSet<E>) collection)
         : makeComplementByHand(collection, type);
@@ -1967,7 +1967,7 @@ public final class Sets {
     private final SortedSet<E> unmodifiableDelegate;
 
     UnmodifiableNavigableSet(NavigableSet<E> delegate) {
-      this.delegate = checkNotNull(delegate);
+      this.delegate = checkNotNull(delegate, "delegate");
       this.unmodifiableDelegate = unmodifiableSortedSet(delegate);
     }
 
@@ -2132,7 +2132,7 @@ public final class Sets {
   }
 
   static boolean removeAllImpl(Set<?> set, Collection<?> collection) {
-    checkNotNull(collection); // for GWT
+    checkNotNull(collection, "collection"); // for GWT
     if (collection instanceof Multiset) {
       collection = ((Multiset<?>) collection).elementSet();
     }
@@ -2325,6 +2325,6 @@ public final class Sets {
     } else if (range.hasUpperBound()) {
       return set.headSet(range.upperEndpoint(), range.upperBoundType() == BoundType.CLOSED);
     }
-    return checkNotNull(set);
+    return checkNotNull(set, "set");
   }
 }

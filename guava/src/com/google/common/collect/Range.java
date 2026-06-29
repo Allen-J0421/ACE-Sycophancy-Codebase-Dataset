@@ -192,8 +192,8 @@ public final class Range<C extends Comparable> implements Predicate<C>, Serializ
    */
   public static <C extends Comparable<?>> Range<C> range(
       C lower, BoundType lowerType, C upper, BoundType upperType) {
-    checkNotNull(lowerType);
-    checkNotNull(upperType);
+    checkNotNull(lowerType, "lowerType");
+    checkNotNull(upperType, "upperType");
 
     Cut<C> lowerBound =
         (lowerType == BoundType.OPEN) ? Cut.aboveValue(lower) : Cut.belowValue(lower);
@@ -302,7 +302,7 @@ public final class Range<C extends Comparable> implements Predicate<C>, Serializ
    * @since 14.0
    */
   public static <C extends Comparable<?>> Range<C> encloseAll(Iterable<C> values) {
-    checkNotNull(values);
+    checkNotNull(values, "values");
     if (values instanceof SortedSet) {
       SortedSet<C> set = (SortedSet<C>) values;
       Comparator<?> comparator = set.comparator();
@@ -325,8 +325,8 @@ public final class Range<C extends Comparable> implements Predicate<C>, Serializ
   final Cut<C> upperBound;
 
   private Range(Cut<C> lowerBound, Cut<C> upperBound) {
-    this.lowerBound = checkNotNull(lowerBound);
-    this.upperBound = checkNotNull(upperBound);
+    this.lowerBound = checkNotNull(lowerBound, "lowerBound");
+    this.upperBound = checkNotNull(upperBound, "upperBound");
     if (lowerBound.compareTo(upperBound) > 0
         || lowerBound == Cut.<C>aboveAll()
         || upperBound == Cut.<C>belowAll()) {
@@ -405,7 +405,7 @@ public final class Range<C extends Comparable> implements Predicate<C>, Serializ
    * returns {@code false}.
    */
   public boolean contains(C value) {
-    checkNotNull(value);
+    checkNotNull(value, "value");
     // let this throw CCE if there is some trickery going on
     return lowerBound.isLessThan(value) && !upperBound.isLessThan(value);
   }
@@ -646,7 +646,7 @@ public final class Range<C extends Comparable> implements Predicate<C>, Serializ
    * </ul>
    */
   public Range<C> canonical(DiscreteDomain<C> domain) {
-    checkNotNull(domain);
+    checkNotNull(domain, "domain");
     Cut<C> lower = lowerBound.canonical(domain);
     Cut<C> upper = upperBound.canonical(domain);
     return (lower == lowerBound && upper == upperBound) ? this : create(lower, upper);

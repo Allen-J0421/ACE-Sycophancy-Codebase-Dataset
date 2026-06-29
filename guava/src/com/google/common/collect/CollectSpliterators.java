@@ -111,8 +111,8 @@ final class CollectSpliterators {
           Spliterator<InElementT> fromSpliterator,
           int characteristics,
           Function<? super InElementT, ? extends OutElementT> function) {
-    checkNotNull(fromSpliterator);
-    checkNotNull(function);
+    checkNotNull(fromSpliterator, "fromSpliterator");
+    checkNotNull(function, "function");
     return new Spliterator<OutElementT>() {
 
       @Override
@@ -155,8 +155,8 @@ final class CollectSpliterators {
   /** Returns a {@code Spliterator} filtered by the specified predicate. */
   static <T extends @Nullable Object> Spliterator<T> filter(
       Spliterator<T> fromSpliterator, Predicate<? super T> predicate) {
-    checkNotNull(fromSpliterator);
-    checkNotNull(predicate);
+    checkNotNull(fromSpliterator, "fromSpliterator");
+    checkNotNull(predicate, "predicate");
     final class Splitr implements Spliterator<T>, Consumer<T> {
       @Nullable T holder = null;
 
@@ -226,8 +226,8 @@ final class CollectSpliterators {
     checkArgument(
         (topCharacteristics & Spliterator.SORTED) == 0,
         "flatMap does not support SORTED characteristic");
-    checkNotNull(fromSpliterator);
-    checkNotNull(function);
+    checkNotNull(fromSpliterator, "fromSpliterator");
+    checkNotNull(function, "function");
     return new FlatMapSpliteratorOfObject<>(
         null, fromSpliterator, function, topCharacteristics, topSize);
   }
@@ -248,8 +248,8 @@ final class CollectSpliterators {
     checkArgument(
         (topCharacteristics & Spliterator.SORTED) == 0,
         "flatMap does not support SORTED characteristic");
-    checkNotNull(fromSpliterator);
-    checkNotNull(function);
+    checkNotNull(fromSpliterator, "fromSpliterator");
+    checkNotNull(function, "function");
     return new FlatMapSpliteratorOfInt<>(
         null, fromSpliterator, function, topCharacteristics, topSize);
   }
@@ -270,8 +270,8 @@ final class CollectSpliterators {
     checkArgument(
         (topCharacteristics & Spliterator.SORTED) == 0,
         "flatMap does not support SORTED characteristic");
-    checkNotNull(fromSpliterator);
-    checkNotNull(function);
+    checkNotNull(fromSpliterator, "fromSpliterator");
+    checkNotNull(function, "function");
     return new FlatMapSpliteratorOfLong<>(
         null, fromSpliterator, function, topCharacteristics, topSize);
   }
@@ -292,8 +292,8 @@ final class CollectSpliterators {
     checkArgument(
         (topCharacteristics & Spliterator.SORTED) == 0,
         "flatMap does not support SORTED characteristic");
-    checkNotNull(fromSpliterator);
-    checkNotNull(function);
+    checkNotNull(fromSpliterator, "fromSpliterator");
+    checkNotNull(function, "function");
     return new FlatMapSpliteratorOfDouble<>(
         null, fromSpliterator, function, topCharacteristics, topSize);
   }

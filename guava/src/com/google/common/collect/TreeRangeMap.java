@@ -138,7 +138,7 @@ public final class TreeRangeMap<K extends Comparable, V> implements RangeMap<K, 
   @Override
   public void put(Range<K> range, V value) {
     if (!range.isEmpty()) {
-      checkNotNull(value);
+      checkNotNull(value, "value");
       remove(range);
       entriesByLowerBound.put(range.lowerBound, new RangeMapEntry<K, V>(range, value));
     }
@@ -286,8 +286,8 @@ public final class TreeRangeMap<K extends Comparable, V> implements RangeMap<K, 
       Range<K> range,
       @Nullable V value,
       BiFunction<? super V, ? super @Nullable V, ? extends @Nullable V> remappingFunction) {
-    checkNotNull(range);
-    checkNotNull(remappingFunction);
+    checkNotNull(range, "range");
+    checkNotNull(remappingFunction, "remappingFunction");
 
     if (range.isEmpty()) {
       return;
@@ -416,14 +416,14 @@ public final class TreeRangeMap<K extends Comparable, V> implements RangeMap<K, 
 
         @Override
         public void put(Range<Comparable<?>> range, Object value) {
-          checkNotNull(range);
+          checkNotNull(range, "range");
           throw new IllegalArgumentException(
               "Cannot insert range " + range + " into an empty subRangeMap");
         }
 
         @Override
         public void putCoalescing(Range<Comparable<?>> range, Object value) {
-          checkNotNull(range);
+          checkNotNull(range, "range");
           throw new IllegalArgumentException(
               "Cannot insert range " + range + " into an empty subRangeMap");
         }
@@ -440,7 +440,7 @@ public final class TreeRangeMap<K extends Comparable, V> implements RangeMap<K, 
 
         @Override
         public void remove(Range<Comparable<?>> range) {
-          checkNotNull(range);
+          checkNotNull(range, "range");
         }
 
         @Override
@@ -451,7 +451,7 @@ public final class TreeRangeMap<K extends Comparable, V> implements RangeMap<K, 
             @Nullable Object value,
             BiFunction<? super Object, ? super @Nullable Object, ? extends @Nullable Object>
                 remappingFunction) {
-          checkNotNull(range);
+          checkNotNull(range, "range");
           throw new IllegalArgumentException(
               "Cannot merge range " + range + " into an empty subRangeMap");
         }
@@ -468,7 +468,7 @@ public final class TreeRangeMap<K extends Comparable, V> implements RangeMap<K, 
 
         @Override
         public RangeMap<Comparable<?>, Object> subRangeMap(Range<Comparable<?>> range) {
-          checkNotNull(range);
+          checkNotNull(range, "range");
           return this;
         }
       };

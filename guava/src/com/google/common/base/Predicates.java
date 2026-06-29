@@ -378,7 +378,7 @@ public final class Predicates {
     final Predicate<T> predicate;
 
     NotPredicate(Predicate<T> predicate) {
-      this.predicate = checkNotNull(predicate);
+      this.predicate = checkNotNull(predicate, "predicate");
     }
 
     @Override
@@ -563,7 +563,7 @@ public final class Predicates {
     private final Class<?> clazz;
 
     private InstanceOfPredicate(Class<?> clazz) {
-      this.clazz = checkNotNull(clazz);
+      this.clazz = checkNotNull(clazz, "clazz");
     }
 
     @Override
@@ -602,7 +602,7 @@ public final class Predicates {
     private final Class<?> clazz;
 
     private SubtypeOfPredicate(Class<?> clazz) {
-      this.clazz = checkNotNull(clazz);
+      this.clazz = checkNotNull(clazz, "clazz");
     }
 
     @Override
@@ -640,7 +640,7 @@ public final class Predicates {
     private final Collection<?> target;
 
     private InPredicate(Collection<?> target) {
-      this.target = checkNotNull(target);
+      this.target = checkNotNull(target, "target");
     }
 
     @Override
@@ -690,8 +690,8 @@ public final class Predicates {
     final Function<A, ? extends B> f;
 
     private CompositionPredicate(Predicate<B> p, Function<A, ? extends B> f) {
-      this.p = checkNotNull(p);
-      this.f = checkNotNull(f);
+      this.p = checkNotNull(p, "p");
+      this.f = checkNotNull(f, "f");
     }
 
     @Override
@@ -730,7 +730,7 @@ public final class Predicates {
     final CommonPattern pattern;
 
     ContainsPatternPredicate(CommonPattern pattern) {
-      this.pattern = checkNotNull(pattern);
+      this.pattern = checkNotNull(pattern, "pattern");
     }
 
     @Override

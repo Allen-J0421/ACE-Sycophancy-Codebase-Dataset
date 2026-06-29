@@ -233,7 +233,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
     @ParametricNullness
     public <C extends @Nullable Object & @Nullable AutoCloseable> C eventuallyClose(
         @ParametricNullness C closeable, Executor closingExecutor) {
-      checkNotNull(closingExecutor);
+      checkNotNull(closingExecutor, "closingExecutor");
       if (closeable != null) {
         list.add(closeable, closingExecutor);
       }
@@ -385,7 +385,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    */
   public static <V extends @Nullable Object> ClosingFuture<V> submit(
       ClosingCallable<V> callable, Executor executor) {
-    checkNotNull(callable);
+    checkNotNull(callable, "callable");
     CloseableList closeables = new CloseableList();
     TrustedListenableFutureTask<V> task =
         TrustedListenableFutureTask.create(
@@ -414,7 +414,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    */
   public static <V extends @Nullable Object> ClosingFuture<V> submitAsync(
       AsyncClosingCallable<V> callable, Executor executor) {
-    checkNotNull(callable);
+    checkNotNull(callable, "callable");
     CloseableList closeables = new CloseableList();
     TrustedListenableFutureTask<V> task =
         TrustedListenableFutureTask.create(
@@ -689,7 +689,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    */
   public <U extends @Nullable Object> ClosingFuture<U> transform(
       ClosingFunction<? super V, U> function, Executor executor) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     AsyncFunction<V, U> applyFunction =
         new AsyncFunction<V, U>() {
           @Override
@@ -783,7 +783,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    */
   public <U extends @Nullable Object> ClosingFuture<U> transformAsync(
       AsyncClosingFunction<? super V, U> function, Executor executor) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     AsyncFunction<V, U> applyFunction =
         new AsyncFunction<V, U>() {
           @Override
@@ -827,7 +827,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
    */
   public static <V extends @Nullable Object, U extends @Nullable Object>
       AsyncClosingFunction<V, U> withoutCloser(AsyncFunction<V, U> function) {
-    checkNotNull(function);
+    checkNotNull(function, "function");
     return (closer, input) -> from(function.apply(input));
   }
 
@@ -880,7 +880,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
   // Avoids generic type capture inconsistency problems where |? extends V| is incompatible with V.
   private <X extends Throwable, W extends V> ClosingFuture<V> catchingMoreGeneric(
       Class<X> exceptionType, ClosingFunction<? super X, W> fallback, Executor executor) {
-    checkNotNull(fallback);
+    checkNotNull(fallback, "fallback");
     AsyncFunction<X, W> applyFallback =
         new AsyncFunction<X, W>() {
           @Override
@@ -976,7 +976,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
   // Avoids generic type capture inconsistency problems where |? extends V| is incompatible with V.
   private <X extends Throwable, W extends V> ClosingFuture<V> catchingAsyncMoreGeneric(
       Class<X> exceptionType, AsyncClosingFunction<? super X, W> fallback, Executor executor) {
-    checkNotNull(fallback);
+    checkNotNull(fallback, "fallback");
     AsyncFunction<X, W> asyncFunction =
         new AsyncFunction<X, W>() {
           @Override
@@ -1091,7 +1091,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
     private volatile boolean beingCalled;
 
     private Peeker(ImmutableList<ClosingFuture<?>> futures) {
-      this.futures = checkNotNull(futures);
+      this.futures = checkNotNull(futures, "futures");
     }
 
     /**
@@ -2164,7 +2164,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
     }
 
     void finishToValueAndCloser(ValueAndCloserConsumer<? super V> consumer, Executor executor) {
-      checkNotNull(consumer);
+      checkNotNull(consumer, "consumer");
       if (!compareAndUpdateStatus(OPEN, WILL_CREATE_VALUE_AND_CLOSER)) {
         switch (status.get()) {
           case SUBSUMED:
@@ -2275,7 +2275,7 @@ public final class ClosingFuture<V extends @Nullable Object> {
     }
 
     void add(@Nullable AutoCloseable closeable, Executor executor) {
-      checkNotNull(executor);
+      checkNotNull(executor, "executor");
       if (closeable == null) {
         return;
       }

@@ -94,7 +94,7 @@ abstract class TreeTraverser<T> {
   @Deprecated
   public static <T> TreeTraverser<T> using(
       Function<T, ? extends Iterable<T>> nodeToChildrenFunction) {
-    checkNotNull(nodeToChildrenFunction);
+    checkNotNull(nodeToChildrenFunction, "nodeToChildrenFunction");
     return new TreeTraverser<T>() {
       @Override
       public Iterable<T> children(T root) {
@@ -118,7 +118,7 @@ abstract class TreeTraverser<T> {
    */
   @Deprecated
   public final FluentIterable<T> preOrderTraversal(T root) {
-    checkNotNull(root);
+    checkNotNull(root, "root");
     return new FluentIterable<T>() {
       @Override
       public UnmodifiableIterator<T> iterator() {
@@ -127,7 +127,7 @@ abstract class TreeTraverser<T> {
 
       @Override
       public void forEach(Consumer<? super T> action) {
-        checkNotNull(action);
+        checkNotNull(action, "action");
         new Consumer<T>() {
           @Override
           public void accept(T t) {
@@ -183,7 +183,7 @@ abstract class TreeTraverser<T> {
    */
   @Deprecated
   public final FluentIterable<T> postOrderTraversal(T root) {
-    checkNotNull(root);
+    checkNotNull(root, "root");
     return new FluentIterable<T>() {
       @Override
       public UnmodifiableIterator<T> iterator() {
@@ -192,7 +192,7 @@ abstract class TreeTraverser<T> {
 
       @Override
       public void forEach(Consumer<? super T> action) {
-        checkNotNull(action);
+        checkNotNull(action, "action");
         new Consumer<T>() {
           @Override
           public void accept(T t) {
@@ -213,8 +213,8 @@ abstract class TreeTraverser<T> {
     final Iterator<T> childIterator;
 
     PostOrderNode(T root, Iterator<T> childIterator) {
-      this.root = checkNotNull(root);
-      this.childIterator = checkNotNull(childIterator);
+      this.root = checkNotNull(root, "root");
+      this.childIterator = checkNotNull(childIterator, "childIterator");
     }
   }
 
@@ -258,7 +258,7 @@ abstract class TreeTraverser<T> {
    */
   @Deprecated
   public final FluentIterable<T> breadthFirstTraversal(T root) {
-    checkNotNull(root);
+    checkNotNull(root, "root");
     return new FluentIterable<T>() {
       @Override
       public UnmodifiableIterator<T> iterator() {

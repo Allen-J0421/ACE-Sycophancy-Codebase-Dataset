@@ -61,8 +61,8 @@ public abstract class ContiguousSet<C extends Comparable> extends ImmutableSorte
    */
   public static <C extends Comparable> ContiguousSet<C> create(
       Range<C> range, DiscreteDomain<C> domain) {
-    checkNotNull(range);
-    checkNotNull(domain);
+    checkNotNull(range, "range");
+    checkNotNull(domain, "domain");
     Range<C> effectiveRange = range;
     try {
       if (!range.hasLowerBound()) {
@@ -165,8 +165,8 @@ public abstract class ContiguousSet<C extends Comparable> extends ImmutableSorte
 
   @Override
   public ContiguousSet<C> subSet(C fromElement, C toElement) {
-    checkNotNull(fromElement);
-    checkNotNull(toElement);
+    checkNotNull(fromElement, "fromElement");
+    checkNotNull(toElement, "toElement");
     checkArgument(comparator().compare(fromElement, toElement) <= 0);
     return subSetImpl(fromElement, true, toElement, false);
   }
@@ -178,8 +178,8 @@ public abstract class ContiguousSet<C extends Comparable> extends ImmutableSorte
   @Override
   public ContiguousSet<C> subSet(
       C fromElement, boolean fromInclusive, C toElement, boolean toInclusive) {
-    checkNotNull(fromElement);
-    checkNotNull(toElement);
+    checkNotNull(fromElement, "fromElement");
+    checkNotNull(toElement, "toElement");
     checkArgument(comparator().compare(fromElement, toElement) <= 0);
     return subSetImpl(fromElement, fromInclusive, toElement, toInclusive);
   }

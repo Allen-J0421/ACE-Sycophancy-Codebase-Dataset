@@ -53,46 +53,39 @@ public final class DissectKey {
                 skip = name.isEmpty();
                 break;
             case NAMED_SKIP:
-                matcher = LEFT_MODIFIER_PATTERN.matcher(key);
-                while (matcher.find()) {
-                    name = matcher.group(2);
-                    skipRightPadding = matcher.group(3) != null;
-                }
+                extractLeftModifier(key);
                 skip = true;
                 break;
             case APPEND:
-                matcher = LEFT_MODIFIER_PATTERN.matcher(key);
-                while (matcher.find()) {
-                    name = matcher.group(2);
-                    skipRightPadding = matcher.group(3) != null;
-                }
-                break;
             case FIELD_NAME:
-                matcher = LEFT_MODIFIER_PATTERN.matcher(key);
-                while (matcher.find()) {
-                    name = matcher.group(2);
-                    skipRightPadding = matcher.group(3) != null;
-                }
-                break;
             case FIELD_VALUE:
-                matcher = LEFT_MODIFIER_PATTERN.matcher(key);
-                while (matcher.find()) {
-                    name = matcher.group(2);
-                    skipRightPadding = matcher.group(3) != null;
-                }
+                extractLeftModifier(key);
                 break;
             case APPEND_WITH_ORDER:
-                matcher = APPEND_WITH_ORDER_PATTERN.matcher(key);
-                while (matcher.find()) {
-                    name = matcher.group(1);
-                    appendPosition = Short.valueOf(matcher.group(3));
-                    skipRightPadding = matcher.group(4) != null;
+                Matcher orderMatcher = APPEND_WITH_ORDER_PATTERN.matcher(key);
+                while (orderMatcher.find()) {
+                    name = orderMatcher.group(1);
+                    appendPosition = Short.valueOf(orderMatcher.group(3));
+                    skipRightPadding = orderMatcher.group(4) != null;
                 }
                 break;
         }
 
         if (name == null || (name.isEmpty() && skip == false)) {
             throw new DissectException.KeyParse(key, "The key name could not be determined");
+        }
+    }
+
+    /**
+     * Extracts the {@link #name} and {@link #skipRightPadding} flag from a key that carries a left-side modifier.
+     * The named-skip, append, field-name and field-value modifiers all share the same grammar
+     * ({@link #LEFT_MODIFIER_PATTERN}), so they parse the key identically.
+     */
+    private void extractLeftModifier(String key) {
+        Matcher matcher = LEFT_MODIFIER_PATTERN.matcher(key);
+        while (matcher.find()) {
+            name = matcher.group(2);
+            skipRightPadding = matcher.group(3) != null;
         }
     }
 

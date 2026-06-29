@@ -7,7 +7,7 @@ class BinarySearch {
     }
 
     public static int binarySearch(int[] arr, int target) {
-        if (arr == null || arr.length == 0) {
+        if (isEmpty(arr)) {
             return NOT_FOUND;
         }
 
@@ -30,6 +30,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static boolean isEmpty(int[] arr) {
+        return arr == null || arr.length == 0;
     }
 
     private static int midpoint(int left, int right) {

@@ -227,7 +227,7 @@ public final class Shorts extends ShortsMethodsForWeb {
   @GwtIncompatible(
       "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static short min(short... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     short min = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] < min) {
@@ -248,7 +248,7 @@ public final class Shorts extends ShortsMethodsForWeb {
   @GwtIncompatible(
       "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static short max(short... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     short max = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] > max) {

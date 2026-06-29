@@ -425,19 +425,19 @@ public class Joiner {
         throws IOException {
       checkNotNull(appendable);
       if (parts.hasNext()) {
-        Entry<?, ?> entry = parts.next();
-        appendable.append(joiner.toString(entry.getKey()));
-        appendable.append(keyValueSeparator);
-        appendable.append(joiner.toString(entry.getValue()));
+        appendEntry(appendable, parts.next());
         while (parts.hasNext()) {
           appendable.append(joiner.separator);
-          Entry<?, ?> e = parts.next();
-          appendable.append(joiner.toString(e.getKey()));
-          appendable.append(keyValueSeparator);
-          appendable.append(joiner.toString(e.getValue()));
+          appendEntry(appendable, parts.next());
         }
       }
       return appendable;
+    }
+
+    private void appendEntry(Appendable appendable, Entry<?, ?> entry) throws IOException {
+      appendable.append(joiner.toString(entry.getKey()));
+      appendable.append(keyValueSeparator);
+      appendable.append(joiner.toString(entry.getValue()));
     }
 
     /**

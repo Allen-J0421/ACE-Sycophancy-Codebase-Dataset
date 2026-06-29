@@ -102,7 +102,7 @@ public final class SignedBytes {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static byte min(byte... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     byte min = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] < min) {
@@ -121,7 +121,7 @@ public final class SignedBytes {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static byte max(byte... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     byte max = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] > max) {

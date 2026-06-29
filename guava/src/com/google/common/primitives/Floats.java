@@ -209,7 +209,7 @@ public final class Floats extends FloatsMethodsForWeb {
   @GwtIncompatible(
       "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static float min(float... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     float min = array[0];
     for (int i = 1; i < array.length; i++) {
       min = Math.min(min, array[i]);
@@ -229,7 +229,7 @@ public final class Floats extends FloatsMethodsForWeb {
   @GwtIncompatible(
       "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static float max(float... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     float max = array[0];
     for (int i = 1; i < array.length; i++) {
       max = Math.max(max, array[i]);

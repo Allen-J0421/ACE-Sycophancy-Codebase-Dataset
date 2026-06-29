@@ -124,7 +124,7 @@ public final class UnsignedInts {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static int min(int... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     int min = flip(array[0]);
     for (int i = 1; i < array.length; i++) {
       int next = flip(array[i]);
@@ -144,7 +144,7 @@ public final class UnsignedInts {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static int max(int... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     int max = flip(array[0]);
     for (int i = 1; i < array.length; i++) {
       int next = flip(array[i]);

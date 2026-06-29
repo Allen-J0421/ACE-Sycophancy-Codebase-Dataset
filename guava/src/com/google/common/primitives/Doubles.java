@@ -212,7 +212,7 @@ public final class Doubles extends DoublesMethodsForWeb {
   @GwtIncompatible(
       "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static double min(double... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     double min = array[0];
     for (int i = 1; i < array.length; i++) {
       min = Math.min(min, array[i]);
@@ -232,7 +232,7 @@ public final class Doubles extends DoublesMethodsForWeb {
   @GwtIncompatible(
       "Available in GWT! Annotation is to avoid conflict with GWT specialization of base class.")
   public static double max(double... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     double max = array[0];
     for (int i = 1; i < array.length; i++) {
       max = Math.max(max, array[i]);

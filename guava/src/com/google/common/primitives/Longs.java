@@ -192,7 +192,7 @@ public final class Longs {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static long min(long... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     long min = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] < min) {
@@ -211,7 +211,7 @@ public final class Longs {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static long max(long... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     long max = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] > max) {

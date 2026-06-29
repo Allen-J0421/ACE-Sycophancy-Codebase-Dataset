@@ -88,7 +88,7 @@ public final class UnsignedLongs {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static long min(long... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     long min = flip(array[0]);
     for (int i = 1; i < array.length; i++) {
       long next = flip(array[i]);
@@ -108,7 +108,7 @@ public final class UnsignedLongs {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static long max(long... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     long max = flip(array[0]);
     for (int i = 1; i < array.length; i++) {
       long next = flip(array[i]);

@@ -140,7 +140,7 @@ public final class UnsignedBytes {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static byte min(byte... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     int min = toUnsignedInt(array[0]);
     for (int i = 1; i < array.length; i++) {
       int next = toUnsignedInt(array[i]);
@@ -160,7 +160,7 @@ public final class UnsignedBytes {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static byte max(byte... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     int max = toUnsignedInt(array[0]);
     for (int i = 1; i < array.length; i++) {
       int next = toUnsignedInt(array[i]);

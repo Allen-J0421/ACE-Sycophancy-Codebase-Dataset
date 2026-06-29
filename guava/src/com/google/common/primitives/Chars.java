@@ -223,7 +223,7 @@ public final class Chars {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static char min(char... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     char min = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] < min) {
@@ -242,7 +242,7 @@ public final class Chars {
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static char max(char... array) {
-    checkArgument(array.length > 0);
+    checkArgument(array.length > 0, "array is empty");
     char max = array[0];
     for (int i = 1; i < array.length; i++) {
       if (array[i] > max) {

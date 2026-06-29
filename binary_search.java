@@ -36,15 +36,15 @@ final class BinarySearchDemo {
 
     private static SearchCase[] searchCases() {
         int[] sampleValues = { 2, 3, 4, 10, 40 };
+        int[] singleValue = { 7 };
 
-        SearchCase[] cases = {
+        return new SearchCase[] {
             SearchCase.expectIndex(sampleValues, 10, 3),
             SearchCase.expectIndex(sampleValues, 5, -1),
             SearchCase.expectIndex(new int[] {}, 10, -1),
-            SearchCase.expectIndex(new int[] { 7 }, 7, 0),
-            SearchCase.expectIndex(new int[] { 7 }, 3, -1)
+            SearchCase.expectIndex(singleValue, 7, 0),
+            SearchCase.expectIndex(singleValue, 3, -1)
         };
-        return cases;
     }
 }
 

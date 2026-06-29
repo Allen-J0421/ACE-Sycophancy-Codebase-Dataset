@@ -66,12 +66,7 @@ public final class TerminalBuffer {
 
         for (int row = selY1; row <= selY2; row++) {
             int x1 = (row == selY1) ? selX1 : 0;
-            int x2;
-            if (row == selY2) {
-                x2 = Math.min(selX2 + 1, columns);
-            } else {
-                x2 = columns;
-            }
+            int x2 = (row == selY2) ? Math.min(selX2 + 1, columns) : columns;
             TerminalRow lineObject = mLines[externalToInternalRow(row)];
             int x1Index = lineObject.findStartOfColumn(x1);
             int x2Index = (x2 < mColumns) ? lineObject.findStartOfColumn(x2) : lineObject.getSpaceUsed();

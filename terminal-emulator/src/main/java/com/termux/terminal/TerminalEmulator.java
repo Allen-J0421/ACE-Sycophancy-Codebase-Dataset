@@ -285,8 +285,6 @@ public final class TerminalEmulator {
             } else if (internalBit == DECSET_BIT_MOUSE_TRACKING_BUTTON_EVENT) {
                 setDecsetinternalBit(DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE, false);
             }
-        }
-        if (set) {
             mCurrentDecSetFlags |= internalBit;
         } else {
             mCurrentDecSetFlags &= ~internalBit;
@@ -441,10 +439,8 @@ public final class TerminalEmulator {
         if (mClient != null)
             cursorStyle = mClient.getTerminalCursorStyle();
 
-        if (cursorStyle == null || !Arrays.asList(TERMINAL_CURSOR_STYLES_LIST).contains(cursorStyle))
-            mCursorStyle = DEFAULT_TERMINAL_CURSOR_STYLE;
-        else
-            mCursorStyle = cursorStyle;
+        mCursorStyle = (cursorStyle == null || !Arrays.asList(TERMINAL_CURSOR_STYLES_LIST).contains(cursorStyle))
+            ? DEFAULT_TERMINAL_CURSOR_STYLE : cursorStyle;
     }
 
     public boolean isReverseVideo() {

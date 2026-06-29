@@ -6,10 +6,9 @@ class BinarySearch {
     private BinarySearch() {
     }
 
-    public static int binarySearch(int[] numbers, int target) {
-        return indexOf(numbers, target);
-    }
-
+    /**
+     * Returns the index of {@code target} in a sorted array, or {@code -1} when absent.
+     */
     public static int indexOf(int[] numbers, int target) {
         int low = 0;
         int high = numbers.length - 1;
@@ -29,6 +28,13 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    /**
+     * Returns the index of {@code target} in a sorted array, or {@code -1} when absent.
+     */
+    public static int binarySearch(int[] numbers, int target) {
+        return indexOf(numbers, target);
     }
 
     private static int midpoint(int low, int high) {

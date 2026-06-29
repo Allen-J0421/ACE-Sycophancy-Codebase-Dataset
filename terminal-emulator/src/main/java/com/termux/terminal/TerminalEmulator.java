@@ -1310,7 +1310,7 @@ public final class TerminalEmulator {
         // Reset: Use Normal Screen Buffer and restore cursor as in DECRC.
         TerminalBuffer newScreen = setting ? mAltBuffer : mMainBuffer;
         if (newScreen != mScreen) {
-            boolean resized = !(newScreen.mColumns == mColumns && newScreen.mScreenRows == mRows);
+            boolean resized = newScreen.mColumns != mColumns || newScreen.mScreenRows != mRows;
             if (setting) saveCursor();
             mScreen = newScreen;
             if (!setting) {

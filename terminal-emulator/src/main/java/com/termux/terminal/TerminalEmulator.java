@@ -947,7 +947,6 @@ public final class TerminalEmulator {
     private void doDeviceControl(int b) {
         switch (b) {
             case (byte) '\\': // End of ESC \ string Terminator
-            {
                 String dcs = mOSCOrDeviceControlArgs.toString();
                 if (dcs.startsWith("$q")) {
                     doDeviceControlRequestStatusString(dcs);
@@ -958,8 +957,7 @@ public final class TerminalEmulator {
                         Logger.logError(mClient, LOG_TAG, "Unrecognized device control string: " + dcs);
                 }
                 finishSequence();
-            }
-            break;
+                break;
             default:
                 if (mOSCOrDeviceControlArgs.length() > MAX_OSC_STRING_LENGTH) {
                     // Too long.
@@ -2010,13 +2008,6 @@ public final class TerminalEmulator {
             }
 
             int code = getArg(i, 0, false);
-            if (code < 0) {
-                if (mArgIndex > 0) {
-                    continue;
-                } else {
-                    code = 0;
-                }
-            }
             if (code == 0) { // reset
                 mForeColor = TextStyle.COLOR_INDEX_FOREGROUND;
                 mBackColor = TextStyle.COLOR_INDEX_BACKGROUND;

@@ -13,12 +13,13 @@ class BinarySearch {
         while (low <= high) {
             int mid = low + (high - low) / 2;
             int candidate = values[mid];
+            int comparison = Integer.compare(candidate, target);
 
-            if (candidate == target) {
+            if (comparison == 0) {
                 return mid;
             }
 
-            if (candidate < target) {
+            if (comparison < 0) {
                 low = mid + 1;
             } else {
                 high = mid - 1;

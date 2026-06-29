@@ -496,9 +496,7 @@ public final class TerminalEmulator {
             if ((byteToProcess & 0b11000000) == 0b10000000) {
                 // 10xxxxxx, a continuation byte.
                 mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
-                if (--mUtf8ToFollow == 0) {
-                    decodeCompletedUtf8Sequence();
-                }
+                if (--mUtf8ToFollow == 0) decodeCompletedUtf8Sequence();
             } else {
                 // Not a UTF-8 continuation byte so replace the entire sequence up to now with the replacement char:
                 mUtf8Index = mUtf8ToFollow = 0;
@@ -512,23 +510,23 @@ public final class TerminalEmulator {
                 // subsequence."
                 processByte(byteToProcess);
             }
-        } else {
-            if ((byteToProcess & 0b10000000) == 0) { // The leading bit is not set so it is a 7-bit ASCII character.
-                processCodePoint(byteToProcess);
-                return;
-            } else if ((byteToProcess & 0b11100000) == 0b11000000) { // 110xxxxx, a two-byte sequence.
-                mUtf8ToFollow = 1;
-            } else if ((byteToProcess & 0b11110000) == 0b11100000) { // 1110xxxx, a three-byte sequence.
-                mUtf8ToFollow = 2;
-            } else if ((byteToProcess & 0b11111000) == 0b11110000) { // 11110xxx, a four-byte sequence.
-                mUtf8ToFollow = 3;
-            } else {
-                // Not a valid UTF-8 sequence start, signal invalid data:
-                processCodePoint(UNICODE_REPLACEMENT_CHAR);
-                return;
-            }
-            mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
+            return;
         }
+        if ((byteToProcess & 0b10000000) == 0) { // The leading bit is not set so it is a 7-bit ASCII character.
+            processCodePoint(byteToProcess);
+            return;
+        } else if ((byteToProcess & 0b11100000) == 0b11000000) { // 110xxxxx, a two-byte sequence.
+            mUtf8ToFollow = 1;
+        } else if ((byteToProcess & 0b11110000) == 0b11100000) { // 1110xxxx, a three-byte sequence.
+            mUtf8ToFollow = 2;
+        } else if ((byteToProcess & 0b11111000) == 0b11110000) { // 11110xxx, a four-byte sequence.
+            mUtf8ToFollow = 3;
+        } else {
+            // Not a valid UTF-8 sequence start, signal invalid data:
+            processCodePoint(UNICODE_REPLACEMENT_CHAR);
+            return;
+        }
+        mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
     }
 
     /** Called when mUtf8ToFollow reaches 0: decode mUtf8InputBuffer[0..mUtf8Index) and dispatch. */

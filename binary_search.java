@@ -12,12 +12,13 @@ final class BinarySearch {
 
         while (lowerBound <= upperBound) {
             int middleIndex = midpoint(lowerBound, upperBound);
+            int middleValue = array[middleIndex];
 
-            if (array[middleIndex] == target) {
+            if (middleValue == target) {
                 return middleIndex;
             }
 
-            if (array[middleIndex] < target) {
+            if (middleValue < target) {
                 lowerBound = middleIndex + 1;
             } else {
                 upperBound = middleIndex - 1;

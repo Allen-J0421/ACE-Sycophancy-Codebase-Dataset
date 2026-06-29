@@ -1,5 +1,7 @@
 class BinarySearch {
     private static final int NOT_FOUND = -1;
+    private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
+    private static final int SAMPLE_TARGET = 10;
 
     static int binarySearch(int[] arr, int target) {
         if (arr == null || arr.length == 0) {
@@ -36,9 +38,7 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int[] arr = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(arr, target);
+        int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(formatSearchResult(result));
     }

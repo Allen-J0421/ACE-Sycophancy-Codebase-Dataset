@@ -54,15 +54,11 @@ public final class TerminalColors {
             double mult = 255 / (Math.pow(2, componentLength * 4) - 1);
 
             int currentPosition = skipInitial;
-            String rString = c.substring(currentPosition, currentPosition + componentLength);
+            int r = (int) (Integer.parseInt(c.substring(currentPosition, currentPosition + componentLength), 16) * mult);
             currentPosition += componentLength + skipBetween;
-            String gString = c.substring(currentPosition, currentPosition + componentLength);
+            int g = (int) (Integer.parseInt(c.substring(currentPosition, currentPosition + componentLength), 16) * mult);
             currentPosition += componentLength + skipBetween;
-            String bString = c.substring(currentPosition, currentPosition + componentLength);
-
-            int r = (int) (Integer.parseInt(rString, 16) * mult);
-            int g = (int) (Integer.parseInt(gString, 16) * mult);
-            int b = (int) (Integer.parseInt(bString, 16) * mult);
+            int b = (int) (Integer.parseInt(c.substring(currentPosition, currentPosition + componentLength), 16) * mult);
             return 0xFF << 24 | r << 16 | g << 8 | b;
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             return 0;

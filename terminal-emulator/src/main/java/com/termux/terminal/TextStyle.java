@@ -58,39 +58,32 @@ public final class TextStyle {
     final static long NORMAL = encode(COLOR_INDEX_FOREGROUND, COLOR_INDEX_BACKGROUND, 0);
 
     static long encode(int foreColor, int backColor, int effect) {
-        long result = effect & 0b111111111;
-        if ((TRUECOLOR_ALPHA & foreColor) == TRUECOLOR_ALPHA) {
-            // 24-bit color.
-            result |= CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND | ((foreColor & TRUECOLOR_MASK) << FOREGROUND_COLOR_SHIFT);
-        } else {
-            // Indexed color.
-            result |= (foreColor & COLOR_INDEX_MASK) << FOREGROUND_COLOR_SHIFT;
-        }
-        if ((TRUECOLOR_ALPHA & backColor) == TRUECOLOR_ALPHA) {
-            // 24-bit color.
-            result |= CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND | ((backColor & TRUECOLOR_MASK) << BACKGROUND_COLOR_SHIFT);
-        } else {
-            // Indexed color.
-            result |= (backColor & COLOR_INDEX_MASK) << BACKGROUND_COLOR_SHIFT;
-        }
+        return (effect & 0b111111111)
+            | encodeColorBits(foreColor, CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND, FOREGROUND_COLOR_SHIFT)
+            | encodeColorBits(backColor, CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND, BACKGROUND_COLOR_SHIFT);
+    }
 
-        return result;
+    private static long encodeColorBits(int color, long truecolorFlag, int shift) {
+        if ((TRUECOLOR_ALPHA & color) == TRUECOLOR_ALPHA) {
+            return truecolorFlag | ((color & TRUECOLOR_MASK) << shift);
+        } else {
+            return (color & COLOR_INDEX_MASK) << shift;
+        }
     }
 
     public static int decodeForeColor(long style) {
-        if ((style & CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND) == 0) {
-            return (int) ((style >>> FOREGROUND_COLOR_SHIFT) & COLOR_INDEX_MASK);
-        } else {
-            return TRUECOLOR_ALPHA | (int) ((style >>> FOREGROUND_COLOR_SHIFT) & TRUECOLOR_MASK);
-        }
-
+        return decodeColor(style, CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND, FOREGROUND_COLOR_SHIFT);
     }
 
     public static int decodeBackColor(long style) {
-        if ((style & CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND) == 0) {
-            return (int) ((style >>> BACKGROUND_COLOR_SHIFT) & COLOR_INDEX_MASK);
+        return decodeColor(style, CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND, BACKGROUND_COLOR_SHIFT);
+    }
+
+    private static int decodeColor(long style, long truecolorFlag, int shift) {
+        if ((style & truecolorFlag) == 0) {
+            return (int) ((style >>> shift) & COLOR_INDEX_MASK);
         } else {
-            return TRUECOLOR_ALPHA | (int) ((style >>> BACKGROUND_COLOR_SHIFT) & TRUECOLOR_MASK);
+            return TRUECOLOR_ALPHA | (int) ((style >>> shift) & TRUECOLOR_MASK);
         }
     }
 

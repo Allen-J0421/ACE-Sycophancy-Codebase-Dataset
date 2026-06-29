@@ -2446,17 +2446,7 @@ public final class TerminalEmulator {
     private void parseArg(int b) {
         if (b >= '0' && b <= '9') {
             if (mArgIndex < mArgs.length) {
-                int oldValue = mArgs[mArgIndex];
-                int thisDigit = b - '0';
-                int value;
-                if (oldValue >= 0) {
-                    value = oldValue * 10 + thisDigit;
-                } else {
-                    value = thisDigit;
-                }
-                if (value > 9999)
-                    value = 9999;
-                mArgs[mArgIndex] = value;
+                mArgs[mArgIndex] = Math.min(Math.max(0, mArgs[mArgIndex]) * 10 + (b - '0'), 9999);
             }
             continueSequence(mEscapeState);
         } else if (b == ';' || b == ':') {

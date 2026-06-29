@@ -60,6 +60,10 @@ final class BinarySearch {
     private static void runDemo() {
         int result = binarySearch(demoValues(), DEMO_TARGET);
 
+        printSearchResult(result);
+    }
+
+    private static void printSearchResult(int result) {
         System.out.println(formatSearchResult(result));
     }
 

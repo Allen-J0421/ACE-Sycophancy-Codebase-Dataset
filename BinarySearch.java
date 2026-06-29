@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public final class BinarySearch {
-    private static final int NOT_FOUND = -1;
+    public static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
@@ -31,22 +31,6 @@ public final class BinarySearch {
     }
 
     public static void main(final String[] args) {
-        final int[] sortedValues = { 2, 3, 4, 10, 40 };
-        final int target = 10;
-        final int result = binarySearch(sortedValues, target);
-
-        printSearchResult(result);
-    }
-
-    private static void printSearchResult(final int index) {
-        System.out.println(formatSearchResult(index));
-    }
-
-    private static String formatSearchResult(final int index) {
-        if (index == NOT_FOUND) {
-            return "Element is not present in array";
-        }
-
-        return "Element is present at index " + index;
+        BinarySearchDemo.main(args);
     }
 }

@@ -1,6 +1,7 @@
 class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
+    private static final int SAMPLE_TARGET = 10;
 
     private BinarySearch() {
     }
@@ -65,7 +66,7 @@ class BinarySearch {
 
     public static void main(String[] args) {
         runSelfTests();
-        printSearchResult(SAMPLE_VALUES, 10);
+        printSearchResult(SAMPLE_VALUES, SAMPLE_TARGET);
     }
 
     private record SearchCase(int[] values, int target, int expectedIndex) {

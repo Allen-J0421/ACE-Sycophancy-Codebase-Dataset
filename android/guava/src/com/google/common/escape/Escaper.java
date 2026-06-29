@@ -14,6 +14,8 @@
 
 package com.google.common.escape;
 
+import static java.lang.System.arraycopy;
+
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.base.Function;
 import com.google.errorprone.annotations.DoNotMock;
@@ -90,5 +92,20 @@ public abstract class Escaper {
   /** Returns a {@link Function} that invokes {@link #escape(String)} on this escaper. */
   public final Function<String, String> asFunction() {
     return asFunction;
+  }
+
+  /**
+   * Helper method to grow the character buffer as needed, this only happens once in a while so it's
+   * ok if it's in a method call. If the index passed in is 0 then no copying will be done.
+   */
+  static char[] growBuffer(char[] dest, int index, int size) {
+    if (size < 0) { // overflow - should be OutOfMemoryError but GWT/j2cl don't support it
+      throw new AssertionError("Cannot increase internal buffer any further");
+    }
+    char[] copy = new char[size];
+    if (index > 0) {
+      arraycopy(dest, 0, copy, 0, index);
+    }
+    return copy;
   }
 }

@@ -2,11 +2,17 @@ import java.util.Objects;
 
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
+    private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
+    private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
 
     private BinarySearch() {
     }
 
     static int binarySearch(int[] numbers, int target) {
+        return indexOf(numbers, target);
+    }
+
+    static int indexOf(int[] numbers, int target) {
         Objects.requireNonNull(numbers, "numbers");
 
         int low = 0;
@@ -43,9 +49,9 @@ final class BinarySearch {
 
     private static String formatSearchResult(int index) {
         if (index == NOT_FOUND) {
-            return "Element is not present in array";
+            return NOT_FOUND_MESSAGE;
         }
 
-        return "Element is present at index " + index;
+        return FOUND_MESSAGE_PREFIX + index;
     }
 }

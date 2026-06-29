@@ -5,13 +5,7 @@ public final class BinarySearch {
     }
 
     static SearchResult search(int[] sortedValues, int target) {
-        int resultIndex = binarySearch(sortedValues, target);
-
-        if (isFound(resultIndex)) {
-            return SearchResult.foundAt(resultIndex);
-        }
-
-        return SearchResult.notFound();
+        return SearchResult.fromIndex(binarySearch(sortedValues, target));
     }
 
     static int binarySearch(int[] sortedValues, int target) {
@@ -34,10 +28,6 @@ public final class BinarySearch {
         }
 
         return NOT_FOUND;
-    }
-
-    static boolean isFound(int resultIndex) {
-        return resultIndex != NOT_FOUND;
     }
 
     private static int middleIndex(int left, int right) {

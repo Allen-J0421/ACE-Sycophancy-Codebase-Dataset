@@ -3,7 +3,7 @@ final class SearchResultFormatter {
     }
 
     static String format(SearchResult result) {
-        if (!result.wasFound()) {
+        if (!result.isFound()) {
             return "Element is not present in array";
         }
 

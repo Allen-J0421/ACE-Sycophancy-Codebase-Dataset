@@ -7,7 +7,19 @@ final class SearchResult {
         this.index = index;
     }
 
+    static SearchResult fromIndex(int index) {
+        if (index < 0) {
+            return notFound();
+        }
+
+        return foundAt(index);
+    }
+
     static SearchResult foundAt(int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException("Result index must be non-negative.");
+        }
+
         return new SearchResult(index);
     }
 
@@ -15,12 +27,12 @@ final class SearchResult {
         return NOT_FOUND;
     }
 
-    boolean wasFound() {
+    boolean isFound() {
         return index >= 0;
     }
 
     int index() {
-        if (!wasFound()) {
+        if (!isFound()) {
             throw new IllegalStateException("Search result has no index.");
         }
 

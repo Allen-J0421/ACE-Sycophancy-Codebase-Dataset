@@ -1,5 +1,4 @@
-final class BinarySearchDemo {
-    private static final int NOT_FOUND = -1;
+public final class BinarySearchDemo {
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
 
@@ -10,7 +9,7 @@ final class BinarySearchDemo {
         run();
     }
 
-    static void run() {
+    public static void run() {
         final int[] numbers = {2, 3, 4, 10, 40};
         final int target = 10;
         final int result = BinarySearch.binarySearch(numbers, target);
@@ -19,7 +18,7 @@ final class BinarySearchDemo {
     }
 
     private static String formatSearchResult(int index) {
-        if (index == NOT_FOUND) {
+        if (index == BinarySearch.NOT_FOUND) {
             return NOT_FOUND_MESSAGE;
         }
 

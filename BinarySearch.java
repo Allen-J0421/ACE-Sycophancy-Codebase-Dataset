@@ -1,16 +1,16 @@
 import java.util.Objects;
 
-final class BinarySearch {
-    private static final int NOT_FOUND = -1;
+public final class BinarySearch {
+    public static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] numbers, int target) {
+    public static int binarySearch(int[] numbers, int target) {
         return indexOf(numbers, target);
     }
 
-    static int indexOf(int[] numbers, int target) {
+    public static int indexOf(int[] numbers, int target) {
         Objects.requireNonNull(numbers, "numbers");
 
         int low = 0;

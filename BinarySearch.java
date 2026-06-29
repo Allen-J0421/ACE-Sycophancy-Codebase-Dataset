@@ -13,11 +13,10 @@ public final class BinarySearch {
     public static int binarySearch(int[] sortedValues, int target) {
         Objects.requireNonNull(sortedValues, "sortedValues");
 
-        int left = 0;
-        int right = sortedValues.length - 1;
+        SearchBounds bounds = SearchBounds.forLength(sortedValues.length);
 
-        while (left <= right) {
-            int middle = middleIndex(left, right);
+        while (bounds.hasCandidates()) {
+            int middle = bounds.middleIndex();
             int candidate = sortedValues[middle];
 
             if (candidate == target) {
@@ -25,17 +24,13 @@ public final class BinarySearch {
             }
 
             if (candidate < target) {
-                left = middle + 1;
+                bounds.discardLowerHalfThrough(middle);
             } else {
-                right = middle - 1;
+                bounds.discardUpperHalfFrom(middle);
             }
         }
 
         return NOT_FOUND_INDEX;
-    }
-
-    private static int middleIndex(int left, int right) {
-        return left + (right - left) / 2;
     }
 
     public static void main(String[] args) {

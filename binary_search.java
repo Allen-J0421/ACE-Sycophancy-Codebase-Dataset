@@ -33,10 +33,14 @@ final class BinarySearch {
         int target = 10;
 
         int result = binarySearch(numbers, target);
+        System.out.println(formatSearchResult(result));
+    }
+
+    private static String formatSearchResult(int result) {
         if (result == NOT_FOUND) {
-            System.out.println(NOT_FOUND_MESSAGE);
-        } else {
-            System.out.println(FOUND_MESSAGE + result);
+            return NOT_FOUND_MESSAGE;
         }
+
+        return FOUND_MESSAGE + result;
     }
 }

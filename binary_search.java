@@ -1,29 +1,52 @@
 class BinarySearch {
-    static int binarySearch(int arr[], int x) {
-        int low = 0, high = arr.length - 1;
+    private static final int NOT_FOUND = -1;
+
+    static int binarySearch(int[] sortedValues, int target) {
+        validateInput(sortedValues);
+
+        int low = 0;
+        int high = sortedValues.length - 1;
+
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
 
-            if (arr[mid] == x)
+            if (sortedValues[mid] == target) {
                 return mid;
+            }
 
-            if (arr[mid] < x)
+            if (sortedValues[mid] < target) {
                 low = mid + 1;
-
-            else
+            } else {
                 high = mid - 1;
+            }
         }
 
-        return -1;
+        return NOT_FOUND;
     }
 
-    public static void main(String args[]) {
-        int arr[] = { 2, 3, 4, 10, 40 };
-        int x = 10;
-        int result = binarySearch(arr, x);
-        if (result == -1)
+    private static void validateInput(int[] sortedValues) {
+        if (sortedValues == null) {
+            throw new IllegalArgumentException("Input array cannot be null");
+        }
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
+    private static void printSearchResult(int index) {
+        if (index == NOT_FOUND) {
             System.out.println("Element is not present in array");
-        else
-            System.out.println("Element is present at index " + result);
+            return;
+        }
+
+        System.out.println("Element is present at index " + index);
+    }
+
+    public static void main(String[] args) {
+        int[] values = {2, 3, 4, 10, 40};
+        int target = 10;
+
+        printSearchResult(binarySearch(values, target));
     }
 }

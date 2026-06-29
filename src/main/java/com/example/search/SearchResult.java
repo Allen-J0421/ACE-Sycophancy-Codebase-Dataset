@@ -1,4 +1,6 @@
-final class SearchResult {
+package com.example.search;
+
+public final class SearchResult {
     private final int index;
 
     private SearchResult(int index) {
@@ -16,18 +18,18 @@ final class SearchResult {
         return new SearchResult(BinarySearch.NOT_FOUND);
     }
 
-    boolean found() {
+    public boolean found() {
         return index != BinarySearch.NOT_FOUND;
     }
 
-    int index() {
+    public int index() {
         if (!found()) {
             throw new IllegalStateException("Search target was not found");
         }
         return index;
     }
 
-    int indexOrDefault(int defaultIndex) {
+    public int indexOrDefault(int defaultIndex) {
         return found() ? index : defaultIndex;
     }
 }

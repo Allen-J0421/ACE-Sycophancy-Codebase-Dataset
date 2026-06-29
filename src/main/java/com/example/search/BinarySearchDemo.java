@@ -1,3 +1,5 @@
+package com.example.search;
+
 final class BinarySearchDemo {
     private BinarySearchDemo() {
     }

@@ -1,7 +1,9 @@
+package com.example.search;
+
 import java.util.Objects;
 
-final class BinarySearch {
-    static final int NOT_FOUND = -1;
+public final class BinarySearch {
+    public static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
@@ -10,7 +12,7 @@ final class BinarySearch {
      * Returns the index of the target in a sorted array, or {@link #NOT_FOUND}.
      * When duplicates exist, this returns the first matching index.
      */
-    static int indexOf(int[] sortedArray, int target) {
+    public static int indexOf(int[] sortedArray, int target) {
         int firstCandidate = insertionPoint(sortedArray, target);
 
         if (firstCandidate == sortedArray.length || sortedArray[firstCandidate] != target) {
@@ -19,11 +21,11 @@ final class BinarySearch {
         return firstCandidate;
     }
 
-    static boolean contains(int[] sortedArray, int target) {
+    public static boolean contains(int[] sortedArray, int target) {
         return indexOf(sortedArray, target) != NOT_FOUND;
     }
 
-    static SearchResult search(int[] sortedArray, int target) {
+    public static SearchResult search(int[] sortedArray, int target) {
         int index = indexOf(sortedArray, target);
 
         if (index == NOT_FOUND) {

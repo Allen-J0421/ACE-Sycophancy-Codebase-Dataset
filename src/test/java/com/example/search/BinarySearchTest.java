@@ -1,3 +1,5 @@
+package com.example.search;
+
 import java.util.Objects;
 
 final class BinarySearchTest {

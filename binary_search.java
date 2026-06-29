@@ -5,7 +5,7 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
-        return search(values, target).index();
+        return search(values, target).toLegacyIndex();
     }
 
     static SearchResult search(int[] values, int target) {
@@ -53,6 +53,10 @@ final class BinarySearch {
         }
 
         int index() {
+            return index;
+        }
+
+        int toLegacyIndex() {
             return index;
         }
     }

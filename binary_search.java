@@ -11,12 +11,13 @@ class BinarySearch {
         while (lowIndex <= highIndex) {
             int midIndex = midpoint(lowIndex, highIndex);
             int value = array[midIndex];
+            int comparison = Integer.compare(value, target);
 
-            if (value == target) {
+            if (comparison == 0) {
                 return midIndex;
             }
 
-            if (value < target) {
+            if (comparison < 0) {
                 lowIndex = midIndex + 1;
             } else {
                 highIndex = midIndex - 1;

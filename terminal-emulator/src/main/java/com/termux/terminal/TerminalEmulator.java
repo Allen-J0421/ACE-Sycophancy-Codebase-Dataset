@@ -1253,18 +1253,7 @@ public final class TerminalEmulator {
             case 1: // Application Cursor Keys (DECCKM).
                 break;
             case 3: // Set: 132 column mode (. Reset: 80 column mode. ANSI name: DECCOLM.
-                // We don't actually set/reset 132 cols, but we do want the side effects
-                // (FIXME: Should only do this if the 95 DECSET bit (DECNCSM) is set, and if changing value?):
-                // Sets the left, right, top and bottom scrolling margins to their default positions, which is important for
-                // the "reset" utility to really reset the terminal:
-                mLeftMargin = mTopMargin = 0;
-                mBottomMargin = mRows;
-                mRightMargin = mColumns;
-                // "DECCOLM resets vertical split screen mode (DECLRMM) to unavailable":
-                setDecsetinternalBit(DECSET_BIT_LEFTRIGHT_MARGIN_MODE, false);
-                // "Erases all data in page memory":
-                blockClear(0, 0, mColumns, mRows);
-                setCursorRowCol(0, 0);
+                doDecSetDeccolm();
                 break;
             case 4: // DECSCLM-Scrolling Mode. Ignore.
                 break;
@@ -1319,6 +1308,22 @@ public final class TerminalEmulator {
                 unknownParameter(externalBit);
                 break;
         }
+    }
+
+    /** DECCOLM (DECSET 3) — reset all margins, clear screen, home cursor. */
+    private void doDecSetDeccolm() {
+        // We don't actually set/reset 132 cols, but we do want the side effects
+        // (FIXME: Should only do this if the 95 DECSET bit (DECNCSM) is set, and if changing value?):
+        // Sets the left, right, top and bottom scrolling margins to their default positions, which is important for
+        // the "reset" utility to really reset the terminal:
+        mLeftMargin = mTopMargin = 0;
+        mBottomMargin = mRows;
+        mRightMargin = mColumns;
+        // "DECCOLM resets vertical split screen mode (DECLRMM) to unavailable":
+        setDecsetinternalBit(DECSET_BIT_LEFTRIGHT_MARGIN_MODE, false);
+        // "Erases all data in page memory":
+        blockClear(0, 0, mColumns, mRows);
+        setCursorRowCol(0, 0);
     }
 
     /** Switch to/from alternate screen buffer (DECSET 47/1047/1049). */

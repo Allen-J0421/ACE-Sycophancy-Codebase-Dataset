@@ -9,7 +9,7 @@ final class BinarySearch {
         int upperBound = sortedValues.length - 1;
 
         while (lowerBound <= upperBound) {
-            int middleIndex = lowerBound + (upperBound - lowerBound) / 2;
+            int middleIndex = middleIndex(lowerBound, upperBound);
             int middleValue = sortedValues[middleIndex];
 
             if (middleValue == target) {
@@ -24,6 +24,10 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int middleIndex(int lowerBound, int upperBound) {
+        return lowerBound + (upperBound - lowerBound) / 2;
     }
 
     public static void main(String[] args) {

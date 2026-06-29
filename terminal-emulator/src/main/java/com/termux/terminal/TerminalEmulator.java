@@ -1441,6 +1441,37 @@ public final class TerminalEmulator {
         }
     }
 
+    private void doEscBackIndex() {
+        if (mCursorCol > mLeftMargin) {
+            mCursorCol--;
+        } else {
+            int rows = mBottomMargin - mTopMargin;
+            mScreen.blockCopy(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin - 1, rows, mLeftMargin + 1, mTopMargin);
+            mScreen.blockSet(mLeftMargin, mTopMargin, 1, rows, ' ', TextStyle.encode(mForeColor, mBackColor, 0));
+        }
+    }
+
+    private void doEscForwardIndex() {
+        if (mCursorCol < mRightMargin - 1) {
+            mCursorCol++;
+        } else {
+            int rows = mBottomMargin - mTopMargin;
+            mScreen.blockCopy(mLeftMargin + 1, mTopMargin, mRightMargin - mLeftMargin - 1, rows, mLeftMargin, mTopMargin);
+            mScreen.blockSet(mRightMargin - 1, mTopMargin, 1, rows, ' ', TextStyle.encode(mForeColor, mBackColor, 0));
+        }
+    }
+
+    private void doEscReverseIndex() {
+        // http://www.vt100.net/docs/vt100-ug/chapter3.html: "Move the active position to the same horizontal
+        // position on the preceding line. If the active position is at the top margin, a scroll down is performed".
+        if (mCursorRow <= mTopMargin) {
+            mScreen.blockCopy(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin, mBottomMargin - (mTopMargin + 1), mLeftMargin, mTopMargin + 1);
+            blockClear(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin);
+        } else {
+            mCursorRow--;
+        }
+    }
+
     private void startEscapeSequence() {
         mEscapeState = ESC;
         mArgIndex = 0;
@@ -1494,13 +1525,7 @@ public final class TerminalEmulator {
                 continueSequence(ESC_SELECT_RIGHT_PAREN);
                 break;
             case '6': // Back index (http://www.vt100.net/docs/vt510-rm/DECBI). Move left, insert blank column if start.
-                if (mCursorCol > mLeftMargin) {
-                    mCursorCol--;
-                } else {
-                    int rows = mBottomMargin - mTopMargin;
-                    mScreen.blockCopy(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin - 1, rows, mLeftMargin + 1, mTopMargin);
-                    mScreen.blockSet(mLeftMargin, mTopMargin, 1, rows, ' ', TextStyle.encode(mForeColor, mBackColor, 0));
-                }
+                doEscBackIndex();
                 break;
             case '7': // DECSC save cursor - http://www.vt100.net/docs/vt510-rm/DECSC
                 saveCursor();
@@ -1509,13 +1534,7 @@ public final class TerminalEmulator {
                 restoreCursor();
                 break;
             case '9': // Forward Index (http://www.vt100.net/docs/vt510-rm/DECFI). Move right, insert blank column if end.
-                if (mCursorCol < mRightMargin - 1) {
-                    mCursorCol++;
-                } else {
-                    int rows = mBottomMargin - mTopMargin;
-                    mScreen.blockCopy(mLeftMargin + 1, mTopMargin, mRightMargin - mLeftMargin - 1, rows, mLeftMargin, mTopMargin);
-                    mScreen.blockSet(mRightMargin - 1, mTopMargin, 1, rows, ' ', TextStyle.encode(mForeColor, mBackColor, 0));
-                }
+                doEscForwardIndex();
                 break;
             case 'c': // RIS - Reset to Initial State (http://vt100.net/docs/vt510-rm/RIS).
                 reset();
@@ -1537,14 +1556,7 @@ public final class TerminalEmulator {
                 mTabStop[mCursorCol] = true;
                 break;
             case 'M': // "${ESC}M" - reverse index (RI).
-                // http://www.vt100.net/docs/vt100-ug/chapter3.html: "Move the active position to the same horizontal
-                // position on the preceding line. If the active position is at the top margin, a scroll down is performed".
-                if (mCursorRow <= mTopMargin) {
-                    mScreen.blockCopy(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin, mBottomMargin - (mTopMargin + 1), mLeftMargin, mTopMargin + 1);
-                    blockClear(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin);
-                } else {
-                    mCursorRow--;
-                }
+                doEscReverseIndex();
                 break;
             case 'N': // SS2, ignore.
             case '0': // SS3, ignore.

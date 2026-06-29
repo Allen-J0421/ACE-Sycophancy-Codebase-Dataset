@@ -258,14 +258,9 @@ public final class TerminalBuffer {
         mActiveTranscriptRows = mScreenFirstRow = 0;
         mColumns = newColumns;
 
-        int newCursorRow = -1;
-        int newCursorColumn = -1;
         int oldCursorRow = cursor[1];
         int oldCursorColumn = cursor[0];
-        boolean newCursorPlaced = false;
-
-        int currentOutputExternalRow = 0;
-        int currentOutputExternalColumn = 0;
+        ReflowState state = new ReflowState();
 
         // Loop over every character in the initial state.
         // Blank lines should be skipped only if at end of transcript (just as is done in the "fast" resize), so we
@@ -279,19 +274,13 @@ public final class TerminalBuffer {
             TerminalRow oldLine = oldLines[internalOldRow];
             boolean cursorAtThisRow = externalOldRow == oldCursorRow;
             // The cursor may only be on a non-null line, which we should not skip:
-            if (oldLine == null || (!(!newCursorPlaced && cursorAtThisRow)) && oldLine.isBlank()) {
+            if (oldLine == null || (!(!state.cursorPlaced && cursorAtThisRow)) && oldLine.isBlank()) {
                 skippedBlankLines++;
                 continue;
             } else if (skippedBlankLines > 0) {
                 // After skipping some blank lines we encounter a non-blank line. Insert the skipped blank lines.
-                for (int i = 0; i < skippedBlankLines; i++) {
-                    if (currentOutputExternalRow == mScreenRows - 1) {
-                        scrollDownOneLine(0, mScreenRows, currentStyle);
-                    } else {
-                        currentOutputExternalRow++;
-                    }
-                    currentOutputExternalColumn = 0;
-                }
+                for (int i = 0; i < skippedBlankLines; i++)
+                    advanceReflowRow(state, false, currentStyle);
                 skippedBlankLines = 0;
             }
 
@@ -308,57 +297,76 @@ public final class TerminalBuffer {
                         lastNonSpaceIndex = i + 1;
             }
 
-            int currentOldCol = 0;
-            long styleAtCol = 0;
-            for (int i = 0; i < lastNonSpaceIndex; i++) {
-                // Note that looping over java character, not cells.
-                char c = oldLine.mText[i];
-                int codePoint = (Character.isHighSurrogate(c)) ? Character.toCodePoint(c, oldLine.mText[++i]) : c;
-                int displayWidth = WcWidth.width(codePoint);
-                // Use the last style if this is a zero-width character:
-                if (displayWidth > 0) styleAtCol = oldLine.getStyle(currentOldCol);
+            reflowOldRow(oldLine, lastNonSpaceIndex, justToCursor, externalOldRow, oldCursorRow, oldCursorColumn, state, currentStyle);
 
-                // Line wrap as necessary:
-                if (currentOutputExternalColumn + displayWidth > mColumns) {
-                    setLineWrap(currentOutputExternalRow);
-                    if (currentOutputExternalRow == mScreenRows - 1) {
-                        if (newCursorPlaced) newCursorRow--;
-                        scrollDownOneLine(0, mScreenRows, currentStyle);
-                    } else {
-                        currentOutputExternalRow++;
-                    }
-                    currentOutputExternalColumn = 0;
-                }
-
-                int offsetDueToCombiningChar = ((displayWidth <= 0 && currentOutputExternalColumn > 0) ? 1 : 0);
-                int outputColumn = currentOutputExternalColumn - offsetDueToCombiningChar;
-                setChar(outputColumn, currentOutputExternalRow, codePoint, styleAtCol);
-
-                if (displayWidth > 0) {
-                    if (oldCursorRow == externalOldRow && oldCursorColumn == currentOldCol) {
-                        newCursorColumn = currentOutputExternalColumn;
-                        newCursorRow = currentOutputExternalRow;
-                        newCursorPlaced = true;
-                    }
-                    currentOldCol += displayWidth;
-                    currentOutputExternalColumn += displayWidth;
-                    if (justToCursor && newCursorPlaced) break;
-                }
-            }
             // Old row has been copied. Check if we need to insert newline if old line was not wrapping:
-            if (externalOldRow != (oldScreenRows - 1) && !oldLine.mLineWrap) {
-                if (currentOutputExternalRow == mScreenRows - 1) {
-                    if (newCursorPlaced) newCursorRow--;
-                    scrollDownOneLine(0, mScreenRows, currentStyle);
-                } else {
-                    currentOutputExternalRow++;
-                }
-                currentOutputExternalColumn = 0;
-            }
+            if (externalOldRow != (oldScreenRows - 1) && !oldLine.mLineWrap)
+                advanceReflowRow(state, true, currentStyle);
         }
 
-        cursor[0] = newCursorColumn;
-        cursor[1] = newCursorRow;
+        cursor[0] = state.newCursorColumn;
+        cursor[1] = state.newCursorRow;
+    }
+
+    /** Mutable state threaded through the reflow helpers to avoid 5 separate locals in resizeWithReflow. */
+    private static final class ReflowState {
+        int outputRow;
+        int outputColumn;
+        int newCursorRow = -1;
+        int newCursorColumn = -1;
+        boolean cursorPlaced;
+    }
+
+    /**
+     * Advance to the next output row during reflow (scroll or increment), resetting the output column.
+     * When {@code adjustPlacedCursor} is true and the cursor has already been placed on a prior char,
+     * decrement newCursorRow to compensate for the scroll (faithful to the original inline blocks).
+     * Blank-line flushing uses false because it did not apply this adjustment in the original code.
+     */
+    private void advanceReflowRow(ReflowState state, boolean adjustPlacedCursor, long currentStyle) {
+        if (state.outputRow == mScreenRows - 1) {
+            if (adjustPlacedCursor && state.cursorPlaced) state.newCursorRow--;
+            scrollDownOneLine(0, mScreenRows, currentStyle);
+        } else {
+            state.outputRow++;
+        }
+        state.outputColumn = 0;
+    }
+
+    /** Process one old source row's characters into the reflow output, updating {@code state} in place. */
+    private void reflowOldRow(TerminalRow oldLine, int lastNonSpaceIndex, boolean justToCursor,
+                               int externalOldRow, int oldCursorRow, int oldCursorColumn,
+                               ReflowState state, long currentStyle) {
+        int currentOldCol = 0;
+        long styleAtCol = 0;
+        for (int i = 0; i < lastNonSpaceIndex; i++) {
+            // Note that looping over java character, not cells.
+            char c = oldLine.mText[i];
+            int codePoint = (Character.isHighSurrogate(c)) ? Character.toCodePoint(c, oldLine.mText[++i]) : c;
+            int displayWidth = WcWidth.width(codePoint);
+            // Use the last style if this is a zero-width character:
+            if (displayWidth > 0) styleAtCol = oldLine.getStyle(currentOldCol);
+
+            // Line wrap as necessary:
+            if (state.outputColumn + displayWidth > mColumns) {
+                setLineWrap(state.outputRow);
+                advanceReflowRow(state, true, currentStyle);
+            }
+
+            int offsetDueToCombiningChar = ((displayWidth <= 0 && state.outputColumn > 0) ? 1 : 0);
+            setChar(state.outputColumn - offsetDueToCombiningChar, state.outputRow, codePoint, styleAtCol);
+
+            if (displayWidth > 0) {
+                if (oldCursorRow == externalOldRow && oldCursorColumn == currentOldCol) {
+                    state.newCursorColumn = state.outputColumn;
+                    state.newCursorRow = state.outputRow;
+                    state.cursorPlaced = true;
+                }
+                currentOldCol += displayWidth;
+                state.outputColumn += displayWidth;
+                if (justToCursor && state.cursorPlaced) break;
+            }
+        }
     }
 
     /**

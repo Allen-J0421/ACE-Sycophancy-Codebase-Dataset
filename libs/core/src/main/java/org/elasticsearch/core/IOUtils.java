@@ -83,16 +83,28 @@ public final class IOUtils {
     public static void close(final Exception ex, final Closeable... objects) throws IOException {
         Exception firstException = ex;
         for (final Closeable object : objects) {
-            try {
-                close(object);
-            } catch (final IOException | RuntimeException e) {
-                firstException = addOrSuppress(firstException, e);
-            }
+            firstException = closeAndCollect(firstException, object);
         }
 
         if (firstException != null) {
             throwRuntimeOrIOException(firstException);
         }
+    }
+
+    /**
+     * Closes a single {@link Closeable} and folds any failure into the running "first exception": the failure is
+     * returned as-is when {@code firstException} is {@code null}, otherwise it is added as a suppressed exception and
+     * {@code firstException} is returned unchanged. Shared by the collecting {@code close} overloads, which differ
+     * only in how they iterate (varargs array vs. {@link Iterable}) and so cannot share a single loop without
+     * allocating a wrapper on this cleanup path.
+     */
+    private static Exception closeAndCollect(Exception firstException, Closeable object) {
+        try {
+            close(object);
+        } catch (final IOException | RuntimeException e) {
+            return addOrSuppress(firstException, e);
+        }
+        return firstException;
     }
 
     private static void throwRuntimeOrIOException(Exception firstException) throws IOException {
@@ -115,11 +127,7 @@ public final class IOUtils {
     public static void close(final Iterable<? extends Closeable> objects) throws IOException {
         Exception firstException = null;
         for (final Closeable object : objects) {
-            try {
-                close(object);
-            } catch (final IOException | RuntimeException e) {
-                firstException = addOrSuppress(firstException, e);
-            }
+            firstException = closeAndCollect(firstException, object);
         }
 
         if (firstException != null) {

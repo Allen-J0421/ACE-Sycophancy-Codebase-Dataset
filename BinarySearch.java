@@ -1,8 +1,10 @@
+import java.util.Objects;
+
 public class BinarySearch {
     public static final int NOT_FOUND = -1;
 
     public static int binarySearch(int[] sortedArray, int target) {
-        java.util.Objects.requireNonNull(sortedArray, "sortedArray");
+        Objects.requireNonNull(sortedArray, "sortedArray");
 
         int left = 0;
         int right = sortedArray.length - 1;

@@ -1,4 +1,6 @@
 final class BinarySearchTest {
+    private static final int NOT_FOUND = -1;
+
     private BinarySearchTest() {
     }
 
@@ -6,8 +8,8 @@ final class BinarySearchTest {
         assertSearch(sortedValues(), 10, 3);
         assertSearch(sortedValues(), 2, 0);
         assertSearch(sortedValues(), 40, 4);
-        assertSearch(sortedValues(), 5, -1);
-        assertSearch(new int[] {}, 10, -1);
+        assertSearch(sortedValues(), 5, NOT_FOUND);
+        assertSearch(new int[] {}, 10, NOT_FOUND);
     }
 
     private static int[] sortedValues() {

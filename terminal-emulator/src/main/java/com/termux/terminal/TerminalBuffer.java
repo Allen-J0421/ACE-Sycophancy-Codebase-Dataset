@@ -407,12 +407,7 @@ public final class TerminalBuffer {
         if (mActiveTranscriptRows < mTotalRows - mScreenRows) mActiveTranscriptRows++;
 
         // Blank the newly revealed line above the bottom margin:
-        int blankRow = externalToInternalRow(bottomMargin - 1);
-        if (mLines[blankRow] == null) {
-            mLines[blankRow] = new TerminalRow(mColumns, style);
-        } else {
-            mLines[blankRow].clear(style);
-        }
+        allocateFullLineIfNecessary(externalToInternalRow(bottomMargin - 1)).clear(style);
     }
 
     /**

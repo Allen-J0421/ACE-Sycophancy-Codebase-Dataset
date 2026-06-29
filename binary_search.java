@@ -16,11 +16,11 @@ final class BinarySearch {
             int mid = midpoint(low, high);
             int value = array[mid];
 
-            if (value == target) {
+            if (isMatch(value, target)) {
                 return mid;
             }
 
-            if (value < target) {
+            if (isBeforeTarget(value, target)) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -32,6 +32,14 @@ final class BinarySearch {
 
     private static int midpoint(int low, int high) {
         return low + (high - low) / 2;
+    }
+
+    private static boolean isMatch(int value, int target) {
+        return value == target;
+    }
+
+    private static boolean isBeforeTarget(int value, int target) {
+        return value < target;
     }
 
     public static void main(String[] args) {

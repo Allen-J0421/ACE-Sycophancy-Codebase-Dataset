@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,8 +61,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class Binder {
 
-	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
-		.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
+	private static final Set<Class<?>> NON_BEAN_CLASSES = Set.of(Object.class, Class.class);
 
 	private final Iterable<ConfigurationPropertySource> sources;
 

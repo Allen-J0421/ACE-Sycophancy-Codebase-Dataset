@@ -186,8 +186,9 @@ class ValueObjectBinder implements DataObjectBinder {
 	}
 
 	private boolean isEmptyDefaultValueAllowed(Class<?> type) {
-		return (Optional.class == type || isAggregate(type))
-				|| !(type.isPrimitive() || type.isEnum() || type.getName().startsWith("java.lang"));
+		return Optional.class == type
+				|| isAggregate(type)
+				|| (!type.isPrimitive() && !type.isEnum() && !type.getName().startsWith("java.lang"));
 	}
 
 	private boolean isAggregate(Class<?> type) {

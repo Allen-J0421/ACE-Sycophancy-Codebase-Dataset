@@ -333,12 +333,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		try {
 			LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
-			if (ignoreLogConfig(logConfig)) {
-				system.initialize(initializationContext, null, logFile);
-			}
-			else {
-				system.initialize(initializationContext, logConfig, logFile);
-			}
+			system.initialize(initializationContext, ignoreLogConfig(logConfig) ? null : logConfig, logFile);
 		}
 		catch (Throwable ex) {
 			Throwable exceptionToReport = ex;
@@ -413,8 +408,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private BiConsumer<String, @Nullable LogLevel> getLogLevelConfigurer(LoggingSystem system) {
 		return (name, level) -> {
 			try {
-				name = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
-				system.setLogLevel(name, level);
+				String loggerName = name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name;
+				system.setLogLevel(loggerName, level);
 			}
 			catch (RuntimeException ex) {
 				this.logger.error(LogMessage.format("Cannot set level '%s' for '%s'", level, name));

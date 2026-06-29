@@ -23,7 +23,6 @@ import org.elasticsearch.xcontent.XContentBuilder;
 import java.io.IOException;
 import java.lang.management.BufferPoolMXBean;
 import java.lang.management.ClassLoadingMXBean;
-import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryPoolMXBean;
@@ -53,13 +52,13 @@ public class JvmStats implements Writeable, ToXContentFragment {
     }
 
     public static JvmStats jvmStats() {
-        MemoryUsage memUsage = memoryMXBean.getHeapMemoryUsage();
-        long heapUsed = memUsage.getUsed() < 0 ? 0 : memUsage.getUsed();
-        long heapCommitted = memUsage.getCommitted() < 0 ? 0 : memUsage.getCommitted();
-        long heapMax = memUsage.getMax() < 0 ? 0 : memUsage.getMax();
-        memUsage = memoryMXBean.getNonHeapMemoryUsage();
-        long nonHeapUsed = memUsage.getUsed() < 0 ? 0 : memUsage.getUsed();
-        long nonHeapCommitted = memUsage.getCommitted() < 0 ? 0 : memUsage.getCommitted();
+        MemoryUsage heapUsage = memoryMXBean.getHeapMemoryUsage();
+        long heapUsed = Math.max(0, heapUsage.getUsed());
+        long heapCommitted = Math.max(0, heapUsage.getCommitted());
+        long heapMax = Math.max(0, heapUsage.getMax());
+        MemoryUsage nonHeapUsage = memoryMXBean.getNonHeapMemoryUsage();
+        long nonHeapUsed = Math.max(0, nonHeapUsage.getUsed());
+        long nonHeapCommitted = Math.max(0, nonHeapUsage.getCommitted());
         List<MemoryPoolMXBean> memoryPoolMXBeans = ManagementFactory.getMemoryPoolMXBeans();
         List<MemoryPool> pools = new ArrayList<>();
         for (MemoryPoolMXBean memoryPoolMXBean : memoryPoolMXBeans) {
@@ -70,10 +69,10 @@ public class JvmStats implements Writeable, ToXContentFragment {
                 pools.add(
                     new MemoryPool(
                         name,
-                        usage.getUsed() < 0 ? 0 : usage.getUsed(),
-                        usage.getMax() < 0 ? 0 : usage.getMax(),
-                        peakUsage.getUsed() < 0 ? 0 : peakUsage.getUsed(),
-                        peakUsage.getMax() < 0 ? 0 : peakUsage.getMax()
+                        Math.max(0, usage.getUsed()),
+                        Math.max(0, usage.getMax()),
+                        Math.max(0, peakUsage.getUsed()),
+                        Math.max(0, peakUsage.getMax())
                     )
                 );
             } catch (final Exception ignored) {
@@ -92,16 +91,10 @@ public class JvmStats implements Writeable, ToXContentFragment {
         Mem mem = new Mem(heapCommitted, heapUsed, heapMax, nonHeapCommitted, nonHeapUsed, Collections.unmodifiableList(pools));
         Threads threads = new Threads(threadMXBean.getThreadCount(), threadMXBean.getPeakThreadCount());
 
-        List<GarbageCollectorMXBean> gcMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
-        GarbageCollector[] collectors = new GarbageCollector[gcMxBeans.size()];
-        for (int i = 0; i < collectors.length; i++) {
-            GarbageCollectorMXBean gcMxBean = gcMxBeans.get(i);
-            collectors[i] = new GarbageCollector(
-                GcNames.getByGcName(gcMxBean.getName(), gcMxBean.getName()),
-                gcMxBean.getCollectionCount(),
-                gcMxBean.getCollectionTime()
-            );
-        }
+        GarbageCollector[] collectors = ManagementFactory.getGarbageCollectorMXBeans()
+            .stream()
+            .map(gc -> new GarbageCollector(GcNames.getByGcName(gc.getName(), gc.getName()), gc.getCollectionCount(), gc.getCollectionTime()))
+            .toArray(GarbageCollector[]::new);
         GarbageCollectors garbageCollectors = new GarbageCollectors(collectors);
         List<BufferPool> bufferPoolsList = Collections.emptyList();
         try {

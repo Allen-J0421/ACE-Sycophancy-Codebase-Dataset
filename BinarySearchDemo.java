@@ -6,8 +6,14 @@ final class BinarySearchDemo {
     }
 
     static void run() {
+        run(System.out);
+    }
+
+    static void run(java.io.PrintStream output) {
+        java.util.Objects.requireNonNull(output, "output");
+
         int result = BinarySearch.binarySearch(SAMPLE_ARRAY, SAMPLE_TARGET);
 
-        System.out.println(SearchResultFormatter.format(result));
+        output.println(SearchResultFormatter.format(result));
     }
 }

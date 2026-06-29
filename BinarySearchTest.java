@@ -9,12 +9,21 @@ public final class BinarySearchTest {
         new SearchCase("empty array", new int[0], 10, BinarySearch.NOT_FOUND)
     };
 
+    private static final FormatCase[] FORMAT_CASES = {
+        new FormatCase("found index", 3, "Element is present at index 3"),
+        new FormatCase("not found", BinarySearch.NOT_FOUND, "Element is not present in array")
+    };
+
     private BinarySearchTest() {
     }
 
     public static void main(String[] args) {
         for (SearchCase searchCase : SEARCH_CASES) {
             assertSearchResult(searchCase);
+        }
+
+        for (FormatCase formatCase : FORMAT_CASES) {
+            assertFormattedResult(formatCase);
         }
 
         System.out.println("All binary search tests passed");
@@ -25,9 +34,20 @@ public final class BinarySearchTest {
         assertEquals(searchCase.expectedIndex, actual, searchCase.name);
     }
 
+    private static void assertFormattedResult(FormatCase formatCase) {
+        String actual = SearchResultFormatter.format(formatCase.index);
+        assertEquals(formatCase.expectedMessage, actual, formatCase.name);
+    }
+
     private static void assertEquals(int expected, int actual, String caseName) {
         if (expected != actual) {
             throw new AssertionError(caseName + ": expected " + expected + " but got " + actual);
+        }
+    }
+
+    private static void assertEquals(String expected, String actual, String caseName) {
+        if (!expected.equals(actual)) {
+            throw new AssertionError(caseName + ": expected \"" + expected + "\" but got \"" + actual + "\"");
         }
     }
 
@@ -42,6 +62,18 @@ public final class BinarySearchTest {
             this.sortedArray = sortedArray;
             this.target = target;
             this.expectedIndex = expectedIndex;
+        }
+    }
+
+    private static final class FormatCase {
+        private final String name;
+        private final int index;
+        private final String expectedMessage;
+
+        private FormatCase(String name, int index, String expectedMessage) {
+            this.name = name;
+            this.index = index;
+            this.expectedMessage = expectedMessage;
         }
     }
 }

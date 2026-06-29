@@ -1,16 +1,16 @@
-class BinarySearch {
+public class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int SAMPLE_TARGET = 10;
 
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] values, int target) {
+    public static int binarySearch(int[] values, int target) {
         int low = 0;
         int high = values.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
 
             if (values[mid] == target) {
                 return mid;
@@ -24,6 +24,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
     }
 
     private static void printSearchResult(int index) {

@@ -10,8 +10,8 @@ final class BinarySearch {
         int low = 0;
         int high = values.length - 1;
 
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
+        while (hasSearchRange(low, high)) {
+            int mid = midpoint(low, high);
             int candidate = values[mid];
 
             if (candidate == target) {
@@ -26,6 +26,14 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static boolean hasSearchRange(int low, int high) {
+        return low <= high;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
     }
 
     public static void main(String[] args) {

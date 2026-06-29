@@ -34,14 +34,11 @@ final class BinarySearch {
         return "Element is present at index " + result;
     }
 
-    private static void printSearchResult(int result) {
-        System.out.println(searchResultMessage(result));
-    }
-
     public static void main(String[] args) {
         int[] values = {2, 3, 4, 10, 40};
         int target = 10;
 
-        printSearchResult(binarySearch(values, target));
+        int result = binarySearch(values, target);
+        System.out.println(searchResultMessage(result));
     }
 }

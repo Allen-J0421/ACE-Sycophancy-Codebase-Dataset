@@ -453,10 +453,8 @@ public final class TerminalEmulator {
         return isDecsetInternalBitSet(DECSET_BIT_CURSOR_ENABLED);
     }
     public boolean shouldCursorBeVisible() {
-        if (!isCursorEnabled())
-            return false;
-        else
-            return mCursorBlinkingEnabled ? mCursorBlinkState : true;
+        if (!isCursorEnabled()) return false;
+        return !mCursorBlinkingEnabled || mCursorBlinkState;
     }
 
     public void setCursorBlinkingEnabled(boolean cursorBlinkingEnabled) {

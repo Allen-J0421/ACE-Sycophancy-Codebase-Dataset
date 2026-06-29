@@ -24,15 +24,22 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int[] values = {2, 3, 4, 10, 40};
-        int target = 10;
-        int result = binarySearch(values, target);
-
-        System.out.println(formatResult(result));
+        BinarySearchDemo.main(args);
     }
 
     private static int midpoint(int low, int high) {
         return low + (high - low) / 2;
+    }
+}
+
+class BinarySearchDemo {
+    private static final int NOT_FOUND = -1;
+    private static final int[] SAMPLE_VALUES = {2, 3, 4, 10, 40};
+    private static final int SAMPLE_TARGET = 10;
+
+    public static void main(String[] args) {
+        int result = BinarySearch.binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
+        System.out.println(formatResult(result));
     }
 
     private static String formatResult(int result) {

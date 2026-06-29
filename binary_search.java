@@ -43,6 +43,10 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
+        runSampleSearch();
+    }
+
+    private static void runSampleSearch() {
         final int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
 
         System.out.println(formatSearchResult(result));

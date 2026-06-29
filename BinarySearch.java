@@ -1,5 +1,7 @@
+import java.util.Objects;
+
 public final class BinarySearch {
-    private static final int NOT_FOUND = -1;
+    public static final int NOT_FOUND_INDEX = SearchResult.NOT_FOUND_INDEX;
 
     private BinarySearch() {
     }
@@ -9,7 +11,7 @@ public final class BinarySearch {
     }
 
     public static int binarySearch(int[] sortedValues, int target) {
-        java.util.Objects.requireNonNull(sortedValues, "sortedValues");
+        Objects.requireNonNull(sortedValues, "sortedValues");
 
         int left = 0;
         int right = sortedValues.length - 1;
@@ -29,7 +31,7 @@ public final class BinarySearch {
             }
         }
 
-        return NOT_FOUND;
+        return NOT_FOUND_INDEX;
     }
 
     private static int middleIndex(int left, int right) {

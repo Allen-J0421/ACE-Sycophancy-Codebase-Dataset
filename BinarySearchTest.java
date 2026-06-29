@@ -4,9 +4,9 @@ final class BinarySearchTest {
 
     public static void main(String[] args) {
         assertIndex(3, new int[] { 2, 3, 4, 10, 40 }, 10);
-        assertIndex(-1, new int[] { 2, 3, 4, 10, 40 }, 5);
+        assertIndex(BinarySearch.NOT_FOUND_INDEX, new int[] { 2, 3, 4, 10, 40 }, 5);
         assertIndex(0, new int[] { 7 }, 7);
-        assertIndex(-1, new int[] {}, 7);
+        assertIndex(BinarySearch.NOT_FOUND_INDEX, new int[] {}, 7);
         assertThrowsNullPointer(new ThrowingRunnable() {
             public void run() {
                 BinarySearch.binarySearch(null, 7);

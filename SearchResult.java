@@ -1,5 +1,7 @@
 public final class SearchResult {
-    private static final SearchResult NOT_FOUND = new SearchResult(-1);
+    static final int NOT_FOUND_INDEX = -1;
+
+    private static final SearchResult NOT_FOUND = new SearchResult(NOT_FOUND_INDEX);
 
     private final int index;
 

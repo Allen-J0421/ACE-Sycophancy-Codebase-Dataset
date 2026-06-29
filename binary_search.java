@@ -13,14 +13,14 @@ class BinarySearch {
         int high = values.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
             int midValue = values[mid];
 
-            if (midValue == target) {
+            if (isMatch(midValue, target)) {
                 return mid;
             }
 
-            if (midValue < target) {
+            if (isBelowTarget(midValue, target)) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -28,6 +28,18 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
+    private static boolean isMatch(int value, int target) {
+        return value == target;
+    }
+
+    private static boolean isBelowTarget(int value, int target) {
+        return value < target;
     }
 
     public static void main(String[] args) {

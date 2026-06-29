@@ -1029,49 +1029,46 @@ public final class TerminalEmulator {
     }
 
     private void respondToTermcapTerminfoRequest(String part) {
-        if (part.length() % 2 == 0) {
-            StringBuilder transBuffer = new StringBuilder();
-            char c;
-            for (int i = 0; i < part.length(); i += 2) {
-                try {
-                    c = (char) Integer.parseInt(part.substring(i, i + 2), 16);
-                } catch (NumberFormatException e) {
-                    Logger.logStackTraceWithMessage(mClient, LOG_TAG, "Invalid device termcap/terminfo encoded name \"" + part + "\"", e);
-                    continue;
-                }
-                transBuffer.append(c);
+        if (part.length() % 2 != 0) {
+            Logger.logError(mClient, LOG_TAG, "Invalid device termcap/terminfo name of odd length: " + part);
+            return;
+        }
+        StringBuilder transBuffer = new StringBuilder();
+        for (int i = 0; i < part.length(); i += 2) {
+            try {
+                transBuffer.append((char) Integer.parseInt(part.substring(i, i + 2), 16));
+            } catch (NumberFormatException e) {
+                Logger.logStackTraceWithMessage(mClient, LOG_TAG, "Invalid device termcap/terminfo encoded name \"" + part + "\"", e);
             }
-            String trans = transBuffer.toString();
-            String responseValue;
+        }
+        String trans = transBuffer.toString();
+        String responseValue;
+        switch (trans) {
+            case "Co":
+            case "colors":
+                responseValue = "256"; // Number of colors.
+                break;
+            case "TN":
+            case "name":
+                responseValue = "xterm";
+                break;
+            default:
+                responseValue = KeyHandler.getCodeFromTermcap(trans, isDecsetInternalBitSet(DECSET_BIT_APPLICATION_CURSOR_KEYS),
+                    isDecsetInternalBitSet(DECSET_BIT_APPLICATION_KEYPAD));
+                break;
+        }
+        if (responseValue == null) {
             switch (trans) {
-                case "Co":
-                case "colors":
-                    responseValue = "256"; // Number of colors.
-                    break;
-                case "TN":
-                case "name":
-                    responseValue = "xterm";
+                case "%1": // Help key - ignore
+                case "&8": // Undo key - ignore.
                     break;
                 default:
-                    responseValue = KeyHandler.getCodeFromTermcap(trans, isDecsetInternalBitSet(DECSET_BIT_APPLICATION_CURSOR_KEYS),
-                        isDecsetInternalBitSet(DECSET_BIT_APPLICATION_KEYPAD));
-                    break;
+                    Logger.logWarn(mClient, LOG_TAG, "Unhandled termcap/terminfo name: '" + trans + "'");
             }
-            if (responseValue == null) {
-                switch (trans) {
-                    case "%1": // Help key - ignore
-                    case "&8": // Undo key - ignore.
-                        break;
-                    default:
-                        Logger.logWarn(mClient, LOG_TAG, "Unhandled termcap/terminfo name: '" + trans + "'");
-                }
-                // Respond with invalid request:
-                mSession.write("\033P0+r" + part + "\033\\");
-            } else {
-                mSession.write("\033P1+r" + part + "=" + hexEncode(responseValue) + "\033\\");
-            }
+            // Respond with invalid request:
+            mSession.write("\033P0+r" + part + "\033\\");
         } else {
-            Logger.logError(mClient, LOG_TAG, "Invalid device termcap/terminfo name of odd length: " + part);
+            mSession.write("\033P1+r" + part + "=" + hexEncode(responseValue) + "\033\\");
         }
     }
 

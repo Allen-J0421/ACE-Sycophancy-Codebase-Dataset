@@ -9,11 +9,10 @@ final class BinarySearch {
     }
 
     static SearchResult search(int[] values, int target) {
-        int low = 0;
-        int high = values.length - 1;
+        SearchBounds bounds = SearchBounds.forValues(values);
 
-        while (hasSearchRange(low, high)) {
-            int mid = midpoint(low, high);
+        while (bounds.hasValues()) {
+            int mid = bounds.midpoint();
             int candidate = values[mid];
 
             if (candidate == target) {
@@ -21,21 +20,13 @@ final class BinarySearch {
             }
 
             if (candidate < target) {
-                low = mid + 1;
+                bounds.discardLowerHalf(mid);
             } else {
-                high = mid - 1;
+                bounds.discardUpperHalf(mid);
             }
         }
 
         return SearchResult.notFound();
-    }
-
-    private static boolean hasSearchRange(int low, int high) {
-        return low <= high;
-    }
-
-    private static int midpoint(int low, int high) {
-        return low + (high - low) / 2;
     }
 
     public static void main(String[] args) {
@@ -63,6 +54,36 @@ final class BinarySearch {
 
         int index() {
             return index;
+        }
+    }
+
+    private static final class SearchBounds {
+        private int low;
+        private int high;
+
+        private SearchBounds(int low, int high) {
+            this.low = low;
+            this.high = high;
+        }
+
+        private static SearchBounds forValues(int[] values) {
+            return new SearchBounds(0, values.length - 1);
+        }
+
+        private boolean hasValues() {
+            return low <= high;
+        }
+
+        private int midpoint() {
+            return low + (high - low) / 2;
+        }
+
+        private void discardLowerHalf(int mid) {
+            low = mid + 1;
+        }
+
+        private void discardUpperHalf(int mid) {
+            high = mid - 1;
         }
     }
 }

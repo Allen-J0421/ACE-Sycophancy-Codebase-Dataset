@@ -3,6 +3,9 @@ package com.example.search;
 import java.util.Objects;
 
 final class BinarySearchTest {
+    private static final int[] SORTED_VALUES = {2, 3, 4, 10, 40};
+    private static final int DEFAULT_INDEX = 99;
+
     private BinarySearchTest() {
     }
 
@@ -22,14 +25,12 @@ final class BinarySearchTest {
     }
 
     private static void findsTargetInMiddle() {
-        assertEquals(3, BinarySearch.indexOf(new int[] {2, 3, 4, 10, 40}, 10));
+        assertEquals(3, BinarySearch.indexOf(SORTED_VALUES, 10));
     }
 
     private static void findsTargetAtBounds() {
-        int[] values = {2, 3, 4, 10, 40};
-
-        assertEquals(0, BinarySearch.indexOf(values, 2));
-        assertEquals(4, BinarySearch.indexOf(values, 40));
+        assertEquals(0, BinarySearch.indexOf(SORTED_VALUES, 2));
+        assertEquals(4, BinarySearch.indexOf(SORTED_VALUES, 40));
     }
 
     private static void findsFirstDuplicate() {
@@ -37,37 +38,33 @@ final class BinarySearchTest {
     }
 
     private static void reportsMissingTarget() {
-        int[] values = {2, 3, 4, 10, 40};
-
-        assertEquals(BinarySearch.NOT_FOUND, BinarySearch.indexOf(values, 5));
-        assertFalse(BinarySearch.contains(values, 5));
+        assertEquals(BinarySearch.NOT_FOUND, BinarySearch.indexOf(SORTED_VALUES, 5));
+        assertFalse(BinarySearch.contains(SORTED_VALUES, 5));
     }
 
     private static void reportsContainingTarget() {
-        assertTrue(BinarySearch.contains(new int[] {2, 3, 4, 10, 40}, 10));
+        assertTrue(BinarySearch.contains(SORTED_VALUES, 10));
     }
 
     private static void reportsInsertionPoints() {
-        int[] values = {2, 3, 4, 10, 40};
-
-        assertEquals(0, BinarySearch.insertionPoint(values, 1));
-        assertEquals(3, BinarySearch.insertionPoint(values, 5));
-        assertEquals(5, BinarySearch.insertionPoint(values, 50));
+        assertEquals(0, BinarySearch.insertionPoint(SORTED_VALUES, 1));
+        assertEquals(3, BinarySearch.insertionPoint(SORTED_VALUES, 5));
+        assertEquals(5, BinarySearch.insertionPoint(SORTED_VALUES, 50));
     }
 
     private static void reportsFoundResult() {
-        SearchResult result = BinarySearch.search(new int[] {2, 3, 4, 10, 40}, 10);
+        SearchResult result = BinarySearch.search(SORTED_VALUES, 10);
 
         assertTrue(result.found());
         assertEquals(3, result.index());
-        assertEquals(3, result.indexOrDefault(99));
+        assertEquals(3, result.indexOrDefault(DEFAULT_INDEX));
     }
 
     private static void reportsMissingResult() {
-        SearchResult result = BinarySearch.search(new int[] {2, 3, 4, 10, 40}, 5);
+        SearchResult result = BinarySearch.search(SORTED_VALUES, 5);
 
         assertFalse(result.found());
-        assertEquals(99, result.indexOrDefault(99));
+        assertEquals(DEFAULT_INDEX, result.indexOrDefault(DEFAULT_INDEX));
         assertThrows("Search target was not found", new ThrowingRunnable() {
             @Override
             public void run() {

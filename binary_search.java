@@ -23,14 +23,18 @@ final class BinarySearch {
                 return mid;
             }
 
-            if (comparison < 0) {
-                bounds.discardLowerHalf(mid);
-            } else {
-                bounds.discardUpperHalf(mid);
-            }
+            updateBounds(bounds, mid, comparison);
         }
 
         return NOT_FOUND;
+    }
+
+    private static void updateBounds(SearchBounds bounds, int mid, int comparison) {
+        if (comparison < 0) {
+            bounds.discardLowerHalf(mid);
+        } else {
+            bounds.discardUpperHalf(mid);
+        }
     }
 
     private static int midpoint(int low, int high) {

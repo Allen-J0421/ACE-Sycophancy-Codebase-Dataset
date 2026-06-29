@@ -59,13 +59,13 @@ class ConfigDataLoaders {
 	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
 			SpringFactoriesLoader springFactoriesLoader) {
 		this.logger = logFactory.getLog(getClass());
-		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory);
-		argumentResolver = argumentResolver.and(ConfigurableBootstrapContext.class, bootstrapContext);
-		argumentResolver = argumentResolver.and(BootstrapContext.class, bootstrapContext);
-		argumentResolver = argumentResolver.and(BootstrapRegistry.class, bootstrapContext);
-		argumentResolver = argumentResolver.andSupplied(Log.class, () -> {
-			throw new IllegalArgumentException("Log types cannot be injected, please use DeferredLogFactory");
-		});
+		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory)
+				.and(ConfigurableBootstrapContext.class, bootstrapContext)
+				.and(BootstrapContext.class, bootstrapContext)
+				.and(BootstrapRegistry.class, bootstrapContext)
+				.andSupplied(Log.class, () -> {
+					throw new IllegalArgumentException("Log types cannot be injected, please use DeferredLogFactory");
+				});
 		this.loaders = springFactoriesLoader.load(ConfigDataLoader.class, argumentResolver);
 		this.resourceTypes = getResourceTypes(this.loaders);
 	}

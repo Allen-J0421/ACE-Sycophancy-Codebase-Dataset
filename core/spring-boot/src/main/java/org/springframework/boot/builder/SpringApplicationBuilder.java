@@ -159,12 +159,13 @@ public class SpringApplicationBuilder {
 	}
 
 	private void configureAsChildIfNecessary(String... args) {
-		if (this.parent != null && !this.configuredAsChild) {
+		SpringApplicationBuilder parent = this.parent;
+		if (parent != null && !this.configuredAsChild) {
 			this.configuredAsChild = true;
 			if (!this.registerShutdownHookApplied) {
 				this.application.setRegisterShutdownHook(false);
 			}
-			initializers(new ParentContextApplicationContextInitializer(this.parent.run(args)));
+			initializers(new ParentContextApplicationContextInitializer(parent.run(args)));
 		}
 	}
 

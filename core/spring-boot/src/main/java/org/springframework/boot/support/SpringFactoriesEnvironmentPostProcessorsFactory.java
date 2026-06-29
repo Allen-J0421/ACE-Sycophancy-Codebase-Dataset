@@ -47,10 +47,10 @@ class SpringFactoriesEnvironmentPostProcessorsFactory implements EnvironmentPost
 	@Override
 	public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext) {
-		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory);
-		argumentResolver = argumentResolver.and(ConfigurableBootstrapContext.class, bootstrapContext);
-		argumentResolver = argumentResolver.and(BootstrapContext.class, bootstrapContext);
-		argumentResolver = argumentResolver.and(BootstrapRegistry.class, bootstrapContext);
+		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory)
+				.and(ConfigurableBootstrapContext.class, bootstrapContext)
+				.and(BootstrapContext.class, bootstrapContext)
+				.and(BootstrapRegistry.class, bootstrapContext);
 		List<Object> postProcessors = new ArrayList<>();
 		postProcessors.addAll(this.loader.load(EnvironmentPostProcessor.class, argumentResolver));
 		postProcessors.addAll(loadDeprecatedPostProcessors(argumentResolver));

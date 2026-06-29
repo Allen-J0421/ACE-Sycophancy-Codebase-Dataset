@@ -455,8 +455,8 @@ public class SpringApplication {
 	}
 
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
-		ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this);
-		argumentResolver = argumentResolver.and(String[].class, args);
+		ArgumentResolver argumentResolver = ArgumentResolver.of(SpringApplication.class, this)
+				.and(String[].class, args);
 		List<SpringApplicationRunListener> listeners = getSpringFactoriesInstances(SpringApplicationRunListener.class,
 				argumentResolver);
 		SpringApplicationHook hook = applicationHook.get();

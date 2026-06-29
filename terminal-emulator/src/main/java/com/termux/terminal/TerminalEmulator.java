@@ -383,11 +383,8 @@ public final class TerminalEmulator {
         this.mCellWidthPixels = cellWidthPixels;
         this.mCellHeightPixels = cellHeightPixels;
 
-        if (mRows == rows && mColumns == columns) {
-            return;
-        } else if (columns < 2 || rows < 2) {
-            throw new IllegalArgumentException("rows=" + rows + ", columns=" + columns);
-        }
+        if (mRows == rows && mColumns == columns) return;
+        if (columns < 2 || rows < 2) throw new IllegalArgumentException("rows=" + rows + ", columns=" + columns);
 
         if (mRows != rows) {
             mRows = rows;
@@ -569,7 +566,8 @@ public final class TerminalEmulator {
         if (mEscapeState == ESC_APC) {
             doApc(b);
             return;
-        } else if (mEscapeState == ESC_APC_ESCAPE) {
+        }
+        if (mEscapeState == ESC_APC_ESCAPE) {
             doApcEscape(b);
             return;
         }
@@ -1494,9 +1492,8 @@ public final class TerminalEmulator {
     }
 
     private void doLinefeed() {
-        boolean belowScrollingRegion = mCursorRow >= mBottomMargin;
         int newCursorRow = mCursorRow + 1;
-        if (belowScrollingRegion) {
+        if (mCursorRow >= mBottomMargin) {
             // Move down (but not scroll) as long as we are above the last row.
             if (mCursorRow != mRows - 1) {
                 setCursorRow(newCursorRow);
@@ -1955,8 +1952,7 @@ public final class TerminalEmulator {
         switch (getArg0(0)) {
             case 5: // Device status report (DSR):
                 // Answer is ESC [ 0 n (Terminal OK).
-                byte[] dsr = {(byte) 27, (byte) '[', (byte) '0', (byte) 'n'};
-                mSession.write(dsr, 0, dsr.length);
+                mSession.write("\033[0n");
                 break;
             case 6: // Cursor position report (CPR):
                 // Answer is ESC [ y ; x R, where x,y is

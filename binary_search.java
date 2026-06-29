@@ -37,6 +37,10 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
+        runDemo();
+    }
+
+    private static void runDemo() {
         int result = binarySearch(demoValues(), DEMO_TARGET);
         System.out.println(formatSearchResult(result));
     }

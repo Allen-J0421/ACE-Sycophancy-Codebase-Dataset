@@ -27,7 +27,7 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
-        runDemo(demoValues(), DEMO_TARGET);
+        printSearchResult(demoValues(), DEMO_TARGET);
     }
 
     private static int midpoint(int low, int high) {
@@ -38,8 +38,8 @@ class BinarySearch {
         return new int[] { 2, 3, 4, 10, 40 };
     }
 
-    private static void runDemo(int[] values, int target) {
-        int index = binarySearch(values, target);
+    private static void printSearchResult(int[] sortedValues, int target) {
+        int index = binarySearch(sortedValues, target);
 
         System.out.println(formatSearchResult(index));
     }

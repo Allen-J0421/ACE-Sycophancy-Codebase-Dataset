@@ -27,19 +27,24 @@ final class BinarySearch {
 
 final class BinarySearchDemo {
     public static void main(String[] args) {
-        SearchCase[] cases = {
-            SearchCase.expectIndex(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
-            SearchCase.expectIndex(new int[] { 2, 3, 4, 10, 40 }, 5, -1),
-            SearchCase.expectIndex(new int[] {}, 10, -1),
-            SearchCase.expectIndex(new int[] { 7 }, 7, 0),
-            SearchCase.expectIndex(new int[] { 7 }, 3, -1)
-        };
-
-        for (SearchCase searchCase : cases) {
+        for (SearchCase searchCase : searchCases()) {
             searchCase.verify();
         }
 
         System.out.println("All binary search checks passed.");
+    }
+
+    private static SearchCase[] searchCases() {
+        int[] sampleValues = { 2, 3, 4, 10, 40 };
+
+        SearchCase[] cases = {
+            SearchCase.expectIndex(sampleValues, 10, 3),
+            SearchCase.expectIndex(sampleValues, 5, -1),
+            SearchCase.expectIndex(new int[] {}, 10, -1),
+            SearchCase.expectIndex(new int[] { 7 }, 7, 0),
+            SearchCase.expectIndex(new int[] { 7 }, 3, -1)
+        };
+        return cases;
     }
 }
 

@@ -1,4 +1,4 @@
-class BinarySearch {
+final class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int DEMO_TARGET = 10;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";
@@ -61,7 +61,7 @@ class BinarySearch {
         return FOUND_MESSAGE_PREFIX + result.index();
     }
 
-    private static class SearchResult {
+    private static final class SearchResult {
         private final int index;
 
         private SearchResult(int index) {
@@ -89,7 +89,7 @@ class BinarySearch {
         }
     }
 
-    private static class SearchRange {
+    private static final class SearchRange {
         private int low;
         private int high;
 

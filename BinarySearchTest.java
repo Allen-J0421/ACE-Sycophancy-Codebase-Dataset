@@ -21,17 +21,18 @@ public final class BinarySearchTest {
         };
 
         for (final SearchCase searchCase : cases) {
-            assertEquals(searchCase.expectedIndex, BinarySearch.binarySearch(searchCase.sortedValues, searchCase.target));
+            assertSearchCase(searchCase);
         }
     }
 
     private static void rejectsNullArray() {
-        assertThrows(NullPointerException.class, new ThrowingRunnable() {
-            @Override
-            public void run() {
-                BinarySearch.binarySearch(null, 10);
-            }
-        });
+        assertThrows(NullPointerException.class, () -> BinarySearch.binarySearch(null, 10));
+    }
+
+    private static void assertSearchCase(final SearchCase searchCase) {
+        assertEquals(
+                searchCase.expectedIndex,
+                BinarySearch.binarySearch(searchCase.sortedValues, searchCase.target));
     }
 
     private static void formatsFoundResult() {

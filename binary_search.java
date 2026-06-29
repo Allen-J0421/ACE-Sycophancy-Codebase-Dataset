@@ -11,6 +11,10 @@ final class BinarySearch {
     static int binarySearch(int[] values, int target) {
         SearchBounds bounds = SearchBounds.forValues(values);
 
+        return searchWithinBounds(values, target, bounds);
+    }
+
+    private static int searchWithinBounds(int[] values, int target, SearchBounds bounds) {
         while (bounds.hasRemainingValues()) {
             int mid = bounds.midpoint();
             int comparison = compare(values[mid], target);

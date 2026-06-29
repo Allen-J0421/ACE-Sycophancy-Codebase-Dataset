@@ -192,7 +192,7 @@ class JsonValueWriter {
 	 */
 	<E> void writeArray(Consumer<Consumer<E>> elements) {
 		start(Series.ARRAY);
-		elements.accept(ThrowingConsumer.of(this::writeElement));
+		writeElements(elements);
 		end(Series.ARRAY);
 	}
 
@@ -227,7 +227,7 @@ class JsonValueWriter {
 	 */
 	<N, V> void writeObject(Consumer<BiConsumer<N, V>> pairs) {
 		start(Series.OBJECT);
-		pairs.accept(this::writePair);
+		writePairs(pairs);
 		end(Series.OBJECT);
 	}
 

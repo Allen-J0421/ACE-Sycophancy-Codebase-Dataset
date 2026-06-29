@@ -150,9 +150,7 @@ public abstract class HashCode {
 
     @Override
     void writeBytesToImpl(byte[] dest, int offset, int maxLength) {
-      for (int i = 0; i < maxLength; i++) {
-        dest[offset + i] = (byte) (hash >> (i * 8));
-      }
+      writeLongBytesTo(hash, dest, offset, maxLength);
     }
 
     @Override
@@ -216,9 +214,7 @@ public abstract class HashCode {
 
     @Override
     void writeBytesToImpl(byte[] dest, int offset, int maxLength) {
-      for (int i = 0; i < maxLength; i++) {
-        dest[offset + i] = (byte) (hash >> (i * 8));
-      }
+      writeLongBytesTo(hash, dest, offset, maxLength);
     }
 
     @Override
@@ -227,6 +223,12 @@ public abstract class HashCode {
     }
 
     private static final long serialVersionUID = 0;
+  }
+
+  private static void writeLongBytesTo(long value, byte[] dest, int offset, int maxLength) {
+    for (int i = 0; i < maxLength; i++) {
+      dest[offset + i] = (byte) (value >> (i * 8));
+    }
   }
 
   /**

@@ -137,7 +137,8 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	 */
 	protected HttpHandler getHttpHandler() {
 		// Use bean names so that we don't consider the hierarchy
-		String[] beanNames = getBeanFactory().getBeanNamesForType(HttpHandler.class);
+		DefaultListableBeanFactory beanFactory = getBeanFactory();
+		String[] beanNames = beanFactory.getBeanNamesForType(HttpHandler.class);
 		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
 					"Unable to start ReactiveWebApplicationContext due to missing HttpHandler bean.");
@@ -147,7 +148,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 					"Unable to start ReactiveWebApplicationContext due to multiple HttpHandler beans : "
 							+ StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
-		return getBeanFactory().getBean(beanNames[0], HttpHandler.class);
+		return beanFactory.getBean(beanNames[0], HttpHandler.class);
 	}
 
 	@Override

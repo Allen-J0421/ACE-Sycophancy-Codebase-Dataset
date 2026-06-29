@@ -83,9 +83,10 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	private Map<Object, Object> createMap(Bindable<?> target) {
-		Class<?> mapType = (target.getValue() != null) ? Map.class : target.getType().resolve(Object.class);
+		ResolvableType targetType = target.getType();
+		Class<?> mapType = (target.getValue() != null) ? Map.class : targetType.resolve(Object.class);
 		if (EnumMap.class.isAssignableFrom(mapType)) {
-			Class<?> keyType = target.getType().asMap().resolveGeneric(0);
+			Class<?> keyType = targetType.asMap().resolveGeneric(0);
 			return CollectionFactory.createMap(mapType, keyType, 0);
 		}
 		return CollectionFactory.createMap(mapType, 0);

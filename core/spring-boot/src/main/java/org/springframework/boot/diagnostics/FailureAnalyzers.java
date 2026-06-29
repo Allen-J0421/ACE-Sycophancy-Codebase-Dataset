@@ -76,9 +76,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 		if (context == null) {
 			return null;
 		}
-		ArgumentResolver argumentResolver = ArgumentResolver.of(BeanFactory.class, context.getBeanFactory());
-		argumentResolver = argumentResolver.and(Environment.class, context.getEnvironment());
-		return argumentResolver;
+		return ArgumentResolver.of(BeanFactory.class, context.getBeanFactory())
+				.and(Environment.class, context.getEnvironment());
 	}
 
 	@Override

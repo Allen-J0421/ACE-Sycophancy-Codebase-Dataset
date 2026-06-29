@@ -54,6 +54,10 @@ final class SearchResult {
     }
 
     static SearchResult foundAt(int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException("Found index cannot be negative");
+        }
+
         return new SearchResult(index);
     }
 

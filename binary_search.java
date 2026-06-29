@@ -9,7 +9,7 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
-        SearchBounds bounds = new SearchBounds(values.length);
+        SearchBounds bounds = SearchBounds.forValues(values);
 
         while (bounds.hasRemainingValues()) {
             int mid = bounds.midpoint();
@@ -45,9 +45,13 @@ final class BinarySearch {
         private int low;
         private int high;
 
-        SearchBounds(int valueCount) {
+        private SearchBounds(int valueCount) {
             low = 0;
             high = valueCount - 1;
+        }
+
+        static SearchBounds forValues(int[] values) {
+            return new SearchBounds(values.length);
         }
 
         boolean hasRemainingValues() {

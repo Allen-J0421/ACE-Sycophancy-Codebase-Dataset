@@ -6,7 +6,7 @@ class BinarySearch {
         int high = values.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
             int candidate = values[mid];
 
             if (candidate == target) {
@@ -24,8 +24,14 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int[] values = { 2, 3, 4, 10, 40 };
-        int target = 10;
+        runDemo(new int[] { 2, 3, 4, 10, 40 }, 10);
+    }
+
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
+    private static void runDemo(int[] values, int target) {
         int result = binarySearch(values, target);
 
         System.out.println(formatSearchResult(result));

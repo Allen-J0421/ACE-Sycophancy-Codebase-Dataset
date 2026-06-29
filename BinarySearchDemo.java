@@ -12,7 +12,7 @@ public final class BinarySearchDemo {
     public static void run() {
         final int[] numbers = {2, 3, 4, 10, 40};
         final int target = 10;
-        final int result = BinarySearch.binarySearch(numbers, target);
+        final int result = BinarySearch.indexOf(numbers, target);
 
         System.out.println(formatSearchResult(result));
     }

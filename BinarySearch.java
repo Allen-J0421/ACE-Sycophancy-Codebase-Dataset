@@ -6,6 +6,7 @@ public final class BinarySearch {
     private BinarySearch() {
     }
 
+    @Deprecated
     public static int binarySearch(int[] numbers, int target) {
         return indexOf(numbers, target);
     }

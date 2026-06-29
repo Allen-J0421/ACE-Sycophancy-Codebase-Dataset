@@ -35,11 +35,7 @@ final class BinarySearch {
     }
 
     private static String formatSearchResult(int index) {
-        if (index == NOT_FOUND) {
-            return NOT_FOUND_MESSAGE;
-        }
-
-        return FOUND_MESSAGE_PREFIX + index;
+        return index == NOT_FOUND ? NOT_FOUND_MESSAGE : FOUND_MESSAGE_PREFIX + index;
     }
 
     private static int[] demoNumbers() {

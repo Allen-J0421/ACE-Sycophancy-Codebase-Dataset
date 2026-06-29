@@ -36,13 +36,7 @@ final class BinarySearchDemo {
         };
 
         for (SearchCase searchCase : cases) {
-            int actual = BinarySearch.findIndex(searchCase.sortedValues, searchCase.target);
-            if (actual != searchCase.expectedIndex) {
-                throw new AssertionError(
-                    "Expected index " + searchCase.expectedIndex + " for target "
-                        + searchCase.target + ", but got " + actual
-                );
-            }
+            searchCase.verify();
         }
 
         System.out.println("All binary search checks passed.");
@@ -58,5 +52,14 @@ final class SearchCase {
         this.sortedValues = sortedValues;
         this.target = target;
         this.expectedIndex = expectedIndex;
+    }
+
+    void verify() {
+        int actual = BinarySearch.findIndex(sortedValues, target);
+        if (actual != expectedIndex) {
+            throw new AssertionError(
+                "Expected index " + expectedIndex + " for target " + target + ", but got " + actual
+            );
+        }
     }
 }

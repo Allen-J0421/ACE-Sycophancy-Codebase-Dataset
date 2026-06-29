@@ -9,6 +9,9 @@ final class BinarySearch {
     private BinarySearch() {
     }
 
+    /**
+     * Searches an ascending sorted array and returns the target index, or -1 when absent.
+     */
     static int binarySearch(int[] sortedValues, int target) {
         Objects.requireNonNull(sortedValues, "sortedValues");
 
@@ -16,7 +19,7 @@ final class BinarySearch {
         int right = sortedValues.length - 1;
 
         while (left <= right) {
-            int middle = left + (right - left) / 2;
+            int middle = midpoint(left, right);
             int value = sortedValues[middle];
 
             if (value == target) {
@@ -31,6 +34,10 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int left, int right) {
+        return left + (right - left) / 2;
     }
 
     public static void main(String[] args) {

@@ -2470,11 +2470,8 @@ public final class TerminalEmulator {
     }
 
     private int getArg(int index, int defaultValue, boolean treatZeroAsDefault) {
-        int result = mArgs[index];
-        if (result < 0 || (result == 0 && treatZeroAsDefault)) {
-            result = defaultValue;
-        }
-        return result;
+        int v = mArgs[index];
+        return (v < 0 || (v == 0 && treatZeroAsDefault)) ? defaultValue : v;
     }
 
     private void collectOSCArgs(int b) {

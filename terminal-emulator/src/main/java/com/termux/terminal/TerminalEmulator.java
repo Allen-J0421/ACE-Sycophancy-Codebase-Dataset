@@ -1699,12 +1699,9 @@ public final class TerminalEmulator {
             case 'P': // "${CSI}{N}P" - delete ${N} characters (DCH).
                 doCsiDeleteChars();
                 break;
-            case 'S': { // "${CSI}${N}S" - scroll up ${N} lines (default = 1) (SU).
-                final int linesToScroll = getArg0(1);
-                for (int i = 0; i < linesToScroll; i++)
-                    scrollDownOneLine();
+            case 'S': // "${CSI}${N}S" - scroll up ${N} lines (default = 1) (SU).
+                doCsiScrollUp();
                 break;
-            }
             case 'T':
                 doCsiScrollDownOrHighlightTracking(b);
                 break;
@@ -1729,9 +1726,7 @@ public final class TerminalEmulator {
                 setCursorColRespectingOriginMode(getArg0(1) - 1);
                 break;
             case 'b': // Repeat the preceding graphic character Ps times (REP).
-                if (mLastEmittedCodePoint == -1) break;
-                final int numRepeat = getArg0(1);
-                for (int i = 0; i < numRepeat; i++) emitCodePoint(mLastEmittedCodePoint);
+                doCsiRepeat();
                 break;
             case 'c': // Primary Device Attributes (http://www.vt100.net/docs/vt510-rm/DA1) if argument is missing or zero.
                 // The important part that may still be used by some (tmux stores this value but does not currently use it)
@@ -1783,6 +1778,20 @@ public final class TerminalEmulator {
     }
 
     /** ED — erase in display (J). Note: default: case uses return to skip mAboutToAutoWrap=false. */
+    /** SU — scroll up N lines (J). */
+    private void doCsiScrollUp() {
+        int linesToScroll = getArg0(1);
+        for (int i = 0; i < linesToScroll; i++)
+            scrollDownOneLine();
+    }
+
+    /** REP — repeat the preceding graphic character N times. */
+    private void doCsiRepeat() {
+        if (mLastEmittedCodePoint == -1) return;
+        int numRepeat = getArg0(1);
+        for (int i = 0; i < numRepeat; i++) emitCodePoint(mLastEmittedCodePoint);
+    }
+
     /** ICH — insert N space characters at cursor, shifting existing chars right. */
     private void doCsiInsertChars() {
         mAboutToAutoWrap = false;

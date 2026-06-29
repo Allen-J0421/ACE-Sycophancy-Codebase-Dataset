@@ -1,4 +1,8 @@
 final class BinarySearch {
+    private static final int NOT_FOUND = -1;
+    private static final int[] SAMPLE_ARRAY = {2, 3, 4, 10, 40};
+    private static final int SAMPLE_TARGET = 10;
+
     private BinarySearch() {
     }
 
@@ -21,19 +25,17 @@ final class BinarySearch {
             }
         }
 
-        return -1;
+        return NOT_FOUND;
     }
 
     public static void main(String[] args) {
-        int[] array = {2, 3, 4, 10, 40};
-        int target = 10;
-        int result = binarySearch(array, target);
+        int result = binarySearch(SAMPLE_ARRAY, SAMPLE_TARGET);
 
         System.out.println(formatSearchResult(result));
     }
 
     private static String formatSearchResult(int result) {
-        if (result == -1) {
+        if (result == NOT_FOUND) {
             return "Element is not present in array";
         }
 

@@ -272,7 +272,8 @@ public final class TerminalBuffer {
             if (oldLine == null || (state.cursorPlaced || !cursorAtThisRow) && oldLine.isBlank()) {
                 skippedBlankLines++;
                 continue;
-            } else if (skippedBlankLines > 0) {
+            }
+            if (skippedBlankLines > 0) {
                 // After skipping some blank lines we encounter a non-blank line. Insert the skipped blank lines.
                 for (int i = 0; i < skippedBlankLines; i++)
                     advanceReflowRow(state, false, currentStyle);

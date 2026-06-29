@@ -18,12 +18,13 @@ final class BinarySearch {
         while (range.hasCandidates()) {
             final int mid = range.midpoint();
             final int current = values[mid];
+            final int comparison = Integer.compare(current, target);
 
-            if (isTarget(current, target)) {
+            if (comparison == 0) {
                 return mid;
             }
 
-            if (isBelowTarget(current, target)) {
+            if (comparison < 0) {
                 range.discardLeftThrough(mid);
             } else {
                 range.discardRightFrom(mid);
@@ -31,14 +32,6 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
-    }
-
-    private static boolean isTarget(final int current, final int target) {
-        return current == target;
-    }
-
-    private static boolean isBelowTarget(final int current, final int target) {
-        return current < target;
     }
 
     private static String formatSearchResult(final int result) {

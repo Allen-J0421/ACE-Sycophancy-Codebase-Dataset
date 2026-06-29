@@ -4,11 +4,13 @@ public final class BinarySearch {
     private BinarySearch() {
     }
 
-    static SearchResult search(int[] sortedValues, int target) {
+    public static SearchResult search(int[] sortedValues, int target) {
         return SearchResult.fromIndex(binarySearch(sortedValues, target));
     }
 
-    static int binarySearch(int[] sortedValues, int target) {
+    public static int binarySearch(int[] sortedValues, int target) {
+        java.util.Objects.requireNonNull(sortedValues, "sortedValues");
+
         int left = 0;
         int right = sortedValues.length - 1;
 

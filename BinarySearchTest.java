@@ -7,6 +7,11 @@ final class BinarySearchTest {
         assertIndex(-1, new int[] { 2, 3, 4, 10, 40 }, 5);
         assertIndex(0, new int[] { 7 }, 7);
         assertIndex(-1, new int[] {}, 7);
+        assertThrowsNullPointer(new ThrowingRunnable() {
+            public void run() {
+                BinarySearch.binarySearch(null, 7);
+            }
+        });
 
         assertSearchResultFound(3, new int[] { 2, 3, 4, 10, 40 }, 10);
         assertSearchResultNotFound(new int[] { 2, 3, 4, 10, 40 }, 5);
@@ -53,5 +58,18 @@ final class BinarySearchTest {
         if (!expected.equals(actual)) {
             throw new AssertionError("Expected \"" + expected + "\" but got \"" + actual + "\".");
         }
+    }
+
+    private static void assertThrowsNullPointer(ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+            throw new AssertionError("Expected NullPointerException.");
+        } catch (NullPointerException expected) {
+            assertEquals("sortedValues", expected.getMessage());
+        }
+    }
+
+    private interface ThrowingRunnable {
+        void run();
     }
 }

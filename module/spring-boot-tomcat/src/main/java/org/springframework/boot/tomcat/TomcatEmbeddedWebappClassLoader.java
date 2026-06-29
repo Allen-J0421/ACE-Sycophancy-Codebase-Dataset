@@ -78,8 +78,10 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 
 	private @Nullable Class<?> findExistingLoadedClass(String name) {
 		Class<?> resultClass = findLoadedClass0(name);
-		resultClass = (resultClass != null || JreCompat.isGraalAvailable()) ? resultClass : findLoadedClass(name);
-		return resultClass;
+		if (resultClass != null || JreCompat.isGraalAvailable()) {
+			return resultClass;
+		}
+		return findLoadedClass(name);
 	}
 
 	private @Nullable Class<?> doLoadClass(String name) {
@@ -95,7 +97,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 		if (resolve) {
 			resolveClass(resultClass);
 		}
-		return (resultClass);
+		return resultClass;
 	}
 
 	@Override

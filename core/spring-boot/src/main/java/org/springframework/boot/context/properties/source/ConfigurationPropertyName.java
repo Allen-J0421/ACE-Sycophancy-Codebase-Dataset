@@ -104,7 +104,8 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @since 2.2.10
 	 */
 	public boolean hasIndexedElement() {
-		for (int i = 0; i < getNumberOfElements(); i++) {
+		int numberOfElements = getNumberOfElements();
+		for (int i = 0; i < numberOfElements; i++) {
 			if (isIndexed(i)) {
 				return true;
 			}
@@ -594,8 +595,9 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	private String buildSimpleToString(char joinChar, IntFunction<String> elementConverter) {
+		int numberOfElements = getNumberOfElements();
 		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < getNumberOfElements(); i++) {
+		for (int i = 0; i < numberOfElements; i++) {
 			if (!result.isEmpty()) {
 				result.append(joinChar);
 			}
@@ -609,7 +611,8 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (hasDashedElement != null) {
 			return hasDashedElement;
 		}
-		for (int i = 0; i < getNumberOfElements(); i++) {
+		int numberOfElements = getNumberOfElements();
+		for (int i = 0; i < numberOfElements; i++) {
 			if (getElement(i, Form.DASHED).indexOf('-') != -1) {
 				this.hasDashedElement = true;
 				return true;

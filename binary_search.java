@@ -28,11 +28,11 @@ final class BinarySearch {
 final class BinarySearchDemo {
     public static void main(String[] args) {
         SearchCase[] cases = {
-            new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
-            new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 5, -1),
-            new SearchCase(new int[] {}, 10, -1),
-            new SearchCase(new int[] { 7 }, 7, 0),
-            new SearchCase(new int[] { 7 }, 3, -1)
+            SearchCase.expectIndex(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
+            SearchCase.expectIndex(new int[] { 2, 3, 4, 10, 40 }, 5, -1),
+            SearchCase.expectIndex(new int[] {}, 10, -1),
+            SearchCase.expectIndex(new int[] { 7 }, 7, 0),
+            SearchCase.expectIndex(new int[] { 7 }, 3, -1)
         };
 
         for (SearchCase searchCase : cases) {
@@ -44,14 +44,18 @@ final class BinarySearchDemo {
 }
 
 final class SearchCase {
-    final int[] sortedValues;
-    final int target;
-    final int expectedIndex;
+    private final int[] sortedValues;
+    private final int target;
+    private final int expectedIndex;
 
-    SearchCase(int[] sortedValues, int target, int expectedIndex) {
+    private SearchCase(int[] sortedValues, int target, int expectedIndex) {
         this.sortedValues = sortedValues;
         this.target = target;
         this.expectedIndex = expectedIndex;
+    }
+
+    static SearchCase expectIndex(int[] sortedValues, int target, int expectedIndex) {
+        return new SearchCase(sortedValues, target, expectedIndex);
     }
 
     void verify() {

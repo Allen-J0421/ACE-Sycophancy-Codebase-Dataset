@@ -45,7 +45,8 @@ public class GeometryPointCountVisitor implements GeometryVisitor<Integer, Runti
 
     @Override
     public Integer visit(LinearRing ring) throws RuntimeException {
-        return ring.length();
+        // A LinearRing is a Line with the same number of points.
+        return visit((Line) ring);
     }
 
     @Override

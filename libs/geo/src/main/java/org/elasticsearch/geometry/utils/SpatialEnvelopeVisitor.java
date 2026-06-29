@@ -337,10 +337,8 @@ public class SpatialEnvelopeVisitor implements GeometryVisitor<Boolean, RuntimeE
 
     @Override
     public Boolean visit(LinearRing ring) throws RuntimeException {
-        for (int i = 0; i < ring.length(); i++) {
-            pointVisitor.visitPoint(ring.getX(i), ring.getY(i));
-        }
-        return isValid();
+        // A LinearRing is a Line, and contributes its vertices to the envelope identically.
+        return visit((Line) ring);
     }
 
     @Override

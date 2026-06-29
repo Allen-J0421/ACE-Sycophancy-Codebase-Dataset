@@ -55,15 +55,15 @@ class ConfigDataLocationResolvers {
 	 */
 	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
 			Binder binder, ResourceLoader resourceLoader, SpringFactoriesLoader springFactoriesLoader) {
-		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory);
-		argumentResolver = argumentResolver.and(Binder.class, binder);
-		argumentResolver = argumentResolver.and(ResourceLoader.class, resourceLoader);
-		argumentResolver = argumentResolver.and(ConfigurableBootstrapContext.class, bootstrapContext);
-		argumentResolver = argumentResolver.and(BootstrapContext.class, bootstrapContext);
-		argumentResolver = argumentResolver.and(BootstrapRegistry.class, bootstrapContext);
-		argumentResolver = argumentResolver.andSupplied(Log.class, () -> {
-			throw new IllegalArgumentException("Log types cannot be injected, please use DeferredLogFactory");
-		});
+		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory)
+				.and(Binder.class, binder)
+				.and(ResourceLoader.class, resourceLoader)
+				.and(ConfigurableBootstrapContext.class, bootstrapContext)
+				.and(BootstrapContext.class, bootstrapContext)
+				.and(BootstrapRegistry.class, bootstrapContext)
+				.andSupplied(Log.class, () -> {
+					throw new IllegalArgumentException("Log types cannot be injected, please use DeferredLogFactory");
+				});
 		this.resolvers = reorder(springFactoriesLoader.load(ConfigDataLocationResolver.class, argumentResolver));
 	}
 

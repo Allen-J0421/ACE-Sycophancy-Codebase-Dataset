@@ -99,13 +99,13 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (type.equals("long")) {
 			return getSource().nextLong();
 		}
-		String range = getRange(type, "int");
-		if (range != null) {
-			return getNextIntInRange(Range.of(range, Integer::parseInt));
+		String intRange = getRange(type, "int");
+		if (intRange != null) {
+			return getNextIntInRange(Range.of(intRange, Integer::parseInt));
 		}
-		range = getRange(type, "long");
-		if (range != null) {
-			return getNextLongInRange(Range.of(range, Long::parseLong));
+		String longRange = getRange(type, "long");
+		if (longRange != null) {
+			return getNextLongInRange(Range.of(longRange, Long::parseLong));
 		}
 		if (type.equals("uuid")) {
 			return UUID.randomUUID().toString();

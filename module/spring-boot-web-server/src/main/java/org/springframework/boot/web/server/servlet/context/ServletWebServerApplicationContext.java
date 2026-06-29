@@ -190,9 +190,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			webServer = factory.getWebServer(getSelfInitializer());
 			this.webServer = webServer;
 			createWebServer.end();
-			getBeanFactory().registerSingleton("webServerGracefulShutdown",
+			DefaultListableBeanFactory beanFactory = getBeanFactory();
+			beanFactory.registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(webServer));
-			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(this, webServer));
+			beanFactory.registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(this, webServer));
 		}
 		else if (servletContext != null) {
 			try {
@@ -213,7 +214,8 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	protected ServletWebServerFactory getWebServerFactory() {
 		// Use bean names so that we don't consider the hierarchy
-		String[] beanNames = getBeanFactory().getBeanNamesForType(ServletWebServerFactory.class);
+		DefaultListableBeanFactory beanFactory = getBeanFactory();
+		String[] beanNames = beanFactory.getBeanNamesForType(ServletWebServerFactory.class);
 		if (beanNames.length == 0) {
 			throw new MissingWebServerFactoryBeanException(getClass(), ServletWebServerFactory.class,
 					WebApplicationType.SERVLET);
@@ -222,7 +224,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			throw new ApplicationContextException("Unable to start ServletWebServerApplicationContext due to multiple "
 					+ "ServletWebServerFactory beans : " + StringUtils.arrayToCommaDelimitedString(beanNames));
 		}
-		return getBeanFactory().getBean(beanNames[0], ServletWebServerFactory.class);
+		return beanFactory.getBean(beanNames[0], ServletWebServerFactory.class);
 	}
 
 	/**
@@ -236,8 +238,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	private void registerWebApplicationScopes() {
-		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(getBeanFactory());
-		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory());
+		DefaultListableBeanFactory beanFactory = getBeanFactory();
+		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(beanFactory);
+		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory);
 		existingScopes.restore();
 	}
 

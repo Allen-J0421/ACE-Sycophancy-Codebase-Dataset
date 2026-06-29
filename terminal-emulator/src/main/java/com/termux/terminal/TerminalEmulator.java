@@ -871,26 +871,23 @@ public final class TerminalEmulator {
 
     /** DECRQM — request DEC private mode setting (ESC_CSI_QUESTIONMARK_ARG_DOLLAR). */
     private void doCsiQuestionMarkArgDollar(int b) {
-        if (b == 'p') {
-            // Request DEC private mode (DECRQM).
-            int mode = getArg0(0);
-            int value;
-            if (mode == 47 || mode == 1047 || mode == 1049) {
-                // This state is carried by mScreen pointer.
-                value = (mScreen == mAltBuffer) ? 1 : 2;
-            } else {
-                int internalBit = mapDecSetBitToInternalBit(mode);
-                if (internalBit != -1) {
-                    value = isDecsetInternalBitSet(internalBit) ? 1 : 2; // 1=set, 2=reset.
-                } else {
-                    Logger.logError(mClient, LOG_TAG, "Got DECRQM for unrecognized private DEC mode=" + mode);
-                    value = 0; // 0=not recognized, 3=permanently set, 4=permanently reset
-                }
-            }
-            mSession.write(String.format(Locale.US, "\033[?%d;%d$y", mode, value));
+        if (b != 'p') { unknownSequence(b); return; }
+        // Request DEC private mode (DECRQM).
+        int mode = getArg0(0);
+        int value;
+        if (mode == 47 || mode == 1047 || mode == 1049) {
+            // This state is carried by mScreen pointer.
+            value = (mScreen == mAltBuffer) ? 1 : 2;
         } else {
-            unknownSequence(b);
+            int internalBit = mapDecSetBitToInternalBit(mode);
+            if (internalBit != -1) {
+                value = isDecsetInternalBitSet(internalBit) ? 1 : 2; // 1=set, 2=reset.
+            } else {
+                Logger.logError(mClient, LOG_TAG, "Got DECRQM for unrecognized private DEC mode=" + mode);
+                value = 0; // 0=not recognized, 3=permanently set, 4=permanently reset
+            }
         }
+        mSession.write(String.format(Locale.US, "\033[?%d;%d$y", mode, value));
     }
 
     /** DECSCUSR — set cursor style; also margin-bell volume (ESC_CSI_ARGS_SPACE). */
@@ -954,10 +951,10 @@ public final class TerminalEmulator {
                     // Too long.
                     mOSCOrDeviceControlArgs.setLength(0);
                     finishSequence();
-                } else {
-                    mOSCOrDeviceControlArgs.appendCodePoint(b);
-                    continueSequence(mEscapeState);
+                    break;
                 }
+                mOSCOrDeviceControlArgs.appendCodePoint(b);
+                continueSequence(mEscapeState);
         }
     }
 

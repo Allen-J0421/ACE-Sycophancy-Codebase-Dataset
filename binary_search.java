@@ -40,23 +40,37 @@ final class BinarySearch {
 }
 
 final class BinarySearchDemo {
-    private static final int DEMO_TARGET = 10;
+    private static final SearchCase DEMO_CASE = new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10);
 
     private BinarySearchDemo() {
     }
 
     public static void main(String[] args) {
-        printSearchResult(demoValues(), DEMO_TARGET);
+        printSearchResult(DEMO_CASE);
     }
 
-    private static int[] demoValues() {
-        return new int[] { 2, 3, 4, 10, 40 };
-    }
-
-    private static void printSearchResult(int[] sortedValues, int target) {
-        int index = BinarySearch.binarySearch(sortedValues, target);
+    private static void printSearchResult(SearchCase searchCase) {
+        int index = BinarySearch.binarySearch(searchCase.sortedValues(), searchCase.target());
 
         System.out.println(SearchResultFormatter.format(index));
+    }
+}
+
+final class SearchCase {
+    private final int[] sortedValues;
+    private final int target;
+
+    SearchCase(int[] sortedValues, int target) {
+        this.sortedValues = sortedValues.clone();
+        this.target = target;
+    }
+
+    int[] sortedValues() {
+        return sortedValues.clone();
+    }
+
+    int target() {
+        return target;
     }
 }
 

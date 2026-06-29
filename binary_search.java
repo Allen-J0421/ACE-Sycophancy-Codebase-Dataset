@@ -13,12 +13,13 @@ final class BinarySearch {
 
         while (low <= high) {
             int mid = midpoint(low, high);
+            int currentValue = sortedValues[mid];
 
-            if (sortedValues[mid] == target) {
+            if (currentValue == target) {
                 return mid;
             }
 
-            if (sortedValues[mid] < target) {
+            if (currentValue < target) {
                 low = mid + 1;
             } else {
                 high = mid - 1;

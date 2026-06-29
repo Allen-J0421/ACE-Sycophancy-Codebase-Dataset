@@ -1,4 +1,4 @@
-final class BinarySearchDemo {
+public final class BinarySearchDemo {
     private static final int[] SAMPLE_VALUES = { 2, 3, 4, 10, 40 };
     private static final int SAMPLE_TARGET = 10;
     private static final String NOT_FOUND_MESSAGE = "Element is not present in array";

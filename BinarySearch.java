@@ -1,14 +1,14 @@
-final class BinarySearch {
+public final class BinarySearch {
     private static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] array, int target) {
+    public static int binarySearch(int[] array, int target) {
         return indexOf(array, target);
     }
 
-    static int indexOf(int[] array, int target) {
+    public static int indexOf(int[] array, int target) {
         int low = 0;
         int high = array.length - 1;
 
@@ -30,7 +30,7 @@ final class BinarySearch {
         return NOT_FOUND;
     }
 
-    static boolean isFound(int result) {
+    public static boolean isFound(int result) {
         return result != NOT_FOUND;
     }
 

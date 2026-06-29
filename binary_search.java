@@ -9,11 +9,10 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
-        int low = 0;
-        int high = values.length - 1;
+        SearchBounds bounds = new SearchBounds(values.length);
 
-        while (low <= high) {
-            int mid = midpoint(low, high);
+        while (bounds.hasRemainingValues()) {
+            int mid = bounds.midpoint();
             int comparison = compare(values[mid], target);
 
             if (comparison == 0) {
@@ -21,9 +20,9 @@ final class BinarySearch {
             }
 
             if (comparison < 0) {
-                low = mid + 1;
+                bounds.discardLowerHalf(mid);
             } else {
-                high = mid - 1;
+                bounds.discardUpperHalf(mid);
             }
         }
 
@@ -36,6 +35,32 @@ final class BinarySearch {
 
     private static int compare(int value, int target) {
         return Integer.compare(value, target);
+    }
+
+    private static final class SearchBounds {
+        private int low;
+        private int high;
+
+        SearchBounds(int valueCount) {
+            low = 0;
+            high = valueCount - 1;
+        }
+
+        boolean hasRemainingValues() {
+            return low <= high;
+        }
+
+        int midpoint() {
+            return BinarySearch.midpoint(low, high);
+        }
+
+        void discardLowerHalf(int mid) {
+            low = mid + 1;
+        }
+
+        void discardUpperHalf(int mid) {
+            high = mid - 1;
+        }
     }
 
     private static String resultMessage(int result) {

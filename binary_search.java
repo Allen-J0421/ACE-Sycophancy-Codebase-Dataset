@@ -23,7 +23,9 @@ final class BinarySearch {
 
         return -1;
     }
+}
 
+final class BinarySearchDemo {
     public static void main(String[] args) {
         SearchCase[] cases = {
             new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
@@ -34,7 +36,7 @@ final class BinarySearch {
         };
 
         for (SearchCase searchCase : cases) {
-            int actual = findIndex(searchCase.sortedValues, searchCase.target);
+            int actual = BinarySearch.findIndex(searchCase.sortedValues, searchCase.target);
             if (actual != searchCase.expectedIndex) {
                 throw new AssertionError(
                     "Expected index " + searchCase.expectedIndex + " for target "

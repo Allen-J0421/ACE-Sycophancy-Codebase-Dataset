@@ -5,29 +5,29 @@ class BinarySearch {
     private static final String FOUND_MESSAGE_PREFIX = "Element is present at index ";
 
     static int binarySearch(int[] array, int target) {
-        int low = 0;
-        int high = array.length - 1;
+        int lowIndex = 0;
+        int highIndex = array.length - 1;
 
-        while (low <= high) {
-            int mid = midpoint(low, high);
-            int value = array[mid];
+        while (lowIndex <= highIndex) {
+            int midIndex = midpoint(lowIndex, highIndex);
+            int value = array[midIndex];
 
             if (value == target) {
-                return mid;
+                return midIndex;
             }
 
             if (value < target) {
-                low = mid + 1;
+                lowIndex = midIndex + 1;
             } else {
-                high = mid - 1;
+                highIndex = midIndex - 1;
             }
         }
 
         return NOT_FOUND;
     }
 
-    private static int midpoint(int low, int high) {
-        return low + (high - low) / 2;
+    private static int midpoint(int lowIndex, int highIndex) {
+        return lowIndex + (highIndex - lowIndex) / 2;
     }
 
     private static String formatSearchResult(int result) {

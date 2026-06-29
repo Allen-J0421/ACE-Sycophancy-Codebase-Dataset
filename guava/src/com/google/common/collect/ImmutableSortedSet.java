@@ -296,7 +296,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
    */
   public static <E> ImmutableSortedSet<E> copyOf(
       Comparator<? super E> comparator, Iterable<? extends E> elements) {
-    checkNotNull(comparator);
+    checkNotNull(comparator, "comparator");
     boolean hasSameComparator = SortedIterables.hasSameComparator(comparator, elements);
 
     if (hasSameComparator && (elements instanceof ImmutableSortedSet)) {
@@ -456,7 +456,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
     @SuppressWarnings("unchecked")
     Builder(Comparator<? super E> comparator, int expectedSize) {
       super(true); // don't construct guts of hash-based set builder
-      this.comparator = checkNotNull(comparator);
+      this.comparator = checkNotNull(comparator, "comparator");
       this.elements = (E[]) new Object[expectedSize];
       this.n = 0;
     }
@@ -497,7 +497,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
     @CanIgnoreReturnValue
     @Override
     public Builder<E> add(E element) {
-      checkNotNull(element);
+      checkNotNull(element, "element");
       copyIfNecessary();
       if (n == elements.length) {
         sortAndDedup();
@@ -647,7 +647,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
    */
   @Override
   public ImmutableSortedSet<E> headSet(E toElement, boolean inclusive) {
-    return headSetImpl(checkNotNull(toElement), inclusive);
+    return headSetImpl(checkNotNull(toElement, "toElement"), inclusive);
   }
 
   /**
@@ -674,9 +674,13 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
   @Override
   public ImmutableSortedSet<E> subSet(
       E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
-    checkNotNull(fromElement);
-    checkNotNull(toElement);
-    checkArgument(comparator.compare(fromElement, toElement) <= 0);
+    checkNotNull(fromElement, "fromElement");
+    checkNotNull(toElement, "toElement");
+    checkArgument(
+        comparator.compare(fromElement, toElement) <= 0,
+        "fromElement (%s) must be <= toElement (%s)",
+        fromElement,
+        toElement);
     return subSetImpl(fromElement, fromInclusive, toElement, toInclusive);
   }
 
@@ -700,7 +704,7 @@ public abstract class ImmutableSortedSet<E> extends ImmutableSet.CachingAsList<E
    */
   @Override
   public ImmutableSortedSet<E> tailSet(E fromElement, boolean inclusive) {
-    return tailSetImpl(checkNotNull(fromElement), inclusive);
+    return tailSetImpl(checkNotNull(fromElement, "fromElement"), inclusive);
   }
 
   /*

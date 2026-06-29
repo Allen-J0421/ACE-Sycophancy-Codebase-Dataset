@@ -418,8 +418,8 @@ public final class Multisets {
    */
   public static <E extends @Nullable Object> Multiset<E> union(
       Multiset<? extends E> multiset1, Multiset<? extends E> multiset2) {
-    checkNotNull(multiset1);
-    checkNotNull(multiset2);
+    checkNotNull(multiset1, "multiset1");
+    checkNotNull(multiset2, "multiset2");
 
     return new ViewMultiset<E>() {
       @Override
@@ -489,8 +489,8 @@ public final class Multisets {
    */
   public static <E extends @Nullable Object> Multiset<E> intersection(
       Multiset<E> multiset1, Multiset<?> multiset2) {
-    checkNotNull(multiset1);
-    checkNotNull(multiset2);
+    checkNotNull(multiset1, "multiset1");
+    checkNotNull(multiset2, "multiset2");
 
     return new ViewMultiset<E>() {
       @Override
@@ -548,8 +548,8 @@ public final class Multisets {
    */
   public static <E extends @Nullable Object> Multiset<E> sum(
       Multiset<? extends E> multiset1, Multiset<? extends E> multiset2) {
-    checkNotNull(multiset1);
-    checkNotNull(multiset2);
+    checkNotNull(multiset1, "multiset1");
+    checkNotNull(multiset2, "multiset2");
 
     // TODO(lowasser): consider making the entries live views
     return new ViewMultiset<E>() {
@@ -624,8 +624,8 @@ public final class Multisets {
    */
   public static <E extends @Nullable Object> Multiset<E> difference(
       Multiset<E> multiset1, Multiset<?> multiset2) {
-    checkNotNull(multiset1);
-    checkNotNull(multiset2);
+    checkNotNull(multiset1, "multiset1");
+    checkNotNull(multiset2, "multiset2");
 
     // TODO(lowasser): consider making the entries live views
     return new ViewMultiset<E>() {
@@ -728,8 +728,8 @@ public final class Multisets {
   /** Delegate implementation which cares about the element type. */
   private static <E extends @Nullable Object> boolean retainOccurrencesImpl(
       Multiset<E> multisetToModify, Multiset<?> occurrencesToRetain) {
-    checkNotNull(multisetToModify);
-    checkNotNull(occurrencesToRetain);
+    checkNotNull(multisetToModify, "multisetToModify");
+    checkNotNull(occurrencesToRetain, "occurrencesToRetain");
     // Avoiding ConcurrentModificationExceptions is tricky.
     Iterator<Entry<E>> entryIterator = multisetToModify.entrySet().iterator();
     boolean changed = false;
@@ -776,8 +776,8 @@ public final class Multisets {
     if (occurrencesToRemove instanceof Multiset) {
       return removeOccurrences(multisetToModify, (Multiset<?>) occurrencesToRemove);
     } else {
-      checkNotNull(multisetToModify);
-      checkNotNull(occurrencesToRemove);
+      checkNotNull(multisetToModify, "multisetToModify");
+      checkNotNull(occurrencesToRemove, "occurrencesToRemove");
       boolean changed = false;
       for (Object o : occurrencesToRemove) {
         changed |= multisetToModify.remove(o);
@@ -811,8 +811,8 @@ public final class Multisets {
   @CanIgnoreReturnValue
   public static boolean removeOccurrences(
       Multiset<?> multisetToModify, Multiset<?> occurrencesToRemove) {
-    checkNotNull(multisetToModify);
-    checkNotNull(occurrencesToRemove);
+    checkNotNull(multisetToModify, "multisetToModify");
+    checkNotNull(occurrencesToRemove, "occurrencesToRemove");
 
     boolean changed = false;
     Iterator<? extends Entry<?>> entryIterator = multisetToModify.entrySet().iterator();

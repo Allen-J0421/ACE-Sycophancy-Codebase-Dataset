@@ -228,7 +228,7 @@ public final class Tables {
     final Table<R, C, V> original;
 
     TransposeTable(Table<R, C, V> original) {
-      this.original = checkNotNull(original);
+      this.original = checkNotNull(original, "original");
     }
 
     @Override

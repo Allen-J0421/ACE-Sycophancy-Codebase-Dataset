@@ -885,8 +885,8 @@ public final class Maps {
     }
 
     AsMapView(Set<K> set, Function<? super K, V> function) {
-      this.set = checkNotNull(set);
-      this.function = checkNotNull(function);
+      this.set = checkNotNull(set, "set");
+      this.function = checkNotNull(function, "function");
     }
 
     @Override

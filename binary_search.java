@@ -52,10 +52,6 @@ final class BinarySearch {
     }
 
     private static String formatSearchResult(int result) {
-        if (result == NOT_FOUND_INDEX) {
-            return NOT_FOUND_MESSAGE;
-        }
-
-        return FOUND_MESSAGE + result;
+        return result == NOT_FOUND_INDEX ? NOT_FOUND_MESSAGE : FOUND_MESSAGE + result;
     }
 }

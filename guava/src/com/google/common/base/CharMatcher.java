@@ -1562,15 +1562,30 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
   }
 
-  /** Implementation of {@link #and(CharMatcher)}. */
-  private static final class And extends CharMatcher {
+  /** Shared base for {@link And} and {@link Or}: holds two matchers and formats toString(). */
+  private abstract static class BinaryCharMatcher extends CharMatcher {
 
     final CharMatcher first;
     final CharMatcher second;
 
-    And(CharMatcher a, CharMatcher b) {
+    BinaryCharMatcher(CharMatcher a, CharMatcher b) {
       first = checkNotNull(a);
       second = checkNotNull(b);
+    }
+
+    abstract String operatorName();
+
+    @Override
+    public String toString() {
+      return first + "." + operatorName() + "(" + second + ")";
+    }
+  }
+
+  /** Implementation of {@link #and(CharMatcher)}. */
+  private static final class And extends BinaryCharMatcher {
+
+    And(CharMatcher a, CharMatcher b) {
+      super(a, b);
     }
 
     @Override
@@ -1590,20 +1605,16 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
 
     @Override
-    public String toString() {
-      return first + ".and(" + second + ")";
+    String operatorName() {
+      return "and";
     }
   }
 
   /** Implementation of {@link #or(CharMatcher)}. */
-  private static final class Or extends CharMatcher {
-
-    final CharMatcher first;
-    final CharMatcher second;
+  private static final class Or extends BinaryCharMatcher {
 
     Or(CharMatcher a, CharMatcher b) {
-      first = checkNotNull(a);
-      second = checkNotNull(b);
+      super(a, b);
     }
 
     @GwtIncompatible // used only from other GwtIncompatible code
@@ -1619,20 +1630,35 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
 
     @Override
-    public String toString() {
-      return first + ".or(" + second + ")";
+    String operatorName() {
+      return "or";
     }
   }
 
   // Static factory implementations
 
-  /** Implementation of {@link #is(char)}. */
-  private static final class Is extends FastMatcher {
+  /** Shared base for {@link Is} and {@link IsNot}: holds a single char and formats toString(). */
+  private abstract static class SingleCharMatcher extends FastMatcher {
 
-    private final char match;
+    final char match;
+
+    SingleCharMatcher(char match) {
+      this.match = match;
+    }
+
+    abstract String methodName();
+
+    @Override
+    public String toString() {
+      return "CharMatcher." + methodName() + "('" + showCharacter(match) + "')";
+    }
+  }
+
+  /** Implementation of {@link #is(char)}. */
+  private static final class Is extends SingleCharMatcher {
 
     Is(char match) {
-      this.match = match;
+      super(match);
     }
 
     @Override
@@ -1667,18 +1693,16 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
 
     @Override
-    public String toString() {
-      return "CharMatcher.is('" + showCharacter(match) + "')";
+    String methodName() {
+      return "is";
     }
   }
 
   /** Implementation of {@link #isNot(char)}. */
-  private static final class IsNot extends FastMatcher {
-
-    private final char match;
+  private static final class IsNot extends SingleCharMatcher {
 
     IsNot(char match) {
-      this.match = match;
+      super(match);
     }
 
     @Override
@@ -1709,8 +1733,8 @@ public abstract class CharMatcher implements Predicate<Character> {
     }
 
     @Override
-    public String toString() {
-      return "CharMatcher.isNot('" + showCharacter(match) + "')";
+    String methodName() {
+      return "isNot";
     }
   }
 

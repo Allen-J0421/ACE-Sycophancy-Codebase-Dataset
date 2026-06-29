@@ -592,16 +592,7 @@ public final class TerminalEmulator {
                     mSession.onBell();
                 break;
             case 8: // Backspace (BS, ^H).
-                if (mLeftMargin == mCursorCol) {
-                    // Jump to previous line if it was auto-wrapped.
-                    int previousRow = mCursorRow - 1;
-                    if (previousRow >= 0 && mScreen.getLineWrap(previousRow)) {
-                        mScreen.clearLineWrap(previousRow);
-                        setCursorRowCol(previousRow, mRightMargin - 1);
-                    }
-                } else {
-                    setCursorCol(mCursorCol - 1);
-                }
+                doBackspace();
                 break;
             case 9: // Horizontal tab (HT, \t) - move to next tab stop, but not past edge of screen
                 // XXX: Should perhaps use color if writing to new cells. Try with
@@ -1434,6 +1425,19 @@ public final class TerminalEmulator {
             default:
                 parseArg(b);
                 break;
+        }
+    }
+
+    private void doBackspace() {
+        if (mLeftMargin == mCursorCol) {
+            // Jump to previous line if it was auto-wrapped.
+            int previousRow = mCursorRow - 1;
+            if (previousRow >= 0 && mScreen.getLineWrap(previousRow)) {
+                mScreen.clearLineWrap(previousRow);
+                setCursorRowCol(previousRow, mRightMargin - 1);
+            }
+        } else {
+            setCursorCol(mCursorCol - 1);
         }
     }
 

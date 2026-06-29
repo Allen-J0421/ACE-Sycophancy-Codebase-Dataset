@@ -45,9 +45,13 @@ final class BinarySearch {
         return new int[] { 2, 3, 4, 10, 40 };
     }
 
-    public static void main(String[] args) {
+    private static void runDemo() {
         final int result = binarySearch(demoNumbers(), DEMO_TARGET);
 
         System.out.println(formatSearchResult(result));
+    }
+
+    public static void main(String[] args) {
+        runDemo();
     }
 }

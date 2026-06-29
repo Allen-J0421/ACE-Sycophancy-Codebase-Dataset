@@ -29,10 +29,14 @@ final class BinarySearch {
         int target = 10;
         int result = binarySearch(array, target);
 
+        System.out.println(formatSearchResult(result));
+    }
+
+    private static String formatSearchResult(int result) {
         if (result == -1) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + result);
+            return "Element is not present in array";
         }
+
+        return "Element is present at index " + result;
     }
 }

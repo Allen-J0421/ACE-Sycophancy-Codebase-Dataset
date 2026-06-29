@@ -330,14 +330,14 @@ public final class AnalysisStats implements ToXContentFragment, Writeable {
     }
 
     public AnalysisStats(StreamInput input) throws IOException {
-        usedCharFilters = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedTokenizers = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedTokenFilters = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedAnalyzers = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedBuiltInCharFilters = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedBuiltInTokenizers = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedBuiltInTokenFilters = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
-        usedBuiltInAnalyzers = Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
+        usedCharFilters = readIndexFeatureStats(input);
+        usedTokenizers = readIndexFeatureStats(input);
+        usedTokenFilters = readIndexFeatureStats(input);
+        usedAnalyzers = readIndexFeatureStats(input);
+        usedBuiltInCharFilters = readIndexFeatureStats(input);
+        usedBuiltInTokenizers = readIndexFeatureStats(input);
+        usedBuiltInTokenFilters = readIndexFeatureStats(input);
+        usedBuiltInAnalyzers = readIndexFeatureStats(input);
         usedSynonyms = input.readImmutableMap(SynonymsStats::new);
         if (input.getTransportVersion().supports(MULTIPLE_SYNONYM_GRAPH_FILTERS_VERSION)) {
             analyzersWithMultipleSynonymGraphFilters = input.readVInt();
@@ -346,6 +346,10 @@ public final class AnalysisStats implements ToXContentFragment, Writeable {
             analyzersWithMultipleSynonymGraphFilters = 0;
             indicesWithMultipleSynonymGraphFilters = 0;
         }
+    }
+
+    private static Set<IndexFeatureStats> readIndexFeatureStats(StreamInput input) throws IOException {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(input.readCollectionAsList(IndexFeatureStats::new)));
     }
 
     @Override

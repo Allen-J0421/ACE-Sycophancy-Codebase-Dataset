@@ -23,6 +23,15 @@ final class BinarySearch {
         return indexOf(sortedArray, target) != NOT_FOUND;
     }
 
+    static SearchResult search(int[] sortedArray, int target) {
+        int index = indexOf(sortedArray, target);
+
+        if (index == NOT_FOUND) {
+            return SearchResult.notFound();
+        }
+        return SearchResult.foundAt(index);
+    }
+
     static int insertionPoint(int[] sortedArray, int target) {
         Objects.requireNonNull(sortedArray, "sortedArray");
 

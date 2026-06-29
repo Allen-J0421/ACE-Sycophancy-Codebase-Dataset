@@ -5,12 +5,12 @@ final class BinarySearchDemo {
     public static void main(String[] args) {
         int[] sortedArray = {2, 3, 4, 10, 40};
         int target = 10;
-        int result = BinarySearch.indexOf(sortedArray, target);
+        SearchResult result = BinarySearch.search(sortedArray, target);
 
-        if (result == BinarySearch.NOT_FOUND) {
+        if (!result.found()) {
             System.out.println("Element is not present in array");
         } else {
-            System.out.println("Element is present at index " + result);
+            System.out.println("Element is present at index " + result.index());
         }
     }
 }

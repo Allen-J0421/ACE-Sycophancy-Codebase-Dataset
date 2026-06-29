@@ -11,6 +11,8 @@ final class BinarySearchTest {
         reportsMissingTarget();
         reportsContainingTarget();
         reportsInsertionPoints();
+        reportsFoundResult();
+        reportsMissingResult();
         handlesEmptyArray();
         rejectsNullArray();
 
@@ -51,6 +53,27 @@ final class BinarySearchTest {
         assertEquals(5, BinarySearch.insertionPoint(values, 50));
     }
 
+    private static void reportsFoundResult() {
+        SearchResult result = BinarySearch.search(new int[] {2, 3, 4, 10, 40}, 10);
+
+        assertTrue(result.found());
+        assertEquals(3, result.index());
+        assertEquals(3, result.indexOrDefault(99));
+    }
+
+    private static void reportsMissingResult() {
+        SearchResult result = BinarySearch.search(new int[] {2, 3, 4, 10, 40}, 5);
+
+        assertFalse(result.found());
+        assertEquals(99, result.indexOrDefault(99));
+        assertThrows("Search target was not found", new ThrowingRunnable() {
+            @Override
+            public void run() {
+                result.index();
+            }
+        });
+    }
+
     private static void handlesEmptyArray() {
         assertEquals(BinarySearch.NOT_FOUND, BinarySearch.indexOf(new int[0], 10));
     }
@@ -86,5 +109,18 @@ final class BinarySearchTest {
         if (!condition) {
             throw new AssertionError("Expected condition to be true");
         }
+    }
+
+    private static void assertThrows(String expectedMessage, ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+            throw new AssertionError("Expected IllegalStateException");
+        } catch (IllegalStateException expected) {
+            assertEquals(expectedMessage, expected.getMessage());
+        }
+    }
+
+    private interface ThrowingRunnable {
+        void run();
     }
 }

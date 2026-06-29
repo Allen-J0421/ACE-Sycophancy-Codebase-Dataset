@@ -18,11 +18,7 @@ class BinarySearch {
                 return middle;
             }
 
-            if (input.targetIsAfter(middle)) {
-                bounds = bounds.after(middle);
-            } else {
-                bounds = bounds.before(middle);
-            }
+            bounds = input.nextBounds(bounds, middle);
         }
 
         return NOT_FOUND;
@@ -58,12 +54,20 @@ class BinarySearch {
             return sortedNumbers[index] == target;
         }
 
-        private boolean targetIsAfter(int index) {
-            return sortedNumbers[index] < target;
+        private SearchBounds nextBounds(SearchBounds currentBounds, int middle) {
+            if (targetIsAfter(middle)) {
+                return currentBounds.after(middle);
+            }
+
+            return currentBounds.before(middle);
         }
 
         private SearchBounds bounds() {
             return new SearchBounds(0, sortedNumbers.length - 1);
+        }
+
+        private boolean targetIsAfter(int index) {
+            return sortedNumbers[index] < target;
         }
     }
 

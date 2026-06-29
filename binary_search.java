@@ -44,11 +44,38 @@ final class BinarySearch {
     }
 
     public static void main(String[] args) {
+        runSelfTest();
         runDemo();
     }
 
     private static void runDemo() {
         int result = indexOf(SORTED_SAMPLE_NUMBERS, SAMPLE_TARGET);
         System.out.println(formatSearchResult(result));
+    }
+
+    private static void runSelfTest() {
+        assertIndexOf(SORTED_SAMPLE_NUMBERS, 2, 0);
+        assertIndexOf(SORTED_SAMPLE_NUMBERS, 10, 3);
+        assertIndexOf(SORTED_SAMPLE_NUMBERS, 41, NOT_FOUND);
+        assertIndexOf(new int[0], 10, NOT_FOUND);
+        assertRejectsNullInput();
+    }
+
+    private static void assertIndexOf(int[] numbers, int target, int expectedIndex) {
+        int actualIndex = indexOf(numbers, target);
+
+        if (actualIndex != expectedIndex) {
+            throw new AssertionError("Expected index " + expectedIndex + " but found " + actualIndex);
+        }
+    }
+
+    private static void assertRejectsNullInput() {
+        try {
+            indexOf(null, SAMPLE_TARGET);
+        } catch (IllegalArgumentException exception) {
+            return;
+        }
+
+        throw new AssertionError("Expected null input to be rejected");
     }
 }

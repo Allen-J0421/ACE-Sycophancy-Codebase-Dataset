@@ -938,7 +938,7 @@ public final class TerminalEmulator {
     /** DECSACE — select attribute change extent (ESC_CSI_ARGS_ASTERIX). */
     private void doCsiArgsAsterix(int b) {
         int attributeChangeExtent = getArg0(0);
-        if (b == 'x' && (attributeChangeExtent >= 0 && attributeChangeExtent <= 2)) {
+        if (b == 'x' && attributeChangeExtent <= 2) {
             // Select attribute change extent (DECSACE - http://www.vt100.net/docs/vt510-rm/DECSACE).
             setDecsetinternalBit(DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE, attributeChangeExtent == 2);
         } else {
@@ -1185,12 +1185,12 @@ public final class TerminalEmulator {
             int internalBit = mapDecSetBitToInternalBit(externalBit);
             if (internalBit == -1) {
                 Logger.logWarn(mClient, LOG_TAG, "Ignoring request to save/recall decset bit=" + externalBit);
+                continue;
+            }
+            if (b == 's') {
+                mSavedDecSetFlags |= internalBit;
             } else {
-                if (b == 's') {
-                    mSavedDecSetFlags |= internalBit;
-                } else {
-                    doDecSetOrReset((mSavedDecSetFlags & internalBit) != 0, externalBit);
-                }
+                doDecSetOrReset((mSavedDecSetFlags & internalBit) != 0, externalBit);
             }
         }
     }

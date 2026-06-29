@@ -1,5 +1,11 @@
 final class BinarySearchTest {
+    private static final int NOT_FOUND = -1;
+
     private BinarySearchTest() {
+    }
+
+    private static int[] sampleNumbers() {
+        return new int[] { 2, 3, 4, 10, 40 };
     }
 
     private static void assertSearchResult(int[] numbers, int target, int expectedIndex) {
@@ -12,10 +18,10 @@ final class BinarySearchTest {
     }
 
     public static void main(String[] args) {
-        assertSearchResult(new int[] { 2, 3, 4, 10, 40 }, 10, 3);
-        assertSearchResult(new int[] { 2, 3, 4, 10, 40 }, 2, 0);
-        assertSearchResult(new int[] { 2, 3, 4, 10, 40 }, 40, 4);
-        assertSearchResult(new int[] { 2, 3, 4, 10, 40 }, 5, -1);
-        assertSearchResult(new int[] {}, 10, -1);
+        assertSearchResult(sampleNumbers(), 10, 3);
+        assertSearchResult(sampleNumbers(), 2, 0);
+        assertSearchResult(sampleNumbers(), 40, 4);
+        assertSearchResult(sampleNumbers(), 5, NOT_FOUND);
+        assertSearchResult(new int[] {}, 10, NOT_FOUND);
     }
 }

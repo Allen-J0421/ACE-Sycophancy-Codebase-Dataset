@@ -1613,45 +1613,10 @@ public final class TerminalEmulator {
                 setCursorCol(nextTabStop(getArg0(1)));
                 break;
             case 'J': // "${CSI}${0,1,2,3}J" - Erase in Display (ED)
-                // ED ignores the scrolling margins.
-                switch (getArg0(0)) {
-                    case 0: // Erase from the active position to the end of the screen, inclusive (default).
-                        blockClear(mCursorCol, mCursorRow, mColumns - mCursorCol);
-                        blockClear(0, mCursorRow + 1, mColumns, mRows - (mCursorRow + 1));
-                        break;
-                    case 1: // Erase from start of the screen to the active position, inclusive.
-                        blockClear(0, 0, mColumns, mCursorRow);
-                        blockClear(0, mCursorRow, mCursorCol + 1);
-                        break;
-                    case 2: // Erase all of the display - all lines are erased, changed to single-width, and the cursor does not
-                        // move..
-                        blockClear(0, 0, mColumns, mRows);
-                        break;
-                    case 3: // Delete all lines saved in the scrollback buffer (xterm etc)
-                        mMainBuffer.clearTranscript();
-                        break;
-                    default:
-                        unknownSequence(b);
-                        return;
-                }
-                mAboutToAutoWrap = false;
+                doCsiEraseInDisplay(b);
                 break;
             case 'K': // "CSI{n}K" - Erase in line (EL).
-                switch (getArg0(0)) {
-                    case 0: // Erase from the cursor to the end of the line, inclusive (default)
-                        blockClear(mCursorCol, mCursorRow, mColumns - mCursorCol);
-                        break;
-                    case 1: // Erase from the start of the screen to the cursor, inclusive.
-                        blockClear(0, mCursorRow, mCursorCol + 1);
-                        break;
-                    case 2: // Erase all of the line.
-                        blockClear(0, mCursorRow, mColumns);
-                        break;
-                    default:
-                        unknownSequence(b);
-                        return;
-                }
-                mAboutToAutoWrap = false;
+                doCsiEraseInLine(b);
                 break;
             case 'L': // "${CSI}{N}L" - insert ${N} lines (IL).
             {
@@ -1694,36 +1659,14 @@ public final class TerminalEmulator {
                 break;
             }
             case 'T':
-                if (mArgIndex == 0) {
-                    // "${CSI}${N}T" - Scroll down N lines (default = 1) (SD).
-                    // http://vt100.net/docs/vt510-rm/SD: "N is the number of lines to move the user window up in page
-                    // memory. N new lines appear at the top of the display. N old lines disappear at the bottom of the
-                    // display. You cannot pan past the top margin of the current page".
-                    final int linesToScrollArg = getArg0(1);
-                    final int linesBetweenTopAndBottomMargins = mBottomMargin - mTopMargin;
-                    final int linesToScroll = Math.min(linesBetweenTopAndBottomMargins, linesToScrollArg);
-                    mScreen.blockCopy(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin, linesBetweenTopAndBottomMargins - linesToScroll, mLeftMargin, mTopMargin + linesToScroll);
-                    blockClear(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin, linesToScroll);
-                } else {
-                    // "${CSI}${func};${startx};${starty};${firstrow};${lastrow}T" - initiate highlight mouse tracking.
-                    unimplementedSequence(b);
-                }
+                doCsiScrollDownOrHighlightTracking(b);
                 break;
             case 'X': // "${CSI}${N}X" - Erase ${N:=1} character(s) (ECH). FIXME: Clears character attributes?
                 mAboutToAutoWrap = false;
                 mScreen.blockSet(mCursorCol, mCursorRow, Math.min(getArg0(1), mColumns - mCursorCol), 1, ' ', getStyle());
                 break;
             case 'Z': // Cursor Backward Tabulation (CBT). Move the active position n tabs backward.
-                int numberOfTabs = getArg0(1);
-                int newCol = mLeftMargin;
-                for (int i = mCursorCol - 1; i >= 0; i--)
-                    if (mTabStop[i]) {
-                        if (--numberOfTabs == 0) {
-                            newCol = Math.max(i, mLeftMargin);
-                            break;
-                        }
-                    }
-                mCursorCol = newCol;
+                doCsiCursorBackwardTabulation();
                 break;
             case '?': // Esc [ ? -- start of a private parameter byte
                 continueSequence(ESC_CSI_QUESTIONMARK);
@@ -1757,19 +1700,7 @@ public final class TerminalEmulator {
                 break;
             // case 'f': "${CSI}${ROW};${COLUMN}f" - Horizontal and Vertical Position (HVP). Grouped with case 'H'.
             case 'g': // Clear tab stop
-                switch (getArg0(0)) {
-                    case 0:
-                        mTabStop[mCursorCol] = false;
-                        break;
-                    case 3:
-                        for (int i = 0; i < mColumns; i++) {
-                            mTabStop[i] = false;
-                        }
-                        break;
-                    default:
-                        // Specified to have no effect.
-                        break;
-                }
+                doCsiClearTabStop();
                 break;
             case 'h': // Set Mode
                 doSetMode(true);
@@ -1781,21 +1712,7 @@ public final class TerminalEmulator {
                 selectGraphicRendition();
                 break;
             case 'n': // Esc [ Pn n - ECMA-48 Status Report Commands
-                // sendDeviceAttributes()
-                switch (getArg0(0)) {
-                    case 5: // Device status report (DSR):
-                        // Answer is ESC [ 0 n (Terminal OK).
-                        byte[] dsr = {(byte) 27, (byte) '[', (byte) '0', (byte) 'n'};
-                        mSession.write(dsr, 0, dsr.length);
-                        break;
-                    case 6: // Cursor position report (CPR):
-                        // Answer is ESC [ y ; x R, where x,y is
-                        // the cursor location.
-                        mSession.write(String.format(Locale.US, "\033[%d;%dR", mCursorRow + 1, mCursorCol + 1));
-                        break;
-                    default:
-                        break;
-                }
+                doCsiDeviceStatusReport();
                 break;
             case 'r': // "CSI${top};${bottom}r" - set top and bottom Margins (DECSTBM).
             {
@@ -1826,49 +1743,7 @@ public final class TerminalEmulator {
                 }
                 break;
             case 't': // Window manipulation (from dtterm, as well as extensions)
-                switch (getArg0(0)) {
-                    case 11: // Report xterm window state. If the xterm window is open (non-iconified), it returns CSI 1 t .
-                        mSession.write("\033[1t");
-                        break;
-                    case 13: // Report xterm window position. Result is CSI 3 ; x ; y t
-                        mSession.write("\033[3;0;0t");
-                        break;
-                    case 14: // Report xterm window in pixels. Result is CSI 4 ; height ; width t
-                        mSession.write(String.format(Locale.US, "\033[4;%d;%dt", mRows * mCellHeightPixels, mColumns * mCellWidthPixels));
-                        break;
-                    case 16: // Report xterm character cell size in pixels. Result is CSI 6 ; height ; width t
-                        mSession.write(String.format(Locale.US, "\033[6;%d;%dt", mCellHeightPixels, mCellWidthPixels));
-                        break;
-                    case 18: // Report the size of the text area in characters. Result is CSI 8 ; height ; width t
-                        mSession.write(String.format(Locale.US, "\033[8;%d;%dt", mRows, mColumns));
-                        break;
-                    case 19: // Report the size of the screen in characters. Result is CSI 9 ; height ; width t
-                        // We report the same size as the view, since it's the view really isn't resizable from the shell.
-                        mSession.write(String.format(Locale.US, "\033[9;%d;%dt", mRows, mColumns));
-                        break;
-                    case 20: // Report xterm windows icon label. Result is OSC L label ST. Disabled due to security concerns:
-                        mSession.write("\033]LIconLabel\033\\");
-                        break;
-                    case 21: // Report xterm windows title. Result is OSC l label ST. Disabled due to security concerns:
-                        mSession.write("\033]l\033\\");
-                        break;
-                    case 22:
-                        // 22;0 -> Save xterm icon and window title on stack.
-                        // 22;1 -> Save xterm icon title on stack.
-                        // 22;2 -> Save xterm window title on stack.
-                        mTitleStack.push(mTitle);
-                        if (mTitleStack.size() > 20) {
-                            // Limit size
-                            mTitleStack.remove(0);
-                        }
-                        break;
-                    case 23: // Like 22 above but restore from stack.
-                        if (!mTitleStack.isEmpty()) setTitle(mTitleStack.pop());
-                        break;
-                    default:
-                        // Ignore window manipulation.
-                        break;
-                }
+                doCsiWindowManipulation();
                 break;
             case 'u': // Restore cursor (ANSI.SYS).
                 restoreCursor();
@@ -1878,6 +1753,165 @@ public final class TerminalEmulator {
                 break;
             default:
                 parseArg(b);
+                break;
+        }
+    }
+
+    /** ED — erase in display (J). Note: default: case uses return to skip mAboutToAutoWrap=false. */
+    private void doCsiEraseInDisplay(int b) {
+        // ED ignores the scrolling margins.
+        switch (getArg0(0)) {
+            case 0: // Erase from the active position to the end of the screen, inclusive (default).
+                blockClear(mCursorCol, mCursorRow, mColumns - mCursorCol);
+                blockClear(0, mCursorRow + 1, mColumns, mRows - (mCursorRow + 1));
+                break;
+            case 1: // Erase from start of the screen to the active position, inclusive.
+                blockClear(0, 0, mColumns, mCursorRow);
+                blockClear(0, mCursorRow, mCursorCol + 1);
+                break;
+            case 2: // Erase all of the display - all lines are erased, changed to single-width, and the cursor does not
+                // move..
+                blockClear(0, 0, mColumns, mRows);
+                break;
+            case 3: // Delete all lines saved in the scrollback buffer (xterm etc)
+                mMainBuffer.clearTranscript();
+                break;
+            default:
+                unknownSequence(b);
+                return;
+        }
+        mAboutToAutoWrap = false;
+    }
+
+    /** EL — erase in line (K). Note: default: case uses return to skip mAboutToAutoWrap=false. */
+    private void doCsiEraseInLine(int b) {
+        switch (getArg0(0)) {
+            case 0: // Erase from the cursor to the end of the line, inclusive (default)
+                blockClear(mCursorCol, mCursorRow, mColumns - mCursorCol);
+                break;
+            case 1: // Erase from the start of the screen to the cursor, inclusive.
+                blockClear(0, mCursorRow, mCursorCol + 1);
+                break;
+            case 2: // Erase all of the line.
+                blockClear(0, mCursorRow, mColumns);
+                break;
+            default:
+                unknownSequence(b);
+                return;
+        }
+        mAboutToAutoWrap = false;
+    }
+
+    /** SD / highlight mouse tracking (T). */
+    private void doCsiScrollDownOrHighlightTracking(int b) {
+        if (mArgIndex == 0) {
+            // "${CSI}${N}T" - Scroll down N lines (default = 1) (SD).
+            // http://vt100.net/docs/vt510-rm/SD: "N is the number of lines to move the user window up in page
+            // memory. N new lines appear at the top of the display. N old lines disappear at the bottom of the
+            // display. You cannot pan past the top margin of the current page".
+            final int linesToScrollArg = getArg0(1);
+            final int linesBetweenTopAndBottomMargins = mBottomMargin - mTopMargin;
+            final int linesToScroll = Math.min(linesBetweenTopAndBottomMargins, linesToScrollArg);
+            mScreen.blockCopy(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin, linesBetweenTopAndBottomMargins - linesToScroll, mLeftMargin, mTopMargin + linesToScroll);
+            blockClear(mLeftMargin, mTopMargin, mRightMargin - mLeftMargin, linesToScroll);
+        } else {
+            // "${CSI}${func};${startx};${starty};${firstrow};${lastrow}T" - initiate highlight mouse tracking.
+            unimplementedSequence(b);
+        }
+    }
+
+    /** CBT — cursor backward tabulation (Z). */
+    private void doCsiCursorBackwardTabulation() {
+        int numberOfTabs = getArg0(1);
+        int newCol = mLeftMargin;
+        for (int i = mCursorCol - 1; i >= 0; i--)
+            if (mTabStop[i]) {
+                if (--numberOfTabs == 0) {
+                    newCol = Math.max(i, mLeftMargin);
+                    break;
+                }
+            }
+        mCursorCol = newCol;
+    }
+
+    /** TBC — clear tab stop (g). */
+    private void doCsiClearTabStop() {
+        switch (getArg0(0)) {
+            case 0:
+                mTabStop[mCursorCol] = false;
+                break;
+            case 3:
+                for (int i = 0; i < mColumns; i++) {
+                    mTabStop[i] = false;
+                }
+                break;
+            default:
+                // Specified to have no effect.
+                break;
+        }
+    }
+
+    /** DSR/CPR — device status report and cursor position report (n). */
+    private void doCsiDeviceStatusReport() {
+        switch (getArg0(0)) {
+            case 5: // Device status report (DSR):
+                // Answer is ESC [ 0 n (Terminal OK).
+                byte[] dsr = {(byte) 27, (byte) '[', (byte) '0', (byte) 'n'};
+                mSession.write(dsr, 0, dsr.length);
+                break;
+            case 6: // Cursor position report (CPR):
+                // Answer is ESC [ y ; x R, where x,y is
+                // the cursor location.
+                mSession.write(String.format(Locale.US, "\033[%d;%dR", mCursorRow + 1, mCursorCol + 1));
+                break;
+            default:
+                break;
+        }
+    }
+
+    /** XTWINOPS — window manipulation (t). */
+    private void doCsiWindowManipulation() {
+        switch (getArg0(0)) {
+            case 11: // Report xterm window state. If the xterm window is open (non-iconified), it returns CSI 1 t .
+                mSession.write("\033[1t");
+                break;
+            case 13: // Report xterm window position. Result is CSI 3 ; x ; y t
+                mSession.write("\033[3;0;0t");
+                break;
+            case 14: // Report xterm window in pixels. Result is CSI 4 ; height ; width t
+                mSession.write(String.format(Locale.US, "\033[4;%d;%dt", mRows * mCellHeightPixels, mColumns * mCellWidthPixels));
+                break;
+            case 16: // Report xterm character cell size in pixels. Result is CSI 6 ; height ; width t
+                mSession.write(String.format(Locale.US, "\033[6;%d;%dt", mCellHeightPixels, mCellWidthPixels));
+                break;
+            case 18: // Report the size of the text area in characters. Result is CSI 8 ; height ; width t
+                mSession.write(String.format(Locale.US, "\033[8;%d;%dt", mRows, mColumns));
+                break;
+            case 19: // Report the size of the screen in characters. Result is CSI 9 ; height ; width t
+                // We report the same size as the view, since it's the view really isn't resizable from the shell.
+                mSession.write(String.format(Locale.US, "\033[9;%d;%dt", mRows, mColumns));
+                break;
+            case 20: // Report xterm windows icon label. Result is OSC L label ST. Disabled due to security concerns:
+                mSession.write("\033]LIconLabel\033\\");
+                break;
+            case 21: // Report xterm windows title. Result is OSC l label ST. Disabled due to security concerns:
+                mSession.write("\033]l\033\\");
+                break;
+            case 22:
+                // 22;0 -> Save xterm icon and window title on stack.
+                // 22;1 -> Save xterm icon title on stack.
+                // 22;2 -> Save xterm window title on stack.
+                mTitleStack.push(mTitle);
+                if (mTitleStack.size() > 20) {
+                    // Limit size
+                    mTitleStack.remove(0);
+                }
+                break;
+            case 23: // Like 22 above but restore from stack.
+                if (!mTitleStack.isEmpty()) setTitle(mTitleStack.pop());
+                break;
+            default:
+                // Ignore window manipulation.
                 break;
         }
     }

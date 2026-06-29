@@ -35,16 +35,16 @@ final class BinarySearch {
     public static void main(String[] args) {
         int[] sortedValues = { 2, 3, 4, 10, 40 };
         int target = 10;
-        int result = binarySearch(sortedValues, target);
+        int searchIndex = binarySearch(sortedValues, target);
 
-        System.out.println(searchResultMessage(result));
+        System.out.println(formatSearchResult(searchIndex));
     }
 
-    private static String searchResultMessage(int result) {
-        if (result == NOT_FOUND) {
+    private static String formatSearchResult(int searchIndex) {
+        if (searchIndex == NOT_FOUND) {
             return NOT_FOUND_MESSAGE;
         }
 
-        return FOUND_MESSAGE_PREFIX + result;
+        return FOUND_MESSAGE_PREFIX + searchIndex;
     }
 }

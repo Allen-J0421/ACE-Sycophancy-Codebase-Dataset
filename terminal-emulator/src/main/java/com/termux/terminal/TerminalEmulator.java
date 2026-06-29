@@ -1605,9 +1605,13 @@ public final class TerminalEmulator {
         }
     }
 
+    private SavedScreenState currentSavedState() {
+        return (mScreen == mMainBuffer) ? mSavedStateMain : mSavedStateAlt;
+    }
+
     /** DECSC save cursor - http://www.vt100.net/docs/vt510-rm/DECSC . See {@link #restoreCursor()}. */
     private void saveCursor() {
-        SavedScreenState state = (mScreen == mMainBuffer) ? mSavedStateMain : mSavedStateAlt;
+        SavedScreenState state = currentSavedState();
         state.mSavedCursorRow = mCursorRow;
         state.mSavedCursorCol = mCursorCol;
         state.mSavedEffect = mEffect;
@@ -1621,7 +1625,7 @@ public final class TerminalEmulator {
 
     /** DECRS restore cursor - http://www.vt100.net/docs/vt510-rm/DECRC. See {@link #saveCursor()}. */
     private void restoreCursor() {
-        SavedScreenState state = (mScreen == mMainBuffer) ? mSavedStateMain : mSavedStateAlt;
+        SavedScreenState state = currentSavedState();
         setCursorRowColAbsolute(state.mSavedCursorRow, state.mSavedCursorCol);
         mEffect = state.mSavedEffect;
         mForeColor = state.mSavedForeColor;

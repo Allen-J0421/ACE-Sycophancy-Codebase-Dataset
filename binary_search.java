@@ -59,7 +59,7 @@ class BinarySearch {
         };
 
         for (SearchCase testCase : testCases) {
-            assertSearchResult(testCase.values, testCase.target, testCase.expectedIndex);
+            assertSearchResult(testCase.values(), testCase.target(), testCase.expectedIndex());
         }
     }
 
@@ -68,15 +68,6 @@ class BinarySearch {
         printSearchResult(SAMPLE_VALUES, 10);
     }
 
-    private static final class SearchCase {
-        private final int[] values;
-        private final int target;
-        private final int expectedIndex;
-
-        private SearchCase(int[] values, int target, int expectedIndex) {
-            this.values = values;
-            this.target = target;
-            this.expectedIndex = expectedIndex;
-        }
+    private record SearchCase(int[] values, int target, int expectedIndex) {
     }
 }

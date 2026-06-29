@@ -148,7 +148,9 @@ class StartupInfoLogger {
 			value = defaultValue;
 		}
 		if (StringUtils.hasLength(value)) {
-			message.append((!message.isEmpty()) ? " " : "");
+			if (!message.isEmpty()) {
+				message.append(" ");
+			}
 			message.append(prefix);
 			message.append(value);
 		}

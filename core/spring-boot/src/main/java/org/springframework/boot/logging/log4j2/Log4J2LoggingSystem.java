@@ -342,7 +342,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private Configuration mergeConfigurations(List<Configuration> configurations) {
 		if (configurations.size() == 1) {
-			return configurations.iterator().next();
+			return configurations.get(0);
 		}
 		return new CompositeConfiguration(configurations.stream().map(AbstractConfiguration.class::cast).toList());
 	}
@@ -441,12 +441,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			return null;
 		}
 		LevelConfiguration effectiveLevelConfiguration = getLevelConfiguration(loggerConfig.getLevel());
-		if (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) {
-			name = ROOT_LOGGER_NAME;
-		}
-		boolean isAssigned = loggerConfig.getName().equals(name);
-		LevelConfiguration assignedLevelConfiguration = (!isAssigned) ? null : effectiveLevelConfiguration;
-		return new LoggerConfiguration(name, assignedLevelConfiguration, effectiveLevelConfiguration);
+		String loggerName = (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) ? ROOT_LOGGER_NAME
+				: name;
+		boolean isAssigned = loggerConfig.getName().equals(loggerName);
+		LevelConfiguration assignedLevelConfiguration = isAssigned ? effectiveLevelConfiguration : null;
+		return new LoggerConfiguration(loggerName, assignedLevelConfiguration, effectiveLevelConfiguration);
 	}
 
 	private LevelConfiguration getLevelConfiguration(Level level) {

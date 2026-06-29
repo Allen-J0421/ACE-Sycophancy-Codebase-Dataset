@@ -5,9 +5,17 @@ final class BinarySearchTest {
     }
 
     public static void main(String[] args) {
+        findsExistingValues();
+        returnsNotFoundForMissingValues();
+    }
+
+    private static void findsExistingValues() {
         assertSearch(sortedValues(), 10, 3);
         assertSearch(sortedValues(), 2, 0);
         assertSearch(sortedValues(), 40, 4);
+    }
+
+    private static void returnsNotFoundForMissingValues() {
         assertSearch(sortedValues(), 5, NOT_FOUND);
         assertSearch(new int[] {}, 10, NOT_FOUND);
     }

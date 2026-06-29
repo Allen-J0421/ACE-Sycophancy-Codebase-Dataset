@@ -501,7 +501,7 @@ public final class MoreExecutors {
     private final ExecutorService delegate;
 
     ListeningDecorator(ExecutorService delegate) {
-      this.delegate = checkNotNull(delegate);
+      this.delegate = checkNotNull(delegate, "delegate");
     }
 
     @Override
@@ -554,7 +554,7 @@ public final class MoreExecutors {
 
     ScheduledListeningDecorator(ScheduledExecutorService delegate) {
       super(delegate);
-      this.delegate = checkNotNull(delegate);
+      this.delegate = checkNotNull(delegate, "delegate");
     }
 
     @Override
@@ -634,7 +634,7 @@ public final class MoreExecutors {
       private final Runnable delegate;
 
       NeverSuccessfulListenableFutureTask(Runnable delegate) {
-        this.delegate = checkNotNull(delegate);
+        this.delegate = checkNotNull(delegate, "delegate");
       }
 
       @Override
@@ -718,8 +718,8 @@ public final class MoreExecutors {
       long timeout,
       TimeUnit unit)
       throws InterruptedException, ExecutionException, TimeoutException {
-    checkNotNull(executorService);
-    checkNotNull(unit);
+    checkNotNull(executorService, "executorService");
+    checkNotNull(unit, "unit");
     int ntasks = tasks.size();
     checkArgument(ntasks > 0);
     List<Future<T>> futures = newArrayListWithCapacity(ntasks);
@@ -869,8 +869,8 @@ public final class MoreExecutors {
   @J2ktIncompatible
   @GwtIncompatible // concurrency
   static Thread newThread(String name, Runnable runnable) {
-    checkNotNull(name);
-    checkNotNull(runnable);
+    checkNotNull(name, "name");
+    checkNotNull(runnable, "runnable");
     // TODO(b/139726489): Confirm that null is impossible here.
     Thread result = requireNonNull(platformThreadFactory().newThread(runnable));
     try {
@@ -898,8 +898,8 @@ public final class MoreExecutors {
   @J2ktIncompatible
   @GwtIncompatible // concurrency
   static Executor renamingDecorator(Executor executor, Supplier<String> nameSupplier) {
-    checkNotNull(executor);
-    checkNotNull(nameSupplier);
+    checkNotNull(executor, "executor");
+    checkNotNull(nameSupplier, "nameSupplier");
     return command -> executor.execute(threadRenaming(command, nameSupplier));
   }
 
@@ -917,8 +917,8 @@ public final class MoreExecutors {
   @J2ktIncompatible
   @GwtIncompatible // concurrency
   static ExecutorService renamingDecorator(ExecutorService service, Supplier<String> nameSupplier) {
-    checkNotNull(service);
-    checkNotNull(nameSupplier);
+    checkNotNull(service, "service");
+    checkNotNull(nameSupplier, "nameSupplier");
     return new WrappingExecutorService(service) {
       @Override
       protected <T extends @Nullable Object> Callable<T> wrapTask(Callable<T> callable) {
@@ -947,8 +947,8 @@ public final class MoreExecutors {
   @GwtIncompatible // concurrency
   static ScheduledExecutorService renamingDecorator(
       ScheduledExecutorService service, Supplier<String> nameSupplier) {
-    checkNotNull(service);
-    checkNotNull(nameSupplier);
+    checkNotNull(service, "service");
+    checkNotNull(nameSupplier, "nameSupplier");
     return new WrappingScheduledExecutorService(service) {
       @Override
       protected <T extends @Nullable Object> Callable<T> wrapTask(Callable<T> callable) {
@@ -1055,8 +1055,8 @@ public final class MoreExecutors {
    * <p>Note, the returned executor can only be used once.
    */
   static Executor rejectionPropagatingExecutor(Executor delegate, AbstractFuture<?> future) {
-    checkNotNull(delegate);
-    checkNotNull(future);
+    checkNotNull(delegate, "delegate");
+    checkNotNull(future, "future");
     if (delegate == directExecutor()) {
       // directExecutor() cannot throw RejectedExecutionException
       return delegate;

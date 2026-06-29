@@ -75,8 +75,8 @@ public final class CharStreams {
       }
     }
 
-    checkNotNull(from);
-    checkNotNull(to);
+    checkNotNull(from, "from");
+    checkNotNull(to, "to");
     long total = 0;
     CharBuffer buf = createBuffer();
     while (from.read(buf) != -1) {
@@ -108,8 +108,8 @@ public final class CharStreams {
    */
   @CanIgnoreReturnValue
   static long copyReaderToBuilder(Reader from, StringBuilder to) throws IOException {
-    checkNotNull(from);
-    checkNotNull(to);
+    checkNotNull(from, "from");
+    checkNotNull(to, "to");
     return doCopy(from, to::append);
   }
 
@@ -129,8 +129,8 @@ public final class CharStreams {
    */
   @CanIgnoreReturnValue
   static long copyReaderToWriter(Reader from, Writer to) throws IOException {
-    checkNotNull(from);
-    checkNotNull(to);
+    checkNotNull(from, "from");
+    checkNotNull(to, "to");
     return doCopy(from, to::write);
   }
 
@@ -230,8 +230,8 @@ public final class CharStreams {
   @ParametricNullness
   public static <T extends @Nullable Object> T readLines(
       Readable readable, LineProcessor<T> processor) throws IOException {
-    checkNotNull(readable);
-    checkNotNull(processor);
+    checkNotNull(readable, "readable");
+    checkNotNull(processor, "processor");
 
     LineReader lineReader = new LineReader(readable);
     String line;
@@ -271,7 +271,7 @@ public final class CharStreams {
    * @throws IOException if an I/O error occurs
    */
   public static void skipFully(Reader reader, long n) throws IOException {
-    checkNotNull(reader);
+    checkNotNull(reader, "reader");
     while (n > 0) {
       long amt = reader.skip(n);
       if (amt == 0) {
@@ -304,7 +304,7 @@ public final class CharStreams {
 
     @Override
     public void write(char[] cbuf) {
-      checkNotNull(cbuf);
+      checkNotNull(cbuf, "cbuf");
     }
 
     @Override
@@ -314,7 +314,7 @@ public final class CharStreams {
 
     @Override
     public void write(String str) {
-      checkNotNull(str);
+      checkNotNull(str, "str");
     }
 
     @Override

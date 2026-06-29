@@ -106,7 +106,7 @@ public final class Lists {
   @SafeVarargs
   @SuppressWarnings("NonApiType") // acts as a direct substitute for a constructor call
   public static <E extends @Nullable Object> ArrayList<E> newArrayList(E... elements) {
-    checkNotNull(elements); // for GWT
+    checkNotNull(elements, "elements"); // for GWT
     // Avoid integer overflow when a large array is passed in
     int capacity = computeArrayListCapacity(elements.length);
     ArrayList<E> list = new ArrayList<>(capacity);
@@ -131,7 +131,7 @@ public final class Lists {
   @SuppressWarnings("NonApiType") // acts as a direct substitute for a constructor call
   public static <E extends @Nullable Object> ArrayList<E> newArrayList(
       Iterable<? extends E> elements) {
-    checkNotNull(elements); // for GWT
+    checkNotNull(elements, "elements"); // for GWT
     // Let ArrayList's sizing logic work, if possible
     return (elements instanceof Collection)
         ? new ArrayList<>((Collection<? extends E>) elements)
@@ -340,7 +340,7 @@ public final class Lists {
 
     OnePlusArrayList(@ParametricNullness E first, E[] rest) {
       this.first = first;
-      this.rest = checkNotNull(rest);
+      this.rest = checkNotNull(rest, "rest");
     }
 
     @Override
@@ -371,7 +371,7 @@ public final class Lists {
     TwoPlusArrayList(@ParametricNullness E first, @ParametricNullness E second, E[] rest) {
       this.first = first;
       this.second = second;
-      this.rest = checkNotNull(rest);
+      this.rest = checkNotNull(rest, "rest");
     }
 
     @Override
@@ -565,8 +565,8 @@ public final class Lists {
     final Function<? super F, ? extends T> function;
 
     TransformingSequentialList(List<F> fromList, Function<? super F, ? extends T> function) {
-      this.fromList = checkNotNull(fromList);
-      this.function = checkNotNull(function);
+      this.fromList = checkNotNull(fromList, "fromList");
+      this.function = checkNotNull(function, "function");
     }
 
     /**
@@ -601,7 +601,7 @@ public final class Lists {
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-      checkNotNull(filter);
+      checkNotNull(filter, "filter");
       return fromList.removeIf(element -> filter.test(function.apply(element)));
     }
 
@@ -622,8 +622,8 @@ public final class Lists {
     final Function<? super F, ? extends T> function;
 
     TransformingRandomAccessList(List<F> fromList, Function<? super F, ? extends T> function) {
-      this.fromList = checkNotNull(fromList);
-      this.function = checkNotNull(function);
+      this.fromList = checkNotNull(fromList, "fromList");
+      this.function = checkNotNull(function, "function");
     }
 
     /**
@@ -663,7 +663,7 @@ public final class Lists {
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-      checkNotNull(filter);
+      checkNotNull(filter, "filter");
       return fromList.removeIf(element -> filter.test(function.apply(element)));
     }
 
@@ -697,7 +697,7 @@ public final class Lists {
    * @throws IllegalArgumentException if {@code partitionSize} is nonpositive
    */
   public static <T extends @Nullable Object> List<List<T>> partition(List<T> list, int size) {
-    checkNotNull(list);
+    checkNotNull(list, "list");
     checkArgument(size > 0);
     return (list instanceof RandomAccess)
         ? new RandomAccessPartition<>(list, size)
@@ -862,7 +862,7 @@ public final class Lists {
     private final List<T> forwardList;
 
     ReverseList(List<T> forwardList) {
-      this.forwardList = checkNotNull(forwardList);
+      this.forwardList = checkNotNull(forwardList, "forwardList");
     }
 
     List<T> getForwardList() {
@@ -1146,7 +1146,7 @@ public final class Lists {
     final List<E> backingList;
 
     AbstractListWrapper(List<E> backingList) {
-      this.backingList = checkNotNull(backingList);
+      this.backingList = checkNotNull(backingList, "backingList");
     }
 
     @Override

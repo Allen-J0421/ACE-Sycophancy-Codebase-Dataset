@@ -1033,8 +1033,8 @@ public final class MediaType {
    * @since 24.0
    */
   public MediaType withParameters(String attribute, Iterable<String> values) {
-    checkNotNull(attribute);
-    checkNotNull(values);
+    checkNotNull(attribute, "attribute");
+    checkNotNull(values, "values");
     String normalizedAttribute = normalizeToken(attribute);
     ImmutableListMultimap.Builder<String, String> updatedParameters =
         ImmutableListMultimap.builder();
@@ -1081,7 +1081,7 @@ public final class MediaType {
    * representable as a {@link Charset} instance), use {@link #withParameter}.
    */
   public MediaType withCharset(Charset charset) {
-    checkNotNull(charset);
+    checkNotNull(charset, "charset");
     MediaType withCharset = withParameter(CHARSET_ATTRIBUTE, charset.name());
     // precache the charset so we don't need to parse it
     withCharset.parsedCharset = Optional.of(charset);
@@ -1142,9 +1142,9 @@ public final class MediaType {
 
   private static MediaType create(
       String type, String subtype, Multimap<String, String> parameters) {
-    checkNotNull(type);
-    checkNotNull(subtype);
-    checkNotNull(parameters);
+    checkNotNull(type, "type");
+    checkNotNull(subtype, "subtype");
+    checkNotNull(parameters, "parameters");
     String normalizedType = normalizeToken(type);
     String normalizedSubtype = normalizeToken(subtype);
     checkArgument(
@@ -1223,7 +1223,7 @@ public final class MediaType {
   }
 
   private static String normalizeParameterValue(String attribute, String value) {
-    checkNotNull(value); // for GWT
+    checkNotNull(value, "value"); // for GWT
     checkArgument(ascii().matchesAllOf(value), "parameter values must be ASCII: %s", value);
     return attribute.equals(CHARSET_ATTRIBUTE) ? Ascii.toLowerCase(value) : value;
   }
@@ -1235,7 +1235,7 @@ public final class MediaType {
    */
   @CanIgnoreReturnValue // TODO(b/219820829): consider removing
   public static MediaType parse(String input) {
-    checkNotNull(input);
+    checkNotNull(input, "input");
     Tokenizer tokenizer = new Tokenizer(input);
     try {
       String type = tokenizer.consumeToken(TOKEN_MATCHER);

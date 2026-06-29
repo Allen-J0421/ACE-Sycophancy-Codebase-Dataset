@@ -979,7 +979,7 @@ public abstract class CharMatcher implements Predicate<Character> {
     private final String description;
 
     NamedFastMatcher(String description) {
-      this.description = checkNotNull(description);
+      this.description = checkNotNull(description, "description");
     }
 
     @Override
@@ -1062,7 +1062,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public boolean matchesAllOf(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return true;
     }
 
@@ -1073,7 +1073,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public String removeFrom(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return "";
     }
 
@@ -1100,7 +1100,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public String trimFrom(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return "";
     }
 
@@ -1111,12 +1111,12 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public CharMatcher and(CharMatcher other) {
-      return checkNotNull(other);
+      return checkNotNull(other, "other");
     }
 
     @Override
     public CharMatcher or(CharMatcher other) {
-      checkNotNull(other);
+      checkNotNull(other, "other");
       return this;
     }
 
@@ -1142,7 +1142,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public int indexIn(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return -1;
     }
 
@@ -1155,7 +1155,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public int lastIndexIn(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return -1;
     }
 
@@ -1166,7 +1166,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public boolean matchesNoneOf(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return true;
     }
 
@@ -1182,7 +1182,7 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public String replaceFrom(CharSequence sequence, CharSequence replacement) {
-      checkNotNull(replacement);
+      checkNotNull(replacement, "replacement");
       return sequence.toString();
     }
 
@@ -1208,19 +1208,19 @@ public abstract class CharMatcher implements Predicate<Character> {
 
     @Override
     public int countIn(CharSequence sequence) {
-      checkNotNull(sequence);
+      checkNotNull(sequence, "sequence");
       return 0;
     }
 
     @Override
     public CharMatcher and(CharMatcher other) {
-      checkNotNull(other);
+      checkNotNull(other, "other");
       return this;
     }
 
     @Override
     public CharMatcher or(CharMatcher other) {
-      return checkNotNull(other);
+      return checkNotNull(other, "other");
     }
 
     @Override
@@ -1519,7 +1519,7 @@ public abstract class CharMatcher implements Predicate<Character> {
     final CharMatcher original;
 
     Negated(CharMatcher original) {
-      this.original = checkNotNull(original);
+      this.original = checkNotNull(original, "original");
     }
 
     @Override
@@ -1569,8 +1569,8 @@ public abstract class CharMatcher implements Predicate<Character> {
     final CharMatcher second;
 
     BinaryCharMatcher(CharMatcher a, CharMatcher b) {
-      first = checkNotNull(a);
-      second = checkNotNull(b);
+      first = checkNotNull(a, "a");
+      second = checkNotNull(b, "b");
     }
 
     abstract String operatorName();
@@ -1844,7 +1844,7 @@ public abstract class CharMatcher implements Predicate<Character> {
     private final Predicate<? super Character> predicate;
 
     ForPredicate(Predicate<? super Character> predicate) {
-      this.predicate = checkNotNull(predicate);
+      this.predicate = checkNotNull(predicate, "predicate");
     }
 
     @Override

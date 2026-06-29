@@ -370,7 +370,7 @@ public final class Chars {
    * @param array an array of {@code char} values, possibly empty
    */
   public static String join(String separator, char... array) {
-    checkNotNull(separator);
+    checkNotNull(separator, "separator");
     int len = array.length;
     if (len == 0) {
       return "";
@@ -445,7 +445,7 @@ public final class Chars {
     char[] array = new char[len];
     for (int i = 0; i < len; i++) {
       // checkNotNull for GWT (do not optimize)
-      array[i] = (Character) checkNotNull(boxedArray[i]);
+      array[i] = (Character) checkNotNull(boxedArray[i], "boxedArray[i]");
     }
     return array;
   }
@@ -456,7 +456,7 @@ public final class Chars {
    * @since 23.1
    */
   public static void sortDescending(char[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     sortDescending(array, 0, array.length);
   }
 
@@ -467,7 +467,7 @@ public final class Chars {
    * @since 23.1
    */
   public static void sortDescending(char[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     sort(array, fromIndex, toIndex);
     reverse(array, fromIndex, toIndex);
@@ -480,7 +480,7 @@ public final class Chars {
    * @since 23.1
    */
   public static void reverse(char[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     reverse(array, 0, array.length);
   }
 
@@ -495,7 +495,7 @@ public final class Chars {
    * @since 23.1
    */
   public static void reverse(char[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     for (int i = fromIndex, j = toIndex - 1; i < j; i++, j--) {
       char tmp = array[i];
@@ -532,7 +532,7 @@ public final class Chars {
    */
   public static void rotate(char[] array, int distance, int fromIndex, int toIndex) {
     // See Ints.rotate for more details about possible algorithms here.
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     if (array.length <= 1) {
       return;
@@ -643,7 +643,7 @@ public final class Chars {
       checkElementIndex(index, size());
       char oldValue = array[start + index];
       // checkNotNull for GWT (do not optimize)
-      array[start + index] = checkNotNull(element);
+      array[start + index] = checkNotNull(element, "element");
       return oldValue;
     }
 

@@ -362,7 +362,7 @@ public final class Floats extends FloatsMethodsForWeb {
    * @param array an array of {@code float} values, possibly empty
    */
   public static String join(String separator, float... array) {
-    checkNotNull(separator);
+    checkNotNull(separator, "separator");
     if (array.length == 0) {
       return "";
     }
@@ -423,7 +423,7 @@ public final class Floats extends FloatsMethodsForWeb {
    * @since 23.1
    */
   public static void sortDescending(float[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     sortDescending(array, 0, array.length);
   }
 
@@ -437,7 +437,7 @@ public final class Floats extends FloatsMethodsForWeb {
    * @since 23.1
    */
   public static void sortDescending(float[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     sort(array, fromIndex, toIndex);
     reverse(array, fromIndex, toIndex);
@@ -450,7 +450,7 @@ public final class Floats extends FloatsMethodsForWeb {
    * @since 23.1
    */
   public static void reverse(float[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     reverse(array, 0, array.length);
   }
 
@@ -465,7 +465,7 @@ public final class Floats extends FloatsMethodsForWeb {
    * @since 23.1
    */
   public static void reverse(float[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     for (int i = fromIndex, j = toIndex - 1; i < j; i++, j--) {
       float tmp = array[i];
@@ -502,7 +502,7 @@ public final class Floats extends FloatsMethodsForWeb {
    */
   public static void rotate(float[] array, int distance, int fromIndex, int toIndex) {
     // See Ints.rotate for more details about possible algorithms here.
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     if (array.length <= 1) {
       return;
@@ -643,7 +643,7 @@ public final class Floats extends FloatsMethodsForWeb {
       checkElementIndex(index, size());
       float oldValue = array[start + index];
       // checkNotNull for GWT (do not optimize)
-      array[start + index] = checkNotNull(element);
+      array[start + index] = checkNotNull(element, "element");
       return oldValue;
     }
 

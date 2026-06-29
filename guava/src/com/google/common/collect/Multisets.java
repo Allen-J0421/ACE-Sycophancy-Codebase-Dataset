@@ -127,7 +127,7 @@ public final class Multisets {
       staticImports = "com.google.common.base.Preconditions.checkNotNull")
   @Deprecated
   public static <E> Multiset<E> unmodifiableMultiset(ImmutableMultiset<E> multiset) {
-    return checkNotNull(multiset);
+    return checkNotNull(multiset, "multiset");
   }
 
   static class UnmodifiableMultiset<E extends @Nullable Object> extends ForwardingMultiset<E>
@@ -334,8 +334,8 @@ public final class Multisets {
     final Predicate<? super E> predicate;
 
     FilteredMultiset(Multiset<E> unfiltered, Predicate<? super E> predicate) {
-      this.unfiltered = checkNotNull(unfiltered);
-      this.predicate = checkNotNull(predicate);
+      this.unfiltered = checkNotNull(unfiltered, "unfiltered");
+      this.predicate = checkNotNull(predicate, "predicate");
     }
 
     @Override
@@ -692,8 +692,8 @@ public final class Multisets {
    */
   @CanIgnoreReturnValue
   public static boolean containsOccurrences(Multiset<?> superMultiset, Multiset<?> subMultiset) {
-    checkNotNull(superMultiset);
-    checkNotNull(subMultiset);
+    checkNotNull(superMultiset, "superMultiset");
+    checkNotNull(subMultiset, "subMultiset");
     for (Entry<?> entry : subMultiset.entrySet()) {
       int superCount = superMultiset.count(entry.getElement());
       if (superCount < entry.getCount()) {
@@ -903,8 +903,8 @@ public final class Multisets {
   /** An implementation of {@link Multiset#addAll}. */
   static <E extends @Nullable Object> boolean addAllImpl(
       Multiset<E> self, Collection<? extends E> elements) {
-    checkNotNull(self);
-    checkNotNull(elements);
+    checkNotNull(self, "self");
+    checkNotNull(elements, "elements");
     if (elements instanceof Multiset) {
       return addAllImpl(self, (Multiset<? extends E>) elements);
     } else if (elements.isEmpty()) {
@@ -936,7 +936,7 @@ public final class Multisets {
 
   /** An implementation of {@link Multiset#retainAll}. */
   static boolean retainAllImpl(Multiset<?> self, Collection<?> elementsToRetain) {
-    checkNotNull(elementsToRetain);
+    checkNotNull(elementsToRetain, "elementsToRetain");
     Collection<?> collection =
         (elementsToRetain instanceof Multiset)
             ? ((Multiset<?>) elementsToRetain).elementSet()

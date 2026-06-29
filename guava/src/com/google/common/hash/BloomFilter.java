@@ -136,10 +136,10 @@ public final class BloomFilter<T extends @Nullable Object> implements Predicate<
     checkArgument(numHashFunctions > 0, "numHashFunctions (%s) must be > 0", numHashFunctions);
     checkArgument(
         numHashFunctions <= 255, "numHashFunctions (%s) must be <= 255", numHashFunctions);
-    this.bits = checkNotNull(bits);
+    this.bits = checkNotNull(bits, "bits");
     this.numHashFunctions = numHashFunctions;
-    this.funnel = checkNotNull(funnel);
-    this.strategy = checkNotNull(strategy);
+    this.funnel = checkNotNull(funnel, "funnel");
+    this.strategy = checkNotNull(strategy, "strategy");
   }
 
   /**
@@ -277,7 +277,7 @@ public final class BloomFilter<T extends @Nullable Object> implements Predicate<
    * @since 15.0
    */
   public boolean isCompatible(BloomFilter<T> that) {
-    checkNotNull(that);
+    checkNotNull(that, "that");
     return this != that
         && this.numHashFunctions == that.numHashFunctions
         && this.bitSize() == that.bitSize()
@@ -295,7 +295,7 @@ public final class BloomFilter<T extends @Nullable Object> implements Predicate<
    * @since 15.0
    */
   public void putAll(BloomFilter<T> that) {
-    checkNotNull(that);
+    checkNotNull(that, "that");
     checkArgument(this != that, "Cannot combine a BloomFilter with itself.");
     checkArgument(
         this.numHashFunctions == that.numHashFunctions,
@@ -399,7 +399,7 @@ public final class BloomFilter<T extends @Nullable Object> implements Predicate<
    */
   public static <T extends @Nullable Object> Collector<T, ?, BloomFilter<T>> toBloomFilter(
       Funnel<? super T> funnel, long expectedInsertions, double fpp) {
-    checkNotNull(funnel);
+    checkNotNull(funnel, "funnel");
     checkArgument(
         expectedInsertions >= 0, "Expected insertions (%s) must be >= 0", expectedInsertions);
     checkArgument(fpp > 0.0, "False positive probability (%s) must be > 0.0", fpp);
@@ -469,12 +469,12 @@ public final class BloomFilter<T extends @Nullable Object> implements Predicate<
   @VisibleForTesting
   static <T extends @Nullable Object> BloomFilter<T> create(
       Funnel<? super T> funnel, long expectedInsertions, double fpp, Strategy strategy) {
-    checkNotNull(funnel);
+    checkNotNull(funnel, "funnel");
     checkArgument(
         expectedInsertions >= 0, "Expected insertions (%s) must be >= 0", expectedInsertions);
     checkArgument(fpp > 0.0, "False positive probability (%s) must be > 0.0", fpp);
     checkArgument(fpp < 1.0, "False positive probability (%s) must be < 1.0", fpp);
-    checkNotNull(strategy);
+    checkNotNull(strategy, "strategy");
 
     if (expectedInsertions == 0) {
       expectedInsertions = 1;

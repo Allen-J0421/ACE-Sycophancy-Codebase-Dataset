@@ -1039,8 +1039,8 @@ public final class Maps {
     private final Function<? super K, V> function;
 
     NavigableAsMapView(NavigableSet<K> ks, Function<? super K, V> vFunction) {
-      this.set = checkNotNull(ks);
-      this.function = checkNotNull(vFunction);
+      this.set = checkNotNull(ks, "ks");
+      this.function = checkNotNull(vFunction, "vFunction");
     }
 
     @Override
@@ -1607,7 +1607,7 @@ public final class Maps {
     private final BiMap<A, B> bimap;
 
     BiMapConverter(BiMap<A, B> bimap) {
-      this.bimap = checkNotNull(bimap);
+      this.bimap = checkNotNull(bimap, "bimap");
     }
 
     @Override
@@ -2124,7 +2124,7 @@ public final class Maps {
 
     TransformedEntriesMap(
         Map<K, V1> fromMap, EntryTransformer<? super K, ? super V1, V2> transformer) {
-      this.fromMap = checkNotNull(fromMap);
+      this.fromMap = checkNotNull(fromMap, "fromMap");
       this.transformer = checkNotNull(transformer, "transformer");
     }
 
@@ -2773,7 +2773,7 @@ public final class Maps {
    */
   public static <K extends @Nullable Object, V extends @Nullable Object> BiMap<K, V> filterEntries(
       BiMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-    checkNotNull(unfiltered);
+    checkNotNull(unfiltered, "unfiltered");
     checkNotNull(entryPredicate, "entryPredicate");
     return (unfiltered instanceof FilteredEntryBiMap)
         ? filterFiltered((FilteredEntryBiMap<K, V>) unfiltered, entryPredicate)
@@ -3219,7 +3219,7 @@ public final class Maps {
 
     FilteredEntryNavigableMap(
         NavigableMap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-      this.unfiltered = checkNotNull(unfiltered);
+      this.unfiltered = checkNotNull(unfiltered, "unfiltered");
       this.entryPredicate = entryPredicate;
       this.filteredDelegate = new FilteredEntryMap<>(unfiltered, entryPredicate);
     }

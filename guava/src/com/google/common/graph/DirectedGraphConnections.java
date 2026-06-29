@@ -74,7 +74,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
     final N node;
 
     NodeConnection(N node) {
-      this.node = checkNotNull(node);
+      this.node = checkNotNull(node, "node");
     }
 
     static final class Pred<N> extends NodeConnection<N> {
@@ -144,7 +144,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
       @Nullable List<NodeConnection<N>> orderedNodeConnections,
       int predecessorCount,
       int successorCount) {
-    this.adjacentNodeValues = checkNotNull(adjacentNodeValues);
+    this.adjacentNodeValues = checkNotNull(adjacentNodeValues, "adjacentNodeValues");
     this.orderedNodeConnections = orderedNodeConnections;
     this.predecessorCount = checkNonNegative(predecessorCount);
     this.successorCount = checkNonNegative(successorCount);
@@ -178,8 +178,8 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
 
   static <N, V> DirectedGraphConnections<N, V> ofImmutable(
       N thisNode, Iterable<EndpointPair<N>> incidentEdges, Function<N, V> successorNodeToValueFn) {
-    checkNotNull(thisNode);
-    checkNotNull(successorNodeToValueFn);
+    checkNotNull(thisNode, "thisNode");
+    checkNotNull(successorNodeToValueFn, "successorNodeToValueFn");
 
     Map<N, Object> adjacentNodeValues = new HashMap<>();
     ImmutableList.Builder<NodeConnection<N>> orderedNodeConnectionsBuilder =
@@ -367,7 +367,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
 
   @Override
   public Iterator<EndpointPair<N>> incidentEdgeIterator(N thisNode) {
-    checkNotNull(thisNode);
+    checkNotNull(thisNode, "thisNode");
 
     Iterator<EndpointPair<N>> resultWithDoubleSelfLoop;
     if (orderedNodeConnections == null) {
@@ -414,7 +414,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
   @SuppressWarnings("unchecked")
   @Override
   public @Nullable V value(N node) {
-    checkNotNull(node);
+    checkNotNull(node, "node");
     Object value = adjacentNodeValues.get(node);
     if (value == PRED) {
       return null;
@@ -427,7 +427,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
 
   @Override
   public void removePredecessor(N node) {
-    checkNotNull(node);
+    checkNotNull(node, "node");
 
     Object previousValue = adjacentNodeValues.get(node);
     boolean removedPredecessor;
@@ -454,7 +454,7 @@ final class DirectedGraphConnections<N, V> implements GraphConnections<N, V> {
   @SuppressWarnings("unchecked")
   @Override
   public @Nullable V removeSuccessor(Object node) {
-    checkNotNull(node);
+    checkNotNull(node, "node");
     Object previousValue = adjacentNodeValues.get(node);
     Object removedValue;
 

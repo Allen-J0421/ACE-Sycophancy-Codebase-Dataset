@@ -101,7 +101,7 @@ public final class Collections2 {
    * throws a {@code ClassCastException} or {@code NullPointerException}.
    */
   static boolean safeContains(Collection<?> collection, @Nullable Object object) {
-    checkNotNull(collection);
+    checkNotNull(collection, "collection");
     try {
       return collection.contains(object);
     } catch (ClassCastException | NullPointerException e) {
@@ -114,7 +114,7 @@ public final class Collections2 {
    * throws a {@code ClassCastException} or {@code NullPointerException}.
    */
   static boolean safeRemove(Collection<?> collection, @Nullable Object object) {
-    checkNotNull(collection);
+    checkNotNull(collection, "collection");
     try {
       return collection.remove(object);
     } catch (ClassCastException | NullPointerException e) {
@@ -187,7 +187,7 @@ public final class Collections2 {
 
     @Override
     public void forEach(Consumer<? super E> action) {
-      checkNotNull(action);
+      checkNotNull(action, "action");
       unfiltered.forEach(
           (E e) -> {
             if (predicate.test(e)) {
@@ -213,7 +213,7 @@ public final class Collections2 {
 
     @Override
     public boolean removeIf(java.util.function.Predicate<? super E> filter) {
-      checkNotNull(filter);
+      checkNotNull(filter, "filter");
       return unfiltered.removeIf(element -> predicate.apply(element) && filter.test(element));
     }
 
@@ -272,8 +272,8 @@ public final class Collections2 {
     final Function<? super F, ? extends T> function;
 
     TransformedCollection(Collection<F> fromCollection, Function<? super F, ? extends T> function) {
-      this.fromCollection = checkNotNull(fromCollection);
-      this.function = checkNotNull(function);
+      this.fromCollection = checkNotNull(fromCollection, "fromCollection");
+      this.function = checkNotNull(function, "function");
     }
 
     @Override
@@ -299,13 +299,13 @@ public final class Collections2 {
 
     @Override
     public void forEach(Consumer<? super T> action) {
-      checkNotNull(action);
+      checkNotNull(action, "action");
       fromCollection.forEach((F f) -> action.accept(function.apply(f)));
     }
 
     @Override
     public boolean removeIf(java.util.function.Predicate<? super T> filter) {
-      checkNotNull(filter);
+      checkNotNull(filter, "filter");
       return fromCollection.removeIf(element -> filter.test(function.apply(element)));
     }
 

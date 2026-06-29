@@ -508,7 +508,7 @@ public final class Longs {
    * @param array an array of {@code long} values, possibly empty
    */
   public static String join(String separator, long... array) {
-    checkNotNull(separator);
+    checkNotNull(separator, "separator");
     if (array.length == 0) {
       return "";
     }
@@ -566,7 +566,7 @@ public final class Longs {
    * @since 23.1
    */
   public static void sortDescending(long[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     sortDescending(array, 0, array.length);
   }
 
@@ -577,7 +577,7 @@ public final class Longs {
    * @since 23.1
    */
   public static void sortDescending(long[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     sort(array, fromIndex, toIndex);
     reverse(array, fromIndex, toIndex);
@@ -590,7 +590,7 @@ public final class Longs {
    * @since 23.1
    */
   public static void reverse(long[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     reverse(array, 0, array.length);
   }
 
@@ -605,7 +605,7 @@ public final class Longs {
    * @since 23.1
    */
   public static void reverse(long[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     for (int i = fromIndex, j = toIndex - 1; i < j; i++, j--) {
       long tmp = array[i];
@@ -642,7 +642,7 @@ public final class Longs {
    */
   public static void rotate(long[] array, int distance, int fromIndex, int toIndex) {
     // See Ints.rotate for more details about possible algorithms here.
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     if (array.length <= 1) {
       return;
@@ -788,7 +788,7 @@ public final class Longs {
       checkElementIndex(index, size());
       long oldValue = array[start + index];
       // checkNotNull for GWT (do not optimize)
-      array[start + index] = checkNotNull(element);
+      array[start + index] = checkNotNull(element, "element");
       return oldValue;
     }
 

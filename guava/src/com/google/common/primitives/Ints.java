@@ -426,7 +426,7 @@ public final class Ints extends IntsMethodsForWeb {
    * @param array an array of {@code int} values, possibly empty
    */
   public static String join(String separator, int... array) {
-    checkNotNull(separator);
+    checkNotNull(separator, "separator");
     if (array.length == 0) {
       return "";
     }
@@ -483,7 +483,7 @@ public final class Ints extends IntsMethodsForWeb {
    * @since 23.1
    */
   public static void sortDescending(int[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     sortDescending(array, 0, array.length);
   }
 
@@ -494,7 +494,7 @@ public final class Ints extends IntsMethodsForWeb {
    * @since 23.1
    */
   public static void sortDescending(int[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     sort(array, fromIndex, toIndex);
     reverse(array, fromIndex, toIndex);
@@ -507,7 +507,7 @@ public final class Ints extends IntsMethodsForWeb {
    * @since 23.1
    */
   public static void reverse(int[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     reverse(array, 0, array.length);
   }
 
@@ -522,7 +522,7 @@ public final class Ints extends IntsMethodsForWeb {
    * @since 23.1
    */
   public static void reverse(int[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     for (int i = fromIndex, j = toIndex - 1; i < j; i++, j--) {
       int tmp = array[i];
@@ -585,7 +585,7 @@ public final class Ints extends IntsMethodsForWeb {
     // twice as many reads and writes. But benchmarking shows that they usually perform better than
     // Dolphin. Reversal is about as good as Successive on average, and it is much simpler,
     // especially since we already have a `reverse` method.
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     if (array.length <= 1) {
       return;
@@ -731,7 +731,7 @@ public final class Ints extends IntsMethodsForWeb {
       checkElementIndex(index, size());
       int oldValue = array[start + index];
       // checkNotNull for GWT (do not optimize)
-      array[start + index] = checkNotNull(element);
+      array[start + index] = checkNotNull(element, "element");
       return oldValue;
     }
 

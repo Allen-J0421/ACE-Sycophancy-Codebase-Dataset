@@ -124,7 +124,7 @@ public class TreeRangeSet<C extends Comparable<?>> extends AbstractRangeSet<C>
 
   @Override
   public @Nullable Range<C> rangeContaining(C value) {
-    checkNotNull(value);
+    checkNotNull(value, "value");
     Entry<Cut<C>, Range<C>> floorEntry = rangesByLowerBound.floorEntry(Cut.belowValue(value));
     if (floorEntry != null && floorEntry.getValue().contains(value)) {
       return floorEntry.getValue();
@@ -136,7 +136,7 @@ public class TreeRangeSet<C extends Comparable<?>> extends AbstractRangeSet<C>
 
   @Override
   public boolean intersects(Range<C> range) {
-    checkNotNull(range);
+    checkNotNull(range, "range");
     Entry<Cut<C>, Range<C>> ceilingEntry = rangesByLowerBound.ceilingEntry(range.lowerBound);
     if (ceilingEntry != null
         && ceilingEntry.getValue().isConnected(range)
@@ -151,13 +151,13 @@ public class TreeRangeSet<C extends Comparable<?>> extends AbstractRangeSet<C>
 
   @Override
   public boolean encloses(Range<C> range) {
-    checkNotNull(range);
+    checkNotNull(range, "range");
     Entry<Cut<C>, Range<C>> floorEntry = rangesByLowerBound.floorEntry(range.lowerBound);
     return floorEntry != null && floorEntry.getValue().encloses(range);
   }
 
   private @Nullable Range<C> rangeEnclosing(Range<C> range) {
-    checkNotNull(range);
+    checkNotNull(range, "range");
     Entry<Cut<C>, Range<C>> floorEntry = rangesByLowerBound.floorEntry(range.lowerBound);
     return (floorEntry != null && floorEntry.getValue().encloses(range))
         ? floorEntry.getValue()
@@ -180,7 +180,7 @@ public class TreeRangeSet<C extends Comparable<?>> extends AbstractRangeSet<C>
 
   @Override
   public void add(Range<C> rangeToAdd) {
-    checkNotNull(rangeToAdd);
+    checkNotNull(rangeToAdd, "rangeToAdd");
 
     if (rangeToAdd.isEmpty()) {
       return;
@@ -227,7 +227,7 @@ public class TreeRangeSet<C extends Comparable<?>> extends AbstractRangeSet<C>
 
   @Override
   public void remove(Range<C> rangeToRemove) {
-    checkNotNull(rangeToRemove);
+    checkNotNull(rangeToRemove, "rangeToRemove");
 
     if (rangeToRemove.isEmpty()) {
       return;
@@ -699,9 +699,9 @@ public class TreeRangeSet<C extends Comparable<?>> extends AbstractRangeSet<C>
         Range<Cut<C>> lowerBoundWindow,
         Range<C> restriction,
         NavigableMap<Cut<C>, Range<C>> rangesByLowerBound) {
-      this.lowerBoundWindow = checkNotNull(lowerBoundWindow);
-      this.restriction = checkNotNull(restriction);
-      this.rangesByLowerBound = checkNotNull(rangesByLowerBound);
+      this.lowerBoundWindow = checkNotNull(lowerBoundWindow, "lowerBoundWindow");
+      this.restriction = checkNotNull(restriction, "restriction");
+      this.rangesByLowerBound = checkNotNull(rangesByLowerBound, "rangesByLowerBound");
       this.rangesByUpperBound = new RangesByUpperBound<>(rangesByLowerBound);
     }
 

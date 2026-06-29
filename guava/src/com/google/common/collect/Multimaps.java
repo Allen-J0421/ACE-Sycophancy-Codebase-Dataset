@@ -687,7 +687,7 @@ public final class Multimaps {
       staticImports = "com.google.common.base.Preconditions.checkNotNull")
   @Deprecated
   public static <K, V> Multimap<K, V> unmodifiableMultimap(ImmutableMultimap<K, V> delegate) {
-    return checkNotNull(delegate);
+    return checkNotNull(delegate, "delegate");
   }
 
   private static class UnmodifiableMultimap<K extends @Nullable Object, V extends @Nullable Object>
@@ -700,7 +700,7 @@ public final class Multimaps {
     @LazyInit transient @Nullable Map<K, Collection<V>> map;
 
     UnmodifiableMultimap(Multimap<K, V> delegate) {
-      this.delegate = checkNotNull(delegate);
+      this.delegate = checkNotNull(delegate, "delegate");
     }
 
     @Override
@@ -955,7 +955,7 @@ public final class Multimaps {
   @Deprecated
   public static <K, V> SetMultimap<K, V> unmodifiableSetMultimap(
       ImmutableSetMultimap<K, V> delegate) {
-    return checkNotNull(delegate);
+    return checkNotNull(delegate, "delegate");
   }
 
   /**
@@ -1039,7 +1039,7 @@ public final class Multimaps {
   @Deprecated
   public static <K, V> ListMultimap<K, V> unmodifiableListMultimap(
       ImmutableListMultimap<K, V> delegate) {
-    return checkNotNull(delegate);
+    return checkNotNull(delegate, "delegate");
   }
 
   /**
@@ -1156,7 +1156,7 @@ public final class Multimaps {
     final Map<K, V> map;
 
     MapMultimap(Map<K, V> map) {
-      this.map = checkNotNull(map);
+      this.map = checkNotNull(map, "map");
     }
 
     @Override
@@ -1500,8 +1500,8 @@ public final class Multimaps {
 
     TransformedEntriesMultimap(
         Multimap<K, V1> fromMultimap, EntryTransformer<? super K, ? super V1, V2> transformer) {
-      this.fromMultimap = checkNotNull(fromMultimap);
-      this.transformer = checkNotNull(transformer);
+      this.fromMultimap = checkNotNull(fromMultimap, "fromMultimap");
+      this.transformer = checkNotNull(transformer, "transformer");
     }
 
     Collection<V2> transform(@ParametricNullness K key, Collection<V1> values) {
@@ -1709,7 +1709,7 @@ public final class Multimaps {
    */
   public static <K, V> ImmutableListMultimap<K, V> index(
       Iterator<V> values, Function<? super V, K> keyFunction) {
-    checkNotNull(keyFunction);
+    checkNotNull(keyFunction, "keyFunction");
     ImmutableListMultimap.Builder<K, V> builder = ImmutableListMultimap.builder();
     while (values.hasNext()) {
       V value = values.next();
@@ -1756,7 +1756,7 @@ public final class Multimaps {
 
     @Override
     public void forEach(Consumer<? super K> consumer) {
-      checkNotNull(consumer);
+      checkNotNull(consumer, "consumer");
       multimap.entries().forEach(entry -> consumer.accept(entry.getKey()));
     }
 
@@ -1868,7 +1868,7 @@ public final class Multimaps {
     @Weak private final Multimap<K, V> multimap;
 
     AsMap(Multimap<K, V> multimap) {
-      this.multimap = checkNotNull(multimap);
+      this.multimap = checkNotNull(multimap, "multimap");
     }
 
     @Override
@@ -2157,7 +2157,7 @@ public final class Multimaps {
   public static <K extends @Nullable Object, V extends @Nullable Object>
       Multimap<K, V> filterEntries(
           Multimap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-    checkNotNull(entryPredicate);
+    checkNotNull(entryPredicate, "entryPredicate");
     if (unfiltered instanceof SetMultimap) {
       return filterEntries((SetMultimap<K, V>) unfiltered, entryPredicate);
     }
@@ -2194,7 +2194,7 @@ public final class Multimaps {
   public static <K extends @Nullable Object, V extends @Nullable Object>
       SetMultimap<K, V> filterEntries(
           SetMultimap<K, V> unfiltered, Predicate<? super Entry<K, V>> entryPredicate) {
-    checkNotNull(entryPredicate);
+    checkNotNull(entryPredicate, "entryPredicate");
     return (unfiltered instanceof FilteredSetMultimap)
         ? filterFiltered((FilteredSetMultimap<K, V>) unfiltered, entryPredicate)
         : new FilteredEntrySetMultimap<K, V>(checkNotNull(unfiltered), entryPredicate);

@@ -419,7 +419,7 @@ public final class Shorts extends ShortsMethodsForWeb {
    * @param array an array of {@code short} values, possibly empty
    */
   public static String join(String separator, short... array) {
-    checkNotNull(separator);
+    checkNotNull(separator, "separator");
     if (array.length == 0) {
       return "";
     }
@@ -477,7 +477,7 @@ public final class Shorts extends ShortsMethodsForWeb {
    * @since 23.1
    */
   public static void sortDescending(short[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     sortDescending(array, 0, array.length);
   }
 
@@ -488,7 +488,7 @@ public final class Shorts extends ShortsMethodsForWeb {
    * @since 23.1
    */
   public static void sortDescending(short[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     sort(array, fromIndex, toIndex);
     reverse(array, fromIndex, toIndex);
@@ -501,7 +501,7 @@ public final class Shorts extends ShortsMethodsForWeb {
    * @since 23.1
    */
   public static void reverse(short[] array) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     reverse(array, 0, array.length);
   }
 
@@ -516,7 +516,7 @@ public final class Shorts extends ShortsMethodsForWeb {
    * @since 23.1
    */
   public static void reverse(short[] array, int fromIndex, int toIndex) {
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     for (int i = fromIndex, j = toIndex - 1; i < j; i++, j--) {
       short tmp = array[i];
@@ -553,7 +553,7 @@ public final class Shorts extends ShortsMethodsForWeb {
    */
   public static void rotate(short[] array, int distance, int fromIndex, int toIndex) {
     // See Ints.rotate for more details about possible algorithms here.
-    checkNotNull(array);
+    checkNotNull(array, "array");
     checkPositionIndexes(fromIndex, toIndex, array.length);
     if (array.length <= 1) {
       return;
@@ -691,7 +691,7 @@ public final class Shorts extends ShortsMethodsForWeb {
       checkElementIndex(index, size());
       short oldValue = array[start + index];
       // checkNotNull for GWT (do not optimize)
-      array[start + index] = checkNotNull(element);
+      array[start + index] = checkNotNull(element, "element");
       return oldValue;
     }
 

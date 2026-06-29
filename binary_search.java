@@ -1,4 +1,10 @@
 class BinarySearch {
+    private static final int NOT_FOUND = -1;
+    private static final int SAMPLE_TARGET = 10;
+
+    private BinarySearch() {
+    }
+
     static int binarySearch(int[] values, int target) {
         int low = 0;
         int high = values.length - 1;
@@ -17,21 +23,25 @@ class BinarySearch {
             }
         }
 
-        return -1;
+        return NOT_FOUND;
     }
 
     private static void printSearchResult(int index) {
-        if (index == -1) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + index);
-        }
+        System.out.println(formatSearchResult(index));
+    }
+
+    private static String formatSearchResult(int index) {
+        return index == NOT_FOUND
+                ? "Element is not present in array"
+                : "Element is present at index " + index;
+    }
+
+    private static int[] sampleValues() {
+        return new int[] { 2, 3, 4, 10, 40 };
     }
 
     public static void main(String[] args) {
-        int[] values = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(values, target);
+        int result = binarySearch(sampleValues(), SAMPLE_TARGET);
 
         printSearchResult(result);
     }

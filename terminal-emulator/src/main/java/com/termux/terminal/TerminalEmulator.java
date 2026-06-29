@@ -1185,26 +1185,31 @@ public final class TerminalEmulator {
                 break;
             case 'r':
             case 's':
-                if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
-                for (int i = 0; i <= mArgIndex; i++) {
-                    int externalBit = mArgs[i];
-                    int internalBit = mapDecSetBitToInternalBit(externalBit);
-                    if (internalBit == -1) {
-                        Logger.logWarn(mClient, LOG_TAG, "Ignoring request to save/recall decset bit=" + externalBit);
-                    } else {
-                        if (b == 's') {
-                            mSavedDecSetFlags |= internalBit;
-                        } else {
-                            doDecSetOrReset((mSavedDecSetFlags & internalBit) != 0, externalBit);
-                        }
-                    }
-                }
+                doCsiDecModesSaveOrRestore(b);
                 break;
             case '$':
                 continueSequence(ESC_CSI_QUESTIONMARK_ARG_DOLLAR);
                 return;
             default:
                 parseArg(b);
+        }
+    }
+
+    /** DECDMSR — save ('s') or restore ('r') a list of DEC private mode bits. */
+    private void doCsiDecModesSaveOrRestore(int b) {
+        if (mArgIndex >= mArgs.length) mArgIndex = mArgs.length - 1;
+        for (int i = 0; i <= mArgIndex; i++) {
+            int externalBit = mArgs[i];
+            int internalBit = mapDecSetBitToInternalBit(externalBit);
+            if (internalBit == -1) {
+                Logger.logWarn(mClient, LOG_TAG, "Ignoring request to save/recall decset bit=" + externalBit);
+            } else {
+                if (b == 's') {
+                    mSavedDecSetFlags |= internalBit;
+                } else {
+                    doDecSetOrReset((mSavedDecSetFlags & internalBit) != 0, externalBit);
+                }
+            }
         }
     }
 

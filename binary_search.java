@@ -1,5 +1,5 @@
 final class BinarySearch {
-    static final int NOT_FOUND = -1;
+    private static final int NOT_FOUND = -1;
 
     private BinarySearch() {
     }
@@ -19,6 +19,10 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    static boolean found(int result) {
+        return result != NOT_FOUND;
     }
 
     private static final class SearchBounds {
@@ -78,8 +82,8 @@ final class SearchResultFormatter {
     }
 
     static String format(int result) {
-        return result == BinarySearch.NOT_FOUND
-                ? NOT_FOUND_MESSAGE
-                : FOUND_MESSAGE_PREFIX + result;
+        return BinarySearch.found(result)
+                ? FOUND_MESSAGE_PREFIX + result
+                : NOT_FOUND_MESSAGE;
     }
 }

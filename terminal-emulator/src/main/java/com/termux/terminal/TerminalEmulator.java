@@ -1727,32 +1727,10 @@ public final class TerminalEmulator {
                 doCsiDeviceStatusReport();
                 break;
             case 'r': // "CSI${top};${bottom}r" - set top and bottom Margins (DECSTBM).
-            {
-                // https://vt100.net/docs/vt510-rm/DECSTBM.html
-                // The top margin defaults to 1, the bottom margin defaults to mRows.
-                // The escape sequence numbers top 1..23, but we number top 0..22.
-                // The escape sequence numbers bottom 2..24, and so do we (because we use a zero based numbering
-                // scheme, but we store the first line below the bottom-most scrolling line.
-                // As a result, we adjust the top line by -1, but we leave the bottom line alone.
-                // Also require that top + 2 <= bottom.
-                mTopMargin = Math.max(0, Math.min(getArg0(1) - 1, mRows - 2));
-                mBottomMargin = Math.max(mTopMargin + 2, Math.min(getArg1(mRows), mRows));
-
-                // DECSTBM moves the cursor to column 1, line 1 of the page respecting origin mode.
-                setCursorPosition(0, 0);
-            }
-            break;
-            case 's':
-                if (isDecsetInternalBitSet(DECSET_BIT_LEFTRIGHT_MARGIN_MODE)) {
-                    // Set left and right margins (DECSLRM - http://www.vt100.net/docs/vt510-rm/DECSLRM).
-                    mLeftMargin = Math.min(getArg0(1) - 1, mColumns - 2);
-                    mRightMargin = Math.max(mLeftMargin + 1, Math.min(getArg1(mColumns), mColumns));
-                    // DECSLRM moves the cursor to column 1, line 1 of the page.
-                    setCursorPosition(0, 0);
-                } else {
-                    // Save cursor (ANSI.SYS), available only when DECLRMM is disabled.
-                    saveCursor();
-                }
+                doCsiSetScrollMargins();
+                break;
+            case 's': // DECSLRM or ANSI.SYS save cursor.
+                doCsiDecslrmOrSaveCursor();
                 break;
             case 't': // Window manipulation (from dtterm, as well as extensions)
                 doCsiWindowManipulation();
@@ -1812,6 +1790,33 @@ public final class TerminalEmulator {
         int cellsToMove = cellsAfterCursor - cellsToDelete;
         mScreen.blockCopy(mCursorCol + cellsToDelete, mCursorRow, cellsToMove, 1, mCursorCol, mCursorRow);
         blockClear(mCursorCol + cellsToMove, mCursorRow, cellsToDelete);
+    }
+
+    /**
+     * DECSTBM — Set top and bottom scroll margins (https://vt100.net/docs/vt510-rm/DECSTBM.html).
+     * Top defaults to 1, bottom defaults to mRows. Escape numbers top 1..N-1 (we subtract 1).
+     * Bottom is stored as the first line BELOW the bottom margin, so we leave it as-is.
+     * Also requires top + 2 <= bottom.
+     */
+    private void doCsiSetScrollMargins() {
+        mTopMargin = Math.max(0, Math.min(getArg0(1) - 1, mRows - 2));
+        mBottomMargin = Math.max(mTopMargin + 2, Math.min(getArg1(mRows), mRows));
+        // DECSTBM moves the cursor to column 1, line 1 of the page respecting origin mode.
+        setCursorPosition(0, 0);
+    }
+
+    /** DECSLRM (when DECLRMM is set) or ANSI.SYS save cursor (otherwise). */
+    private void doCsiDecslrmOrSaveCursor() {
+        if (isDecsetInternalBitSet(DECSET_BIT_LEFTRIGHT_MARGIN_MODE)) {
+            // Set left and right margins (DECSLRM - http://www.vt100.net/docs/vt510-rm/DECSLRM).
+            mLeftMargin = Math.min(getArg0(1) - 1, mColumns - 2);
+            mRightMargin = Math.max(mLeftMargin + 1, Math.min(getArg1(mColumns), mColumns));
+            // DECSLRM moves the cursor to column 1, line 1 of the page.
+            setCursorPosition(0, 0);
+        } else {
+            // Save cursor (ANSI.SYS), available only when DECLRMM is disabled.
+            saveCursor();
+        }
     }
 
     private void doCsiEraseInDisplay(int b) {

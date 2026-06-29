@@ -6,14 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.termux.shared.data.DataUtils;
-import com.termux.shared.android.PackageUtils;
-import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
-import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_FLOAT_APP;
 import com.termux.shared.termux.TermuxConstants;
 
-public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
+public class TermuxFloatAppSharedPreferences extends TermuxAppSharedPreferencesBase {
 
     private int MIN_FONTSIZE;
     private int MAX_FONTSIZE;
@@ -38,11 +35,8 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
      */
     @Nullable
     public static TermuxFloatAppSharedPreferences build(@NonNull final Context context) {
-        Context termuxFloatPackageContext = PackageUtils.getContextForPackage(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME);
-        if (termuxFloatPackageContext == null)
-            return null;
-        else
-            return new TermuxFloatAppSharedPreferences(termuxFloatPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME,
+            TermuxFloatAppSharedPreferences::new);
     }
 
     /**
@@ -54,12 +48,10 @@ public class TermuxFloatAppSharedPreferences extends AppSharedPreferences {
      *                       be shown which when dismissed will exit the app.
      * @return Returns the {@link TermuxFloatAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
+    @Nullable
     public static TermuxFloatAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
-        Context termuxFloatPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME, exitAppOnError);
-        if (termuxFloatPackageContext == null)
-            return null;
-        else
-            return new TermuxFloatAppSharedPreferences(termuxFloatPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_FLOAT_PACKAGE_NAME,
+            exitAppOnError, TermuxFloatAppSharedPreferences::new);
     }
 
 

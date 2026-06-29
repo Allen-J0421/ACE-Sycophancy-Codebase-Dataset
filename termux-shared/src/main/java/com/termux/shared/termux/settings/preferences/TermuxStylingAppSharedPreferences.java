@@ -5,13 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.android.PackageUtils;
-import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
-import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.TermuxConstants;
 
-public class TermuxStylingAppSharedPreferences extends AppSharedPreferences {
+public class TermuxStylingAppSharedPreferences extends TermuxAppSharedPreferencesBase {
 
     private TermuxStylingAppSharedPreferences(@NonNull Context context) {
         super(context,
@@ -30,11 +27,8 @@ public class TermuxStylingAppSharedPreferences extends AppSharedPreferences {
      */
     @Nullable
     public static TermuxStylingAppSharedPreferences build(@NonNull final Context context) {
-        Context termuxStylingPackageContext = PackageUtils.getContextForPackage(context, TermuxConstants.TERMUX_STYLING_PACKAGE_NAME);
-        if (termuxStylingPackageContext == null)
-            return null;
-        else
-            return new TermuxStylingAppSharedPreferences(termuxStylingPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_STYLING_PACKAGE_NAME,
+            TermuxStylingAppSharedPreferences::new);
     }
 
     /**
@@ -46,12 +40,10 @@ public class TermuxStylingAppSharedPreferences extends AppSharedPreferences {
      *                       be shown which when dismissed will exit the app.
      * @return Returns the {@link TermuxStylingAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
+    @Nullable
     public static TermuxStylingAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
-        Context termuxStylingPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_STYLING_PACKAGE_NAME, exitAppOnError);
-        if (termuxStylingPackageContext == null)
-            return null;
-        else
-            return new TermuxStylingAppSharedPreferences(termuxStylingPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_STYLING_PACKAGE_NAME,
+            exitAppOnError, TermuxStylingAppSharedPreferences::new);
     }
 
 

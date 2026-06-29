@@ -5,13 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.android.PackageUtils;
-import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
-import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.TermuxConstants;
 
-public class TermuxBootAppSharedPreferences extends AppSharedPreferences {
+public class TermuxBootAppSharedPreferences extends TermuxAppSharedPreferencesBase {
 
     private TermuxBootAppSharedPreferences(@NonNull Context context) {
         super(context,
@@ -30,11 +27,8 @@ public class TermuxBootAppSharedPreferences extends AppSharedPreferences {
      */
     @Nullable
     public static TermuxBootAppSharedPreferences build(@NonNull final Context context) {
-        Context termuxBootPackageContext = PackageUtils.getContextForPackage(context, TermuxConstants.TERMUX_BOOT_PACKAGE_NAME);
-        if (termuxBootPackageContext == null)
-            return null;
-        else
-            return new TermuxBootAppSharedPreferences(termuxBootPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_BOOT_PACKAGE_NAME,
+            TermuxBootAppSharedPreferences::new);
     }
 
     /**
@@ -46,12 +40,10 @@ public class TermuxBootAppSharedPreferences extends AppSharedPreferences {
      *                       be shown which when dismissed will exit the app.
      * @return Returns the {@link TermuxBootAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
+    @Nullable
     public static TermuxBootAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
-        Context termuxBootPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_BOOT_PACKAGE_NAME, exitAppOnError);
-        if (termuxBootPackageContext == null)
-            return null;
-        else
-            return new TermuxBootAppSharedPreferences(termuxBootPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_BOOT_PACKAGE_NAME,
+            exitAppOnError, TermuxBootAppSharedPreferences::new);
     }
 
 

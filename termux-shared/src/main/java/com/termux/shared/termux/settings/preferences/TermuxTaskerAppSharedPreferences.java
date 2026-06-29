@@ -5,16 +5,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.termux.shared.android.PackageUtils;
-import com.termux.shared.settings.preferences.AppSharedPreferences;
 import com.termux.shared.settings.preferences.SharedPreferenceUtils;
 import com.termux.shared.termux.TermuxConstants;
-import com.termux.shared.termux.TermuxUtils;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants.TERMUX_TASKER_APP;
 
-public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
+public class TermuxTaskerAppSharedPreferences extends TermuxAppSharedPreferencesBase {
 
-    private  TermuxTaskerAppSharedPreferences(@NonNull Context context) {
+    private TermuxTaskerAppSharedPreferences(@NonNull Context context) {
         super(context,
             SharedPreferenceUtils.getPrivateSharedPreferences(context,
                 TermuxConstants.TERMUX_TASKER_DEFAULT_PREFERENCES_FILE_BASENAME_WITHOUT_EXTENSION),
@@ -31,11 +28,8 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
      */
     @Nullable
     public static TermuxTaskerAppSharedPreferences build(@NonNull final Context context) {
-        Context termuxTaskerPackageContext = PackageUtils.getContextForPackage(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME);
-        if (termuxTaskerPackageContext == null)
-            return null;
-        else
-            return new TermuxTaskerAppSharedPreferences(termuxTaskerPackageContext);
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME,
+            TermuxTaskerAppSharedPreferences::new);
     }
 
     /**
@@ -47,12 +41,10 @@ public class TermuxTaskerAppSharedPreferences extends AppSharedPreferences {
      *                       be shown which when dismissed will exit the app.
      * @return Returns the {@link TermuxTaskerAppSharedPreferences}. This will {@code null} if an exception is raised.
      */
-    public static  TermuxTaskerAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
-        Context termuxTaskerPackageContext = TermuxUtils.getContextForPackageOrExitApp(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME, exitAppOnError);
-        if (termuxTaskerPackageContext == null)
-            return null;
-        else
-            return new TermuxTaskerAppSharedPreferences(termuxTaskerPackageContext);
+    @Nullable
+    public static TermuxTaskerAppSharedPreferences build(@NonNull final Context context, final boolean exitAppOnError) {
+        return TermuxAppSharedPreferencesBase.build(context, TermuxConstants.TERMUX_TASKER_PACKAGE_NAME,
+            exitAppOnError, TermuxTaskerAppSharedPreferences::new);
     }
 
 

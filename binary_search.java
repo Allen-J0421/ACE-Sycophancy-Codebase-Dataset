@@ -9,7 +9,7 @@ final class BinarySearch {
 
     static int binarySearch(int[] sortedValues, int target) {
         int low = 0;
-        int high = sortedValues.length - 1;
+        int high = lastIndex(sortedValues);
 
         while (low <= high) {
             int mid = midpoint(low, high);
@@ -31,6 +31,10 @@ final class BinarySearch {
 
     private static int midpoint(int low, int high) {
         return low + (high - low) / 2;
+    }
+
+    private static int lastIndex(int[] values) {
+        return values.length - 1;
     }
 
     public static void main(String[] args) {

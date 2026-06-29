@@ -37,6 +37,10 @@ final class BinarySearch {
         return Integer.compare(value, target);
     }
 
+    private static boolean isFound(int result) {
+        return result != NOT_FOUND;
+    }
+
     private static final class SearchBounds {
         private int low;
         private int high;
@@ -64,11 +68,11 @@ final class BinarySearch {
     }
 
     private static String resultMessage(int result) {
-        if (result == NOT_FOUND) {
-            return NOT_FOUND_MESSAGE;
+        if (isFound(result)) {
+            return FOUND_MESSAGE_PREFIX + result;
         }
 
-        return FOUND_MESSAGE_PREFIX + result;
+        return NOT_FOUND_MESSAGE;
     }
 
     private static void runDemo() {

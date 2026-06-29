@@ -71,9 +71,13 @@ final class BinarySearch {
         return FOUND_MESSAGE_PREFIX + result;
     }
 
-    public static void main(String[] args) {
+    private static void runDemo() {
         int result = binarySearch(DEMO_VALUES, DEMO_TARGET);
 
         System.out.println(resultMessage(result));
+    }
+
+    public static void main(String[] args) {
+        runDemo();
     }
 }

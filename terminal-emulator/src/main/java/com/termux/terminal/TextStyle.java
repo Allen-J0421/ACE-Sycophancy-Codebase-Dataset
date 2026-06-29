@@ -43,24 +43,35 @@ public final class TextStyle {
     /** The 256 standard color entries and the three special (foreground, background and cursor) ones. */
     public final static int NUM_INDEXED_COLORS = 259;
 
+    /** Bit offset of the 24-bit foreground color field within an encoded style. */
+    private final static int FOREGROUND_COLOR_SHIFT = 40;
+    /** Bit offset of the 24-bit background color field within an encoded style. */
+    private final static int BACKGROUND_COLOR_SHIFT = 16;
+    /** Mask for a 9-bit indexed color, enough to hold any of the {@link #NUM_INDEXED_COLORS} indices. */
+    private final static long COLOR_INDEX_MASK = 0b111111111L;
+    /** Mask for a 24-bit true (RGB) color. */
+    private final static long TRUECOLOR_MASK = 0x00ffffffL;
+    /** The high alpha byte marking a value as a 24-bit color rather than a color index. */
+    private final static int TRUECOLOR_ALPHA = 0xff000000;
+
     /** Normal foreground and background colors and no effects. */
     final static long NORMAL = encode(COLOR_INDEX_FOREGROUND, COLOR_INDEX_BACKGROUND, 0);
 
     static long encode(int foreColor, int backColor, int effect) {
         long result = effect & 0b111111111;
-        if ((0xff000000 & foreColor) == 0xff000000) {
+        if ((TRUECOLOR_ALPHA & foreColor) == TRUECOLOR_ALPHA) {
             // 24-bit color.
-            result |= CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND | ((foreColor & 0x00ffffffL) << 40L);
+            result |= CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND | ((foreColor & TRUECOLOR_MASK) << FOREGROUND_COLOR_SHIFT);
         } else {
             // Indexed color.
-            result |= (foreColor & 0b111111111L) << 40;
+            result |= (foreColor & COLOR_INDEX_MASK) << FOREGROUND_COLOR_SHIFT;
         }
-        if ((0xff000000 & backColor) == 0xff000000) {
+        if ((TRUECOLOR_ALPHA & backColor) == TRUECOLOR_ALPHA) {
             // 24-bit color.
-            result |= CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND | ((backColor & 0x00ffffffL) << 16L);
+            result |= CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND | ((backColor & TRUECOLOR_MASK) << BACKGROUND_COLOR_SHIFT);
         } else {
             // Indexed color.
-            result |= (backColor & 0b111111111L) << 16L;
+            result |= (backColor & COLOR_INDEX_MASK) << BACKGROUND_COLOR_SHIFT;
         }
 
         return result;
@@ -68,18 +79,18 @@ public final class TextStyle {
 
     public static int decodeForeColor(long style) {
         if ((style & CHARACTER_ATTRIBUTE_TRUECOLOR_FOREGROUND) == 0) {
-            return (int) ((style >>> 40) & 0b111111111L);
+            return (int) ((style >>> FOREGROUND_COLOR_SHIFT) & COLOR_INDEX_MASK);
         } else {
-            return 0xff000000 | (int) ((style >>> 40) & 0x00ffffffL);
+            return TRUECOLOR_ALPHA | (int) ((style >>> FOREGROUND_COLOR_SHIFT) & TRUECOLOR_MASK);
         }
 
     }
 
     public static int decodeBackColor(long style) {
         if ((style & CHARACTER_ATTRIBUTE_TRUECOLOR_BACKGROUND) == 0) {
-            return (int) ((style >>> 16) & 0b111111111L);
+            return (int) ((style >>> BACKGROUND_COLOR_SHIFT) & COLOR_INDEX_MASK);
         } else {
-            return 0xff000000 | (int) ((style >>> 16) & 0x00ffffffL);
+            return TRUECOLOR_ALPHA | (int) ((style >>> BACKGROUND_COLOR_SHIFT) & TRUECOLOR_MASK);
         }
     }
 

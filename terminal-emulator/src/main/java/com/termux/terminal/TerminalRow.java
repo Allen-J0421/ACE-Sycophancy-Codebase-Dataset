@@ -175,15 +175,7 @@ public final class TerminalRow {
         final int oldStartOfColumnIndex = findStartOfColumn(columnToSet);
         final int oldCodePointDisplayWidth = WcWidth.width(text, oldStartOfColumnIndex);
 
-        // Get the number of elements in the mText array this column uses now
-        int oldCharactersUsedForColumn;
-        if (columnToSet + oldCodePointDisplayWidth < mColumns) {
-            int oldEndOfColumnIndex = findStartOfColumn(columnToSet + oldCodePointDisplayWidth);
-            oldCharactersUsedForColumn = oldEndOfColumnIndex - oldStartOfColumnIndex;
-        } else {
-            // Last character.
-            oldCharactersUsedForColumn = mSpaceUsed - oldStartOfColumnIndex;
-        }
+        int oldCharactersUsedForColumn = countCharsUsedByColumn(columnToSet, oldCodePointDisplayWidth, oldStartOfColumnIndex);
 
         // If MAX_COMBINING_CHARACTERS_PER_COLUMN already exist in column, then ignore adding additional combining characters.
         if (newIsCombining) {
@@ -218,13 +210,30 @@ public final class TerminalRow {
         //noinspection ResultOfMethodCallIgnored - since we already now how many java chars is used.
         Character.toChars(codePoint, text, oldStartOfColumnIndex + (newIsCombining ? oldCharactersUsedForColumn : 0));
 
-        if (oldCodePointDisplayWidth == 2 && newCodePointDisplayWidth == 1) {
-            // Replace second half of wide char with a space. Which mean that we actually add a ' ' java character.
-            text = shiftTail(text, newNextColumnIndex, 1);
-            text[newNextColumnIndex] = ' ';
+        adjustAfterWidthChange(oldCodePointDisplayWidth, newCodePointDisplayWidth, columnToSet, newNextColumnIndex);
+    }
 
+    /** Returns how many java chars the given column occupies in mText, starting at {@code startIndex}. */
+    private int countCharsUsedByColumn(int column, int displayWidth, int startIndex) {
+        if (column + displayWidth < mColumns) {
+            return findStartOfColumn(column + displayWidth) - startIndex;
+        } else {
+            // Last character.
+            return mSpaceUsed - startIndex;
+        }
+    }
+
+    /**
+     * Handle mText and mSpaceUsed adjustments when the display width of a column changes.
+     * Called after the new codepoint has been stored but before returning from setChar.
+     */
+    private void adjustAfterWidthChange(int oldWidth, int newWidth, int columnToSet, int newNextColumnIndex) {
+        if (oldWidth == 2 && newWidth == 1) {
+            // Replace second half of wide char with a space. Which mean that we actually add a ' ' java character.
+            shiftTail(mText, newNextColumnIndex, 1);
+            mText[newNextColumnIndex] = ' ';
             ++mSpaceUsed;
-        } else if (oldCodePointDisplayWidth == 1 && newCodePointDisplayWidth == 2) {
+        } else if (oldWidth == 1 && newWidth == 2) {
             if (columnToSet == mColumns - 1) {
                 throw new IllegalArgumentException("Cannot put wide character in last column");
             } else if (columnToSet == mColumns - 2) {
@@ -235,9 +244,8 @@ public final class TerminalRow {
                 // check at the beginning of this method we know that we are not overwriting a wide char.
                 int newNextNextColumnIndex = newNextColumnIndex + (Character.isHighSurrogate(mText[newNextColumnIndex]) ? 2 : 1);
                 int nextLen = newNextNextColumnIndex - newNextColumnIndex;
-
                 // Shift the array leftwards.
-                System.arraycopy(text, newNextNextColumnIndex, text, newNextColumnIndex, mSpaceUsed - newNextNextColumnIndex);
+                System.arraycopy(mText, newNextNextColumnIndex, mText, newNextColumnIndex, mSpaceUsed - newNextNextColumnIndex);
                 mSpaceUsed -= nextLen;
             }
         }

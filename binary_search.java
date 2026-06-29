@@ -2,6 +2,10 @@ class BinarySearch {
     static final int NOT_FOUND = -1;
 
     static int binarySearch(int[] values, int target) {
+        return search(values, target);
+    }
+
+    static int search(int[] values, int target) {
         int low = 0;
         int high = values.length - 1;
 
@@ -37,7 +41,7 @@ class BinarySearchDemo {
     private static final int SAMPLE_TARGET = 10;
 
     public static void main(String[] args) {
-        int result = BinarySearch.binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
+        int result = BinarySearch.search(SAMPLE_VALUES, SAMPLE_TARGET);
         System.out.println(formatResult(result));
     }
 
@@ -61,6 +65,7 @@ class BinarySearchTest {
         for (SearchCase testCase : testCases()) {
             assertSearch(testCase);
         }
+        assertCompatibilityMethod();
 
         System.out.println("All binary search tests passed");
     }
@@ -79,11 +84,19 @@ class BinarySearchTest {
     }
 
     private static void assertSearch(SearchCase testCase) {
-        int actual = BinarySearch.binarySearch(testCase.values, testCase.target);
+        int actual = BinarySearch.search(testCase.values, testCase.target);
 
         if (actual != testCase.expected) {
             throw new AssertionError(
                     testCase.name + ": expected " + testCase.expected + " but got " + actual);
+        }
+    }
+
+    private static void assertCompatibilityMethod() {
+        int actual = BinarySearch.binarySearch(SORTED_VALUES, 10);
+
+        if (actual != 3) {
+            throw new AssertionError("binarySearch compatibility method: expected 3 but got " + actual);
         }
     }
 

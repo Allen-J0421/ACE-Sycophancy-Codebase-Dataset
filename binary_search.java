@@ -9,7 +9,7 @@ class BinarySearch {
         }
 
         SearchInput input = new SearchInput(sortedNumbers, target);
-        SearchBounds bounds = SearchBounds.forArray(sortedNumbers);
+        SearchBounds bounds = input.bounds();
 
         while (bounds.hasRemainingValues()) {
             int middle = bounds.midpoint();
@@ -61,6 +61,10 @@ class BinarySearch {
         private boolean targetIsAfter(int index) {
             return sortedNumbers[index] < target;
         }
+
+        private SearchBounds bounds() {
+            return new SearchBounds(0, sortedNumbers.length - 1);
+        }
     }
 
     private static final class SearchBounds {
@@ -70,10 +74,6 @@ class BinarySearch {
         private SearchBounds(int left, int right) {
             this.left = left;
             this.right = right;
-        }
-
-        private static SearchBounds forArray(int[] sortedNumbers) {
-            return new SearchBounds(0, sortedNumbers.length - 1);
         }
 
         private boolean hasRemainingValues() {

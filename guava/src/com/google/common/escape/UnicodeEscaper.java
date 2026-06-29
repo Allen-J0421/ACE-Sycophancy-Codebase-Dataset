@@ -294,19 +294,4 @@ public abstract class UnicodeEscaper extends Escaper {
   static int codePointAtInternal(CharSequence seq, int index, int end) {
     return codePointAt(seq, index, end);
   }
-
-  /**
-   * Helper method to grow the character buffer as needed, this only happens once in a while so it's
-   * ok if it's in a method call. If the index passed in is 0 then no copying will be done.
-   */
-  private static char[] growBuffer(char[] dest, int index, int size) {
-    if (size < 0) { // overflow - should be OutOfMemoryError but GWT/j2cl don't support it
-      throw new AssertionError("Cannot increase internal buffer any further");
-    }
-    char[] copy = new char[size];
-    if (index > 0) {
-      arraycopy(dest, 0, copy, 0, index);
-    }
-    return copy;
-  }
 }

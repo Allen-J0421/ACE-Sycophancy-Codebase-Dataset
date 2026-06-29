@@ -8,7 +8,7 @@ class BinarySearch {
         int right = sortedNumbers.length - 1;
 
         while (left <= right) {
-            int middle = left + (right - left) / 2;
+            int middle = midpoint(left, right);
             int value = sortedNumbers[middle];
 
             if (value == target) {
@@ -23,6 +23,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int midpoint(int left, int right) {
+        return left + (right - left) / 2;
     }
 
     static String formatSearchResult(int result) {

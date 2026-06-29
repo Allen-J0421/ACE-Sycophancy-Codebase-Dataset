@@ -481,7 +481,7 @@ public abstract class Ordering<T extends @Nullable Object> implements Comparator
    * thenComparing} may be even more useful.
    */
   public <U extends T> Ordering<U> compound(Comparator<? super U> secondaryComparator) {
-    return new CompoundOrdering<>(this, checkNotNull(secondaryComparator));
+    return new CompoundOrdering<>(this, checkNotNull(secondaryComparator, "secondaryComparator"));
   }
 
   /**
@@ -780,7 +780,7 @@ public abstract class Ordering<T extends @Nullable Object> implements Comparator
    */
   @SuppressWarnings("EmptyList") // ImmutableList doesn't support nullable element types
   public <E extends T> List<E> leastOf(Iterator<E> iterator, int k) {
-    checkNotNull(iterator);
+    checkNotNull(iterator, "iterator");
     checkNonnegative(k, "k");
 
     if (k == 0 || !iterator.hasNext()) {

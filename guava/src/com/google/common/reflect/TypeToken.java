@@ -165,7 +165,7 @@ public abstract class TypeToken<T> extends TypeCapture<T> implements Serializabl
   }
 
   private TypeToken(Type type) {
-    this.runtimeType = checkNotNull(type);
+    this.runtimeType = checkNotNull(type, "type");
   }
 
   /** Returns an instance of type token that wraps {@code type}. */
@@ -289,7 +289,7 @@ public abstract class TypeToken<T> extends TypeCapture<T> implements Serializabl
    * }
    */
   public final TypeToken<?> resolveType(Type type) {
-    checkNotNull(type);
+    checkNotNull(type, "type");
     // Being conservative here because the user could use resolveType() to resolve a type in an
     // invariant context.
     return of(getInvariantTypeResolver().resolveType(type));
@@ -496,7 +496,7 @@ public abstract class TypeToken<T> extends TypeCapture<T> implements Serializabl
    * @since 19.0
    */
   public final boolean isSubtypeOf(Type supertype) {
-    checkNotNull(supertype);
+    checkNotNull(supertype, "supertype");
     if (supertype instanceof WildcardType) {
       // if 'supertype' is <? super Foo>, 'this' can be:
       // Foo, SubFoo, <? extends Foo>.

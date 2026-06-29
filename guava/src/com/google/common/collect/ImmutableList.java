@@ -236,7 +236,7 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
    * @throws NullPointerException if {@code elements} contains a null element
    */
   public static <E> ImmutableList<E> copyOf(Iterable<? extends E> elements) {
-    checkNotNull(elements); // TODO(kevinb): is this here only for GWT?
+    checkNotNull(elements, "elements"); // TODO(kevinb): is this here only for GWT?
     return (elements instanceof Collection)
         ? copyOf((Collection<? extends E>) elements)
         : copyOf(elements.iterator());
@@ -343,7 +343,7 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
    */
   public static <E> ImmutableList<E> sortedCopyOf(
       Comparator<? super E> comparator, Iterable<? extends E> elements) {
-    checkNotNull(comparator);
+    checkNotNull(comparator, "comparator");
     @SuppressWarnings("unchecked") // all supported methods are covariant
     E[] array = (E[]) Iterables.toArray(elements);
     checkElementsNotNull(array);
@@ -419,7 +419,7 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
 
   @Override
   public void forEach(Consumer<? super E> consumer) {
-    checkNotNull(consumer);
+    checkNotNull(consumer, "consumer");
     int n = size();
     for (int i = 0; i < n; i++) {
       consumer.accept(get(i));
@@ -846,7 +846,7 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
     @CanIgnoreReturnValue
     @Override
     public Builder<E> add(E element) {
-      checkNotNull(element);
+      checkNotNull(element, "element");
       ensureRoomFor(1);
       contents[size++] = element;
       return this;
@@ -891,7 +891,7 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
     @CanIgnoreReturnValue
     @Override
     public Builder<E> addAll(Iterable<? extends E> elements) {
-      checkNotNull(elements);
+      checkNotNull(elements, "elements");
       if (elements instanceof Collection) {
         Collection<?> collection = (Collection<?>) elements;
         ensureRoomFor(collection.size());
@@ -921,7 +921,7 @@ public abstract class ImmutableList<E> extends ImmutableCollection<E>
 
     @CanIgnoreReturnValue
     Builder<E> combine(Builder<E> builder) {
-      checkNotNull(builder);
+      checkNotNull(builder, "builder");
       add(builder.contents, builder.size);
       return this;
     }

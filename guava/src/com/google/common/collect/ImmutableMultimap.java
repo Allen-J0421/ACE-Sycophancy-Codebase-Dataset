@@ -335,7 +335,7 @@ public abstract class ImmutableMultimap<K, V> extends BaseImmutableMultimap<K, V
      */
     @CanIgnoreReturnValue
     public Builder<K, V> orderKeysBy(Comparator<? super K> keyComparator) {
-      this.keyComparator = checkNotNull(keyComparator);
+      this.keyComparator = checkNotNull(keyComparator, "keyComparator");
       return this;
     }
 
@@ -346,7 +346,7 @@ public abstract class ImmutableMultimap<K, V> extends BaseImmutableMultimap<K, V
      */
     @CanIgnoreReturnValue
     public Builder<K, V> orderValuesBy(Comparator<? super V> valueComparator) {
-      this.valueComparator = checkNotNull(valueComparator);
+      this.valueComparator = checkNotNull(valueComparator, "valueComparator");
       return this;
     }
 
@@ -696,7 +696,7 @@ public abstract class ImmutableMultimap<K, V> extends BaseImmutableMultimap<K, V
 
   @Override
   public final void forEach(BiConsumer<? super K, ? super V> action) {
-    checkNotNull(action);
+    checkNotNull(action, "action");
     asMap()
         .forEach(
             (key, valueCollection) -> valueCollection.forEach(value -> action.accept(key, value)));

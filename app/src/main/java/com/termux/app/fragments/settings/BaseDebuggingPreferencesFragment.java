@@ -1,42 +1,27 @@
 package com.termux.app.fragments.settings;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.shared.logger.Logger;
 
 @Keep
-public abstract class BaseDebuggingPreferencesFragment extends PreferenceFragmentCompat {
+public abstract class BaseDebuggingPreferencesFragment extends BasePreferencesFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
-
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(createDataStore(context));
-
-        setPreferencesFromResource(getPreferencesXmlResource(), rootKey);
-
+    protected void onPreferencesCreated(@NonNull Context context) {
         configureLoggingPreferences(context);
     }
-
-    protected abstract int getPreferencesXmlResource();
-
-    protected abstract PreferenceDataStore createDataStore(Context context);
 
     @Nullable
     protected abstract Integer getCurrentLogLevel(Context context);
 
-    private void configureLoggingPreferences(Context context) {
+    private void configureLoggingPreferences(@NonNull Context context) {
         PreferenceCategory loggingCategory = findPreference("logging");
         if (loggingCategory == null) return;
 

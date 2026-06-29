@@ -1,28 +1,24 @@
 package com.termux.app.fragments.settings;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.preference.PreferenceDataStore;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.termux.R;
 import com.termux.shared.termux.settings.preferences.TermuxTaskerAppSharedPreferences;
 
 @Keep
-public class TermuxTaskerPreferencesFragment extends PreferenceFragmentCompat {
+public class TermuxTaskerPreferencesFragment extends BasePreferencesFragment {
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Context context = getContext();
-        if (context == null) return;
+    protected int getPreferencesXmlResource() {
+        return R.xml.termux_tasker_preferences;
+    }
 
-        PreferenceManager preferenceManager = getPreferenceManager();
-        preferenceManager.setPreferenceDataStore(TermuxTaskerPreferencesDataStore.getInstance(context));
-
-        setPreferencesFromResource(R.xml.termux_tasker_preferences, rootKey);
+    @Override
+    protected PreferenceDataStore createDataStore(Context context) {
+        return TermuxTaskerPreferencesDataStore.getInstance(context);
     }
 
 }

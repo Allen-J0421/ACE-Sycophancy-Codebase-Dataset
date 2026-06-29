@@ -6,7 +6,7 @@ class BinarySearch {
         int high = array.length - 1;
 
         while (low <= high) {
-            int mid = low + (high - low) / 2;
+            int mid = midpoint(low, high);
             int value = array[mid];
 
             if (value == target) {
@@ -23,6 +23,10 @@ class BinarySearch {
         return NOT_FOUND;
     }
 
+    private static int midpoint(int low, int high) {
+        return low + (high - low) / 2;
+    }
+
     private static String formatSearchResult(int result) {
         if (result == NOT_FOUND) {
             return "Element is not present in array";
@@ -32,6 +36,10 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
+        runDemo();
+    }
+
+    private static void runDemo() {
         int[] array = { 2, 3, 4, 10, 40 };
         int target = 10;
         int result = binarySearch(array, target);

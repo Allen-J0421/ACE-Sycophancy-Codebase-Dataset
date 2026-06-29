@@ -1,5 +1,8 @@
-class BinarySearch {
+final class BinarySearch {
     static final int NOT_FOUND = -1;
+
+    private BinarySearch() {
+    }
 
     static int binarySearch(int[] values, int target) {
         return search(values, target);
@@ -36,9 +39,12 @@ class BinarySearch {
     }
 }
 
-class BinarySearchDemo {
+final class BinarySearchDemo {
     private static final int[] SAMPLE_VALUES = {2, 3, 4, 10, 40};
     private static final int SAMPLE_TARGET = 10;
+
+    private BinarySearchDemo() {
+    }
 
     public static void main(String[] args) {
         int result = BinarySearch.search(SAMPLE_VALUES, SAMPLE_TARGET);
@@ -58,8 +64,11 @@ class BinarySearchDemo {
     }
 }
 
-class BinarySearchTest {
+final class BinarySearchTest {
     private static final int[] SORTED_VALUES = {2, 3, 4, 10, 40};
+
+    private BinarySearchTest() {
+    }
 
     public static void main(String[] args) {
         for (SearchCase testCase : testCases()) {

@@ -29,8 +29,7 @@ class BinarySearch {
         return NOT_FOUND;
     }
 
-    private static void printSearchResult(int[] values, int target) {
-        int result = binarySearch(values, target);
+    private static void printSearchResult(int result) {
         System.out.println(formatSearchResult(result));
     }
 
@@ -67,7 +66,8 @@ class BinarySearch {
 
     public static void main(String[] args) {
         runSelfTests();
-        printSearchResult(SAMPLE_VALUES, SAMPLE_TARGET);
+        int result = binarySearch(SAMPLE_VALUES, SAMPLE_TARGET);
+        printSearchResult(result);
     }
 
     private record SearchCase(int[] values, int target, int expectedIndex) {

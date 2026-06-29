@@ -384,12 +384,7 @@ public class SpringApplication {
 		postProcessApplicationContext(context);
 		addAotGeneratedInitializerIfNecessary(this.initializers);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
-			autowireCapableBeanFactory.setAllowCircularReferences(this.properties.isAllowCircularReferences());
-			if (beanFactory instanceof DefaultListableBeanFactory listableBeanFactory) {
-				listableBeanFactory.setAllowBeanDefinitionOverriding(this.properties.isAllowBeanDefinitionOverriding());
-			}
-		}
+		configureBeanFactory(beanFactory);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		bootstrapContext.close(context);
@@ -416,6 +411,15 @@ public class SpringApplication {
 			load(context, sources.toArray(new Object[0]));
 		}
 		listeners.contextLoaded(context);
+	}
+
+	private void configureBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			autowireCapableBeanFactory.setAllowCircularReferences(this.properties.isAllowCircularReferences());
+			if (beanFactory instanceof DefaultListableBeanFactory listableBeanFactory) {
+				listableBeanFactory.setAllowBeanDefinitionOverriding(this.properties.isAllowBeanDefinitionOverriding());
+			}
+		}
 	}
 
 	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
@@ -557,13 +561,14 @@ public class SpringApplication {
 	}
 
 	private @Nullable Banner printBanner(ConfigurableEnvironment environment) {
-		if (this.properties.getBannerMode(environment) == Banner.Mode.OFF) {
+		Banner.Mode bannerMode = this.properties.getBannerMode(environment);
+		if (bannerMode == Banner.Mode.OFF) {
 			return null;
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
 				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
-		if (this.properties.getBannerMode(environment) == Mode.LOG) {
+		if (bannerMode == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
 		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
@@ -1075,7 +1080,7 @@ public class SpringApplication {
 	 */
 	public void addBootstrapRegistryInitializer(BootstrapRegistryInitializer bootstrapRegistryInitializer) {
 		Assert.notNull(bootstrapRegistryInitializer, "'bootstrapRegistryInitializer' must not be null");
-		this.bootstrapRegistryInitializers.addAll(Arrays.asList(bootstrapRegistryInitializer));
+		this.bootstrapRegistryInitializers.add(bootstrapRegistryInitializer);
 	}
 
 	/**

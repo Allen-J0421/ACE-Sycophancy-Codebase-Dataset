@@ -139,7 +139,11 @@ class JavaBeanBinder implements DataObjectBinder {
 	}
 
 	private String determinePropertyName(BeanProperty property) {
-		return Arrays.stream((property.getAnnotations() != null) ? property.getAnnotations() : new Annotation[0])
+		Annotation[] annotations = property.getAnnotations();
+		if (annotations == null) {
+			return property.getName();
+		}
+		return Arrays.stream(annotations)
 			.filter((annotation) -> annotation.annotationType() == Name.class)
 			.findFirst()
 			.map(Name.class::cast)

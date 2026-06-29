@@ -6,7 +6,7 @@ class BinarySearch {
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] numbers, int target) {
+    static int indexOf(int[] numbers, int target) {
         int low = 0;
         int high = numbers.length - 1;
 
@@ -37,7 +37,11 @@ class BinarySearch {
     }
 
     public static void main(String[] args) {
-        int result = binarySearch(SAMPLE_NUMBERS, SAMPLE_TARGET);
+        runDemo();
+    }
+
+    private static void runDemo() {
+        int result = indexOf(SAMPLE_NUMBERS, SAMPLE_TARGET);
         System.out.println(formatSearchResult(result));
     }
 }

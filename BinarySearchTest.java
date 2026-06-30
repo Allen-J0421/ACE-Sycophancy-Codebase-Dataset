@@ -11,6 +11,7 @@ class BinarySearchTest {
         runTest("finds the only element in a single-element array", BinarySearchTest::findsSingleElement);
         runTest("returns -1 when a single-element array does not contain the target",
                 BinarySearchTest::returnsMinusOneForMissingSingleElement);
+        runTest("throws an exception for unsorted arrays", BinarySearchTest::throwsExceptionForUnsortedArray);
 
         System.out.println(passedTests + " BinarySearch tests passed.");
     }
@@ -69,6 +70,15 @@ class BinarySearchTest {
 
         TestAssertions.assertThat(BinarySearchUtils.binarySearch(values, 5))
                 .isEqualTo(-1, "Single-element arrays should return -1 when the target is absent");
+    }
+
+    private static void throwsExceptionForUnsortedArray() {
+        Integer[] values = {2, 10, 4, 40};
+
+        TestAssertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> BinarySearchUtils.binarySearch(values, 10),
+                "Unsorted arrays should be rejected before searching");
     }
 
     private static void runTest(String name, Runnable test) {

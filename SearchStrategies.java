@@ -3,11 +3,19 @@ final class SearchStrategies {
     }
 
     static <T> SearchStrategy<T> iterativeBinarySearch() {
-        return new IterativeBinarySearchStrategy<T>();
+        return iterativeBinarySearch(SearchConfiguration.fullArray());
+    }
+
+    static <T> SearchStrategy<T> iterativeBinarySearch(SearchConfiguration configuration) {
+        return new IterativeBinarySearchStrategy<T>(configuration);
     }
 
     static <T> SearchStrategy<T> recursiveBinarySearch() {
-        return new RecursiveBinarySearchStrategy<T>();
+        return recursiveBinarySearch(SearchConfiguration.fullArray());
+    }
+
+    static <T> SearchStrategy<T> recursiveBinarySearch(SearchConfiguration configuration) {
+        return new RecursiveBinarySearchStrategy<T>(configuration);
     }
 
     static <T> SearchStrategy<T> monitored(
@@ -27,7 +35,19 @@ final class SearchStrategies {
         return monitored(iterativeBinarySearch(), observer);
     }
 
+    static <T> SearchStrategy<T> monitoredIterativeBinarySearch(
+            SearchObserver observer,
+            SearchConfiguration configuration) {
+        return monitored(iterativeBinarySearch(configuration), observer);
+    }
+
     static <T> SearchStrategy<T> monitoredRecursiveBinarySearch(SearchObserver observer) {
         return monitored(recursiveBinarySearch(), observer);
+    }
+
+    static <T> SearchStrategy<T> monitoredRecursiveBinarySearch(
+            SearchObserver observer,
+            SearchConfiguration configuration) {
+        return monitored(recursiveBinarySearch(configuration), observer);
     }
 }

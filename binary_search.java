@@ -10,6 +10,13 @@ final class BinarySearch {
         return binarySearch(sortedArray, target, SearchStrategies.<Integer>iterativeBinarySearch());
     }
 
+    static int binarySearch(int[] sortedArray, int target, SearchConfiguration configuration) {
+        return binarySearch(
+                sortedArray,
+                target,
+                SearchStrategies.<Integer>iterativeBinarySearch(configuration));
+    }
+
     static int binarySearch(int[] sortedArray, int target, SearchStrategy<Integer> strategy) {
         return SearchContainer.<Integer>naturalOrderContainer(strategy)
                 .searchAlgorithm()
@@ -19,6 +26,16 @@ final class BinarySearch {
 
     static <T extends Comparable<? super T>> int binarySearch(T[] sortedArray, T target) {
         return binarySearch(sortedArray, target, SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T extends Comparable<? super T>> int binarySearch(
+            T[] sortedArray,
+            T target,
+            SearchConfiguration configuration) {
+        return binarySearch(
+                sortedArray,
+                target,
+                SearchStrategies.<T>iterativeBinarySearch(configuration));
     }
 
     static <T extends Comparable<? super T>> int binarySearch(
@@ -40,6 +57,18 @@ final class BinarySearch {
                 target,
                 comparator,
                 SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T> int binarySearch(
+            T[] sortedArray,
+            T target,
+            Comparator<? super T> comparator,
+            SearchConfiguration configuration) {
+        return binarySearch(
+                sortedArray,
+                target,
+                comparator,
+                SearchStrategies.<T>iterativeBinarySearch(configuration));
     }
 
     static <T> int binarySearch(

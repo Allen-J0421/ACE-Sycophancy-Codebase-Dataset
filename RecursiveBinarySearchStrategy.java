@@ -1,9 +1,28 @@
 import java.util.Comparator;
 
 final class RecursiveBinarySearchStrategy<T> implements SearchStrategy<T> {
+    private final SearchConfiguration configuration;
+
+    RecursiveBinarySearchStrategy() {
+        this(SearchConfiguration.fullArray());
+    }
+
+    RecursiveBinarySearchStrategy(SearchConfiguration configuration) {
+        if (configuration == null) {
+            throw new IllegalArgumentException("configuration must not be null");
+        }
+
+        this.configuration = configuration;
+    }
+
     @Override
     public SearchResult search(T[] sortedArray, T target, Comparator<? super T> comparator) {
-        return search(sortedArray, target, comparator, 0, sortedArray.length - 1);
+        return search(
+                sortedArray,
+                target,
+                comparator,
+                configuration.low(),
+                configuration.highForArrayLength(sortedArray.length));
     }
 
     private SearchResult search(

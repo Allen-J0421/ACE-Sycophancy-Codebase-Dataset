@@ -18,6 +18,12 @@ final class SearchContainer<T> {
     }
 
     static <T extends Comparable<? super T>> SearchContainer<T> naturalOrderContainer(
+            SearchConfiguration configuration) {
+        return SearchContainer.<T>naturalOrderContainer(
+                SearchStrategies.<T>iterativeBinarySearch(configuration));
+    }
+
+    static <T extends Comparable<? super T>> SearchContainer<T> naturalOrderContainer(
             SearchStrategy<T> strategy) {
         return SearchContainer.<T>builder()
                 .withSearchAlgorithm(BinarySearcher.<T>naturalOrder(strategy))
@@ -29,6 +35,14 @@ final class SearchContainer<T> {
         return SearchContainer.<T>comparatorContainer(
                 comparator,
                 SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T> SearchContainer<T> comparatorContainer(
+            Comparator<? super T> comparator,
+            SearchConfiguration configuration) {
+        return SearchContainer.<T>comparatorContainer(
+                comparator,
+                SearchStrategies.<T>iterativeBinarySearch(configuration));
     }
 
     static <T> SearchContainer<T> comparatorContainer(

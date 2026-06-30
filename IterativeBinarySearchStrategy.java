@@ -1,10 +1,24 @@
 import java.util.Comparator;
 
 final class IterativeBinarySearchStrategy<T> implements SearchStrategy<T> {
+    private final SearchConfiguration configuration;
+
+    IterativeBinarySearchStrategy() {
+        this(SearchConfiguration.fullArray());
+    }
+
+    IterativeBinarySearchStrategy(SearchConfiguration configuration) {
+        if (configuration == null) {
+            throw new IllegalArgumentException("configuration must not be null");
+        }
+
+        this.configuration = configuration;
+    }
+
     @Override
     public SearchResult search(T[] sortedArray, T target, Comparator<? super T> comparator) {
-        int low = 0;
-        int high = sortedArray.length - 1;
+        int low = configuration.low();
+        int high = configuration.highForArrayLength(sortedArray.length);
 
         while (low <= high) {
             int mid = low + (high - low) / 2;

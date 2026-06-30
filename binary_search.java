@@ -1,5 +1,10 @@
-class BinarySearch {
-    static <T extends Comparable<? super T>> int binarySearch(T[] array, T target) {
+interface SearchStrategy<T extends Comparable<? super T>> {
+    int search(T[] array, T target);
+}
+
+class BinarySearchStrategy<T extends Comparable<? super T>> implements SearchStrategy<T> {
+    @Override
+    public int search(T[] array, T target) {
         int low = 0, high = array.length - 1;
 
         while (low <= high) {
@@ -19,11 +24,14 @@ class BinarySearch {
 
         return -1;
     }
+}
 
+class BinarySearch {
     public static void main(String[] args) {
         Integer[] numbers = { 2, 3, 4, 10, 40 };
         int target = 10;
-        int result = binarySearch(numbers, target);
+        SearchStrategy<Integer> searchStrategy = new BinarySearchStrategy<>();
+        int result = searchStrategy.search(numbers, target);
 
         if (result == -1) {
             System.out.println("Element is not present in array");

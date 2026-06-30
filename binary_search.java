@@ -2,27 +2,26 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.IntFunction;
 
 interface SearchService<T> {
     SearchResult search(List<T> sortedValues, T target);
 }
 
-final class SearchResult {
+record SearchResult(boolean found, int index) {
     private static final int NOT_FOUND_INDEX = -1;
 
-    private final boolean found;
-    private final int index;
-
-    private SearchResult(boolean found, int index) {
-        this.found = found;
-        this.index = index;
-    }
-
-    static SearchResult found(int index) {
-        if (index < 0) {
+    SearchResult {
+        if (found && index < 0) {
             throw new IllegalArgumentException("index must not be negative");
         }
 
+        if (!found) {
+            index = NOT_FOUND_INDEX;
+        }
+    }
+
+    static SearchResult found(int index) {
         return new SearchResult(true, index);
     }
 
@@ -30,16 +29,22 @@ final class SearchResult {
         return new SearchResult(false, NOT_FOUND_INDEX);
     }
 
-    boolean found() {
-        return found;
-    }
-
-    int index() {
+    @Override
+    public int index() {
         if (!found) {
             throw new IllegalStateException("No index is available for a missing result");
         }
 
         return index;
+    }
+
+    <T> T map(IntFunction<? extends T> mapper, T defaultValue) {
+        Objects.requireNonNull(mapper, "mapper must not be null");
+        return found ? mapper.apply(index) : defaultValue;
+    }
+
+    int orElse(int defaultIndex) {
+        return found ? index : defaultIndex;
     }
 }
 
@@ -87,11 +92,10 @@ class BinarySearchDemo {
 
         SearchService<Integer> searchService = BinarySearchService.naturalOrder();
         SearchResult result = searchService.search(values, target);
+        String message = result.map(
+                index -> "Element is present at index " + index,
+                "Element is not present in array");
 
-        if (result.found()) {
-            System.out.println("Element is present at index " + result.index());
-        } else {
-            System.out.println("Element is not present in array");
-        }
+        System.out.println(message);
     }
 }

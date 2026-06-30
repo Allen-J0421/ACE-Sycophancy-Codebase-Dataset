@@ -21,7 +21,6 @@ import static java.lang.Double.isNaN;
 
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.J2ktIncompatible;
-import com.google.common.primitives.Doubles;
 
 /**
  * A mutable object which accumulates paired double values (e.g. points on a plane) and tracks some
@@ -176,8 +175,9 @@ public final class PairedStatsAccumulator {
     // The product of two positive numbers can be zero if the multiplication underflowed. We
     // force a positive value by effectively rounding up to MIN_VALUE.
     double productOfSumsOfSquaresOfDeltas =
-        ensurePositive(xSumOfSquaresOfDeltas * ySumOfSquaresOfDeltas);
-    return ensureInUnitRange(sumOfProductsOfDeltas / Math.sqrt(productOfSumsOfSquaresOfDeltas));
+        PairedStats.ensurePositive(xSumOfSquaresOfDeltas * ySumOfSquaresOfDeltas);
+    return PairedStats.ensureInUnitRange(
+        sumOfProductsOfDeltas / Math.sqrt(productOfSumsOfSquaresOfDeltas));
   }
 
   /**
@@ -228,17 +228,5 @@ public final class PairedStatsAccumulator {
       checkState(yStats.sumOfSquaresOfDeltas() > 0.0);
       return LinearTransformation.vertical(xStats.mean());
     }
-  }
-
-  private static double ensurePositive(double value) {
-    if (value > 0.0) {
-      return value;
-    } else {
-      return Double.MIN_VALUE;
-    }
-  }
-
-  private static double ensureInUnitRange(double value) {
-    return Doubles.constrainToRange(value, -1.0, 1.0);
   }
 }

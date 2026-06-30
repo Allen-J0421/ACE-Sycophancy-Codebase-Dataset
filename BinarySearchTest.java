@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 class BinarySearchTest {
     private static int passedTests = 0;
 
@@ -19,6 +21,8 @@ class BinarySearchTest {
                 BinarySearchTest::doesNotValidateSortednessInFastSearchMode);
         runTest("throws an exception for unsorted arrays in safe mode",
                 BinarySearchTest::throwsExceptionForUnsortedArrayInSafeMode);
+        runTest("finds an object using a custom comparator", BinarySearchTest::findsObjectUsingCustomComparator);
+        runTest("checks sortedness using a custom comparator", BinarySearchTest::checksSortednessUsingCustomComparator);
 
         System.out.println(passedTests + " BinarySearch tests passed.");
     }
@@ -123,12 +127,50 @@ class BinarySearchTest {
                 "Safe mode should reject unsorted arrays before searching");
     }
 
+    private static void findsObjectUsingCustomComparator() {
+        Person[] people = {
+                new Person("Ada", 31),
+                new Person("Grace", 37),
+                new Person("Katherine", 42)
+        };
+        Comparator<Person> byAge = Comparator.comparingInt(Person::age);
+
+        TestAssertions.assertThat(BinarySearchUtils.binarySearch(people, new Person("Target", 37), byAge))
+                .isEqualTo(1, "Expected to find a Person by age using a custom comparator");
+    }
+
+    private static void checksSortednessUsingCustomComparator() {
+        Person[] people = {
+                new Person("Ada", 31),
+                new Person("Grace", 37),
+                new Person("Katherine", 42)
+        };
+        Comparator<Person> byAge = Comparator.comparingInt(Person::age);
+
+        TestAssertions.assertThat(BinarySearchUtils.isSorted(people, byAge))
+                .isTrue("Expected Person array to be sorted by age");
+    }
+
     private static void runTest(String name, Runnable test) {
         try {
             test.run();
             passedTests++;
         } catch (AssertionError error) {
             throw new AssertionError("Test failed: " + name + System.lineSeparator() + error.getMessage(), error);
+        }
+    }
+
+    private static final class Person {
+        private final String name;
+        private final int age;
+
+        private Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        private int age() {
+            return age;
         }
     }
 }

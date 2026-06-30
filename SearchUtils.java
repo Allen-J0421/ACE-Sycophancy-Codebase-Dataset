@@ -3,8 +3,15 @@ public final class SearchUtils {
     }
 
     public static <T extends Comparable<? super T>> int binarySearch(T[] arr, T target) {
-        int low = 0;
-        int high = arr.length - 1;
+        return binarySearch(arr, target, 0, arr.length);
+    }
+
+    public static <T extends Comparable<? super T>> int binarySearch(
+            T[] arr, T target, int fromIndex, int toIndex) {
+        checkRange(arr.length, fromIndex, toIndex);
+
+        int low = fromIndex;
+        int high = toIndex - 1;
 
         while (low <= high) {
             int mid = low + (high - low) / 2;
@@ -22,5 +29,15 @@ public final class SearchUtils {
         }
 
         return -1;
+    }
+
+    private static void checkRange(int length, int fromIndex, int toIndex) {
+        if (fromIndex > toIndex) {
+            throw new IllegalArgumentException("fromIndex must be less than or equal to toIndex");
+        }
+
+        if (fromIndex < 0 || toIndex > length) {
+            throw new IndexOutOfBoundsException("range must be within array bounds");
+        }
     }
 }

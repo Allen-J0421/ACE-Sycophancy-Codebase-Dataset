@@ -1,3 +1,7 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 interface SearchStrategy<T extends Comparable<? super T>> {
     SearchResult search(SearchContext<T> context);
 }
@@ -54,36 +58,42 @@ class SearchResultFormatter {
     }
 }
 
-enum SearchStrategyType {
-    BINARY
-}
-
 class SearchStrategyFactory<T extends Comparable<? super T>> {
-    private final SearchStrategyType strategyType;
+    static final String BINARY_SEARCH = "binary";
+
+    private final Map<String, Supplier<SearchStrategy<T>>> strategySuppliers = new HashMap<>();
 
     SearchStrategyFactory() {
-        this(SearchStrategyType.BINARY);
+        registerStrategy(BINARY_SEARCH, () -> new BinarySearchStrategy<>());
     }
 
-    SearchStrategyFactory(SearchStrategyType strategyType) {
-        this.strategyType = strategyType;
+    SearchStrategyFactory<T> registerStrategy(String key, Supplier<SearchStrategy<T>> supplier) {
+        strategySuppliers.put(key, supplier);
+        return this;
     }
 
-    SearchStrategy<T> createStrategy() {
-        if (strategyType == SearchStrategyType.BINARY) {
-            return new BinarySearchStrategy<>();
+    SearchStrategy<T> createStrategy(String key) {
+        Supplier<SearchStrategy<T>> strategySupplier = strategySuppliers.get(key);
+
+        if (strategySupplier == null) {
+            throw new IllegalArgumentException("Unsupported search strategy: " + key);
         }
 
-        throw new IllegalArgumentException("Unsupported search strategy: " + strategyType);
+        return strategySupplier.get();
     }
 }
 
 class SearchEngine<T extends Comparable<? super T>> {
     private final SearchStrategyFactory<T> searchStrategyFactory;
+    private final String searchStrategyKey;
     private final SearchResultFormatter resultFormatter;
 
-    private SearchEngine(SearchStrategyFactory<T> searchStrategyFactory, SearchResultFormatter resultFormatter) {
+    private SearchEngine(
+            SearchStrategyFactory<T> searchStrategyFactory,
+            String searchStrategyKey,
+            SearchResultFormatter resultFormatter) {
         this.searchStrategyFactory = searchStrategyFactory;
+        this.searchStrategyKey = searchStrategyKey;
         this.resultFormatter = resultFormatter;
     }
 
@@ -93,7 +103,7 @@ class SearchEngine<T extends Comparable<? super T>> {
 
     String search(T[] array, T target) {
         SearchContext<T> context = new SearchContext<>(array, target);
-        SearchStrategy<T> searchStrategy = searchStrategyFactory.createStrategy();
+        SearchStrategy<T> searchStrategy = searchStrategyFactory.createStrategy(searchStrategyKey);
         SearchResult result = searchStrategy.search(context);
 
         return resultFormatter.format(result);
@@ -101,10 +111,16 @@ class SearchEngine<T extends Comparable<? super T>> {
 
     static class Builder<T extends Comparable<? super T>> {
         private SearchStrategyFactory<T> searchStrategyFactory = new SearchStrategyFactory<>();
+        private String searchStrategyKey = SearchStrategyFactory.BINARY_SEARCH;
         private SearchResultFormatter resultFormatter = new SearchResultFormatter();
 
         Builder<T> withSearchStrategyFactory(SearchStrategyFactory<T> searchStrategyFactory) {
             this.searchStrategyFactory = searchStrategyFactory;
+            return this;
+        }
+
+        Builder<T> withSearchStrategyKey(String searchStrategyKey) {
+            this.searchStrategyKey = searchStrategyKey;
             return this;
         }
 
@@ -114,7 +130,7 @@ class SearchEngine<T extends Comparable<? super T>> {
         }
 
         SearchEngine<T> build() {
-            return new SearchEngine<>(searchStrategyFactory, resultFormatter);
+            return new SearchEngine<>(searchStrategyFactory, searchStrategyKey, resultFormatter);
         }
     }
 }

@@ -2,6 +2,7 @@ import java.util.Objects;
 
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
+    private static final int DEMO_TARGET = 10;
 
     private BinarySearch() {
     }
@@ -47,10 +48,12 @@ final class BinarySearch {
     }
 
     private static void runDemo() {
-        int[] values = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(values, target);
+        int result = binarySearch(demoValues(), DEMO_TARGET);
 
         System.out.println(formatSearchResult(result));
+    }
+
+    private static int[] demoValues() {
+        return new int[] { 2, 3, 4, 10, 40 };
     }
 }

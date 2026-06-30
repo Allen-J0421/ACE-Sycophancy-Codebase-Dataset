@@ -29,14 +29,16 @@ final class SearchConfiguration {
         return FULL_ARRAY;
     }
 
-    static SearchConfiguration withBounds(int low, int high) {
-        if (low < 0) {
-            throw new IllegalArgumentException("low must be non-negative");
-        }
+    static Builder builder() {
+        return new Builder();
+    }
 
-        if (high < low) {
-            throw new IllegalArgumentException("high must be greater than or equal to low");
-        }
+    static SearchConfiguration withBounds(int low, int high) {
+        return builder().withBounds(low, high).build();
+    }
+
+    private static SearchConfiguration boundedConfiguration(int low, int high) {
+        validateBounds(low, high);
 
         BoundsKey key = new BoundsKey(low, high);
         synchronized (BOUNDS_CACHE) {
@@ -47,6 +49,16 @@ final class SearchConfiguration {
             }
 
             return configuration;
+        }
+    }
+
+    private static void validateBounds(int low, int high) {
+        if (low < 0) {
+            throw new IllegalArgumentException("low must be non-negative");
+        }
+
+        if (high < low) {
+            throw new IllegalArgumentException("high must be greater than or equal to low");
         }
     }
 
@@ -72,6 +84,61 @@ final class SearchConfiguration {
         }
 
         return high;
+    }
+
+    static final class Builder {
+        private boolean bounded;
+        private boolean lowConfigured;
+        private boolean highConfigured;
+        private int low;
+        private int high;
+
+        private Builder() {
+        }
+
+        Builder fullArray() {
+            bounded = false;
+            lowConfigured = false;
+            highConfigured = false;
+            low = 0;
+            high = FULL_ARRAY_HIGH;
+            return this;
+        }
+
+        Builder withBounds(int low, int high) {
+            bounded = true;
+            lowConfigured = true;
+            highConfigured = true;
+            this.low = low;
+            this.high = high;
+            return this;
+        }
+
+        Builder withLowBound(int low) {
+            bounded = true;
+            lowConfigured = true;
+            this.low = low;
+            return this;
+        }
+
+        Builder withHighBound(int high) {
+            bounded = true;
+            highConfigured = true;
+            this.high = high;
+            return this;
+        }
+
+        SearchConfiguration build() {
+            if (!bounded) {
+                return SearchConfiguration.fullArray();
+            }
+
+            if (!lowConfigured || !highConfigured) {
+                throw new IllegalStateException("both low and high bounds must be configured");
+            }
+
+            return SearchConfiguration.boundedConfiguration(low, high);
+        }
     }
 
     private static final class BoundsKey {

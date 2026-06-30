@@ -5,25 +5,24 @@ public final class SearchUtils {
     }
 
     public static <T extends Comparable<? super T>> SearchResult binarySearch(T[] arr, T target) {
-        return binarySearch(arr, target, 0, arr.length, null);
+        return binarySearch(arr, target, 0, arr.length, Comparator.naturalOrder());
     }
 
-    public static <T extends Comparable<? super T>> SearchResult binarySearch(
+    public static <T> SearchResult binarySearch(
             T[] arr, T target, Comparator<? super T> comparator) {
         return binarySearch(arr, target, 0, arr.length, comparator);
     }
 
     public static <T extends Comparable<? super T>> SearchResult binarySearch(
             T[] arr, T target, int fromIndex, int toIndex) {
-        return binarySearch(arr, target, fromIndex, toIndex, null);
+        return binarySearch(arr, target, fromIndex, toIndex, Comparator.naturalOrder());
     }
 
-    public static <T extends Comparable<? super T>> SearchResult binarySearch(
+    public static <T> SearchResult binarySearch(
             T[] arr, T target, int fromIndex, int toIndex, Comparator<? super T> comparator) {
         RangeValidator.validate(arr.length, fromIndex, toIndex);
 
-        Comparator<? super T> resolvedComparator =
-                comparator == null ? Comparator.<T>naturalOrder() : comparator;
+        Comparator<? super T> resolvedComparator = resolveComparator(comparator);
         int low = fromIndex;
         int high = toIndex - 1;
 
@@ -49,7 +48,7 @@ public final class SearchUtils {
         return binarySearch(arr, target).index();
     }
 
-    public static <T extends Comparable<? super T>> int binarySearchIndex(
+    public static <T> int binarySearchIndex(
             T[] arr, T target, Comparator<? super T> comparator) {
         return binarySearch(arr, target, comparator).index();
     }
@@ -59,9 +58,26 @@ public final class SearchUtils {
         return binarySearch(arr, target, fromIndex, toIndex).index();
     }
 
-    public static <T extends Comparable<? super T>> int binarySearchIndex(
+    public static <T> int binarySearchIndex(
             T[] arr, T target, int fromIndex, int toIndex, Comparator<? super T> comparator) {
         return binarySearch(arr, target, fromIndex, toIndex, comparator).index();
+    }
+
+    private static <T> Comparator<? super T> resolveComparator(Comparator<? super T> comparator) {
+        if (comparator != null) {
+            return comparator;
+        }
+
+        return SearchUtils::compareNaturally;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> int compareNaturally(T left, T right) {
+        if (!(left instanceof Comparable<?> comparable)) {
+            throw new IllegalArgumentException("a comparator is required for non-comparable elements");
+        }
+
+        return ((Comparable<? super T>) comparable).compareTo(right);
     }
 
     private static final class RangeValidator {

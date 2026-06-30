@@ -92,4 +92,21 @@ class BinarySearchTest {
 
         assertEquals(SearchResult.found(3), result);
     }
+
+    @Test
+    void supportsNonComparableTypesWhenComparatorIsProvided() {
+        Person[] arr = {
+                new Person("Ari", 24),
+                new Person("Blair", 31),
+                new Person("Casey", 45)
+        };
+
+        SearchResult result = SearchUtils.binarySearch(
+                arr, new Person("Target", 31), Comparator.comparingInt(Person::age));
+
+        assertEquals(SearchResult.found(1), result);
+    }
+
+    private record Person(String name, int age) {
+    }
 }

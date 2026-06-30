@@ -14,15 +14,28 @@ final class SearchContainer<T> {
     }
 
     static <T extends Comparable<? super T>> SearchContainer<T> naturalOrderContainer() {
+        return SearchContainer.<T>naturalOrderContainer(SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T extends Comparable<? super T>> SearchContainer<T> naturalOrderContainer(
+            SearchStrategy<T> strategy) {
         return SearchContainer.<T>builder()
-                .withSearchAlgorithm(BinarySearcher.<T>naturalOrder())
+                .withSearchAlgorithm(BinarySearcher.<T>naturalOrder(strategy))
                 .withResultFormatter(new DefaultSearchResultFormatter())
                 .build();
     }
 
     static <T> SearchContainer<T> comparatorContainer(Comparator<? super T> comparator) {
+        return SearchContainer.<T>comparatorContainer(
+                comparator,
+                SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T> SearchContainer<T> comparatorContainer(
+            Comparator<? super T> comparator,
+            SearchStrategy<T> strategy) {
         return SearchContainer.<T>builder()
-                .withSearchAlgorithm(new BinarySearcher<T>(comparator))
+                .withSearchAlgorithm(new BinarySearcher<T>(comparator, strategy))
                 .withResultFormatter(new DefaultSearchResultFormatter())
                 .build();
     }

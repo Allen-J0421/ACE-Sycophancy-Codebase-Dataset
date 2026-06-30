@@ -7,11 +7,25 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] sortedArray, int target) {
-        return CONTAINER.searchAlgorithm().search(toIntegerArray(sortedArray), target).index();
+        return binarySearch(sortedArray, target, SearchStrategies.<Integer>iterativeBinarySearch());
+    }
+
+    static int binarySearch(int[] sortedArray, int target, SearchStrategy<Integer> strategy) {
+        return SearchContainer.<Integer>naturalOrderContainer(strategy)
+                .searchAlgorithm()
+                .search(toIntegerArray(sortedArray), target)
+                .index();
     }
 
     static <T extends Comparable<? super T>> int binarySearch(T[] sortedArray, T target) {
-        return SearchContainer.<T>naturalOrderContainer()
+        return binarySearch(sortedArray, target, SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T extends Comparable<? super T>> int binarySearch(
+            T[] sortedArray,
+            T target,
+            SearchStrategy<T> strategy) {
+        return SearchContainer.<T>naturalOrderContainer(strategy)
                 .searchAlgorithm()
                 .search(sortedArray, target)
                 .index();
@@ -21,7 +35,19 @@ final class BinarySearch {
             T[] sortedArray,
             T target,
             Comparator<? super T> comparator) {
-        return SearchContainer.<T>comparatorContainer(comparator)
+        return binarySearch(
+                sortedArray,
+                target,
+                comparator,
+                SearchStrategies.<T>iterativeBinarySearch());
+    }
+
+    static <T> int binarySearch(
+            T[] sortedArray,
+            T target,
+            Comparator<? super T> comparator,
+            SearchStrategy<T> strategy) {
+        return SearchContainer.<T>comparatorContainer(comparator, strategy)
                 .searchAlgorithm()
                 .search(sortedArray, target)
                 .index();

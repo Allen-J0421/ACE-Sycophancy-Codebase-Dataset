@@ -3,12 +3,13 @@ class BinarySearch {
         SearchAlgorithm<Integer> searchAlgorithm = new BinarySearchService<>();
         Integer[] values = { 2, 3, 4, 10, 40 };
         Integer target = 10;
+        SearchRequest<Integer> request = new SearchRequest<>(values, target);
 
-        int result = searchAlgorithm.search(values, target);
-        if (result == -1) {
+        SearchResult result = searchAlgorithm.search(request);
+        if (!result.isFound()) {
             System.out.println("Element is not present in array");
         } else {
-            System.out.println("Element is present at index " + result);
+            System.out.println("Element is present at index " + result.index());
         }
     }
 }

@@ -1,5 +1,6 @@
-class BinarySearchService {
-    int search(int[] sortedValues, int target) {
+class BinarySearchService implements SearchAlgorithm {
+    @Override
+    public int search(int[] sortedValues, int target) {
         if (sortedValues == null) {
             throw new IllegalArgumentException("sortedValues must not be null");
         }

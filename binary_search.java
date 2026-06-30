@@ -58,13 +58,13 @@ class SearchEngine<T extends Comparable<? super T>> {
     private final SearchStrategy<T> searchStrategy;
     private final SearchResultFormatter resultFormatter;
 
-    SearchEngine() {
-        this(new BinarySearchStrategy<>(), new SearchResultFormatter());
-    }
-
-    SearchEngine(SearchStrategy<T> searchStrategy, SearchResultFormatter resultFormatter) {
+    private SearchEngine(SearchStrategy<T> searchStrategy, SearchResultFormatter resultFormatter) {
         this.searchStrategy = searchStrategy;
         this.resultFormatter = resultFormatter;
+    }
+
+    static <T extends Comparable<? super T>> Builder<T> builder() {
+        return new Builder<>();
     }
 
     String search(T[] array, T target) {
@@ -72,6 +72,25 @@ class SearchEngine<T extends Comparable<? super T>> {
         SearchResult result = searchStrategy.search(context);
 
         return resultFormatter.format(result);
+    }
+
+    static class Builder<T extends Comparable<? super T>> {
+        private SearchStrategy<T> searchStrategy = new BinarySearchStrategy<>();
+        private SearchResultFormatter resultFormatter = new SearchResultFormatter();
+
+        Builder<T> withSearchStrategy(SearchStrategy<T> searchStrategy) {
+            this.searchStrategy = searchStrategy;
+            return this;
+        }
+
+        Builder<T> withResultFormatter(SearchResultFormatter resultFormatter) {
+            this.resultFormatter = resultFormatter;
+            return this;
+        }
+
+        SearchEngine<T> build() {
+            return new SearchEngine<>(searchStrategy, resultFormatter);
+        }
     }
 }
 
@@ -105,7 +124,7 @@ class BinarySearch {
     public static void main(String[] args) {
         Integer[] numbers = { 2, 3, 4, 10, 40 };
         int target = 10;
-        SearchEngine<Integer> searchEngine = new SearchEngine<>();
+        SearchEngine<Integer> searchEngine = SearchEngine.<Integer>builder().build();
 
         System.out.println(searchEngine.search(numbers, target));
     }

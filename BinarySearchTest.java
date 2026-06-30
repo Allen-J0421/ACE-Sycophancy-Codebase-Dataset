@@ -107,6 +107,42 @@ class BinarySearchTest {
         assertEquals(SearchResult.found(1), result);
     }
 
+    @Test
+    void supportsPrimitiveIntArray() {
+        int[] arr = { 2, 3, 4, 10, 40 };
+
+        SearchResult result = SearchUtils.binarySearch(arr, 10);
+
+        assertEquals(SearchResult.found(3), result);
+    }
+
+    @Test
+    void supportsPrimitiveLongArrayWithRange() {
+        long[] arr = { 2L, 3L, 4L, 10L, 40L };
+
+        SearchResult result = SearchUtils.binarySearch(arr, 10L, 2, 4);
+
+        assertEquals(SearchResult.found(3), result);
+    }
+
+    @Test
+    void supportsPrimitiveDoubleArrayInsertionPoint() {
+        double[] arr = { 2.0, 3.0, 4.0, 10.0, 40.0 };
+
+        SearchResult result = SearchUtils.binarySearch(arr, 5.0);
+
+        assertEquals(SearchResult.notFound(3), result);
+    }
+
+    @Test
+    void supportsPrimitiveIndexConvenienceMethod() {
+        int[] arr = { 2, 3, 4, 10, 40 };
+
+        int result = SearchUtils.binarySearchIndex(arr, 10);
+
+        assertEquals(3, result);
+    }
+
     private record Person(String name, int age) {
     }
 }

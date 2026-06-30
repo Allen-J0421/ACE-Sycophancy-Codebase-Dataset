@@ -8,11 +8,11 @@ public sealed interface SearchResult permits Found, NotFound {
 
     int orElse(int defaultIndex);
 
-    static SearchResult found(int index) {
+    public static SearchResult found(int index) {
         return new Found(index);
     }
 
-    static SearchResult notFound() {
+    public static SearchResult notFound() {
         return new NotFound();
     }
 }

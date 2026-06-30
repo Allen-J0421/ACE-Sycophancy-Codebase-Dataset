@@ -2,7 +2,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import search.Found;
 import search.SearchResult;
 import search.SearchService;
 
@@ -50,11 +49,10 @@ class BinarySearchDemo {
 
         SearchService<Integer> searchService = BinarySearchService.naturalOrder();
         SearchResult result = searchService.search(values, target);
+        String message = result.map(
+                index -> "Element is present at index " + index,
+                () -> "Element is not present in array");
 
-        if (result instanceof Found found) {
-            System.out.println("Element is present at index " + found.index());
-        } else {
-            System.out.println("Element is not present in array");
-        }
+        System.out.println(message);
     }
 }

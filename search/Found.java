@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-public record Found(int index) implements SearchResult {
-    public Found {
+record Found(int index) implements SearchResult {
+    Found {
         if (index < 0) {
             throw new IllegalArgumentException("index must not be negative");
         }

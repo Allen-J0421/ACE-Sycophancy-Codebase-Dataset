@@ -6,6 +6,10 @@ final class TestAssertions {
         return new IntAssertion(actual);
     }
 
+    static BooleanAssertion assertThat(boolean actual) {
+        return new BooleanAssertion(actual);
+    }
+
     static <T extends Throwable> void assertThrows(
             Class<T> expectedType,
             ThrowingRunnable action,
@@ -36,6 +40,26 @@ final class TestAssertions {
         void isEqualTo(int expected, String message) {
             if (actual != expected) {
                 throw new AssertionError(message + " expected:<" + expected + "> but was:<" + actual + ">");
+            }
+        }
+    }
+
+    static final class BooleanAssertion {
+        private final boolean actual;
+
+        private BooleanAssertion(boolean actual) {
+            this.actual = actual;
+        }
+
+        void isTrue(String message) {
+            if (!actual) {
+                throw new AssertionError(message + " expected:<true> but was:<false>");
+            }
+        }
+
+        void isFalse(String message) {
+            if (actual) {
+                throw new AssertionError(message + " expected:<false> but was:<true>");
             }
         }
     }

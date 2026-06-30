@@ -11,7 +11,14 @@ class BinarySearchTest {
         runTest("finds the only element in a single-element array", BinarySearchTest::findsSingleElement);
         runTest("returns -1 when a single-element array does not contain the target",
                 BinarySearchTest::returnsMinusOneForMissingSingleElement);
-        runTest("throws an exception for unsorted arrays", BinarySearchTest::throwsExceptionForUnsortedArray);
+        runTest("reports sorted arrays as sorted", BinarySearchTest::reportsSortedArray);
+        runTest("reports unsorted arrays as unsorted", BinarySearchTest::reportsUnsortedArray);
+        runTest("reports empty arrays as sorted", BinarySearchTest::reportsEmptyArrayAsSorted);
+        runTest("reports single-element arrays as sorted", BinarySearchTest::reportsSingleElementArrayAsSorted);
+        runTest("does not validate sortedness in fast search mode",
+                BinarySearchTest::doesNotValidateSortednessInFastSearchMode);
+        runTest("throws an exception for unsorted arrays in safe mode",
+                BinarySearchTest::throwsExceptionForUnsortedArrayInSafeMode);
 
         System.out.println(passedTests + " BinarySearch tests passed.");
     }
@@ -72,13 +79,48 @@ class BinarySearchTest {
                 .isEqualTo(-1, "Single-element arrays should return -1 when the target is absent");
     }
 
-    private static void throwsExceptionForUnsortedArray() {
+    private static void reportsSortedArray() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.isSorted(values))
+                .isTrue("Sorted arrays should be reported as sorted");
+    }
+
+    private static void reportsUnsortedArray() {
+        Integer[] values = {2, 10, 4, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.isSorted(values))
+                .isFalse("Unsorted arrays should be reported as unsorted");
+    }
+
+    private static void reportsEmptyArrayAsSorted() {
+        Integer[] values = {};
+
+        TestAssertions.assertThat(BinarySearchUtils.isSorted(values))
+                .isTrue("Empty arrays should be treated as sorted");
+    }
+
+    private static void reportsSingleElementArrayAsSorted() {
+        Integer[] values = {10};
+
+        TestAssertions.assertThat(BinarySearchUtils.isSorted(values))
+                .isTrue("Single-element arrays should be treated as sorted");
+    }
+
+    private static void doesNotValidateSortednessInFastSearchMode() {
+        Integer[] values = {2, 10, 4, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.binarySearch(values, 10))
+                .isEqualTo(1, "Fast search mode should not reject unsorted arrays");
+    }
+
+    private static void throwsExceptionForUnsortedArrayInSafeMode() {
         Integer[] values = {2, 10, 4, 40};
 
         TestAssertions.assertThrows(
                 IllegalArgumentException.class,
-                () -> BinarySearchUtils.binarySearch(values, 10),
-                "Unsorted arrays should be rejected before searching");
+                () -> BinarySearchUtils.binarySearch(values, 10, true),
+                "Safe mode should reject unsorted arrays before searching");
     }
 
     private static void runTest(String name, Runnable test) {

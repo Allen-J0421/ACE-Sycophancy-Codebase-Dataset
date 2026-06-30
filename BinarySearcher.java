@@ -1,8 +1,6 @@
-final class BinarySearcher {
-    private BinarySearcher() {
-    }
-
-    static SearchResult search(int[] sortedArray, int target) {
+final class BinarySearcher implements SearchAlgorithm {
+    @Override
+    public SearchResult search(int[] sortedArray, int target) {
         validateInput(sortedArray);
 
         int low = 0;

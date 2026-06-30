@@ -1,9 +1,11 @@
 final class BinarySearch {
+    private static final SearchAlgorithm SEARCH_ALGORITHM = new BinarySearcher();
+
     private BinarySearch() {
     }
 
     static int binarySearch(int[] sortedArray, int target) {
-        return BinarySearcher.search(sortedArray, target).index();
+        return SEARCH_ALGORITHM.search(sortedArray, target).index();
     }
 
     public static void main(String[] args) {

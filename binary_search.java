@@ -38,9 +38,9 @@ final class BinarySearch {
     }
 
     private static String runDemo() {
-        int result = binarySearch(demoNumbers(), DEMO_TARGET);
+        int foundIndex = binarySearch(demoNumbers(), DEMO_TARGET);
 
-        return formatSearchResult(result);
+        return formatSearchResult(foundIndex);
     }
 
     private static int[] demoNumbers() {

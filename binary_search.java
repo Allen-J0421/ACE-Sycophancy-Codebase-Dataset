@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 final class BinarySearch {
     private static final int NOT_FOUND = -1;
 
@@ -5,6 +7,8 @@ final class BinarySearch {
     }
 
     static int binarySearch(int[] values, int target) {
+        Objects.requireNonNull(values, "values");
+
         int low = 0;
         int high = values.length - 1;
 

@@ -1,21 +1,33 @@
 class BinarySearchTest {
     public static void main(String[] args) {
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 10, 3);
-        assertSearch(new int[] { 2, 3, 4, 10, 40 }, 5, -1);
-        assertSearch(new int[] {}, 10, -1);
-        assertSearch(new int[] { 10 }, 10, 0);
-        assertSearch(new int[] { 10 }, 4, -1);
+        for (SearchCase searchCase : searchCases()) {
+            assertSearch(searchCase);
+        }
 
         System.out.println("All BinarySearch tests passed");
     }
 
-    private static void assertSearch(int[] numbers, int target, int expectedIndex) {
-        int actualIndex = BinarySearch.binarySearch(numbers, target);
+    private static SearchCase[] searchCases() {
+        return new SearchCase[] {
+                new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
+                new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 5, -1),
+                new SearchCase(new int[] {}, 10, -1),
+                new SearchCase(new int[] { 10 }, 10, 0),
+                new SearchCase(new int[] { 10 }, 4, -1),
+        };
+    }
 
-        if (actualIndex != expectedIndex) {
+    private static void assertSearch(SearchCase searchCase) {
+        int actualIndex = BinarySearch.binarySearch(searchCase.numbers(), searchCase.target());
+
+        if (actualIndex != searchCase.expectedIndex()) {
             throw new AssertionError(
-                    "Expected index " + expectedIndex + " for target " + target
+                    "Expected index " + searchCase.expectedIndex()
+                            + " for target " + searchCase.target()
                             + ", but got " + actualIndex);
         }
+    }
+
+    private record SearchCase(int[] numbers, int target, int expectedIndex) {
     }
 }

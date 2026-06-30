@@ -24,6 +24,7 @@ import static java.lang.Double.isNaN;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.annotations.J2ktIncompatible;
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.Doubles;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -257,7 +258,7 @@ public final class PairedStats implements Serializable {
     return sumOfProductsOfDeltas;
   }
 
-  private static double ensurePositive(double value) {
+  static double ensurePositive(double value) {
     if (value > 0.0) {
       return value;
     } else {
@@ -265,14 +266,8 @@ public final class PairedStats implements Serializable {
     }
   }
 
-  private static double ensureInUnitRange(double value) {
-    if (value >= 1.0) {
-      return 1.0;
-    }
-    if (value <= -1.0) {
-      return -1.0;
-    }
-    return value;
+  static double ensureInUnitRange(double value) {
+    return Doubles.constrainToRange(value, -1.0, 1.0);
   }
 
   // Serialization helpers

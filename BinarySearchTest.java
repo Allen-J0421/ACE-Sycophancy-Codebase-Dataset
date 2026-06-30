@@ -1,6 +1,8 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Comparator;
+
 import org.junit.jupiter.api.Test;
 
 class BinarySearchTest {
@@ -71,5 +73,23 @@ class BinarySearchTest {
     void resultOrReturnsIndexOrInsertionPoint() {
         assertEquals(3, SearchResult.found(3).or(-1));
         assertEquals(3, SearchResult.notFound(3).or(-1));
+    }
+
+    @Test
+    void supportsCustomComparator() {
+        Integer[] arr = { 40, 10, 4, 3, 2 };
+
+        SearchResult result = SearchUtils.binarySearch(arr, 10, Comparator.reverseOrder());
+
+        assertEquals(SearchResult.found(1), result);
+    }
+
+    @Test
+    void nullComparatorUsesNaturalOrdering() {
+        Integer[] arr = { 2, 3, 4, 10, 40 };
+
+        SearchResult result = SearchUtils.binarySearch(arr, 10, null);
+
+        assertEquals(SearchResult.found(3), result);
     }
 }

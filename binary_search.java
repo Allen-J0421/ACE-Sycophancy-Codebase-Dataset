@@ -1,6 +1,6 @@
 class BinarySearch {
     public static void main(String[] args) {
-        SearchAlgorithm<Integer> searchAlgorithm = new BinarySearchService<>();
+        SearchAlgorithm<Integer> searchAlgorithm = SearchAlgorithmFactory.binarySearch();
         Integer[] values = { 2, 3, 4, 10, 40 };
         Integer target = 10;
         SearchRequest<Integer> request = SearchRequest.<Integer>builder()

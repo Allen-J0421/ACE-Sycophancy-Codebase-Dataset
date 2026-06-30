@@ -1,3 +1,5 @@
+import java.util.List;
+
 class BinarySearchTest {
     public static void main(String[] args) {
         for (SearchCase searchCase : searchCases()) {
@@ -7,14 +9,13 @@ class BinarySearchTest {
         System.out.println("All BinarySearch tests passed");
     }
 
-    private static SearchCase[] searchCases() {
-        return new SearchCase[] {
+    private static List<SearchCase> searchCases() {
+        return List.of(
                 new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 10, 3),
                 new SearchCase(new int[] { 2, 3, 4, 10, 40 }, 5, -1),
                 new SearchCase(new int[] {}, 10, -1),
                 new SearchCase(new int[] { 10 }, 10, 0),
-                new SearchCase(new int[] { 10 }, 4, -1),
-        };
+                new SearchCase(new int[] { 10 }, 4, -1));
     }
 
     private static void assertSearch(SearchCase searchCase) {

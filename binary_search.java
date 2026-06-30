@@ -1,10 +1,10 @@
 class BinarySearch {
     public static void main(String[] args) {
-        SearchAlgorithm searchAlgorithm = new BinarySearchService();
-        int[] arr = { 2, 3, 4, 10, 40 };
-        int target = 10;
+        SearchAlgorithm<Integer> searchAlgorithm = new BinarySearchService<>();
+        Integer[] values = { 2, 3, 4, 10, 40 };
+        Integer target = 10;
 
-        int result = searchAlgorithm.search(arr, target);
+        int result = searchAlgorithm.search(values, target);
         if (result == -1) {
             System.out.println("Element is not present in array");
         } else {

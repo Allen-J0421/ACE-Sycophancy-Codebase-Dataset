@@ -18,4 +18,8 @@ public final class SearchStrategyFactory {
     public static <T> SearchAlgorithm<T> linearSearch() {
         return new LinearSearchAlgorithm<T>();
     }
+
+    public static <T> SearchServiceBuilder<T> serviceBuilder(SearchAlgorithm<T> algorithm) {
+        return SearchServiceBuilder.of(algorithm);
+    }
 }

@@ -1,24 +1,37 @@
-final class SearchContainer {
-    private final SearchAlgorithm searchAlgorithm;
+import java.util.Comparator;
+
+final class SearchContainer<T> {
+    private final SearchAlgorithm<T> searchAlgorithm;
     private final SearchResultFormatter resultFormatter;
 
-    private SearchContainer(Builder builder) {
+    private SearchContainer(Builder<T> builder) {
         searchAlgorithm = requireConfigured(builder.searchAlgorithm, "searchAlgorithm");
         resultFormatter = requireConfigured(builder.resultFormatter, "resultFormatter");
     }
 
-    static SearchContainer defaultContainer() {
-        return builder()
-                .withSearchAlgorithm(new BinarySearcher())
+    static SearchContainer<Integer> defaultContainer() {
+        return SearchContainer.<Integer>naturalOrderContainer();
+    }
+
+    static <T extends Comparable<? super T>> SearchContainer<T> naturalOrderContainer() {
+        return SearchContainer.<T>builder()
+                .withSearchAlgorithm(BinarySearcher.<T>naturalOrder())
                 .withResultFormatter(new DefaultSearchResultFormatter())
                 .build();
     }
 
-    static Builder builder() {
-        return new Builder();
+    static <T> SearchContainer<T> comparatorContainer(Comparator<? super T> comparator) {
+        return SearchContainer.<T>builder()
+                .withSearchAlgorithm(new BinarySearcher<T>(comparator))
+                .withResultFormatter(new DefaultSearchResultFormatter())
+                .build();
     }
 
-    SearchAlgorithm searchAlgorithm() {
+    static <T> Builder<T> builder() {
+        return new Builder<T>();
+    }
+
+    SearchAlgorithm<T> searchAlgorithm() {
         return searchAlgorithm;
     }
 
@@ -34,25 +47,25 @@ final class SearchContainer {
         return dependency;
     }
 
-    static final class Builder {
-        private SearchAlgorithm searchAlgorithm;
+    static final class Builder<T> {
+        private SearchAlgorithm<T> searchAlgorithm;
         private SearchResultFormatter resultFormatter;
 
         private Builder() {
         }
 
-        Builder withSearchAlgorithm(SearchAlgorithm searchAlgorithm) {
+        Builder<T> withSearchAlgorithm(SearchAlgorithm<T> searchAlgorithm) {
             this.searchAlgorithm = searchAlgorithm;
             return this;
         }
 
-        Builder withResultFormatter(SearchResultFormatter resultFormatter) {
+        Builder<T> withResultFormatter(SearchResultFormatter resultFormatter) {
             this.resultFormatter = resultFormatter;
             return this;
         }
 
-        SearchContainer build() {
-            return new SearchContainer(this);
+        SearchContainer<T> build() {
+            return new SearchContainer<T>(this);
         }
     }
 }

@@ -1,3 +1,3 @@
-interface SearchAlgorithm {
-    SearchResult search(int[] sortedArray, int target);
+interface SearchAlgorithm<T> {
+    SearchResult search(T[] sortedArray, T target);
 }

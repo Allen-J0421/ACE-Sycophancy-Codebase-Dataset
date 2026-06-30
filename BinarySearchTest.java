@@ -5,48 +5,48 @@ import org.junit.jupiter.api.Test;
 
 class BinarySearchTest {
     @Test
-    void returnsIndexWhenIntegerElementIsPresent() {
+    void returnsFoundResultWhenIntegerElementIsPresent() {
         Integer[] arr = { 2, 3, 4, 10, 40 };
 
-        int result = SearchUtils.binarySearch(arr, 10);
+        SearchResult result = SearchUtils.binarySearch(arr, 10);
 
-        assertEquals(3, result);
+        assertEquals(SearchResult.found(3), result);
     }
 
     @Test
-    void returnsNegativeOneWhenIntegerElementIsAbsent() {
+    void returnsNotFoundResultWithInsertionPointWhenIntegerElementIsAbsent() {
         Integer[] arr = { 2, 3, 4, 10, 40 };
 
-        int result = SearchUtils.binarySearch(arr, 5);
+        SearchResult result = SearchUtils.binarySearch(arr, 5);
 
-        assertEquals(-1, result);
+        assertEquals(SearchResult.notFound(3), result);
     }
 
     @Test
     void supportsComparableTypesOtherThanInteger() {
         String[] arr = { "apple", "banana", "cherry", "date" };
 
-        int result = SearchUtils.binarySearch(arr, "cherry");
+        SearchResult result = SearchUtils.binarySearch(arr, "cherry");
 
-        assertEquals(2, result);
+        assertEquals(SearchResult.found(2), result);
     }
 
     @Test
-    void returnsIndexWhenElementIsInsideRange() {
+    void returnsFoundResultWhenElementIsInsideRange() {
         Integer[] arr = { 2, 3, 4, 10, 40 };
 
-        int result = SearchUtils.binarySearch(arr, 10, 2, 4);
+        SearchResult result = SearchUtils.binarySearch(arr, 10, 2, 4);
 
-        assertEquals(3, result);
+        assertEquals(SearchResult.found(3), result);
     }
 
     @Test
-    void returnsNegativeOneWhenElementIsOutsideRange() {
+    void returnsNotFoundResultWhenElementIsOutsideRange() {
         Integer[] arr = { 2, 3, 4, 10, 40 };
 
-        int result = SearchUtils.binarySearch(arr, 10, 0, 3);
+        SearchResult result = SearchUtils.binarySearch(arr, 10, 0, 3);
 
-        assertEquals(-1, result);
+        assertEquals(SearchResult.notFound(3), result);
     }
 
     @Test
@@ -56,5 +56,14 @@ class BinarySearchTest {
         assertThrows(IllegalArgumentException.class, () -> SearchUtils.binarySearch(arr, 10, 4, 2));
         assertThrows(IndexOutOfBoundsException.class, () -> SearchUtils.binarySearch(arr, 10, -1, 3));
         assertThrows(IndexOutOfBoundsException.class, () -> SearchUtils.binarySearch(arr, 10, 0, 6));
+    }
+
+    @Test
+    void exposesIndexOnlyConvenienceMethod() {
+        Integer[] arr = { 2, 3, 4, 10, 40 };
+
+        int result = SearchUtils.binarySearchIndex(arr, 10);
+
+        assertEquals(3, result);
     }
 }

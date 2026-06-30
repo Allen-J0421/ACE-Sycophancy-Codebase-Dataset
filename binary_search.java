@@ -10,7 +10,11 @@ class BinarySearch {
             }
         }
 
-        SearchAlgorithm<Integer> searchAlgorithm = SearchAlgorithmFactory.create(searchType, loggingEnabled);
+        ResultHandler resultHandler = new ConsoleResultHandler();
+        SearchAlgorithm<Integer> searchAlgorithm = SearchAlgorithmFactory.create(
+                searchType,
+                loggingEnabled,
+                resultHandler);
         Integer[] values = { 2, 3, 4, 10, 40 };
         Integer target = 10;
         SearchRequest<Integer> request = SearchRequest.<Integer>builder()
@@ -18,11 +22,6 @@ class BinarySearch {
                 .target(target)
                 .build();
 
-        SearchResult result = searchAlgorithm.search(request);
-        if (!result.isFound()) {
-            System.out.println("Element is not present in array");
-        } else {
-            System.out.println("Element is present at index " + result.index());
-        }
+        searchAlgorithm.search(request);
     }
 }

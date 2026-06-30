@@ -1,10 +1,6 @@
 class BinarySearchService<T extends Comparable<? super T>> implements SearchAlgorithm<T> {
     @Override
     public SearchResult search(SearchRequest<T> request) {
-        if (request == null) {
-            throw new IllegalArgumentException("request must not be null");
-        }
-
         T[] sortedValues = request.values();
         T target = request.target();
 
@@ -14,10 +10,6 @@ class BinarySearchService<T extends Comparable<? super T>> implements SearchAlgo
         while (low <= high) {
             int mid = low + (high - low) / 2;
             T midValue = sortedValues[mid];
-
-            if (midValue == null) {
-                throw new IllegalArgumentException("sortedValues must not contain null elements");
-            }
 
             int comparison = midValue.compareTo(target);
             if (comparison == 0) {

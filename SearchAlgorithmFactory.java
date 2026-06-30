@@ -7,7 +7,18 @@ final class SearchAlgorithmFactory {
     }
 
     static <T extends Comparable<? super T>> SearchAlgorithm<T> create(SearchType searchType, boolean loggingEnabled) {
+        return create(searchType, loggingEnabled, new DefaultSearchRequestValidator<T>());
+    }
+
+    static <T extends Comparable<? super T>> SearchAlgorithm<T> create(
+            SearchType searchType,
+            boolean loggingEnabled,
+            SearchRequestValidator<T> validator) {
         SearchAlgorithm<T> algorithm = createBase(searchType);
+        if (validator != null) {
+            algorithm = new ValidatingSearchAlgorithm<>(algorithm, validator);
+        }
+
         if (loggingEnabled) {
             return new LoggingSearchAlgorithm<>(algorithm);
         }

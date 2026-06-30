@@ -2,58 +2,9 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
-
-interface SearchService<T> {
-    SearchResult search(List<T> sortedValues, T target);
-}
-
-sealed interface SearchResult permits Found, NotFound {
-    <T> T map(IntFunction<? extends T> foundMapper, Supplier<? extends T> notFoundSupplier);
-
-    int orElse(int defaultIndex);
-
-    static SearchResult found(int index) {
-        return new Found(index);
-    }
-
-    static SearchResult notFound() {
-        return new NotFound();
-    }
-}
-
-record Found(int index) implements SearchResult {
-    Found {
-        if (index < 0) {
-            throw new IllegalArgumentException("index must not be negative");
-        }
-    }
-
-    @Override
-    public <T> T map(IntFunction<? extends T> foundMapper, Supplier<? extends T> notFoundSupplier) {
-        Objects.requireNonNull(foundMapper, "foundMapper must not be null");
-        return foundMapper.apply(index);
-    }
-
-    @Override
-    public int orElse(int defaultIndex) {
-        return index;
-    }
-}
-
-record NotFound() implements SearchResult {
-    @Override
-    public <T> T map(IntFunction<? extends T> foundMapper, Supplier<? extends T> notFoundSupplier) {
-        Objects.requireNonNull(notFoundSupplier, "notFoundSupplier must not be null");
-        return notFoundSupplier.get();
-    }
-
-    @Override
-    public int orElse(int defaultIndex) {
-        return defaultIndex;
-    }
-}
+import search.Found;
+import search.SearchResult;
+import search.SearchService;
 
 final class BinarySearchService<T> implements SearchService<T> {
     private final Comparator<? super T> comparator;

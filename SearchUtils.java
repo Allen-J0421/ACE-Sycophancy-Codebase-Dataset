@@ -39,4 +39,19 @@ public final class SearchUtils {
             T[] arr, T target, int fromIndex, int toIndex) {
         return binarySearch(arr, target, fromIndex, toIndex).index();
     }
+
+    private static final class RangeValidator {
+        private RangeValidator() {
+        }
+
+        static void validate(int length, int fromIndex, int toIndex) {
+            if (fromIndex > toIndex) {
+                throw new IllegalArgumentException("fromIndex must be less than or equal to toIndex");
+            }
+
+            if (fromIndex < 0 || toIndex > length) {
+                throw new IndexOutOfBoundsException("range must be within array bounds");
+            }
+        }
+    }
 }

@@ -23,6 +23,15 @@ class BinarySearchTest {
                 BinarySearchTest::throwsExceptionForUnsortedArrayInSafeMode);
         runTest("finds an object using a custom comparator", BinarySearchTest::findsObjectUsingCustomComparator);
         runTest("checks sortedness using a custom comparator", BinarySearchTest::checksSortednessUsingCustomComparator);
+        runTest("finds an element in the full requested range", BinarySearchTest::findsElementInFullRange);
+        runTest("finds an element in a partial range", BinarySearchTest::findsElementInPartialRange);
+        runTest("returns -1 when an element is outside the requested range",
+                BinarySearchTest::returnsMinusOneWhenElementIsOutsideRange);
+        runTest("returns -1 for an empty requested range", BinarySearchTest::returnsMinusOneForEmptyRange);
+        runTest("throws when range start is greater than range end",
+                BinarySearchTest::throwsWhenRangeStartIsGreaterThanRangeEnd);
+        runTest("throws when range start is negative", BinarySearchTest::throwsWhenRangeStartIsNegative);
+        runTest("throws when range end exceeds array length", BinarySearchTest::throwsWhenRangeEndExceedsArrayLength);
 
         System.out.println(passedTests + " BinarySearch tests passed.");
     }
@@ -149,6 +158,61 @@ class BinarySearchTest {
 
         TestAssertions.assertThat(BinarySearchUtils.isSorted(people, byAge))
                 .isTrue("Expected Person array to be sorted by age");
+    }
+
+    private static void findsElementInFullRange() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.binarySearch(values, 10, 0, values.length))
+                .isEqualTo(3, "Expected full-range search to match whole-array search");
+    }
+
+    private static void findsElementInPartialRange() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.binarySearch(values, 10, 2, 4))
+                .isEqualTo(3, "Expected partial-range search to find values inside the requested window");
+    }
+
+    private static void returnsMinusOneWhenElementIsOutsideRange() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.binarySearch(values, 40, 0, 4))
+                .isEqualTo(-1, "Values outside [fromIndex, toIndex) should not be found");
+    }
+
+    private static void returnsMinusOneForEmptyRange() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThat(BinarySearchUtils.binarySearch(values, 10, 3, 3))
+                .isEqualTo(-1, "Empty ranges should not contain any target");
+    }
+
+    private static void throwsWhenRangeStartIsGreaterThanRangeEnd() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> BinarySearchUtils.binarySearch(values, 10, 4, 3),
+                "Ranges with fromIndex greater than toIndex should be rejected");
+    }
+
+    private static void throwsWhenRangeStartIsNegative() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThrows(
+                ArrayIndexOutOfBoundsException.class,
+                () -> BinarySearchUtils.binarySearch(values, 10, -1, 3),
+                "Ranges with negative fromIndex should be rejected");
+    }
+
+    private static void throwsWhenRangeEndExceedsArrayLength() {
+        Integer[] values = {2, 3, 4, 10, 40};
+
+        TestAssertions.assertThrows(
+                ArrayIndexOutOfBoundsException.class,
+                () -> BinarySearchUtils.binarySearch(values, 10, 0, 6),
+                "Ranges with toIndex beyond array length should be rejected");
     }
 
     private static void runTest(String name, Runnable test) {

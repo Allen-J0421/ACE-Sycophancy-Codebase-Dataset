@@ -1,7 +1,16 @@
 class BinarySearch {
     public static void main(String[] args) {
-        SearchType searchType = args.length > 0 ? SearchType.from(args[0]) : SearchType.BINARY;
-        SearchAlgorithm<Integer> searchAlgorithm = SearchAlgorithmFactory.create(searchType);
+        SearchType searchType = SearchType.BINARY;
+        boolean loggingEnabled = false;
+        for (String arg : args) {
+            if ("log".equalsIgnoreCase(arg) || "logging".equalsIgnoreCase(arg)) {
+                loggingEnabled = true;
+            } else {
+                searchType = SearchType.from(arg);
+            }
+        }
+
+        SearchAlgorithm<Integer> searchAlgorithm = SearchAlgorithmFactory.create(searchType, loggingEnabled);
         Integer[] values = { 2, 3, 4, 10, 40 };
         Integer target = 10;
         SearchRequest<Integer> request = SearchRequest.<Integer>builder()

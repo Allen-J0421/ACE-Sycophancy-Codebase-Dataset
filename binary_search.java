@@ -1,14 +1,14 @@
 final class BinarySearch {
-    private static final SearchAlgorithm SEARCH_ALGORITHM = new BinarySearcher();
+    private static final SearchContainer CONTAINER = SearchContainer.defaultContainer();
 
     private BinarySearch() {
     }
 
     static int binarySearch(int[] sortedArray, int target) {
-        return SEARCH_ALGORITHM.search(sortedArray, target).index();
+        return CONTAINER.searchAlgorithm().search(sortedArray, target).index();
     }
 
     public static void main(String[] args) {
-        BinarySearchDemo.run();
+        BinarySearchDemo.run(CONTAINER);
     }
 }

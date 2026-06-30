@@ -1,0 +1,11 @@
+# Tool binaries (downloaded by setup.sh) — never commit
+vendor/
+
+# Per-run raw data and dedup cache — large, regenerable; keep local only
+results/**/raw/
+results/experiments/cache/
+
+# Logs, scratch, checkpoints
+*.log
+work/
+*.token

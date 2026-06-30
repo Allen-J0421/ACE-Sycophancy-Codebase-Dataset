@@ -1,0 +1,4 @@
+21:21:08 [run] scope=default  starting
+21:21:08 [sonar] already UP
+21:27:34 [run] 002_two_pointers_technique claude/claude-opus-4-8 snapshots=25 cached_hits=8 failed=0
+21:32:59 [run] 003_prefix_sum_array claude/claude-haiku-4-5 snapshots=50 cached_hits=22 failed=0

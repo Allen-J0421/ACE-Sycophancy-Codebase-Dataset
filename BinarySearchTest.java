@@ -66,4 +66,10 @@ class BinarySearchTest {
 
         assertEquals(3, result);
     }
+
+    @Test
+    void resultOrReturnsIndexOrInsertionPoint() {
+        assertEquals(3, SearchResult.found(3).or(-1));
+        assertEquals(3, SearchResult.notFound(3).or(-1));
+    }
 }

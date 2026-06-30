@@ -24,4 +24,8 @@ public record SearchResult(boolean found, int index, int insertionPoint) {
     public static SearchResult notFound(int insertionPoint) {
         return new SearchResult(false, -1, insertionPoint);
     }
+
+    public int or(int defaultIndex) {
+        return found ? index : insertionPoint;
+    }
 }

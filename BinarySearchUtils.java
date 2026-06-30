@@ -3,6 +3,12 @@ import java.util.Objects;
 
 /**
  * Utility methods for searching sorted arrays.
+ *
+ * <p><strong>Thread safety:</strong> This class is stateless and thread-safe.
+ * All methods operate only on their arguments and local variables. Methods do
+ * not mutate the provided arrays, but callers remain responsible for avoiding
+ * concurrent mutation of arrays or comparator state while a search or sortedness
+ * check is running.</p>
  */
 public final class BinarySearchUtils {
     private BinarySearchUtils() {

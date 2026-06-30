@@ -1,6 +1,12 @@
 import java.util.Comparator;
 
+/**
+ * Stateless test registry for {@link BinarySearchUtils}.
+ */
 class BinarySearchTest {
+    private BinarySearchTest() {
+    }
+
     public static void main(String[] args) {
         TestRunner runner = new TestRunner("BinarySearch");
 

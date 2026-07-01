@@ -27,8 +27,8 @@ plt.rcParams.update({
     "figure.dpi": 200,
 })
 
-COLORS = {"gpt-5.5":"#2ca02c","gpt-5.4":"#1f77b4","gpt-5.4-mini":"#17becf",
-          "claude-opus-4-8":"#9467bd","claude-sonnet-4-6":"#ff7f0e"}
+COLORS = {"gpt-5.5":"#C00000","gpt-5.4":"#70AD47","gpt-5.4-mini":"#FFC000",
+          "claude-opus-4-8":"#111111","claude-sonnet-4-6":"#4472C4"}
 MARKERS = {"gpt-5.5":"^","gpt-5.4":"o","gpt-5.4-mini":"v",
            "claude-opus-4-8":"P","claude-sonnet-4-6":"s"}
 LABELS = {"gpt-5.5":"GPT-5.5","gpt-5.4":"GPT-5.4","gpt-5.4-mini":"GPT-5.4-mini",

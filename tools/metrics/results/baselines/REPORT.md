@@ -1,4 +1,4 @@
-# Baseline Code-Quality Metrics — 80 Units
+# Baseline Code-Quality Metrics — 65 Units
 
 Each unit at its **Initial Commit / Baseline** snapshot.
 
@@ -20,14 +20,39 @@ rules skipped; AST metrics unaffected); Maintainability is SonarQube's SQALE mea
 classic Microsoft Maintainability Index; huge repos (G) are scanned in ≤5k-file bins and summed
 (counts add; duplication & debt-ratio ncloc-weighted; rating re-derived from SQALE thresholds).
 
+### Core analysis engines
 
-## Per-category summary (mean / median)
+| Component | Exact version | Role | Metrics it produces |
+|---|---|---|---|
+| CK (mauricioaniche/ck) | 0.7.0 (fat jar, 15 MB, from Maven Central) | Static AST metrics per class/method | Coupling Between Objects (`cbo`); per-method Cyclomatic Complexity (`wmc`) |
+| SonarQube Community Build | 25.1.0.102122 | Server-side analysis + metric model | Cyclomatic (`complexity`), Cognitive (`cognitive_complexity`), Code Smells, Duplication density, Maintainability (SQALE rating + debt) |
+| SonarScanner CLI | 8.1.0.6389 (Homebrew) | Client that uploads source analysis to the server | — |
+| SonarJava analyzer plugin | 8.8.0.37665 (bundled in SonarQube) | The engine inside Sonar that parses Java | (drives all Sonar metrics above) |
+
+Both CK and SonarJava parse Java with the Eclipse JDT compiler (ECJ) — that's why both hit the
+same TypeBinding/JDT NullPointerException on certain files, which the pipeline works around
+(CK fault-isolation; Sonar per-bin scanning).
+
+### Runtime / platform
+
+| Layer | Detail |
+|---|---|
+| JDK for SonarQube | OpenJDK 17.0.19 (`openjdk@17`) — required; SonarQube 25.1 crashes on Java 21 (SecurityManager removal) |
+| JDK for CK | OpenJDK 21.0.11 (default) — CK runs fine on 21 |
+| SonarQube embedded search | Elasticsearch 8.16.1 (bundled; SonarQube starts it internally on :9001) |
+| SonarQube database | H2 2.3.232 (embedded; ephemeral projects created + deleted per scan) |
+| Orchestration language | Bash (macOS zsh env) + Python 3.9.6 (stdlib only — csv, json, statistics; no third-party packages) |
+| Snapshot extraction | git `git archive <commit> \| tar -x` (read-only; never touches the working tree) |
+| OS / hardware | macOS (arm64), 8 GB RAM (the constraint that forces bin-packed scans for huge repos) |
+
+
+## Per-category summary (mean / median ±sd)
 
 | Category | n | Cyclomatic/fn | Cognitive/fn | Smells/kLOC | Duplication % | CBO mean | Debt % |
 |---|---|---|---|---|---|---|---|
-| ALG | 50 | 3.22 / 3.0 | 3.46 / 3.0 | 138.76 / 106.63 | 0.0 / 0.0 | 1.86 / 2.0 | 3.22 / 2.6 |
-| R | 25 | 2.1 / 2.04 | 1.86 / 1.73 | 89.94 / 86.15 | 8.77 / 6.9 | 4.54 / 4.5 | 1.91 / 1.8 |
-| G | 5 | 2.05 / 2.14 | 1.36 / 1.23 | 30.05 / 30.64 | 18.42 / 4.4 | 6.33 / 5.91 | 0.88 / 0.8 |
+| ALG | 50 | 3.22 / 3.0 ±1.32 | 3.46 / 3.0 ±2.27 | 138.76 / 106.63 ±84.8 | 0.0 / 0.0 ±0.0 | 1.86 / 2.0 ±0.43 | 3.22 / 2.6 ±1.54 |
+| R | 10 | 2.07 / 1.98 ±0.37 | 1.82 / 1.54 ±0.66 | 91.14 / 86.74 ±22.59 | 8.89 / 5.25 ±8.42 | 4.71 / 4.83 ±0.75 | 2.0 / 1.8 ±0.61 |
+| G | 5 | 2.05 / 2.14 ±0.55 | 1.36 / 1.23 ±0.94 | 30.05 / 30.64 ±8.29 | 18.42 / 4.4 ±32.67 | 6.33 / 5.91 ±1.65 | 0.88 / 0.8 ±0.36 |
 
 ## G — full GitHub repos
 
@@ -53,21 +78,6 @@ classic Microsoft Maintainability Index; huge repos (G) are scanned in ≤5k-fil
 | R008_module_java | 1557 | 305 | 2.36 | 272 | 2.11 | 140 | 89.92 | 3.6 | 3.83 | 15 | A | 1.8 |
 | R009_module_java | 1625 | 365 | 1.74 | 276 | 1.31 | 140 | 86.15 | 17.5 | 4.88 | 16 | A | 1.6 |
 | R010_module_java | 1400 | 328 | 2.83 | 385 | 3.32 | 106 | 75.71 | 16.3 | 4.78 | 15 | A | 1.6 |
-| R011_module_java | 1661 | 373 | 2.14 | 322 | 1.85 | 151 | 90.91 | 19.7 | 5.57 | 16 | A | 1.6 |
-| R012_module_java | 1327 | 276 | 1.56 | 173 | 0.98 | 136 | 102.49 | 14.3 | 3.86 | 13 | A | 2.1 |
-| R013_module_java | 1406 | 296 | 2.33 | 286 | 2.25 | 95 | 67.57 | 14.2 | 4.5 | 13 | A | 1.4 |
-| R014_module_java | 1819 | 348 | 2.35 | 269 | 1.82 | 155 | 85.21 | 1.8 | 2.31 | 15 | A | 2.2 |
-| R015_module_java | 1320 | 284 | 1.59 | 181 | 1.01 | 174 | 131.82 | 7.7 | 4.03 | 15 | A | 3.1 |
-| R016_module_java | 1765 | 387 | 2.14 | 351 | 1.94 | 174 | 98.58 | 0.9 | 4.88 | 20 | A | 2.2 |
-| R017_module_java | 1342 | 287 | 2.47 | 329 | 2.84 | 104 | 77.5 | 14.6 | 4.47 | 12 | A | 1.6 |
-| R018_module_java | 1663 | 353 | 1.71 | 295 | 1.43 | 168 | 101.02 | 3.0 | 5.0 | 16 | A | 2.2 |
-| R019_module_java | 1651 | 346 | 2.31 | 337 | 2.25 | 122 | 73.89 | 9.1 | 4.0 | 23 | A | 1.7 |
-| R020_module_java | 2386 | 469 | 2.04 | 340 | 1.48 | 194 | 81.31 | 1.8 | 4.18 | 15 | A | 1.4 |
-| R021_module_java | 1086 | 222 | 2.02 | 185 | 1.68 | 103 | 94.84 | 0.0 | 4.63 | 14 | A | 1.9 |
-| R022_module_java | 3106 | 542 | 1.97 | 431 | 1.57 | 252 | 81.13 | 5.5 | 4.66 | 16 | A | 1.4 |
-| R023_module_java | 1342 | 287 | 2.47 | 329 | 2.84 | 104 | 77.5 | 14.6 | 4.47 | 12 | A | 1.6 |
-| R024_module_java | 1422 | 297 | 2.2 | 250 | 1.85 | 101 | 71.03 | 19.4 | 4.3 | 15 | A | 1.4 |
-| R025_module_java | 1801 | 377 | 2.48 | 385 | 2.53 | 184 | 102.17 | 3.7 | 5.67 | 17 | A | 2.0 |
 
 ## ALG — 50 synthetic DSA units (summary)
 

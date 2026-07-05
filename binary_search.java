@@ -15,7 +15,7 @@ final class BinarySearch {
         int low = 0;
         int high = numbers.length - 1;
 
-        while (low <= high) {
+        while (hasSearchWindow(low, high)) {
             final int mid = midpoint(low, high);
             final int comparison = compareAt(numbers, mid, target);
 
@@ -35,6 +35,10 @@ final class BinarySearch {
 
     private static boolean isEmpty(final int[] numbers) {
         return numbers.length == 0;
+    }
+
+    private static boolean hasSearchWindow(final int low, final int high) {
+        return low <= high;
     }
 
     private static int midpoint(final int low, final int high) {

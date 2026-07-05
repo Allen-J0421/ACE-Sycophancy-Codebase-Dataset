@@ -7,19 +7,25 @@ interface DisjointSet {
     void reset();
 }
 
-public class UnionFind implements DisjointSet {
-    private static class Node {
-        Node parent;
-        int rank;
-        final int index;
+class Node {
+    Node parent;
+    int rank;
+    final int index;
 
-        Node(int index) {
-            this.parent = this;
-            this.rank = 0;
-            this.index = index;
-        }
+    Node(int index) {
+        this.parent = this;
+        this.rank = 0;
+        this.index = index;
     }
+}
 
+class DisjointSetFactory {
+    static DisjointSet create(int size) {
+        return new UnionFind(size);
+    }
+}
+
+public class UnionFind implements DisjointSet {
     private final Node[] nodes;
     private int count;
 
@@ -103,7 +109,7 @@ public class UnionFind implements DisjointSet {
 
     public static void main(String[] args) {
         int size = 5;
-        DisjointSet uf = new UnionFind(size);
+        DisjointSet uf = DisjointSetFactory.create(size);
         uf.union(1, 2);
         uf.union(3, 4);
         System.out.println("Are 1 and 2 in the same set? " + uf.connected(1, 2));

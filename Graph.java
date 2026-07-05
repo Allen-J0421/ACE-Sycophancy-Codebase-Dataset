@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Graph implements GraphView {
-    private final int n;
-    private final ArrayList<ArrayList<Integer>> adj;
+    private final int capacity;
+    private final List<List<Integer>> adj;
 
-    Graph(int n) {
-        this.n = n;
+    Graph(int capacity) {
+        this.capacity = capacity;
         adj = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < capacity; i++) {
             adj.add(new ArrayList<>());
         }
     }
@@ -24,6 +24,6 @@ class Graph implements GraphView {
 
     @Override
     public int size() {
-        return n;
+        return capacity;
     }
 }

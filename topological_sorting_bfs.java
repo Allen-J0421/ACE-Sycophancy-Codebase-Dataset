@@ -10,17 +10,14 @@ class CycleDetectedException extends RuntimeException {
 }
 
 class TopologicalSortService {
-    private final GraphView graph;
 
-    private TopologicalSortService(GraphView graph) {
-        this.graph = graph;
+    private TopologicalSortService() {}
+
+    static TopologicalSortService of() {
+        return new TopologicalSortService();
     }
 
-    static TopologicalSortService of(GraphView graph) {
-        return new TopologicalSortService(graph);
-    }
-
-    private int[] computeIndegrees() {
+    private int[] computeIndegrees(GraphView graph) {
         int n = graph.size();
         int[] indegree = new int[n];
         for (int i = 0; i < n; i++) {
@@ -31,7 +28,7 @@ class TopologicalSortService {
         return indegree;
     }
 
-    private List<Integer> processQueue(int[] indegree, Queue<Integer> q) {
+    private List<Integer> processQueue(GraphView graph, int[] indegree, Queue<Integer> q) {
         List<Integer> result = new ArrayList<>();
         while (!q.isEmpty()) {
             int top = q.poll();
@@ -45,9 +42,9 @@ class TopologicalSortService {
         return result;
     }
 
-    List<Integer> sort() {
+    List<Integer> sort(GraphView graph) {
         int n = graph.size();
-        int[] indegree = computeIndegrees();
+        int[] indegree = computeIndegrees(graph);
         Queue<Integer> q = new LinkedList<>();
         for (int i = 0; i < n; i++) {
             if (indegree[i] == 0) {
@@ -55,7 +52,7 @@ class TopologicalSortService {
             }
         }
 
-        List<Integer> result = processQueue(indegree, q);
+        List<Integer> result = processQueue(graph, indegree, q);
 
         if (result.size() != n) {
             throw new CycleDetectedException();
@@ -75,7 +72,7 @@ class TopologicalSort {
         graph.addEdge(5, 1);
         graph.addEdge(5, 2);
 
-        List<Integer> res = TopologicalSortService.of(graph).sort();
+        List<Integer> res = TopologicalSortService.of().sort(graph);
         for (int vertex : res) {
             System.out.print(vertex + " ");
         }

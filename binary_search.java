@@ -17,7 +17,7 @@ final class BinarySearch {
 
         while (low <= high) {
             final int mid = midpoint(low, high);
-            final int comparison = Integer.compare(numbers[mid], target);
+            final int comparison = compareAt(numbers, mid, target);
 
             if (comparison == 0) {
                 return mid;
@@ -39,6 +39,10 @@ final class BinarySearch {
 
     private static int midpoint(final int low, final int high) {
         return low + (high - low) / 2;
+    }
+
+    private static int compareAt(final int[] numbers, final int index, final int target) {
+        return Integer.compare(numbers[index], target);
     }
 
     private static String formatSearchResult(final int result) {

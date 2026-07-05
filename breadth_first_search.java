@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 interface GraphView {
     int vertexCount();
-    List<Integer> neighbors(int v);
+    Iterable<Integer> neighbors(int v);
 }
 
 class Graph implements GraphView {
@@ -32,7 +32,7 @@ class Graph implements GraphView {
     }
 
     @Override
-    public List<Integer> neighbors(int v) {
+    public Iterable<Integer> neighbors(int v) {
         return adj.get(v);
     }
 }

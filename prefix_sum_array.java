@@ -8,7 +8,11 @@ interface RangeSumQuery {
 public class PrefixSum implements RangeSumQuery {
     private final int[] prefix;
 
-    public PrefixSum(int[] arr) {
+    public static PrefixSum of(int[] arr) {
+        return new PrefixSum(arr);
+    }
+
+    private PrefixSum(int[] arr) {
         if (arr == null) throw new IllegalArgumentException("Input array must not be null");
         if (arr.length == 0) throw new IllegalArgumentException("Input array must not be empty");
         prefix = new int[arr.length];
@@ -32,7 +36,7 @@ public class PrefixSum implements RangeSumQuery {
 
     public static void main(String[] args) {
         int[] arr = {10, 20, 10, 5, 15};
-        RangeSumQuery ps = new PrefixSum(arr);
+        RangeSumQuery ps = PrefixSum.of(arr);
         System.out.println(Arrays.toString(ps.toArray()));
         System.out.println(ps.rangeSum(1, 3)); // 35: arr[1]+arr[2]+arr[3]
     }

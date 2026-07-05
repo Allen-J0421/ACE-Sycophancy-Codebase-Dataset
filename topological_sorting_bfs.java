@@ -36,8 +36,13 @@ class Graph implements GraphView {
 }
 
 class TopologicalSortService {
+    private final GraphView graph;
 
-    static ArrayList<Integer> sort(GraphView graph) {
+    TopologicalSortService(GraphView graph) {
+        this.graph = graph;
+    }
+
+    ArrayList<Integer> sort() {
         int n = graph.size();
         int[] indegree = new int[n];
         Queue<Integer> q = new LinkedList<>();
@@ -81,7 +86,7 @@ class TopologicalSort {
         graph.addEdge(5, 1);
         graph.addEdge(5, 2);
 
-        ArrayList<Integer> res = TopologicalSortService.sort(graph);
+        ArrayList<Integer> res = new TopologicalSortService(graph).sort();
         for (int vertex : res) {
             System.out.print(vertex + " ");
         }

@@ -4,11 +4,12 @@ interface DisjointSet {
     int find(int i);
     void union(int i, int j);
     boolean connected(int i, int j);
+    int size();
 }
 
 public class UnionFind implements DisjointSet {
-    private int[] parent;
-    private int[] rank;
+    private final int[] parent;
+    private final int[] rank;
 
     public UnionFind(int size) {
 
@@ -53,6 +54,10 @@ public class UnionFind implements DisjointSet {
             parent[jrep] = irep;
             rank[irep]++;
         }
+    }
+
+    public int size() {
+        return parent.length;
     }
 
     public boolean connected(int i, int j) {

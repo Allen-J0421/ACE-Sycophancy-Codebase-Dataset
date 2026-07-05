@@ -4,16 +4,18 @@ public class PrefixSum implements RangeSumQuery {
     private final int[] prefix;
 
     public static PrefixSum of(int[] arr) {
-        return new PrefixSum(arr);
+        return new PrefixSum(arr, PrefixCalculator.iterative());
     }
 
-    private PrefixSum(int[] arr) {
+    public static PrefixSum of(int[] arr, PrefixCalculator calculator) {
+        return new PrefixSum(arr, calculator);
+    }
+
+    private PrefixSum(int[] arr, PrefixCalculator calculator) {
         if (arr == null) throw new IllegalArgumentException("Input array must not be null");
         if (arr.length == 0) throw new IllegalArgumentException("Input array must not be empty");
-        prefix = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            prefix[i] = arr[i] + (i > 0 ? prefix[i - 1] : 0);
-        }
+        if (calculator == null) throw new IllegalArgumentException("Calculator must not be null");
+        prefix = calculator.calculate(arr);
     }
 
     @Override
@@ -31,8 +33,14 @@ public class PrefixSum implements RangeSumQuery {
 
     public static void main(String[] args) {
         int[] arr = {10, 20, 10, 5, 15};
-        RangeSumQuery ps = PrefixSum.of(arr);
-        System.out.println(Arrays.toString(ps.toArray()));
-        System.out.println(ps.rangeSum(1, 3)); // 35: arr[1]+arr[2]+arr[3]
+
+        RangeSumQuery iterative = PrefixSum.of(arr);
+        RangeSumQuery recursive = PrefixSum.of(arr, PrefixCalculator.recursive());
+        RangeSumQuery parallel  = PrefixSum.of(arr, PrefixCalculator.parallel());
+
+        System.out.println(Arrays.toString(iterative.toArray())); // [10, 30, 40, 45, 60]
+        System.out.println(Arrays.toString(recursive.toArray()));  // [10, 30, 40, 45, 60]
+        System.out.println(Arrays.toString(parallel.toArray()));   // [10, 30, 40, 45, 60]
+        System.out.println(iterative.rangeSum(1, 3));              // 35
     }
 }

@@ -8,6 +8,10 @@ final class BinarySearch {
     }
 
     static int binarySearch(final int[] numbers, final int target) {
+        if (isEmpty(numbers)) {
+            return NOT_FOUND;
+        }
+
         int low = 0;
         int high = numbers.length - 1;
 
@@ -27,6 +31,10 @@ final class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static boolean isEmpty(final int[] numbers) {
+        return numbers.length == 0;
     }
 
     private static int midpoint(final int low, final int high) {

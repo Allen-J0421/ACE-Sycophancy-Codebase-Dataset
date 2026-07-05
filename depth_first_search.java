@@ -31,43 +31,44 @@ class Graph implements GraphInterface {
     }
 }
 
-public class DepthFirstSearch {
+class DfsService {
+    private boolean[] visited;
+    private final List<Integer> result = new ArrayList<>();
 
-    private static void dfsRec(GraphInterface graph, boolean[] visited, int s, ArrayList<Integer> res) {
-        visited[s] = true;
-        res.add(s);
-
-        for (int i : graph.getNeighbors(s)) {
-            if (!visited[i]) {
-                dfsRec(graph, visited, i, res);
-            }
-        }
-    }
-
-    public static ArrayList<Integer> dfs(GraphInterface graph) {
-        boolean[] visited = new boolean[graph.size()];
-        ArrayList<Integer> res = new ArrayList<>();
-
+    public List<Integer> traverse(GraphInterface graph) {
+        visited = new boolean[graph.size()];
+        result.clear();
         for (int i = 0; i < graph.size(); i++) {
             if (!visited[i]) {
-                dfsRec(graph, visited, i, res);
+                visit(graph, i);
             }
         }
-
-        return res;
+        return new ArrayList<>(result);
     }
 
+    private void visit(GraphInterface graph, int vertex) {
+        visited[vertex] = true;
+        result.add(vertex);
+        for (int neighbor : graph.getNeighbors(vertex)) {
+            if (!visited[neighbor]) {
+                visit(graph, neighbor);
+            }
+        }
+    }
+}
+
+public class DepthFirstSearch {
     public static void main(String[] args) {
         Graph g = new Graph(6);
-
         g.addEdge(1, 2);
         g.addEdge(0, 3);
         g.addEdge(2, 0);
         g.addEdge(5, 4);
 
-        ArrayList<Integer> res = dfs(g);
+        DfsService service = new DfsService();
+        List<Integer> result = service.traverse(g);
 
-        for (int num : res) {
+        for (int num : result) {
             System.out.print(num + " ");
         }
     }

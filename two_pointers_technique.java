@@ -1,13 +1,10 @@
-import java.util.Arrays;
+class TwoPointerService {
 
-class TwoPointers {
-
-    static boolean twoSum(int[] arr, int target){
-
-        int left = 0, right = arr.length - 1;
+    boolean hasPairWithSum(int[] sortedArr, int target) {
+        int left = 0, right = sortedArr.length - 1;
 
         while (left < right) {
-            int sum = arr[left] + arr[right];
+            int sum = sortedArr[left] + sortedArr[right];
 
             if (sum == target)
                 return true;
@@ -19,15 +16,29 @@ class TwoPointers {
 
         return false;
     }
+}
 
-    public static void main(String[] args){
-        int[] arr = {-3, -1, 0, 1, 2 };
+class TwoPointers {
+
+    private final TwoPointerService service;
+
+    TwoPointers() {
+        this.service = new TwoPointerService();
+    }
+
+    boolean twoSum(int[] arr, int target) {
+        return service.hasPairWithSum(arr, target);
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {-3, -1, 0, 1, 2};
         int target = -2;
 
-        if (twoSum(arr, target)) {
+        TwoPointers tp = new TwoPointers();
+
+        if (tp.twoSum(arr, target)) {
             System.out.println("true");
-        }
-        else {
+        } else {
             System.out.println("false");
         }
     }

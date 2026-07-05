@@ -2,7 +2,6 @@ import java.util.Objects;
 
 public final class BinarySearch {
     public static final int NOT_FOUND = -1;
-    private static final int SAMPLE_TARGET = 10;
 
     private BinarySearch() {
     }
@@ -39,26 +38,7 @@ public final class BinarySearch {
         return left + (right - left) / 2;
     }
 
-    private static void printSearchResult(int index) {
-        System.out.println(formatSearchResult(index));
-    }
-
-    private static String formatSearchResult(int index) {
-        return index == NOT_FOUND
-                ? "Element is not present in array"
-                : "Element is present at index " + index;
-    }
-
     public static void main(String[] args) {
-        runSampleSearch();
-    }
-
-    private static void runSampleSearch() {
-        int result = binarySearch(sampleNumbers(), SAMPLE_TARGET);
-        printSearchResult(result);
-    }
-
-    private static int[] sampleNumbers() {
-        return new int[] {2, 3, 4, 10, 40};
+        BinarySearchDemo.runSampleSearch();
     }
 }

@@ -1,10 +1,5 @@
 import java.util.Arrays;
 
-interface RangeSumQuery {
-    int rangeSum(int l, int r);
-    int[] toArray();
-}
-
 public class PrefixSum implements RangeSumQuery {
     private final int[] prefix;
 

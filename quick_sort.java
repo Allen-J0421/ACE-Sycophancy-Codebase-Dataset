@@ -5,29 +5,29 @@ interface Sorter {
 interface PivotSelector {
     <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high);
 
-    static PivotSelector last()   { return new LastElementPivotSelector(); }
-    static PivotSelector first()  { return new FirstElementPivotSelector(); }
-    static PivotSelector random() { return new RandomPivotSelector(); }
-}
+    static PivotSelector last()   { return new Last(); }
+    static PivotSelector first()  { return new First(); }
+    static PivotSelector random() { return new Random(); }
 
-class LastElementPivotSelector implements PivotSelector {
-    @Override
-    public <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high) {
-        return high;
+    class Last implements PivotSelector {
+        @Override
+        public <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high) {
+            return high;
+        }
     }
-}
 
-class FirstElementPivotSelector implements PivotSelector {
-    @Override
-    public <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high) {
-        return low;
+    class First implements PivotSelector {
+        @Override
+        public <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high) {
+            return low;
+        }
     }
-}
 
-class RandomPivotSelector implements PivotSelector {
-    @Override
-    public <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high) {
-        return low + (int) (Math.random() * (high - low + 1));
+    class Random implements PivotSelector {
+        @Override
+        public <T extends Comparable<T>> int selectPivot(T[] arr, int low, int high) {
+            return low + (int) (Math.random() * (high - low + 1));
+        }
     }
 }
 

@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -37,10 +36,8 @@ class Pathfinder {
             }
         }
 
-        ArrayList<Integer> result = new ArrayList<>();
-        for (int d : dist)
-            result.add(d);
-
-        return result;
+        return Arrays.stream(dist)
+                .boxed()
+                .toList();
     }
 }

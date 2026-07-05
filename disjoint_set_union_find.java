@@ -5,16 +5,19 @@ interface DisjointSet {
     void union(int i, int j);
     boolean connected(int i, int j);
     int size();
+    int count();
 }
 
 public class UnionFind implements DisjointSet {
     private final int[] parent;
     private final int[] rank;
+    private int count;
 
     public UnionFind(int size) {
 
         parent = new int[size];
         rank = new int[size];
+        count = size;
         for (int i = 0; i < size; i++) {
             parent[i] = i;
         }
@@ -46,6 +49,8 @@ public class UnionFind implements DisjointSet {
 
         if (irep == jrep) return;
 
+        count--;
+
         if (rank[irep] < rank[jrep]) {
             parent[irep] = jrep;
         } else if (rank[irep] > rank[jrep]) {
@@ -58,6 +63,10 @@ public class UnionFind implements DisjointSet {
 
     public int size() {
         return parent.length;
+    }
+
+    public int count() {
+        return count;
     }
 
     public boolean connected(int i, int j) {

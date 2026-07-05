@@ -41,11 +41,15 @@ class BinarySearch {
         System.out.println(formatSearchResult(result));
     }
 
-    public static void main(String[] args) {
+    private static void runDemo() {
         int[] sortedValues = { 2, 3, 4, 10, 40 };
         int target = 10;
         int result = binarySearch(sortedValues, target);
 
         printSearchResult(result);
+    }
+
+    public static void main(String[] args) {
+        runDemo();
     }
 }

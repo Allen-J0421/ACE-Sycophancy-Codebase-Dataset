@@ -3,6 +3,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.LinkedList;
 
+class CycleDetectedException extends RuntimeException {
+    CycleDetectedException() {
+        super("Graph contains a cycle and cannot be topologically sorted");
+    }
+}
+
 interface GraphView {
     int size();
     List<Integer> getNeighbors(int u);
@@ -75,6 +81,9 @@ class TopologicalSortService {
             }
         }
 
+        if (result.size() != n) {
+            throw new CycleDetectedException();
+        }
         return result;
     }
 }

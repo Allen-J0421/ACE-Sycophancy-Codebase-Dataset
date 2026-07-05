@@ -1,5 +1,3 @@
-import java.util.List;
-
 class Dijkstra {
     public static void main(String[] args) {
         int src = 0;
@@ -12,9 +10,9 @@ class Dijkstra {
                 .addEdge(2, 3, 2)
                 .addEdge(3, 4, 10);
 
-        List<Integer> result = Pathfinder.dijkstra(graph, src);
-        for (int d : result)
-            System.out.print(d + " ");
+        PathfindingResult result = Pathfinder.dijkstra(graph, src);
+        for (int v = 0; v < graph.size(); v++)
+            System.out.print(result.distanceTo(v) + " ");
         System.out.println();
     }
 }

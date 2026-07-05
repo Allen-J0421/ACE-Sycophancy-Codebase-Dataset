@@ -1,6 +1,5 @@
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.stream.IntStream;
@@ -9,7 +8,7 @@ class Pathfinder {
     private record Node(int dist, int vertex) {}
 
     private static class DistanceTracker {
-        static final int UNREACHABLE = Integer.MAX_VALUE;
+        static final int UNREACHABLE = PathfindingResult.UNREACHABLE;
 
         private final Map<Integer, Integer> distances = new HashMap<>();
 
@@ -25,14 +24,13 @@ class Pathfinder {
             return candidate < get(vertex);
         }
 
-        List<Integer> toList(int size) {
-            return IntStream.range(0, size)
-                    .mapToObj(this::get)
-                    .toList();
+        PathfindingResult toResult(int size) {
+            return new PathfindingResult(
+                    IntStream.range(0, size).mapToObj(this::get).toList());
         }
     }
 
-    static List<Integer> dijkstra(Graph graph, int src) {
+    static PathfindingResult dijkstra(Graph graph, int src) {
         int V = graph.size();
 
         PriorityQueue<Node> pq = new PriorityQueue<>(Comparator.comparingInt(Node::dist));
@@ -60,6 +58,6 @@ class Pathfinder {
             }
         }
 
-        return dist.toList(V);
+        return dist.toResult(V);
     }
 }

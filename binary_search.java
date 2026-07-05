@@ -30,11 +30,15 @@ class BinarySearch {
         return "Element is present at index " + index;
     }
 
-    public static void main(String[] args) {
+    private static void runDemo() {
         int[] numbers = { 2, 3, 4, 10, 40 };
         int target = 10;
         int result = binarySearch(numbers, target);
 
         System.out.println(formatSearchResult(result));
+    }
+
+    public static void main(String[] args) {
+        runDemo();
     }
 }

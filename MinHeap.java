@@ -2,47 +2,22 @@ import java.util.*;
 
 class MinHeap<T extends Comparable<T>> implements Iterable<T> {
 
-    private ArrayList<T> heapArray;
+    private final ArrayList<T> heapArray;
+    private final HeapHelper<T> helper;
 
     public MinHeap() {
         heapArray = new ArrayList<>();
-    }
-
-    private void swap(int a, int b) {
-        T temp = heapArray.get(a);
-        heapArray.set(a, heapArray.get(b));
-        heapArray.set(b, temp);
-    }
-
-    private int parent(int key) {
-        return (key - 1) / 2;
-    }
-
-    private int left(int key) {
-        return 2 * key + 1;
-    }
-
-    private int right(int key) {
-        return 2 * key + 2;
+        helper = new HeapHelper<>(heapArray);
     }
 
     public void insertKey(T key) {
         heapArray.add(key);
-        int i = heapArray.size() - 1;
-
-        while (i != 0 && heapArray.get(i).compareTo(heapArray.get(parent(i))) < 0) {
-            swap(i, parent(i));
-            i = parent(i);
-        }
+        helper.siftUp(heapArray.size() - 1);
     }
 
     public void decreaseKey(int index, T new_val) {
         heapArray.set(index, new_val);
-
-        while (index != 0 && heapArray.get(index).compareTo(heapArray.get(parent(index))) < 0) {
-            swap(index, parent(index));
-            index = parent(index);
-        }
+        helper.siftUp(index);
     }
 
     public T getMin() {
@@ -60,7 +35,7 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
 
         T root = heapArray.get(0);
         heapArray.set(0, heapArray.remove(heapArray.size() - 1));
-        MinHeapify(0);
+        helper.siftDown(0);
 
         return root;
     }
@@ -73,40 +48,17 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         }
         heapArray.set(index, heapArray.remove(lastIndex));
         if (index < heapArray.size()) {
-            if (index > 0 && heapArray.get(index).compareTo(heapArray.get(parent(index))) < 0) {
-                int i = index;
-                while (i != 0 && heapArray.get(i).compareTo(heapArray.get(parent(i))) < 0) {
-                    swap(i, parent(i));
-                    i = parent(i);
-                }
+            if (index > 0 && heapArray.get(index).compareTo(heapArray.get(helper.parent(index))) < 0) {
+                helper.siftUp(index);
             } else {
-                MinHeapify(index);
+                helper.siftDown(index);
             }
-        }
-    }
-
-    private void MinHeapify(int key) {
-        int l = left(key);
-        int r = right(key);
-        int size = heapArray.size();
-
-        int smallest = key;
-        if (l < size && heapArray.get(l).compareTo(heapArray.get(smallest)) < 0) {
-            smallest = l;
-        }
-        if (r < size && heapArray.get(r).compareTo(heapArray.get(smallest)) < 0) {
-            smallest = r;
-        }
-
-        if (smallest != key) {
-            swap(key, smallest);
-            MinHeapify(smallest);
         }
     }
 
     public void increaseKey(int index, T new_val) {
         heapArray.set(index, new_val);
-        MinHeapify(index);
+        helper.siftDown(index);
     }
 
     public void changeValueOnAKey(int index, T new_val) {

@@ -16,11 +16,17 @@ interface GraphView<T> {
 }
 
 class Graph<T> implements GraphView<T> {
+    private final Set<T> vertexSet = new LinkedHashSet<>();
     private final Map<T, List<T>> adj = new LinkedHashMap<>();
 
+    void addVertex(T v) {
+        vertexSet.add(v);
+    }
+
     void addDirectedEdge(T from, T to) {
+        addVertex(from);
+        addVertex(to);
         adj.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
-        adj.computeIfAbsent(to, k -> new ArrayList<>());
     }
 
     void addUndirectedEdge(T u, T v) {
@@ -30,7 +36,7 @@ class Graph<T> implements GraphView<T> {
 
     @Override
     public Iterable<T> vertices() {
-        return adj.keySet();
+        return Collections.unmodifiableSet(vertexSet);
     }
 
     @Override

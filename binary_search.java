@@ -14,13 +14,13 @@ final class BinarySearch {
 
         while (left <= right) {
             int middle = midpoint(left, right);
-            int candidate = sortedValues[middle];
+            int middleValue = sortedValues[middle];
 
-            if (candidate == target) {
+            if (middleValue == target) {
                 return middle;
             }
 
-            if (candidate < target) {
+            if (middleValue < target) {
                 left = middle + 1;
             } else {
                 right = middle - 1;

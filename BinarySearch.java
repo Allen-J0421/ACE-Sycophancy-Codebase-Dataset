@@ -1,13 +1,17 @@
 import java.util.Objects;
 
-final class BinarySearch {
-    private static final int NOT_FOUND = -1;
+public final class BinarySearch {
+    public static final int NOT_FOUND = -1;
     private static final int SAMPLE_TARGET = 10;
 
     private BinarySearch() {
     }
 
-    static int binarySearch(int[] sortedNumbers, int target) {
+    /**
+     * Returns the index of {@code target} in an ascending sorted array, or
+     * {@link #NOT_FOUND} when the target is absent.
+     */
+    public static int binarySearch(int[] sortedNumbers, int target) {
         Objects.requireNonNull(sortedNumbers, "sortedNumbers must not be null");
 
         int left = 0;

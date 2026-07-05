@@ -1,45 +1,74 @@
-interface PairSearchStrategy {
-    boolean hasPairWithSum(int[] sortedArr, int target);
+class Algorithm {
+
+    interface PairSearchStrategy {
+        boolean hasPairWithSum(int[] sortedArr, int target);
+    }
+
+    static class TwoPointerService implements PairSearchStrategy {
+
+        @Override
+        public boolean hasPairWithSum(int[] sortedArr, int target) {
+            int left = 0, right = sortedArr.length - 1;
+
+            while (left < right) {
+                int sum = sortedArr[left] + sortedArr[right];
+
+                if (sum == target)
+                    return true;
+                else if (sum < target)
+                    left++;
+                else
+                    right--;
+            }
+
+            return false;
+        }
+    }
 }
 
-class TwoPointerService implements PairSearchStrategy {
+class Data {
 
-    @Override
-    public boolean hasPairWithSum(int[] sortedArr, int target) {
-        int left = 0, right = sortedArr.length - 1;
+    interface Preprocessor<T> {
+        T process(T input);
+    }
 
-        while (left < right) {
-            int sum = sortedArr[left] + sortedArr[right];
+    static class SortedArrayPreprocessor implements Preprocessor<int[]> {
 
-            if (sum == target)
-                return true;
-            else if (sum < target)
-                left++;
-            else
-                right--;
+        @Override
+        public int[] process(int[] input) {
+            if (input == null)
+                throw new IllegalArgumentException("Array must not be null");
+            for (int i = 0; i < input.length - 1; i++) {
+                if (input[i] > input[i + 1])
+                    throw new IllegalArgumentException("Array must be sorted in ascending order");
+            }
+            return input;
         }
-
-        return false;
     }
 }
 
 class TwoPointers {
 
-    private final PairSearchStrategy strategy;
+    private final Algorithm.PairSearchStrategy strategy;
+    private final Data.Preprocessor<int[]> preprocessor;
 
-    TwoPointers(PairSearchStrategy strategy) {
+    TwoPointers(Algorithm.PairSearchStrategy strategy, Data.Preprocessor<int[]> preprocessor) {
         this.strategy = strategy;
+        this.preprocessor = preprocessor;
     }
 
     boolean twoSum(int[] arr, int target) {
-        return strategy.hasPairWithSum(arr, target);
+        return strategy.hasPairWithSum(preprocessor.process(arr), target);
     }
 
     public static void main(String[] args) {
         int[] arr = {-3, -1, 0, 1, 2};
         int target = -2;
 
-        TwoPointers tp = new TwoPointers(new TwoPointerService());
+        TwoPointers tp = new TwoPointers(
+            new Algorithm.TwoPointerService(),
+            new Data.SortedArrayPreprocessor()
+        );
 
         if (tp.twoSum(arr, target)) {
             System.out.println("true");

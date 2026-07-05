@@ -35,11 +35,15 @@ final class BinarySearch {
     }
 
     private static String formatSearchResult(int foundIndex) {
-        if (foundIndex == NOT_FOUND) {
+        if (isNotFound(foundIndex)) {
             return NOT_PRESENT_MESSAGE;
         }
 
         return PRESENT_MESSAGE_PREFIX + foundIndex;
+    }
+
+    private static boolean isNotFound(int foundIndex) {
+        return foundIndex == NOT_FOUND;
     }
 
     public static void main(String[] args) {

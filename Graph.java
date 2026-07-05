@@ -10,9 +10,10 @@ class Graph {
             adj.add(new ArrayList<>());
     }
 
-    void addEdge(int u, int v, int w) {
+    Graph addEdge(int u, int v, int w) {
         adj.get(u).add(new Edge(v, w));
         adj.get(v).add(new Edge(u, w));
+        return this;
     }
 
     List<Edge> neighbors(int u) {

@@ -1,6 +1,11 @@
 import java.util.Arrays;
 
-public class UnionFind {
+interface DisjointSet {
+    int find(int i);
+    void union(int i, int j);
+}
+
+public class UnionFind implements DisjointSet {
     private int[] parent;
     private int[] rank;
 
@@ -42,7 +47,7 @@ public class UnionFind {
 
     public static void main(String[] args) {
         int size = 5;
-        UnionFind uf = new UnionFind(size);
+        DisjointSet uf = new UnionFind(size);
         uf.union(1, 2);
         uf.union(3, 4);
         boolean inSameSet = uf.find(1) == uf.find(2);

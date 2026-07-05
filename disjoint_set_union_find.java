@@ -18,7 +18,14 @@ public class UnionFind implements DisjointSet {
         }
     }
 
+    private void validate(int i) {
+        if (i < 0 || i >= parent.length) {
+            throw new IllegalArgumentException("Index " + i + " out of bounds for size " + parent.length);
+        }
+    }
+
     public int find(int i) {
+        validate(i);
 
         if (parent[i] != i) {
             parent[i] = find(parent[i]);
@@ -28,6 +35,8 @@ public class UnionFind implements DisjointSet {
     }
 
     public void union(int i, int j) {
+        validate(i);
+        validate(j);
 
         int irep = find(i);
 

@@ -1,5 +1,6 @@
 class BinarySearch {
     private static final int NOT_FOUND = -1;
+    private static final int DEMO_TARGET = 10;
 
     static int binarySearch(int[] numbers, int target) {
         int low = 0;
@@ -30,10 +31,12 @@ class BinarySearch {
         return "Element is present at index " + index;
     }
 
+    private static int[] demoNumbers() {
+        return new int[] { 2, 3, 4, 10, 40 };
+    }
+
     private static void runDemo() {
-        int[] numbers = { 2, 3, 4, 10, 40 };
-        int target = 10;
-        int result = binarySearch(numbers, target);
+        int result = binarySearch(demoNumbers(), DEMO_TARGET);
 
         System.out.println(formatSearchResult(result));
     }

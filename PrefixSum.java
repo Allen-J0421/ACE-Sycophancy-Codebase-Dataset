@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BinaryOperator;
 
+import static java.util.Objects.requireNonNull;
+
 public class PrefixSum<T> implements RangeSumQuery<T> {
     private final List<T> prefix;
     private final BinaryOperator<T> difference;
@@ -26,12 +28,12 @@ public class PrefixSum<T> implements RangeSumQuery<T> {
 
     private PrefixSum(List<T> input, BinaryOperator<T> op, ZeroValueProvider<T> zero,
                       BinaryOperator<T> difference, PrefixCalculator<T> calculator) {
-        if (input == null)      throw new IllegalArgumentException("Input must not be null");
-        if (input.isEmpty())    throw new IllegalArgumentException("Input must not be empty");
-        if (op == null)         throw new IllegalArgumentException("Operator must not be null");
-        if (zero == null)       throw new IllegalArgumentException("Zero provider must not be null");
-        if (difference == null) throw new IllegalArgumentException("Difference operator must not be null");
-        if (calculator == null) throw new IllegalArgumentException("Calculator must not be null");
+        requireNonNull(input,      "input");
+        requireNonNull(op,         "op");
+        requireNonNull(zero,       "zero");
+        requireNonNull(difference, "difference");
+        requireNonNull(calculator, "calculator");
+        Validator.requireNonEmpty(input, "input");
         this.prefix     = Collections.unmodifiableList(calculator.calculate(input, op, zero));
         this.difference = difference;
     }

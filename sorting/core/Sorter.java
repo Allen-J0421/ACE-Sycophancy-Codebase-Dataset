@@ -41,6 +41,11 @@ public class Sorter<T> {
             return this;
         }
 
+        public Builder<T> algorithm(String name) {
+            this.strategyFactory = AlgorithmRegistry.get(name);
+            return this;
+        }
+
         public Builder<T> observer(SortObserver observer) {
             this.observer = observer;
             return this;

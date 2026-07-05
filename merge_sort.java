@@ -1,7 +1,6 @@
 import java.util.Comparator;
 import sorting.core.SortObserver;
 import sorting.core.Sorter;
-import sorting.algorithm.MergeSort;
 
 class Main {
     private static <T> void printArray(T[] arr) {
@@ -22,7 +21,7 @@ class Main {
 
         Integer[] ints = {38, 27, 43, 10};
         Sorter.<Integer>builder()
-            .strategy(MergeSort::new)
+            .algorithm("merge")
             .comparator(Comparator.naturalOrder())
             .observer(logger)
             .build()
@@ -31,7 +30,7 @@ class Main {
 
         Integer[] intsDesc = {38, 27, 43, 10};
         Sorter.<Integer>builder()
-            .strategy(MergeSort::new)
+            .algorithm("merge")
             .comparator(Comparator.reverseOrder())
             .observer(logger)
             .build()
@@ -40,7 +39,7 @@ class Main {
 
         String[] words = {"Banana", "apple", "Cherry", "date"};
         Sorter.<String>builder()
-            .strategy(MergeSort::new)
+            .algorithm("merge")
             .comparator(String.CASE_INSENSITIVE_ORDER)
             .observer(logger)
             .build()

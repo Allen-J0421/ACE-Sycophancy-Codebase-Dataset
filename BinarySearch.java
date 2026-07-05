@@ -37,8 +37,4 @@ public final class BinarySearch {
     private static int midpoint(int left, int right) {
         return left + (right - left) / 2;
     }
-
-    public static void main(String[] args) {
-        BinarySearchDemo.runSampleSearch();
-    }
 }

@@ -1,7 +1,7 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Queue;
 import java.util.function.Consumer;
 
 interface GraphView {
@@ -36,11 +36,11 @@ class Graph implements GraphView {
     }
 }
 
-class BFSTraversal {
+abstract class GraphTraversal {
     private final GraphView graph;
     private final boolean[] visited;
 
-    BFSTraversal(GraphView graph) {
+    GraphTraversal(GraphView graph) {
         this.graph = graph;
         this.visited = new boolean[graph.vertexCount()];
     }
@@ -53,25 +53,49 @@ class BFSTraversal {
     }
 
     private void expandFrom(int src, Consumer<Integer> visitor) {
-        Queue<Integer> queue = new LinkedList<>();
+        Deque<Integer> frontier = new ArrayDeque<>();
         visited[src] = true;
-        queue.add(src);
-        while (!queue.isEmpty()) {
-            int curr = queue.poll();
+        addToFrontier(frontier, src);
+        while (!frontier.isEmpty()) {
+            int curr = frontier.pollFirst();
             visitor.accept(curr);
             for (int neighbor : graph.neighbors(curr)) {
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
-                    queue.add(neighbor);
+                    addToFrontier(frontier, neighbor);
                 }
             }
         }
+    }
+
+    protected abstract void addToFrontier(Deque<Integer> frontier, int node);
+}
+
+class BFSTraversal extends GraphTraversal {
+    BFSTraversal(GraphView graph) {
+        super(graph);
+    }
+
+    @Override
+    protected void addToFrontier(Deque<Integer> frontier, int node) {
+        frontier.addLast(node);
     }
 
     static List<Integer> collect(GraphView graph) {
         List<Integer> result = new ArrayList<>();
         new BFSTraversal(graph).traverse(result::add);
         return result;
+    }
+}
+
+class DFSTraversal extends GraphTraversal {
+    DFSTraversal(GraphView graph) {
+        super(graph);
+    }
+
+    @Override
+    protected void addToFrontier(Deque<Integer> frontier, int node) {
+        frontier.addFirst(node);
     }
 }
 

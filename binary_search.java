@@ -34,12 +34,12 @@ final class BinarySearch {
         return left + (right - left) / 2;
     }
 
-    private static String formatSearchResult(int index) {
-        if (index == NOT_FOUND) {
+    private static String formatSearchResult(int foundIndex) {
+        if (foundIndex == NOT_FOUND) {
             return NOT_PRESENT_MESSAGE;
         }
 
-        return PRESENT_MESSAGE_PREFIX + index;
+        return PRESENT_MESSAGE_PREFIX + foundIndex;
     }
 
     public static void main(String[] args) {

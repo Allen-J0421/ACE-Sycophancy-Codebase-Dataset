@@ -19,11 +19,11 @@ final class BinarySearch {
             final int mid = midpoint(low, high);
             final int comparison = compareAt(numbers, mid, target);
 
-            if (comparison == 0) {
+            if (isMatch(comparison)) {
                 return mid;
             }
 
-            if (comparison < 0) {
+            if (isBeforeTarget(comparison)) {
                 low = mid + 1;
             } else {
                 high = mid - 1;
@@ -43,6 +43,14 @@ final class BinarySearch {
 
     private static int compareAt(final int[] numbers, final int index, final int target) {
         return Integer.compare(numbers[index], target);
+    }
+
+    private static boolean isMatch(final int comparison) {
+        return comparison == 0;
+    }
+
+    private static boolean isBeforeTarget(final int comparison) {
+        return comparison < 0;
     }
 
     private static String formatSearchResult(final int result) {

@@ -1,6 +1,6 @@
 import java.util.*;
 
-class MinHeap<T extends Comparable<T>> {
+class MinHeap<T extends Comparable<T>> implements Iterable<T> {
 
     private ArrayList<T> heapArray;
 
@@ -118,5 +118,10 @@ class MinHeap<T extends Comparable<T>> {
         } else {
             decreaseKey(index, new_val);
         }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return heapArray.iterator();
     }
 }

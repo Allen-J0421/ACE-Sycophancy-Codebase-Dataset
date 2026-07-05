@@ -6,7 +6,7 @@ class BinarySearch {
 
     static int binarySearch(final int[] sortedValues, final int target) {
         int lowerBound = 0;
-        int upperBound = sortedValues.length - 1;
+        int upperBound = lastIndex(sortedValues);
 
         while (lowerBound <= upperBound) {
             final int mid = midpoint(lowerBound, upperBound);
@@ -24,6 +24,10 @@ class BinarySearch {
         }
 
         return NOT_FOUND;
+    }
+
+    private static int lastIndex(final int[] values) {
+        return values.length - 1;
     }
 
     private static int midpoint(final int lowerBound, final int upperBound) {

@@ -56,12 +56,36 @@ class MergeSort<T> implements SortStrategy<T> {
 class Sorter<T> {
     private final SortStrategy<T> strategy;
 
-    Sorter(SortStrategy<T> strategy) {
-        this.strategy = strategy;
+    private Sorter(Builder<T> builder) {
+        this.strategy = builder.strategy;
     }
 
     void sort(T[] arr) {
         strategy.sort(arr);
+    }
+
+    static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    static class Builder<T> {
+        private SortStrategy<T> strategy;
+
+        Builder<T> strategy(SortStrategy<T> strategy) {
+            this.strategy = strategy;
+            return this;
+        }
+
+        Builder<T> comparator(Comparator<T> comparator) {
+            this.strategy = new MergeSort<>(comparator);
+            return this;
+        }
+
+        Sorter<T> build() {
+            if (strategy == null)
+                throw new IllegalStateException("A sort strategy must be provided");
+            return new Sorter<>(this);
+        }
     }
 }
 
@@ -74,15 +98,24 @@ class Main {
 
     public static void main(String[] args) {
         Integer[] ints = {38, 27, 43, 10};
-        new Sorter<>(new MergeSort<Integer>(Comparator.naturalOrder())).sort(ints);
+        Sorter.<Integer>builder()
+            .comparator(Comparator.naturalOrder())
+            .build()
+            .sort(ints);
         printArray(ints);
 
         Integer[] intsDesc = {38, 27, 43, 10};
-        new Sorter<>(new MergeSort<Integer>(Comparator.reverseOrder())).sort(intsDesc);
+        Sorter.<Integer>builder()
+            .comparator(Comparator.reverseOrder())
+            .build()
+            .sort(intsDesc);
         printArray(intsDesc);
 
         String[] words = {"Banana", "apple", "Cherry", "date"};
-        new Sorter<>(new MergeSort<String>(String.CASE_INSENSITIVE_ORDER)).sort(words);
+        Sorter.<String>builder()
+            .comparator(String.CASE_INSENSITIVE_ORDER)
+            .build()
+            .sort(words);
         printArray(words);
     }
 }

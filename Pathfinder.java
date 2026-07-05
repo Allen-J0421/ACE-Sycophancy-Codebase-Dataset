@@ -26,7 +26,7 @@ class Pathfinder {
 
         PathfindingResult toResult(int size) {
             return new PathfindingResult(
-                    IntStream.range(0, size).mapToObj(this::get).toList());
+                    IntStream.range(0, size).map(this::get).toArray());
         }
     }
 

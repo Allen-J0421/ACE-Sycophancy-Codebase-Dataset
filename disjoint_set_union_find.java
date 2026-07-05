@@ -3,6 +3,7 @@ import java.util.Arrays;
 interface DisjointSet {
     int find(int i);
     void union(int i, int j);
+    boolean connected(int i, int j);
 }
 
 public class UnionFind implements DisjointSet {
@@ -54,12 +55,17 @@ public class UnionFind implements DisjointSet {
         }
     }
 
+    public boolean connected(int i, int j) {
+        validate(i);
+        validate(j);
+        return find(i) == find(j);
+    }
+
     public static void main(String[] args) {
         int size = 5;
         DisjointSet uf = new UnionFind(size);
         uf.union(1, 2);
         uf.union(3, 4);
-        boolean inSameSet = uf.find(1) == uf.find(2);
-        System.out.println("Are 1 and 2 in the same set? " + inSameSet);
+        System.out.println("Are 1 and 2 in the same set? " + uf.connected(1, 2));
     }
 }

@@ -76,6 +76,10 @@ class Data {
 
     interface Preprocessor<T> {
         T process(T input);
+
+        default Preprocessor<T> andThen(Preprocessor<T> next) {
+            return input -> next.process(this.process(input));
+        }
     }
 
     static class SortedArrayPreprocessor implements Preprocessor<int[]> {
@@ -88,6 +92,23 @@ class Data {
                 if (input[i] > input[i + 1])
                     throw new IllegalArgumentException("Array must be sorted in ascending order");
             }
+            return input;
+        }
+    }
+
+    static class MinLengthPreprocessor implements Preprocessor<int[]> {
+
+        private final int minLength;
+
+        MinLengthPreprocessor(int minLength) {
+            this.minLength = minLength;
+        }
+
+        @Override
+        public int[] process(int[] input) {
+            if (input.length < minLength)
+                throw new IllegalArgumentException(
+                    "Array must have at least " + minLength + " elements, got " + input.length);
             return input;
         }
     }
@@ -160,12 +181,15 @@ class TwoPointers {
         int[] arr = {-3, -1, 0, 1, 2};
         int target = -2;
 
+        Data.Preprocessor<int[]> preprocessor = new Data.SortedArrayPreprocessor()
+            .andThen(new Data.MinLengthPreprocessor(2));
+
         TwoPointers tp = new TwoPointers(
             new Algorithm.InstrumentedStrategy(
                 new Algorithm.TwoPointerService(),
                 new Algorithm.LoggingContext()
             ),
-            new Data.SortedArrayPreprocessor()
+            preprocessor
         );
 
         String output = tp.twoSum(arr, target).fold(

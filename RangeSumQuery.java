@@ -1,4 +1,6 @@
-public interface RangeSumQuery {
-    int rangeSum(int l, int r);
-    int[] toArray();
+import java.util.List;
+
+public interface RangeSumQuery<T> {
+    T rangeSum(int l, int r);
+    List<T> toList();
 }

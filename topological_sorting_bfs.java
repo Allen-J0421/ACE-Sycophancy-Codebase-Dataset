@@ -52,17 +52,22 @@ class TopologicalSortService {
         return new TopologicalSortService(graph);
     }
 
-    List<Integer> sort() {
+    private int[] computeIndegrees() {
         int n = graph.size();
         int[] indegree = new int[n];
-        Queue<Integer> q = new LinkedList<>();
-        List<Integer> result = new ArrayList<>();
-
         for (int i = 0; i < n; i++) {
             for (int next : graph.getNeighbors(i)) {
                 indegree[next]++;
             }
         }
+        return indegree;
+    }
+
+    List<Integer> sort() {
+        int n = graph.size();
+        int[] indegree = computeIndegrees();
+        Queue<Integer> q = new LinkedList<>();
+        List<Integer> result = new ArrayList<>();
 
         for (int i = 0; i < n; i++) {
             if (indegree[i] == 0) {

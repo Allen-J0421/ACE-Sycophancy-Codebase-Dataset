@@ -1,6 +1,9 @@
-class BinarySearch {
+final class BinarySearch {
     private static final int NOT_FOUND = -1;
     private static final int DEMO_TARGET = 10;
+
+    private BinarySearch() {
+    }
 
     static int binarySearch(int[] numbers, int target) {
         int low = 0;

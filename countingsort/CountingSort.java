@@ -12,22 +12,8 @@ public class CountingSort {
             return new int[0];
         }
 
-        int min = arr[0];
-        int max = arr[0];
-        for (int val : arr) {
-            if (val < min) min = val;
-            if (val > max) max = val;
-        }
-
-        long range = (long) max - min + 1;
-        if (range > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Value range too large for counting sort: " + range);
-        }
-
-        int[] counts = new int[(int) range];
-        for (int val : arr) {
-            counts[val - min]++;
-        }
+        int min = computeMin(arr);
+        int[] counts = computeFrequencies(arr, min, computeRange(arr, min));
 
         for (int i = 1; i < counts.length; i++) {
             counts[i] += counts[i - 1];
@@ -41,5 +27,33 @@ public class CountingSort {
         }
 
         return sorted;
+    }
+
+    private static int computeMin(int[] arr) {
+        int min = arr[0];
+        for (int val : arr) {
+            if (val < min) min = val;
+        }
+        return min;
+    }
+
+    private static int computeRange(int[] arr, int min) {
+        int max = arr[0];
+        for (int val : arr) {
+            if (val > max) max = val;
+        }
+        long range = (long) max - min + 1;
+        if (range > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Value range too large for counting sort: " + range);
+        }
+        return (int) range;
+    }
+
+    private static int[] computeFrequencies(int[] arr, int min, int range) {
+        int[] counts = new int[range];
+        for (int val : arr) {
+            counts[val - min]++;
+        }
+        return counts;
     }
 }

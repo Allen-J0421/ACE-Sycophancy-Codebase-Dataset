@@ -1,7 +1,7 @@
 import java.awt.*;
 
 
-public abstract class Entity {
+public abstract class Entity implements FieldOccupant {
 
 
 	private Field field;
@@ -21,12 +21,6 @@ public abstract class Entity {
 	protected abstract Color getObjectColor(Climate climate);
 
 
-	protected abstract void placeInField(Location location);
-
-
-	protected abstract void clearFromField(Location location);
-
-
 	protected Field getField() {
 		return field;
 	}
@@ -44,10 +38,10 @@ public abstract class Entity {
 
 	protected void setLocation(Location newLocation) {
 		if (location != null) {
-			clearFromField(location);
+			field.removeOccupant(this, location);
 		}
 		location = newLocation;
-		placeInField(newLocation);
+		field.place(this, newLocation);
 	}
 
 
@@ -64,7 +58,7 @@ public abstract class Entity {
 	protected void setDead() {
 		alive = false;
 		if (location != null) {
-			clearFromField(location);
+			field.removeOccupant(this, location);
 			setLocationNull();
 			setFieldNull();
 		}

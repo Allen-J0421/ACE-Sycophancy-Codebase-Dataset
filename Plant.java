@@ -16,13 +16,8 @@ public abstract class Plant extends Entity {
 	}
 
 
-	protected void placeInField(Location location) {
-		getField().placePlant(this, location);
-	}
-
-
-	protected void clearFromField(Location location) {
-		getField().clearPlant(location);
+	public FieldOccupant.Layer getOccupantLayer() {
+		return FieldOccupant.Layer.PLANT;
 	}
 
 

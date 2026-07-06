@@ -40,13 +40,8 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void placeInField(Location location) {
-		getField().placeAnimal(this, location);
-	}
-
-
-	protected void clearFromField(Location location) {
-		getField().clear(location);
+	public FieldOccupant.Layer getOccupantLayer() {
+		return FieldOccupant.Layer.ANIMAL;
 	}
 
 

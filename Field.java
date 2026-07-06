@@ -34,28 +34,20 @@ public class Field {
 	}
 
 
-	public void clear(Location location) {
-		animalField[location.getRow()][location.getCol()] = null;
+	public void place(FieldOccupant occupant, Location location) {
+		Object[][] grid = gridFor(occupant);
+		grid[location.getRow()][location.getCol()] = occupant;
 	}
 
 
-	public void clearPlant(Location location) {
-		plantField[location.getRow()][location.getCol()] = null;
+	public void removeOccupant(FieldOccupant occupant, Location location) {
+		Object[][] grid = gridFor(occupant);
+		grid[location.getRow()][location.getCol()] = null;
 	}
 
 
-	public void placeAnimal(Object animal, int row, int col) {
-		placeAnimal(animal, new Location(row, col));
-	}
-
-
-	public void placeAnimal(Object animal, Location location) {
-		animalField[location.getRow()][location.getCol()] = animal;
-	}
-
-
-	public void placePlant(Object plant, Location location) {
-		plantField[location.getRow()][location.getCol()] = plant;
+	private Object[][] gridFor(FieldOccupant occupant) {
+		return occupant.getOccupantLayer() == FieldOccupant.Layer.ANIMAL ? animalField : plantField;
 	}
 
 

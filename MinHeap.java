@@ -10,14 +10,50 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         helper = new HeapHelper<>(heapArray);
     }
 
-    public void insertKey(T key) {
+    public MinHeap<T> insert(T key) {
         heapArray.add(key);
         helper.siftUp(heapArray.size() - 1);
+        return this;
     }
 
-    public void decreaseKey(int index, T new_val) {
+    public MinHeap<T> decrease(int index, T new_val) {
         heapArray.set(index, new_val);
         helper.siftUp(index);
+        return this;
+    }
+
+    public MinHeap<T> increase(int index, T new_val) {
+        heapArray.set(index, new_val);
+        helper.siftDown(index);
+        return this;
+    }
+
+    public MinHeap<T> delete(int index) {
+        int lastIndex = heapArray.size() - 1;
+        if (index == lastIndex) {
+            heapArray.remove(lastIndex);
+            return this;
+        }
+        heapArray.set(index, heapArray.remove(lastIndex));
+        if (index < heapArray.size()) {
+            if (index > 0 && heapArray.get(index).compareTo(heapArray.get(helper.parent(index))) < 0) {
+                helper.siftUp(index);
+            } else {
+                helper.siftDown(index);
+            }
+        }
+        return this;
+    }
+
+    public MinHeap<T> changeValue(int index, T new_val) {
+        if (heapArray.get(index).equals(new_val)) {
+            return this;
+        }
+        if (heapArray.get(index).compareTo(new_val) < 0) {
+            return increase(index, new_val);
+        } else {
+            return decrease(index, new_val);
+        }
     }
 
     public T getMin() {
@@ -38,38 +74,6 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         helper.siftDown(0);
 
         return root;
-    }
-
-    public void deleteKey(int index) {
-        int lastIndex = heapArray.size() - 1;
-        if (index == lastIndex) {
-            heapArray.remove(lastIndex);
-            return;
-        }
-        heapArray.set(index, heapArray.remove(lastIndex));
-        if (index < heapArray.size()) {
-            if (index > 0 && heapArray.get(index).compareTo(heapArray.get(helper.parent(index))) < 0) {
-                helper.siftUp(index);
-            } else {
-                helper.siftDown(index);
-            }
-        }
-    }
-
-    public void increaseKey(int index, T new_val) {
-        heapArray.set(index, new_val);
-        helper.siftDown(index);
-    }
-
-    public void changeValueOnAKey(int index, T new_val) {
-        if (heapArray.get(index).equals(new_val)) {
-            return;
-        }
-        if (heapArray.get(index).compareTo(new_val) < 0) {
-            increaseKey(index, new_val);
-        } else {
-            decreaseKey(index, new_val);
-        }
     }
 
     @Override

@@ -1,17 +1,18 @@
 class MinHeapTest {
     public static void main(String[] args) {
-        MinHeap<Integer> h = new MinHeap<>();
-        h.insertKey(3);
-        h.insertKey(2);
-        h.deleteKey(1);
-        h.insertKey(15);
-        h.insertKey(5);
-        h.insertKey(4);
-        h.insertKey(45);
+        MinHeap<Integer> h = new MinHeap<Integer>()
+                .insert(3)
+                .insert(2)
+                .delete(1)
+                .insert(15)
+                .insert(5)
+                .insert(4)
+                .insert(45);
+
         System.out.print(h.extractMin() + " ");
         System.out.print(h.getMin() + " ");
 
-        h.decreaseKey(2, 1);
+        h.decrease(2, 1);
         System.out.print(h.getMin());
     }
 }

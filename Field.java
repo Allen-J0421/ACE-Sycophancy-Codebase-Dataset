@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -14,57 +13,57 @@ public class Field {
 
 	private final int width;
 
-	private final EnumMap<FieldOccupant.Layer, Grid> layers;
+	private final Grid<Animal> animalGrid = new Grid<>();
+
+	private final Grid<Plant> plantGrid = new Grid<>();
 
 
 	public Field(int depth, int width) {
 		this.depth = depth;
 		this.width = width;
-		layers = new EnumMap<>(FieldOccupant.Layer.class);
-		for (FieldOccupant.Layer layer : FieldOccupant.Layer.values()) {
-			layers.put(layer, new Grid());
-		}
 	}
 
 
 	public void clear() {
-		for (Grid grid : layers.values()) {
-			grid.clear();
-		}
+		animalGrid.clear();
+		plantGrid.clear();
 	}
 
 
 	public void place(FieldOccupant occupant, Location location) {
-		gridFor(occupant).place(occupant, location);
+		if (occupant.getOccupantLayer() == FieldOccupant.Layer.ANIMAL) {
+			animalGrid.place((Animal) occupant, location);
+		} else {
+			plantGrid.place((Plant) occupant, location);
+		}
 	}
 
 
 	public void removeOccupant(FieldOccupant occupant, Location location) {
-		gridFor(occupant).remove(location);
+		if (occupant.getOccupantLayer() == FieldOccupant.Layer.ANIMAL) {
+			animalGrid.remove(location);
+		} else {
+			plantGrid.remove(location);
+		}
 	}
 
 
-	private Grid gridFor(FieldOccupant occupant) {
-		return layers.get(occupant.getOccupantLayer());
+	public Animal getAnimalAt(Location location) {
+		return animalGrid.get(location);
 	}
 
 
-	public Object getAnimalAt(Location location) {
-		return layers.get(FieldOccupant.Layer.ANIMAL).get(location);
-	}
-
-
-	public Object getAnimalAt(int row, int col) {
+	public Animal getAnimalAt(int row, int col) {
 		return getAnimalAt(new Location(row, col));
 	}
 
 
-	public Object getPlantAt(Location location) {
-		return layers.get(FieldOccupant.Layer.PLANT).get(location);
+	public Plant getPlantAt(Location location) {
+		return plantGrid.get(location);
 	}
 
 
-	public Object getPlantAt(int row, int col) {
+	public Plant getPlantAt(int row, int col) {
 		return getPlantAt(new Location(row, col));
 	}
 
@@ -77,7 +76,6 @@ public class Field {
 
 	public List<Location> getFreeAnimalAdjacentLocations(Location location) {
 		List<Location> free = new LinkedList<>();
-		Grid animalGrid = layers.get(FieldOccupant.Layer.ANIMAL);
 		for (Location next : adjacentAnimalLocations(location)) {
 			if (animalGrid.isEmpty(next)) {
 				free.add(next);

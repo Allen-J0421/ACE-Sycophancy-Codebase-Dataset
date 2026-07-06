@@ -2,13 +2,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Grid {
+public class Grid<T extends FieldOccupant> {
 
 
-	private final Map<Location, FieldOccupant> cells = new HashMap<>();
+	private final Map<Location, T> cells = new HashMap<>();
 
 
-	public void place(FieldOccupant occupant, Location location) {
+	public void place(T occupant, Location location) {
 		cells.put(location, occupant);
 	}
 
@@ -18,7 +18,7 @@ public class Grid {
 	}
 
 
-	public FieldOccupant get(Location location) {
+	public T get(Location location) {
 		return cells.get(location);
 	}
 

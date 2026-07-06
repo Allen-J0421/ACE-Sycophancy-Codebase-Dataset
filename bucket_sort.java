@@ -88,18 +88,29 @@ class BucketSort<T extends Comparable<T>> implements SortingStrategy<T> {
     }
 }
 
+class SortRunner {
+    private final Float[] data;
+    private final SortingStrategy<Float> sorter;
+
+    SortRunner() {
+        this.data = new Float[]{0.897f, 0.565f, 0.656f, 0.1234f, 0.665f, 0.3434f};
+        int n = data.length;
+        SortingContext<Float> context = new SortingContext<>(new BucketFactory<Float>(), value -> (int) (n * value));
+        this.sorter = new BucketSort<>(context);
+    }
+
+    void run() {
+        sorter.sort(data);
+        System.out.println("Sorted array is:");
+        for (float num : data) {
+            System.out.print(num + " ");
+        }
+    }
+}
+
 class Main {
 
     public static void main(String[] args) {
-        Float[] arr = {0.897f, 0.565f, 0.656f, 0.1234f, 0.665f, 0.3434f};
-        int n = arr.length;
-        SortingContext<Float> context = new SortingContext<>(new BucketFactory<Float>(), value -> (int) (n * value));
-        SortingStrategy<Float> sorter = new BucketSort<>(context);
-        sorter.sort(arr);
-
-        System.out.println("Sorted array is:");
-        for (float num : arr) {
-            System.out.print(num + " ");
-        }
+        new SortRunner().run();
     }
 }

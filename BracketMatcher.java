@@ -1,18 +1,9 @@
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-class BracketMatcher {
-    private final Map<Character, Character> closerToOpener;
-    private final Set<Character> openers;
-
-    BracketMatcher(Map<Character, Character> closerToOpener) {
-        this.closerToOpener = closerToOpener;
-        this.openers = new HashSet<>(closerToOpener.values());
-    }
+record BracketMatcher(Map<Character, Character> closerToOpener) {
 
     boolean isOpener(char c) {
-        return openers.contains(c);
+        return closerToOpener.containsValue(c);
     }
 
     boolean isCloser(char c) {

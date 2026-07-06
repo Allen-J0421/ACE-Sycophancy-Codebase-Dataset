@@ -15,6 +15,6 @@ public class MatrixChainMultiplication {
 
     public static void main(String[] args) {
         int[] dims = { 2, 1, 3, 4 };
-        new MatrixChainMultiplication(new DpMatrixChainSolver()).run(dims);
+        new MatrixChainMultiplication(new MemoizedMatrixChainSolver()).run(dims);
     }
 }

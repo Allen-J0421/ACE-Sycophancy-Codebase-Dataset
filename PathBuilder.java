@@ -4,15 +4,15 @@ import java.util.List;
 
 final class PathBuilder {
 
-    private final int[] predecessors;
+    private final PredecessorMap predecessors;
 
-    PathBuilder(int[] predecessors) {
-        this.predecessors = predecessors.clone();
+    PathBuilder(PredecessorMap predecessors) {
+        this.predecessors = predecessors;
     }
 
     Path build(int target, int totalWeight) {
         List<Integer> vertices = new ArrayList<>();
-        for (int v = target; v != Distances.NO_PREDECESSOR; v = predecessors[v]) {
+        for (int v = target; v != Distances.NO_PREDECESSOR; v = predecessors.predecessorOf(v)) {
             vertices.add(v);
         }
         Collections.reverse(vertices);

@@ -3,21 +3,20 @@ import java.util.Arrays;
 final class EdgeRelaxer {
 
     private final int[] dist;
-    private final int[] pred;
+    private final PredecessorMap predecessorMap;
 
     EdgeRelaxer(int vertices, int source) {
         dist = new int[vertices];
-        pred = new int[vertices];
         Arrays.fill(dist, Distances.UNREACHABLE);
-        Arrays.fill(pred, Distances.NO_PREDECESSOR);
         dist[source] = 0;
+        predecessorMap = new ArrayPredecessorMap(vertices);
     }
 
     boolean relax(Edge e) {
         int u = e.from(), v = e.to(), w = e.weight();
         if (dist[u] != Distances.UNREACHABLE && (long) dist[u] + w < dist[v]) {
             dist[v] = dist[u] + w;
-            pred[v] = u;
+            predecessorMap.set(v, u);
             return true;
         }
         return false;
@@ -32,10 +31,10 @@ final class EdgeRelaxer {
     // Records e.from() as the predecessor of e.to() without changing distances.
     // Used during negative-cycle detection when the distance arrays must not be updated further.
     void linkPredecessor(Edge e) {
-        pred[e.to()] = e.from();
+        predecessorMap.set(e.to(), e.from());
     }
 
     int[] distances() { return dist; }
 
-    int[] predecessors() { return pred; }
+    PredecessorMap predecessors() { return predecessorMap; }
 }

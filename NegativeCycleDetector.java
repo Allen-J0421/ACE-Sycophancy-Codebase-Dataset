@@ -26,12 +26,12 @@ final class NegativeCycleDetector {
     }
 
     private NegativeCycle buildCycle(int cycleEntry) {
-        int[] pred = relaxer.predecessors();
+        PredecessorMap pred = relaxer.predecessors();
 
         // Walk back vertexCount steps to guarantee landing inside the cycle
         int x = cycleEntry;
         for (int i = 0; i < vertexCount; i++) {
-            x = pred[x];
+            x = pred.predecessorOf(x);
         }
 
         // Trace the cycle in predecessor order until we revisit x
@@ -39,7 +39,7 @@ final class NegativeCycleDetector {
         int cur = x;
         do {
             traceback.add(cur);
-            cur = pred[cur];
+            cur = pred.predecessorOf(cur);
         } while (cur != x);
 
         Collections.reverse(traceback);

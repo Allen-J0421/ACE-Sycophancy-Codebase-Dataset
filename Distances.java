@@ -9,7 +9,7 @@ final class Distances implements ShortestPathResult {
     private final int[] distances;
     private final PathBuilder pathBuilder;
 
-    Distances(int source, int[] distances, int[] predecessors) {
+    Distances(int source, int[] distances, PredecessorMap predecessors) {
         this.source = source;
         this.distances = distances.clone();
         this.pathBuilder = new PathBuilder(predecessors);

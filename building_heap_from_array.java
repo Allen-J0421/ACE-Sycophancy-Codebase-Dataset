@@ -21,6 +21,36 @@ interface IHeapBuilder {
     int[] getArray();
 }
 
+class BinaryTreeIndex {
+
+    private final int index;
+
+    BinaryTreeIndex(int index)
+    {
+        this.index = index;
+    }
+
+    int get()
+    {
+        return index;
+    }
+
+    int left()
+    {
+        return 2 * index + 1;
+    }
+
+    int right()
+    {
+        return 2 * index + 2;
+    }
+
+    int parent()
+    {
+        return (index - 1) / 2;
+    }
+}
+
 class HeapUtility implements IHeapBuilder {
 
     private int[] arr;
@@ -46,11 +76,13 @@ class HeapUtility implements IHeapBuilder {
     private void heapify(int n, int i)
     {
 
-        int largest = i;
+        BinaryTreeIndex node = new BinaryTreeIndex(i);
 
-        int l = 2 * i + 1;
+        int largest = node.get();
 
-        int r = 2 * i + 2;
+        int l = node.left();
+
+        int r = node.right();
 
         if (l < n && arr[l] > arr[largest])
             largest = l;
@@ -58,8 +90,8 @@ class HeapUtility implements IHeapBuilder {
         if (r < n && arr[r] > arr[largest])
             largest = r;
 
-        if (largest != i) {
-            swap(i, largest);
+        if (largest != node.get()) {
+            swap(node.get(), largest);
 
             heapify(n, largest);
         }

@@ -14,7 +14,7 @@ class CuttingRod {
         SolverResultPrinter printer = new SolverResultPrinter(System.out);
         for (SolverType type : SolverType.values()) {
             if (selected != null && type != selected) continue;
-            RodCuttingSolver solver = new RodCuttingSolver(RodCuttingStrategyFactory.create(type));
+            RodCuttingSolver solver = new RodCuttingSolver(RodCuttingStrategyFactory.create(type, System.out));
             printer.print(type, solver.solve(arrayProblem));
             printer.print(type, solver.solve(lambdaProblem));
         }

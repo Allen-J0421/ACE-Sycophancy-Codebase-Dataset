@@ -3,12 +3,20 @@ package com.algorithms;
 import java.util.Comparator;
 import java.util.List;
 
-class InsertionSorter<T> implements Sorter<T> {
+public class InsertionSorter<T> implements Sorter<T> {
 
     private final Comparator<T> comparator;
 
-    InsertionSorter(Comparator<T> comparator) {
+    public InsertionSorter(Comparator<T> comparator) {
         this.comparator = comparator;
+    }
+
+    public static <T extends Comparable<T>> InsertionSorter<T> naturalOrder() {
+        return new InsertionSorter<T>(Comparator.naturalOrder());
+    }
+
+    public static <T extends Comparable<T>> InsertionSorter<T> reverseOrder() {
+        return new InsertionSorter<T>(Comparator.reverseOrder());
     }
 
     @Override

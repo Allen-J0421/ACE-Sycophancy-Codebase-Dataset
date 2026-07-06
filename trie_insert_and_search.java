@@ -1,6 +1,11 @@
 public class Trie {
+    private static final char ALPHABET_START = 'a';
+    private static final int ALPHABET_SIZE = 26;
+
+    private static int charIndex(char c) { return c - ALPHABET_START; }
+
     private static class TrieNode {
-        TrieNode[] children = new TrieNode[26];
+        TrieNode[] children = new TrieNode[ALPHABET_SIZE];
         boolean isEndOfWord;
     }
 
@@ -10,7 +15,7 @@ public class Trie {
     {
         TrieNode curr = root;
         for (char c : key.toCharArray()) {
-            int idx = c - 'a';
+            int idx = charIndex(c);
             if (curr.children[idx] == null) {
                 curr.children[idx] = new TrieNode();
             }
@@ -23,7 +28,7 @@ public class Trie {
     {
         TrieNode curr = root;
         for (char c : key.toCharArray()) {
-            curr = curr.children[c - 'a'];
+            curr = curr.children[charIndex(c)];
             if (curr == null) return null;
         }
         return curr;

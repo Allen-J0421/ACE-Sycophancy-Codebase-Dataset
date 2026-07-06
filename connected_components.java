@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 interface Graph {
     int size();
-    ArrayList<Integer> getNeighbors(int v);
+    Iterable<Integer> getNeighbors(int v);
 }
 
 class AdjacencyListGraph implements Graph {
@@ -29,7 +29,7 @@ class AdjacencyListGraph implements Graph {
     }
 
     @Override
-    public ArrayList<Integer> getNeighbors(int v) {
+    public Iterable<Integer> getNeighbors(int v) {
         return adj.get(v);
     }
 }

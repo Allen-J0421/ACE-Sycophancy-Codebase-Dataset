@@ -1,31 +1,56 @@
-import java.io.*;
-import java.lang.*;
-import java.util.*;
 import java.util.LinkedList;
 
+class FlowGraph {
+    private final int size;
+    private final int[][] capacity;
+
+    FlowGraph(int[][] matrix) {
+        this.size = matrix.length;
+        this.capacity = new int[size][size];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                this.capacity[i][j] = matrix[i][j];
+    }
+
+    private FlowGraph(int size, int[][] capacity) {
+        this.size = size;
+        this.capacity = capacity;
+    }
+
+    FlowGraph copy() {
+        int[][] cap = new int[size][size];
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
+                cap[i][j] = capacity[i][j];
+        return new FlowGraph(size, cap);
+    }
+
+    int size() {
+        return size;
+    }
+
+    int capacity(int u, int v) {
+        return capacity[u][v];
+    }
+
+    void updateFlow(int u, int v, int flow) {
+        capacity[u][v] -= flow;
+        capacity[v][u] += flow;
+    }
+}
+
 class MaxFlow {
-    static final int V = 6;
-
-    boolean bfs(int rGraph[][], int s, int t, int parent[])
-    {
-
-        boolean visited[] = new boolean[V];
-        for (int i = 0; i < V; ++i)
-            visited[i] = false;
-
-        LinkedList<Integer> queue
-            = new LinkedList<Integer>();
+    private boolean bfs(FlowGraph residual, int s, int t, int[] parent) {
+        boolean[] visited = new boolean[residual.size()];
+        LinkedList<Integer> queue = new LinkedList<>();
         queue.add(s);
         visited[s] = true;
         parent[s] = -1;
 
-        while (queue.size() != 0) {
+        while (!queue.isEmpty()) {
             int u = queue.poll();
-
-            for (int v = 0; v < V; v++) {
-                if (visited[v] == false
-                    && rGraph[u][v] > 0) {
-
+            for (int v = 0; v < residual.size(); v++) {
+                if (!visited[v] && residual.capacity(u, v) > 0) {
                     if (v == t) {
                         parent[v] = u;
                         return true;
@@ -36,56 +61,36 @@ class MaxFlow {
                 }
             }
         }
-
         return false;
     }
 
-    int fordFulkerson(int graph[][], int s, int t)
-    {
-        int u, v;
+    int fordFulkerson(FlowGraph graph, int s, int t) {
+        FlowGraph residual = graph.copy();
+        int[] parent = new int[graph.size()];
+        int maxFlow = 0;
 
-        int rGraph[][] = new int[V][V];
-
-        for (u = 0; u < V; u++)
-            for (v = 0; v < V; v++)
-                rGraph[u][v] = graph[u][v];
-
-        int parent[] = new int[V];
-
-        int max_flow = 0;
-
-        while (bfs(rGraph, s, t, parent)) {
-
-            int path_flow = Integer.MAX_VALUE;
-            for (v = t; v != s; v = parent[v]) {
-                u = parent[v];
-                path_flow
-                    = Math.min(path_flow, rGraph[u][v]);
+        while (bfs(residual, s, t, parent)) {
+            int pathFlow = Integer.MAX_VALUE;
+            for (int v = t; v != s; v = parent[v]) {
+                int u = parent[v];
+                pathFlow = Math.min(pathFlow, residual.capacity(u, v));
             }
-
-            for (v = t; v != s; v = parent[v]) {
-                u = parent[v];
-                rGraph[u][v] -= path_flow;
-                rGraph[v][u] += path_flow;
+            for (int v = t; v != s; v = parent[v]) {
+                int u = parent[v];
+                residual.updateFlow(u, v, pathFlow);
             }
-
-            max_flow += path_flow;
+            maxFlow += pathFlow;
         }
-
-        return max_flow;
+        return maxFlow;
     }
 
-    public static void main(String[] args)
-        throws java.lang.Exception
-    {
-
-        int graph[][] = new int[][] {
+    public static void main(String[] args) throws java.lang.Exception {
+        FlowGraph graph = new FlowGraph(new int[][] {
             { 0, 16, 13, 0, 0, 0 }, { 0, 0, 10, 12, 0, 0 },
             { 0, 4, 0, 0, 14, 0 },  { 0, 0, 9, 0, 0, 20 },
             { 0, 0, 0, 7, 0, 4 },   { 0, 0, 0, 0, 0, 0 }
-        };
+        });
         MaxFlow m = new MaxFlow();
-
         System.out.println("The maximum possible flow is "
                            + m.fordFulkerson(graph, 0, 5));
     }

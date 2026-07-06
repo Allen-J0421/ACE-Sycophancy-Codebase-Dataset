@@ -136,4 +136,22 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
                 insertNode(oldTable[i].getKey(), oldTable[i].getValue());
         }
     }
+
+    private static class HashNode<K, V> {
+        private K key;
+        private V value;
+
+        HashNode(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        K getKey() {
+            return key;
+        }
+
+        V getValue() {
+            return value;
+        }
+    }
 }

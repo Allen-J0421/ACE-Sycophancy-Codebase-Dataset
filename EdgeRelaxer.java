@@ -1,21 +1,19 @@
-import java.util.Arrays;
-
 final class EdgeRelaxer {
 
-    private final int[] dist;
+    private final DistanceMap distanceMap;
     private final PredecessorMap predecessorMap;
 
     EdgeRelaxer(int vertices, int source) {
-        dist = new int[vertices];
-        Arrays.fill(dist, Distances.UNREACHABLE);
-        dist[source] = 0;
+        distanceMap = new ArrayDistanceMap(vertices);
+        distanceMap.set(source, 0);
         predecessorMap = new ArrayPredecessorMap(vertices);
     }
 
     boolean relax(Edge e) {
         int u = e.from(), v = e.to(), w = e.weight();
-        if (dist[u] != Distances.UNREACHABLE && (long) dist[u] + w < dist[v]) {
-            dist[v] = dist[u] + w;
+        if (distanceMap.get(u) != Distances.UNREACHABLE
+                && (long) distanceMap.get(u) + w < distanceMap.get(v)) {
+            distanceMap.set(v, distanceMap.get(u) + w);
             predecessorMap.set(v, u);
             return true;
         }
@@ -24,8 +22,8 @@ final class EdgeRelaxer {
 
     boolean canRelax(Edge e) {
         int u = e.from();
-        return dist[u] != Distances.UNREACHABLE
-            && (long) dist[u] + e.weight() < dist[e.to()];
+        return distanceMap.get(u) != Distances.UNREACHABLE
+            && (long) distanceMap.get(u) + e.weight() < distanceMap.get(e.to());
     }
 
     // Records e.from() as the predecessor of e.to() without changing distances.
@@ -34,7 +32,7 @@ final class EdgeRelaxer {
         predecessorMap.set(e.to(), e.from());
     }
 
-    int[] distances() { return dist; }
+    DistanceMap distances() { return distanceMap; }
 
     PredecessorMap predecessors() { return predecessorMap; }
 }

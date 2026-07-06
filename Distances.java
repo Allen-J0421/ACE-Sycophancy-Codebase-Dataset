@@ -6,36 +6,36 @@ final class Distances implements ShortestPathResult {
     static final int NO_PREDECESSOR = -1;
 
     private final int source;
-    private final int[] distances;
+    private final DistanceMap distanceMap;
     private final PathBuilder pathBuilder;
 
-    Distances(int source, int[] distances, PredecessorMap predecessors) {
+    Distances(int source, DistanceMap distanceMap, PredecessorMap predecessors) {
         this.source = source;
-        this.distances = distances.clone();
+        this.distanceMap = distanceMap;
         this.pathBuilder = new PathBuilder(predecessors);
     }
 
     int source() { return source; }
 
     boolean isReachable(int vertex) {
-        return distances[vertex] != UNREACHABLE;
+        return distanceMap.get(vertex) != UNREACHABLE;
     }
 
     int distanceTo(int vertex) {
-        return distances[vertex];
+        return distanceMap.get(vertex);
     }
 
     Path pathTo(int target) {
         if (!isReachable(target)) return Path.none();
-        return pathBuilder.build(target, distances[target]);
+        return pathBuilder.build(target, distanceMap.get(target));
     }
 
     int[] all() {
-        return distances.clone();
+        return distanceMap.snapshot();
     }
 
     int vertexCount() {
-        return distances.length;
+        return distanceMap.size();
     }
 
     @Override
@@ -45,6 +45,6 @@ final class Distances implements ShortestPathResult {
 
     @Override
     public String toString() {
-        return "Distances[source=" + source + ", distances=" + Arrays.toString(distances) + "]";
+        return "Distances[source=" + source + ", distances=" + Arrays.toString(distanceMap.snapshot()) + "]";
     }
 }

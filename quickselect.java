@@ -9,6 +9,8 @@ class QuickSelect {
         int kPosition = 3;
         int length = array.length;
 
+        SelectionStrategy strategy = new QuickSelectStrategy();
+
         if (kPosition > length) {
             System.out.println("Index out of bound");
         }
@@ -16,8 +18,7 @@ class QuickSelect {
 
             System.out.println(
                 "K-th smallest element in array : "
-                + QuickSelectUtils.kthSmallest(arraycopy, 0, length - 1,
-                              kPosition));
+                + strategy.select(arraycopy, kPosition));
         }
     }
 }

@@ -1,7 +1,7 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class LRUCache<K, V> {
+public class LRUCache<K, V> implements Cache<K, V> {
     private final Map<K, V> map;
 
     public LRUCache(int capacity) {

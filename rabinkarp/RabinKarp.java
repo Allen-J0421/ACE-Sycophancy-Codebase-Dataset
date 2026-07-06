@@ -3,7 +3,7 @@ package rabinkarp;
 import java.util.List;
 
 public final class RabinKarp {
-    private static final RabinKarpMatcher DEFAULT_MATCHER;
+    private static final StringMatcher DEFAULT_MATCHER;
 
     static {
         DEFAULT_MATCHER = new RabinKarpMatcher(RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS);

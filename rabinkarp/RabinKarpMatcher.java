@@ -3,7 +3,7 @@ package rabinkarp;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class RabinKarpMatcher {
+public final class RabinKarpMatcher implements StringMatcher {
     public static final int DEFAULT_RADIX = 256;
     public static final int DEFAULT_MODULUS = 101;
 
@@ -15,6 +15,7 @@ public final class RabinKarpMatcher {
         this.modulus = modulus;
     }
 
+    @Override
     public List<Integer> search(CharSequence pattern, CharSequence text) {
         CompiledPattern cp = CompiledPattern.compile(pattern, radix, modulus);
         int n = text.length();

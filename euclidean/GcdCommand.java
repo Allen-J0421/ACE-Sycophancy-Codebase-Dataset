@@ -1,6 +1,6 @@
 package euclidean;
 
-final class GcdCommand {
+final class GcdCommand implements Command<Integer> {
 
     private final Operands operands;
 
@@ -8,7 +8,8 @@ final class GcdCommand {
         this.operands = operands;
     }
 
-    int execute() {
+    @Override
+    public Integer execute() {
         return EuclideanAlgorithm.gcd(operands.left(), operands.right());
     }
 }

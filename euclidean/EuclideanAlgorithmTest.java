@@ -28,6 +28,7 @@ public final class EuclideanAlgorithmTest {
 
         assertCommand(new GcdCommand(new Operands(35, 15)), 5);
         assertCommand(new GcdCommand(new Operands(-42, 56)), 14);
+        assertCommand(() -> EuclideanAlgorithm.gcd(12, 8), 4);
     }
 
     private static void assertGcd(int left, int right, int expected) {
@@ -54,10 +55,10 @@ public final class EuclideanAlgorithmTest {
         }
     }
 
-    private static void assertCommand(GcdCommand command, int expected) {
+    private static void assertCommand(Command<Integer> command, int expected) {
         int actual = command.execute();
         if (actual != expected) {
-            throw new AssertionError("GcdCommand.execute() = " + actual + "; expected " + expected);
+            throw new AssertionError("Command.execute() = " + actual + "; expected " + expected);
         }
     }
 

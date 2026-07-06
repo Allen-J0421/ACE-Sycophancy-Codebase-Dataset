@@ -20,20 +20,20 @@ public final class EuclideanAlgorithmApp {
 
     public static void main(String[] args) {
         Operands operands = parseOperands(args);
-        Command<GcdResult> command = new GcdCommandBuilder()
+        Command<Result<Integer, GcdError>> command = new GcdCommandBuilder()
                 .observer((a, b, result) -> {
-                    if (result instanceof GcdResult.Success s) {
+                    if (result instanceof Result.Success<?, ?> s) {
                         System.err.println("gcd(" + a + ", " + b + ") = " + s.value());
-                    } else if (result instanceof GcdResult.Failure f) {
-                        System.err.println("gcd(" + a + ", " + b + ") failed: " + f.reason());
+                    } else if (result instanceof Result.Failure<?, ?> f) {
+                        System.err.println("gcd(" + a + ", " + b + ") failed: " + ((GcdError) f.error()).reason());
                     }
                 })
                 .build(operands);
-        GcdResult result = command.execute();
-        if (result instanceof GcdResult.Success s) {
+        Result<Integer, GcdError> result = command.execute();
+        if (result instanceof Result.Success<?, ?> s) {
             System.out.println(s.value());
-        } else if (result instanceof GcdResult.Failure f) {
-            System.err.println("Error: " + f.reason());
+        } else if (result instanceof Result.Failure<?, ?> f) {
+            System.err.println("Error: " + ((GcdError) f.error()).reason());
             System.exit(1);
         }
     }

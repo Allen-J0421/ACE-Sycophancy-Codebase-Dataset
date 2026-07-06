@@ -2,5 +2,5 @@ package euclidean;
 
 @FunctionalInterface
 interface GcdProvider {
-    GcdResult compute(int a, int b);
+    Result<Integer, GcdError> compute(int a, int b);
 }

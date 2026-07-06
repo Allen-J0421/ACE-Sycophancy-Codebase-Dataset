@@ -25,6 +25,12 @@ class QuickSelectUtils {
 
     public static int kthSmallest(int[] arr, int low, int high, int k)
     {
+        if (arr == null || arr.length == 0)
+            throw new IllegalArgumentException("Array must not be null or empty");
+        if (k < 1 || k > arr.length)
+            throw new IllegalArgumentException(
+                "k must be between 1 and " + arr.length + ", got " + k);
+
         int partition = partition(arr, low, high);
 
         if (partition == k - 1)

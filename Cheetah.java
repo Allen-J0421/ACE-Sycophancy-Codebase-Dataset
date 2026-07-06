@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -21,9 +20,6 @@ public class Cheetah extends Predator {
 
     private static final double SPREAD_DISEASE_PROBABILITY = 0.01;
     private static final double DEATH_BY_DISEASE_PROBABILITY = 0.01;
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a Cheetah in the simulation.
@@ -83,7 +79,7 @@ public class Cheetah extends Predator {
      * @return The cheetah's disease spreading probability.
      */
     @Override
-    protected double getDiseaseSpreadProbability() {
+    public double getDiseaseSpreadProbability() {
         return SPREAD_DISEASE_PROBABILITY;
     }
 
@@ -93,7 +89,7 @@ public class Cheetah extends Predator {
      * @return The cheetah's disease death probability.
      */
     @Override
-    protected double getDeathByDiseaseProbability() {
+    public double getDeathByDiseaseProbability() {
         return DEATH_BY_DISEASE_PROBABILITY;
     }
 
@@ -128,19 +124,10 @@ public class Cheetah extends Predator {
                 return;
             }
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
+            if (handleDiseaseDeath()) return;
 
             // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
+            Location newLocation = spreadOrFindFood();
 
             if(newLocation == null) {
                 // No food found - try to move to a free location.

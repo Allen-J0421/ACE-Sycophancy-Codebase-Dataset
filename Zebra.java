@@ -82,7 +82,7 @@ public class Zebra extends Prey {
      * @return The zebra's disease spreading probability.
      */
     @Override
-    protected double getDiseaseSpreadProbability() {
+    public double getDiseaseSpreadProbability() {
         return SPREAD_DISEASE_PROBABILITY;
     }
 
@@ -92,7 +92,7 @@ public class Zebra extends Prey {
      * @return The zebra's disease death probability.
      */
     @Override
-    protected double getDeathByDiseaseProbability() {
+    public double getDeathByDiseaseProbability() {
         return DEATH_BY_DISEASE_PROBABILITY;
     }
 
@@ -122,10 +122,7 @@ public class Zebra extends Prey {
         if(isAlive()) {
             giveBirth(newZebras);
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
+            if (handleDiseaseDeath()) return;
 
             if (time == TimeOfDay.AROUND_MIDNIGHT){
                 this.setActiveness(0.9);
@@ -133,13 +130,7 @@ public class Zebra extends Prey {
 
             if (rand.nextDouble() <= getActiveness()){
                 // Try to move into a free location.
-                Location newLocation;
-
-                if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                    newLocation = findAnimalToInfect();
-                } else {
-                    newLocation = findFood();
-                }
+                Location newLocation = spreadOrFindFood();
 
                 // Random chance to do either?
                 if ((newLocation == null) || (getFoodValue() > 10)) {

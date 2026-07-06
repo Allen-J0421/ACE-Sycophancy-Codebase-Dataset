@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * This file is part of the Predator-Prey Simulation.
@@ -13,9 +12,6 @@ public abstract class Scavenger extends Animal {
 
     // define fields
     private int foodLevel;
-
-    // shared random generator to generate consistent results
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Constructor for a scavenger in the simulation.
@@ -48,19 +44,10 @@ public abstract class Scavenger extends Animal {
                 return;
             }
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
+            if (handleDiseaseDeath()) return;
 
             // Move towards a source of food if found.
-            Location newLocation;
-
-            if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                newLocation = findAnimalToInfect();
-            } else {
-                newLocation = findFood();
-            }
+            Location newLocation = spreadOrFindFood();
 
             if(newLocation == null) {
                 // No food found - try to move to a free location.

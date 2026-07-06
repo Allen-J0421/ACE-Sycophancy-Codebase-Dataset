@@ -82,7 +82,7 @@ public class Elephant extends Prey {
      * @return The elephant's disease spreading probability.
      */
     @Override
-    protected double getDiseaseSpreadProbability() {
+    public double getDiseaseSpreadProbability() {
         return SPREAD_DISEASE_PROBABILITY;
     }
 
@@ -92,7 +92,7 @@ public class Elephant extends Prey {
      * @return The elephant's disease death probability.
      */
     @Override
-    protected double getDeathByDiseaseProbability() {
+    public double getDeathByDiseaseProbability() {
         return DEATH_BY_DISEASE_PROBABILITY;
     }
 
@@ -123,10 +123,7 @@ public class Elephant extends Prey {
             giveBirth(newElephants);
 
 
-            if (rand.nextDouble() <= getDeathByDiseaseProbability() ) {
-                remove();
-                return;
-            }
+            if (handleDiseaseDeath()) return;
 
             if (time == TimeOfDay.SUNSET){
                 this.setActiveness(0.85);
@@ -134,13 +131,7 @@ public class Elephant extends Prey {
 
             if (rand.nextDouble() <= getActiveness()){
                 // Try to move into a free location.
-                Location newLocation;
-
-                if (rand.nextDouble() <= getDiseaseSpreadProbability() ) {
-                    newLocation = findAnimalToInfect();
-                } else {
-                    newLocation = findFood();
-                }
+                Location newLocation = spreadOrFindFood();
 
                 // Random chance to do either?
 

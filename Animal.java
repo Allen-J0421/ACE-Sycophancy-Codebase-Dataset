@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Animal extends Organism implements AbleToEat {
+public abstract class Animal extends Organism implements AbleToEat, DiseaseProfile {
 
     // define fields
     private final Gender gender; // gender of specific animal
@@ -134,16 +134,29 @@ public abstract class Animal extends Organism implements AbleToEat {
     }
 
     /**
-     * Getter method to return this animal's disease spreading probability.
+     * Rolls against this animal's disease death probability. If it triggers,
+     * removes the animal from the simulation and returns true.
      *
-     * @return The animal's disease spreading probability.
+     * @return true if the animal dies from disease this step.
      */
-    abstract protected double getDiseaseSpreadProbability();
+    protected boolean handleDiseaseDeath() {
+        if (rand.nextDouble() <= getDeathByDiseaseProbability()) {
+            remove();
+            return true;
+        }
+        return false;
+    }
 
     /**
-     * Getter method to return the probability this animal dies from disease.
+     * Rolls against this animal's disease spread probability. If it triggers,
+     * attempts to infect an adjacent animal; otherwise searches for food.
      *
-     * @return The animal's disease death probability.
+     * @return The location the animal moves to.
      */
-    abstract protected double getDeathByDiseaseProbability();
+    protected Location spreadOrFindFood() {
+        if (rand.nextDouble() <= getDiseaseSpreadProbability()) {
+            return findAnimalToInfect();
+        }
+        return findFood();
+    }
 }

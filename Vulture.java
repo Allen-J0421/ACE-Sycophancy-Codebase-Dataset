@@ -76,7 +76,7 @@ public class Vulture extends Scavenger {
      * @return The vulture's disease spreading probability.
      */
     @Override
-    protected double getDiseaseSpreadProbability() {
+    public double getDiseaseSpreadProbability() {
         return SPREAD_DISEASE_PROBABILITY;
     }
 
@@ -86,7 +86,7 @@ public class Vulture extends Scavenger {
      * @return The vulture's disease death probability.
      */
     @Override
-    protected double getDeathByDiseaseProbability() {
+    public double getDeathByDiseaseProbability() {
         return DEATH_BY_DISEASE_PROBABILITY;
     }
 

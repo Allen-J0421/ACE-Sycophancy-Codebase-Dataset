@@ -1,4 +1,3 @@
- import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,21 +17,6 @@ public class Simulator
     //   The default height for the grid:
     private static final int DEFAULT_DEPTH = 160;
                                                   
-    // Constants representing the creation probabilities for the actors:
-    //   Primary consumers:
-    private static final double GRASSHOPPER_CREATION_PROBABILITY   = 0.15;
-    private static final double HARVESTER_ANT_CREATION_PROBABILITY = 0.25;
-    private static final double TERMITE_CREATION_PROBABILITY       = 0.21;
-    private static final double IMPALA_CREATION_PROBABILITY        = 0.15;
-    //   Secondary consumers:
-    private static final double PANGOLIN_CREATION_PROBABILITY      = 0.125;
-    private static final double AARDVARK_CREATION_PROBABILITY      = 0.12;
-    private static final double MONGOOSE_CREATION_PROBABILITY      = 0.12;
-    //   Producers:
-    private static final double STAR_GRASS_CREATION_PROBABILITY    = 0.05;
-    private static final double RED_OAT_GRASS_CREATION_PROBABILITY = 0.04;
-    private static final double ACACIA_CREATION_PROBABILITY        = 0.04;
-    
     // Constants representing the color of each actor in the simulation view:
     //   Primary consumers:
     private static final Color GRASSHOPPER_COLOR   = new Color(188, 248, 236);
@@ -53,6 +37,8 @@ public class Simulator
     // The number of steps in a day:
     public static final int NUMBER_OF_STEPS_PER_DAY = 25;
     
+    // Populates the field with actors at simulation start/reset:
+    private final FieldPopulator populator;
     // List of actors in the field:
     private List<Actor> actors;
     // The current state of the field:
@@ -91,6 +77,7 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
+        populator = new FieldPopulator();
         actors = new ArrayList<>();
         field = new Field(depth, width);
         
@@ -207,45 +194,11 @@ public class Simulator
     }
     
     /**
-     * Randomly populate the field with foxes and rabbits.
+     * Populate the field with all actor species.
      */
     private void populate()
     {
-        Random rand = Randomizer.getRandom();
-        field.clear();
-        
-        for (int row = 0; row < field.getDepth(); row++)
-        {
-            for (int col = 0; col < field.getWidth(); col++)
-            {
-                Location location = new Location(row, col);
-                Actor actor;
-                
-                // Refactor this?
-                if (rand.nextDouble() <= GRASSHOPPER_CREATION_PROBABILITY)
-                    actors.add(new Grasshopper(true, field, location));
-                else if (rand.nextDouble() <= HARVESTER_ANT_CREATION_PROBABILITY)
-                    actors.add(new HarvesterAnt(true, field, location));
-                else if (rand.nextDouble() <= TERMITE_CREATION_PROBABILITY)
-                    actors.add(new Termite(true, field, location));
-                else if (rand.nextDouble() <= IMPALA_CREATION_PROBABILITY)
-                    actors.add(new Impala(true, field, location));
-                else if (rand.nextDouble() <= PANGOLIN_CREATION_PROBABILITY)
-                    actors.add(new Pangolin(true, field, location));
-                else if (rand.nextDouble() <= AARDVARK_CREATION_PROBABILITY)
-                    actors.add(new Aardvark(true, field, location));
-                else if (rand.nextDouble() <= MONGOOSE_CREATION_PROBABILITY)
-                    actors.add(new Mongoose(true, field, location));
-                else if (rand.nextDouble() <= STAR_GRASS_CREATION_PROBABILITY)
-                    actors.add(new StarGrass(field, location));
-                else if (rand.nextDouble() <= RED_OAT_GRASS_CREATION_PROBABILITY)
-                    actors.add(new RedOatGrass(field, location));
-                else if (rand.nextDouble() <= ACACIA_CREATION_PROBABILITY)
-                    actors.add(new Acacia(field, location));
-                
-                // Else leave the location empty.
-            }
-        }
+        populator.populate(field, actors);
     }
     
     /**

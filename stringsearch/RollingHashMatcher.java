@@ -1,4 +1,4 @@
-package rabinkarp;
+package stringsearch;
 
 public class RollingHashMatcher implements StringMatcher {
     protected final HashCalculator hashCalculator;
@@ -34,5 +34,19 @@ public class RollingHashMatcher implements StringMatcher {
 
     protected int rollHash(int currentHash, char leaving, char entering, int highOrderFactor) {
         return hashCalculator.roll(currentHash, leaving, entering, highOrderFactor);
+    }
+
+    /** For subclasses in other packages that cannot access MatchResult's package-private constructor. */
+    protected MatchResult newResult() {
+        return new MatchResult();
+    }
+
+    protected MatchResult newResult(int capacity) {
+        return new MatchResult(capacity);
+    }
+
+    /** For subclasses in other packages that cannot access MatchResult's package-private add(). */
+    protected void recordMatch(MatchResult result, int pos) {
+        result.add(pos);
     }
 }

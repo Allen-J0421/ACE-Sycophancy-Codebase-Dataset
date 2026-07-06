@@ -1,5 +1,9 @@
 package rabinkarp;
 
+import stringsearch.MatchResult;
+import stringsearch.RollingHashMatcher;
+import stringsearch.TextWindow;
+
 public final class RabinKarpMatcher extends RollingHashMatcher {
     public static final int DEFAULT_RADIX = 256;
     public static final int DEFAULT_MODULUS = 101;
@@ -13,10 +17,10 @@ public final class RabinKarpMatcher extends RollingHashMatcher {
         int m = compiledPat.length();
         TextWindow window = new TextWindow(text, 0, m);
         int txtHash = hashOf(window, window.length());
-        MatchResult result = new MatchResult(n - m + 1);
+        MatchResult result = newResult(n - m + 1);
         while (window.start() <= n - m) {
             if (compiledPat.hash() == txtHash && window.startsWith(compiledPat.pattern())) {
-                result.add(window.start());
+                recordMatch(result, window.start());
             }
             if (window.start() < n - m) {
                 txtHash = rollHash(txtHash, window.leaving(), window.entering(), compiledPat.highOrderFactor());

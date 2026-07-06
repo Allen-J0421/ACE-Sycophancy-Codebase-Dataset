@@ -1,4 +1,4 @@
-package rabinkarp;
+package stringsearch;
 
 public interface HashCalculator {
     int hash(CharSequence seq, int length);

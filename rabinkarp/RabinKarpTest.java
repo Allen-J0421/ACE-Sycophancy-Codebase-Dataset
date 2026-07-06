@@ -1,5 +1,7 @@
 package rabinkarp;
 
+import stringsearch.MatchResult;
+import stringsearch.StringMatcher;
 import java.util.List;
 
 public final class RabinKarpTest {

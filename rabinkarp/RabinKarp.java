@@ -1,5 +1,8 @@
 package rabinkarp;
 
+import stringsearch.MatchResult;
+import stringsearch.StringMatcher;
+
 public final class RabinKarp {
     private static final StringMatcher DEFAULT_MATCHER;
 

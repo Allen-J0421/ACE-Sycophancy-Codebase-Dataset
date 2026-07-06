@@ -1,4 +1,4 @@
-package rabinkarp;
+package stringsearch;
 
 public final class NaiveMatcher implements StringMatcher {
     @Override

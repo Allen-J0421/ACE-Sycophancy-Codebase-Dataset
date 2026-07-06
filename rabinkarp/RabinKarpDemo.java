@@ -1,5 +1,7 @@
 package rabinkarp;
 
+import stringsearch.MatchResult;
+
 public final class RabinKarpDemo {
     private RabinKarpDemo() {}
 

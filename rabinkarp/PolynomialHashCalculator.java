@@ -1,5 +1,7 @@
 package rabinkarp;
 
+import stringsearch.HashCalculator;
+
 public final class PolynomialHashCalculator implements HashCalculator {
     private final int radix;
     private final int modulus;

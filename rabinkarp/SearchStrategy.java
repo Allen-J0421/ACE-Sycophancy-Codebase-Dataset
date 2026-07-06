@@ -1,5 +1,9 @@
 package rabinkarp;
 
+import stringsearch.MatchResult;
+import stringsearch.NaiveMatcher;
+import stringsearch.StringMatcher;
+
 public enum SearchStrategy implements StringMatcher {
     RABIN_KARP(new RabinKarpMatcher(RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS)),
     NAIVE(new NaiveMatcher());

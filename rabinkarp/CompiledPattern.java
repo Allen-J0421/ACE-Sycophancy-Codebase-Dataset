@@ -1,5 +1,7 @@
 package rabinkarp;
 
+import stringsearch.HashCalculator;
+
 final class CompiledPattern {
     private final CharSequence pattern;
     private final int length;

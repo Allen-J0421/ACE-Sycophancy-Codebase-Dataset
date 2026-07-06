@@ -1,4 +1,4 @@
-package rabinkarp;
+package stringsearch;
 
 import java.util.ArrayList;
 import java.util.Collections;

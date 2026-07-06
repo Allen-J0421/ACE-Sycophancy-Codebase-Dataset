@@ -1,5 +1,9 @@
 package rabinkarp;
 
+import stringsearch.HashCalculator;
+import stringsearch.RollingHashMatcher;
+import stringsearch.StringMatcher;
+
 public final class StringMatcherFactory {
     private StringMatcherFactory() {}
 

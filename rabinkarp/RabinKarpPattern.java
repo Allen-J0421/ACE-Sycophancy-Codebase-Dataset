@@ -1,5 +1,7 @@
 package rabinkarp;
 
+import stringsearch.MatchResult;
+
 public final class RabinKarpPattern {
     private final CharSequence pattern;
     private final int length;

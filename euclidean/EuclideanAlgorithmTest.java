@@ -14,8 +14,14 @@ public final class EuclideanAlgorithmTest {
             new GcdCase(9, 0, 9),
             new GcdCase(0, 0, 0),
         };
-        for (GcdCase c : cases) {
-            assertGcd(c.left(), c.right(), c.expected());
+
+        GcdProvider[] providers = {EuclideanAlgorithm.iterative(), EuclideanAlgorithm.recursive()};
+
+        for (GcdProvider provider : providers) {
+            for (GcdCase c : cases) {
+                assertGcd(provider, c.left(), c.right(), c.expected());
+            }
+            assertOverflow(provider, Integer.MIN_VALUE, 0);
         }
 
         assertOperands(35, 15, EuclideanAlgorithmApp.parseOperands(new String[0]));
@@ -24,24 +30,24 @@ public final class EuclideanAlgorithmTest {
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7"}));
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7", "8x"}));
 
-        assertOverflow(Integer.MIN_VALUE, 0);
-
-        assertCommand(new GcdCommand(new Operands(35, 15)), 5);
-        assertCommand(new GcdCommand(new Operands(-42, 56)), 14);
-        assertCommand(() -> EuclideanAlgorithm.gcd(12, 8), 4);
+        assertCommand(new GcdCommand(new Operands(35, 15), EuclideanAlgorithm.iterative()), 5);
+        assertCommand(new GcdCommand(new Operands(35, 15), EuclideanAlgorithm.recursive()), 5);
+        assertCommand(new GcdCommand(new Operands(-42, 56), EuclideanAlgorithm.iterative()), 14);
+        assertCommand(new GcdCommand(new Operands(-42, 56), EuclideanAlgorithm.recursive()), 14);
+        assertCommand(() -> EuclideanAlgorithm.iterative().compute(12, 8), 4);
     }
 
-    private static void assertGcd(int left, int right, int expected) {
-        int actual = EuclideanAlgorithm.gcd(left, right);
+    private static void assertGcd(GcdProvider provider, int left, int right, int expected) {
+        int actual = provider.compute(left, right);
         if (actual != expected) {
             throw new AssertionError(
                     "gcd(" + left + ", " + right + ") = " + actual + "; expected " + expected);
         }
     }
 
-    private static void assertOverflow(int a, int b) {
+    private static void assertOverflow(GcdProvider provider, int a, int b) {
         try {
-            EuclideanAlgorithm.gcd(a, b);
+            provider.compute(a, b);
         } catch (ArithmeticException e) {
             return;
         }

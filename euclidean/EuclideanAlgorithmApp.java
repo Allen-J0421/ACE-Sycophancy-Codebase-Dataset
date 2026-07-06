@@ -20,7 +20,7 @@ public final class EuclideanAlgorithmApp {
 
     public static void main(String[] args) {
         Operands operands = parseOperands(args);
-        Command<Integer> command = new GcdCommand(operands);
+        Command<Integer> command = new GcdCommand(operands, EuclideanAlgorithm.iterative());
         System.out.println(command.execute());
     }
 }

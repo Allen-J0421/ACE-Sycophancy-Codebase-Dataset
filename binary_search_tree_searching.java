@@ -1,5 +1,22 @@
 class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
     private Node<T> root;
+    private TreeTraverser<T> traverser;
+
+    BinarySearchTree() {
+        this(new InOrderTraverser<>());
+    }
+
+    BinarySearchTree(TreeTraverser<T> traverser) {
+        this.traverser = traverser;
+    }
+
+    void setTraverser(TreeTraverser<T> traverser) {
+        this.traverser = traverser;
+    }
+
+    void traverse(NodeVisitor<T> visitor) {
+        traverser.traverse(root, visitor);
+    }
 
     public void insert(T key) {
         root = insertRec(root, key);
@@ -27,7 +44,10 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
 
     @Override
     public String toString() {
-        return new TreeTraverser<>(root).toVisualString();
+        StringBuilder sb = new StringBuilder();
+        new DescendingTraverser<T>().traverse(root, (data, depth) ->
+            sb.append("    ".repeat(depth)).append(data).append("\n"));
+        return sb.toString().stripTrailing();
     }
 
     public static void main(String[] args) {
@@ -40,5 +60,19 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
 
         System.out.println(bst.search(7));
         System.out.println(bst);
+
+        System.out.print("In-order:   ");
+        bst.traverse((data, depth) -> System.out.print(data + " "));
+        System.out.println();
+
+        bst.setTraverser(new PreOrderTraverser<>());
+        System.out.print("Pre-order:  ");
+        bst.traverse((data, depth) -> System.out.print(data + " "));
+        System.out.println();
+
+        bst.setTraverser(new PostOrderTraverser<>());
+        System.out.print("Post-order: ");
+        bst.traverse((data, depth) -> System.out.print(data + " "));
+        System.out.println();
     }
 }

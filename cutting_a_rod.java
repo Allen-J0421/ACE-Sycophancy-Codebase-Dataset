@@ -4,10 +4,14 @@ class CuttingRod {
         int[] price = {0, 1, 5, 8, 9, 10, 17, 17, 20};
         RodCuttingProblem problem = new RodCuttingProblem(price);
 
-        RodCuttingSolution iterative = new RodCuttingSolver(new IterativeDPStrategy()).solve(problem);
-        System.out.println("Iterative DP    - max revenue: " + iterative.maxRevenue() + ", cuts: " + iterative.cuts());
+        SolverType selected = (args.length > 0)
+                ? SolverType.valueOf(args[0].toUpperCase())
+                : null;
 
-        RodCuttingSolution memoized = new RodCuttingSolver(new MemoizedRecursiveStrategy()).solve(problem);
-        System.out.println("Memoized Recur. - max revenue: " + memoized.maxRevenue() + ", cuts: " + memoized.cuts());
+        for (SolverType type : SolverType.values()) {
+            if (selected != null && type != selected) continue;
+            RodCuttingSolution solution = new RodCuttingSolver(RodCuttingStrategyFactory.create(type)).solve(problem);
+            System.out.println(type + " - max revenue: " + solution.maxRevenue() + ", cuts: " + solution.cuts());
+        }
     }
 }

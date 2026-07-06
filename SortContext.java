@@ -8,35 +8,15 @@ final class SortContext implements HeapFactory {
 
     @Override
     public HeapSorter<Integer> forIntArray(int[] arr) {
-        return (from, to) -> new AbstractHeap() {
-            @Override
-            protected boolean isGreater(int i, int j) {
-                return arr[from + i] > arr[from + j];
-            }
-
-            @Override
-            protected void swap(int i, int j) {
-                int tmp = arr[from + i];
-                arr[from + i] = arr[from + j];
-                arr[from + j] = tmp;
-            }
-        }.sort(to - from);
+        return (from, to) -> AbstractHeap.sort(to - from,
+            (i, j) -> arr[from + i] > arr[from + j],
+            (i, j) -> { int tmp = arr[from + i]; arr[from + i] = arr[from + j]; arr[from + j] = tmp; });
     }
 
     @Override
     public <T> HeapSorter<T> forObjectArray(T[] arr, Comparator<T> cmp) {
-        return (from, to) -> new AbstractHeap() {
-            @Override
-            protected boolean isGreater(int i, int j) {
-                return cmp.compare(arr[from + i], arr[from + j]) > 0;
-            }
-
-            @Override
-            protected void swap(int i, int j) {
-                T tmp = arr[from + i];
-                arr[from + i] = arr[from + j];
-                arr[from + j] = tmp;
-            }
-        }.sort(to - from);
+        return (from, to) -> AbstractHeap.sort(to - from,
+            (i, j) -> cmp.compare(arr[from + i], arr[from + j]) > 0,
+            (i, j) -> { T tmp = arr[from + i]; arr[from + i] = arr[from + j]; arr[from + j] = tmp; });
     }
 }

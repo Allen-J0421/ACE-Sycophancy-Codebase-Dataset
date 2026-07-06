@@ -187,58 +187,57 @@ public class RedBlackTree {
         }
     }
 
-    void inorderTraversalHelper(Node node)
+    static class TreePrinter
     {
-        if(node != null)
+        public void inorderTraversal(Node root)
         {
-            inorderTraversalHelper(node.left);
-            System.out.printf("%d ", node.data);
-            inorderTraversalHelper(node.right);
-        }
-    }
-
-    public void inorderTraversal()
-    {
-        inorderTraversalHelper(this.root);
-    }
-
-    void printTreeHelper(Node root, int space)
-    {
-        int i;
-        if(root != null)
-        {
-            space = space + 10;
-            printTreeHelper(root.right, space);
-
-            System.out.printf("\n");
-
-            for(i = 10; i < space; i++)
+            if(root != null)
             {
-                System.out.printf(" ");
+                inorderTraversal(root.left);
+                System.out.printf("%d ", root.data);
+                inorderTraversal(root.right);
             }
-
-            System.out.printf("%d", root.data);
-            System.out.printf("\n");
-            printTreeHelper(root.left, space);
         }
-    }
 
-    public void printTree()
-    {
-        printTreeHelper(this.root, 0);
+        public void printTree(Node root)
+        {
+            printTreeHelper(root, 0);
+        }
+
+        private void printTreeHelper(Node root, int space)
+        {
+            int i;
+            if(root != null)
+            {
+                space = space + 10;
+                printTreeHelper(root.right, space);
+
+                System.out.printf("\n");
+
+                for(i = 10; i < space; i++)
+                {
+                    System.out.printf(" ");
+                }
+
+                System.out.printf("%d", root.data);
+                System.out.printf("\n");
+                printTreeHelper(root.left, space);
+            }
+        }
     }
 
     public static void main(String[] args)
     {
         RedBlackTree t = new RedBlackTree();
+        TreePrinter printer = new TreePrinter();
         int[] arr = {1,4,6,3,5,7,8,2,9};
         for(int i = 0; i < 9; i++)
         {
             t.insert(arr[i]);
             System.out.println();
-            t.inorderTraversal();
+            printer.inorderTraversal(t.root);
         }
 
-        t.printTree();
+        printer.printTree(t.root);
     }
 }

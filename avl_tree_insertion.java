@@ -1,8 +1,12 @@
 import java.util.*;
 
+interface TreeVisitor {
+    void visit(int key);
+}
+
 interface Tree {
     void insert(int key);
-    void preOrder();
+    void accept(TreeVisitor visitor);
 }
 
 class AVLTree implements Tree {
@@ -105,15 +109,15 @@ class AVLTree implements Tree {
         return AVLBalancer.rebalance(node, key);
     }
 
-    public void preOrder() {
-        preOrderTraversal(root);
+    public void accept(TreeVisitor visitor) {
+        preOrderTraversal(root, visitor);
     }
 
-    private void preOrderTraversal(Node node) {
+    private void preOrderTraversal(Node node, TreeVisitor visitor) {
         if (node != null) {
-            System.out.print(node.key + " ");
-            preOrderTraversal(node.left);
-            preOrderTraversal(node.right);
+            visitor.visit(node.key);
+            preOrderTraversal(node.left, visitor);
+            preOrderTraversal(node.right, visitor);
         }
     }
 
@@ -127,6 +131,6 @@ class AVLTree implements Tree {
         tree.insert(50);
         tree.insert(25);
 
-        tree.preOrder();
+        tree.accept(key -> System.out.print(key + " "));
     }
 }

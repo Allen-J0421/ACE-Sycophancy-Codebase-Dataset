@@ -1,10 +1,5 @@
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
-interface Sorter<T> {
-    void sort(List<T> list, Comparator<T> comparator);
-}
 
 class InsertionSorter<T> implements Sorter<T> {
 
@@ -24,15 +19,5 @@ class InsertionSorter<T> implements Sorter<T> {
             j--;
         }
         return j + 1;
-    }
-}
-
-public class InsertionSort {
-
-    public static void main(String[] args) {
-        List<Integer> numbers = Arrays.asList(12, 11, 13, 5, 6);
-        Sorter<Integer> sorter = new InsertionSorter<>();
-        sorter.sort(numbers, Comparator.naturalOrder());
-        System.out.println(numbers);
     }
 }

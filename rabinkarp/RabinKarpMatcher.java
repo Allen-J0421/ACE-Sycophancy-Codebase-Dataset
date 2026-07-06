@@ -10,18 +10,20 @@ public final class RabinKarpMatcher extends RollingHashMatcher {
         super(new PolynomialHashCalculator(radix, modulus));
     }
 
-    List<Integer> search(RabinKarpPattern pattern, CharSequence text) {
+    List<Integer> search(RabinKarpPattern compiledPat, CharSequence text) {
         int n = text.length();
-        int m = pattern.length();
-        int txtHash = hashOf(text, m);
+        int m = compiledPat.length();
+        TextWindow window = new TextWindow(text, 0, m);
+        int txtHash = hashOf(window, window.length());
         List<Integer> result = allMatchPositions(n - m + 1);
-        for (int i = 0; i <= n - m; i++) {
-            if (pattern.hash() == txtHash && matchesAt(text, pattern.pattern(), i)) {
-                result.add(i);
+        while (window.start() <= n - m) {
+            if (compiledPat.hash() == txtHash && window.startsWith(compiledPat.pattern())) {
+                result.add(window.start());
             }
-            if (i < n - m) {
-                txtHash = rollHash(txtHash, text.charAt(i), text.charAt(i + m), pattern.highOrderFactor());
+            if (window.start() < n - m) {
+                txtHash = rollHash(txtHash, window.leaving(), window.entering(), compiledPat.highOrderFactor());
             }
+            window = window.slide();
         }
         return result;
     }

@@ -16,15 +16,17 @@ public class RollingHashMatcher implements StringMatcher {
         int n = text.length();
         int patHash = hashCalculator.hash(pattern, m);
         int h = hashCalculator.highOrderFactor(m);
-        int txtHash = hashCalculator.hash(text, m);
+        TextWindow window = new TextWindow(text, 0, m);
+        int txtHash = hashCalculator.hash(window, window.length());
         List<Integer> result = allMatchPositions(n - m + 1);
-        for (int i = 0; i <= n - m; i++) {
-            if (patHash == txtHash && matchesAt(text, pattern, i)) {
-                result.add(i);
+        while (window.start() <= n - m) {
+            if (patHash == txtHash && window.startsWith(pattern)) {
+                result.add(window.start());
             }
-            if (i < n - m) {
-                txtHash = hashCalculator.roll(txtHash, text.charAt(i), text.charAt(i + m), h);
+            if (window.start() < n - m) {
+                txtHash = hashCalculator.roll(txtHash, window.leaving(), window.entering(), h);
             }
+            window = window.slide();
         }
         return result;
     }
@@ -35,13 +37,6 @@ public class RollingHashMatcher implements StringMatcher {
 
     protected int rollHash(int currentHash, char leaving, char entering, int highOrderFactor) {
         return hashCalculator.roll(currentHash, leaving, entering, highOrderFactor);
-    }
-
-    protected boolean matchesAt(CharSequence text, CharSequence pattern, int pos) {
-        for (int j = 0; j < pattern.length(); j++) {
-            if (text.charAt(pos + j) != pattern.charAt(j)) return false;
-        }
-        return true;
     }
 
     protected List<Integer> allMatchPositions(int initialCapacity) {

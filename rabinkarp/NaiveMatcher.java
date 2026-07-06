@@ -9,12 +9,10 @@ public final class NaiveMatcher implements StringMatcher {
         int m = pattern.length();
         int n = text.length();
         List<Integer> result = new ArrayList<>();
-        outer:
-        for (int i = 0; i <= n - m; i++) {
-            for (int j = 0; j < m; j++) {
-                if (text.charAt(i + j) != pattern.charAt(j)) continue outer;
-            }
-            result.add(i);
+        TextWindow window = new TextWindow(text, 0, m);
+        while (window.start() <= n - m) {
+            if (window.startsWith(pattern)) result.add(window.start());
+            window = window.slide();
         }
         return result;
     }

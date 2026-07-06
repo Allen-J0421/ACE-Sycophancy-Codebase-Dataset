@@ -1,7 +1,7 @@
 import java.io.*;
 
-public class RedBlackTree<T extends Comparable<T>> {
-    public Node<T> root;
+public class RedBlackTree<T extends Comparable<T>> implements IBinarySearchTree<T> {
+    private Node<T> root;
 
     static class RotationHandler<T extends Comparable<T>>
     {
@@ -214,6 +214,13 @@ public class RedBlackTree<T extends Comparable<T>> {
         controller = new InsertionController<>(this);
     }
 
+    @Override
+    public Node<T> getRoot()
+    {
+        return root;
+    }
+
+    @Override
     public void insert(T data)
     {
         controller.insert(data);
@@ -221,16 +228,16 @@ public class RedBlackTree<T extends Comparable<T>> {
 
     public static void main(String[] args)
     {
-        RedBlackTree<Integer> t = new RedBlackTree<>();
+        IBinarySearchTree<Integer> t = new RedBlackTree<>();
         TreePrinter<Integer> printer = new TreePrinter<>();
         Integer[] arr = {1,4,6,3,5,7,8,2,9};
         for(int i = 0; i < 9; i++)
         {
             t.insert(arr[i]);
             System.out.println();
-            printer.inorderTraversal(t.root);
+            printer.inorderTraversal(t.getRoot());
         }
 
-        printer.printTree(t.root);
+        printer.printTree(t.getRoot());
     }
 }

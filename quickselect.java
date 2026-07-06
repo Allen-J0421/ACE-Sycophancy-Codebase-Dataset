@@ -1,5 +1,3 @@
-import java.util.Random;
-
 class QuickSelect {
 
     public static void main(String[] args)
@@ -11,9 +9,7 @@ class QuickSelect {
         int kPosition = 3;
         int length = array.length;
 
-        PartitionStrategy partitioner =
-            new LoggingPartitionDecorator(new RandomPivotPartition(new Random()));
-        SelectionStrategy strategy = new QuickSelectStrategy(partitioner);
+        SelectionStrategy strategy = SelectionStrategy.createDefault();
 
         if (kPosition > length) {
             System.out.println("Index out of bound");

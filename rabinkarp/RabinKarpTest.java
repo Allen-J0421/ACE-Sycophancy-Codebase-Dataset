@@ -6,9 +6,11 @@ public final class RabinKarpTest {
     private RabinKarpTest() {}
 
     public static void main(String[] args) {
-        runSuite(StringMatcherFactory.rabinKarp(), "RabinKarpMatcher");
-        runSuite(StringMatcherFactory.naive(), "NaiveMatcher");
-        runSuite(StringMatcherFactory.rollingHash(new PolynomialHashCalculator(256, 101)), "RollingHashMatcher+PolynomialHashCalculator");
+        for (SearchStrategy strategy : SearchStrategy.values()) {
+            runSuite(strategy, strategy.name());
+        }
+        runSuite(StringMatcherFactory.rollingHash(new PolynomialHashCalculator(256, 101)),
+                 "rollingHash+PolynomialHashCalculator");
 
         RabinKarpPattern compiled = RabinKarpPattern.compile("geeks");
         expect(compiled.searchIn("geeksforgeeks"), List.of(0, 8), "compiled pattern: geeks in geeksforgeeks");

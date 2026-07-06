@@ -7,13 +7,11 @@ public final class RabinKarpDemo {
         String txt = "geeksforgeeks";
         String pat = "geeks";
 
-        StringMatcher rk = StringMatcherFactory.rabinKarp();
-        for (int idx : rk.search(pat, txt))
+        for (int idx : SearchStrategy.RABIN_KARP.search(pat, txt))
             System.out.print(idx + " ");
         System.out.println();
 
-        StringMatcher naive = StringMatcherFactory.naive();
-        for (int idx : naive.search(pat, txt))
+        for (int idx : SearchStrategy.NAIVE.search(pat, txt))
             System.out.print(idx + " ");
         System.out.println();
 

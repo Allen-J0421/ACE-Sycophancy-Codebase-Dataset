@@ -4,7 +4,7 @@ public final class RabinKarp {
     private static final StringMatcher DEFAULT_MATCHER;
 
     static {
-        DEFAULT_MATCHER = StringMatcherFactory.rabinKarp();
+        DEFAULT_MATCHER = SearchStrategy.RABIN_KARP;
     }
 
     private RabinKarp() {}

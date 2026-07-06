@@ -103,6 +103,14 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public void clear() {
+        capacity = 20;
+        size = 0;
+        table = (HashNode<K, V>[]) new HashNode[capacity];
+    }
+
     @SuppressWarnings("unchecked")
     private void resize() {
         int oldCapacity = capacity;

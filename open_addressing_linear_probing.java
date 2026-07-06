@@ -22,6 +22,11 @@ class Demo {
         System.out.println("Delete key10:          " + h.deleteNode("key10"));
         System.out.println("Get key10 (deleted):   " + h.get("key10"));
         System.out.println("Size after delete:     " + h.getSize());
+
+        // Clear and verify empty state
+        h.clear();
+        System.out.println("Size after clear:      " + h.getSize());
+        System.out.println("Is empty after clear:  " + h.isEmpty());
         System.out.println();
     }
 }

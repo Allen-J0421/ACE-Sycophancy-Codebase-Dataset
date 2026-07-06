@@ -5,4 +5,5 @@ interface HashMapOperations<K, V> {
     int getSize();
     boolean isEmpty();
     void display();
+    void clear();
 }

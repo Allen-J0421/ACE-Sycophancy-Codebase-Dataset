@@ -41,7 +41,11 @@ class BucketFactory {
 }
 
 class BucketSort implements SortingStrategy {
-    private final BucketFactory bucketFactory = new BucketFactory();
+    private final BucketFactory bucketFactory;
+
+    BucketSort(BucketFactory bucketFactory) {
+        this.bucketFactory = bucketFactory;
+    }
 
     @Override
     public void sort(float[] arr) {
@@ -73,7 +77,7 @@ class Main {
 
     public static void main(String[] args) {
         float[] arr = {0.897f, 0.565f, 0.656f, 0.1234f, 0.665f, 0.3434f};
-        SortingStrategy sorter = new BucketSort();
+        SortingStrategy sorter = new BucketSort(new BucketFactory());
         sorter.sort(arr);
 
         System.out.println("Sorted array is:");

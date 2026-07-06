@@ -1,15 +1,21 @@
 class RodCuttingProblem {
-    private final int[] price;
+    private final int rodLength;
+    private final PriceProvider priceProvider;
 
-    RodCuttingProblem(int[] price) {
-        this.price = price.clone();
+    RodCuttingProblem(int rodLength, PriceProvider priceProvider) {
+        this.rodLength = rodLength;
+        this.priceProvider = priceProvider;
+    }
+
+    static RodCuttingProblem fromArray(int[] price) {
+        return new RodCuttingProblem(price.length - 1, length -> price[length]);
     }
 
     int rodLength() {
-        return price.length - 1;
+        return rodLength;
     }
 
     int priceFor(int length) {
-        return price[length];
+        return priceProvider.priceFor(length);
     }
 }

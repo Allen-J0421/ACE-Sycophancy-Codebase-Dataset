@@ -13,7 +13,7 @@ final class EdgeRelaxer {
         dist[source] = 0;
     }
 
-    boolean relax(WeightedEdge e) {
+    boolean relax(Edge e) {
         int u = e.from(), v = e.to(), w = e.weight();
         if (dist[u] != Distances.UNREACHABLE && (long) dist[u] + w < dist[v]) {
             dist[v] = dist[u] + w;
@@ -23,7 +23,7 @@ final class EdgeRelaxer {
         return false;
     }
 
-    boolean canRelax(WeightedEdge e) {
+    boolean canRelax(Edge e) {
         int u = e.from();
         return dist[u] != Distances.UNREACHABLE
             && (long) dist[u] + e.weight() < dist[e.to()];
@@ -31,7 +31,7 @@ final class EdgeRelaxer {
 
     // Records e.from() as the predecessor of e.to() without changing distances.
     // Used during negative-cycle detection when the distance arrays must not be updated further.
-    void linkPredecessor(WeightedEdge e) {
+    void linkPredecessor(Edge e) {
         pred[e.to()] = e.from();
     }
 

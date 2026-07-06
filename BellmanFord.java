@@ -16,7 +16,7 @@ final class BellmanFord {
         List<WeightedEdge> edges = graph.edges();
 
         for (int i = 0; i < V - 1; i++) {
-            for (WeightedEdge e : edges) {
+            for (Edge e : edges) {
                 relaxer.relax(e);
             }
         }

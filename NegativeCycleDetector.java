@@ -6,17 +6,17 @@ import java.util.Optional;
 final class NegativeCycleDetector {
 
     private final EdgeRelaxer relaxer;
-    private final List<WeightedEdge> edges;
+    private final List<? extends Edge> edges;
     private final int vertexCount;
 
-    NegativeCycleDetector(EdgeRelaxer relaxer, List<WeightedEdge> edges, int vertexCount) {
+    NegativeCycleDetector(EdgeRelaxer relaxer, List<? extends Edge> edges, int vertexCount) {
         this.relaxer = relaxer;
         this.edges = edges;
         this.vertexCount = vertexCount;
     }
 
     Optional<NegativeCycle> detect() {
-        for (WeightedEdge e : edges) {
+        for (Edge e : edges) {
             if (relaxer.canRelax(e)) {
                 relaxer.linkPredecessor(e);
                 return Optional.of(buildCycle(e.to()));

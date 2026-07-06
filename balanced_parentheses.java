@@ -38,20 +38,34 @@ public class BalancedParentheses {
         return isBalanced(s, DEFAULT_PAIRS);
     }
 
+    static class ValidationContext {
+        private final BracketMatcher matcher;
+        private final Deque<Character> stack = new ArrayDeque<>();
+
+        ValidationContext(BracketMatcher matcher) {
+            this.matcher = matcher;
+        }
+
+        boolean process(char c) {
+            if (matcher.isOpener(c)) { stack.push(c); return true; }
+            if (matcher.isCloser(c)) {
+                if (stack.isEmpty() || !matcher.matches(stack.peek(), c)) return false;
+                stack.pop();
+            }
+            return true;
+        }
+
+        boolean isComplete() {
+            return stack.isEmpty();
+        }
+    }
+
     public static boolean isBalanced(String s, Map<Character, Character> pairs) {
-        BracketMatcher matcher = new BracketMatcher(pairs);
-        Deque<Character> stack = new ArrayDeque<>();
-        boolean valid = s.chars()
+        ValidationContext ctx = new ValidationContext(new BracketMatcher(pairs));
+        return s.chars()
             .mapToObj(c -> (char) c)
-            .allMatch(c -> {
-                if (matcher.isOpener(c)) { stack.push(c); return true; }
-                if (matcher.isCloser(c)) {
-                    if (stack.isEmpty() || !matcher.matches(stack.peek(), c)) return false;
-                    stack.pop();
-                }
-                return true;
-            });
-        return valid && stack.isEmpty();
+            .allMatch(ctx::process)
+            && ctx.isComplete();
     }
 
     public static void main(String[] args) {

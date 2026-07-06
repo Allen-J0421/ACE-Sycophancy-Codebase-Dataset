@@ -10,18 +10,18 @@ public class ActivitySelection {
         for (int i = 0; i < n; i++) {
             activities[i] = new Activity(start[i], finish[i]);
         }
-        return strategy.select(activities);
+        return strategy.select(new ActivityCollection(activities));
     }
 
     public static void main(String[] args) {
-        Activity[] activities = {
+        ActivityCollection activities = new ActivityCollection(
             Activity.builder().start(1).finish(2).build(),
             Activity.builder().start(3).finish(4).build(),
             Activity.builder().start(0).finish(6).build(),
             Activity.builder().start(5).finish(7).build(),
             Activity.builder().start(8).finish(9).build(),
-            Activity.builder().start(5).finish(9).build(),
-        };
+            Activity.builder().start(5).finish(9).build()
+        );
 
         System.out.println(new ActivitySelector().select(activities));
     }

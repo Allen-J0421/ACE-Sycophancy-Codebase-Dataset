@@ -1,16 +1,12 @@
-import java.util.Arrays;
-import java.util.Comparator;
-
 public class ActivitySelector implements SelectionStrategy {
-    public int select(Activity[] activities) {
-        Activity[] sorted = activities.clone();
-        Arrays.sort(sorted, Comparator.comparingInt(a -> a.finish));
+    public int select(ActivityCollection collection) {
+        ActivityCollection sorted = collection.sortedByFinish();
 
         int count = 1;
         int j = 0;
 
-        for (int i = 1; i < sorted.length; i++) {
-            if (sorted[i].start > sorted[j].finish) {
+        for (int i = 1; i < sorted.size(); i++) {
+            if (sorted.get(i).start > sorted.get(j).finish) {
                 count++;
                 j = i;
             }

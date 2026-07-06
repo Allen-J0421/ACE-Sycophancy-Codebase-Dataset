@@ -1,3 +1,3 @@
 public interface SelectionStrategy {
-    int select(Activity[] activities);
+    int select(ActivityCollection activities);
 }

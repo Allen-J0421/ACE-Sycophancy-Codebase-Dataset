@@ -4,6 +4,18 @@ class Demo {
         runDemo("Quadratic Probing",           new HashMap<>(ProbingStrategies.quadratic()));
         runDemo("Double Hashing",              new HashMap<>(ProbingStrategies.doubleHashing()));
         runDemo("Linear Probing (capacity 4)", new HashMap<>(4, ProbingStrategies.linear()));
+
+        // Demonstrate Iterable and keySet on a small, readable map
+        System.out.println("=== Iterator & keySet ===");
+        HashMapOperations<String, Integer> small = new HashMap<>(ProbingStrategies.linear());
+        small.insertNode("apple",  1);
+        small.insertNode("banana", 2);
+        small.insertNode("cherry", 3);
+        System.out.print("for-each keys: ");
+        for (String key : small)
+            System.out.print(key + " ");
+        System.out.println();
+        System.out.println("keySet():      " + small.keySet());
     }
 
     static void runDemo(String label, HashMapOperations<String, Integer> h) {
@@ -14,6 +26,12 @@ class Demo {
             h.insertNode("key" + i, i * 10);
 
         System.out.println("Size after 20 inserts: " + h.getSize());
+
+        // Verify iterator visits every live key
+        int itCount = 0;
+        for (String ignored : h) itCount++;
+        System.out.println("Keys via iterator:     " + itCount);
+        System.out.println("keySet size:           " + h.keySet().size());
 
         // Update an existing key
         h.insertNode("key5", 999);

@@ -1,3 +1,8 @@
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
 class HashMap<K, V> implements HashMapOperations<K, V> {
     private HashNode<K, V>[] table;
     private int capacity;
@@ -115,6 +120,21 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     }
 
     @Override
+    public Iterator<K> iterator() {
+        return new KeyIterator();
+    }
+
+    @Override
+    public Set<K> keySet() {
+        Set<K> keys = new HashSet<>();
+        for (int i = 0; i < capacity; i++) {
+            if (table[i] != null && table[i] != DELETED)
+                keys.add(table[i].getKey());
+        }
+        return keys;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void clear() {
         capacity = initialCapacity;
@@ -134,6 +154,33 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
         for (int i = 0; i < oldCapacity; i++) {
             if (oldTable[i] != null && oldTable[i] != DELETED)
                 insertNode(oldTable[i].getKey(), oldTable[i].getValue());
+        }
+    }
+
+    private class KeyIterator implements Iterator<K> {
+        private int index = 0;
+
+        KeyIterator() {
+            advance();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < capacity;
+        }
+
+        @Override
+        public K next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            K key = table[index++].getKey();
+            advance();
+            return key;
+        }
+
+        private void advance() {
+            while (index < capacity && (table[index] == null || table[index] == DELETED))
+                index++;
         }
     }
 

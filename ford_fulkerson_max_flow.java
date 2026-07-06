@@ -172,23 +172,29 @@ interface MaxFlowAlgorithm {
     MaxFlowResult compute(FlowNetwork graph, int s, int t);
 }
 
-class FordFulkerson implements MaxFlowAlgorithm {
+abstract class AugmentingPathAlgorithm implements MaxFlowAlgorithm {
     private final PathFinder pathFinder;
     private final ResidualGraphFactory residualFactory;
 
-    FordFulkerson(PathFinder pathFinder, ResidualGraphFactory residualFactory) {
+    AugmentingPathAlgorithm(PathFinder pathFinder, ResidualGraphFactory residualFactory) {
         this.pathFinder = pathFinder;
         this.residualFactory = residualFactory;
     }
 
     @Override
-    public MaxFlowResult compute(FlowNetwork graph, int s, int t) {
+    public final MaxFlowResult compute(FlowNetwork graph, int s, int t) {
         FlowNetwork residual = residualFactory.createResidual(graph);
         int maxFlow = 0;
         AugmentingPath path;
         while ((path = pathFinder.find(residual, s, t)) != null)
             maxFlow += path.applyTo(residual);
         return new MaxFlowResult(maxFlow, residual);
+    }
+}
+
+class FordFulkerson extends AugmentingPathAlgorithm {
+    FordFulkerson(PathFinder pathFinder, ResidualGraphFactory residualFactory) {
+        super(pathFinder, residualFactory);
     }
 }
 

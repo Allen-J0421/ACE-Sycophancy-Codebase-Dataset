@@ -27,16 +27,7 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        buildString(root, sb, 0);
-        return sb.toString().stripTrailing();
-    }
-
-    private void buildString(Node<T> node, StringBuilder sb, int depth) {
-        if (node == null) return;
-        buildString(node.right, sb, depth + 1);
-        sb.append("    ".repeat(depth)).append(node.data).append("\n");
-        buildString(node.left, sb, depth + 1);
+        return new TreeTraverser<>(root).toVisualString();
     }
 
     public static void main(String[] args) {

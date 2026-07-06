@@ -1,7 +1,9 @@
+package matrixchain;
+
 public class DpMatrixChainSolver implements MatrixChainSolver {
 
     @Override
-    public MatrixChainResult solve(int[] dims) {
+    public Result solve(int[] dims) {
         int n = dims.length;
         int[][] cost = new int[n][n];
         int[][] split = new int[n][n];
@@ -21,6 +23,6 @@ public class DpMatrixChainSolver implements MatrixChainSolver {
             }
         }
 
-        return new MatrixChainResult(cost[0][n - 1], split);
+        return new Result(cost[0][n - 1], split);
     }
 }

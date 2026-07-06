@@ -1,3 +1,5 @@
+package matrixchain;
+
 public class MatrixChainMultiplication {
 
     private final MatrixChainSolver solver;
@@ -7,7 +9,7 @@ public class MatrixChainMultiplication {
     }
 
     public void run(int[] dims) {
-        MatrixChainResult result = solver.solve(dims);
+        MatrixChainSolver.Result result = solver.solve(dims);
         System.out.println(result.minCost);
     }
 

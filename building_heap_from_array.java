@@ -51,46 +51,56 @@ class BinaryTreeIndex {
     }
 }
 
+class SwapUtility {
+
+    private final int[] arr;
+
+    SwapUtility(int[] arr)
+    {
+        this.arr = arr;
+    }
+
+    void swap(int i, int j)
+    {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
 @FunctionalInterface
 interface HeapifyStrategy {
     void heapify(int n, int i);
 
     static HeapifyStrategy maxHeapify(int[] arr)
     {
-        return new HeapifyStrategy() {
+        SwapUtility swapper = new SwapUtility(arr);
+        HeapifyStrategy[] self = new HeapifyStrategy[1];
 
-            private void swap(int i, int j)
-            {
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
-            }
+        self[0] = (n, i) -> {
 
-            @Override
-            public void heapify(int n, int i)
-            {
+            BinaryTreeIndex node = new BinaryTreeIndex(i);
 
-                BinaryTreeIndex node = new BinaryTreeIndex(i);
+            int largest = node.get();
 
-                int largest = node.get();
+            int l = node.left();
 
-                int l = node.left();
+            int r = node.right();
 
-                int r = node.right();
+            if (l < n && arr[l] > arr[largest])
+                largest = l;
 
-                if (l < n && arr[l] > arr[largest])
-                    largest = l;
+            if (r < n && arr[r] > arr[largest])
+                largest = r;
 
-                if (r < n && arr[r] > arr[largest])
-                    largest = r;
+            if (largest != node.get()) {
+                swapper.swap(node.get(), largest);
 
-                if (largest != node.get()) {
-                    swap(node.get(), largest);
-
-                    heapify(n, largest);
-                }
+                self[0].heapify(n, largest);
             }
         };
+
+        return self[0];
     }
 }
 

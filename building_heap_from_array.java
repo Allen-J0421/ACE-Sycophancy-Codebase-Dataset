@@ -47,6 +47,21 @@ record BinaryTreeIndex(int index) {
     }
 }
 
+@FunctionalInterface
+interface MaxHeapCondition {
+    boolean shouldPromote(int candidate, int current);
+
+    static MaxHeapCondition maxOrder()
+    {
+        return (candidate, current) -> candidate > current;
+    }
+
+    static MaxHeapCondition minOrder()
+    {
+        return (candidate, current) -> candidate < current;
+    }
+}
+
 class SwapUtility {
 
     private final int[] arr;
@@ -83,7 +98,7 @@ interface HeapifyStrategy {
         return new BinaryTreeIndex(i).parent();
     }
 
-    static HeapifyStrategy maxHeapify(int[] arr)
+    static HeapifyStrategy of(int[] arr, MaxHeapCondition condition)
     {
         SwapUtility swapper = new SwapUtility(arr);
         HeapifyStrategy[] self = new HeapifyStrategy[1];
@@ -92,26 +107,31 @@ interface HeapifyStrategy {
 
             HeapBounds bounds = new HeapBounds(n);
 
-            int largest = i;
+            int dominant = i;
 
             int l = self[0].leftChild(i);
 
             int r = self[0].rightChild(i);
 
-            if (bounds.isValidIndex(l) && arr[l] > arr[largest])
-                largest = l;
+            if (bounds.isValidIndex(l) && condition.shouldPromote(arr[l], arr[dominant]))
+                dominant = l;
 
-            if (bounds.isValidIndex(r) && arr[r] > arr[largest])
-                largest = r;
+            if (bounds.isValidIndex(r) && condition.shouldPromote(arr[r], arr[dominant]))
+                dominant = r;
 
-            if (largest != i) {
-                swapper.swap(i, largest);
+            if (dominant != i) {
+                swapper.swap(i, dominant);
 
-                self[0].heapify(n, largest);
+                self[0].heapify(n, dominant);
             }
         };
 
         return self[0];
+    }
+
+    static HeapifyStrategy maxHeapify(int[] arr)
+    {
+        return of(arr, MaxHeapCondition.maxOrder());
     }
 }
 
@@ -120,6 +140,11 @@ class HeapBuilderFactory {
     static IHeapBuilder createMaxHeapBuilder(int[] arr)
     {
         return new HeapUtility(arr, HeapifyStrategy.maxHeapify(arr));
+    }
+
+    static IHeapBuilder createMinHeapBuilder(int[] arr)
+    {
+        return new HeapUtility(arr, HeapifyStrategy.of(arr, MaxHeapCondition.minOrder()));
     }
 }
 

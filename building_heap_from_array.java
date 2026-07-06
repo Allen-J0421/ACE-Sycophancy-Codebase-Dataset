@@ -51,19 +51,13 @@ class BinaryTreeIndex {
     }
 }
 
-class HeapUtility implements IHeapBuilder {
+class Heapifier {
 
-    private int[] arr;
+    private final int[] arr;
 
-    HeapUtility(int[] arr)
+    Heapifier(int[] arr)
     {
         this.arr = arr;
-    }
-
-    @Override
-    public int[] getArray()
-    {
-        return arr;
     }
 
     private void swap(int i, int j)
@@ -73,7 +67,7 @@ class HeapUtility implements IHeapBuilder {
         arr[j] = temp;
     }
 
-    private void heapify(int n, int i)
+    void heapify(int n, int i)
     {
 
         BinaryTreeIndex node = new BinaryTreeIndex(i);
@@ -96,6 +90,24 @@ class HeapUtility implements IHeapBuilder {
             heapify(n, largest);
         }
     }
+}
+
+class HeapUtility implements IHeapBuilder {
+
+    private final int[] arr;
+    private final Heapifier heapifier;
+
+    HeapUtility(int[] arr)
+    {
+        this.arr = arr;
+        this.heapifier = new Heapifier(arr);
+    }
+
+    @Override
+    public int[] getArray()
+    {
+        return arr;
+    }
 
     @Override
     public void buildHeap()
@@ -106,7 +118,7 @@ class HeapUtility implements IHeapBuilder {
         int startIdx = (n / 2) - 1;
 
         for (int i = startIdx; i >= 0; i--) {
-            heapify(n, i);
+            heapifier.heapify(n, i);
         }
     }
 }

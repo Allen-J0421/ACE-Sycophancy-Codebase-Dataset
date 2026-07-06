@@ -1,3 +1,5 @@
+import java.util.Optional;
+
 class BipartiteAnalyzer {
 
     public static void main(String[] args) {
@@ -8,7 +10,7 @@ class BipartiteAnalyzer {
         GraphFactory factory = new UndirectedGraphFactory();
         Graph graph = factory.fromEdges(V, edges);
         BipartiteChecker checker = new BipartiteChecker(new BfsColoringStrategy());
-        Result<Partition> result = checker.check(graph);
-        result.accept(new GraphView());
+        Optional<Partition> result = checker.check(graph);
+        result.ifPresentOrElse(GraphView::printBipartite, GraphView::printNonBipartite);
     }
 }

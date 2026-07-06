@@ -1,12 +1,10 @@
-class GraphView implements ResultVisitor<Partition> {
+class GraphView {
 
-    @Override
-    public void onSuccess(Partition partition) {
+    static void printBipartite(Partition partition) {
         System.out.println(true);
     }
 
-    @Override
-    public void onFailure() {
+    static void printNonBipartite() {
         System.out.println(false);
     }
 }

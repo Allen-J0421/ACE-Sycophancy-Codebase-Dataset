@@ -1,97 +1,74 @@
 import java.util.*;
 
-class Node {
-
-    int data;
-
-    int index;
-
-    Node left, right;
-
-    Node(int d, int i) {
-        data = d;
-        index = i;
-        left = right = null;
-    }
-
-    Node(Node l, Node r) {
-        data = l.data + r.data;
-
-        index = Math.min(l.index, r.index);
-
-        left = l;
-        right = r;
-    }
-}
-
-class Compare implements Comparator<Node> {
-    public int compare(Node a, Node b) {
-
-        if (a.data != b.data)
-            return a.data - b.data;
-
-        return a.index - b.index;
-    }
-}
-
 public class HuffmanCoding {
 
-    static void preOrder(Node root, ArrayList<String> ans, String curr) {
-        if (root == null) return;
+    private static class HuffmanNode {
+        private final int frequency;
+        private final int charIndex;
+        private final HuffmanNode left;
+        private final HuffmanNode right;
 
-        if (root.left == null && root.right == null) {
-
-            if (curr.equals("")) curr = "0";
-
-            ans.add(curr);
-            return;
+        HuffmanNode(int frequency, int charIndex) {
+            this.frequency = frequency;
+            this.charIndex = charIndex;
+            this.left = null;
+            this.right = null;
         }
 
-        preOrder(root.left, ans, curr + '0');
-        preOrder(root.right, ans, curr + '1');
+        HuffmanNode(HuffmanNode left, HuffmanNode right) {
+            this.frequency = left.frequency + right.frequency;
+            this.charIndex = Math.min(left.charIndex, right.charIndex);
+            this.left = left;
+            this.right = right;
+        }
+
+        boolean isLeaf() {
+            return left == null && right == null;
+        }
+    }
+
+    private static HuffmanNode buildTree(int[] freq) {
+        PriorityQueue<HuffmanNode> pq = new PriorityQueue<>(
+            Comparator.comparingInt((HuffmanNode n) -> n.frequency)
+                      .thenComparingInt(n -> n.charIndex)
+        );
+        for (int i = 0; i < freq.length; i++) {
+            pq.add(new HuffmanNode(freq[i], i));
+        }
+        while (pq.size() >= 2) {
+            HuffmanNode left = pq.poll();
+            HuffmanNode right = pq.poll();
+            pq.add(new HuffmanNode(left, right));
+        }
+        return pq.peek();
+    }
+
+    private static ArrayList<String> collectCodes(HuffmanNode node, String prefix) {
+        if (node == null) return new ArrayList<>();
+        if (node.isLeaf()) {
+            ArrayList<String> result = new ArrayList<>();
+            result.add(prefix.isEmpty() ? "0" : prefix);
+            return result;
+        }
+        ArrayList<String> codes = collectCodes(node.left, prefix + '0');
+        codes.addAll(collectCodes(node.right, prefix + '1'));
+        return codes;
     }
 
     static ArrayList<String> huffmanCodes(String s, int[] freq) {
-
-        int n = s.length();
-
-        PriorityQueue<Node> pq = new PriorityQueue<>(new Compare());
-        for (int i = 0; i < n; i++) {
-
-            Node tmp = new Node(freq[i], i);
-
-            pq.add(tmp);
+        if (s.length() == 1) {
+            return new ArrayList<>(Collections.singletonList("0"));
         }
-
-        if (n == 1) {
-            ArrayList<String> res = new ArrayList<>();
-            res.add("0");
-            return res;
-        }
-
-        while (pq.size() >= 2) {
-
-            Node l = pq.poll();
-
-            Node r = pq.poll();
-
-            Node newNode = new Node(l, r);
-
-            pq.add(newNode);
-        }
-
-        Node root = pq.peek();
-        ArrayList<String> ans = new ArrayList<>();
-        preOrder(root, ans, "");
-        return ans;
+        HuffmanNode root = buildTree(freq);
+        return collectCodes(root, "");
     }
 
     public static void main(String[] args) {
         String s = "abcdef";
         int[] freq = {5, 9, 12, 13, 16, 45};
-        ArrayList<String> ans = huffmanCodes(s, freq);
-        for (int i = 0; i < ans.size(); i++) {
-            System.out.print(ans.get(i) + " ");
+        ArrayList<String> codes = huffmanCodes(s, freq);
+        for (String code : codes) {
+            System.out.print(code + " ");
         }
     }
 }

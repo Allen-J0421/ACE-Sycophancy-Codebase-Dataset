@@ -2,13 +2,9 @@ import java.util.Optional;
 
 class BipartiteChecker {
 
-    private final ColoringStrategy strategy;
+    private BipartiteChecker() {}
 
-    BipartiteChecker(ColoringStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    Optional<Partition> check(Graph graph) {
+    static Optional<Partition> check(Graph graph, ColoringStrategy strategy) {
         int V = graph.vertexCount();
         PartitionState state = new PartitionState(V);
 

@@ -9,8 +9,7 @@ class BipartiteAnalyzer {
         GraphInputValidator.validate(V, edges);
         GraphFactory factory = new UndirectedGraphFactory();
         Graph graph = factory.fromEdges(V, edges);
-        BipartiteChecker checker = new BipartiteChecker(new BfsColoringStrategy());
-        Optional<Partition> result = checker.check(graph);
+        Optional<Partition> result = BipartiteChecker.check(graph, BfsColoringStrategy::colorComponent);
         result.ifPresentOrElse(GraphView::printBipartite, GraphView::printNonBipartite);
     }
 }

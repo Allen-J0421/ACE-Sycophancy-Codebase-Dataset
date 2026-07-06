@@ -1,10 +1,11 @@
 import java.util.LinkedList;
 import java.util.Queue;
 
-class BfsColoringStrategy implements ColoringStrategy {
+class BfsColoringStrategy {
 
-    @Override
-    public boolean colorComponent(Graph graph, int start, PartitionState state) {
+    private BfsColoringStrategy() {}
+
+    static boolean colorComponent(Graph graph, int start, PartitionState state) {
         Queue<Integer> queue = new LinkedList<>();
         state.setColor(start, PartitionState.Color.RED);
         queue.offer(start);

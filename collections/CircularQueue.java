@@ -10,8 +10,8 @@ public class CircularQueue<T> implements Queue<T> {
 
     private int capacity;
 
-    public CircularQueue(int capacity) {
-        this.capacity = capacity;
+    public CircularQueue(int initialCapacity) {
+        this.capacity = initialCapacity;
         arr = new Object[capacity];
         front = 0;
         size = 0;
@@ -29,8 +29,15 @@ public class CircularQueue<T> implements Queue<T> {
         return (front + size - 1) % capacity;
     }
 
-    private void requireNonFull() {
-        if (size == capacity) throw new IllegalStateException("Queue is full");
+    private void resize() {
+        int newCapacity = capacity * 2;
+        Object[] newArr = new Object[newCapacity];
+        for (int i = 0; i < size; i++) {
+            newArr[i] = arr[(front + i) % capacity];
+        }
+        arr = newArr;
+        front = 0;
+        capacity = newCapacity;
     }
 
     private void requireNonEmpty() {
@@ -38,8 +45,8 @@ public class CircularQueue<T> implements Queue<T> {
     }
 
     public void enqueue(T value) {
-        requireNonFull();
-        arr[(rearIndex() + 1) % capacity] = value;
+        if (size == capacity) resize();
+        arr[(front + size) % capacity] = value;
         size++;
     }
 

@@ -45,22 +45,30 @@ class QueueTest {
         assertEqual(40, q.getRear(), "rear after wrap-around enqueue");
     }
 
-    private static void testIsEmptyAndFullExceptions() {
+    private static void testEmptyQueueExceptions() {
         Queue<Integer> q = new CircularQueue<>(2);
         assertTrue(q.isEmpty(), "isEmpty on new queue");
         q.enqueue(1);
-        q.enqueue(2);
-        try {
-            q.enqueue(3);
-            throw new AssertionError("enqueue on full queue: expected IllegalStateException");
-        } catch (IllegalStateException e) { /* expected */ }
         q.dequeue();
-        q.dequeue();
+        assertTrue(q.isEmpty(), "isEmpty after draining queue");
         try {
             q.dequeue();
             throw new AssertionError("dequeue on empty queue: expected IllegalStateException");
         } catch (IllegalStateException e) { /* expected */ }
-        assertTrue(q.isEmpty(), "isEmpty after draining queue");
+    }
+
+    private static void testDynamicResizing() {
+        Queue<Integer> q = new CircularQueue<>(2);
+        for (int i = 0; i < 10; i++) {
+            q.enqueue(i);
+        }
+        assertEqual(10, q.size(), "size after growing past initial capacity");
+        assertEqual(0, q.getFront(), "front preserved after resize");
+        assertEqual(9, q.getRear(), "rear preserved after resize");
+        for (int i = 0; i < 10; i++) {
+            assertEqual(i, q.dequeue(), "dequeue order after resize");
+        }
+        assertTrue(q.isEmpty(), "isEmpty after draining resized queue");
     }
 
     private static void testStringQueue() {
@@ -78,7 +86,8 @@ class QueueTest {
         testEnqueueUpdatesEnds();
         testDequeueAdvancesFront();
         testWrapAround();
-        testIsEmptyAndFullExceptions();
+        testEmptyQueueExceptions();
+        testDynamicResizing();
         testStringQueue();
         System.out.println("All tests passed.");
     }

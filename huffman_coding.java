@@ -27,6 +27,28 @@ interface FrequencyStrategy {
 
 record HuffmanResult(HuffmanNode tree, Map<Character, String> codes) {}
 
+class CodeCollector implements HuffmanNodeVisitor {
+    private final List<Character> chars;
+    private final Map<Character, String> codes = new LinkedHashMap<>();
+
+    CodeCollector(List<Character> chars) {
+        this.chars = chars;
+    }
+
+    public void visit(LeafNode leaf, String prefix) {
+        codes.put(chars.get(leaf.charIndex()), prefix.isEmpty() ? "0" : prefix);
+    }
+
+    public void visit(InternalNode node, String prefix) {
+        node.left().accept(this, prefix + '0');
+        node.right().accept(this, prefix + '1');
+    }
+
+    Map<Character, String> codes() {
+        return codes;
+    }
+}
+
 class HuffmanEncoder {
 
     private final FrequencyStrategy strategy;
@@ -45,9 +67,9 @@ class HuffmanEncoder {
         }
 
         HuffmanNode root = buildTree(chars, freqMap);
-        Map<Character, String> codes = new LinkedHashMap<>();
-        root.collectCodes("", codes, chars);
-        return new HuffmanResult(root, codes);
+        CodeCollector collector = new CodeCollector(chars);
+        root.accept(collector, "");
+        return new HuffmanResult(root, collector.codes());
     }
 
     private HuffmanNode buildTree(List<Character> chars, Map<Character, Integer> freqMap) {

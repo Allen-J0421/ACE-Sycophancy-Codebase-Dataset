@@ -1,9 +1,14 @@
 import java.util.*;
 
+interface HuffmanNodeVisitor {
+    void visit(LeafNode leaf, String prefix);
+    void visit(InternalNode node, String prefix);
+}
+
 sealed interface HuffmanNode permits LeafNode, InternalNode {
     int frequency();
     int charIndex();
-    void collectCodes(String prefix, Map<Character, String> codes, List<Character> chars);
+    void accept(HuffmanNodeVisitor visitor, String prefix);
 }
 
 final class LeafNode implements HuffmanNode {
@@ -18,8 +23,8 @@ final class LeafNode implements HuffmanNode {
     public int frequency() { return frequency; }
     public int charIndex() { return charIndex; }
 
-    public void collectCodes(String prefix, Map<Character, String> codes, List<Character> chars) {
-        codes.put(chars.get(charIndex), prefix.isEmpty() ? "0" : prefix);
+    public void accept(HuffmanNodeVisitor visitor, String prefix) {
+        visitor.visit(this, prefix);
     }
 }
 
@@ -38,9 +43,10 @@ final class InternalNode implements HuffmanNode {
 
     public int frequency() { return frequency; }
     public int charIndex() { return charIndex; }
+    public HuffmanNode left() { return left; }
+    public HuffmanNode right() { return right; }
 
-    public void collectCodes(String prefix, Map<Character, String> codes, List<Character> chars) {
-        left.collectCodes(prefix + '0', codes, chars);
-        right.collectCodes(prefix + '1', codes, chars);
+    public void accept(HuffmanNodeVisitor visitor, String prefix) {
+        visitor.visit(this, prefix);
     }
 }

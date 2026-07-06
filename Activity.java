@@ -26,6 +26,10 @@ public class Activity {
         }
 
         public Activity build() {
+            if (start > finish) {
+                throw new IllegalArgumentException(
+                    "start time " + start + " cannot be greater than finish time " + finish);
+            }
             return new Activity(start, finish);
         }
     }

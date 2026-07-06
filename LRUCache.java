@@ -10,11 +10,14 @@ public class LRUCache<K, V> implements Cache<K, V> {
 
     @Override
     public V get(K key) {
+        if (key == null) throw new NullKeyException();
         return map.get(key);
     }
 
     @Override
     public void put(K key, V value) {
+        if (key == null) throw new NullKeyException();
+        if (value == null) throw new NullValueException();
         map.put(key, value);
     }
 

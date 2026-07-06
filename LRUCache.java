@@ -1,5 +1,6 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class LRUCache<K, V> implements Cache<K, V> {
     private final Map<K, V> map;
@@ -10,14 +11,14 @@ public class LRUCache<K, V> implements Cache<K, V> {
 
     @Override
     public V get(K key) {
-        if (key == null) throw new NullKeyException();
+        Objects.requireNonNull(key, "Cache key must not be null");
         return map.get(key);
     }
 
     @Override
     public void put(K key, V value) {
-        if (key == null) throw new NullKeyException();
-        if (value == null) throw new NullValueException();
+        Objects.requireNonNull(key, "Cache key must not be null");
+        Objects.requireNonNull(value, "Cache value must not be null");
         map.put(key, value);
     }
 

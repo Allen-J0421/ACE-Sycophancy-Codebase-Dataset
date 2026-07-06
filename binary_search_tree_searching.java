@@ -51,12 +51,13 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
     }
 
     public static void main(String[] args) {
-        BinarySearchTree<Integer> bst = new BinarySearchTree<>();
-        bst.insert(6);
-        bst.insert(2);
-        bst.insert(8);
-        bst.insert(7);
-        bst.insert(9);
+        BinarySearchTree<Integer> bst = new TreeBuilder<Integer>()
+            .insert(6)
+            .insert(2)
+            .insert(8)
+            .insert(7)
+            .insert(9)
+            .build();
 
         System.out.println(bst.search(7));
         System.out.println(bst);

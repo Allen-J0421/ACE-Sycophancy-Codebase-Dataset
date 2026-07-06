@@ -7,9 +7,14 @@ class BTree {
         this.minDegree = minDegree;
     }
 
+    @FunctionalInterface
+    interface KeyVisitor {
+        void visit(int key);
+    }
+
     void traverse() {
         if (root != null) {
-            root.traverse();
+            root.traverse(key -> System.out.print(" " + key));
         }
     }
 
@@ -150,15 +155,15 @@ class BTree {
             storage.insertKey(i, y.storage.getKey(minDegree - 1));
         }
 
-        void traverse() {
+        void traverse(KeyVisitor visitor) {
             for (int i = 0; i < storage.size(); i++) {
                 if (!leaf) {
-                    storage.getChild(i).traverse();
+                    storage.getChild(i).traverse(visitor);
                 }
-                System.out.print(" " + storage.getKey(i));
+                visitor.visit(storage.getKey(i));
             }
             if (!leaf) {
-                storage.getChild(storage.size()).traverse();
+                storage.getChild(storage.size()).traverse(visitor);
             }
         }
 

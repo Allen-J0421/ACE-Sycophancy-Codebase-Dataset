@@ -1,20 +1,11 @@
-import java.util.ArrayList;
 import java.util.List;
 
 class Partition {
-    final List<Integer> setA = new ArrayList<>();
-    final List<Integer> setB = new ArrayList<>();
-    final boolean bipartite;
+    final List<Integer> setA;
+    final List<Integer> setB;
 
-    Partition(boolean bipartite) {
-        this.bipartite = bipartite;
-    }
-
-    void accept(PartitionVisitor visitor) {
-        if (bipartite) {
-            visitor.visitBipartite(setA, setB);
-        } else {
-            visitor.visitNonBipartite();
-        }
+    Partition(List<Integer> setA, List<Integer> setB) {
+        this.setA = setA;
+        this.setB = setB;
     }
 }

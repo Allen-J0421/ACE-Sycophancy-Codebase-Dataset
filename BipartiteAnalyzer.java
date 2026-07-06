@@ -8,7 +8,7 @@ class BipartiteAnalyzer {
         GraphFactory factory = new UndirectedGraphFactory();
         Graph graph = factory.fromEdges(V, edges);
         BipartiteChecker checker = new BipartiteChecker(new BfsColoringStrategy());
-        Partition result = checker.check(graph);
+        Result<Partition> result = checker.check(graph);
         result.accept(new GraphView());
     }
 }

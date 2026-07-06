@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 class PartitionState {
 
     enum Color {
@@ -27,14 +30,15 @@ class PartitionState {
     }
 
     Partition buildPartition() {
-        Partition result = new Partition(true);
+        List<Integer> setA = new ArrayList<>();
+        List<Integer> setB = new ArrayList<>();
         for (int i = 0; i < colors.length; i++) {
             if (colors[i] == Color.RED) {
-                result.setA.add(i);
+                setA.add(i);
             } else {
-                result.setB.add(i);
+                setB.add(i);
             }
         }
-        return result;
+        return new Partition(setA, setB);
     }
 }

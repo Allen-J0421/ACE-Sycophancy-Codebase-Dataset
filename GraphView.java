@@ -1,14 +1,12 @@
-import java.util.List;
-
-class GraphView implements PartitionVisitor {
+class GraphView implements ResultVisitor<Partition> {
 
     @Override
-    public void visitBipartite(List<Integer> setA, List<Integer> setB) {
+    public void onSuccess(Partition partition) {
         System.out.println(true);
     }
 
     @Override
-    public void visitNonBipartite() {
+    public void onFailure() {
         System.out.println(false);
     }
 }

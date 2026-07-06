@@ -8,10 +8,11 @@ class CuttingRod {
                 ? SolverType.valueOf(args[0].toUpperCase())
                 : null;
 
+        SolverResultPrinter printer = new SolverResultPrinter(System.out);
         for (SolverType type : SolverType.values()) {
             if (selected != null && type != selected) continue;
             RodCuttingSolution solution = new RodCuttingSolver(RodCuttingStrategyFactory.create(type)).solve(problem);
-            System.out.println(type + " - max revenue: " + solution.maxRevenue() + ", cuts: " + solution.cuts());
+            printer.print(type, solution);
         }
     }
 }

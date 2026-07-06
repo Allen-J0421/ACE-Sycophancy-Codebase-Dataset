@@ -2,8 +2,8 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     private HashNode<K, V>[] table;
     private int capacity;
     private int size;
-    // Per-instance sentinel used to mark deleted slots; detected by identity (==).
     private final HashNode<K, V> DELETED = new HashNode<>(null, null);
+    private static final double LOAD_FACTOR_THRESHOLD = 0.75;
 
     @SuppressWarnings("unchecked")
     public HashMap() {
@@ -31,6 +31,9 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
         if (table[hashIndex] == null || table[hashIndex] == DELETED)
             size++;
         table[hashIndex] = temp;
+
+        if (size > capacity * LOAD_FACTOR_THRESHOLD)
+            resize();
     }
 
     @Override
@@ -85,6 +88,21 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
             if (table[i] != null && table[i] != DELETED) {
                 System.out.println(table[i].getKey() + " " + table[i].getValue());
             }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        int oldCapacity = capacity;
+        HashNode<K, V>[] oldTable = table;
+
+        capacity *= 2;
+        size = 0;
+        table = (HashNode<K, V>[]) new HashNode[capacity];
+
+        for (int i = 0; i < oldCapacity; i++) {
+            if (oldTable[i] != null && oldTable[i] != DELETED)
+                insertNode(oldTable[i].getKey(), oldTable[i].getValue());
         }
     }
 }

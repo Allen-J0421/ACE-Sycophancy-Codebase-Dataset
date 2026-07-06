@@ -26,9 +26,7 @@ public class SimulatorView extends JFrame
     
     // A map for storing colors for participants in the simulation:
     private Map<Class, Color> colors;
-    // Tracks per-species population counts for the current step:
-    private PopulationStats stats;
-    private Simulator simulator;
+    private SimulationOrchestrator orchestrator;
     
     // Threads for each method called by the buttons:
     private Thread runLongSimulationThread;
@@ -41,11 +39,10 @@ public class SimulatorView extends JFrame
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(Simulator simulator, int height, int width)
+    public SimulatorView(SimulationOrchestrator orchestrator, int height, int width)
     {
-        stats = new PopulationStats();
         colors = new LinkedHashMap<>();
-        this.simulator = simulator;
+        this.orchestrator = orchestrator;
         setTitle("Australian Savannah Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
@@ -59,7 +56,7 @@ public class SimulatorView extends JFrame
                 if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
                 if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
                 
-                runLongSimulationThread = new Thread(simulator::runLongSimulation);
+                runLongSimulationThread = new Thread(orchestrator::runLongSimulation);
                 runLongSimulationThread.start();
             }
         });
@@ -70,7 +67,7 @@ public class SimulatorView extends JFrame
                 if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
                 if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
                 
-                resetThread = new Thread(simulator::reset);
+                resetThread = new Thread(orchestrator::reset);
                 resetThread.start();
             }
         });
@@ -80,7 +77,7 @@ public class SimulatorView extends JFrame
                 if (simulateOneStepThread != null && simulateOneStepThread.isAlive()) return;
                 if (runLongSimulationThread != null && runLongSimulationThread.isAlive()) return;
                 
-                simulateOneStepThread = new Thread(simulator::simulateOneStep);
+                simulateOneStepThread = new Thread(orchestrator::simulateOneStep);
                 simulateOneStepThread.start();
             }
         });
@@ -169,8 +166,9 @@ public class SimulatorView extends JFrame
         if (!isVisible()) setVisible(true);
             
         stepLabel.setText(STEP_PREFIX + step);
+        PopulationStats stats = Simulator.getPopulationStats();
         stats.reset();
-        
+
         fieldView.preparePaint();
 
         for (int row = 0; row < field.getDepth(); row++)
@@ -178,8 +176,8 @@ public class SimulatorView extends JFrame
             for (int col = 0; col < field.getWidth(); col++)
             {
                 Object animal = field.getObjectAt(row, col);
-                
-                if(animal != null)
+
+                if (animal != null)
                 {
                     stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
@@ -190,7 +188,7 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        
+
         stats.countFinished();
 
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails());
@@ -200,21 +198,6 @@ public class SimulatorView extends JFrame
         fieldView.repaint();
     }
 
-    /**
-     * @return The population stats object for external consumers (e.g. StatisticsView).
-     */
-    public PopulationStats getStats() { return stats; }
-
-    /**
-     * Determine whether the simulation should continue to run.
-     *
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        return stats.isViable();
-    }
-    
     /**
      * Provide a graphical view of a rectangular field. This is 
      * a nested class (a class defined inside a class) which

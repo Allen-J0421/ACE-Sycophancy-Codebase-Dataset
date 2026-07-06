@@ -1,10 +1,9 @@
-public class Activity {
-    final int start;
-    final int finish;
-
-    Activity(int start, int finish) {
-        this.start = start;
-        this.finish = finish;
+public record Activity(int start, int finish) {
+    public Activity {
+        if (start > finish) {
+            throw new IllegalArgumentException(
+                "start time " + start + " cannot be greater than finish time " + finish);
+        }
     }
 
     public static Builder builder() {
@@ -26,10 +25,6 @@ public class Activity {
         }
 
         public Activity build() {
-            if (start > finish) {
-                throw new IllegalArgumentException(
-                    "start time " + start + " cannot be greater than finish time " + finish);
-            }
             return new Activity(start, finish);
         }
     }

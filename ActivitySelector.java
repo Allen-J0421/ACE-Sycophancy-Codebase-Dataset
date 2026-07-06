@@ -6,7 +6,7 @@ public class ActivitySelector implements SelectionStrategy {
         Activity last = null;
 
         for (Activity activity : sorted) {
-            if (last == null || activity.start > last.finish) {
+            if (last == null || activity.start() > last.finish()) {
                 count++;
                 last = activity;
             }

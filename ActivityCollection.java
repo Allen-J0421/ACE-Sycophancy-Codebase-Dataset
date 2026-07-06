@@ -19,7 +19,7 @@ public class ActivityCollection implements Iterable<Activity> {
 
     public ActivityCollection sortedByFinish() {
         Activity[] sorted = activities.clone();
-        Arrays.sort(sorted, Comparator.comparingInt(a -> a.finish));
+        Arrays.sort(sorted, Comparator.comparingInt(a -> a.finish()));
         return new ActivityCollection(sorted);
     }
 

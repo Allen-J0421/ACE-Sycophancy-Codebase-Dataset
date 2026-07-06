@@ -8,24 +8,20 @@ public class RollingHashMatcher implements StringMatcher {
     }
 
     @Override
-    public MatchResult search(CharSequence pattern, CharSequence text) {
-        int m = pattern.length();
-        int n = text.length();
-        int patHash = hashCalculator.hash(pattern, m);
-        int h = hashCalculator.highOrderFactor(m);
-        TextWindow window = new TextWindow(text, 0, m);
-        int txtHash = hashCalculator.hash(window, window.length());
-        MatchResult result = new MatchResult(n - m + 1);
-        while (window.start() <= n - m) {
-            if (patHash == txtHash && window.startsWith(pattern)) {
-                result.add(window.start());
+    public MatchResult search(SearchContext ctx) {
+        int patHash = hashCalculator.hash(ctx.pattern(), ctx.patternLength());
+        int h = hashCalculator.highOrderFactor(ctx.patternLength());
+        int txtHash = hashCalculator.hash(ctx.window(), ctx.window().length());
+        while (ctx.hasMore()) {
+            if (patHash == txtHash && ctx.window().startsWith(ctx.pattern())) {
+                ctx.recordMatch();
             }
-            if (window.start() < n - m) {
-                txtHash = hashCalculator.roll(txtHash, window.leaving(), window.entering(), h);
+            if (ctx.canAdvance()) {
+                txtHash = hashCalculator.roll(txtHash, ctx.window().leaving(), ctx.window().entering(), h);
             }
-            window = window.slide();
+            ctx.advance();
         }
-        return result;
+        return ctx.result();
     }
 
     protected int hashOf(CharSequence seq, int length) {
@@ -34,19 +30,5 @@ public class RollingHashMatcher implements StringMatcher {
 
     protected int rollHash(int currentHash, char leaving, char entering, int highOrderFactor) {
         return hashCalculator.roll(currentHash, leaving, entering, highOrderFactor);
-    }
-
-    /** For subclasses in other packages that cannot access MatchResult's package-private constructor. */
-    protected MatchResult newResult() {
-        return new MatchResult();
-    }
-
-    protected MatchResult newResult(int capacity) {
-        return new MatchResult(capacity);
-    }
-
-    /** For subclasses in other packages that cannot access MatchResult's package-private add(). */
-    protected void recordMatch(MatchResult result, int pos) {
-        result.add(pos);
     }
 }

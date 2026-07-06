@@ -2,6 +2,7 @@ package rabinkarp;
 
 import stringsearch.MatchResult;
 import stringsearch.NaiveMatcher;
+import stringsearch.SearchContext;
 import stringsearch.StringMatcher;
 
 public enum SearchStrategy implements StringMatcher {
@@ -15,7 +16,7 @@ public enum SearchStrategy implements StringMatcher {
     }
 
     @Override
-    public MatchResult search(CharSequence pattern, CharSequence text) {
-        return impl.search(pattern, text);
+    public MatchResult search(SearchContext ctx) {
+        return impl.search(ctx);
     }
 }

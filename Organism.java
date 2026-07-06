@@ -8,7 +8,7 @@ import java.util.Random;
  *
  * @version 2022.03.02
  */
-public abstract class Organism implements Entity {
+public abstract class Organism implements Entity, BreedingProfile {
 
     // define fields
     //number of steps an organism remains for after dying but not having been eaten
@@ -134,45 +134,11 @@ public abstract class Organism implements Entity {
     }
 
     /**
-     * Getter method for the probability to breed of the organism.
-     *
-     * @return A double value representing the breeding probability.
-     */
-    abstract public double getBreedingProbability();
-
-    /**
-     * Getter method for the maximum litter size of the organism's newborns.
-     *
-     * @return An integer value representing the maximum allowed litter size.
-     */
-    abstract public int getMaxLitterSize();
-
-    /**
      * Getter method for the maximum age of the organism.
      *
      * @return An integer value representing the maximum age.
      */
     abstract public int getMaxAge();
-
-    /**
-     * Getter method for the age of breeding of the organism.
-     *
-     * @return A double value representing the breeding age.
-     */
-    abstract public int getBreedingAge();
-
-    /**
-     * Called when breeding occurs for this organism.
-     *
-     * @return The number of births as a result of breeding.
-     */
-    protected int breed() {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= getBreedingProbability()) {
-            births = rand.nextInt(getMaxLitterSize()) + 1;
-        }
-        return births;
-    }
 
     /**
      * Create a new instance of this organism.
@@ -188,11 +154,9 @@ public abstract class Organism implements Entity {
      * @param newOrganisms A list to return newly born organisms.
      */
     protected void giveBirth(List<Entity> newOrganisms) {
-        // New organisms are born into adjacent locations.
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
+        int births = ReproductiveStrategy.computeBirths(this, canBreed());
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             newOrganisms.add(createNewOrganism(field, loc));

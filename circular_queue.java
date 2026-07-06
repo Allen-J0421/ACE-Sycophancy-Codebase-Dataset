@@ -22,19 +22,23 @@ class CircularQueue implements IntQueue {
         size = 0;
     }
 
+    private void requireNonFull() {
+        if (size == capacity) throw new IllegalStateException("Queue is full");
+    }
+
+    private void requireNonEmpty() {
+        if (size == 0) throw new IllegalStateException("Queue is empty");
+    }
+
     public void enqueue(int value) {
-        if (size == capacity) {
-            throw new IllegalStateException("Queue is full");
-        }
+        requireNonFull();
         int rear = (front + size) % capacity;
         arr[rear] = value;
         size++;
     }
 
     public int dequeue() {
-        if (size == 0) {
-            throw new IllegalStateException("Queue is empty");
-        }
+        requireNonEmpty();
         int value = arr[front];
         front = (front + 1) % capacity;
         size--;
@@ -42,16 +46,12 @@ class CircularQueue implements IntQueue {
     }
 
     public int getFront() {
-        if (size == 0) {
-            throw new IllegalStateException("Queue is empty");
-        }
+        requireNonEmpty();
         return arr[front];
     }
 
     public int getRear() {
-        if (size == 0) {
-            throw new IllegalStateException("Queue is empty");
-        }
+        requireNonEmpty();
         int rear = (front + size - 1) % capacity;
         return arr[rear];
     }

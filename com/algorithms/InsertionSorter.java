@@ -5,8 +5,14 @@ import java.util.List;
 
 class InsertionSorter<T> implements Sorter<T> {
 
+    private final Comparator<T> comparator;
+
+    InsertionSorter(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
+
     @Override
-    public void sort(List<T> list, Comparator<T> comparator) {
+    public void sort(List<T> list) {
         for (int i = 1; i < list.size(); i++) {
             int j = i;
             while (j > 0 && comparator.compare(list.get(j - 1), list.get(j)) > 0) {

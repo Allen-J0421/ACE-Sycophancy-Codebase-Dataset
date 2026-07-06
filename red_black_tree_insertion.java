@@ -42,65 +42,6 @@ public class RedBlackTree<T extends Comparable<T>> implements IBinarySearchTree<
         }
     }
 
-    static class InsertionController<T extends Comparable<T>>
-    {
-        private final RedBlackTree<T> tree;
-
-        InsertionController(RedBlackTree<T> tree)
-        {
-            this.tree = tree;
-        }
-
-        public void insert(T data)
-        {
-            if(tree.root == null)
-            {
-                tree.root = new Node<>(data);
-                tree.root.setBlack();
-            }
-            else
-            {
-                RotationHandler<T> handler = new RotationHandler<>();
-                tree.root = insertHelp(tree.root, data, handler);
-            }
-        }
-
-        private Node<T> insertHelp(Node<T> root, T data, RotationHandler<T> handler)
-        {
-            boolean f = false;
-
-            if(root == null)
-                return new Node<>(data);
-            else if(data.compareTo(root.data) < 0)
-            {
-                root.left = insertHelp(root.left, data, handler);
-                root.left.parent = root;
-                if(root != tree.root)
-                {
-                    if(root.isRed() && root.left.isRed())
-                        f = true;
-                }
-            }
-            else
-            {
-                root.right = insertHelp(root.right, data, handler);
-                root.right.parent = root;
-                if(root != tree.root)
-                {
-                    if(root.isRed() && root.right.isRed())
-                        f = true;
-                }
-            }
-
-            root = handler.applyPending(root);
-
-            if(f)
-                handler.handleViolation(root, tree.root);
-
-            return root;
-        }
-    }
-
     private final InsertionController<T> controller;
 
     public RedBlackTree()
@@ -113,6 +54,11 @@ public class RedBlackTree<T extends Comparable<T>> implements IBinarySearchTree<
     public Node<T> getRoot()
     {
         return root;
+    }
+
+    void setRoot(Node<T> node)
+    {
+        root = node;
     }
 
     @Override

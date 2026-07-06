@@ -3,37 +3,48 @@ import java.util.Comparator;
 
 public class ActivitySelection {
 
-        public static int activitySelection(int[] start, int[] finish) {
+    public static int activitySelection(int[] start, int[] finish) {
         int n = start.length;
-        int[][] arr = new int[n][2];
+        Activity[] activities = new Activity[n];
         for (int i = 0; i < n; i++) {
-            arr[i][0] = start[i];
-            arr[i][1] = finish[i];
+            activities[i] = new Activity(start[i], finish[i]);
         }
-
-        Arrays.sort(arr, Comparator.comparingInt(a -> a[1]));
-
-        int count = 1;
-
-        int j = 0;
-
-        for (int i = 1; i < n; i++) {
-
-            if (arr[i][0] > arr[j][1]) {
-                count++;
-
-                j = i;
-            }
-        }
-
-        return count;
+        return new ActivitySelector().select(activities);
     }
 
     public static void main(String[] args) {
         int[] start = {1, 3, 0, 5, 8, 5};
         int[] finish = {2, 4, 6, 7, 9, 9};
 
-        System.out.println(
-            activitySelection(start, finish));
+        System.out.println(activitySelection(start, finish));
+    }
+}
+
+class Activity {
+    final int start;
+    final int finish;
+
+    Activity(int start, int finish) {
+        this.start = start;
+        this.finish = finish;
+    }
+}
+
+class ActivitySelector {
+    public int select(Activity[] activities) {
+        Activity[] sorted = activities.clone();
+        Arrays.sort(sorted, Comparator.comparingInt(a -> a.finish));
+
+        int count = 1;
+        int j = 0;
+
+        for (int i = 1; i < sorted.length; i++) {
+            if (sorted[i].start > sorted[j].finish) {
+                count++;
+                j = i;
+            }
+        }
+
+        return count;
     }
 }

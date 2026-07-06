@@ -14,9 +14,11 @@ public abstract class Animal extends Entity {
 
 	private final BreedingStrategy breedingStrategy;
 
-	private final boolean breedFirst;
+	private final AgingStrategy agingStrategy;
 
-	private int age;
+	private final SicknessStrategy sicknessStrategy;
+
+	private final boolean breedFirst;
 
 	private Gender gender = Gender.MALE;
 
@@ -28,31 +30,23 @@ public abstract class Animal extends Entity {
 
 	private int foodLevel;
 
-	private boolean sick;
-
-	private int sickProbability;
-
-	private int recoverProbability;
-
-	private int sickStep;
-
-	private int maxSickStep;
-
 
 	protected Animal(Field field, Location location,
 	                 HungerStrategy hungerStrategy,
 	                 MovementStrategy movementStrategy,
 	                 BreedingStrategy breedingStrategy,
+	                 AgingStrategy agingStrategy,
+	                 SicknessStrategy sicknessStrategy,
 	                 boolean breedFirst) {
 		super(field, location);
 		this.hungerStrategy = hungerStrategy;
 		this.movementStrategy = movementStrategy;
 		this.breedingStrategy = breedingStrategy;
+		this.agingStrategy = agingStrategy;
+		this.sicknessStrategy = sicknessStrategy;
 		this.breedFirst = breedFirst;
 		gender = gender.randomGender();
 		nocturnal = false;
-		sick = false;
-		sickProbability = 16;
 	}
 
 
@@ -62,9 +56,9 @@ public abstract class Animal extends Entity {
 
 
 	public void act(List<Animal> newAnimals, TimeCycle time) {
-		incrementAge();
-		incrementHunger();
-		battleSickness();
+		agingStrategy.tick(this);
+		hungerStrategy.tick(this);
+		sicknessStrategy.tick(this);
 		if (isAlive()) {
 			if (time == TimeCycle.NIGHT && isNocturnal()) {
 
@@ -94,19 +88,11 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected void incrementAge() {
-		age++;
-		if (age > getMaxAge()) {
-			setDead();
-		}
-	}
-
-
 	private boolean canBreed() {
 		Field field = getField();
 		List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
 		Iterator<Location> it = adjacent.iterator();
-		boolean returnValue = age >= getBreedingAge();
+		boolean returnValue = agingStrategy.getAge() >= getBreedingAge();
 		while (it.hasNext()) {
 			Location where = it.next();
 			Object animal = field.getAnimalAt(where);
@@ -147,93 +133,19 @@ public abstract class Animal extends Entity {
 	}
 
 
+	public boolean isSick() {
+		return sicknessStrategy.isSick();
+	}
+
+
 	protected void becomeSick() {
-		if (!isSick()) {
-			int randomNumber = rand.nextInt(getSickProbability());
-			if (randomNumber == 1) {
-				toggleSick();
-			}
-		}
-	}
-
-
-	protected void notSick() {
-		if (isSick()) {
-			int randomNumber = rand.nextInt(getRecoverProbability());
-			if (randomNumber == 1) {
-				toggleSick();
-				sickStep = 0;
-			}
-		}
-	}
-
-
-	protected void battleSickness() {
-		if (sick) {
-			if (sickStep >= maxSickStep) {
-				setDead();
-				return;
-			}
-			sickStep++;
-			Field field = getField();
-			if (field != null) {
-				List<Location> adjacent = field.adjacentAnimalLocations(getLocation());
-				Iterator<Location> it = adjacent.iterator();
-				while (it.hasNext()) {
-					Location where = it.next();
-					Object animal = field.getAnimalAt(where);
-					if (animal instanceof Animal) {
-						Animal nearAnimal = (Animal) animal;
-						if (nearAnimal.getClass().equals(this.getClass())) {
-							nearAnimal.becomeSick();
-						}
-					}
-				}
-				this.notSick();
-			}
-		} else {
-			becomeSick();
-		}
-	}
-
-
-	protected void incrementHunger() {
-		foodLevel--;
-		if (foodLevel <= 0) {
-			setDead();
-		}
+		sicknessStrategy.becomeSick();
 	}
 
 
 	protected void toggleNocturnal() {
 		nocturnal = !nocturnal;
 
-	}
-
-
-	protected void toggleSick() {
-		sick = !sick;
-
-	}
-
-
-	protected int getSickProbability() {
-		return sickProbability;
-	}
-
-
-	protected void setSickProbability(int inputValue) {
-		sickProbability = inputValue;
-	}
-
-
-	protected int getRecoverProbability() {
-		return recoverProbability;
-	}
-
-
-	protected void setRecoverProbability(int inputValue) {
-		recoverProbability = inputValue;
 	}
 
 
@@ -267,16 +179,6 @@ public abstract class Animal extends Entity {
 	}
 
 
-	protected boolean isSick() {
-		return sick;
-	}
-
-
-	protected void setAge(int age) {
-		this.age = age;
-	}
-
-
 	public int getFoodLevel() {
 		return foodLevel;
 	}
@@ -287,30 +189,7 @@ public abstract class Animal extends Entity {
 	}
 
 
-	public int getSickStep() {
-		return sickStep;
-	}
-
-
-	public void setSickStep(int inputValue) {
-		this.sickStep = inputValue;
-	}
-
-
-	public int getMaxSickStep() {
-		return maxSickStep;
-	}
-
-
-	public void setMaxSickStep(int inputValue) {
-		this.maxSickStep = inputValue;
-	}
-
-
 	abstract protected int getBreedingAge();
-
-
-	abstract protected int getMaxAge();
 
 
 	abstract protected double getBreedingProbability();

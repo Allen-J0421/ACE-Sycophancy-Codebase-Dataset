@@ -18,30 +18,18 @@ public class Wolf extends Animal {
 		      new PredatorHungerStrategy(9, true),
 		      new StandardMovementStrategy(),
 		      new StandardBreedingStrategy(),
+		      new StandardAgingStrategy(randomAge ? rand.nextInt(MAX_AGE) : 0, MAX_AGE),
+		      new StandardSicknessStrategy(15, 4, 30),
 		      true);
 		toggleNocturnal();
 		setFoodChainLevel(2);
 		setFoodValue(10);
-		setSickProbability(15);
-		setRecoverProbability(4);
-		setMaxSickStep(30);
-		if (randomAge) {
-			setAge(rand.nextInt(MAX_AGE));
-			setFoodLevel(rand.nextInt(5));
-		} else {
-			setAge(0);
-			setFoodLevel(6);
-		}
+		setFoodLevel(randomAge ? rand.nextInt(5) : 6);
 	}
 
 
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
 	}
 
 

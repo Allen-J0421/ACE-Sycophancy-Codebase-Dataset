@@ -18,29 +18,17 @@ public class Bear extends Animal {
 		      new PredatorHungerStrategy(40, false),
 		      new StandardMovementStrategy(),
 		      new StandardBreedingStrategy(),
+		      new StandardAgingStrategy(randomAge ? rand.nextInt(MAX_AGE) : 0, MAX_AGE),
+		      new StandardSicknessStrategy(10, 4, 30),
 		      true);
 		setFoodChainLevel(3);
 		setFoodValue(30);
-		setSickProbability(10);
-		setRecoverProbability(4);
-		setMaxSickStep(30);
-		if (randomAge) {
-			setAge(rand.nextInt(MAX_AGE));
-			setFoodLevel(rand.nextInt(5));
-		} else {
-			setAge(0);
-			setFoodLevel(6);
-		}
+		setFoodLevel(randomAge ? rand.nextInt(5) : 6);
 	}
 
 
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
 	}
 
 

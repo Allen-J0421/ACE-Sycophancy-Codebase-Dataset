@@ -18,27 +18,17 @@ public class Duck extends Animal {
 		      new PreyHungerStrategy(),
 		      new StandardMovementStrategy(),
 		      new StandardBreedingStrategy(),
+		      new StandardAgingStrategy(randomAge ? rand.nextInt(MAX_AGE) : 0, MAX_AGE),
+		      new StandardSicknessStrategy(10, 2, 20),
 		      false);
 		setFoodChainLevel(1);
 		setFoodValue(5);
-		setSickProbability(10);
-		setRecoverProbability(2);
-		setMaxSickStep(20);
-		setAge(0);
 		setFoodLevel(6);
-		if (randomAge) {
-			setAge(rand.nextInt(MAX_AGE));
-		}
 	}
 
 
 	protected int getBreedingAge() {
 		return BREEDING_AGE;
-	}
-
-
-	protected int getMaxAge() {
-		return MAX_AGE;
 	}
 
 

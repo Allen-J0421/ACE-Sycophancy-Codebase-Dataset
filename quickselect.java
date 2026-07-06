@@ -11,7 +11,8 @@ class QuickSelect {
         int kPosition = 3;
         int length = array.length;
 
-        SelectionStrategy strategy = new QuickSelectStrategy(new Random());
+        PartitionStrategy partitioner = new RandomPivotPartition(new Random());
+        SelectionStrategy strategy = new QuickSelectStrategy(partitioner);
 
         if (kPosition > length) {
             System.out.println("Index out of bound");

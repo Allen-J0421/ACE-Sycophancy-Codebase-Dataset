@@ -1,17 +1,15 @@
-import java.util.Random;
-
 class QuickSelectStrategy implements SelectionStrategy {
 
-    private final Random rand;
+    private final PartitionStrategy partitioner;
 
-    public QuickSelectStrategy(Random rand)
+    public QuickSelectStrategy(PartitionStrategy partitioner)
     {
-        this.rand = rand;
+        this.partitioner = partitioner;
     }
 
     @Override
     public int select(int[] arr, int k)
     {
-        return QuickSelectUtils.kthSmallest(arr, 0, arr.length - 1, k, rand);
+        return QuickSelectUtils.kthSmallest(arr, 0, arr.length - 1, k, partitioner);
     }
 }

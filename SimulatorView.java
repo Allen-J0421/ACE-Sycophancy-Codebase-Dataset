@@ -118,12 +118,7 @@ public class SimulatorView extends JFrame
      */
     private void updateWeatherPropertiesLabel()
     {
-        String text;
-        
-        if (WeatherSystem.getIsRaining()) text = "RAINING";
-        else                              text = "NOT RAINING";
-        
-        weatherPropertiesLabel.setText(text);
+        weatherPropertiesLabel.setText(Simulator.getWeather().getCurrent().getDescription());
     }
     public void updateDayLabel()
     {   

@@ -1,36 +1,32 @@
 import java.util.Random;
 
 /**
- * A system that keeps track of the current weather, including
- * e.g. whether it is raining or not. This has an impact on
- * the actors within the simulation, e.g. plants spread slower
- * without water from the rain.
- *
- * @version 18.02.22 (DD:MM:YY)
+ * Manages the current weather state and transitions it each day.
+ * Owned by the Simulator; accessed by actors via Simulator.getWeather().
  */
 public class WeatherSystem
 {
-    // Whether or not it is currently raining:
-    private static boolean isRaining;
-    // A random number generator to select new weather properties:
-    private static final Random rand = Randomizer.getRandom();
-    
+    private final Random rand = Randomizer.getRandom();
+    private Weather current;
+
     /**
-     * Change to a new day and randomly select new weather
-     * properties.
+     * Create a WeatherSystem with an initial weather state already set.
      */
-    public static void changeToNextDay()
+    public WeatherSystem()
     {
-        if (rand.nextInt(2) == 1) isRaining = true;
-        else                      isRaining = false;
+        advance();
     }
-    
+
     /**
-     * @return Whether or not it is raining.
+     * Randomly select a new weather state for the next day.
      */
-    public static boolean getIsRaining() { return isRaining; }
+    public void advance()
+    {
+        current = (rand.nextInt(2) == 1) ? new RainyWeather() : new DryWeather();
+    }
+
+    /**
+     * @return The current weather state.
+     */
+    public Weather getCurrent() { return current; }
 }
-
-
-// The weather should change each day.
-// When the weather changes, 

@@ -7,8 +7,6 @@ import java.util.List;
  */
 public abstract class Producer extends Actor
 {
-    // The % of the normal breeding probability when there is no rain:
-    private double noRainBreedingProbabilityPercentage = 0.2;
     /**
      * Create a new producer at a location in the field.
      * 
@@ -85,10 +83,8 @@ public abstract class Producer extends Actor
     {
         int births = 0;
         
-        // Decrease breeding probability if there is no rain:
-        double actualBreedingProbability = getBreedingProbability();
-        
-        if (!WeatherSystem.getIsRaining()) actualBreedingProbability *= noRainBreedingProbabilityPercentage;
+        double actualBreedingProbability = getBreedingProbability()
+            * Simulator.getWeather().getCurrent().breedingProbabilityModifier();
         
         // Calculate number of births:
         if (rand.nextDouble() <= actualBreedingProbability)

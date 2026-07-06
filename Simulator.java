@@ -19,6 +19,8 @@ public class Simulator
     // The number of steps in a day:
     public static final int NUMBER_OF_STEPS_PER_DAY = 25;
     
+    // Manages weather state and daily transitions:
+    private static WeatherSystem weather;
     // Maps actor classes to their display colors:
     private final ColorRegistry colorRegistry;
     // Populates the field with actors at simulation start/reset:
@@ -61,13 +63,11 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
+        weather = new WeatherSystem();
         colorRegistry = new ColorRegistry();
         populator = new FieldPopulator();
         actors = new ArrayList<>();
         field = new Field(depth, width);
-        
-        // Set the initial weather:
-        WeatherSystem.changeToNextDay();
 
         // Create a view of the state of each location in the field:
         view = new SimulatorView(this,depth, width);
@@ -97,6 +97,11 @@ public class Simulator
      * @return The population stats for the current simulation step.
      */
     public static PopulationStats getPopulationStats() { return view.getStats(); }
+
+    /**
+     * @return The weather system managing the current weather state.
+     */
+    public static WeatherSystem getWeather() { return weather; }
     
     /**
      * Run the simulation from its current state for a reasonably long period,
@@ -131,11 +136,9 @@ public class Simulator
     {
         step++;
         
-        // Update the weather:
         if (TimeSystem.hasDayChanged())
         {
-            WeatherSystem.changeToNextDay();
-            
+            weather.advance();
         }
 
         updateActors();

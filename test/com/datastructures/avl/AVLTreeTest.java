@@ -11,11 +11,13 @@ import static org.junit.Assert.assertTrue;
 
 public class AVLTreeTest {
 
-    private AVLTree<Integer> tree;
+    private TreeFactory<Integer> factory;
+    private Tree<Integer> tree;
 
     @Before
     public void setUp() {
-        tree = new AVLTree<>();
+        factory = new AVLTreeFactory<>();
+        tree = factory.createTree();
     }
 
     @Test
@@ -112,7 +114,7 @@ public class AVLTreeTest {
 
     @Test
     public void testWorksWithStrings() {
-        Tree<String> stringTree = new AVLTree<>();
+        Tree<String> stringTree = new AVLTreeFactory<String>().createTree();
         stringTree.insert("banana");
         stringTree.insert("apple");
         stringTree.insert("cherry");

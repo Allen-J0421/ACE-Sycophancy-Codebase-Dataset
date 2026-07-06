@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class SimulationRunner implements SimulatorListener {
+public class SimulationRunner {
 
 
 	private final Simulator simulator;
@@ -17,7 +17,8 @@ public class SimulationRunner implements SimulatorListener {
 		Field field = simulator.getField();
 		gridView = new SimulatorView(field.getDepth(), field.getWidth());
 		graphView = new GraphView(1000, 500, 500);
-		simulator.addListener(this);
+		simulator.addStepListener(this::onStep);
+		simulator.addResetListener(this::onReset);
 		// Simulator constructor fired reset() before we registered; sync views now.
 		SimulationState initialState = simulator.getState();
 		refreshSpeciesColors(initialState);
@@ -32,25 +33,23 @@ public class SimulationRunner implements SimulatorListener {
 
 	public void simulate(int numSteps) {
 		for (int i = 1; i <= numSteps && gridView.isViable(simulator.getField()); i++) {
-			simulator.simulateOneStep(); // fires onStep → syncViews
+			simulator.simulateOneStep(); // fires step listeners → onStep → syncViews
 			delay(60);
 		}
 	}
 
 
 	public void reset() {
-		simulator.reset(); // fires onReset → view reset + syncViews
+		simulator.reset(); // fires reset listeners → onReset → view reset + syncViews
 	}
 
 
-	@Override
-	public void onStep(SimulationState state) {
+	private void onStep(SimulationState state) {
 		syncViews(state);
 	}
 
 
-	@Override
-	public void onReset(SimulationState state) {
+	private void onReset(SimulationState state) {
 		graphView.reset();
 		refreshSpeciesColors(state);
 		syncViews(state);

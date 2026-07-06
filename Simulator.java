@@ -3,6 +3,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 
 public class Simulator {
@@ -31,7 +32,9 @@ public class Simulator {
 	private static final int TIMECYCLE_LENGTH = 4;
 
 
-	private final List<SimulatorListener> listeners = new CopyOnWriteArrayList<>();
+	private final List<Consumer<SimulationState>> stepListeners = new CopyOnWriteArrayList<>();
+
+	private final List<Consumer<SimulationState>> resetListeners = new CopyOnWriteArrayList<>();
 
 	private List<Animal> animals;
 
@@ -124,13 +127,23 @@ public class Simulator {
 	}
 
 
-	public void addListener(SimulatorListener listener) {
-		listeners.add(listener);
+	public void addStepListener(Consumer<SimulationState> listener) {
+		stepListeners.add(listener);
 	}
 
 
-	public void removeListener(SimulatorListener listener) {
-		listeners.remove(listener);
+	public void removeStepListener(Consumer<SimulationState> listener) {
+		stepListeners.remove(listener);
+	}
+
+
+	public void addResetListener(Consumer<SimulationState> listener) {
+		resetListeners.add(listener);
+	}
+
+
+	public void removeResetListener(Consumer<SimulationState> listener) {
+		resetListeners.remove(listener);
 	}
 
 
@@ -141,17 +154,13 @@ public class Simulator {
 
 	private void fireOnStep() {
 		SimulationState state = getState();
-		for (SimulatorListener l : listeners) {
-			l.onStep(state);
-		}
+		stepListeners.forEach(l -> l.accept(state));
 	}
 
 
 	private void fireOnReset() {
 		SimulationState state = getState();
-		for (SimulatorListener l : listeners) {
-			l.onReset(state);
-		}
+		resetListeners.forEach(l -> l.accept(state));
 	}
 
 

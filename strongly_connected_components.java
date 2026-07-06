@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -26,8 +27,8 @@ class Graph {
         adj[u][degree[u]++] = v;
     }
 
-    int[] neighbors(int u) {
-        return Arrays.copyOf(adj[u], degree[u]);
+    Iterable<Integer> neighbors(int u) {
+        return () -> new AdjacencyIterator(adj[u], degree[u]);
     }
 
     int vertexCount() {
@@ -42,6 +43,20 @@ class Graph {
             }
         }
         return rev;
+    }
+
+    private static class AdjacencyIterator implements Iterator<Integer> {
+        private final int[] data;
+        private final int limit;
+        private int cursor;
+
+        AdjacencyIterator(int[] data, int limit) {
+            this.data = data;
+            this.limit = limit;
+        }
+
+        @Override public boolean hasNext() { return cursor < limit; }
+        @Override public Integer next() { return data[cursor++]; }
     }
 }
 

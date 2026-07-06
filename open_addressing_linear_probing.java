@@ -1,57 +1,62 @@
-import java.lang.*;
+class HashNode {
+    private int key;
+    private int value;
 
-class hashNode {
-    int key;
-    int value;
-
-    public hashNode(int key, int value) {
+    public HashNode(int key, int value) {
         this.key = key;
         this.value = value;
     }
-}
 
-class hashMap {
-    hashNode[] arr;
-    int capacity;
-    int size;
-    hashNode dummy;
-
-    public hashMap() {
-        capacity = 20;
-        size = 0;
-        arr = new hashNode[capacity];
-        dummy = new hashNode(-1, -1);
+    public int getKey() {
+        return key;
     }
 
-    int hashCode(int key) {
+    public int getValue() {
+        return value;
+    }
+}
+
+class HashMap {
+    private HashNode[] table;
+    private int capacity;
+    private int size;
+    private static final HashNode DUMMY = new HashNode(-1, -1);
+
+    public HashMap() {
+        capacity = 20;
+        size = 0;
+        table = new HashNode[capacity];
+    }
+
+    private int hash(int key) {
         return key % capacity;
     }
 
-    void insertNode(int key, int value) {
-        hashNode temp = new hashNode(key, value);
-        int hashIndex = hashCode(key);
+    public void insertNode(int key, int value) {
+        HashNode temp = new HashNode(key, value);
+        int hashIndex = hash(key);
 
-        while (arr[hashIndex] != null &&
-               arr[hashIndex].key != key &&
-               arr[hashIndex].key != -1) {
+        while (table[hashIndex] != null &&
+               table[hashIndex].getKey() != key &&
+               table[hashIndex].getKey() != -1) {
             hashIndex++;
             hashIndex %= capacity;
         }
 
-        if (arr[hashIndex] == null || arr[hashIndex].key == -1)
+        if (table[hashIndex] == null || table[hashIndex].getKey() == -1)
             size++;
-        arr[hashIndex] = temp;
+        table[hashIndex] = temp;
     }
 
-    int deleteNode(int key) {
-        int hashIndex = hashCode(key);
+    public int deleteNode(int key) {
+        int hashIndex = hash(key);
 
-        while (arr[hashIndex] != null) {
-            if (arr[hashIndex].key == key) {
-                hashNode temp = arr[hashIndex];
-                arr[hashIndex] = dummy;
+        while (table[hashIndex] != null) {
+            if (table[hashIndex].getKey() == key) {
+                HashNode temp = table[hashIndex];
+                table[hashIndex] = DUMMY;
                 size--;
-                return temp.value;
+                return temp.getValue();
             }
             hashIndex++;
             hashIndex %= capacity;
@@ -60,16 +65,16 @@ class hashMap {
         return -1;
     }
 
-    int get(int key) {
-        int hashIndex = hashCode(key);
+    public int get(int key) {
+        int hashIndex = hash(key);
         int counter = 0;
 
-        while (arr[hashIndex] != null) {
+        while (table[hashIndex] != null) {
             if (counter++ > capacity)
                 return -1;
 
-            if (arr[hashIndex].key == key)
-                return arr[hashIndex].value;
+            if (table[hashIndex].getKey() == key)
+                return table[hashIndex].getValue();
             hashIndex++;
             hashIndex %= capacity;
         }
@@ -77,32 +82,31 @@ class hashMap {
         return -1;
     }
 
-    int sizeofMap() {
+    public int getSize() {
         return size;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return size == 0;
     }
 
-    void display() {
+    public void display() {
         for (int i = 0; i < capacity; i++) {
-            if (arr[i] != null && arr[i].key != -1) {
-                System.out.println(arr[i].key +
-                " " + arr[i].value);
+            if (table[i] != null && table[i].getKey() != -1) {
+                System.out.println(table[i].getKey() + " " + table[i].getValue());
             }
         }
     }
 
     public static void main(String[] args) {
-        hashMap h = new hashMap();
+        HashMap h = new HashMap();
         h.insertNode(1, 1);
         h.insertNode(2, 2);
         h.insertNode(2, 3);
         h.display();
-        System.out.println(h.sizeofMap());
+        System.out.println(h.getSize());
         System.out.println(h.deleteNode(2));
-        System.out.println(h.sizeofMap());
+        System.out.println(h.getSize());
         System.out.println(h.isEmpty());
         System.out.println(h.get(2));
     }

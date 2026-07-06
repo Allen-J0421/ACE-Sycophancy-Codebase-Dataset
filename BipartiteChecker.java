@@ -39,6 +39,14 @@ class BipartiteChecker {
         Partition(boolean bipartite) {
             this.bipartite = bipartite;
         }
+
+        void accept(PartitionVisitor visitor) {
+            if (bipartite) {
+                visitor.visitBipartite(setA, setB);
+            } else {
+                visitor.visitNonBipartite();
+            }
+        }
     }
 
     private final ColoringStrategy strategy;

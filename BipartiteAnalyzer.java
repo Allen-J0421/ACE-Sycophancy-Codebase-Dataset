@@ -43,6 +43,6 @@ class BipartiteAnalyzer {
         Graph graph = factory.fromEdges(V, edges);
         BipartiteChecker checker = new BipartiteChecker(new BfsColoringStrategy());
         BipartiteChecker.Partition result = checker.check(graph);
-        GraphView.printResult(result);
+        result.accept(new GraphView());
     }
 }

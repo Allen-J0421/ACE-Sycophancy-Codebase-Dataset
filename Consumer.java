@@ -57,27 +57,22 @@ public abstract class Consumer extends Actor
      * @param newConsumers A list to receive newly born consumers.
      */
     public void act(List<Actor> newConsumers)
-    {   
-        incrementAge();
-        incrementHunger();
-        if (getIsAlive())
+    {
+        giveBirth(newConsumers);
+        boolean wasPossibleToMove = huntForFood();
+        if (ifCarcass)
         {
-            giveBirth(newConsumers);
-            boolean wasPossibleToMove = huntForFood();
-            if(ifCarcass)
-            {
-                newConsumers.add(newCarcass);
-                ifCarcass = false;
-                newCarcass = null;
-            }
-            if(hasDisease())
-            {                                                                                   
-                diseaseEffect();
-            }
-            if (!wasPossibleToMove)
-            {
-                setDead();
-            }
+            newConsumers.add(newCarcass);
+            ifCarcass = false;
+            newCarcass = null;
+        }
+        if (hasDisease())
+        {
+            diseaseEffect();
+        }
+        if (!wasPossibleToMove)
+        {
+            setDead();
         }
     }
     /**
@@ -269,7 +264,7 @@ public abstract class Consumer extends Actor
     /**
      * Make this consumer more hungry. This could result in the consumer's death.
      */
-    private void incrementHunger()
+    void incrementHunger()
     {
         sustenanceLevel--;
         if (sustenanceLevel <= 0) setDead();

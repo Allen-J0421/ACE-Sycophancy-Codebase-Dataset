@@ -26,6 +26,8 @@ public class Simulator
     // A Boolean indicating whether or not to reset the StatisticsView:
     public static boolean resetStatisticsView = false;
 
+    // Manages per-step age and hunger updates for all actors:
+    private final ActorLifecycle lifecycle;
     // Populates the field with actors at simulation start/reset:
     private final FieldPopulator populator;
     // List of actors in the field:
@@ -58,9 +60,10 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
 
-        weather       = new WeatherSystem();
+        weather         = new WeatherSystem();
         populationStats = new PopulationStats();
-        populator     = new FieldPopulator();
+        lifecycle       = new ActorLifecycle();
+        populator       = new FieldPopulator();
         actors        = new ArrayList<>();
         field         = new Field(depth, width);
 
@@ -127,7 +130,11 @@ public class Simulator
         for (Iterator<Actor> it = actors.iterator(); it.hasNext(); )
         {
             Actor actor = it.next();
-            actor.act(newActors);
+            lifecycle.tick(actor);
+            if (actor.getIsAlive())
+            {
+                actor.act(newActors);
+            }
             if (!actor.getIsAlive()) it.remove();
         }
         actors.addAll(newActors);

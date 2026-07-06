@@ -125,20 +125,6 @@ public abstract class Actor
     protected Field getField() { return field; }
     
     /**
-     * Increase the age.
-     * This could result in the actor's death.
-     */
-    protected void incrementAge()
-    {
-        currentAge++;
-        
-        if (currentAge > maxAge) {
-           
-            setDead();
-        }
-        
-    }
-    /**
      * Returns true if the actor can become a carcass and false if it can't.
      * return if the actor can become a carcass.
      */

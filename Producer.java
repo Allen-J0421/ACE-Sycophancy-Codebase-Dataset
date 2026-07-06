@@ -30,11 +30,7 @@ public abstract class Producer extends Actor
      */
     public void act(List<Actor> newProducers)
     {
-        incrementAge();
-        if (getIsAlive())
-        {
-            giveBirth(newProducers);
-        }
+        giveBirth(newProducers);
     }
     
     /**

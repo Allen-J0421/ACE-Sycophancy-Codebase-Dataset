@@ -36,6 +36,25 @@ public final class EuclideanAlgorithmTest {
         assertCommand(new GcdCommand(new Operands(-42, 56), GcdProviderRegistry.get("recursive")), 14);
         assertCommand(() -> GcdProviderRegistry.getDefault().compute(12, 8), 4);
         assertIllegalArgument(() -> GcdProviderRegistry.get("unknown"));
+
+        int[] observed = {Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
+        GcdProvider logging = new LoggingGcdProvider(
+                GcdProviderRegistry.get("iterative"),
+                (a, b, result) -> { observed[0] = a; observed[1] = b; observed[2] = result; });
+        assertCommand(() -> logging.compute(35, 15), 5);
+        if (observed[0] != 35 || observed[1] != 15 || observed[2] != 5) {
+            throw new AssertionError(
+                    "Observer received wrong values: (" + observed[0] + ", " + observed[1] + ") = " + observed[2]);
+        }
+
+        boolean[] observerCalled = {false};
+        GcdProvider loggingOverflow = new LoggingGcdProvider(
+                GcdProviderRegistry.get("iterative"),
+                (a, b, result) -> observerCalled[0] = true);
+        assertOverflow(loggingOverflow, Integer.MIN_VALUE, 0);
+        if (observerCalled[0]) {
+            throw new AssertionError("Observer must not be called when delegate throws");
+        }
     }
 
     private static void assertGcd(GcdProvider provider, int left, int right, int expected) {

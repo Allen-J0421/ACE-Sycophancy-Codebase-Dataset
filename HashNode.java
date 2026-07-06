@@ -1,17 +1,17 @@
-class HashNode {
-    private int key;
-    private int value;
+class HashNode<K, V> {
+    private K key;
+    private V value;
 
-    public HashNode(int key, int value) {
+    public HashNode(K key, V value) {
         this.key = key;
         this.value = value;
     }
 
-    public int getKey() {
+    public K getKey() {
         return key;
     }
 
-    public int getValue() {
+    public V getValue() {
         return value;
     }
 }

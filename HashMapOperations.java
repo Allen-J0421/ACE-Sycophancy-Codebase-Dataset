@@ -1,7 +1,7 @@
-interface HashMapOperations {
-    void insertNode(int key, int value);
-    int deleteNode(int key);
-    int get(int key);
+interface HashMapOperations<K, V> {
+    void insertNode(K key, V value);
+    V deleteNode(K key);
+    V get(K key);
     int getSize();
     boolean isEmpty();
     void display();

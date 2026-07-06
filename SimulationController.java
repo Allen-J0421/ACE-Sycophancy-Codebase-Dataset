@@ -82,7 +82,7 @@ public class SimulationController
      *
      * @param populator The populator used to seed the field with organisms.
      */
-    public void reset(Populator populator)
+    public void reset(FieldPopulator populator)
     {
         step = 0;
         hour = 1;

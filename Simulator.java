@@ -99,7 +99,10 @@ public class Simulator
      */
     public void reset()
     {
-        Populator populator = new Populator(view);
+        RandomFieldPopulator populator = RandomFieldPopulator.createDefault();
+        for (SpeciesEntry entry : populator.getSpecies()) {
+            view.setColor(entry.speciesClass, entry.displayColor);
+        }
         controller.reset(populator);
         monitor.observe(controller.getField());
         view.showStatus(controller.getStep(), controller.getField());

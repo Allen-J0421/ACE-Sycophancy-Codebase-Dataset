@@ -5,10 +5,13 @@ class KnapsackInput {
     final Item[] items;
 
     KnapsackInput(int capacity, Item[] items) {
-        if (capacity < 0)
-            throw new IllegalArgumentException("Capacity must be non-negative");
         this.capacity = capacity;
         this.items = items;
+    }
+
+    void validate() {
+        if (capacity < 0)
+            throw new IllegalArgumentException("Capacity must be non-negative");
     }
 }
 
@@ -48,6 +51,7 @@ class Knapsack {
     }
 
     int solve(KnapsackInput problem) {
+        problem.validate();
         return strategy.solve(problem);
     }
 

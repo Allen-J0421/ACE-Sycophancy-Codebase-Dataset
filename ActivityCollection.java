@@ -1,7 +1,8 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 
-public class ActivityCollection {
+public class ActivityCollection implements Iterable<Activity> {
     private final Activity[] activities;
 
     public ActivityCollection(Activity... activities) {
@@ -20,5 +21,10 @@ public class ActivityCollection {
         Activity[] sorted = activities.clone();
         Arrays.sort(sorted, Comparator.comparingInt(a -> a.finish));
         return new ActivityCollection(sorted);
+    }
+
+    @Override
+    public Iterator<Activity> iterator() {
+        return Arrays.asList(activities).iterator();
     }
 }

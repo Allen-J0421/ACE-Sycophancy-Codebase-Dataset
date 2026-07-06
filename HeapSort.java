@@ -12,7 +12,7 @@ public class HeapSort {
         if (from < 0 || to > arr.length || from > to)
             throw new IllegalArgumentException(
                 "Invalid range [" + from + ", " + to + ") for array of length " + arr.length);
-        FACTORY.forIntRange(arr, from).sort(to - from);
+        FACTORY.forIntArray(arr).sort(from, to);
     }
 
     public static <T> void heapSort(T[] arr, Comparator<T> cmp) {
@@ -23,6 +23,6 @@ public class HeapSort {
         if (from < 0 || to > arr.length || from > to)
             throw new IllegalArgumentException(
                 "Invalid range [" + from + ", " + to + ") for array of length " + arr.length);
-        FACTORY.forObjectRange(arr, from, to, cmp).sort();
+        FACTORY.forObjectArray(arr, cmp).sort(from, to);
     }
 }

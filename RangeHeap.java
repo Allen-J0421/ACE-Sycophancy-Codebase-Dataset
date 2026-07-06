@@ -1,10 +1,15 @@
-class RangeHeap extends AbstractHeap {
+class RangeHeap extends AbstractHeap implements HeapSorter<Integer> {
     private final int[] arr;
-    private final int from;
+    private int from;
 
-    RangeHeap(int[] arr, int from) {
+    RangeHeap(int[] arr) {
         this.arr = arr;
+    }
+
+    @Override
+    public void sort(int from, int to) {
         this.from = from;
+        sort(to - from);
     }
 
     @Override

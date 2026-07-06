@@ -3,12 +3,12 @@ import java.util.Comparator;
 final class SortContext implements HeapFactory {
 
     @Override
-    public AbstractHeap forIntRange(int[] arr, int from) {
-        return new RangeHeap(arr, from);
+    public HeapSorter<Integer> forIntArray(int[] arr) {
+        return new RangeHeap(arr);
     }
 
     @Override
-    public <T> Heap<T> forObjectRange(T[] arr, int from, int to, Comparator<T> cmp) {
-        return new ObjectRangeHeap<>(arr, from, to, cmp);
+    public <T> HeapSorter<T> forObjectArray(T[] arr, Comparator<T> cmp) {
+        return new ObjectRangeHeap<>(arr, cmp);
     }
 }

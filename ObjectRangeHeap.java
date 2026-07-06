@@ -1,21 +1,19 @@
 import java.util.Comparator;
 
-class ObjectRangeHeap<T> extends AbstractHeap implements Heap<T> {
+class ObjectRangeHeap<T> extends AbstractHeap implements HeapSorter<T> {
     private final T[] arr;
-    private final int from;
-    private final int size;
+    private int from;
     private final Comparator<T> cmp;
 
-    ObjectRangeHeap(T[] arr, int from, int to, Comparator<T> cmp) {
+    ObjectRangeHeap(T[] arr, Comparator<T> cmp) {
         this.arr = arr;
-        this.from = from;
-        this.size = to - from;
         this.cmp = cmp;
     }
 
     @Override
-    public void sort() {
-        sort(size);
+    public void sort(int from, int to) {
+        this.from = from;
+        sort(to - from);
     }
 
     @Override

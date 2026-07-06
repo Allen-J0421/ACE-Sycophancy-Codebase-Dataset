@@ -1,11 +1,12 @@
 import java.util.Map;
-import java.util.stream.IntStream;
 
 public class BalancedParentheses {
 
-    private static final BracketConfig DEFAULT_CONFIG = new BracketConfig(
-        new char[]{')', '}', ']'},
-        new char[]{'(', '{', '['}
+    private static final BracketValidator DEFAULT_VALIDATOR = new BracketValidator(
+        new BracketConfig(
+            new char[]{')', '}', ']'},
+            new char[]{'(', '{', '['}
+        )
     );
 
     public static boolean isBalanced(String s) {
@@ -27,18 +28,11 @@ public class BalancedParentheses {
     }
 
     public static void validate(String s) {
-        validate(s, DEFAULT_CONFIG);
+        DEFAULT_VALIDATOR.validate(s);
     }
 
     public static void validate(String s, Map<Character, Character> pairs) {
-        validate(s, BracketConfig.from(pairs));
-    }
-
-    private static void validate(String s, BracketConfig config) {
-        ValidationContext ctx = new ValidationContext(new BracketMatcher(config));
-        IntStream.range(0, s.length())
-            .forEach(i -> ctx.process(s.charAt(i), i));
-        ctx.checkComplete();
+        new BracketValidator(BracketConfig.from(pairs)).validate(s);
     }
 
     public static void main(String[] args) {

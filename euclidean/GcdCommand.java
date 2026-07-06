@@ -1,6 +1,6 @@
 package euclidean;
 
-final class GcdCommand implements Command<Integer> {
+final class GcdCommand implements Command<GcdResult> {
 
     private final Operands operands;
     private final GcdProvider provider;
@@ -11,7 +11,7 @@ final class GcdCommand implements Command<Integer> {
     }
 
     @Override
-    public Integer execute() {
+    public GcdResult execute() {
         return provider.compute(operands.left(), operands.right());
     }
 }

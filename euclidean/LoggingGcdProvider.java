@@ -11,8 +11,8 @@ final class LoggingGcdProvider implements GcdProvider {
     }
 
     @Override
-    public int compute(int a, int b) {
-        int result = delegate.compute(a, b);
+    public GcdResult compute(int a, int b) {
+        GcdResult result = delegate.compute(a, b);
         observer.onCompute(a, b, result);
         return result;
     }

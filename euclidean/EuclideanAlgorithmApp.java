@@ -20,9 +20,21 @@ public final class EuclideanAlgorithmApp {
 
     public static void main(String[] args) {
         Operands operands = parseOperands(args);
-        Command<Integer> command = new GcdCommandBuilder()
-                .observer((a, b, result) -> System.err.println("gcd(" + a + ", " + b + ") = " + result))
+        Command<GcdResult> command = new GcdCommandBuilder()
+                .observer((a, b, result) -> {
+                    if (result instanceof GcdResult.Success s) {
+                        System.err.println("gcd(" + a + ", " + b + ") = " + s.value());
+                    } else if (result instanceof GcdResult.Failure f) {
+                        System.err.println("gcd(" + a + ", " + b + ") failed: " + f.reason());
+                    }
+                })
                 .build(operands);
-        System.out.println(command.execute());
+        GcdResult result = command.execute();
+        if (result instanceof GcdResult.Success s) {
+            System.out.println(s.value());
+        } else if (result instanceof GcdResult.Failure f) {
+            System.err.println("Error: " + f.reason());
+            System.exit(1);
+        }
     }
 }

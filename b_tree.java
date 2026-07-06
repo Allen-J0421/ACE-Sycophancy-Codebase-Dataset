@@ -3,7 +3,7 @@ class BTree {
     private final NodeFactory nodeFactory;
 
     public BTree(int minDegree) {
-        this(minDegree, SearchStrategy.LINEAR);
+        this(minDegree, SearchStrategies.LINEAR);
     }
 
     public BTree(int minDegree, SearchStrategy searchStrategy) {
@@ -19,24 +19,6 @@ class BTree {
     @FunctionalInterface
     interface SearchStrategy {
         int findFirstGE(KeyManager storage, int key);
-
-        SearchStrategy LINEAR = (storage, key) -> {
-            int i = 0;
-            while (i < storage.size() && storage.getKey(i) < key) {
-                i++;
-            }
-            return i;
-        };
-
-        SearchStrategy BINARY = (storage, key) -> {
-            int lo = 0, hi = storage.size();
-            while (lo < hi) {
-                int mid = (lo + hi) >>> 1;
-                if (storage.getKey(mid) < key) lo = mid + 1;
-                else hi = mid;
-            }
-            return lo;
-        };
     }
 
     interface KeyManager {
@@ -235,6 +217,29 @@ class BTree {
                 return null;
             }
             return storage.getChild(i).search(key);
+        }
+    }
+}
+
+enum SearchStrategies implements BTree.SearchStrategy {
+    LINEAR {
+        public int findFirstGE(BTree.KeyManager storage, int key) {
+            int i = 0;
+            while (i < storage.size() && storage.getKey(i) < key) {
+                i++;
+            }
+            return i;
+        }
+    },
+    BINARY {
+        public int findFirstGE(BTree.KeyManager storage, int key) {
+            int lo = 0, hi = storage.size();
+            while (lo < hi) {
+                int mid = (lo + hi) >>> 1;
+                if (storage.getKey(mid) < key) lo = mid + 1;
+                else hi = mid;
+            }
+            return lo;
         }
     }
 }

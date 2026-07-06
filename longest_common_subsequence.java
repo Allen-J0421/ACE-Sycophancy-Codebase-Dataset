@@ -8,11 +8,54 @@ enum LcsStrategyType {
     SPACE_OPTIMIZED
 }
 
+class FullTableLcsStrategy implements LcsStrategy {
+    @Override
+    public int compute(String s1, String s2) {
+        int m = s1.length();
+        int n = s2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+
+class SpaceOptimizedLcsStrategy implements LcsStrategy {
+    @Override
+    public int compute(String s1, String s2) {
+        int m = s1.length();
+        int n = s2.length();
+        int[] prev = new int[n + 1];
+        int[] curr = new int[n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                    curr[j] = prev[j - 1] + 1;
+                } else {
+                    curr[j] = Math.max(prev[j], curr[j - 1]);
+                }
+            }
+            int[] tmp = prev;
+            prev = curr;
+            curr = tmp;
+            java.util.Arrays.fill(curr, 0);
+        }
+        return prev[n];
+    }
+}
+
 class LcsStrategyFactory {
     static LcsStrategy create(LcsStrategyType type) {
         switch (type) {
-            case SPACE_OPTIMIZED: return LcsService::spaceOptimized;
-            default:              return LcsService::fullTable;
+            case SPACE_OPTIMIZED: return new SpaceOptimizedLcsStrategy();
+            default:              return new FullTableLcsStrategy();
         }
     }
 }
@@ -23,8 +66,8 @@ class LcsService {
     private final boolean caseInsensitive;
 
     private LcsService(Builder builder) {
-        this.strategy       = builder.strategy;
-        this.validateInputs = builder.validateInputs;
+        this.strategy        = builder.strategy;
+        this.validateInputs  = builder.validateInputs;
         this.caseInsensitive = builder.caseInsensitive;
     }
 
@@ -63,43 +106,6 @@ class LcsService {
         LcsService build() {
             return new LcsService(this);
         }
-    }
-
-    static int fullTable(String s1, String s2) {
-        int m = s1.length();
-        int n = s2.length();
-        int[][] dp = new int[m + 1][n + 1];
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
-                } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
-                }
-            }
-        }
-        return dp[m][n];
-    }
-
-    static int spaceOptimized(String s1, String s2) {
-        int m = s1.length();
-        int n = s2.length();
-        int[] prev = new int[n + 1];
-        int[] curr = new int[n + 1];
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
-                    curr[j] = prev[j - 1] + 1;
-                } else {
-                    curr[j] = Math.max(prev[j], curr[j - 1]);
-                }
-            }
-            int[] tmp = prev;
-            prev = curr;
-            curr = tmp;
-            java.util.Arrays.fill(curr, 0);
-        }
-        return prev[n];
     }
 }
 

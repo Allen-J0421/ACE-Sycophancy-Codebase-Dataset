@@ -6,7 +6,7 @@ public final class RabinKarp {
     private static final StringMatcher DEFAULT_MATCHER;
 
     static {
-        DEFAULT_MATCHER = new RabinKarpMatcher(RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS);
+        DEFAULT_MATCHER = StringMatcherFactory.rabinKarp();
     }
 
     private RabinKarp() {}

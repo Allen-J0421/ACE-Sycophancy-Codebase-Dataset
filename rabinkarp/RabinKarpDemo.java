@@ -9,14 +9,18 @@ public final class RabinKarpDemo {
         String txt = "geeksforgeeks";
         String pat = "geeks";
 
-        List<Integer> res = RabinKarp.search(pat, txt);
-        for (int idx : res)
+        StringMatcher rk = StringMatcherFactory.rabinKarp();
+        for (int idx : rk.search(pat, txt))
+            System.out.print(idx + " ");
+        System.out.println();
+
+        StringMatcher naive = StringMatcherFactory.naive();
+        for (int idx : naive.search(pat, txt))
             System.out.print(idx + " ");
         System.out.println();
 
         RabinKarpPattern compiled = RabinKarpPattern.compile(pat);
-        List<Integer> res2 = compiled.searchIn(txt);
-        for (int idx : res2)
+        for (int idx : compiled.searchIn(txt))
             System.out.print(idx + " ");
         System.out.println();
     }

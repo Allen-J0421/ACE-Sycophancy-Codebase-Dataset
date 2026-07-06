@@ -6,8 +6,8 @@ public final class RabinKarpTest {
     private RabinKarpTest() {}
 
     public static void main(String[] args) {
-        runSuite(new RabinKarpMatcher(RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS), "RabinKarpMatcher");
-        runSuite(new NaiveMatcher(), "NaiveMatcher");
+        runSuite(StringMatcherFactory.rabinKarp(), "RabinKarpMatcher");
+        runSuite(StringMatcherFactory.naive(), "NaiveMatcher");
 
         RabinKarpPattern compiled = RabinKarpPattern.compile("geeks");
         expect(compiled.searchIn("geeksforgeeks"), List.of(0, 8), "compiled pattern: geeks in geeksforgeeks");

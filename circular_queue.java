@@ -1,4 +1,11 @@
-class CircularQueue {
+interface IntQueue {
+    void enqueue(int value);
+    int dequeue();
+    int getFront();
+    int getRear();
+}
+
+class CircularQueue implements IntQueue {
 
     private int[] arr;
 
@@ -50,7 +57,7 @@ class CircularQueue {
     }
 
     public static void main(String[] args) {
-        CircularQueue q = new CircularQueue(5);
+        IntQueue q = new CircularQueue(5);
         q.enqueue(10);
         q.enqueue(20);
         q.enqueue(30);

@@ -1,46 +1,32 @@
-class Node {
-    private int data;
-    private Node left;
-    private Node right;
+class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
+    private Node<T> root;
 
-    Node(int data) {
-        this.data = data;
-    }
-
-    int getData() { return data; }
-    Node getLeft() { return left; }
-    Node getRight() { return right; }
-    void setLeft(Node left) { this.left = left; }
-    void setRight(Node right) { this.right = right; }
-}
-
-class BinarySearchTree {
-    private Node root;
-
-    void insert(int key) {
+    public void insert(T key) {
         root = insertRec(root, key);
     }
 
-    private Node insertRec(Node node, int key) {
-        if (node == null) return new Node(key);
-        if (key < node.getData())
+    private Node<T> insertRec(Node<T> node, T key) {
+        if (node == null) return new Node<>(key);
+        int cmp = key.compareTo(node.getData());
+        if (cmp < 0)
             node.setLeft(insertRec(node.getLeft(), key));
-        else if (key > node.getData())
+        else if (cmp > 0)
             node.setRight(insertRec(node.getRight(), key));
         return node;
     }
 
-    boolean search(int key) {
-        Node current = root;
+    public boolean search(T key) {
+        Node<T> current = root;
         while (current != null) {
-            if (current.getData() == key) return true;
-            current = key > current.getData() ? current.getRight() : current.getLeft();
+            int cmp = key.compareTo(current.getData());
+            if (cmp == 0) return true;
+            current = cmp > 0 ? current.getRight() : current.getLeft();
         }
         return false;
     }
 
     public static void main(String[] args) {
-        BinarySearchTree bst = new BinarySearchTree();
+        BinarySearchTree<Integer> bst = new BinarySearchTree<>();
         bst.insert(6);
         bst.insert(2);
         bst.insert(8);

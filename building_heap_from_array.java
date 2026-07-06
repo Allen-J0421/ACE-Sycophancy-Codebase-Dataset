@@ -21,6 +21,14 @@ interface IHeapBuilder {
     int[] getArray();
 }
 
+record HeapBounds(int size) {
+
+    boolean isValidIndex(int index)
+    {
+        return index < size;
+    }
+}
+
 record BinaryTreeIndex(int index) {
 
     int left()
@@ -82,16 +90,18 @@ interface HeapifyStrategy {
 
         self[0] = (n, i) -> {
 
+            HeapBounds bounds = new HeapBounds(n);
+
             int largest = i;
 
             int l = self[0].leftChild(i);
 
             int r = self[0].rightChild(i);
 
-            if (l < n && arr[l] > arr[largest])
+            if (bounds.isValidIndex(l) && arr[l] > arr[largest])
                 largest = l;
 
-            if (r < n && arr[r] > arr[largest])
+            if (bounds.isValidIndex(r) && arr[r] > arr[largest])
                 largest = r;
 
             if (largest != i) {

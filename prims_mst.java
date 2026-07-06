@@ -3,6 +3,7 @@ import java.util.*;
 interface Graph {
     int vertexCount();
     int weight(int u, int v);
+    Iterable<Integer> neighbors(int u);
 }
 
 class AdjacencyListGraph implements Graph {
@@ -28,6 +29,11 @@ class AdjacencyListGraph implements Graph {
     @Override
     public int weight(int u, int v) {
         return adjList.get(u).getOrDefault(v, 0);
+    }
+
+    @Override
+    public Iterable<Integer> neighbors(int u) {
+        return adjList.get(u).keySet();
     }
 }
 
@@ -57,35 +63,29 @@ class MSTService {
         boolean[] inMST = new boolean[V];
 
         Arrays.fill(key, Integer.MAX_VALUE);
+        Arrays.fill(parent, -1);
         key[0] = 0;
-        parent[0] = -1;
 
-        for (int count = 0; count < V - 1; count++) {
-            int u = minKey(key, inMST);
+        // min-heap of [key, vertex]
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(e -> e[0]));
+        pq.offer(new int[]{0, 0});
+
+        while (!pq.isEmpty()) {
+            int u = pq.poll()[1];
+            if (inMST[u]) continue;  // stale entry
             inMST[u] = true;
 
-            for (int v = 0; v < V; v++) {
+            for (int v : graph.neighbors(u)) {
                 int w = graph.weight(u, v);
-                if (w != 0 && !inMST[v] && w < key[v]) {
+                if (!inMST[v] && w < key[v]) {
                     parent[v] = u;
                     key[v] = w;
+                    pq.offer(new int[]{w, v});
                 }
             }
         }
 
         return buildEdgeList(parent, graph);
-    }
-
-    private int minKey(int[] key, boolean[] inMST) {
-        int min = Integer.MAX_VALUE;
-        int minIndex = -1;
-        for (int v = 0; v < key.length; v++) {
-            if (!inMST[v] && key[v] < min) {
-                min = key[v];
-                minIndex = v;
-            }
-        }
-        return minIndex;
     }
 
     private List<Edge> buildEdgeList(int[] parent, Graph graph) {

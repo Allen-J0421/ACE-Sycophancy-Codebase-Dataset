@@ -15,6 +15,18 @@ public class CountingSort {
             this.counts = counts;
         }
 
+        static int[] sort(int[] arr) {
+            if (arr == null) {
+                throw new IllegalArgumentException("Input array cannot be null");
+            }
+            if (arr.length == 0) {
+                return new int[0];
+            }
+            SortState state = from(arr);
+            state.accumulateCounts();
+            return state.buildSorted();
+        }
+
         static SortState from(int[] arr) {
             int min = arr[0];
             int max = arr[0];
@@ -51,15 +63,6 @@ public class CountingSort {
     }
 
     public static int[] sort(int[] arr) {
-        if (arr == null) {
-            throw new IllegalArgumentException("Input array cannot be null");
-        }
-        if (arr.length == 0) {
-            return new int[0];
-        }
-
-        SortState state = SortState.from(arr);
-        state.accumulateCounts();
-        return state.buildSorted();
+        return SortState.sort(arr);
     }
 }

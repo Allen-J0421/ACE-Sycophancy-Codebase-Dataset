@@ -1,6 +1,6 @@
 import java.util.*;
 
-class MinHeap<T extends Comparable<T>> implements Iterable<T> {
+class MinHeap<T extends Comparable<T>> implements Heap<T> {
 
     private final ArrayList<T> heapArray;
     private final Heapify<T> strategy;
@@ -14,24 +14,28 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         this.strategy = strategy;
     }
 
+    @Override
     public MinHeap<T> insert(T key) {
         heapArray.add(key);
         strategy.siftUp(heapArray, heapArray.size() - 1);
         return this;
     }
 
+    @Override
     public MinHeap<T> decrease(int index, T new_val) {
         heapArray.set(index, new_val);
         strategy.fix(heapArray, index);
         return this;
     }
 
+    @Override
     public MinHeap<T> increase(int index, T new_val) {
         heapArray.set(index, new_val);
         strategy.fix(heapArray, index);
         return this;
     }
 
+    @Override
     public MinHeap<T> delete(int index) {
         int lastIndex = heapArray.size() - 1;
         if (index == lastIndex) {
@@ -43,6 +47,7 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         return this;
     }
 
+    @Override
     public MinHeap<T> changeValue(int index, T new_val) {
         if (heapArray.get(index).equals(new_val)) {
             return this;
@@ -52,11 +57,13 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         return this;
     }
 
-    public T getMin() {
+    @Override
+    public T peek() {
         return heapArray.get(0);
     }
 
-    public T extractMin() {
+    @Override
+    public T poll() {
         if (heapArray.isEmpty()) {
             return null;
         }

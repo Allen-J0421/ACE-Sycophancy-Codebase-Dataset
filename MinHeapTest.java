@@ -2,8 +2,8 @@ import java.util.Comparator;
 
 class MinHeapTest {
     public static void main(String[] args) {
-        // Default min-heap via BinaryHeapStrategy(naturalOrder)
-        MinHeap<Integer> minHeap = new MinHeap<Integer>()
+        // Declared as Heap<T> — implementation is swappable
+        Heap<Integer> minHeap = new MinHeap<Integer>()
                 .insert(3)
                 .insert(2)
                 .delete(1)
@@ -12,19 +12,19 @@ class MinHeapTest {
                 .insert(4)
                 .insert(45);
 
-        System.out.print(minHeap.extractMin() + " ");
-        System.out.print(minHeap.getMin() + " ");
+        System.out.print(minHeap.poll() + " ");
+        System.out.print(minHeap.peek() + " ");
 
         minHeap.decrease(2, 1);
-        System.out.print(minHeap.getMin());
+        System.out.print(minHeap.peek());
 
         System.out.println();
 
-        // Max-heap by supplying a reversed BinaryHeapStrategy
-        MinHeap<Integer> maxHeap = new MinHeap<>(new BinaryHeapStrategy<Integer>(Comparator.reverseOrder()));
+        // Max-heap: same interface, different strategy
+        Heap<Integer> maxHeap = new MinHeap<>(new BinaryHeapStrategy<Integer>(Comparator.reverseOrder()));
         maxHeap.insert(3).insert(2).insert(15).insert(5).insert(4).insert(45);
-        System.out.print(maxHeap.extractMin() + " "); // largest first: 45
-        System.out.print(maxHeap.extractMin() + " "); // 15
-        System.out.print(maxHeap.getMin());            // 5 (next maximum)
+        System.out.print(maxHeap.poll() + " "); // largest first: 45
+        System.out.print(maxHeap.poll() + " "); // 15
+        System.out.print(maxHeap.peek());        // 5 (next maximum)
     }
 }

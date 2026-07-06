@@ -1,3 +1,6 @@
+import collections.CircularQueue;
+import collections.Queue;
+
 class QueueTest {
 
     private static void assertEqual(Object expected, Object actual, String label) {

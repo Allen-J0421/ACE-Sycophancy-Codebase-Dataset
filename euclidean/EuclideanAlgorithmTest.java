@@ -25,6 +25,9 @@ public final class EuclideanAlgorithmTest {
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7", "8x"}));
 
         assertOverflow(Integer.MIN_VALUE, 0);
+
+        assertCommand(new GcdCommand(new Operands(35, 15)), 5);
+        assertCommand(new GcdCommand(new Operands(-42, 56)), 14);
     }
 
     private static void assertGcd(int left, int right, int expected) {
@@ -44,10 +47,17 @@ public final class EuclideanAlgorithmTest {
         throw new AssertionError("Expected ArithmeticException from gcd(" + a + ", " + b + ")");
     }
 
-    private static void assertOperands(int left, int right, EuclideanAlgorithmApp.Operands op) {
+    private static void assertOperands(int left, int right, Operands op) {
         if (op.left() != left || op.right() != right) {
             throw new AssertionError(
                     "Expected (" + left + ", " + right + ") but got (" + op.left() + ", " + op.right() + ")");
+        }
+    }
+
+    private static void assertCommand(GcdCommand command, int expected) {
+        int actual = command.execute();
+        if (actual != expected) {
+            throw new AssertionError("GcdCommand.execute() = " + actual + "; expected " + expected);
         }
     }
 

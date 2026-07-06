@@ -40,10 +40,13 @@ public final class EuclideanAlgorithmTest {
                 GcdProviderRegistry.get("iterative"),
                 (a, b, result) -> { observedArgs[0] = a; observedArgs[1] = b; observedResult[0] = result; });
         assertCommand(() -> logging.compute(35, 15), 5);
-        if (observedArgs[0] != 35 || observedArgs[1] != 15
-                || !(observedResult[0] instanceof Result.Success<?, ?> s) || !s.value().equals(5)) {
+        @SuppressWarnings("unchecked")
+        int capturedValue = ((Result<Integer, GcdError>) observedResult[0]).fold(
+                v -> v,
+                e -> { throw new AssertionError("Observer captured Failure: " + e.reason()); });
+        if (observedArgs[0] != 35 || observedArgs[1] != 15 || capturedValue != 5) {
             throw new AssertionError("Observer received wrong values: args=("
-                    + observedArgs[0] + ", " + observedArgs[1] + ") result=" + observedResult[0]);
+                    + observedArgs[0] + ", " + observedArgs[1] + ") value=" + capturedValue);
         }
 
         // Observer is called with Failure — no special-case suppression.
@@ -52,9 +55,10 @@ public final class EuclideanAlgorithmTest {
                 GcdProviderRegistry.get("iterative"),
                 (a, b, result) -> failureObserved[0] = result);
         assertFailure(loggingOverflow, Integer.MIN_VALUE, 0);
-        if (!(failureObserved[0] instanceof Result.Failure<?, ?>)) {
-            throw new AssertionError("Observer must be called with Failure when computation overflows");
-        }
+        @SuppressWarnings("unchecked")
+        Object __ = ((Result<Integer, GcdError>) failureObserved[0]).fold(
+                v -> { throw new AssertionError("Observer captured Success, expected Failure: " + v); },
+                e -> null);
 
         // Builder: default, named provider, direct provider injection.
         assertCommand(new GcdCommandBuilder().build(new Operands(35, 15)), 5);
@@ -69,24 +73,28 @@ public final class EuclideanAlgorithmTest {
                 .provider("iterative")
                 .observer((a, b, result) -> builderObserved[0] = result)
                 .build(new Operands(35, 15)), 5);
-        if (!(builderObserved[0] instanceof Result.Success<?, ?> bs) || !bs.value().equals(5)) {
-            throw new AssertionError("Builder observer received wrong result: " + builderObserved[0]);
+        @SuppressWarnings("unchecked")
+        int capturedBuilderValue = ((Result<Integer, GcdError>) builderObserved[0]).fold(
+                v -> v,
+                e -> { throw new AssertionError("Builder observer captured Failure: " + e.reason()); });
+        if (capturedBuilderValue != 5) {
+            throw new AssertionError("Builder observer received wrong result: " + capturedBuilderValue);
         }
     }
 
     private static void assertGcd(GcdProvider provider, int left, int right, int expected) {
-        Result<Integer, GcdError> result = provider.compute(left, right);
-        if (!(result instanceof Result.Success<?, ?> s) || !s.value().equals(expected)) {
-            throw new AssertionError(
-                    "gcd(" + left + ", " + right + ") = " + result + "; expected " + expected);
+        int actual = provider.compute(left, right).fold(
+                v -> v,
+                e -> { throw new AssertionError("gcd(" + left + ", " + right + ") failed: " + e.reason()); });
+        if (actual != expected) {
+            throw new AssertionError("gcd(" + left + ", " + right + ") = " + actual + "; expected " + expected);
         }
     }
 
     private static void assertFailure(GcdProvider provider, int a, int b) {
-        Result<Integer, GcdError> result = provider.compute(a, b);
-        if (!(result instanceof Result.Failure<?, ?>)) {
-            throw new AssertionError("Expected Failure from gcd(" + a + ", " + b + ") but got: " + result);
-        }
+        provider.compute(a, b).fold(
+                v -> { throw new AssertionError("Expected Failure from gcd(" + a + ", " + b + ") but got: " + v); },
+                e -> null);
     }
 
     private static void assertOperands(int left, int right, Operands op) {
@@ -97,9 +105,11 @@ public final class EuclideanAlgorithmTest {
     }
 
     private static void assertCommand(Command<Result<Integer, GcdError>> command, int expected) {
-        Result<Integer, GcdError> result = command.execute();
-        if (!(result instanceof Result.Success<?, ?> s) || !s.value().equals(expected)) {
-            throw new AssertionError("Command.execute() = " + result + "; expected " + expected);
+        int actual = command.execute().fold(
+                v -> v,
+                e -> { throw new AssertionError("Command failed: " + e.reason()); });
+        if (actual != expected) {
+            throw new AssertionError("Command.execute() = " + actual + "; expected " + expected);
         }
     }
 

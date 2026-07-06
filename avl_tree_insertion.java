@@ -1,6 +1,11 @@
 import java.util.*;
 
-class AVLTree {
+interface Tree {
+    void insert(int key);
+    void preOrder();
+}
+
+class AVLTree implements Tree {
 
     private Node root;
 
@@ -113,7 +118,7 @@ class AVLTree {
     }
 
     public static void main(String[] args) {
-        AVLTree tree = new AVLTree();
+        Tree tree = new AVLTree();
 
         tree.insert(10);
         tree.insert(20);

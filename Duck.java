@@ -1,7 +1,7 @@
 import java.awt.*;
 
 
-public class Duck extends Prey {
+public class Duck extends Animal {
 
 
 	private static final int BREEDING_AGE = 4;
@@ -14,11 +14,21 @@ public class Duck extends Prey {
 
 
 	public Duck(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
+		super(field, location,
+		      new PreyHungerStrategy(),
+		      new StandardMovementStrategy(),
+		      new StandardBreedingStrategy(),
+		      false);
 		setFoodChainLevel(1);
 		setFoodValue(5);
 		setSickProbability(10);
 		setRecoverProbability(2);
+		setMaxSickStep(20);
+		setAge(0);
+		setFoodLevel(6);
+		if (randomAge) {
+			setAge(rand.nextInt(MAX_AGE));
+		}
 	}
 
 

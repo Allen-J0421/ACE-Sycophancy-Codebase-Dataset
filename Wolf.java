@@ -1,7 +1,7 @@
 import java.awt.*;
 
 
-public class Wolf extends Predator {
+public class Wolf extends Animal {
 
 
 	private static final int BREEDING_AGE = 20;
@@ -14,14 +14,24 @@ public class Wolf extends Predator {
 
 
 	public Wolf(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
+		super(field, location,
+		      new PredatorHungerStrategy(9, true),
+		      new StandardMovementStrategy(),
+		      new StandardBreedingStrategy(),
+		      true);
 		toggleNocturnal();
 		setFoodChainLevel(2);
 		setFoodValue(10);
-		toggleCannibal();
 		setSickProbability(15);
 		setRecoverProbability(4);
-		setAdditionalFoodValue(9);
+		setMaxSickStep(30);
+		if (randomAge) {
+			setAge(rand.nextInt(MAX_AGE));
+			setFoodLevel(rand.nextInt(5));
+		} else {
+			setAge(0);
+			setFoodLevel(6);
+		}
 	}
 
 

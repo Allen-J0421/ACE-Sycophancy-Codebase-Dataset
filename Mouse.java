@@ -1,7 +1,7 @@
 import java.awt.*;
 
 
-public class Mouse extends Prey {
+public class Mouse extends Animal {
 
 
 	private static final int BREEDING_AGE = 3;
@@ -14,11 +14,21 @@ public class Mouse extends Prey {
 
 
 	public Mouse(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
+		super(field, location,
+		      new PreyHungerStrategy(),
+		      new StandardMovementStrategy(),
+		      new StandardBreedingStrategy(),
+		      false);
 		setFoodChainLevel(1);
 		setFoodValue(7);
 		setSickProbability(50);
 		setRecoverProbability(7);
+		setMaxSickStep(20);
+		setAge(0);
+		setFoodLevel(6);
+		if (randomAge) {
+			setAge(rand.nextInt(MAX_AGE));
+		}
 	}
 
 

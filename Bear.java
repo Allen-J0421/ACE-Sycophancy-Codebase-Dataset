@@ -1,7 +1,7 @@
 import java.awt.*;
 
 
-public class Bear extends Predator {
+public class Bear extends Animal {
 
 
 	private static final int BREEDING_AGE = 40;
@@ -14,12 +14,23 @@ public class Bear extends Predator {
 
 
 	public Bear(boolean randomAge, Field field, Location location) {
-		super(randomAge, field, location);
+		super(field, location,
+		      new PredatorHungerStrategy(40, false),
+		      new StandardMovementStrategy(),
+		      new StandardBreedingStrategy(),
+		      true);
 		setFoodChainLevel(3);
 		setFoodValue(30);
 		setSickProbability(10);
 		setRecoverProbability(4);
-		setAdditionalFoodValue(40);
+		setMaxSickStep(30);
+		if (randomAge) {
+			setAge(rand.nextInt(MAX_AGE));
+			setFoodLevel(rand.nextInt(5));
+		} else {
+			setAge(0);
+			setFoodLevel(6);
+		}
 	}
 
 

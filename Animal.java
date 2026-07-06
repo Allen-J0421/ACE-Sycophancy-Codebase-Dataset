@@ -6,7 +6,15 @@ import java.util.Random;
 public abstract class Animal extends Entity {
 
 
-	private static final Random rand = Randomizer.getRandom();
+	protected static final Random rand = Randomizer.getRandom();
+
+	private final HungerStrategy hungerStrategy;
+
+	private final MovementStrategy movementStrategy;
+
+	private final BreedingStrategy breedingStrategy;
+
+	private final boolean breedFirst;
 
 	private int age;
 
@@ -31,8 +39,16 @@ public abstract class Animal extends Entity {
 	private int maxSickStep;
 
 
-	public Animal(Field field, Location location) {
+	protected Animal(Field field, Location location,
+	                 HungerStrategy hungerStrategy,
+	                 MovementStrategy movementStrategy,
+	                 BreedingStrategy breedingStrategy,
+	                 boolean breedFirst) {
 		super(field, location);
+		this.hungerStrategy = hungerStrategy;
+		this.movementStrategy = movementStrategy;
+		this.breedingStrategy = breedingStrategy;
+		this.breedFirst = breedFirst;
 		gender = gender.randomGender();
 		nocturnal = false;
 		sick = false;
@@ -43,9 +59,6 @@ public abstract class Animal extends Entity {
 	public FieldOccupant.Layer getOccupantLayer() {
 		return FieldOccupant.Layer.ANIMAL;
 	}
-
-
-	abstract protected void normalAct(List<Animal> newAnimals);
 
 
 	public void act(List<Animal> newAnimals, TimeCycle time) {
@@ -63,6 +76,20 @@ public abstract class Animal extends Entity {
 
 				normalAct(newAnimals);
 			}
+		}
+	}
+
+
+	private void normalAct(List<Animal> newAnimals) {
+		if (breedFirst) {
+			breedingStrategy.breed(this, newAnimals);
+		}
+		Location foodLocation = hungerStrategy.findFood(this);
+		if (!breedFirst) {
+			breedingStrategy.breed(this, newAnimals);
+		}
+		if (isAlive()) {
+			movementStrategy.move(this, foodLocation);
 		}
 	}
 

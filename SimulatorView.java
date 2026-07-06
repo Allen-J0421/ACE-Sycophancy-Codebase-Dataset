@@ -29,11 +29,9 @@ public class SimulatorView extends JFrame
 
     private JLabel stepLabel, population, infoLabel, timeLabel, environmentLabel;
     private FieldView fieldView;
-    
+
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
 
     /**
      * Create a view of the given width and height.
@@ -42,7 +40,6 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
-        stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
         setTitle("Predator Prey Simulation");
@@ -106,25 +103,24 @@ public class SimulatorView extends JFrame
     }
 
     /**
-     * Show the current status of the field.
-     * @param step Which iteration step it is.
-     * @param field The field whose status is to be displayed.
+     * Paint the current state of the field and update the step counter.
+     * Population text must be supplied separately via {@link #updatePopulation(String)}.
+     *
+     * @param step  Which iteration step it is.
+     * @param field The field whose contents are to be painted.
      */
     public void showStatus(int step, Field field)
     {
-        if(!isVisible()) {
+        if (!isVisible()) {
             setVisible(true);
         }
         stepLabel.setText(STEP_PREFIX + step);
-        stats.reset();
-        
-        fieldView.preparePaint();
 
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
+        fieldView.preparePaint();
+        for (int row = 0; row < field.getDepth(); row++) {
+            for (int col = 0; col < field.getWidth(); col++) {
                 Object animal = field.getObjectAt(row, col);
-                if(animal != null) {
-                    stats.incrementCount(animal.getClass());
+                if (animal != null) {
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                 }
                 else {
@@ -132,19 +128,17 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        stats.countFinished();
-
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
         fieldView.repaint();
     }
 
     /**
-     * Determine whether the simulation should continue to run.
-     * @return true If there is more than one species alive.
+     * Update the population label with the given pre-computed summary string.
+     *
+     * @param populationText A summary of current population counts.
      */
-    public boolean isViable(Field field)
+    public void updatePopulation(String populationText)
     {
-        return stats.isViable(field);
+        population.setText(POPULATION_PREFIX + populationText);
     }
 
     public void updateTimeLabel(int day, int hour){

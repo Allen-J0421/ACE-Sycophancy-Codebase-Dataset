@@ -18,6 +18,8 @@ public class Simulator
     private SimulatorView view;
     // Owns all simulation state and step logic.
     private SimulationController controller;
+    // Observes the field and maintains population counts.
+    private PopulationStatsMonitor monitor;
 
     /**
      * Construct a simulation field with default size.
@@ -43,6 +45,7 @@ public class Simulator
 
         view = new SimulatorView(depth, width);
         controller = new SimulationController(depth, width);
+        monitor = new PopulationStatsMonitor();
 
         reset();
     }
@@ -64,7 +67,7 @@ public class Simulator
      */
     public void simulate(int numSteps)
     {
-        for (int i = 1; i <= numSteps && view.isViable(controller.getField()); i++) {
+        for (int i = 1; i <= numSteps && monitor.isViable(controller.getField()); i++) {
             simulateOneStep();
             delay(5);
         }
@@ -76,7 +79,9 @@ public class Simulator
     public void simulateOneStep()
     {
         controller.advance();
+        monitor.observe(controller.getField());
         view.showStatus(controller.getStep(), controller.getField());
+        view.updatePopulation(monitor.getPopulationSummary(controller.getField()));
         view.updateTimeLabel(controller.getDay(), controller.getHour());
         view.updateEnvironmentLabel(controller.getCurrentWeather(), controller.getCurrentTime());
     }
@@ -96,7 +101,9 @@ public class Simulator
     {
         Populator populator = new Populator(view);
         controller.reset(populator);
+        monitor.observe(controller.getField());
         view.showStatus(controller.getStep(), controller.getField());
+        view.updatePopulation(monitor.getPopulationSummary(controller.getField()));
     }
 
     /**

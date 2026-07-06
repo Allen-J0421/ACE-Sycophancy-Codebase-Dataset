@@ -5,7 +5,13 @@ final class BellmanFord {
 
     private BellmanFord() {}
 
+    // Delegation shim — preserves the concrete WeightedGraph overload for call sites
+    // that were compiled against it, while the algorithm itself works on Graph.
     static ShortestPathResult shortestPaths(WeightedGraph graph, int source) {
+        return shortestPaths((Graph) graph, source);
+    }
+
+    static ShortestPathResult shortestPaths(Graph graph, int source) {
         int V = graph.vertices();
         if (source < 0 || source >= V) {
             throw new IllegalArgumentException(
@@ -13,7 +19,7 @@ final class BellmanFord {
         }
 
         EdgeRelaxer relaxer = new EdgeRelaxer(V, source);
-        List<WeightedEdge> edges = graph.edges();
+        List<? extends Edge> edges = graph.edges();
 
         for (int i = 0; i < V - 1; i++) {
             for (Edge e : edges) {

@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-final class WeightedGraph {
+final class WeightedGraph implements Graph {
 
     private final VertexIndex vertexIndex;
     private final AdjacencyStore store;
@@ -29,7 +29,8 @@ final class WeightedGraph {
         return new WeightedGraph(index, store);
     }
 
-    int vertices() {
+    @Override
+    public int vertices() {
         return vertexIndex.size();
     }
 
@@ -37,7 +38,8 @@ final class WeightedGraph {
         return store.edgeCount();
     }
 
-    List<WeightedEdge> edges() {
+    @Override
+    public List<? extends Edge> edges() {
         return store.allEdges();
     }
 }

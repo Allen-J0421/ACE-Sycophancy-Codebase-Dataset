@@ -3,28 +3,32 @@ import java.util.*;
 class MinHeap<T extends Comparable<T>> implements Iterable<T> {
 
     private final ArrayList<T> heapArray;
-    private final Comparator<T> comparator;
+    private final Heapify<T> strategy;
 
     public MinHeap() {
+        this(new BinaryHeapStrategy<T>(Comparator.naturalOrder()));
+    }
+
+    public MinHeap(Heapify<T> strategy) {
         heapArray = new ArrayList<>();
-        comparator = Comparator.naturalOrder();
+        this.strategy = strategy;
     }
 
     public MinHeap<T> insert(T key) {
         heapArray.add(key);
-        siftUp(heapArray.size() - 1);
+        strategy.siftUp(heapArray, heapArray.size() - 1);
         return this;
     }
 
     public MinHeap<T> decrease(int index, T new_val) {
         heapArray.set(index, new_val);
-        siftUp(index);
+        strategy.fix(heapArray, index);
         return this;
     }
 
     public MinHeap<T> increase(int index, T new_val) {
         heapArray.set(index, new_val);
-        siftDown(index);
+        strategy.fix(heapArray, index);
         return this;
     }
 
@@ -34,28 +38,17 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
             heapArray.remove(lastIndex);
             return this;
         }
-        T replacement = heapArray.remove(lastIndex);
-        heapArray.set(index, replacement);
-        if (index > 0 && comparator.compare(replacement, heapArray.get(parent(index))) < 0) {
-            siftUp(index);
-        } else {
-            siftDown(index);
-        }
+        heapArray.set(index, heapArray.remove(lastIndex));
+        strategy.fix(heapArray, index);
         return this;
     }
 
     public MinHeap<T> changeValue(int index, T new_val) {
-        T current = heapArray.get(index);
-        int cmp = comparator.compare(current, new_val);
-        if (cmp == 0) {
+        if (heapArray.get(index).equals(new_val)) {
             return this;
         }
         heapArray.set(index, new_val);
-        if (cmp < 0) {
-            siftDown(index);
-        } else {
-            siftUp(index);
-        }
+        strategy.fix(heapArray, index);
         return this;
     }
 
@@ -72,42 +65,12 @@ class MinHeap<T extends Comparable<T>> implements Iterable<T> {
         }
         T root = heapArray.get(0);
         heapArray.set(0, heapArray.remove(heapArray.size() - 1));
-        siftDown(0);
+        strategy.siftDown(heapArray, 0);
         return root;
     }
 
     @Override
     public Iterator<T> iterator() {
         return heapArray.iterator();
-    }
-
-    private void siftUp(int index) {
-        while (index != 0 && comparator.compare(heapArray.get(index), heapArray.get(parent(index))) < 0) {
-            Collections.swap(heapArray, index, parent(index));
-            index = parent(index);
-        }
-    }
-
-    private void siftDown(int index) {
-        int size = heapArray.size();
-        int l = 2 * index + 1;
-        int r = 2 * index + 2;
-        int smallest = index;
-
-        if (l < size && comparator.compare(heapArray.get(l), heapArray.get(smallest)) < 0) {
-            smallest = l;
-        }
-        if (r < size && comparator.compare(heapArray.get(r), heapArray.get(smallest)) < 0) {
-            smallest = r;
-        }
-
-        if (smallest != index) {
-            Collections.swap(heapArray, index, smallest);
-            siftDown(smallest);
-        }
-    }
-
-    private static int parent(int index) {
-        return (index - 1) / 2;
     }
 }

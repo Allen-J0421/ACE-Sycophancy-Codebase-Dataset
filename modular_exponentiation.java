@@ -1,4 +1,6 @@
-class ModularExponentiation {
+final class ModularExponentiation {
+    private ModularExponentiation() {}
+
     public static int powMod(int base, int exp, int mod) {
         if (mod <= 0) throw new IllegalArgumentException("mod must be positive");
         if (exp < 0)  throw new IllegalArgumentException("exp must be non-negative");

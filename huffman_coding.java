@@ -1,17 +1,23 @@
 import java.util.*;
 
+class FrequencyAnalyzer {
+    private FrequencyAnalyzer() {}
+
+    static Map<Character, Integer> countChars(String input) {
+        Map<Character, Integer> freq = new LinkedHashMap<>();
+        for (char c : input.toCharArray()) {
+            freq.merge(c, 1, Integer::sum);
+        }
+        return freq;
+    }
+}
+
 @FunctionalInterface
 interface FrequencyStrategy {
     Map<Character, Integer> getFrequencies();
 
     static FrequencyStrategy fromString(String input) {
-        return () -> {
-            Map<Character, Integer> freq = new LinkedHashMap<>();
-            for (char c : input.toCharArray()) {
-                freq.merge(c, 1, Integer::sum);
-            }
-            return freq;
-        };
+        return () -> FrequencyAnalyzer.countChars(input);
     }
 
     static FrequencyStrategy fromPreset(Map<Character, Integer> preset) {

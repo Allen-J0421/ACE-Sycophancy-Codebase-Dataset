@@ -46,35 +46,45 @@ record SortingContext<T extends Comparable<T>>(
         BucketFactory<T> bucketFactory,
         Function<T, Integer> indexMapper) {}
 
-class BucketSort<T extends Comparable<T>> implements SortingStrategy<T> {
+class BucketOrchestrator<T extends Comparable<T>> {
     private final SortingContext<T> context;
 
-    BucketSort(SortingContext<T> context) {
+    BucketOrchestrator(SortingContext<T> context) {
         this.context = context;
     }
 
-    @Override
-    public void sort(T[] arr) {
-        Bucket<T>[] buckets = context.bucketFactory().create(arr.length);
-        distribute(arr, buckets);
-        for (Bucket<T> bucket : buckets) {
-            bucket.sort();
-        }
-        collect(arr, buckets);
-    }
-
-    private void distribute(T[] arr, Bucket<T>[] buckets) {
+    void distribute(T[] arr, Bucket<T>[] buckets) {
         IntStream.range(0, arr.length)
                 .forEach(i -> buckets[context.indexMapper().apply(arr[i])].add(arr[i]));
     }
 
-    private void collect(T[] arr, Bucket<T>[] buckets) {
+    void collect(T[] arr, Bucket<T>[] buckets) {
         List<T> sorted = Arrays.stream(buckets)
                 .flatMap(b -> b.getValues().stream())
                 .collect(Collectors.toList());
         for (int i = 0; i < arr.length; i++) {
             arr[i] = sorted.get(i);
         }
+    }
+}
+
+class BucketSort<T extends Comparable<T>> implements SortingStrategy<T> {
+    private final SortingContext<T> context;
+    private final BucketOrchestrator<T> orchestrator;
+
+    BucketSort(SortingContext<T> context) {
+        this.context = context;
+        this.orchestrator = new BucketOrchestrator<>(context);
+    }
+
+    @Override
+    public void sort(T[] arr) {
+        Bucket<T>[] buckets = context.bucketFactory().create(arr.length);
+        orchestrator.distribute(arr, buckets);
+        for (Bucket<T> bucket : buckets) {
+            bucket.sort();
+        }
+        orchestrator.collect(arr, buckets);
     }
 }
 

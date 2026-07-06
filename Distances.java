@@ -1,7 +1,4 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 final class Distances implements ShortestPathResult {
 
@@ -10,12 +7,12 @@ final class Distances implements ShortestPathResult {
 
     private final int source;
     private final int[] distances;
-    private final int[] predecessors;
+    private final PathBuilder pathBuilder;
 
     Distances(int source, int[] distances, int[] predecessors) {
         this.source = source;
         this.distances = distances.clone();
-        this.predecessors = predecessors.clone();
+        this.pathBuilder = new PathBuilder(predecessors);
     }
 
     int source() { return source; }
@@ -30,13 +27,7 @@ final class Distances implements ShortestPathResult {
 
     Path pathTo(int target) {
         if (!isReachable(target)) return Path.none();
-
-        List<Integer> path = new ArrayList<>();
-        for (int v = target; v != NO_PREDECESSOR; v = predecessors[v]) {
-            path.add(v);
-        }
-        Collections.reverse(path);
-        return Path.of(path, distances[target]);
+        return pathBuilder.build(target, distances[target]);
     }
 
     int[] all() {

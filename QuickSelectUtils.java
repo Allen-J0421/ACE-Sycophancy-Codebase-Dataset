@@ -2,8 +2,6 @@ import java.util.Random;
 
 class QuickSelectUtils {
 
-    private static final Random rand = new Random();
-
     private static void swap(int[] arr, int i, int j)
     {
         int temp = arr[i];
@@ -11,7 +9,7 @@ class QuickSelectUtils {
         arr[j] = temp;
     }
 
-    public static int partition(int[] arr, int low, int high)
+    public static int partition(int[] arr, int low, int high, Random rand)
     {
         int randomIndex = low + rand.nextInt(high - low + 1);
         swap(arr, randomIndex, high);
@@ -30,7 +28,7 @@ class QuickSelectUtils {
         return pivotloc;
     }
 
-    public static int kthSmallest(int[] arr, int low, int high, int k)
+    public static int kthSmallest(int[] arr, int low, int high, int k, Random rand)
     {
         if (arr == null || arr.length == 0)
             throw new IllegalArgumentException("Array must not be null or empty");
@@ -38,15 +36,15 @@ class QuickSelectUtils {
             throw new IllegalArgumentException(
                 "k must be between 1 and " + arr.length + ", got " + k);
 
-        int partition = partition(arr, low, high);
+        int partition = partition(arr, low, high, rand);
 
         if (partition == k - 1)
             return arr[partition];
 
         else if (partition < k - 1)
-            return kthSmallest(arr, partition + 1, high, k);
+            return kthSmallest(arr, partition + 1, high, k, rand);
 
         else
-            return kthSmallest(arr, low, partition - 1, k);
+            return kthSmallest(arr, low, partition - 1, k, rand);
     }
 }

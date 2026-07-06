@@ -1,3 +1,5 @@
+import java.util.Random;
+
 class QuickSelect {
 
     public static void main(String[] args)
@@ -9,7 +11,7 @@ class QuickSelect {
         int kPosition = 3;
         int length = array.length;
 
-        SelectionStrategy strategy = new QuickSelectStrategy();
+        SelectionStrategy strategy = new QuickSelectStrategy(new Random());
 
         if (kPosition > length) {
             System.out.println("Index out of bound");

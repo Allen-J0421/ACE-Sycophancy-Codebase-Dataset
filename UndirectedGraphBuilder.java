@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-class UndirectedGraphBuilder {
+class UndirectedGraphBuilder implements GraphBuilder {
     private final int V;
     private final List<int[]> edges = new ArrayList<>();
 
@@ -9,12 +9,14 @@ class UndirectedGraphBuilder {
         this.V = V;
     }
 
-    UndirectedGraphBuilder addEdge(int u, int v) {
+    @Override
+    public GraphBuilder addEdge(int u, int v) {
         edges.add(new int[]{u, v});
         return this;
     }
 
-    UndirectedGraph build() {
+    @Override
+    public Graph build() {
         List<List<Integer>> adj = new ArrayList<>();
         for (int i = 0; i < V; i++) adj.add(new ArrayList<>());
         for (int[] edge : edges) {

@@ -5,8 +5,10 @@ public class Trie {
     private static int charIndex(char c) { return c - ALPHABET_START; }
 
     private static class TrieNode {
-        TrieNode[] children = new TrieNode[ALPHABET_SIZE];
+        TrieNode[] children;
         boolean isEndOfWord;
+
+        TrieNode() { children = new TrieNode[ALPHABET_SIZE]; }
     }
 
     private final TrieNode root = new TrieNode();

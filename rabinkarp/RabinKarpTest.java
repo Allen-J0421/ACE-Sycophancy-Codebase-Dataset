@@ -24,9 +24,9 @@ public final class RabinKarpTest {
         expect(matcher.search("a",     "a"),              List.of(0),     label + ": single char exact match");
     }
 
-    private static void expect(List<Integer> actual, List<Integer> expected, String label) {
-        if (!actual.equals(expected)) {
-            throw new AssertionError(label + ": expected " + expected + " but got " + actual);
+    private static void expect(MatchResult actual, List<Integer> expected, String label) {
+        if (!actual.positions().equals(expected)) {
+            throw new AssertionError(label + ": expected " + expected + " but got " + actual.positions());
         }
     }
 }

@@ -1,7 +1,5 @@
 package rabinkarp;
 
-import java.util.List;
-
 public final class RabinKarpPattern {
     private final CharSequence pattern;
     private final int length;
@@ -28,7 +26,7 @@ public final class RabinKarpPattern {
         return compile(pattern, RabinKarpMatcher.DEFAULT_RADIX, RabinKarpMatcher.DEFAULT_MODULUS);
     }
 
-    public List<Integer> searchIn(CharSequence text) {
+    public MatchResult searchIn(CharSequence text) {
         return matcher.search(this, text);
     }
 

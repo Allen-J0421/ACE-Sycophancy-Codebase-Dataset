@@ -1,7 +1,5 @@
 package rabinkarp;
 
-import java.util.List;
-
 public final class RabinKarpDemo {
     private RabinKarpDemo() {}
 
@@ -20,8 +18,7 @@ public final class RabinKarpDemo {
         System.out.println();
 
         RabinKarpPattern compiled = RabinKarpPattern.compile(pat);
-        for (int idx : compiled.searchIn(txt))
-            System.out.print(idx + " ");
-        System.out.println();
+        MatchResult result = compiled.searchIn(txt);
+        System.out.println(result.count() + " match(es): " + result.positions());
     }
 }

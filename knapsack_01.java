@@ -17,30 +17,26 @@ interface KnapsackStrategy {
 }
 
 class KnapsackSolver {
-    private final int[] dp;
+    private KnapsackSolver() {}
 
-    KnapsackSolver(int capacity) {
-        this.dp = new int[capacity + 1];
+    static int compute(int capacity, Item[] items) {
+        int[] dp = new int[capacity + 1];
+        for (Item item : items) {
+            processItem(dp, item);
+        }
+        return dp[capacity];
     }
 
-    void processItem(Item item) {
+    private static void processItem(int[] dp, Item item) {
         for (int remaining = dp.length - 1; remaining >= item.weight(); remaining--) {
             dp[remaining] = Math.max(dp[remaining], dp[remaining - item.weight()] + item.value());
         }
-    }
-
-    int optimalValue() {
-        return dp[dp.length - 1];
     }
 }
 
 class DPKnapsackStrategy implements KnapsackStrategy {
     public int solve(KnapsackInput problem) {
-        KnapsackSolver table = new KnapsackSolver(problem.capacity);
-        for (Item item : problem.items) {
-            table.processItem(item);
-        }
-        return table.optimalValue();
+        return KnapsackSolver.compute(problem.capacity, problem.items);
     }
 }
 

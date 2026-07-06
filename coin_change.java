@@ -1,8 +1,7 @@
 import java.util.Arrays;
 
-public class CoinChange{
-
-    static int count(int[] coins, int sum) {
+class CoinChangeDPService {
+    int computeWays(int[] coins, int sum) {
         int n = coins.length;
 
         int[][] dp = new int[n + 1][sum + 1];
@@ -20,7 +19,15 @@ public class CoinChange{
             }
         }
         return dp[n][sum];
+    }
 }
+
+public class CoinChange{
+
+    static int count(int[] coins, int sum) {
+        return new CoinChangeDPService().computeWays(coins, sum);
+    }
+
     public static void main(String[] args) {
         int[] coins = {1, 2, 3};
         int sum = 5;

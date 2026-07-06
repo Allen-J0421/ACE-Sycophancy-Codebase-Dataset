@@ -17,10 +17,16 @@ public class ActivitySelection {
     }
 
     public static void main(String[] args) {
-        int[] start = {1, 3, 0, 5, 8, 5};
-        int[] finish = {2, 4, 6, 7, 9, 9};
+        Activity[] activities = {
+            Activity.builder().start(1).finish(2).build(),
+            Activity.builder().start(3).finish(4).build(),
+            Activity.builder().start(0).finish(6).build(),
+            Activity.builder().start(5).finish(7).build(),
+            Activity.builder().start(8).finish(9).build(),
+            Activity.builder().start(5).finish(9).build(),
+        };
 
-        System.out.println(activitySelection(start, finish));
+        System.out.println(new ActivitySelector().select(activities));
     }
 }
 
@@ -31,6 +37,29 @@ class Activity {
     Activity(int start, int finish) {
         this.start = start;
         this.finish = finish;
+    }
+
+    static Builder builder() {
+        return new Builder();
+    }
+
+    static class Builder {
+        private int start;
+        private int finish;
+
+        Builder start(int start) {
+            this.start = start;
+            return this;
+        }
+
+        Builder finish(int finish) {
+            this.finish = finish;
+            return this;
+        }
+
+        Activity build() {
+            return new Activity(start, finish);
+        }
     }
 }
 

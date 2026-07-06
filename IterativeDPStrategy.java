@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 class IterativeDPStrategy implements RodCuttingStrategy {
 
     @Override
@@ -19,16 +16,6 @@ class IterativeDPStrategy implements RodCuttingStrategy {
             }
         }
 
-        return new RodCuttingSolution(revenue[n], traceCuts(bestCut, n));
-    }
-
-    private List<Integer> traceCuts(int[] bestCut, int n) {
-        List<Integer> cuts = new ArrayList<>();
-        int remaining = n;
-        while (remaining > 0) {
-            cuts.add(bestCut[remaining]);
-            remaining -= bestCut[remaining];
-        }
-        return cuts;
+        return new RodCuttingSolution(revenue[n], CutTracer.trace(bestCut, n));
     }
 }

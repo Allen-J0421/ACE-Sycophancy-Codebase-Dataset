@@ -1,6 +1,4 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 class MemoizedRecursiveStrategy implements RodCuttingStrategy {
 
@@ -14,7 +12,7 @@ class MemoizedRecursiveStrategy implements RodCuttingStrategy {
 
         computeRevenue(n, problem, memo, bestCut);
 
-        return new RodCuttingSolution(memo[n], traceCuts(bestCut, n));
+        return new RodCuttingSolution(memo[n], CutTracer.trace(bestCut, n));
     }
 
     private int computeRevenue(int length, RodCuttingProblem problem, int[] memo, int[] bestCut) {
@@ -29,15 +27,5 @@ class MemoizedRecursiveStrategy implements RodCuttingStrategy {
         }
         memo[length] = best;
         return best;
-    }
-
-    private List<Integer> traceCuts(int[] bestCut, int n) {
-        List<Integer> cuts = new ArrayList<>();
-        int remaining = n;
-        while (remaining > 0) {
-            cuts.add(bestCut[remaining]);
-            remaining -= bestCut[remaining];
-        }
-        return cuts;
     }
 }

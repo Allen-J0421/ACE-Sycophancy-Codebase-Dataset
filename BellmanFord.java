@@ -1,6 +1,5 @@
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 final class BellmanFord {
 
@@ -22,39 +21,11 @@ final class BellmanFord {
             }
         }
 
-        // V-th round: if any edge can still be relaxed, a negative cycle is reachable
-        int cycleEntry = -1;
-        for (WeightedEdge e : edges) {
-            if (relaxer.canRelax(e)) {
-                relaxer.linkPredecessor(e);
-                cycleEntry = e.to();
-                break;
-            }
-        }
+        Optional<NegativeCycle> cycle =
+            new NegativeCycleDetector(relaxer, edges, V).detect();
 
-        if (cycleEntry == -1) {
-            return new Distances(source, relaxer.distances(), relaxer.predecessors());
-        }
-
-        return extractNegativeCycle(cycleEntry, relaxer.predecessors(), V);
-    }
-
-    private static NegativeCycle extractNegativeCycle(int cycleEntry, int[] pred, int V) {
-        // Walk back V steps to guarantee landing inside the cycle
-        int x = cycleEntry;
-        for (int i = 0; i < V; i++) {
-            x = pred[x];
-        }
-
-        // Trace the cycle in pred order until we revisit x
-        List<Integer> traceback = new ArrayList<>();
-        int cur = x;
-        do {
-            traceback.add(cur);
-            cur = pred[cur];
-        } while (cur != x);
-
-        Collections.reverse(traceback);
-        return new NegativeCycle(traceback);
+        return cycle.isPresent()
+            ? cycle.get()
+            : new Distances(source, relaxer.distances(), relaxer.predecessors());
     }
 }

@@ -65,8 +65,14 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
 
     public static void main(String[] args) {
         SearchCallback<Integer> logger = new SearchCallback<Integer>() {
-            public void onFound(Integer key) { System.out.println(key + ": found"); }
-            public void onNotFound(Integer key) { System.out.println(key + ": not found"); }
+            @Override void onFound(Integer key) { System.out.println("[LOG] Found: " + key); }
+            @Override void onNotFound(Integer key) { System.out.println("[LOG] Not found: " + key); }
+        };
+
+        SearchCallback<Integer> analytics = new SearchCallback<Integer>() {
+            private int hits = 0, misses = 0;
+            @Override void onFound(Integer key) { System.out.println("[ANALYTICS] hits=" + ++hits); }
+            @Override void onNotFound(Integer key) { System.out.println("[ANALYTICS] misses=" + ++misses); }
         };
 
         BinarySearchTree<Integer> bst = new TreeBuilder<Integer>()
@@ -75,13 +81,14 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
             .insert(8)
             .insert(7)
             .insert(9)
-            .withSearchCallback(logger)
+            .withSearchCallback(logger.andThen(analytics))
             .build();
 
         System.out.println(bst);
 
         bst.search(7);
         bst.search(5);
+        bst.search(9);
 
         System.out.print("In-order:   ");
         bst.traverse((data, depth) -> System.out.print(data + " "));

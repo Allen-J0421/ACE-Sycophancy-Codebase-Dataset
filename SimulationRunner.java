@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class SimulationRunner {
+public class SimulationRunner implements SimulatorListener {
 
 
 	private final Simulator simulator;
@@ -17,6 +17,8 @@ public class SimulationRunner {
 		Field field = simulator.getField();
 		gridView = new SimulatorView(field.getDepth(), field.getWidth());
 		graphView = new GraphView(1000, 500, 500);
+		simulator.addListener(this);
+		// Simulator constructor fired reset() before we registered; sync views now.
 		refreshSpeciesColors();
 		syncViews();
 	}
@@ -29,16 +31,26 @@ public class SimulationRunner {
 
 	public void simulate(int numSteps) {
 		for (int i = 1; i <= numSteps && gridView.isViable(simulator.getField()); i++) {
-			simulator.simulateOneStep();
-			syncViews();
+			simulator.simulateOneStep(); // fires onStep → syncViews
 			delay(60);
 		}
 	}
 
 
 	public void reset() {
+		simulator.reset(); // fires onReset → view reset + syncViews
+	}
+
+
+	@Override
+	public void onStep(int step, TimeCycle timeCycle, Field field, Climate climate, int sickPercentage) {
+		syncViews();
+	}
+
+
+	@Override
+	public void onReset(int step, TimeCycle timeCycle, Field field, Climate climate, int sickPercentage) {
 		graphView.reset();
-		simulator.reset();
 		refreshSpeciesColors();
 		syncViews();
 	}
@@ -70,7 +82,6 @@ public class SimulationRunner {
 		try {
 			Thread.sleep(millisec);
 		} catch (InterruptedException ie) {
-			// restore interrupt status
 			Thread.currentThread().interrupt();
 		}
 	}

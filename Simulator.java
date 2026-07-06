@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class Simulator {
@@ -29,6 +30,8 @@ public class Simulator {
 
 	private static final int TIMECYCLE_LENGTH = 4;
 
+
+	private final List<SimulatorListener> listeners = new CopyOnWriteArrayList<>();
 
 	private List<Animal> animals;
 
@@ -105,6 +108,7 @@ public class Simulator {
 		}
 
 		sickPercentage = animals.isEmpty() ? 0 : (count * 100) / animals.size();
+		fireOnStep();
 	}
 
 
@@ -116,6 +120,31 @@ public class Simulator {
 		currentTimeCycle = DEFAULT_TIMECYCLE;
 		climate.setCurrentWeather(DEFAULT_WEATHER);
 		sickPercentage = 0;
+		fireOnReset();
+	}
+
+
+	public void addListener(SimulatorListener listener) {
+		listeners.add(listener);
+	}
+
+
+	public void removeListener(SimulatorListener listener) {
+		listeners.remove(listener);
+	}
+
+
+	private void fireOnStep() {
+		for (SimulatorListener l : listeners) {
+			l.onStep(step, currentTimeCycle, field, climate, sickPercentage);
+		}
+	}
+
+
+	private void fireOnReset() {
+		for (SimulatorListener l : listeners) {
+			l.onReset(step, currentTimeCycle, field, climate, sickPercentage);
+		}
 	}
 
 

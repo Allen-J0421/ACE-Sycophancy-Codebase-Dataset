@@ -1,12 +1,17 @@
 import java.io.PrintStream;
 
 class RodCuttingStrategyFactory {
+    private final PrintStream log;
 
-    static RodCuttingStrategy create(SolverType type, PrintStream log) {
+    RodCuttingStrategyFactory(PrintStream log) {
+        this.log = log;
+    }
+
+    RodCuttingStrategy create(SolverType type) {
         return new LoggingDecorator(bareStrategy(type), log);
     }
 
-    private static RodCuttingStrategy bareStrategy(SolverType type) {
+    private RodCuttingStrategy bareStrategy(SolverType type) {
         switch (type) {
             case ITERATIVE_DP:       return new IterativeDPStrategy();
             case MEMOIZED_RECURSIVE: return new MemoizedRecursiveStrategy();

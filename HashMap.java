@@ -4,33 +4,45 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     private int size;
     private final HashNode<K, V> DELETED = new HashNode<>(null, null);
     private static final double LOAD_FACTOR_THRESHOLD = 0.75;
+    private final ProbingStrategy strategy;
+
+    public HashMap() {
+        this(new LinearProbingStrategy());
+    }
 
     @SuppressWarnings("unchecked")
-    public HashMap() {
+    public HashMap(ProbingStrategy strategy) {
+        this.strategy = strategy;
         capacity = 20;
         size = 0;
         table = (HashNode<K, V>[]) new HashNode[capacity];
     }
 
-    private int hash(K key) {
+    private int hash1(K key) {
         return (key.hashCode() & 0x7FFFFFFF) % capacity;
+    }
+
+    // Secondary hash for double hashing; guaranteed >= 1 so the step is never zero.
+    private int hash2(K key) {
+        return 1 + (key.hashCode() & 0x7FFFFFFF) % (capacity - 1);
     }
 
     @Override
     public void insertNode(K key, V value) {
-        HashNode<K, V> temp = new HashNode<>(key, value);
-        int hashIndex = hash(key);
+        int h1 = hash1(key);
+        int h2 = hash2(key);
+        int attempt = 0;
+        int hashIndex = strategy.probe(h1, h2, attempt, capacity);
 
         while (table[hashIndex] != null &&
                !key.equals(table[hashIndex].getKey()) &&
                table[hashIndex] != DELETED) {
-            hashIndex++;
-            hashIndex %= capacity;
+            hashIndex = strategy.probe(h1, h2, ++attempt, capacity);
         }
 
         if (table[hashIndex] == null || table[hashIndex] == DELETED)
             size++;
-        table[hashIndex] = temp;
+        table[hashIndex] = new HashNode<>(key, value);
 
         if (size > capacity * LOAD_FACTOR_THRESHOLD)
             resize();
@@ -38,7 +50,10 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
 
     @Override
     public V deleteNode(K key) {
-        int hashIndex = hash(key);
+        int h1 = hash1(key);
+        int h2 = hash2(key);
+        int attempt = 0;
+        int hashIndex = strategy.probe(h1, h2, attempt, capacity);
 
         while (table[hashIndex] != null) {
             if (key.equals(table[hashIndex].getKey())) {
@@ -47,8 +62,7 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
                 size--;
                 return value;
             }
-            hashIndex++;
-            hashIndex %= capacity;
+            hashIndex = strategy.probe(h1, h2, ++attempt, capacity);
         }
 
         return null;
@@ -56,17 +70,15 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
 
     @Override
     public V get(K key) {
-        int hashIndex = hash(key);
-        int counter = 0;
+        int h1 = hash1(key);
+        int h2 = hash2(key);
+        int attempt = 0;
+        int hashIndex = strategy.probe(h1, h2, attempt, capacity);
 
-        while (table[hashIndex] != null) {
-            if (counter++ > capacity)
-                return null;
-
+        while (table[hashIndex] != null && attempt <= capacity) {
             if (key.equals(table[hashIndex].getKey()))
                 return table[hashIndex].getValue();
-            hashIndex++;
-            hashIndex %= capacity;
+            hashIndex = strategy.probe(h1, h2, ++attempt, capacity);
         }
 
         return null;

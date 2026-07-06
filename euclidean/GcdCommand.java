@@ -11,7 +11,7 @@ final class GcdCommand implements Command<Integer> {
     }
 
     GcdCommand(Operands operands) {
-        this(operands, EuclideanAlgorithm.iterative());
+        this(operands, GcdProviderRegistry.getDefault());
     }
 
     @Override

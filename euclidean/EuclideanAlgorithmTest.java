@@ -15,7 +15,7 @@ public final class EuclideanAlgorithmTest {
             new GcdCase(0, 0, 0),
         };
 
-        GcdProvider[] providers = {EuclideanAlgorithm.iterative(), EuclideanAlgorithm.recursive()};
+        GcdProvider[] providers = {GcdProviderRegistry.get("iterative"), GcdProviderRegistry.get("recursive")};
 
         for (GcdProvider provider : providers) {
             for (GcdCase c : cases) {
@@ -30,11 +30,12 @@ public final class EuclideanAlgorithmTest {
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7"}));
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7", "8x"}));
 
-        assertCommand(new GcdCommand(new Operands(35, 15), EuclideanAlgorithm.iterative()), 5);
-        assertCommand(new GcdCommand(new Operands(35, 15), EuclideanAlgorithm.recursive()), 5);
-        assertCommand(new GcdCommand(new Operands(-42, 56), EuclideanAlgorithm.iterative()), 14);
-        assertCommand(new GcdCommand(new Operands(-42, 56), EuclideanAlgorithm.recursive()), 14);
-        assertCommand(() -> EuclideanAlgorithm.iterative().compute(12, 8), 4);
+        assertCommand(new GcdCommand(new Operands(35, 15), GcdProviderRegistry.get("iterative")), 5);
+        assertCommand(new GcdCommand(new Operands(35, 15), GcdProviderRegistry.get("recursive")), 5);
+        assertCommand(new GcdCommand(new Operands(-42, 56), GcdProviderRegistry.get("iterative")), 14);
+        assertCommand(new GcdCommand(new Operands(-42, 56), GcdProviderRegistry.get("recursive")), 14);
+        assertCommand(() -> GcdProviderRegistry.getDefault().compute(12, 8), 4);
+        assertIllegalArgument(() -> GcdProviderRegistry.get("unknown"));
     }
 
     private static void assertGcd(GcdProvider provider, int left, int right, int expected) {

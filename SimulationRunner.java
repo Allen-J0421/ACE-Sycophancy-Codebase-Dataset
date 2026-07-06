@@ -19,8 +19,9 @@ public class SimulationRunner implements SimulatorListener {
 		graphView = new GraphView(1000, 500, 500);
 		simulator.addListener(this);
 		// Simulator constructor fired reset() before we registered; sync views now.
-		refreshSpeciesColors();
-		syncViews();
+		SimulationState initialState = simulator.getState();
+		refreshSpeciesColors(initialState);
+		syncViews(initialState);
 	}
 
 
@@ -43,36 +44,36 @@ public class SimulationRunner implements SimulatorListener {
 
 
 	@Override
-	public void onStep(int step, TimeCycle timeCycle, Field field, Climate climate, int sickPercentage) {
-		syncViews();
+	public void onStep(SimulationState state) {
+		syncViews(state);
 	}
 
 
 	@Override
-	public void onReset(int step, TimeCycle timeCycle, Field field, Climate climate, int sickPercentage) {
+	public void onReset(SimulationState state) {
 		graphView.reset();
-		refreshSpeciesColors();
-		syncViews();
+		refreshSpeciesColors(state);
+		syncViews(state);
 	}
 
 
-	private void syncViews() {
+	private void syncViews(SimulationState state) {
 		gridView.showStatus(
-			simulator.getStep(),
-			simulator.getCurrentTimeCycle(),
-			simulator.getField(),
-			simulator.getClimate(),
-			simulator.getSickPercentage()
+			state.getStep(),
+			state.getTimeCycle(),
+			state.getField(),
+			state.getClimate(),
+			state.getSickPercentage()
 		);
-		graphView.showStatus(simulator.getStep(), simulator.getField());
+		graphView.showStatus(state.getStep(), state.getField());
 	}
 
 
-	private void refreshSpeciesColors() {
+	private void refreshSpeciesColors(SimulationState state) {
 		Set<Class<?>> seen = new HashSet<>();
 		for (Animal animal : simulator.getAnimals()) {
 			if (seen.add(animal.getClass())) {
-				graphView.setColor(animal.getClass(), animal.getObjectColor(simulator.getClimate()));
+				graphView.setColor(animal.getClass(), animal.getObjectColor(state.getClimate()));
 			}
 		}
 	}

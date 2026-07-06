@@ -134,16 +134,23 @@ public class Simulator {
 	}
 
 
+	public SimulationState getState() {
+		return new SimulationState(step, currentTimeCycle, field, climate, sickPercentage);
+	}
+
+
 	private void fireOnStep() {
+		SimulationState state = getState();
 		for (SimulatorListener l : listeners) {
-			l.onStep(step, currentTimeCycle, field, climate, sickPercentage);
+			l.onStep(state);
 		}
 	}
 
 
 	private void fireOnReset() {
+		SimulationState state = getState();
 		for (SimulatorListener l : listeners) {
-			l.onReset(step, currentTimeCycle, field, climate, sickPercentage);
+			l.onReset(state);
 		}
 	}
 

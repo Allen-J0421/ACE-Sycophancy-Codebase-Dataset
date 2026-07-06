@@ -1,15 +1,4 @@
-public record Activity(int start, int finish) {
-    public Activity {
-        validate(start, finish);
-    }
-
-    private static void validate(int start, int finish) {
-        if (start > finish) {
-            throw new IllegalArgumentException(
-                "start time " + start + " cannot be greater than finish time " + finish);
-        }
-    }
-
+public record Activity(TimeRange range) {
     public static Builder builder() {
         return new Builder();
     }
@@ -29,7 +18,7 @@ public record Activity(int start, int finish) {
         }
 
         public Activity build() {
-            return new Activity(start, finish);
+            return new Activity(new TimeRange(start, finish));
         }
     }
 }

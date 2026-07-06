@@ -8,7 +8,7 @@ public class ActivitySelection {
         int n = start.length;
         Activity[] activities = new Activity[n];
         for (int i = 0; i < n; i++) {
-            activities[i] = new Activity(start[i], finish[i]);
+            activities[i] = Activity.builder().start(start[i]).finish(finish[i]).build();
         }
         return strategy.select(new ActivityCollection(activities));
     }

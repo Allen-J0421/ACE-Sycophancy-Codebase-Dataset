@@ -1,3 +1,4 @@
+@FunctionalInterface
 interface ProbingStrategy {
     /**
      * Returns the table index to probe on the given attempt.

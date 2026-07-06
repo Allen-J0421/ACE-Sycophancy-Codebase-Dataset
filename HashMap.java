@@ -9,7 +9,7 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     private final ProbingStrategy strategy;
 
     public HashMap() {
-        this(DEFAULT_CAPACITY, new LinearProbingStrategy());
+        this(DEFAULT_CAPACITY, ProbingStrategies.linear());
     }
 
     public HashMap(ProbingStrategy strategy) {
@@ -17,7 +17,7 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     }
 
     public HashMap(int initialCapacity) {
-        this(initialCapacity, new LinearProbingStrategy());
+        this(initialCapacity, ProbingStrategies.linear());
     }
 
     @SuppressWarnings("unchecked")

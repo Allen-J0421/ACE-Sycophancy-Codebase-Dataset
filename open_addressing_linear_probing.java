@@ -1,8 +1,9 @@
 class Demo {
     public static void main(String[] args) {
-        runDemo("Linear Probing",    new HashMap<>(new LinearProbingStrategy()));
-        runDemo("Quadratic Probing", new HashMap<>(new QuadraticProbingStrategy()));
-        runDemo("Double Hashing",    new HashMap<>(new DoubleHashingStrategy()));
+        runDemo("Linear Probing",              new HashMap<>(new LinearProbingStrategy()));
+        runDemo("Quadratic Probing",           new HashMap<>(new QuadraticProbingStrategy()));
+        runDemo("Double Hashing",              new HashMap<>(new DoubleHashingStrategy()));
+        runDemo("Linear Probing (capacity 4)", new HashMap<>(4, new LinearProbingStrategy()));
     }
 
     static void runDemo(String label, HashMapOperations<String, Integer> h) {

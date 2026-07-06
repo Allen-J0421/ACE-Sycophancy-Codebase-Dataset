@@ -2,20 +2,31 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     private HashNode<K, V>[] table;
     private int capacity;
     private int size;
+    private final int initialCapacity;
     private final HashNode<K, V> DELETED = new HashNode<>(null, null);
     private static final double LOAD_FACTOR_THRESHOLD = 0.75;
+    private static final int DEFAULT_CAPACITY = 20;
     private final ProbingStrategy strategy;
 
     public HashMap() {
-        this(new LinearProbingStrategy());
+        this(DEFAULT_CAPACITY, new LinearProbingStrategy());
+    }
+
+    public HashMap(ProbingStrategy strategy) {
+        this(DEFAULT_CAPACITY, strategy);
+    }
+
+    public HashMap(int initialCapacity) {
+        this(initialCapacity, new LinearProbingStrategy());
     }
 
     @SuppressWarnings("unchecked")
-    public HashMap(ProbingStrategy strategy) {
+    public HashMap(int initialCapacity, ProbingStrategy strategy) {
         this.strategy = strategy;
-        capacity = 20;
-        size = 0;
-        table = (HashNode<K, V>[]) new HashNode[capacity];
+        this.initialCapacity = initialCapacity;
+        this.capacity = initialCapacity;
+        this.size = 0;
+        this.table = (HashNode<K, V>[]) new HashNode[capacity];
     }
 
     private int hash1(K key) {
@@ -106,7 +117,7 @@ class HashMap<K, V> implements HashMapOperations<K, V> {
     @Override
     @SuppressWarnings("unchecked")
     public void clear() {
-        capacity = 20;
+        capacity = initialCapacity;
         size = 0;
         table = (HashNode<K, V>[]) new HashNode[capacity];
     }

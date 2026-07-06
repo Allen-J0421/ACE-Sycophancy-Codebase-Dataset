@@ -11,7 +11,8 @@ class QuickSelect {
         int kPosition = 3;
         int length = array.length;
 
-        PartitionStrategy partitioner = new RandomPivotPartition(new Random());
+        PartitionStrategy partitioner =
+            new LoggingPartitionDecorator(new RandomPivotPartition(new Random()));
         SelectionStrategy strategy = new QuickSelectStrategy(partitioner);
 
         if (kPosition > length) {

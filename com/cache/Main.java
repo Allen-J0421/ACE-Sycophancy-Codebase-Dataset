@@ -1,6 +1,8 @@
+package com.cache;
+
 public class Main {
     public static void main(String[] args) {
-        LRUCache<Integer, Integer> cache = new LRUCache<>(2);
+        Cache<Integer, Integer> cache = new LRUCache<>(2);
 
         cache.put(1, 1);
         cache.put(2, 2);

@@ -1,16 +1,19 @@
-import java.util.Map;
-
-record BracketMatcher(Map<Character, Character> closerToOpener) {
+record BracketMatcher(BracketConfig config) {
 
     boolean isOpener(char c) {
-        return closerToOpener.containsValue(c);
+        for (char o : config.openers) if (o == c) return true;
+        return false;
     }
 
     boolean isCloser(char c) {
-        return closerToOpener.containsKey(c);
+        for (char cl : config.closers) if (cl == c) return true;
+        return false;
     }
 
     boolean matches(char opener, char closer) {
-        return opener == closerToOpener.getOrDefault(closer, '\0');
+        for (int i = 0; i < config.closers.length; i++) {
+            if (config.closers[i] == closer) return config.openers[i] == opener;
+        }
+        return false;
     }
 }

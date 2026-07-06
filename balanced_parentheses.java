@@ -3,10 +3,9 @@ import java.util.stream.IntStream;
 
 public class BalancedParentheses {
 
-    private static final Map<Character, Character> DEFAULT_PAIRS = Map.of(
-        ')', '(',
-        '}', '{',
-        ']', '['
+    private static final BracketConfig DEFAULT_CONFIG = new BracketConfig(
+        new char[]{')', '}', ']'},
+        new char[]{'(', '{', '['}
     );
 
     public static boolean isBalanced(String s) {
@@ -28,11 +27,15 @@ public class BalancedParentheses {
     }
 
     public static void validate(String s) {
-        validate(s, DEFAULT_PAIRS);
+        validate(s, DEFAULT_CONFIG);
     }
 
     public static void validate(String s, Map<Character, Character> pairs) {
-        ValidationContext ctx = new ValidationContext(new BracketMatcher(pairs));
+        validate(s, BracketConfig.from(pairs));
+    }
+
+    private static void validate(String s, BracketConfig config) {
+        ValidationContext ctx = new ValidationContext(new BracketMatcher(config));
         IntStream.range(0, s.length())
             .forEach(i -> ctx.process(s.charAt(i), i));
         ctx.checkComplete();

@@ -23,6 +23,6 @@ class UndirectedGraphBuilder implements GraphBuilder {
             adj.get(edge[0]).add(edge[1]);
             adj.get(edge[1]).add(edge[0]);
         }
-        return new UndirectedGraph(adj);
+        return new Graph(adj);
     }
 }

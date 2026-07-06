@@ -1,6 +1,13 @@
+import java.util.Collections;
 import java.util.List;
 
-interface Graph {
-    int vertexCount();
-    List<Integer> neighbors(int v);
+record Graph(List<List<Integer>> adj) {
+
+    int vertexCount() {
+        return adj.size();
+    }
+
+    List<Integer> neighbors(int v) {
+        return Collections.unmodifiableList(adj.get(v));
+    }
 }

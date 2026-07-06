@@ -1,3 +1,3 @@
 interface ColoringStrategy {
-    boolean colorComponent(Graph graph, int start, BipartiteChecker.Coloring coloring);
+    boolean colorComponent(Graph graph, int start, PartitionState state);
 }

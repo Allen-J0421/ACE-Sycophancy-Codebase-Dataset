@@ -1,38 +1,4 @@
-import java.util.List;
-
 class BipartiteAnalyzer {
-
-    static class Coloring {
-        private final BipartiteChecker.Coloring internal;
-
-        Coloring(BipartiteChecker.Coloring internal) {
-            this.internal = internal;
-        }
-
-        BipartiteChecker.Color getColor(int v) {
-            return internal.get(v);
-        }
-    }
-
-    static class Partition {
-        private final BipartiteChecker.Partition internal;
-
-        Partition(BipartiteChecker.Partition internal) {
-            this.internal = internal;
-        }
-
-        boolean isBipartite() {
-            return internal.bipartite;
-        }
-
-        List<Integer> getSetA() {
-            return internal.setA;
-        }
-
-        List<Integer> getSetB() {
-            return internal.setB;
-        }
-    }
 
     public static void main(String[] args) {
         int V = 4;
@@ -42,7 +8,7 @@ class BipartiteAnalyzer {
         GraphFactory factory = new UndirectedGraphFactory();
         Graph graph = factory.fromEdges(V, edges);
         BipartiteChecker checker = new BipartiteChecker(new BfsColoringStrategy());
-        BipartiteChecker.Partition result = checker.check(graph);
+        Partition result = checker.check(graph);
         result.accept(new GraphView());
     }
 }

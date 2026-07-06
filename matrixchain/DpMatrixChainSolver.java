@@ -17,7 +17,7 @@ public class DpMatrixChainSolver extends AbstractMatrixChainSolver {
                     .min(Comparator.comparingInt(m -> cost[i][m] + cost[m][j] + multiplicationCost(i, m, j)))
                     .orElseThrow();
                 cost[i][j] = cost[i][k] + cost[k][j] + multiplicationCost(i, k, j);
-                split[i][j] = k;
+                split.set(i, j, k);
             })
         );
 

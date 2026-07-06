@@ -30,7 +30,7 @@ public class MemoizedMatrixChainSolver extends AbstractMatrixChainSolver {
                       + multiplicationCost(ii, k, jj);
                 if (c < minCost) {
                     minCost = c;
-                    split[ii][jj] = k;
+                    split.set(ii, jj, k);
                 }
             }
             return minCost;

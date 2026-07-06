@@ -4,13 +4,13 @@ public abstract class AbstractMatrixChainSolver implements MatrixChainSolver {
 
     protected int[] dims;
     protected int n;
-    protected int[][] split;
+    protected SplitTable split;
 
     @Override
     public final Result solve(int[] dims) {
         this.dims = dims;
         this.n = dims.length;
-        this.split = new int[n][n];
+        this.split = new SplitTable(n);
         int minCost = computeMinCost();
         return new Result(minCost, split);
     }

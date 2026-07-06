@@ -1,14 +1,14 @@
 import java.util.Comparator;
 
-final class SortContext {
+final class SortContext implements HeapFactory {
 
-    private SortContext() {}
-
-    static AbstractHeap forIntRange(int[] arr, int from) {
+    @Override
+    public AbstractHeap forIntRange(int[] arr, int from) {
         return new RangeHeap(arr, from);
     }
 
-    static <T> Heap<T> forObjectRange(T[] arr, int from, int to, Comparator<T> cmp) {
+    @Override
+    public <T> Heap<T> forObjectRange(T[] arr, int from, int to, Comparator<T> cmp) {
         return new ObjectRangeHeap<>(arr, from, to, cmp);
     }
 }

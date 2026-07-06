@@ -2,6 +2,8 @@ import java.util.Comparator;
 
 public class HeapSort {
 
+    private static final HeapFactory FACTORY = new SortContext();
+
     public static void heapSort(int[] arr) {
         heapSort(arr, 0, arr.length);
     }
@@ -10,7 +12,7 @@ public class HeapSort {
         if (from < 0 || to > arr.length || from > to)
             throw new IllegalArgumentException(
                 "Invalid range [" + from + ", " + to + ") for array of length " + arr.length);
-        SortContext.forIntRange(arr, from).sort(to - from);
+        FACTORY.forIntRange(arr, from).sort(to - from);
     }
 
     public static <T> void heapSort(T[] arr, Comparator<T> cmp) {
@@ -21,6 +23,6 @@ public class HeapSort {
         if (from < 0 || to > arr.length || from > to)
             throw new IllegalArgumentException(
                 "Invalid range [" + from + ", " + to + ") for array of length " + arr.length);
-        SortContext.forObjectRange(arr, from, to, cmp).sort();
+        FACTORY.forObjectRange(arr, from, to, cmp).sort();
     }
 }

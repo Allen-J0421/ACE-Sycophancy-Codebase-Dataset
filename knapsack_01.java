@@ -4,6 +4,10 @@ class KnapsackProblem {
     final int[] weights;
 
     KnapsackProblem(int capacity, int[] values, int[] weights) {
+        if (capacity < 0)
+            throw new IllegalArgumentException("Capacity must be non-negative");
+        if (values.length != weights.length)
+            throw new IllegalArgumentException("Values and weights arrays must have equal length");
         this.capacity = capacity;
         this.values = values;
         this.weights = weights;

@@ -5,7 +5,7 @@ public class BuildHeap {
 
         int arr[] = {1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17};
 
-        IHeapBuilder heapUtility = new HeapUtility(arr, HeapifyStrategy.maxHeapify(arr));
+        IHeapBuilder heapUtility = HeapBuilderFactory.createMaxHeapBuilder(arr);
         heapUtility.buildHeap();
 
         int[] result = heapUtility.getArray();
@@ -101,6 +101,14 @@ interface HeapifyStrategy {
         };
 
         return self[0];
+    }
+}
+
+class HeapBuilderFactory {
+
+    static IHeapBuilder createMaxHeapBuilder(int[] arr)
+    {
+        return new HeapUtility(arr, HeapifyStrategy.maxHeapify(arr));
     }
 }
 

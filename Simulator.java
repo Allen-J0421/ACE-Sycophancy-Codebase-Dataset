@@ -38,10 +38,6 @@ public class Simulator {
 
 	private int step;
 
-	private SimulatorView gridView;
-
-	private GraphView graphView;
-
 	private TimeCycle currentTimeCycle;
 
 	private Climate climate;
@@ -51,7 +47,6 @@ public class Simulator {
 
 	public Simulator() {
 		this(DEFAULT_DEPTH, DEFAULT_WIDTH);
-		currentTimeCycle = DEFAULT_TIMECYCLE;
 	}
 
 
@@ -63,34 +58,12 @@ public class Simulator {
 			width = DEFAULT_WIDTH;
 		}
 
-
 		animals = new ArrayList<>();
-
 		plants = new ArrayList<>();
 		field = new Field(depth, width);
 		climate = new Climate(DEFAULT_WEATHER);
 
-
-		gridView = new SimulatorView(depth, width);
-
-
-		graphView = new GraphView(1000, 500, 500);
-
-
 		reset();
-	}
-
-
-	public void runLongSimulation() {
-		simulate(4000);
-	}
-
-
-	public void simulate(int numSteps) {
-		for (int step = 1; step <= numSteps && gridView.isViable(field); step++) {
-			simulateOneStep();
-			delay(60);
-		}
 	}
 
 
@@ -131,23 +104,18 @@ public class Simulator {
 			}
 		}
 
-		sickPercentage = (count * 100) / animals.size();
-		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
-		graphView.showStatus(step, field);
+		sickPercentage = animals.isEmpty() ? 0 : (count * 100) / animals.size();
 	}
 
 
 	public void reset() {
 		step = 0;
 		animals.clear();
+		plants.clear();
 		populate();
-		currentTimeCycle = TimeCycle.DAY;
-		climate.setCurrentWeather(Weather.SUN);
-
+		currentTimeCycle = DEFAULT_TIMECYCLE;
+		climate.setCurrentWeather(DEFAULT_WEATHER);
 		sickPercentage = 0;
-		graphView.reset();
-		gridView.showStatus(step, currentTimeCycle, field, climate, sickPercentage);
-		graphView.showStatus(step, field);
 	}
 
 
@@ -161,34 +129,22 @@ public class Simulator {
 
 
 				if (rand.nextDouble() <= FLOWER_CREATION_PROBABILITY) {
-					Flower flower = new Flower(field, location);
-					plants.add(flower);
+					plants.add(new Flower(field, location));
 				} else {
-					Grass grass = new Grass(field, location);
-					plants.add(grass);
+					plants.add(new Grass(field, location));
 				}
 
 
 				if (rand.nextDouble() <= BIRD_CREATION_PROBABILITY) {
-					Bird bird = new Bird(true, field, location);
-					animals.add(bird);
-					graphView.setColor(Bird.class, bird.getObjectColor(climate));
+					animals.add(new Bird(true, field, location));
 				} else if (rand.nextDouble() <= MOUSE_CREATION_PROBABILITY) {
-					Mouse mouse = new Mouse(true, field, location);
-					animals.add(mouse);
-					graphView.setColor(Mouse.class, mouse.getObjectColor(climate));
+					animals.add(new Mouse(true, field, location));
 				} else if (rand.nextDouble() <= DUCK_CREATION_PROBABILITY) {
-					Duck duck = new Duck(true, field, location);
-					animals.add(duck);
-					graphView.setColor(Duck.class, duck.getObjectColor(climate));
+					animals.add(new Duck(true, field, location));
 				} else if (rand.nextDouble() <= WOLF_CREATION_PROBABILITY) {
-					Wolf wolf = new Wolf(true, field, location);
-					animals.add(wolf);
-					graphView.setColor(Wolf.class, wolf.getObjectColor(climate));
+					animals.add(new Wolf(true, field, location));
 				} else if (rand.nextDouble() <= BEAR_CREATION_PROBABILITY) {
-					Bear bear = new Bear(true, field, location);
-					animals.add(bear);
-					graphView.setColor(Bear.class, bear.getObjectColor(climate));
+					animals.add(new Bear(true, field, location));
 				}
 
 			}
@@ -196,11 +152,32 @@ public class Simulator {
 	}
 
 
-	private void delay(int millisec) {
-		try {
-			Thread.sleep(millisec);
-		} catch (InterruptedException ie) {
+	public int getStep() {
+		return step;
+	}
 
-		}
+
+	public Field getField() {
+		return field;
+	}
+
+
+	public Climate getClimate() {
+		return climate;
+	}
+
+
+	public TimeCycle getCurrentTimeCycle() {
+		return currentTimeCycle;
+	}
+
+
+	public int getSickPercentage() {
+		return sickPercentage;
+	}
+
+
+	public List<Animal> getAnimals() {
+		return animals;
 	}
 }

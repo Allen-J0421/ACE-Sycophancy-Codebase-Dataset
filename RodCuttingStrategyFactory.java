@@ -1,14 +1,12 @@
-import java.io.PrintStream;
-
 class RodCuttingStrategyFactory {
-    private final PrintStream log;
+    private final ResultLogger logger;
 
-    RodCuttingStrategyFactory(PrintStream log) {
-        this.log = log;
+    RodCuttingStrategyFactory(ResultLogger logger) {
+        this.logger = logger;
     }
 
     RodCuttingStrategy create(SolverType type) {
-        return new LoggingDecorator(bareStrategy(type), log);
+        return new LoggingDecorator(bareStrategy(type), logger);
     }
 
     private RodCuttingStrategy bareStrategy(SolverType type) {

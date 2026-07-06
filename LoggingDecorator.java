@@ -1,20 +1,17 @@
-import java.io.PrintStream;
-
 class LoggingDecorator implements RodCuttingStrategy {
     private final RodCuttingStrategy delegate;
-    private final PrintStream log;
+    private final ResultLogger logger;
 
-    LoggingDecorator(RodCuttingStrategy delegate, PrintStream log) {
+    LoggingDecorator(RodCuttingStrategy delegate, ResultLogger logger) {
         this.delegate = delegate;
-        this.log = log;
+        this.logger = logger;
     }
 
     @Override
     public RodCuttingSolution solve(RodCuttingProblem problem) {
         long start = System.nanoTime();
         RodCuttingSolution solution = delegate.solve(problem);
-        long elapsedNs = System.nanoTime() - start;
-        log.println(delegate.getClass().getSimpleName() + " solved in " + elapsedNs + " ns");
+        logger.logTiming(delegate.getClass().getSimpleName(), System.nanoTime() - start);
         return solution;
     }
 }

@@ -14,8 +14,8 @@ class CuttingRod {
         for (SolverType type : SolverType.values()) {
             if (selected != null && type != selected) continue;
             RodCuttingSolver solver = ctx.solverFor(type);
-            ctx.printer().print(type, solver.solve(arrayProblem));
-            ctx.printer().print(type, solver.solve(lambdaProblem));
+            ctx.logger().logSolution(type, solver.solve(arrayProblem));
+            ctx.logger().logSolution(type, solver.solve(lambdaProblem));
         }
     }
 }

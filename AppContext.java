@@ -2,11 +2,11 @@ import java.io.PrintStream;
 
 class AppContext {
     private final RodCuttingStrategyFactory strategyFactory;
-    private final SolverResultPrinter printer;
+    private final ResultLogger logger;
 
     private AppContext(PrintStream out) {
-        this.strategyFactory = new RodCuttingStrategyFactory(out);
-        this.printer = new SolverResultPrinter(out);
+        this.logger = new ResultLogger(out);
+        this.strategyFactory = new RodCuttingStrategyFactory(logger);
     }
 
     static AppContext withOutput(PrintStream out) {
@@ -17,7 +17,7 @@ class AppContext {
         return new RodCuttingSolver(strategyFactory.create(type));
     }
 
-    SolverResultPrinter printer() {
-        return printer;
+    ResultLogger logger() {
+        return logger;
     }
 }

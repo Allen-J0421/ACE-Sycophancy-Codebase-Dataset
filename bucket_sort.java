@@ -1,10 +1,48 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main {
+class BucketSort {
 
-    public static void insertionSort(List<Float> bucket) {
-        for (int i = 1; i < bucket.size(); ++i) {
+    public void sort(float[] arr) {
+        List<Float>[] buckets = createBuckets(arr.length);
+        distribute(arr, buckets);
+        sortBuckets(buckets);
+        collect(arr, buckets);
+    }
+
+    private List<Float>[] createBuckets(int count) {
+        List<Float>[] buckets = new ArrayList[count];
+        for (int i = 0; i < count; i++) {
+            buckets[i] = new ArrayList<>();
+        }
+        return buckets;
+    }
+
+    private void distribute(float[] arr, List<Float>[] buckets) {
+        int n = arr.length;
+        for (float value : arr) {
+            int index = (int) (n * value);
+            buckets[index].add(value);
+        }
+    }
+
+    private void sortBuckets(List<Float>[] buckets) {
+        for (List<Float> bucket : buckets) {
+            insertionSort(bucket);
+        }
+    }
+
+    private void collect(float[] arr, List<Float>[] buckets) {
+        int index = 0;
+        for (List<Float> bucket : buckets) {
+            for (float value : bucket) {
+                arr[index++] = value;
+            }
+        }
+    }
+
+    private void insertionSort(List<Float> bucket) {
+        for (int i = 1; i < bucket.size(); i++) {
             float key = bucket.get(i);
             int j = i - 1;
             while (j >= 0 && bucket.get(j) > key) {
@@ -14,35 +52,13 @@ public class Main {
             bucket.set(j + 1, key);
         }
     }
+}
 
-    public static void bucketSort(float[] arr) {
-        int n = arr.length;
-
-        List<Float>[] buckets = new ArrayList[n];
-        for (int i = 0; i < n; i++) {
-            buckets[i] = new ArrayList<>();
-        }
-
-        for (int i = 0; i < n; i++) {
-            int bi = (int) (n * arr[i]);
-            buckets[bi].add(arr[i]);
-        }
-
-        for (int i = 0; i < n; i++) {
-            insertionSort(buckets[i]);
-        }
-
-        int index = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < buckets[i].size(); j++) {
-                arr[index++] = buckets[i].get(j);
-            }
-        }
-    }
+class Main {
 
     public static void main(String[] args) {
         float[] arr = {0.897f, 0.565f, 0.656f, 0.1234f, 0.665f, 0.3434f};
-        bucketSort(arr);
+        new BucketSort().sort(arr);
 
         System.out.println("Sorted array is:");
         for (float num : arr) {

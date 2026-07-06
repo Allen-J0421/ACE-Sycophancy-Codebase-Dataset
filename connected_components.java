@@ -2,9 +2,27 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.LinkedList;
 
-class ConnectedComponents {
+class Graph {
+    private ArrayList<ArrayList<Integer>> adj;
+    private int V;
 
-    static void bfs(ArrayList<ArrayList<Integer>> adj, int src, boolean[] visited, ArrayList<Integer> res) {
+    Graph(int V) {
+        this.V = V;
+        adj = new ArrayList<>();
+        for (int i = 0; i < V; i++)
+            adj.add(new ArrayList<>());
+    }
+
+    void addEdge(int u, int v) {
+        adj.get(u).add(v);
+        adj.get(v).add(u);
+    }
+
+    int size() {
+        return V;
+    }
+
+    void bfs(int src, boolean[] visited, ArrayList<Integer> res) {
         Queue<Integer> q = new LinkedList<>();
         visited[src] = true;
         q.add(src);
@@ -21,40 +39,34 @@ class ConnectedComponents {
             }
         }
     }
+}
 
-    static ArrayList<ArrayList<Integer>> getComponents(ArrayList<ArrayList<Integer>> adj) {
-        int V = adj.size();
+class ConnectedComponents {
+
+    static ArrayList<ArrayList<Integer>> getComponents(Graph g) {
+        int V = g.size();
         boolean[] visited = new boolean[V];
         ArrayList<ArrayList<Integer>> res = new ArrayList<>();
 
         for (int i = 0; i < V; i++) {
             if (!visited[i]) {
                 ArrayList<Integer> component = new ArrayList<>();
-                bfs(adj, i, visited, component);
+                g.bfs(i, visited, component);
                 res.add(component);
             }
         }
         return res;
     }
 
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-        adj.get(v).add(u);
-    }
-
     public static void main(String[] args) {
-        int V = 6;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
+        Graph g = new Graph(6);
 
-        for (int i = 0; i < V; i++)
-            adj.add(new ArrayList<>());
+        g.addEdge(1, 2);
+        g.addEdge(0, 3);
+        g.addEdge(2, 0);
+        g.addEdge(5, 4);
 
-        addEdge(adj, 1, 2);
-        addEdge(adj, 0, 3);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 5, 4);
-
-        ArrayList<ArrayList<Integer>> res = getComponents(adj);
+        ArrayList<ArrayList<Integer>> res = getComponents(g);
 
         for (ArrayList<Integer> component : res) {
             for (int vertex : component) {

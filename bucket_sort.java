@@ -42,18 +42,20 @@ class BucketFactory<T extends Comparable<T>> {
     }
 }
 
-class BucketSort<T extends Comparable<T>> implements SortingStrategy<T> {
-    private final BucketFactory<T> bucketFactory;
-    private final Function<T, Integer> indexMapper;
+record SortingContext<T extends Comparable<T>>(
+        BucketFactory<T> bucketFactory,
+        Function<T, Integer> indexMapper) {}
 
-    BucketSort(BucketFactory<T> bucketFactory, Function<T, Integer> indexMapper) {
-        this.bucketFactory = bucketFactory;
-        this.indexMapper = indexMapper;
+class BucketSort<T extends Comparable<T>> implements SortingStrategy<T> {
+    private final SortingContext<T> context;
+
+    BucketSort(SortingContext<T> context) {
+        this.context = context;
     }
 
     @Override
     public void sort(T[] arr) {
-        Bucket<T>[] buckets = bucketFactory.create(arr.length);
+        Bucket<T>[] buckets = context.bucketFactory().create(arr.length);
         distribute(arr, buckets);
         for (Bucket<T> bucket : buckets) {
             bucket.sort();
@@ -63,7 +65,7 @@ class BucketSort<T extends Comparable<T>> implements SortingStrategy<T> {
 
     private void distribute(T[] arr, Bucket<T>[] buckets) {
         IntStream.range(0, arr.length)
-                .forEach(i -> buckets[indexMapper.apply(arr[i])].add(arr[i]));
+                .forEach(i -> buckets[context.indexMapper().apply(arr[i])].add(arr[i]));
     }
 
     private void collect(T[] arr, Bucket<T>[] buckets) {
@@ -81,8 +83,8 @@ class Main {
     public static void main(String[] args) {
         Float[] arr = {0.897f, 0.565f, 0.656f, 0.1234f, 0.665f, 0.3434f};
         int n = arr.length;
-        BucketFactory<Float> factory = new BucketFactory<>();
-        SortingStrategy<Float> sorter = new BucketSort<>(factory, value -> (int) (n * value));
+        SortingContext<Float> context = new SortingContext<>(new BucketFactory<Float>(), value -> (int) (n * value));
+        SortingStrategy<Float> sorter = new BucketSort<>(context);
         sorter.sort(arr);
 
         System.out.println("Sorted array is:");

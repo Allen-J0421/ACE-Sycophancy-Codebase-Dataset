@@ -1,4 +1,8 @@
+import java.util.Random;
+
 class QuickSelectUtils {
+
+    private static final Random rand = new Random();
 
     private static void swap(int[] arr, int i, int j)
     {
@@ -9,6 +13,9 @@ class QuickSelectUtils {
 
     public static int partition(int[] arr, int low, int high)
     {
+        int randomIndex = low + rand.nextInt(high - low + 1);
+        swap(arr, randomIndex, high);
+
         int pivot = arr[high], pivotloc = low;
         for (int i = low; i <= high; i++) {
 

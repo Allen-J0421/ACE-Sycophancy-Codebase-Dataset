@@ -26,8 +26,8 @@ public class SimulatorView extends JFrame
     
     // A map for storing colors for participants in the simulation:
     private Map<Class, Color> colors;
-    // A statistics object computing and storing simulation information:
-    private static FieldStats stats;
+    // Tracks per-species population counts for the current step:
+    private PopulationStats stats;
     private Simulator simulator;
     
     // Threads for each method called by the buttons:
@@ -43,7 +43,7 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(Simulator simulator, int height, int width)
     {
-        stats = new FieldStats();
+        stats = new PopulationStats();
         colors = new LinkedHashMap<>();
         this.simulator = simulator;
         setTitle("Australian Savannah Simulation");
@@ -198,7 +198,7 @@ public class SimulatorView extends JFrame
         
         stats.countFinished();
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        population.setText(POPULATION_PREFIX + stats.getPopulationDetails());
         
         updateWeatherPropertiesLabel();
         updateDayLabel();
@@ -206,13 +206,18 @@ public class SimulatorView extends JFrame
     }
 
     /**
+     * @return The population stats object for external consumers (e.g. StatisticsView).
+     */
+    public PopulationStats getStats() { return stats; }
+
+    /**
      * Determine whether the simulation should continue to run.
-     * 
+     *
      * @return true If there is more than one species alive.
      */
-    public static boolean isViable(Field field)
+    public boolean isViable(Field field)
     {
-        return stats.isViable(field);
+        return stats.isViable();
     }
     
     /**

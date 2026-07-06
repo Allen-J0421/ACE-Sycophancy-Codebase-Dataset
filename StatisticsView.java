@@ -121,9 +121,8 @@ public class StatisticsView extends Application
         // hasn't changed since the last update:
         if (lastDayRecorded == TimeSystem.getCurrentDay()) return;
         
-        // Iterate through each counter in FieldStats:
-        Field field = Simulator.getCurrentField();
-        HashMap<Class, Counter> counters = FieldStats.getCounters(field);
+        // Iterate through each counter in PopulationStats:
+        HashMap<Class, Counter> counters = Simulator.getPopulationStats().getCounters();
         
         for (Class key : counters.keySet())
         {

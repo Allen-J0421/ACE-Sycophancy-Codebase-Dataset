@@ -92,6 +92,11 @@ public class Simulator
      * @return The current field in the simulation.
      */
     public static Field getCurrentField() { return field; }
+
+    /**
+     * @return The population stats for the current simulation step.
+     */
+    public static PopulationStats getPopulationStats() { return view.getStats(); }
     
     /**
      * Run the simulation from its current state for a reasonably long period,

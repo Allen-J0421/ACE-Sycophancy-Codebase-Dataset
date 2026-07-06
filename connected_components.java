@@ -34,37 +34,37 @@ class AdjacencyListGraph implements Graph {
     }
 }
 
-class BFSContext {
-    private boolean[] visited;
-    private ArrayList<Integer> component;
-
-    BFSContext(int V) {
-        visited = new boolean[V];
-        component = new ArrayList<>();
-    }
-
-    boolean isVisited(int v) {
-        return visited[v];
-    }
-
-    void markVisited(int v) {
-        visited[v] = true;
-    }
-
-    void addToComponent(int v) {
-        component.add(v);
-    }
-
-    void resetComponent() {
-        component = new ArrayList<>();
-    }
-
-    ArrayList<Integer> getComponent() {
-        return component;
-    }
-}
-
 class GraphTraversal {
+
+    static class BFSContext {
+        private boolean[] visited;
+        private ArrayList<Integer> component;
+
+        BFSContext(int V) {
+            visited = new boolean[V];
+            component = new ArrayList<>();
+        }
+
+        boolean isVisited(int v) {
+            return visited[v];
+        }
+
+        void markVisited(int v) {
+            visited[v] = true;
+        }
+
+        void addToComponent(int v) {
+            component.add(v);
+        }
+
+        void resetComponent() {
+            component = new ArrayList<>();
+        }
+
+        ArrayList<Integer> getComponent() {
+            return component;
+        }
+    }
 
     static void bfs(Graph g, int src, BFSContext ctx) {
         Queue<Integer> q = new LinkedList<>();
@@ -88,7 +88,7 @@ class GraphTraversal {
 class ConnectedComponents {
 
     static ArrayList<ArrayList<Integer>> getComponents(Graph g) {
-        BFSContext ctx = new BFSContext(g.size());
+        GraphTraversal.BFSContext ctx = new GraphTraversal.BFSContext(g.size());
         ArrayList<ArrayList<Integer>> res = new ArrayList<>();
 
         for (int i = 0; i < g.size(); i++) {

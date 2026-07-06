@@ -58,34 +58,13 @@ class CodeCollector implements CodeProducingVisitor {
     }
 }
 
-class HuffmanEncoder {
+@FunctionalInterface
+interface TreeBuilder {
+    HuffmanNode build(List<Character> chars, Map<Character, Integer> freqMap);
+}
 
-    private final FrequencyStrategy strategy;
-    private final VisitorFactory visitorFactory;
-
-    HuffmanEncoder(FrequencyStrategy strategy, VisitorFactory visitorFactory) {
-        this.strategy = strategy;
-        this.visitorFactory = visitorFactory;
-    }
-
-    HuffmanEncoder(FrequencyStrategy strategy) {
-        this(strategy, CodeCollector::new);
-    }
-
-    HuffmanResult encode() {
-        Map<Character, Integer> freqMap = strategy.getFrequencies();
-        List<Character> chars = new ArrayList<>(freqMap.keySet());
-
-        HuffmanNode root = chars.size() == 1
-            ? new LeafNode(freqMap.get(chars.get(0)), 0)
-            : buildTree(chars, freqMap);
-
-        CodeProducingVisitor visitor = visitorFactory.create(chars);
-        root.accept(visitor, "");
-        return new HuffmanResult(root, visitor.codes());
-    }
-
-    private HuffmanNode buildTree(List<Character> chars, Map<Character, Integer> freqMap) {
+class HuffmanTreeBuilder implements TreeBuilder {
+    public HuffmanNode build(List<Character> chars, Map<Character, Integer> freqMap) {
         PriorityQueue<HuffmanNode> pq = new PriorityQueue<>(
             Comparator.comparingInt((HuffmanNode n) -> n.frequency())
                       .thenComparingInt(n -> n.charIndex())
@@ -99,6 +78,36 @@ class HuffmanEncoder {
             pq.add(new InternalNode(left, right));
         }
         return pq.peek();
+    }
+}
+
+class HuffmanEncoder {
+
+    private final FrequencyStrategy strategy;
+    private final TreeBuilder treeBuilder;
+    private final VisitorFactory visitorFactory;
+
+    HuffmanEncoder(FrequencyStrategy strategy, TreeBuilder treeBuilder, VisitorFactory visitorFactory) {
+        this.strategy = strategy;
+        this.treeBuilder = treeBuilder;
+        this.visitorFactory = visitorFactory;
+    }
+
+    HuffmanEncoder(FrequencyStrategy strategy) {
+        this(strategy, new HuffmanTreeBuilder(), CodeCollector::new);
+    }
+
+    HuffmanResult encode() {
+        Map<Character, Integer> freqMap = strategy.getFrequencies();
+        List<Character> chars = new ArrayList<>(freqMap.keySet());
+
+        HuffmanNode root = chars.size() == 1
+            ? new LeafNode(freqMap.get(chars.get(0)), 0)
+            : treeBuilder.build(chars, freqMap);
+
+        CodeProducingVisitor visitor = visitorFactory.create(chars);
+        root.accept(visitor, "");
+        return new HuffmanResult(root, visitor.codes());
     }
 }
 

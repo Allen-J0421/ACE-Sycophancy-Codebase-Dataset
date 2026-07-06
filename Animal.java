@@ -8,8 +8,6 @@ public abstract class Animal extends Entity {
 
 	private static final Random rand = Randomizer.getRandom();
 
-	private boolean alive;
-
 	private int age;
 
 	private Gender gender = Gender.MALE;
@@ -35,11 +33,20 @@ public abstract class Animal extends Entity {
 
 	public Animal(Field field, Location location) {
 		super(field, location);
-		alive = true;
 		gender = gender.randomGender();
 		nocturnal = false;
 		sick = false;
 		sickProbability = 16;
+	}
+
+
+	protected void placeInField(Location location) {
+		getField().placeAnimal(this, location);
+	}
+
+
+	protected void clearFromField(Location location) {
+		getField().clear(location);
 	}
 
 
@@ -114,21 +121,6 @@ public abstract class Animal extends Entity {
 				Animal young = createNewAnimal(false, field, loc);
 				newAnimals.add(young);
 			}
-		}
-	}
-
-
-	protected boolean isAlive() {
-		return alive;
-	}
-
-
-	protected void setDead() {
-		alive = false;
-		if (getLocation() != null) {
-			getField().clear(getLocation());
-			setLocationNull();
-			setFieldNull();
 		}
 	}
 

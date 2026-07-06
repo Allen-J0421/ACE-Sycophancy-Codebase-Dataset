@@ -8,14 +8,23 @@ public abstract class Entity {
 
 	private Location location;
 
+	private boolean alive;
+
 
 	public Entity(Field field, Location location) {
 		this.field = field;
+		alive = true;
 		setLocation(location);
 	}
 
 
 	protected abstract Color getObjectColor(Climate climate);
+
+
+	protected abstract void placeInField(Location location);
+
+
+	protected abstract void clearFromField(Location location);
 
 
 	protected Field getField() {
@@ -34,25 +43,31 @@ public abstract class Entity {
 
 
 	protected void setLocation(Location newLocation) {
-		if (location == null) {
-			location = null;
-		}
-
 		if (location != null) {
-			field.clear(location);
+			clearFromField(location);
 		}
 		location = newLocation;
-
-		if (this instanceof Animal) {
-			field.placeAnimal(this, newLocation);
-		} else {
-			field.placePlant(this, newLocation);
-		}
+		placeInField(newLocation);
 	}
 
 
 	protected void setLocationNull() {
 		location = null;
+	}
+
+
+	protected boolean isAlive() {
+		return alive;
+	}
+
+
+	protected void setDead() {
+		alive = false;
+		if (location != null) {
+			clearFromField(location);
+			setLocationNull();
+			setFieldNull();
+		}
 	}
 
 }

@@ -16,6 +16,16 @@ public abstract class Plant extends Entity {
 	}
 
 
+	protected void placeInField(Location location) {
+		getField().placePlant(this, location);
+	}
+
+
+	protected void clearFromField(Location location) {
+		getField().clearPlant(location);
+	}
+
+
 	protected void increaseStage(Climate climate) {
 		if (stage < getMaxStage()) {
 			if (climate.getCurrentWeather() == Weather.RAIN) {

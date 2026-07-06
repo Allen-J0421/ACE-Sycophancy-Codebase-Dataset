@@ -39,6 +39,11 @@ public class Field {
 	}
 
 
+	public void clearPlant(Location location) {
+		plantField[location.getRow()][location.getCol()] = null;
+	}
+
+
 	public void placeAnimal(Object animal, int row, int col) {
 		placeAnimal(animal, new Location(row, col));
 	}

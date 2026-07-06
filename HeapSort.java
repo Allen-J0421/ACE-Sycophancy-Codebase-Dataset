@@ -2,7 +2,7 @@ import java.util.Comparator;
 
 public class HeapSort {
 
-    private static final HeapFactory FACTORY = new SortContext();
+    private static final HeapFactory FACTORY = SortContext.INSTANCE;
 
     public static void heapSort(int[] arr) {
         heapSort(arr, 0, arr.length);

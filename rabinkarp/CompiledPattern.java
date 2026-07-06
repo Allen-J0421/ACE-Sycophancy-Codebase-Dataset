@@ -13,16 +13,10 @@ final class CompiledPattern {
         this.highOrderFactor = highOrderFactor;
     }
 
-    static CompiledPattern compile(CharSequence pattern, int radix, int modulus) {
+    static CompiledPattern compile(CharSequence pattern, HashCalculator calculator) {
         int m = pattern.length();
-        int h = 1;
-        for (int i = 0; i < m - 1; i++) {
-            h = (h * radix) % modulus;
-        }
-        int hash = 0;
-        for (int i = 0; i < m; i++) {
-            hash = (radix * hash + pattern.charAt(i)) % modulus;
-        }
+        int hash = calculator.hash(pattern, m);
+        int h = calculator.highOrderFactor(m);
         return new CompiledPattern(pattern, m, hash, h);
     }
 

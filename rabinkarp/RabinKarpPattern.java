@@ -18,8 +18,9 @@ public final class RabinKarpPattern {
     }
 
     public static RabinKarpPattern compile(CharSequence pattern, int radix, int modulus) {
+        PolynomialHashCalculator calculator = new PolynomialHashCalculator(radix, modulus);
         RabinKarpMatcher m = new RabinKarpMatcher(radix, modulus);
-        CompiledPattern cp = CompiledPattern.compile(pattern, radix, modulus);
+        CompiledPattern cp = CompiledPattern.compile(pattern, calculator);
         return new RabinKarpPattern(cp.pattern(), cp.length(), cp.hash(), cp.highOrderFactor(), m);
     }
 

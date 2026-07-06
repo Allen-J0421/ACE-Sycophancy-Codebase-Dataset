@@ -14,4 +14,8 @@ public final class StringMatcherFactory {
     public static StringMatcher naive() {
         return new NaiveMatcher();
     }
+
+    public static StringMatcher rollingHash(HashCalculator calculator) {
+        return new RollingHashMatcher(calculator);
+    }
 }

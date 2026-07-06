@@ -8,6 +8,7 @@ public final class RabinKarpTest {
     public static void main(String[] args) {
         runSuite(StringMatcherFactory.rabinKarp(), "RabinKarpMatcher");
         runSuite(StringMatcherFactory.naive(), "NaiveMatcher");
+        runSuite(StringMatcherFactory.rollingHash(new PolynomialHashCalculator(256, 101)), "RollingHashMatcher+PolynomialHashCalculator");
 
         RabinKarpPattern compiled = RabinKarpPattern.compile("geeks");
         expect(compiled.searchIn("geeksforgeeks"), List.of(0, 8), "compiled pattern: geeks in geeksforgeeks");

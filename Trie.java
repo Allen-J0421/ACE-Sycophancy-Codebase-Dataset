@@ -23,6 +23,14 @@ public class Trie {
         boolean hasChild(char c) { return children[mapping.indexOf(c)] != null; }
         TrieNode getChild(char c) { return children[mapping.indexOf(c)]; }
         void setChild(char c, TrieNode node) { children[mapping.indexOf(c)] = node; }
+
+        boolean hasAnyChild()
+        {
+            for (TrieNode child : children) {
+                if (child != null) return true;
+            }
+            return false;
+        }
     }
 
     private final CharacterMapping mapping;
@@ -67,5 +75,24 @@ public class Trie {
     public boolean isPrefix(String prefix)
     {
         return navigate(prefix) != null;
+    }
+
+    public void delete(String key)
+    {
+        deleteFrom(root, key, 0);
+    }
+
+    private boolean deleteFrom(TrieNode node, String key, int depth)
+    {
+        if (node == null) return false;
+        if (depth == key.length()) {
+            if (!node.isEndOfWord) return false;
+            node.isEndOfWord = false;
+            return !node.hasAnyChild();
+        }
+        char c = key.charAt(depth);
+        if (!deleteFrom(node.getChild(c), key, depth + 1)) return false;
+        node.setChild(c, null);
+        return !node.isEndOfWord && !node.hasAnyChild();
     }
 }

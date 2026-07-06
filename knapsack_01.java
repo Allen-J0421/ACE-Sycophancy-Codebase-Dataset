@@ -1,14 +1,6 @@
 record Item(int weight, int value) {}
 
-class KnapsackInput {
-    final int capacity;
-    final Item[] items;
-
-    KnapsackInput(int capacity, Item[] items) {
-        this.capacity = capacity;
-        this.items = items;
-    }
-
+record KnapsackInput(int capacity, Item[] items) {
     void validate() {
         if (capacity < 0)
             throw new IllegalArgumentException("Capacity must be non-negative");
@@ -39,7 +31,7 @@ class KnapsackSolver {
 
 class DPKnapsackStrategy implements KnapsackStrategy {
     public int solve(KnapsackInput problem) {
-        return KnapsackSolver.compute(problem.capacity, problem.items);
+        return KnapsackSolver.compute(problem.capacity(), problem.items());
     }
 }
 

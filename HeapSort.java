@@ -10,7 +10,7 @@ public class HeapSort {
         if (from < 0 || to > arr.length || from > to)
             throw new IllegalArgumentException(
                 "Invalid range [" + from + ", " + to + ") for array of length " + arr.length);
-        new RangeHeap(arr, from, to).sort();
+        new RangeHeap(arr, from).sort(to - from);
     }
 
     public static <T> void heapSort(T[] arr, Comparator<T> cmp) {
@@ -25,23 +25,18 @@ public class HeapSort {
     }
 
     abstract static class AbstractHeap {
-        protected final int size;
 
-        AbstractHeap(int size) {
-            this.size = size;
-        }
-
-        public void sort() {
-            build();
-            for (int i = size - 1; i > 0; i--) {
+        void sort(int n) {
+            build(n);
+            for (int i = n - 1; i > 0; i--) {
                 swap(0, i);
                 siftDown(0, i);
             }
         }
 
-        private void build() {
-            for (int i = size / 2 - 1; i >= 0; i--)
-                siftDown(i, size);
+        private void build(int n) {
+            for (int i = n / 2 - 1; i >= 0; i--)
+                siftDown(i, n);
         }
 
         private void siftDown(int i, int n) {
@@ -66,8 +61,7 @@ public class HeapSort {
         private final int[] arr;
         private final int from;
 
-        private RangeHeap(int[] arr, int from, int to) {
-            super(to - from);
+        private RangeHeap(int[] arr, int from) {
             this.arr = arr;
             this.from = from;
         }
@@ -88,13 +82,19 @@ public class HeapSort {
     static class ObjectRangeHeap<T> extends AbstractHeap implements Heap<T> {
         private final T[] arr;
         private final int from;
+        private final int size;
         private final Comparator<T> cmp;
 
         ObjectRangeHeap(T[] arr, int from, int to, Comparator<T> cmp) {
-            super(to - from);
             this.arr = arr;
             this.from = from;
+            this.size = to - from;
             this.cmp = cmp;
+        }
+
+        @Override
+        public void sort() {
+            sort(size);
         }
 
         @Override

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 class Graph {
     private final int V;
@@ -24,7 +25,7 @@ class Graph {
     ArrayList<ArrayList<Integer>> getAdj() { return adj; }
 }
 
-class ArticulationResult {
+class ArticulationResult implements Iterable<Integer> {
     private final ArrayList<Integer> points;
 
     ArticulationResult(ArrayList<Integer> points) {
@@ -33,6 +34,9 @@ class ArticulationResult {
 
     boolean hasArticulationPoints() { return !points.isEmpty(); }
     ArrayList<Integer> getPoints() { return points; }
+
+    @Override
+    public Iterator<Integer> iterator() { return points.iterator(); }
 }
 
 interface GraphAlgorithm<T> {
@@ -116,10 +120,8 @@ class ArticulationPoints {
         GraphAlgorithm<ArticulationResult> finder = new ArticulationPointsFinder(g);
         ArticulationResult result = finder.execute();
 
-        if (result.hasArticulationPoints()) {
-            for (int u : result.getPoints()) {
-                System.out.print(u + " ");
-            }
+        for (int u : result) {
+            System.out.print(u + " ");
         }
         System.out.println();
     }

@@ -41,32 +41,7 @@ public abstract class Producer extends Actor
      */
     protected void giveBirth(List<Actor> newProducers)
     {
-        // Get a list of free adjacent locations:
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        
-        // Work out the number of births this producer will have this step:
-        int births = breed();
-        
-        // Add each birth into an adjacent location:
-        for (int b = 0; b < births && free.size() > 0; b++)
-        {
-            Location location = free.remove(0);
-            
-            try
-            {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(Field.class,
-                                                      Location.class)
-                              .newInstance(field, location);
-                
-                newProducers.add(child);
-            }
-            catch (java.lang.Exception e)
-            {
-                continue;
-            }
-        }
+        BirthManager.spawnProducerOffspring(this, breed(), newProducers);
     }
         
     /**

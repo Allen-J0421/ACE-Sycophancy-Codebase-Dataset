@@ -179,37 +179,8 @@ public abstract class Consumer extends Actor
      */
     private void giveBirth(List<Actor> newConsumers)
     {
-        // Ensure this consumer has a valid mate in a neighboring location before continuing.
         if (!checkForValidMate()) return;
-        
-        // Get a list of free adjacent locations:
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        
-        // Work out the number of births this producer will have this step:
-        int births = breed();
-        // Add each birth into an adjacent location:
-        for (int b = 0; b < births && free.size() > 0; b++)
-        {
-            Location location = free.remove(0);
-            
-            try
-            {
-                Actor child = this.getClass()
-                              .getDeclaredConstructor(boolean.class,
-                                                      Field.class,
-                                                      Location.class)
-                              .newInstance(true, field, location);
-                
-                newConsumers.add(child);
-            }
-            catch (java.lang.Exception e)
-            {
-                System.out.println("Error!");
-                
-                continue;
-            }
-        }
+        BirthManager.spawnConsumerOffspring(this, breed(), newConsumers);
     }
     
     /**

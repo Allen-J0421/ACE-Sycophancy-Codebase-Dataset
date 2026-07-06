@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 final class BellmanFordDemo {
 
     public static void main(String[] args) {
@@ -9,15 +11,15 @@ final class BellmanFordDemo {
             {4, 3, -1}
         });
 
-        ShortestPathResult result = BellmanFord.shortestPaths(graph, 0);
-
-        if (result instanceof Distances d) {
-            for (int dist : d.all()) {
-                System.out.print(dist + " ");
+        BellmanFord.shortestPaths(graph, 0).accept(ResultVisitor.of(
+            d -> {
+                System.out.println(Arrays.toString(d.all()));
+                return null;
+            },
+            nc -> {
+                System.out.println("Negative cycle detected: " + nc.vertices());
+                return null;
             }
-            System.out.println();
-        } else if (result instanceof NegativeCycle nc) {
-            System.out.println("Negative cycle detected: " + nc.vertices());
-        }
+        ));
     }
 }

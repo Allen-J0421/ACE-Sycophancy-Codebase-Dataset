@@ -39,6 +39,11 @@ final class Distances implements ShortestPathResult {
     }
 
     @Override
+    public <T> T accept(ResultVisitor<T> visitor) {
+        return visitor.onDistances(this);
+    }
+
+    @Override
     public String toString() {
         return "Distances[source=" + source + ", distances=" + Arrays.toString(distances) + "]";
     }

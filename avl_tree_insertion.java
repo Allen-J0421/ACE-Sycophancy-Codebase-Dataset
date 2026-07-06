@@ -90,35 +90,38 @@ class AVLTree implements Tree {
         }
     }
 
-    public void insert(int key) {
-        root = insertNode(root, key);
+    private static class TreeTraverser {
+
+        static Node insert(Node node, int key) {
+            if (node == null)
+                return new Node(key);
+
+            if (key < node.key)
+                node.left = insert(node.left, key);
+            else if (key > node.key)
+                node.right = insert(node.right, key);
+            else
+                return node;
+
+            AVLBalancer.updateHeight(node);
+            return AVLBalancer.rebalance(node, key);
+        }
+
+        static void traverse(Node node, TreeVisitor visitor) {
+            if (node != null) {
+                visitor.visit(node.key);
+                traverse(node.left, visitor);
+                traverse(node.right, visitor);
+            }
+        }
     }
 
-    private Node insertNode(Node node, int key) {
-        if (node == null)
-            return new Node(key);
-
-        if (key < node.key)
-            node.left = insertNode(node.left, key);
-        else if (key > node.key)
-            node.right = insertNode(node.right, key);
-        else
-            return node;
-
-        AVLBalancer.updateHeight(node);
-        return AVLBalancer.rebalance(node, key);
+    public void insert(int key) {
+        root = TreeTraverser.insert(root, key);
     }
 
     public void accept(TreeVisitor visitor) {
-        preOrderTraversal(root, visitor);
-    }
-
-    private void preOrderTraversal(Node node, TreeVisitor visitor) {
-        if (node != null) {
-            visitor.visit(node.key);
-            preOrderTraversal(node.left, visitor);
-            preOrderTraversal(node.right, visitor);
-        }
+        TreeTraverser.traverse(root, visitor);
     }
 
     public static void main(String[] args) {

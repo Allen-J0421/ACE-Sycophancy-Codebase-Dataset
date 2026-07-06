@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 class KruskalMST {
@@ -14,11 +15,15 @@ class KruskalMST {
             .edge(0, 3, 5)
             .build();
 
-        KruskalSolver solver = new KruskalSolver(RankedUnionFind::new);
-        List<Edge> mst = solver.solve(graph);
-        int totalCost = mst.stream().mapToInt(e -> e.weight).sum();
-        System.out.println("MST edges: " + mst);
-        System.out.println("Total cost: " + totalCost);
+        KruskalSolver minSolver = new KruskalSolver(RankedUnionFind::new, new AscendingWeight());
+        List<Edge> mst = minSolver.solve(graph);
+        System.out.println("Min spanning tree: " + mst);
+        System.out.println("Total cost: " + mst.stream().mapToInt(e -> e.weight).sum());
+
+        KruskalSolver maxSolver = new KruskalSolver(RankedUnionFind::new, new DescendingWeight());
+        List<Edge> maxst = maxSolver.solve(graph);
+        System.out.println("Max spanning tree: " + maxst);
+        System.out.println("Total cost: " + maxst.stream().mapToInt(e -> e.weight).sum());
     }
 }
 
@@ -53,14 +58,16 @@ class Graph {
 
 class KruskalSolver {
     private final UnionFindFactory ufFactory;
+    private final EdgeSortingStrategy sortingStrategy;
 
-    KruskalSolver(UnionFindFactory ufFactory) {
+    KruskalSolver(UnionFindFactory ufFactory, EdgeSortingStrategy sortingStrategy) {
         this.ufFactory = ufFactory;
+        this.sortingStrategy = sortingStrategy;
     }
 
     List<Edge> solve(Graph graph) {
         Edge[] sorted = graph.edges.toArray(new Edge[0]);
-        Arrays.sort(sorted);
+        Arrays.sort(sorted, sortingStrategy.comparator());
 
         UnionFind uf = ufFactory.create(graph.vertices);
         List<Edge> mst = new ArrayList<>();
@@ -73,6 +80,24 @@ class KruskalSolver {
             }
         }
         return mst;
+    }
+}
+
+interface EdgeSortingStrategy {
+    Comparator<Edge> comparator();
+}
+
+class AscendingWeight implements EdgeSortingStrategy {
+    @Override
+    public Comparator<Edge> comparator() {
+        return Comparator.comparingInt(e -> e.weight);
+    }
+}
+
+class DescendingWeight implements EdgeSortingStrategy {
+    @Override
+    public Comparator<Edge> comparator() {
+        return Comparator.<Edge>comparingInt(e -> e.weight).reversed();
     }
 }
 
@@ -120,18 +145,13 @@ class RankedUnionFind implements UnionFind {
     }
 }
 
-class Edge implements Comparable<Edge> {
+class Edge {
     final int from, to, weight;
 
     Edge(int from, int to, int weight) {
         this.from = from;
         this.to = to;
         this.weight = weight;
-    }
-
-    @Override
-    public int compareTo(Edge other) {
-        return Integer.compare(this.weight, other.weight);
     }
 
     @Override

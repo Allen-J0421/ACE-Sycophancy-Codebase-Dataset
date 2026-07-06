@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 class BipartiteChecker {
 
@@ -43,13 +41,19 @@ class BipartiteChecker {
         }
     }
 
-    static Partition check(Graph graph) {
+    private final ColoringStrategy strategy;
+
+    BipartiteChecker(ColoringStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    Partition check(Graph graph) {
         int V = graph.vertexCount();
         Coloring coloring = new Coloring(V);
 
         for (int i = 0; i < V; i++) {
             if (coloring.isUncolored(i)) {
-                if (!bfsColor(graph, i, coloring)) {
+                if (!strategy.colorComponent(graph, i, coloring)) {
                     return new Partition(false);
                 }
             }
@@ -64,24 +68,5 @@ class BipartiteChecker {
             }
         }
         return result;
-    }
-
-    private static boolean bfsColor(Graph graph, int start, Coloring coloring) {
-        Queue<Integer> queue = new LinkedList<>();
-        coloring.set(start, Color.RED);
-        queue.offer(start);
-
-        while (!queue.isEmpty()) {
-            int u = queue.poll();
-            for (int v : graph.neighbors(u)) {
-                if (coloring.isUncolored(v)) {
-                    coloring.set(v, coloring.get(u).opposite());
-                    queue.offer(v);
-                } else if (coloring.get(v) == coloring.get(u)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

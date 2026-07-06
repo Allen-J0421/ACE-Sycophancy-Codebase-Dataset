@@ -40,7 +40,8 @@ class BipartiteAnalyzer {
 
         GraphInputValidator.validate(V, edges);
         Graph graph = UndirectedGraphFactory.fromEdges(V, edges);
-        BipartiteChecker.Partition result = BipartiteChecker.check(graph);
+        BipartiteChecker checker = new BipartiteChecker(new BfsColoringStrategy());
+        BipartiteChecker.Partition result = checker.check(graph);
         GraphView.printResult(result);
     }
 }

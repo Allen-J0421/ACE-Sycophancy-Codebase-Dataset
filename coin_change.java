@@ -1,11 +1,27 @@
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BooleanSupplier;
 
 class InvalidCoinChangeInputException extends RuntimeException {
     InvalidCoinChangeInputException(String message) {
         super(message);
+    }
+}
+
+@FunctionalInterface
+interface Validator {
+    void validate(int[] coins, int sum);
+}
+
+final class CompositeValidator implements Validator {
+    private final List<Validator> validators;
+
+    CompositeValidator(List<Validator> validators) {
+        this.validators = validators;
+    }
+
+    @Override
+    public void validate(int[] coins, int sum) {
+        validators.forEach(v -> v.validate(coins, sum));
     }
 }
 
@@ -14,21 +30,19 @@ interface CoinChangeStrategy {
 }
 
 final class CoinChangeDPService implements CoinChangeStrategy {
+    private static final Validator VALIDATOR = new CompositeValidator(List.of(
+        (coins, sum) -> { if (coins == null)     throw new InvalidCoinChangeInputException("coins must not be null"); },
+        (coins, sum) -> { if (coins.length == 0) throw new InvalidCoinChangeInputException("coins must not be empty"); },
+        (coins, sum) -> { if (sum < 0)           throw new InvalidCoinChangeInputException("sum must not be negative"); },
+        (coins, sum) -> Arrays.stream(coins)
+                              .filter(c -> c <= 0)
+                              .findFirst()
+                              .ifPresent(c -> { throw new InvalidCoinChangeInputException("each coin must be positive, got: " + c); })
+    ));
+
     @Override
     public int computeWays(int[] coins, int sum) {
-        List.of(
-            Map.entry((BooleanSupplier) () -> coins == null,     "coins must not be null"),
-            Map.entry((BooleanSupplier) () -> coins.length == 0, "coins must not be empty"),
-            Map.entry((BooleanSupplier) () -> sum < 0,           "sum must not be negative")
-        ).stream()
-         .filter(rule -> rule.getKey().getAsBoolean())
-         .findFirst()
-         .ifPresent(rule -> { throw new InvalidCoinChangeInputException(rule.getValue()); });
-
-        Arrays.stream(coins)
-              .filter(c -> c <= 0)
-              .findFirst()
-              .ifPresent(c -> { throw new InvalidCoinChangeInputException("each coin must be positive, got: " + c); });
+        VALIDATOR.validate(coins, sum);
 
         int[] dp = new int[sum + 1];
 

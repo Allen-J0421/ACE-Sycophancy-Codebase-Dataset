@@ -1,42 +1,83 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 class KruskalMST {
     public static void main(String[] args) {
-        Edge[] edges = {
-            new Edge(0, 1, 10),
-            new Edge(1, 3, 15),
-            new Edge(2, 3, 4),
-            new Edge(2, 0, 6),
-            new Edge(0, 3, 5)
-        };
+        Graph graph = new Graph.Builder()
+            .vertices(4)
+            .edge(0, 1, 10)
+            .edge(1, 3, 15)
+            .edge(2, 3, 4)
+            .edge(2, 0, 6)
+            .edge(0, 3, 5)
+            .build();
 
-        List<Edge> mst = GraphAlgorithms.kruskalMST(4, edges);
+        KruskalSolver solver = new KruskalSolver(RankedUnionFind::new);
+        List<Edge> mst = solver.solve(graph);
         int totalCost = mst.stream().mapToInt(e -> e.weight).sum();
         System.out.println("MST edges: " + mst);
         System.out.println("Total cost: " + totalCost);
     }
 }
 
-class GraphAlgorithms {
-    private GraphAlgorithms() {}
+class Graph {
+    final int vertices;
+    final List<Edge> edges;
 
-    static List<Edge> kruskalMST(int V, Edge[] edges) {
-        Arrays.sort(edges);
+    private Graph(Builder b) {
+        this.vertices = b.vertices;
+        this.edges = Collections.unmodifiableList(b.edges);
+    }
 
-        UnionFind uf = new RankedUnionFind(V);
+    static class Builder {
+        private int vertices;
+        private final List<Edge> edges = new ArrayList<>();
+
+        Builder vertices(int n) {
+            this.vertices = n;
+            return this;
+        }
+
+        Builder edge(int from, int to, int weight) {
+            edges.add(new Edge(from, to, weight));
+            return this;
+        }
+
+        Graph build() {
+            return new Graph(this);
+        }
+    }
+}
+
+class KruskalSolver {
+    private final UnionFindFactory ufFactory;
+
+    KruskalSolver(UnionFindFactory ufFactory) {
+        this.ufFactory = ufFactory;
+    }
+
+    List<Edge> solve(Graph graph) {
+        Edge[] sorted = graph.edges.toArray(new Edge[0]);
+        Arrays.sort(sorted);
+
+        UnionFind uf = ufFactory.create(graph.vertices);
         List<Edge> mst = new ArrayList<>();
 
-        for (Edge e : edges) {
+        for (Edge e : sorted) {
             if (uf.find(e.from) != uf.find(e.to)) {
                 uf.union(e.from, e.to);
                 mst.add(e);
-                if (mst.size() == V - 1) break;
+                if (mst.size() == graph.vertices - 1) break;
             }
         }
         return mst;
     }
+}
+
+interface UnionFindFactory {
+    UnionFind create(int n);
 }
 
 interface UnionFind {

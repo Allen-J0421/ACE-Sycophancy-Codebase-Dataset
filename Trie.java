@@ -9,6 +9,7 @@ public class Trie implements Iterable<String> {
 
     private final CharacterMapping mapping;
     private final TrieNode root;
+    private int wordCount;
 
     public Trie() { this(LOWERCASE); }
 
@@ -27,7 +28,10 @@ public class Trie implements Iterable<String> {
             }
             curr = curr.getChild(c);
         }
-        curr.isEndOfWord = true;
+        if (!curr.isEndOfWord) {
+            curr.isEndOfWord = true;
+            wordCount++;
+        }
     }
 
     private TrieNode navigate(String key)
@@ -53,8 +57,12 @@ public class Trie implements Iterable<String> {
 
     public void delete(String key)
     {
+        if (!search(key)) return;
+        wordCount--;
         deleteFrom(root, key, 0);
     }
+
+    public int size() { return wordCount; }
 
     private boolean deleteFrom(TrieNode node, String key, int depth)
     {

@@ -13,8 +13,6 @@ public class Grass extends Plant {
     private static final double MAX_SIZE = 10.0;
     private static final int MAX_AGE = 25;
     private static final int BREEDING_AGE = 16;
-    private static final double LOW_BREEDING_PROBABILITY = 0.15;
-    private static final double HIGH_BREEDING_PROBABILITY = 0.25;
     private static final int MAX_LITTER_SIZE = 2;
     private static final double DEFAULT_SIZE = 1.00;
     private static final int DEFAULT_FOOD_VALUE = 5;
@@ -30,7 +28,7 @@ public class Grass extends Plant {
     public Grass(int foodValue, double size, boolean randomAge, Field field, Location location) {
         super(false, foodValue, size, randomAge, field, location);
         setGrowthRate(DEFAULT_GROWTH_RATE);
-        setBreedingProbability(LOW_BREEDING_PROBABILITY);
+        setWeatherEffect(new GrassWeatherEffect());
     }
 
     /**
@@ -74,13 +72,7 @@ public class Grass extends Plant {
     @Override
     public void act(List<Entity> newGrass, Weather weather, TimeOfDay time) {
         if (isAlive()) {
-            setBreedingProbability(LOW_BREEDING_PROBABILITY);
-
-            //If it has recently rained or is sunny, grow at a higher growth rate
-            if (weather.getRecentWeather().contains(WeatherType.RAIN) ||
-                    weather.getRecentWeather().contains(WeatherType.SUN)){
-                setBreedingProbability(HIGH_BREEDING_PROBABILITY);
-            }
+            applyWeatherEffect(weather);
             grow();
             giveBirth(newGrass);
         }

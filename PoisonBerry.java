@@ -13,8 +13,6 @@ public class PoisonBerry extends Plant {
     private static final double MAX_SIZE = 10.0;
     private static final int MAX_AGE = 20;
     private static final int BREEDING_AGE = 16;
-    private static final double LOW_BREEDING_PROBABILITY = 0.104;
-    private static final double HIGH_BREEDING_PROBABILITY = 0.2;
     private static final int MAX_LITTER_SIZE = 3;
     private static final double DEFAULT_SIZE = 1.00;
     private static final int DEFAULT_FOOD_VALUE = 5;
@@ -32,7 +30,7 @@ public class PoisonBerry extends Plant {
     public PoisonBerry(int foodValue, double size, boolean randomAge, Field field, Location location) {
         super(true, foodValue, size, randomAge, field, location);
         setGrowthRate(DEFAULT_GROWTH_RATE);
-        setBreedingProbability(LOW_BREEDING_PROBABILITY);
+        setWeatherEffect(new PoisonBerryWeatherEffect());
     }
 
     /**
@@ -76,13 +74,7 @@ public class PoisonBerry extends Plant {
     @Override
     public void act(List<Entity> newBerries, Weather weather, TimeOfDay time) {
         if (isAlive()) {
-            setBreedingProbability(LOW_BREEDING_PROBABILITY);
-
-            //If it has recently rained or is snowy, grow at a higher growth rate
-            if (weather.getRecentWeather().contains(WeatherType.RAIN) ||
-                    weather.getRecentWeather().contains(WeatherType.SNOW)){
-                setBreedingProbability(HIGH_BREEDING_PROBABILITY);
-            }
+            applyWeatherEffect(weather);
             grow();
             giveBirth(newBerries);
         }

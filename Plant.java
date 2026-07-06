@@ -15,6 +15,7 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     private final boolean poisonous;
     private double growthRate;
     private double breedingProbability;
+    private WeatherEffect weatherEffect;
 
     /**
      * Constructor for a plant in the simulation.
@@ -160,5 +161,25 @@ public abstract class Plant extends Organism implements Growable, Consumable {
     @Override
     public double getBreedingProbability() {
         return this.breedingProbability;
+    }
+
+    /**
+     * Assign the WeatherEffect strategy used to compute breeding probability
+     * adjustments each step.
+     *
+     * @param effect The strategy to use.
+     */
+    protected void setWeatherEffect(WeatherEffect effect) {
+        this.weatherEffect = effect;
+    }
+
+    /**
+     * Applies the current WeatherEffect strategy: queries it for the appropriate
+     * breeding probability and updates this plant's breeding probability accordingly.
+     *
+     * @param weather The current weather in the simulation.
+     */
+    protected void applyWeatherEffect(Weather weather) {
+        setBreedingProbability(weatherEffect.getBreedingProbability(weather));
     }
 }

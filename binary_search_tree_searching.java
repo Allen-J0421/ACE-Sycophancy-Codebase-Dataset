@@ -1,6 +1,7 @@
 class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
     private Node<T> root;
     private TreeTraverser<T> traverser;
+    private SearchCallback<T> searchCallback = SearchCallback.noOp();
 
     BinarySearchTree() {
         this(TreeTraverserFactory.inOrder());
@@ -12,6 +13,10 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
 
     void setTraverser(TreeTraverser<T> traverser) {
         this.traverser = traverser;
+    }
+
+    void setSearchCallback(SearchCallback<T> callback) {
+        this.searchCallback = callback;
     }
 
     void traverse(NodeVisitor<T> visitor) {
@@ -33,12 +38,20 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
     }
 
     public boolean search(T key) {
+        return search(key, searchCallback);
+    }
+
+    boolean search(T key, SearchCallback<T> callback) {
         Node<T> current = root;
         while (current != null) {
             int cmp = key.compareTo(current.data);
-            if (cmp == 0) return true;
+            if (cmp == 0) {
+                callback.onFound(key);
+                return true;
+            }
             current = cmp > 0 ? current.right : current.left;
         }
+        callback.onNotFound(key);
         return false;
     }
 
@@ -51,16 +64,24 @@ class BinarySearchTree<T extends Comparable<T>> implements SearchTree<T> {
     }
 
     public static void main(String[] args) {
+        SearchCallback<Integer> logger = new SearchCallback<Integer>() {
+            public void onFound(Integer key) { System.out.println(key + ": found"); }
+            public void onNotFound(Integer key) { System.out.println(key + ": not found"); }
+        };
+
         BinarySearchTree<Integer> bst = new TreeBuilder<Integer>()
             .insert(6)
             .insert(2)
             .insert(8)
             .insert(7)
             .insert(9)
+            .withSearchCallback(logger)
             .build();
 
-        System.out.println(bst.search(7));
         System.out.println(bst);
+
+        bst.search(7);
+        bst.search(5);
 
         System.out.print("In-order:   ");
         bst.traverse((data, depth) -> System.out.print(data + " "));

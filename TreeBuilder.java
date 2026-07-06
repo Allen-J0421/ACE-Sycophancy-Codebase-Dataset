@@ -11,6 +11,11 @@ class TreeBuilder<T extends Comparable<T>> {
         return this;
     }
 
+    TreeBuilder<T> withSearchCallback(SearchCallback<T> callback) {
+        tree.setSearchCallback(callback);
+        return this;
+    }
+
     BinarySearchTree<T> build() {
         return tree;
     }

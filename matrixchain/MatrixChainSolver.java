@@ -2,15 +2,7 @@ package matrixchain;
 
 public interface MatrixChainSolver {
 
-    class Result {
-        public final int minCost;
-        public final int[][] splitTable;
-
-        public Result(int minCost, int[][] splitTable) {
-            this.minCost = minCost;
-            this.splitTable = splitTable;
-        }
-    }
+    record Result(int minCost, int[][] splitTable) {}
 
     Result solve(int[] dims);
 

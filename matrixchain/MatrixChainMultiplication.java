@@ -10,7 +10,7 @@ public class MatrixChainMultiplication {
 
     public void run(int[] dims) {
         MatrixChainSolver.Result result = solver.solve(dims);
-        System.out.println(result.minCost);
+        System.out.println(result.minCost());
     }
 
     public static void main(String[] args) {

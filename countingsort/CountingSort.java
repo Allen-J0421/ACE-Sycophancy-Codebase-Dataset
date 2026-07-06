@@ -2,6 +2,8 @@ package countingsort;
 
 public class CountingSort {
 
+    private static final SortStateFactory DEFAULT_FACTORY = CountingSortState::new;
+
     private CountingSort() {}
 
     public static int[] sort(int[] arr) {
@@ -11,7 +13,7 @@ public class CountingSort {
         if (arr.length == 0) {
             return new int[0];
         }
-        SortState state = new CountingSortState(arr);
+        SortState state = DEFAULT_FACTORY.create(arr);
         state.accumulateCounts();
         return state.buildSorted();
     }

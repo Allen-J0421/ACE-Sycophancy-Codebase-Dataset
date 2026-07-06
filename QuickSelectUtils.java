@@ -1,21 +1,24 @@
 class QuickSelectUtils {
 
+    private static void swap(int[] arr, int i, int j)
+    {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
     public static int partition(int[] arr, int low, int high)
     {
         int pivot = arr[high], pivotloc = low;
         for (int i = low; i <= high; i++) {
 
             if (arr[i] < pivot) {
-                int temp = arr[i];
-                arr[i] = arr[pivotloc];
-                arr[pivotloc] = temp;
+                swap(arr, i, pivotloc);
                 pivotloc++;
             }
         }
 
-        int temp = arr[high];
-        arr[high] = arr[pivotloc];
-        arr[pivotloc] = temp;
+        swap(arr, high, pivotloc);
 
         return pivotloc;
     }

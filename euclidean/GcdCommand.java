@@ -10,10 +10,6 @@ final class GcdCommand implements Command<Integer> {
         this.provider = provider;
     }
 
-    GcdCommand(Operands operands) {
-        this(operands, GcdProviderRegistry.getDefault());
-    }
-
     @Override
     public Integer execute() {
         return provider.compute(operands.left(), operands.right());

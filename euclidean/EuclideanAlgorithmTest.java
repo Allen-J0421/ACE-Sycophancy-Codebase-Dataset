@@ -30,10 +30,6 @@ public final class EuclideanAlgorithmTest {
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7"}));
         assertIllegalArgument(() -> EuclideanAlgorithmApp.parseOperands(new String[]{"7", "8x"}));
 
-        assertCommand(new GcdCommand(new Operands(35, 15), GcdProviderRegistry.get("iterative")), 5);
-        assertCommand(new GcdCommand(new Operands(35, 15), GcdProviderRegistry.get("recursive")), 5);
-        assertCommand(new GcdCommand(new Operands(-42, 56), GcdProviderRegistry.get("iterative")), 14);
-        assertCommand(new GcdCommand(new Operands(-42, 56), GcdProviderRegistry.get("recursive")), 14);
         assertCommand(() -> GcdProviderRegistry.getDefault().compute(12, 8), 4);
         assertIllegalArgument(() -> GcdProviderRegistry.get("unknown"));
 
@@ -54,6 +50,22 @@ public final class EuclideanAlgorithmTest {
         assertOverflow(loggingOverflow, Integer.MIN_VALUE, 0);
         if (observerCalled[0]) {
             throw new AssertionError("Observer must not be called when delegate throws");
+        }
+
+        assertCommand(new GcdCommandBuilder().build(new Operands(35, 15)), 5);
+        assertCommand(new GcdCommandBuilder().provider("recursive").build(new Operands(35, 15)), 5);
+        assertCommand(new GcdCommandBuilder()
+                .provider(GcdProviderRegistry.get("iterative"))
+                .build(new Operands(-42, 56)), 14);
+
+        int[] builderObserved = {Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
+        assertCommand(new GcdCommandBuilder()
+                .provider("iterative")
+                .observer((a, b, result) -> { builderObserved[0] = a; builderObserved[1] = b; builderObserved[2] = result; })
+                .build(new Operands(35, 15)), 5);
+        if (builderObserved[0] != 35 || builderObserved[1] != 15 || builderObserved[2] != 5) {
+            throw new AssertionError(
+                    "Builder observer received wrong values: (" + builderObserved[0] + ", " + builderObserved[1] + ") = " + builderObserved[2]);
         }
     }
 

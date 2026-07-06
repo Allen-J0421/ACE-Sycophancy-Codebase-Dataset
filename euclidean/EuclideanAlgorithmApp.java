@@ -20,10 +20,9 @@ public final class EuclideanAlgorithmApp {
 
     public static void main(String[] args) {
         Operands operands = parseOperands(args);
-        GcdProvider provider = new LoggingGcdProvider(
-                GcdProviderRegistry.getDefault(),
-                (a, b, result) -> System.err.println("gcd(" + a + ", " + b + ") = " + result));
-        Command<Integer> command = new GcdCommand(operands, provider);
+        Command<Integer> command = new GcdCommandBuilder()
+                .observer((a, b, result) -> System.err.println("gcd(" + a + ", " + b + ") = " + result))
+                .build(operands);
         System.out.println(command.execute());
     }
 }

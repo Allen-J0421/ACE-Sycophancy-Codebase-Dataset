@@ -73,16 +73,7 @@ public class Snake extends Animal
                     newSnakes.add(young);
                 }
             }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie();
         }
     }
 
@@ -92,8 +83,8 @@ public class Snake extends Animal
      * If it is a plant, it can be 'trampled'
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood()
-    {
+    @Override
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

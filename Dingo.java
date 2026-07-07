@@ -73,16 +73,7 @@ public class Dingo extends Animal
                     newDingoes.add(young);
                 }
             }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie();
         }
     }
 
@@ -92,7 +83,8 @@ public class Dingo extends Animal
      * If it is a plant, then it is 'trampled'
      * @return where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    @Override
+    protected Location findFood() {
         if (getFog()){
             if (rand.nextInt(2) == 0) {
                 Field field = getField();

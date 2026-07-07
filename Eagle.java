@@ -76,19 +76,8 @@ public class Eagle extends Animal
                     newEagles.add(young);
                 }
             }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
-
+            moveOrDie();
         }
-
     }
 
     /**
@@ -97,7 +86,8 @@ public class Eagle extends Animal
      * If it is a plant, then it is 'trampled'
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    @Override
+    protected Location findFood() {
         if (getFog() && (rand.nextInt(2) == 0)) {
             Field field = getField();
             List<Location> adjacent = field.adjacentLocations(getLocation());

@@ -78,16 +78,7 @@ public class Ant extends Animal
                 }
             }
 
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie();
         }
     }
 
@@ -96,7 +87,8 @@ public class Ant extends Animal
      * Only the first grass or acacia is eaten.
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    @Override
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

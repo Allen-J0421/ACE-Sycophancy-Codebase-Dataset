@@ -74,16 +74,7 @@ public class Rat extends Animal
                     newRats.add(young);
                 }
             }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie();
         }
     }
 
@@ -93,7 +84,8 @@ public class Rat extends Animal
      * if there is a plant adjacent, it can be 'trampled'
      * @return where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    @Override
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

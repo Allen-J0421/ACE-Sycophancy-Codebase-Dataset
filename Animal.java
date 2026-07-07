@@ -51,6 +51,29 @@ public abstract class Animal
     abstract public void act(List<Animal> newAnimals, int time);
 
     /**
+     * Look for food adjacent to the current location.
+     * @return the location of food found, or null if none.
+     */
+    abstract protected Location findFood();
+
+    /**
+     * Move to a food location or a free adjacent location.
+     * Die if no location is available.
+     */
+    protected void moveOrDie() {
+        Location newLocation = findFood();
+        if(newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
+        if(newLocation != null) {
+            setLocation(newLocation);
+        }
+        else {
+            setDead();
+        }
+    }
+
+    /**
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
      */

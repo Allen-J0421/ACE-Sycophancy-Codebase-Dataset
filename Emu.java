@@ -73,19 +73,9 @@ public class Emu extends Animal
                     newEmus.add(young);
                 }
             }
-            Location newLocation = findFood();
-            if(newLocation == null) {
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                setDead();
-            }
+            moveOrDie();
         }
     }
-
 
     /**
      * Look for grass adjacent to the current location.
@@ -93,7 +83,8 @@ public class Emu extends Animal
      * If acacia is adjacent, it is 'trampled'
      * @return Where food was found, or null if it wasn't.
      */
-    private Location findFood() {
+    @Override
+    protected Location findFood() {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();

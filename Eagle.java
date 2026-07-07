@@ -65,20 +65,15 @@ public class Eagle extends Animal
             if (getDisease()){
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Eagle young = new Eagle(false, field, loc);
-                    young.setGender();
-                    newEagles.add(young);
-                }
-            }
+            spawnOffspring(newEagles);
             moveOrDie();
         }
     }
+
+    @Override protected int getBreedingAge() { return BREEDING_AGE; }
+    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    @Override protected Animal createOffspring(Field field, Location loc) { return new Eagle(false, field, loc); }
 
     /**
      * Look for rats and snakes adjacent to the current location.

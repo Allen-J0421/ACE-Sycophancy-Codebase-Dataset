@@ -56,6 +56,28 @@ public abstract class Animal
      */
     abstract protected Location findFood();
 
+    abstract protected int getBreedingAge();
+    abstract protected double getBreedingProbability();
+    abstract protected int getMaxLitterSize();
+    abstract protected Animal createOffspring(Field field, Location loc);
+
+    /**
+     * Spawn offspring into free adjacent locations if breeding conditions are met.
+     */
+    protected void spawnOffspring(List<Animal> newAnimals) {
+        if(giveBirth(getBreedingAge())) {
+            Field field = getField();
+            List<Location> free = field.getFreeAdjacentLocations(getLocation());
+            int births = breed(getBreedingAge(), getBreedingProbability(), getMaxLitterSize());
+            for(int b = 0; b < births && free.size() > 0; b++) {
+                Location loc = free.remove(0);
+                Animal young = createOffspring(field, loc);
+                young.setGender();
+                newAnimals.add(young);
+            }
+        }
+    }
+
     /**
      * Move to a food location or a free adjacent location.
      * Die if no location is available.

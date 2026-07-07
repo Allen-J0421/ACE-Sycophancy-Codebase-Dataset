@@ -66,21 +66,15 @@ public class Ant extends Animal
             if (getDisease()) {
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Ant young = new Ant(false, field, loc);
-                    young.setGender();
-                    newAnts.add(young);
-                }
-            }
-
+            spawnOffspring(newAnts);
             moveOrDie();
         }
     }
+
+    @Override protected int getBreedingAge() { return BREEDING_AGE; }
+    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    @Override protected Animal createOffspring(Field field, Location loc) { return new Ant(false, field, loc); }
 
     /**
      * Look for acacia and grass adjacent to the current location.

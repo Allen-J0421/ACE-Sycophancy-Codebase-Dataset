@@ -63,20 +63,15 @@ public class Rat extends Animal
             if (getDisease()){
                 spreadDisease();
             }
-            if (giveBirth(BREEDING_AGE)) {
-                Field field = getField();
-                List<Location> free = field.getFreeAdjacentLocations(getLocation());
-                int births = breed(BREEDING_AGE, BREEDING_PROBABILITY, MAX_LITTER_SIZE);
-                for (int b = 0; b < births && free.size() > 0; b++) {
-                    Location loc = free.remove(0);
-                    Rat young = new Rat(false, field, loc);
-                    young.setGender();
-                    newRats.add(young);
-                }
-            }
+            spawnOffspring(newRats);
             moveOrDie();
         }
     }
+
+    @Override protected int getBreedingAge() { return BREEDING_AGE; }
+    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    @Override protected Animal createOffspring(Field field, Location loc) { return new Rat(false, field, loc); }
 
     /**
      * Look for ants adjacent to the current location.

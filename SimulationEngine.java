@@ -18,7 +18,7 @@ public class SimulationEngine
     private List<Creature> creatures;
     private Field field;
     private int step;
-    private Disease disease;
+    private DiseaseManager diseaseManager;
     private Weather weather;
     private double oxygenLevel;
 
@@ -32,7 +32,7 @@ public class SimulationEngine
         creatures = new ArrayList<>();
         field = new Field(config.depth, config.width);
         weather = new Weather(field);
-        disease = new Disease();
+        diseaseManager = new DiseaseManager();
         oxygenLevel = 1;
         Animal.populationDieOfDisease = 0;
         populate();
@@ -63,12 +63,12 @@ public class SimulationEngine
 
         double totalOxygenInvolved = 0;
 
-        disease.creationSourceOfInfection(creatures, step);
+        diseaseManager.trySpread(creatures, step);
 
         List<Creature> newCreatures = new ArrayList<>();
         for (Iterator<Creature> it = creatures.iterator(); it.hasNext(); ) {
             Creature creature = it.next();
-            totalOxygenInvolved += creature.act(newCreatures, timeOfDay(), oxygenLevel, disease, step);
+            totalOxygenInvolved += creature.act(newCreatures, timeOfDay(), oxygenLevel, diseaseManager.getParams(), step);
             if (!creature.isAlive()) {
                 it.remove();
             }
@@ -83,8 +83,8 @@ public class SimulationEngine
 
         oxygenLevel += totalOxygenInvolved;
 
-        if (disease.getIsSpread()) {
-            disease.setIsSpread(identifyIfDiseaseStops());
+        if (diseaseManager.getIsSpread()) {
+            diseaseManager.setIsSpread(diseaseManager.isStillActive(creatures));
         }
 
         creatures.addAll(newCreatures);
@@ -136,23 +136,4 @@ public class SimulationEngine
         }
     }
 
-    /**
-     * If all animals infected die or all animals get immunity, the disease stops.
-     */
-    private boolean identifyIfDiseaseStops()
-    {
-        boolean existDisease = true;
-        for (Iterator<Creature> it = creatures.iterator(); it.hasNext(); ) {
-            Creature creature = it.next();
-            if (creature instanceof Animal) {
-                Animal ani = (Animal) creature;
-                if (!ani.getIsInfected() || ani.getIsImmuned()) {
-                    existDisease = false;
-                } else {
-                    existDisease = true;
-                }
-            }
-        }
-        return existDisease;
-    }
 }

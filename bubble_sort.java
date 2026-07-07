@@ -11,10 +11,15 @@ class Main {
         runCase("Reverse order",  new Integer[]{ 5, 4, 3, 2, 1 },              intSorter);
         runCase("Single element", new Integer[]{ 42 },                          intSorter);
         runCase("Strings",        new String[]{ "banana", "apple", "cherry" },  strSorter);
+        runCase("Null array",     null,                                          intSorter);
     }
 
     private static <T extends Comparable<T>> void runCase(String label, T[] arr, Sorter<T> sorter) {
-        sorter.sort(arr);
-        System.out.println(label + ": " + Arrays.toString(arr));
+        try {
+            sorter.sort(arr);
+            System.out.println(label + ": " + Arrays.toString(arr));
+        } catch (SortException e) {
+            System.out.println(label + " [error]: " + e.getMessage());
+        }
     }
 }

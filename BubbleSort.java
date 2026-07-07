@@ -1,7 +1,8 @@
 class BubbleSort<T extends Comparable<T>> implements Sorter<T> {
 
     @Override
-    public void sort(T[] arr) {
+    public void sort(T[] arr) throws SortException {
+        if (arr == null) throw new SortException("Cannot sort a null array");
         int n = arr.length;
         for (int i = 0; i < n - 1; i++) {
             boolean swapped = false;

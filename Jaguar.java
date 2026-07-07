@@ -147,27 +147,12 @@ public class Jaguar extends Predator
         return MAX_TIME_UNTIL_BREEDING_AGAIN;
     }
     
-    /**
-     * Gets the probability the jaguar will find food when it is sunny
-     * @return The probability the jaguar will find food when it is sunny
-     */
-    protected double getSunnyFindingFoodProbability(){
-        return SUNNY_FINDING_FOOD_PROBABILITY;
-    }
-    
-    /**
-     * Gets the probability the jaguar will find food when it is rainy
-     * @return The probability the jaguar will find food when it is rainy
-     */
-    protected double getRainyFindingFoodProbability(){
-        return RAINY_FINDING_FOOD_PROBABILITY;
-    }
-    
-    /**
-     * Gets the probability the jaguar will find food when it is foggy
-     * @return The probability the jaguar will find food when it is foggy
-     */
-    protected double getFoggyFindingFoodProbability(){
-        return FOGGY_FINDING_FOOD_PROBABILITY;
+    protected double getFindingFoodProbability(Weather weather){
+        switch(weather){
+            case SUNNY: return SUNNY_FINDING_FOOD_PROBABILITY;
+            case RAINY: return RAINY_FINDING_FOOD_PROBABILITY;
+            case FOGGY: return FOGGY_FINDING_FOOD_PROBABILITY;
+            default:    return getRandom().nextDouble();
+        }
     }
 }

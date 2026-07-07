@@ -69,21 +69,7 @@ public abstract class Animal extends Actor
      * @param simulator The simulator.
      */
     public void act(List<Actor> newAnimals, Simulator simulator){
-        Location newLocation = null;
-        switch(simulator.getWeather()){
-            case SUNNY:
-                newLocation = findFood(getSunnyFindingFoodProbability());
-                break;
-            case RAINY:
-                newLocation = findFood(getRainyFindingFoodProbability());
-                break;
-            case FOGGY:
-                newLocation = findFood(getFoggyFindingFoodProbability());
-                break;
-            default:
-                findFood(getRandom().nextDouble());
-                break;
-        }
+        Location newLocation = findFood(getFindingFoodProbability(simulator.getWeather()));
         if(newLocation == null) { 
             // No food found - try to move to a free location.
             newLocation = getField().freeAdjacentLocation(getLocation());
@@ -335,20 +321,9 @@ public abstract class Animal extends Actor
     abstract protected int getMaxTimeUntilBreedingAgain();
 
     /**
-     * Gets the probability the animal will find food when it is sunny
-     * @return The probability the animal will find food when it is sunny
+     * Returns the probability this animal will find food under the given weather.
+     * @param weather The current weather.
+     * @return Probability of finding food (0.0–1.0).
      */
-    abstract protected double getSunnyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is rainy
-     * @return The probability the animal will find food when it is rainy
-     */
-    abstract protected double getRainyFindingFoodProbability();
-
-    /**
-     * Gets the probability the animal will find food when it is foggy
-     * @return The probability the animal will find food when it is foggy
-     */
-    abstract protected double getFoggyFindingFoodProbability();
+    abstract protected double getFindingFoodProbability(Weather weather);
 }

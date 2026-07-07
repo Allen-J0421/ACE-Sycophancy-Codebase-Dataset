@@ -6,19 +6,14 @@ import java.util.Iterator;
 /**
  * Manages the pure simulation state and time-stepping logic: the creature
  * population, field, environment (oxygen, weather, disease), and the act
- * loop. Does not interact with the view.
+ * loop. Does not interact with the view. All tunable parameters are supplied
+ * via a SimulationConfig so they can be varied without changing engine logic.
  *
  * @version 2022/03/02
  */
 public class SimulationEngine
 {
-    private static final double SALMON_CREATION_PROBABILITY = 0.08;
-    private static final double COD_CREATION_PROBABILITY = 0.08;
-    private static final double SEAWEED_CREATION_PROBABILITY = 0.03;
-    private static final double SHARK_CREATION_PROBABILITY = 0.04;
-    private static final double WHALE_CREATION_PROBABILITY = 0.03;
-
-    private static final double STORM_HAPPEN_PROBABILITY = 0.14;
+    private final SimulationConfig config;
 
     private List<Creature> creatures;
     private Field field;
@@ -28,14 +23,14 @@ public class SimulationEngine
     private double oxygenLevel;
 
     /**
-     * Create a simulation engine operating on a grid of the given dimensions.
-     * @param depth Depth of the field.
-     * @param width Width of the field.
+     * Create a simulation engine using the supplied configuration.
+     * @param config Immutable parameters for grid size and spawn probabilities.
      */
-    public SimulationEngine(int depth, int width)
+    public SimulationEngine(SimulationConfig config)
     {
+        this.config = config;
         creatures = new ArrayList<>();
-        field = new Field(depth, width);
+        field = new Field(config.depth, config.width);
         weather = new Weather(field);
         disease = new Disease();
         oxygenLevel = 1;
@@ -43,6 +38,7 @@ public class SimulationEngine
         populate();
     }
 
+    public SimulationConfig getConfig() { return config; }
     public Field getField() { return field; }
     public int getStep() { return step; }
     public Weather getWeather() { return weather; }
@@ -78,7 +74,7 @@ public class SimulationEngine
             }
         }
 
-        if (Randomizer.getRandom().nextDouble() <= STORM_HAPPEN_PROBABILITY) {
+        if (Randomizer.getRandom().nextDouble() <= config.stormHappenProbability) {
             weather.underwaterStorm(3);
             weather.setStormStart(true);
         } else {
@@ -115,23 +111,23 @@ public class SimulationEngine
         field.clear();
         for (int row = 0; row < field.getDepth(); row++) {
             for (int col = 0; col < field.getWidth(); col++) {
-                if (rand.nextDouble() <= SALMON_CREATION_PROBABILITY) {
+                if (rand.nextDouble() <= config.salmonCreationProbability) {
                     Location location = new Location(row, col);
                     Salmon salmon = new Salmon(true, field, location);
                     creatures.add(salmon);
-                } else if (rand.nextDouble() <= COD_CREATION_PROBABILITY) {
+                } else if (rand.nextDouble() <= config.codCreationProbability) {
                     Location location = new Location(row, col);
                     Cod cod = new Cod(true, field, location);
                     creatures.add(cod);
-                } else if (rand.nextDouble() <= SEAWEED_CREATION_PROBABILITY) {
+                } else if (rand.nextDouble() <= config.seaweedCreationProbability) {
                     Location location = new Location(row, col);
                     Seaweed seaweed = new Seaweed(true, field, location);
                     creatures.add(seaweed);
-                } else if (rand.nextDouble() <= SHARK_CREATION_PROBABILITY) {
+                } else if (rand.nextDouble() <= config.sharkCreationProbability) {
                     Location location = new Location(row, col);
                     Shark shark = new Shark(true, field, location);
                     creatures.add(shark);
-                } else if (rand.nextDouble() <= WHALE_CREATION_PROBABILITY) {
+                } else if (rand.nextDouble() <= config.whaleCreationProbability) {
                     Location location = new Location(row, col);
                     Whale whale = new Whale(true, field, location);
                     creatures.add(whale);

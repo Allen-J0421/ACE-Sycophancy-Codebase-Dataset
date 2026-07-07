@@ -9,9 +9,6 @@ import java.awt.Color;
  */
 public class Simulator
 {
-    private static final int DEFAULT_WIDTH = 120;
-    private static final int DEFAULT_DEPTH = 80;
-
     private SimulationEngine engine;
     private SimulatorView view;
 
@@ -20,7 +17,7 @@ public class Simulator
      */
     public Simulator()
     {
-        this(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        this(SimulationConfig.DEFAULT_DEPTH, SimulationConfig.DEFAULT_WIDTH);
     }
 
     /**
@@ -33,13 +30,14 @@ public class Simulator
         if (width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
             System.out.println("Using default values.");
-            depth = DEFAULT_DEPTH;
-            width = DEFAULT_WIDTH;
+            depth = SimulationConfig.DEFAULT_DEPTH;
+            width = SimulationConfig.DEFAULT_WIDTH;
         }
 
-        engine = new SimulationEngine(depth, width);
+        SimulationConfig config = SimulationConfig.withDimensions(depth, width);
+        engine = new SimulationEngine(config);
 
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(config.depth, config.width);
         view.setColor(Cod.class, Color.ORANGE);
         view.setColor(Salmon.class, Color.YELLOW);
         view.setColor(Seaweed.class, Color.RED);

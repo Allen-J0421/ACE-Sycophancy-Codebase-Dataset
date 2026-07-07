@@ -16,12 +16,12 @@ public class SimulationEngine
     static final int DEFAULT_WIDTH = 240;
 
     private final PopulationStrategy populationStrategy;
+    private final EnvironmentManager environmentManager;
 
     private List<Actor> actors;
     private Field field;
     private FieldAnalyzer fieldAnalyzer;
     private int step;
-    private Environment environment;
 
     /**
      * Create an engine with default creation probabilities.
@@ -50,10 +50,10 @@ public class SimulationEngine
             width = DEFAULT_WIDTH;
         }
         this.populationStrategy = strategy;
+        this.environmentManager = new EnvironmentManager();
         actors = new ArrayList<>();
         field = new Field(depth, width);
         fieldAnalyzer = new FieldAnalyzer(field);
-        environment = new Environment(new Time(), new Weather());
         reset();
     }
 
@@ -64,9 +64,9 @@ public class SimulationEngine
     public void step()
     {
         step++;
-        environment.getTime().incrementTime();
-        environment.getWeather().checkWeatherChange(step);
+        environmentManager.tick(step);
 
+        Environment environment = environmentManager.getEnvironment();
         List<Actor> newActors = new ArrayList<>();
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
@@ -103,13 +103,13 @@ public class SimulationEngine
     {
         step = 0;
         actors.clear();
-        populationStrategy.populate(field, environment, actors);
-        environment.getTime().reset();
+        populationStrategy.populate(field, environmentManager.getEnvironment(), actors);
+        environmentManager.reset();
     }
 
     public int getStep()                              { return step; }
     public Field getField()                           { return field; }
-    public Environment getEnvironment()               { return environment; }
+    public Environment getEnvironment()               { return environmentManager.getEnvironment(); }
     public Map<Class<?>, Double> getCreationProbabilities() { return populationStrategy.getCreationProbabilities(); }
 
     /**
@@ -120,7 +120,7 @@ public class SimulationEngine
         double grassProb = populationStrategy.getCreationProbabilities().get(Grass.class);
         for(Location location : fieldAnalyzer.getRandomFreePatches(grassProb)) {
             if(rand.nextDouble() <= grassProb
-                    && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
+                    && environmentManager.getEnvironment().getWeather().getCurrentWeather() == WeatherType.RAINING) {
                 actors.add(new Grass(field, location));
             }
         }

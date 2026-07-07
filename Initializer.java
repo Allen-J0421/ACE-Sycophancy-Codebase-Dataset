@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -26,8 +25,6 @@ public class Initializer
     private static final String DEFAULT_PLANT_NAME = "plant";
     // The default value of if animals' ages must be randomized when thy are created.
     private static final boolean RANDOM_ANIMAL_AGE = true;
-    // The names of available climate change scenarios.
-    private static final ArrayList<String> CLIMATE_CHANGE_SCENARIO_NAMES = new ArrayList<>(Arrays.asList("none", "low", "medium", "high"));
     // False of the simulation starts during the day, true if it starts during the night.
     private static final boolean DEFAULT_START_TIME = false;
     // The list of colors available for animal objects.
@@ -40,6 +37,8 @@ public class Initializer
     private final HabitatCSVReader habitatReader;
     // Factory responsible for creating Animal, Predator, and Plant instances.
     private final SpeciesFactory speciesFactory;
+    // Factory that reads scenarios.csv and creates ClimateScenario instances.
+    private final ClimateScenarioFactory scenarioFactory;
     // A Random object to handle random behaviours throughout the class.
     private static final Random rand = Randomizer.getRandom();
     // A graphical view of the simulation.
@@ -60,6 +59,7 @@ public class Initializer
         speciesToEvolveInSimulation = new ArrayList<>();
         habitatReader = new HabitatCSVReader();
         speciesFactory = new SpeciesFactory(new AnimalCSVReader(), new PlantCSVReader());
+        scenarioFactory = new ClimateScenarioFactory();
         listOfColorsForAnimals = new ArrayList<>();
         errorThrower = new ErrorThrower();
 
@@ -77,7 +77,7 @@ public class Initializer
     {
         ArrayList<String> animalChoices = speciesFactory.getAnimalChoices();
         ArrayList<String> habitatChoices = habitatReader.getChoicesList();
-        handler = new GUIHandler(this, animalChoices, habitatChoices, CLIMATE_CHANGE_SCENARIO_NAMES);
+        handler = new GUIHandler(this, animalChoices, habitatChoices, scenarioFactory.getChoicesList());
     }
 
     /**
@@ -94,7 +94,7 @@ public class Initializer
     {
         SimulationStep simulatorStepCounter = new SimulationStep();
         Field field = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
-        ClimateScenarios chosenClimateChangeScenario = createChosenClimateChangeScenario(scenarioName);
+        ClimateScenario chosenClimateChangeScenario = scenarioFactory.createScenario(scenarioName);
         Habitat simulationHabitat = createHabitat(chosenHabitat, simulatorStepCounter, chosenClimateChangeScenario);
         if (getNumberOfPlants() + getNumberOfAnimals(animalsToCreate) > calculateFieldArea()) {
             errorThrower.throwMessage("Too many animals were added for this habitat, please reduce the number of animals and try again");
@@ -112,10 +112,10 @@ public class Initializer
      *
      * @param habitatName (String) The name of the chosen habitat.
      * @param simulatorStepCounter (SimulationStep) The created SimulationStep object for this simulation to be handed to the Habitat object.
-     * @param climateChangeScenario (ClimateScenarios) The created ClimateScenarios enum to be handed to the Habitat object.
+     * @param climateChangeScenario (ClimateScenario) The created ClimateScenario enum to be handed to the Habitat object.
      * @return (Habitat) the created Habitat object.
      */
-    private Habitat createHabitat (String habitatName, SimulationStep simulatorStepCounter, ClimateScenarios climateChangeScenario)
+    private Habitat createHabitat (String habitatName, SimulationStep simulatorStepCounter, ClimateScenario climateChangeScenario)
     {
         if (habitatName != null) {
             habitatReader.extractDataFor(habitatName);
@@ -151,31 +151,6 @@ public class Initializer
                 idxOfColorToUseNext++;
             }
         }
-    }
-
-    /**
-     * Create the chosen climate change scenario. Scenarios are pre-defined in the enum ClimateScenarios
-     * as their functions can be changed to better approximate the real scenarios projected by the GIEC.
-     *
-     * @param scenarioName (String) The name of the scenario chosen by the user.
-     * @return (ClimateScenarios) The created ClimateScenarios enum.
-     */
-    private ClimateScenarios createChosenClimateChangeScenario(String scenarioName)
-    {
-        ClimateScenarios chosenScenario;
-        if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(3))) {
-            chosenScenario = ClimateScenarios.SCENARIO4;
-        }
-        else if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(2))) {
-            chosenScenario = ClimateScenarios.SCENARIO3;
-        }
-        else if (scenarioName.equals(CLIMATE_CHANGE_SCENARIO_NAMES.get(1))) {
-            chosenScenario = ClimateScenarios.SCENARIO2;
-        }
-        else{
-            chosenScenario = ClimateScenarios.SCENARIO1;
-        }
-        return chosenScenario;
     }
 
     /**

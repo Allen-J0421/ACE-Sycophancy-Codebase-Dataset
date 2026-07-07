@@ -7,17 +7,11 @@ class BubbleSort<T extends Comparable<T>> implements Sorter<T> {
             boolean swapped = false;
             for (int j = 0; j < n - i - 1; j++) {
                 if (arr[j].compareTo(arr[j + 1]) > 0) {
-                    swap(arr, j, j + 1);
+                    ArrayUtils.swap(arr, j, j + 1);
                     swapped = true;
                 }
             }
             if (!swapped) break;
         }
-    }
-
-    private void swap(T[] arr, int i, int j) {
-        T temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
     }
 }

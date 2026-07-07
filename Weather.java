@@ -7,7 +7,27 @@
  */
 public class Weather {
     // Stores all of the possible weather types.
-    public static enum WeatherType { Sunny, Rainy, Foggy, Clear, Cloudy }
+    public static enum WeatherType implements WeatherEffect
+    {
+        Sunny (0.20),
+        Rainy (0.14),
+        Foggy (0.05),
+        Clear (0.08),
+        Cloudy(0.10);
+
+        private final double spreadProbability;
+
+        WeatherType(double spreadProbability)
+        {
+            this.spreadProbability = spreadProbability;
+        }
+
+        @Override
+        public double getSpreadProbability()
+        {
+            return spreadProbability;
+        }
+    }
     
     private static WeatherType currentWeather;
     
@@ -18,9 +38,9 @@ public class Weather {
     private static final SimRandom rand = Randomizer.getRandom();
     
     /**
-     * @return Returns the current weather.
+     * @return Returns the current weather effect.
      */
-    public static WeatherType getWeather() 
+    public static WeatherEffect getWeather()
     {
         if (currentWeather == null) 
         {

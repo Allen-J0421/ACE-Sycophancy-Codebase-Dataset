@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Plants can grow, be can be partially eaten, they can be completely eaten and die, plants
@@ -11,8 +10,6 @@ public class Plant extends LivingOrganism
 {
     // its current health percentage
     private double healthPercentage;
-    // The likelihood a plants being able to spread into areas with no plants
-    private double spreadProbability;
     // The rate at which plants grow back and increase their health percentage
     private static final double GROWTH_RATE = 0.05;
     // The amount of health percentage which is taken away every time an animal eats a plant
@@ -60,26 +57,8 @@ public class Plant extends LivingOrganism
         {
             if(isAlive()) 
             {
-                switch (Weather.getWeather())
-                {
-                    case Sunny:
-                        spreadProbability = 0.2;
-                        break;
-                    case Rainy:
-                        spreadProbability = 0.14;
-                        break;
-                    case Foggy:
-                        spreadProbability = 0.05;
-                        break;
-                    case Cloudy:
-                        spreadProbability = 0.1;
-                        break;
-                    case Clear:
-                        spreadProbability = 0.08;
-                        break;
-                }    
-                
-                if (rand.nextDouble() < spreadProbability) 
+                double spreadProbability = Weather.getWeather().getSpreadProbability();
+                if (rand.nextDouble() < spreadProbability)
                 {
                     populate(newPlants);
                 }

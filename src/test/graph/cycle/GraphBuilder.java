@@ -1,10 +1,10 @@
 package graph.cycle;
 
 class GraphBuilder {
-    private final DirectedGraph graph;
+    private final DirectedGraph.Builder builder;
 
     private GraphBuilder(int vertices) {
-        graph = new DirectedGraph(vertices);
+        builder = DirectedGraph.builder(vertices);
     }
 
     static GraphBuilder withVertices(int n) {
@@ -12,11 +12,11 @@ class GraphBuilder {
     }
 
     GraphBuilder edge(int u, int v) {
-        graph.addEdge(u, v);
+        builder.addEdge(u, v);
         return this;
     }
 
     DirectedGraph build() {
-        return graph;
+        return builder.build();
     }
 }

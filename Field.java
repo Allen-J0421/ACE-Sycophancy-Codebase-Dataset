@@ -47,7 +47,7 @@ public class Field
      * @param location The location to clear.
      */
     public void clear(Location location) {
-        grid[location.getRow()][location.getCol()] = null;
+        grid[location.row()][location.col()] = null;
     }
 
     /**
@@ -58,7 +58,7 @@ public class Field
      */
     public void place(GridOccupant occupant, Location location)
     {
-        grid[location.getRow()][location.getCol()] = occupant;
+        grid[location.row()][location.col()] = occupant;
     }
 
     /**
@@ -68,7 +68,7 @@ public class Field
      */
     public GridOccupant getObjectAt(Location location)
     {
-        return grid[location.getRow()][location.getCol()];
+        return grid[location.row()][location.col()];
     }
 
     /**
@@ -129,8 +129,8 @@ public class Field
         assert location != null : "Null location passed to adjacentLocations";
         List<Location> locations = new LinkedList<>();
         if(location != null) {
-            int row = location.getRow();
-            int col = location.getCol();
+            int row = location.row();
+            int col = location.col();
             for(int roffset = -1; roffset <= 1; roffset++) {
                 int nextRow = row + roffset;
                 if(nextRow >= 0 && nextRow < depth) {

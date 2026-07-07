@@ -1,3 +1,3 @@
 package graph.cycle;
 
-public enum Algorithm { KAHN }
+public enum Algorithm { KAHN, DFS }

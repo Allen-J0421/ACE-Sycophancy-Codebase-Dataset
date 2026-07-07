@@ -1,9 +1,10 @@
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class PatternSearchDemo {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String txt = "aabaacaadaabaaba";
         String pat = "aaba";
 
@@ -23,5 +24,10 @@ public class PatternSearchDemo {
         searcher.stream(txt)
                 .findFirst()
                 .ifPresent(pos -> System.out.println("First  : " + pos));
+
+        // Async: non-blocking search, chain post-processing on the result
+        CompletableFuture<SearchResult> future = searcher.searchAsync(txt);
+        future.thenAccept(r -> System.out.println("Async  : " + r))
+              .get(); // block only here, at the demo boundary
     }
 }

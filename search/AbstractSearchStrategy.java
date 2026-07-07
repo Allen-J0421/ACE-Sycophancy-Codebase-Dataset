@@ -2,10 +2,15 @@ package search;
 
 import java.util.Optional;
 
-public interface SearchStrategy<T extends Comparable<T>> {
-    Optional<Integer> search(T[] arr, T target);
+public abstract class AbstractSearchStrategy<T extends Comparable<T>> {
+    public final Optional<Integer> search(T[] arr, T target) {
+        validate(arr, target);
+        return doSearch(arr, target);
+    }
 
-    default void validate(T[] arr, T target) {
+    protected abstract Optional<Integer> doSearch(T[] arr, T target);
+
+    protected void validate(T[] arr, T target) {
         if (arr == null)
             throw new IllegalArgumentException("Array must not be null");
         if (arr.length == 0)

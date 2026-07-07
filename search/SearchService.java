@@ -3,9 +3,9 @@ package search;
 import java.util.Optional;
 
 public class SearchService<T extends Comparable<T>> {
-    private final SearchStrategy<T> strategy;
+    private final AbstractSearchStrategy<T> strategy;
 
-    public SearchService(SearchStrategy<T> strategy) {
+    public SearchService(AbstractSearchStrategy<T> strategy) {
         this.strategy = strategy;
     }
 

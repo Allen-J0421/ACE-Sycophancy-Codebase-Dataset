@@ -2,11 +2,9 @@ package search;
 
 import java.util.Optional;
 
-public class BinarySearchStrategy<T extends Comparable<T>> implements SearchStrategy<T> {
+public class BinarySearchStrategy<T extends Comparable<T>> extends AbstractSearchStrategy<T> {
     @Override
-    public Optional<Integer> search(T[] arr, T target) {
-        validate(arr, target);
-
+    protected Optional<Integer> doSearch(T[] arr, T target) {
         int low = 0, high = arr.length - 1;
         while (low <= high) {
             int mid = low + (high - low) / 2;

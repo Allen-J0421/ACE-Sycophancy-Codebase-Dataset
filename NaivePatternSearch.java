@@ -1,10 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-interface PatternSearcher {
-    List<Integer> search(String text);
-}
-
 public class NaivePatternSearch implements PatternSearcher {
 
     private final String pattern;
@@ -15,6 +11,7 @@ public class NaivePatternSearch implements PatternSearcher {
         this.pattern = pattern;
     }
 
+    @Override
     public List<Integer> search(String text) {
         if (text == null)
             throw new IllegalArgumentException("Text must not be null");
@@ -37,17 +34,5 @@ public class NaivePatternSearch implements PatternSearcher {
                 return false;
         }
         return true;
-    }
-
-    public static void main(String[] args) {
-        String txt = "aabaacaadaabaaba";
-        String pat = "aaba";
-
-        PatternSearcher searcher = new NaivePatternSearch(pat);
-        List<Integer> res = searcher.search(txt);
-
-        for (int it : res) {
-            System.out.print(it + " ");
-        }
     }
 }

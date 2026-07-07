@@ -13,6 +13,6 @@ class Main {
         registry.register(SortTestCase.of("Strings",        new String[]{ "banana", "apple", "cherry" },  strSorter, reporter));
         registry.register(SortTestCase.of("Null array",     null,                                          intSorter, reporter));
 
-        registry.runAll();
+        registry.forEach(SortTestCase::run);
     }
 }

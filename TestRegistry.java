@@ -9,7 +9,9 @@ class TestRegistry {
         cases.add(testCase);
     }
 
-    void runAll() {
-        cases.forEach(SortTestCase::run);
+    void forEach(TestCaseConsumer consumer) {
+        for (SortTestCase testCase : cases) {
+            consumer.accept(testCase);
+        }
     }
 }

@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class collects and provides some statistical data on the state 
@@ -13,16 +14,17 @@ public class FieldStats
     private HashMap<String, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
+    // Responsible for traversing the field and tallying species counts.
+    private final FieldAnalyzer analyzer;
 
     /**
      * Construct a FieldStats object.
      */
     public FieldStats()
     {
-        // Set up a collection for counters for each type of specie that
-        // we might find
         counters = new HashMap<>();
         countsValid = true;
+        analyzer = new FieldAnalyzer();
     }
 
     /**
@@ -106,20 +108,18 @@ public class FieldStats
     }
     
     /**
-     * Generate counts of the number of species. These are not kept up to date as species are placed in the field, but only when a request
-     * is made for the information.
+     * Generate counts of the number of species by delegating field traversal
+     * to the FieldAnalyzer, then loading the results into the counters map.
+     *
      * @param field (Field) The field to generate the stats for.
      */
     private void generateCounts(Field field)
     {
         reset();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Object specie = field.getObjectAt(row, col);
-                if(specie != null) {
-                    Species speciesObject = (Species) specie;
-                    incrementCount(speciesObject.getName());
-                }
+        HashMap<String, Integer> totals = analyzer.countSpecies(field);
+        for (Map.Entry<String, Integer> entry : totals.entrySet()) {
+            for (int i = 0; i < entry.getValue(); i++) {
+                incrementCount(entry.getKey());
             }
         }
         countsValid = true;

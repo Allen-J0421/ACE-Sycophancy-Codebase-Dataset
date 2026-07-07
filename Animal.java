@@ -75,11 +75,11 @@ public abstract class Animal extends Organism implements Actor
             Location newLocation = findFood();
             if(newLocation == null) {
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getFieldAnalyzer().freeAdjacentLocation(getLocation());
             }
 
             // list of adjacent locations that contain an instance of Grass
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
+            List<Location> adjacentGrassSpots = getFieldAnalyzer().adjacentLocationsWithSpecies(getLocation(), Grass.class);
 
             if(newLocation != null) {
                 // See if it was possible to move.
@@ -111,7 +111,7 @@ public abstract class Animal extends Organism implements Actor
     protected Location findFood()
     {
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
+        List<Location> adjacent = getFieldAnalyzer().adjacentLocations(getLocation());
         diseaseManager.checkContactSpread(adjacent, field);
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
@@ -191,7 +191,7 @@ public abstract class Animal extends Organism implements Actor
     {
         List<Organism> potentialMates = new ArrayList<>();
         if(getField() != null){
-            potentialMates = getField().adjacentLocations(getLocation()).stream()
+            potentialMates = getFieldAnalyzer().adjacentLocations(getLocation()).stream()
                     .map(s -> getField().getObjectAt(s))
                     .filter(s -> s != null)
                     .filter(s -> s.getClass().equals(this.getClass()))

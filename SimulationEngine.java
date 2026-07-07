@@ -21,6 +21,7 @@ public class SimulationEngine
 
     private List<Actor> actors;
     private Field field;
+    private FieldAnalyzer fieldAnalyzer;
     private int step;
     private Environment environment;
 
@@ -40,6 +41,7 @@ public class SimulationEngine
         ));
         actors = new ArrayList<>();
         field = new Field(depth, width);
+        fieldAnalyzer = new FieldAnalyzer(field);
         environment = new Environment(new Time(), new Weather());
         reset();
     }
@@ -52,6 +54,7 @@ public class SimulationEngine
         creationProbabilities = probabilities;
         actors = new ArrayList<>();
         field = new Field(depth, width);
+        fieldAnalyzer = new FieldAnalyzer(field);
         environment = new Environment(new Time(), new Weather());
         reset();
     }
@@ -156,7 +159,7 @@ public class SimulationEngine
      */
     private void plantGrassInPatches()
     {
-        for(Location location : field.getRandomFreePatches(creationProbabilities.get(Grass.class))) {
+        for(Location location : fieldAnalyzer.getRandomFreePatches(creationProbabilities.get(Grass.class))) {
             if(rand.nextDouble() <= creationProbabilities.get(Grass.class)
                     && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
                 actors.add(new Grass(field, location));

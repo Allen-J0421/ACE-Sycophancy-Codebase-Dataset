@@ -64,6 +64,14 @@ public abstract class Organism {
     }
 
     /**
+     * Return a FieldAnalyzer for the organism's current field.
+     */
+    protected FieldAnalyzer getFieldAnalyzer()
+    {
+        return new FieldAnalyzer(field);
+    }
+
+    /**
      * Check whether the organism is alive or not.
      * @return true if the organism is still alive.
      */

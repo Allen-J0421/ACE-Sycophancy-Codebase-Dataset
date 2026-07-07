@@ -64,7 +64,7 @@ public class Eagle extends Animal
         // New Eagles are born into adjacent locations.
         // Get a list of adjacent free locations.
         Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        List<Location> free = getFieldAnalyzer().getFreeAdjacentLocations(getLocation());
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
@@ -91,9 +91,9 @@ public class Eagle extends Animal
             Location newLocation = findFood(environment);
             if(newLocation == null) {
                 // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
+                newLocation = getFieldAnalyzer().freeAdjacentLocation(getLocation());
             }
-            List<Location> adjacentGrassSpots = getField().adjacentLocationsWithSpecies(getLocation(), Grass.class);
+            List<Location> adjacentGrassSpots = getFieldAnalyzer().adjacentLocationsWithSpecies(getLocation(), Grass.class);
 
             if(newLocation != null) {
                 setLocation(newLocation);

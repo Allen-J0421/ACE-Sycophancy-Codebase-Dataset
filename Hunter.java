@@ -9,6 +9,7 @@ public class Hunter implements Actor
 {
     private static boolean alive;
     private Field field;
+    private FieldAnalyzer fieldAnalyzer;
     private Location location;
 
     private Random rand = Randomizer.getRandom();
@@ -26,6 +27,7 @@ public class Hunter implements Actor
     {
         alive = true;
         this.field = field;
+        this.fieldAnalyzer = new FieldAnalyzer(field);
         setLocation(location);
     }
 
@@ -48,9 +50,9 @@ public class Hunter implements Actor
             Location newLocation = findPrey();
             if(newLocation == null) {
                 // No animals found - try to move to a free location.
-                newLocation = field.freeAdjacentLocation(location);
+                newLocation = fieldAnalyzer.freeAdjacentLocation(location);
             }
-            List<Location> adjacentGrassSpots = field.adjacentLocationsWithSpecies(location, Grass.class);
+            List<Location> adjacentGrassSpots = fieldAnalyzer.adjacentLocationsWithSpecies(location, Grass.class);
 
             // See if it was possible to move.
             if(newLocation != null) {
@@ -85,8 +87,7 @@ public class Hunter implements Actor
      */
     private Location findPrey()
     {
-        Field field = this.field;
-        List<Location> adjacent = field.adjacentLocations(location);
+        List<Location> adjacent = fieldAnalyzer.adjacentLocations(location);
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();

@@ -1,25 +1,17 @@
-import java.util.Arrays;
-
 class Main {
 
     public static void main(String[] args) {
         Sorter<Integer> intSorter = SorterFactory.create(SorterFactory.Algorithm.BUBBLE);
         Sorter<String> strSorter = SorterFactory.create(SorterFactory.Algorithm.BUBBLE);
 
-        runCase("Random order",   new Integer[]{ 64, 34, 25, 12, 22, 11, 90 }, intSorter);
-        runCase("Already sorted", new Integer[]{ 1, 2, 3, 4, 5 },              intSorter);
-        runCase("Reverse order",  new Integer[]{ 5, 4, 3, 2, 1 },              intSorter);
-        runCase("Single element", new Integer[]{ 42 },                          intSorter);
-        runCase("Strings",        new String[]{ "banana", "apple", "cherry" },  strSorter);
-        runCase("Null array",     null,                                          intSorter);
-    }
+        TestRegistry registry = new TestRegistry();
+        registry.register(SortTestCase.of("Random order",   new Integer[]{ 64, 34, 25, 12, 22, 11, 90 }, intSorter));
+        registry.register(SortTestCase.of("Already sorted", new Integer[]{ 1, 2, 3, 4, 5 },              intSorter));
+        registry.register(SortTestCase.of("Reverse order",  new Integer[]{ 5, 4, 3, 2, 1 },              intSorter));
+        registry.register(SortTestCase.of("Single element", new Integer[]{ 42 },                          intSorter));
+        registry.register(SortTestCase.of("Strings",        new String[]{ "banana", "apple", "cherry" },  strSorter));
+        registry.register(SortTestCase.of("Null array",     null,                                          intSorter));
 
-    private static <T extends Comparable<T>> void runCase(String label, T[] arr, Sorter<T> sorter) {
-        try {
-            sorter.sort(arr);
-            System.out.println(label + ": " + Arrays.toString(arr));
-        } catch (SortException e) {
-            System.out.println(label + " [error]: " + e.getMessage());
-        }
+        registry.runAll();
     }
 }

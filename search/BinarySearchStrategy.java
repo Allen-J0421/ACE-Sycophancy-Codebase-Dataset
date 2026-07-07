@@ -5,6 +5,8 @@ import java.util.Optional;
 public class BinarySearchStrategy<T extends Comparable<T>> implements SearchStrategy<T> {
     @Override
     public Optional<Integer> search(T[] arr, T target) {
+        validate(arr, target);
+
         int low = 0, high = arr.length - 1;
         while (low <= high) {
             int mid = low + (high - low) / 2;

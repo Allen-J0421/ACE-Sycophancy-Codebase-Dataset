@@ -1,31 +1,27 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class NaivePatternSearch {
 
-    static ArrayList<Integer> search(String pat, String txt)
-    {
+    private static boolean matchesAt(String text, String pattern, int startIndex) {
+        for (int i = 0; i < pattern.length(); i++) {
+            if (text.charAt(startIndex + i) != pattern.charAt(i))
+                return false;
+        }
+        return true;
+    }
 
-        int m = pat.length();
+    static List<Integer> search(String pattern, String text) {
+        int patternLen = pattern.length();
+        int textLen = text.length();
+        List<Integer> matches = new ArrayList<>();
 
-        int n = txt.length();
-
-        ArrayList<Integer> ans = new ArrayList<>();
-
-        for (int i = 0; i <= n - m; i++)
-        {
-            int j;
-
-            for (j = 0; j < m; j++)
-            {
-                if (txt.charAt(i + j) != pat.charAt(j))
-                    break;
-            }
-
-            if (j == m)
-                ans.add(i);
+        for (int i = 0; i <= textLen - patternLen; i++) {
+            if (matchesAt(text, pattern, i))
+                matches.add(i);
         }
 
-        return ans;
+        return matches;
     }
 
     public static void main(String[] args)
@@ -33,7 +29,7 @@ public class NaivePatternSearch {
         String txt = "aabaacaadaabaaba";
         String pat = "aaba";
 
-        ArrayList<Integer> res = search(pat, txt);
+        List<Integer> res = search(pat, txt);
 
         for (int it : res)
         {

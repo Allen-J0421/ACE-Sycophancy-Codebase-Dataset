@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Iterator;
 /**
  * An extension of the Animal Class that can only eat a specified type of plants
  *
@@ -31,26 +28,13 @@ public abstract class HerbivoreAnimal extends Animal
     }
     
     /**
-     * Seek for the food in adjacent locations that are of type of plant
+     * Seek for the food in adjacent locations that are of type of plant.
+     *
      * @param targetPlants the preferred diet of the animal (e.g eats only grass)
      * @return the location traveled to in order to access the food
      */
-    public Location findFood(List<Class<? extends Plant>> targetPlants) 
+    public Location findFood(List<Class<? extends Plant>> targetPlants)
     {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Plant plant = field.getPlantAt(where);
-            if(plant != null && targetPlants.contains(plant.getClass())) {
-                if(plant.isAlive()) {
-                    this.foodLevel += plant.getFeedingValue();
-                    plant.setDead();
-                    return where;
-                }
-            }
-        }
-        return null;
+        return feedingHandler.findPlantFood(this, targetPlants);
     }
 }

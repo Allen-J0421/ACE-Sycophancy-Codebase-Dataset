@@ -22,6 +22,7 @@ public abstract class Animal implements Actor
     
     private static final Random rand = Randomizer.getRandom();
     private final BreedingHandler breedingHandler;
+    protected final FeedingHandler feedingHandler;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -51,6 +52,7 @@ public abstract class Animal implements Actor
         this.gender = gender;
         this.infectionTimestamp = null;
         this.breedingHandler = new BreedingHandler(field);
+        this.feedingHandler = new FeedingHandler(field);
         setLocation(location);
     }
     

@@ -32,13 +32,7 @@ public class CarnivoreDiet implements DietaryBehaviour
                         && rand.nextDouble() < preyCatchingProbability)
                 {
                     self.foodLevel += prey.beEaten();
-
-                    if (prey.getIsInfected() && !self.immune
-                            && rand.nextDouble() <= self.diseaseSpreadProbability)
-                    {
-                        self.infected = true;
-                    }
-
+                    self.tryInfectFrom(prey.getIsInfected(), rand);
                     return where;
                 }
             }

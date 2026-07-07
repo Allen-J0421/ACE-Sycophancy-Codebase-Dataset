@@ -11,18 +11,6 @@ public abstract class Animal extends LivingOrganism
     protected boolean isFemale;
     // The age to which an animal can live.
     protected int maxAge;
-    // whether the animal is infected or not
-    protected boolean infected;
-    // The likelihood of an animal having a disease.
-    protected double diseaseProbability;
-    // The likelihood of an animal catching a disease from another animal
-    protected double diseaseSpreadProbability;
-    // The likelihood of an animal dying from catching the disease
-    protected double deathFromInfectionProbability;
-    // The likelihood of an animal becoming immune to the disease
-    protected double immuneProbability;
-    // whether the animal is immune or not
-    protected boolean immune;
     // The animals's age.
     protected int age;
     // The animals's food level, which is increased by eating prey.
@@ -31,8 +19,9 @@ public abstract class Animal extends LivingOrganism
     protected int maxFoodLevel;
 
     // Behaviour components — wired at construction time.
-    private final MovementBehaviour    movement;
-    private final DietaryBehaviour     diet;
+    private final HealthBehaviour       health;
+    private final MovementBehaviour     movement;
+    private final DietaryBehaviour      diet;
     private final ReproductiveBehaviour reproduction;
 
     /**
@@ -51,16 +40,10 @@ public abstract class Animal extends LivingOrganism
     {
         super(field, location);
         alive = true;
-        this.infected     = infected;
-        this.immune       = immune;
+        this.health       = new StandardHealthBehaviour(infected, immune);
         this.movement     = movement;
         this.diet         = diet;
         this.reproduction = reproduction;
-
-        diseaseProbability          = 0.00000015;
-        diseaseSpreadProbability    = 0.80;
-        deathFromInfectionProbability = 0.13;
-        immuneProbability           = 0.05;
 
         isFemale = rand.nextBoolean();
     }
@@ -78,41 +61,14 @@ public abstract class Animal extends LivingOrganism
         incrementAge();
         incrementHunger();
 
-        // Infection may cause death or confer immunity.
-        if (!getIsImmune() && getIsInfected())
+        if (health.progressDisease(rand))
         {
-            if (rand.nextDouble() <= deathFromInfectionProbability)
-            {
-                setDead();
-            }
-            else if (rand.nextDouble() <= immuneProbability)
-            {
-                immune   = true;
-                infected = false;
-            }
-        }
-        // Immunity may wane over time.
-        else
-        {
-            if (rand.nextDouble() <= (immuneProbability / 15))
-            {
-                immune = false;
-            }
+            setDead();
         }
 
         if (isAlive())
         {
-            if (!getIsImmune() && !getIsInfected())
-            {
-                if (surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
-                {
-                    infected = true;
-                }
-                else if (rand.nextDouble() <= diseaseProbability)
-                {
-                    infected = true;
-                }
-            }
+            health.tryAcquireDisease(this, getField(), rand);
 
             if (this.getIsFemale())
             {
@@ -251,7 +207,7 @@ public abstract class Animal extends LivingOrganism
 
         for (int b = 0; b < births && free.size() > 0; b++)
         {
-            Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
+            Animal newAnimal = createNewOffspring(this.getClass(), free, health.isInfected(), health.isImmune(), foodLevel);
             newAnimals.add(newAnimal);
         }
     }
@@ -338,13 +294,25 @@ public abstract class Animal extends LivingOrganism
     /** @return true if this animal is currently infected. */
     public boolean getIsInfected()
     {
-        return infected;
+        return health.isInfected();
     }
 
     /** @return true if this animal is currently immune. */
     public boolean getIsImmune()
     {
-        return immune;
+        return health.isImmune();
+    }
+
+    /**
+     * Attempt to infect this animal from an external source (e.g. prey consumed
+     * by a predator). Delegates to the health component.
+     *
+     * @param sourceIsInfected true if the infection source is infected.
+     * @param rand             The shared random generator.
+     */
+    protected void tryInfectFrom(boolean sourceIsInfected, SimRandom rand)
+    {
+        health.tryInfectFrom(sourceIsInfected, rand);
     }
 
     /**

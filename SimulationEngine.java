@@ -3,6 +3,7 @@ import java.util.*;
 /**
  * Manages the core simulation state and per-step logic: the actor list,
  * the field, the environment, population seeding, and grass regrowth.
+ * How the field is initially populated is delegated to a PopulationStrategy.
  * GUI and run-control concerns live in Simulator.
  *
  * @version 2022.03.02
@@ -14,10 +15,7 @@ public class SimulationEngine
     static final int DEFAULT_DEPTH = 160;
     static final int DEFAULT_WIDTH = 240;
 
-    private static final int HUNTER_LIMIT = 5;
-    private int hunterCount = 0;
-
-    private Map<Class<?>, Double> creationProbabilities;
+    private final PopulationStrategy populationStrategy;
 
     private List<Actor> actors;
     private Field field;
@@ -30,7 +28,7 @@ public class SimulationEngine
      */
     public SimulationEngine(int depth, int width)
     {
-        creationProbabilities = new HashMap<>(Map.ofEntries(
+        this(depth, width, new DefaultPopulationStrategy(new HashMap<>(Map.ofEntries(
                 Map.entry(Coyote.class, 0.010),
                 Map.entry(Deer.class,   0.080),
                 Map.entry(Wolf.class,   0.010),
@@ -38,20 +36,20 @@ public class SimulationEngine
                 Map.entry(Mouse.class,  0.080),
                 Map.entry(Grass.class,  0.030),
                 Map.entry(Hunter.class, 0.030)
-        ));
-        actors = new ArrayList<>();
-        field = new Field(depth, width);
-        fieldAnalyzer = new FieldAnalyzer(field);
-        environment = new Environment(new Time(), new Weather());
-        reset();
+        ))));
     }
 
     /**
-     * Create an engine with custom creation probabilities.
+     * Create an engine with a custom population strategy.
+     * @param strategy The strategy that will seed the field on each reset.
      */
-    public SimulationEngine(int depth, int width, Map<Class<?>, Double> probabilities)
+    public SimulationEngine(int depth, int width, PopulationStrategy strategy)
     {
-        creationProbabilities = probabilities;
+        if(width <= 0 || depth <= 0) {
+            depth = DEFAULT_DEPTH;
+            width = DEFAULT_WIDTH;
+        }
+        this.populationStrategy = strategy;
         actors = new ArrayList<>();
         field = new Field(depth, width);
         fieldAnalyzer = new FieldAnalyzer(field);
@@ -105,62 +103,23 @@ public class SimulationEngine
     {
         step = 0;
         actors.clear();
-        populate();
+        populationStrategy.populate(field, environment, actors);
         environment.getTime().reset();
     }
 
     public int getStep()                              { return step; }
     public Field getField()                           { return field; }
     public Environment getEnvironment()               { return environment; }
-    public Map<Class<?>, Double> getCreationProbabilities() { return creationProbabilities; }
-
-    /**
-     * Randomly populate the field with organisms according to CREATION_PROBABILITIES.
-     */
-    private void populate()
-    {
-        field.clear();
-        for(int row = 0; row < field.getDepth(); row++) {
-            for(int col = 0; col < field.getWidth(); col++) {
-                Animal.Gender sex = Randomizer.getRandomSex();
-                Location location = new Location(row, col);
-
-                if(rand.nextDouble() <= creationProbabilities.get(Grass.class)) {
-                    actors.add(new Grass(field, location));
-                }
-                else if(rand.nextDouble() <= creationProbabilities.get(Deer.class)) {
-                    actors.add(new Deer(true, field, location, sex));
-                }
-                else if(rand.nextDouble() <= creationProbabilities.get(Coyote.class)) {
-                    actors.add(new Coyote(true, field, location, sex));
-                }
-                else if(rand.nextDouble() <= creationProbabilities.get(Wolf.class)) {
-                    actors.add(new Wolf(true, field, location, sex));
-                }
-                else if(rand.nextDouble() <= creationProbabilities.get(Eagle.class)) {
-                    actors.add(new Eagle(true, field, location, sex));
-                }
-                else if(rand.nextDouble() <= creationProbabilities.get(Mouse.class)) {
-                    actors.add(new Mouse(true, field, location, sex));
-                }
-                else if(rand.nextDouble() <= creationProbabilities.get(Hunter.class)) {
-                    if(hunterCount < HUNTER_LIMIT) {
-                        actors.add(new Hunter(field, location, environment));
-                        hunterCount++;
-                    }
-                }
-                // else leave the location empty.
-            }
-        }
-    }
+    public Map<Class<?>, Double> getCreationProbabilities() { return populationStrategy.getCreationProbabilities(); }
 
     /**
      * Randomly grow new grass in free patches, but only when it is raining.
      */
     private void plantGrassInPatches()
     {
-        for(Location location : fieldAnalyzer.getRandomFreePatches(creationProbabilities.get(Grass.class))) {
-            if(rand.nextDouble() <= creationProbabilities.get(Grass.class)
+        double grassProb = populationStrategy.getCreationProbabilities().get(Grass.class);
+        for(Location location : fieldAnalyzer.getRandomFreePatches(grassProb)) {
+            if(rand.nextDouble() <= grassProb
                     && environment.getWeather().getCurrentWeather() == WeatherType.RAINING) {
                 actors.add(new Grass(field, location));
             }

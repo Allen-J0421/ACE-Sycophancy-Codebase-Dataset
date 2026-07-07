@@ -27,7 +27,7 @@ public class Simulator
         this(SimulationEngine.DEFAULT_WIDTH, SimulationEngine.DEFAULT_DEPTH);
 
         engine = new SimulationEngine(SimulationEngine.DEFAULT_DEPTH, SimulationEngine.DEFAULT_WIDTH,
-                Map.ofEntries(
+                new DefaultPopulationStrategy(Map.ofEntries(
                         Map.entry(Coyote.class, CoyoteProbability),
                         Map.entry(Deer.class,   DeerProbability),
                         Map.entry(Wolf.class,   WolfProbability),
@@ -35,7 +35,7 @@ public class Simulator
                         Map.entry(Mouse.class,  MouseProbability),
                         Map.entry(Grass.class,  GrassProbability),
                         Map.entry(Hunter.class, HunterProbability)
-                ));
+                )));
         showCurrentStatus();
     }
 

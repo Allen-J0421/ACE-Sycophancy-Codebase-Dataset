@@ -62,6 +62,19 @@ class KahnCycleDetector implements CycleDetector {
     }
 }
 
+enum Algorithm { KAHN }
+
+class CycleDetectorFactory {
+    private CycleDetectorFactory() {}
+
+    static CycleDetector create(Algorithm algorithm) {
+        switch (algorithm) {
+            case KAHN: return new KahnCycleDetector();
+            default: throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
+        }
+    }
+}
+
 class DetectCycle {
     public static void main(String[] args) {
         DirectedGraph graph = new DirectedGraph(4);
@@ -70,7 +83,7 @@ class DetectCycle {
         graph.addEdge(2, 0);
         graph.addEdge(2, 3);
 
-        CycleDetector detector = new KahnCycleDetector();
-        System.out.println(detector.hasCycle(graph) ? "true" : "false");
+        CycleDetector detector = CycleDetectorFactory.create(Algorithm.KAHN);
+        System.out.println(detector.hasCycle(graph));
     }
 }

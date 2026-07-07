@@ -10,13 +10,13 @@ class SortTestCase {
         this.task = task;
     }
 
-    static <T extends Comparable<T>> SortTestCase of(String label, T[] arr, Sorter<T> sorter) {
+    static <T extends Comparable<T>> SortTestCase of(String label, T[] arr, Sorter<T> sorter, Reporter reporter) {
         return new SortTestCase(label, () -> {
             try {
                 sorter.sort(arr);
-                System.out.println(label + ": " + Arrays.toString(arr));
+                reporter.reportSuccess(label, Arrays.toString(arr));
             } catch (SortException e) {
-                System.out.println(label + " [error]: " + e.getMessage());
+                reporter.reportError(label, e.getMessage());
             }
         });
     }

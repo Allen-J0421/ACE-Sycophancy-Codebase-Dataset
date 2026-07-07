@@ -8,14 +8,10 @@ import java.util.Iterator;
 public abstract class Animal extends LivingOrganism
 {
     // Indicates whether an animal is a female or not;
-    protected boolean isFemale;    
-    // The age at which an animal can start to breed.
-    protected int breedingAge;
+    protected boolean isFemale;
     // The age to which an animal can live.
     protected int maxAge;
-    // The likelihood of an animal breeding.
-    protected double breedingProbability;
-    // whther the animal is infected or not
+    // whether the animal is infected or not
     protected boolean infected;
     // The likelihood of an animal having a disease.
     protected double diseaseProbability;
@@ -23,289 +19,267 @@ public abstract class Animal extends LivingOrganism
     protected double diseaseSpreadProbability;
     // The likelihood of an animal dying from catching the disease
     protected double deathFromInfectionProbability;
-    // The likelihood of an animal becomming immune to the disease
+    // The likelihood of an animal becoming immune to the disease
     protected double immuneProbability;
     // whether the animal is immune or not
     protected boolean immune;
-    // The maximum number of births.
-    protected int maxLitterSize;
     // The animals's age.
     protected int age;
     // The animals's food level, which is increased by eating prey.
     protected int foodLevel;
-    // The maximum food level that an animal will eat at. The food level they will stop
-    // being hungry at
+    // The maximum food level that an animal will eat at.
     protected int maxFoodLevel;
-    // Probability that an animal will move at a given step.
-    protected double movementProbability;
-    
+
+    // Behaviour components — wired at construction time.
+    private final MovementBehaviour    movement;
+    private final DietaryBehaviour     diet;
+    private final ReproductiveBehaviour reproduction;
+
     /**
      * Create a new animal at location in field.
-     * 
-     * @param field The field currently occupied.
-     * @param location The location within the field.
-     * @param infected Intial state if the animal is infected or not
-     * @param immmune Intial state if the animal is immune or not
+     *
+     * @param field        The field currently occupied.
+     * @param location     The location within the field.
+     * @param infected     Initial infection state.
+     * @param immune       Initial immune state.
+     * @param movement     Controls activity gating and wander probability.
+     * @param diet         Controls food search and consumption.
+     * @param reproduction Supplies breeding parameters.
      */
-    public Animal(Field field, Location location, boolean infected, boolean immune)
+    public Animal(Field field, Location location, boolean infected, boolean immune,
+                  MovementBehaviour movement, DietaryBehaviour diet, ReproductiveBehaviour reproduction)
     {
         super(field, location);
         alive = true;
-        this.infected = infected;
-        this.immune = immune;
-        
-        diseaseProbability = 0.00000015;
-        diseaseSpreadProbability = 0.80;
+        this.infected     = infected;
+        this.immune       = immune;
+        this.movement     = movement;
+        this.diet         = diet;
+        this.reproduction = reproduction;
+
+        diseaseProbability          = 0.00000015;
+        diseaseSpreadProbability    = 0.80;
         deathFromInfectionProbability = 0.13;
-        immuneProbability = 0.05;
-        
+        immuneProbability           = 0.05;
+
         isFemale = rand.nextBoolean();
     }
-    
+
     /**
-     * @Override
-     * 
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
-     * 
+     *
      * @param newAnimals A list to receive newly born animals.
      */
     public void act(List<LivingOrganism> newAnimals)
     {
+        if (!movement.canActThisStep(rand)) return;
+
         incrementAge();
         incrementHunger();
-        
-        // checks to see if the animal is going to die from it infection 
-        // or become immune
-        // if the animal becomes immune then it no longer is infected
-        if (!getIsImmune() && getIsInfected()) 
+
+        // Infection may cause death or confer immunity.
+        if (!getIsImmune() && getIsInfected())
         {
-            if(rand.nextDouble() <= deathFromInfectionProbability) 
+            if (rand.nextDouble() <= deathFromInfectionProbability)
             {
-                setDead();            
+                setDead();
             }
-            else if(rand.nextDouble() <= immuneProbability) {
-                immune = true;
+            else if (rand.nextDouble() <= immuneProbability)
+            {
+                immune   = true;
                 infected = false;
             }
         }
-        // If the animal is immune and not infected, there is a chance
-        // of losing immunity.
+        // Immunity may wane over time.
         else
         {
-            if(rand.nextDouble() <= (immuneProbability / 15)) {
+            if (rand.nextDouble() <= (immuneProbability / 15))
+            {
                 immune = false;
             }
         }
-        
-        if(isAlive()) 
-        {
-            if(!getIsImmune() && !getIsInfected())
-            {
-                // checks to see if the animal is going to catch a disease from
-                // its surroundings.
 
+        if (isAlive())
+        {
+            if (!getIsImmune() && !getIsInfected())
+            {
                 if (surroundingsInfected() && rand.nextDouble() <= diseaseSpreadProbability)
                 {
                     infected = true;
                 }
-                
-                // checks to see if the animal is going to get a disease out 
-                // of nowhere.
-                else if (rand.nextDouble() <= diseaseProbability) 
+                else if (rand.nextDouble() <= diseaseProbability)
                 {
-                    infected = true;           
+                    infected = true;
                 }
             }
-            
-            // checks to see if the animal is able to give birth
-            if(this.getIsFemale()) 
+
+            if (this.getIsFemale())
             {
-                if(canBreed() && rand.nextDouble() <= breedingProbability)
+                if (canBreed() && rand.nextDouble() <= reproduction.getBreedingProbability())
                 {
                     populate(newAnimals);
                 }
             }
 
-            // Move towards a source of food if found.
             Location newLocation = findFood();
-            
-            if(newLocation == null) 
-            { 
+
+            if (newLocation == null)
+            {
                 Location possibleNewLocation = getField().freeAdjacentLocation(getLocation(), Animal.class);
-                
-                if (possibleNewLocation == null) 
+
+                if (possibleNewLocation == null)
                 {
-                    // no free adjacent locations therefore it is 
-                    // overcrowded
-                    if (rand.nextDouble() < 0.3) 
+                    if (rand.nextDouble() < 0.3)
                     {
                         setDead();
                     }
                 }
-                
-                // No food found and there is a free location - move there.
-                if (rand.nextDouble() <= movementProbability) 
+
+                if (rand.nextDouble() <= movement.getMovementProbability())
                 {
                     newLocation = possibleNewLocation;
                 }
             }
-            
-            // Move to new location
-            if(newLocation != null)
-            { 
+
+            if (newLocation != null)
+            {
                 setLocation(newLocation);
             }
         }
     }
-    
-    /**
-     * Look for food adjacent to the current location.
-     * Only the first live prey or plant is eaten.
-     * 
-     * @return Where food was found, or null if it wasn't.
-     */
-    abstract protected Location findFood();
 
     /**
-     * @Override
-     * 
+     * Delegate food search to the dietary behaviour component.
+     *
+     * @return Where food was found, or null.
+     */
+    protected Location findFood()
+    {
+        return diet.findFood(this, getField(), rand);
+    }
+
+    /**
      * Indicate that the animal is no longer alive.
      * It is removed from the field.
      */
     protected void setDead()
     {
         alive = false;
-        
-        if(location != null) 
+
+        if (location != null)
         {
             field.clear(location, Animal.class);
             location = null;
         }
-        
-        if (this.getClass().equals(Lion.class) || this.getClass().equals(Cheetah.class)){
+
+        if (this.getClass().equals(Lion.class) || this.getClass().equals(Cheetah.class))
+        {
             location = null;
         }
     }
-    
+
     /**
-     * @Override
-     * 
-     * When called, the animal is killed and returns
-     * its food value.
-     * 
+     * When called, the animal is killed and returns its food value.
+     *
      * @return The food value of the animal eaten.
      */
-    protected int beEaten() 
+    protected int beEaten()
     {
         setDead();
-        
         return foodValue;
     }
-    
+
     /**
-     * @Override
-     * 
      * Place the animal at the new location in the given field.
-     * 
+     *
      * @param newLocation The animal's new location.
      */
     protected void setLocation(Location newLocation)
     {
-        if(location != null) 
+        if (location != null)
         {
-            if(field.getObjectAt(location, Animal.class) != null)
+            if (field.getObjectAt(location, Animal.class) != null)
             {
                 field.clear(location, Animal.class);
             }
         }
-        
+
         location = newLocation;
         field.place(this, newLocation);
     }
-    
-    /**
-     * Returns the gender of the animal.
-     * 
-     * @return Returns true if female.
-     */
-    protected boolean getIsFemale() 
+
+    /** @return true if this animal is female. */
+    protected boolean getIsFemale()
     {
         return isFemale;
     }
-    
+
     /**
-     * @Override
-     * 
-     * Increase the age.
-     * This could result in the Animal's death.
+     * Increase the age. This could result in the animal's death.
      */
     protected void incrementAge()
     {
         age++;
-        if(age > maxAge) {
+        if (age > maxAge)
+        {
             setDead();
         }
     }
-    
-    /**
-     * Make this animal's more hungry. This could result in the animal's death.
-     */
+
+    /** Increase hunger. This could result in the animal's death. */
     protected void incrementHunger()
     {
         foodLevel--;
-        if(foodLevel <= 0) {
+        if (foodLevel <= 0)
+        {
             setDead();
         }
     }
-    
+
     /**
-     * @Override
-     * 
      * New births will be made into free adjacent locations.
-     * @param newAnimals A list to return newly born Animals.
+     *
+     * @param newAnimals A list to return newly born animals.
      */
     protected void populate(List<LivingOrganism> newAnimals)
     {
-        // Get a list of adjacent free locations.
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation(), Animal.class);
-        //determines the number of offspring the animal will produce
-        
+
         int births = breed();
-        // New animals are born into adjacent locations.
-        
-        for(int b = 0; b < births && free.size() > 0; b++) 
+
+        for (int b = 0; b < births && free.size() > 0; b++)
         {
             Animal newAnimal = createNewOffspring(this.getClass(), free, infected, immune, foodLevel);
             newAnimals.add(newAnimal);
         }
     }
-    
+
     /**
-     * Creates a new offspring and places it into the field at the first free location
+     * Creates a new offspring at the first free location.
      *
-     * @param classOfAnimal The class type of the new animal
-     * @param free A list of the free adjacent location
-     * @param motherIsInfected If the mother has currently the disease, so will the child
-     *
-     * @return Returns the new animal
+     * @param classOfAnimal    Species of the offspring.
+     * @param free             Available adjacent locations.
+     * @param motherIsInfected Whether the mother is currently infected.
+     * @param motherIsImmune   Whether the mother is immune.
+     * @param motherFoodLevel  The mother's current food level.
+     * @return The newly created animal.
      */
-    protected Animal createNewOffspring(Class<?> classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
+    protected Animal createNewOffspring(Class<?> classOfAnimal, List<Location> free,
+                                        boolean motherIsInfected, boolean motherIsImmune,
+                                        int motherFoodLevel)
     {
         Location loc = free.remove(0);
 
         boolean offspringIsInfected = motherIsInfected;
-        boolean offspringIsImmune = motherIsImmune;
+        boolean offspringIsImmune   = motherIsImmune;
 
-        // If the mother is immune and the mother is infected, then there is
-        // a small of the child getting immunity
         if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15)
         {
-            offspringIsImmune = true;
+            offspringIsImmune   = true;
             offspringIsInfected = false;
         }
-        // If the mother is immune then there is a chance child isn't immune
         else if (motherIsImmune && rand.nextDouble() < 0.9)
         {
             offspringIsImmune = false;
@@ -313,91 +287,85 @@ public abstract class Animal extends LivingOrganism
 
         return AnimalFactory.createOffspring(classOfAnimal, field, loc, offspringIsInfected, offspringIsImmune);
     }
-    
+
     /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * 
-     * @return The number of births (may be zero).
+     * Count births for this step by scanning adjacent animals of the same
+     * species for a male partner.
+     *
+     * @return Number of births (may be zero).
      */
     protected int breed()
     {
         int births = 0;
-        
+
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext()) 
+
+        while (it.hasNext())
         {
             Location where = it.next();
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            Class typeOfOtherAnimal = null;
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
+            Animal   animal = (Animal) field.getObjectAt(where, Animal.class);
+            Class    typeOfOtherAnimal = null;
+
+            if (field.getObjectAt(where, Animal.class) != null)
             {
-                typeOfOtherAnimal  = field.getObjectAt(where, Animal.class).getClass();
+                typeOfOtherAnimal = field.getObjectAt(where, Animal.class).getClass();
             }
-            
-            //checks to make sure they are of the same species
-            if(this.getClass().equals(typeOfOtherAnimal)) 
+
+            if (this.getClass().equals(typeOfOtherAnimal))
             {
-                //checks to make the other animal is also a male
-                if(animal.getIsFemale() == false) 
+                if (animal.getIsFemale() == false)
                 {
-                    births = rand.nextInt(maxLitterSize) + 1;
+                    births = rand.nextInt(reproduction.getMaxLitterSize()) + 1;
                 }
             }
         }
-        
+
         return births;
     }
 
     /**
-     * An Animal can breed if it has reached the breeding age.
-     * 
-     * @return true if the Animal can breed, false otherwise.
+     * An animal can breed if it has reached the breeding age.
+     *
+     * @return true if the animal can breed.
      */
     protected boolean canBreed()
     {
-        return age >= breedingAge;
+        return age >= reproduction.getBreedingAge();
     }
-    
-    /**
-     * @return Returns the status of the animal being infected or not
-     */
-    public boolean getIsInfected() 
+
+    /** @return true if this animal is currently infected. */
+    public boolean getIsInfected()
     {
         return infected;
     }
-    
-    /**
-     * @return Returns the status of the animal being immune or not
-     */
-    public boolean getIsImmune() 
+
+    /** @return true if this animal is currently immune. */
+    public boolean getIsImmune()
     {
         return immune;
     }
-    
+
     /**
-     * Checks all the surroundings to see if there any animals which are infected.
-     * 
-     * @return Returns true if there is a surrounding animal which is infected.
+     * Check whether any adjacent animal is infected.
+     *
+     * @return true if at least one neighbour is infected.
      */
     protected boolean surroundingsInfected()
     {
         boolean surroundingsAreInfected = false;
-        
+
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        
-        while(it.hasNext() && ! surroundingsAreInfected) 
+
+        while (it.hasNext() && !surroundingsAreInfected)
         {
-            Location where = it.next();
-            Animal animal = (Animal) field.getObjectAt(where, Animal.class);
-            
-            if (field.getObjectAt(where, Animal.class) != null) 
+            Location where  = it.next();
+            Animal   animal = (Animal) field.getObjectAt(where, Animal.class);
+
+            if (field.getObjectAt(where, Animal.class) != null)
             {
                 if (animal.getIsInfected())
                 {
@@ -405,7 +373,7 @@ public abstract class Animal extends LivingOrganism
                 }
             }
         }
-        
+
         return surroundingsAreInfected;
     }
 }

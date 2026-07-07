@@ -2,12 +2,11 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.awt.event.ActionListener;
 import javax.swing.border.LineBorder;
 
 /**
  * A graphical view of the simulation grid.
- * The view displays a colored rectangle for each location 
+ * The view displays a colored rectangle for each location
  * representing its contents. It uses a default background color.
  * Colors for each type of species can be defined using the
  * setColor method.
@@ -39,98 +38,33 @@ public class SimulatorView extends JFrame
     private Map<String, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
-    // The GUIHandler governing the simulation's GUI.
-    private GUIHandler handler;
 
     /**
-     * Constructor has two roles:
-     *      1) Initializing the fields.
-     *      2) Building the view.
+     * Create the simulator view and build its layout via SimulationViewLayout.
      *
      * @param height (int) The simulation's height.
      * @param width (int) The simulation's width.
+     * @param handler (GUIHandler) The handler that button actions are forwarded to.
      */
     public SimulatorView(int height, int width, GUIHandler handler)
     {
-        // INITIALIZES FIELDS
-        this.handler = handler;
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
 
-        // Various information labels initialization.
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("  ", JLabel.CENTER);
         timeLabel = new JLabel(TIME_PREFIX, JLabel.CENTER);
         temperatureLabel = new JLabel(TEMPERATURE_PREFIX, JLabel.CENTER);
         seasonLabel = new JLabel(SEASON_PREFIX, JLabel.CENTER);
 
-        // Population display initialization.
         population = new JPanel();
-        GridLayout gridLayout = new GridLayout(5,5);
-        population.setLayout(gridLayout);
+        population.setLayout(new GridLayout(5, 5));
 
         fieldView = new FieldView(height, width);
 
-        // BUILDS THE VIEW
-        JFrame frame = new JFrame("Ultimate Simulator 3000");
-        frame.setMinimumSize(new Dimension(800, 600));
-
-        // Information display on habitat conditions and step counter.
-        FlowLayout simInfo = new FlowLayout();
-        simInfo.setHgap(50);
-
-        JPanel infoPane = new JPanel(simInfo);
-        infoPane.add(infoLabel, BorderLayout.CENTER);
-        infoPane.add(stepLabel, BorderLayout.CENTER);
-        infoPane.add(timeLabel, BorderLayout.CENTER);
-        infoPane.add(seasonLabel, BorderLayout.CENTER);
-        infoPane.add(temperatureLabel, BorderLayout.CENTER);
-
-        // Various buttons for user to interact with the simulation.
-        JButton launchLongSimButton = new JButton("Launch long simulation");
-        ActionListener launchLongSim = e -> {
-            handler.launchLongSimulation();
-        };
-        launchLongSimButton.addActionListener(launchLongSim);
-        
-        JButton launchHundredStepsButton = new JButton("Run 100 steps");
-        ActionListener launchHundredSteps = e -> {
-            handler.runHundredSteps();
-        };
-        launchHundredStepsButton.addActionListener(launchHundredSteps);
-        
-        JButton launchOneStepButton  = new JButton("Run 1 step");
-        ActionListener launchOneStep = e -> {
-            handler.runOneStep();
-        };
-        launchOneStepButton.addActionListener(launchOneStep);
-        
-        JButton goBackMenuButton  = new JButton("Run a new simulation");
-        ActionListener goBackMenu = e -> {
-            setVisible(false);
-            handler.switchToMenuView();
-        };
-        goBackMenuButton.addActionListener(goBackMenu);
-
-        // Bringing the UI together.
-        JPanel buttons = new JPanel(new FlowLayout());
-        buttons.add(launchLongSimButton);
-        buttons.add(launchHundredStepsButton);
-        buttons.add(launchOneStepButton);
-        buttons.add(goBackMenuButton);
-        
-        Box bottomComponents = Box.createVerticalBox();
-        bottomComponents.add(population);
-        bottomComponents.add(buttons);
-        
-        JPanel centeredFieldView = new JPanel(new BorderLayout());
-        centeredFieldView.add(fieldView, BorderLayout.CENTER);
-        add(infoPane, BorderLayout.NORTH);
-        add(fieldView, BorderLayout.CENTER);
-        add(bottomComponents, BorderLayout.SOUTH);
-
-        pack();
-        setVisible(true);
+        new SimulationViewLayout(handler).buildAndApply(
+                this, fieldView, population,
+                stepLabel, infoLabel, timeLabel, temperatureLabel, seasonLabel);
     }
 
     /**

@@ -82,7 +82,7 @@ public class Eagle extends Animal
      */
     public void act(List<Actor> newAnimals, Environment environment)
     {
-        randomlyContractDisease();
+        diseaseManager.processRandomContraction();
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -104,9 +104,7 @@ public class Eagle extends Animal
             }
             // removing overcrowding for eagles since they're above everyone
 
-            if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
-                // every step, check if the Animal is diseased
-                // if it is Diseased, and a random double is less than the lethality rate, the Animal dies
+            if(diseaseManager.isLethalStep()) {
                 setDead();
             }
 

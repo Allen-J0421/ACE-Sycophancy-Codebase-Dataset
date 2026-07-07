@@ -16,13 +16,13 @@ public abstract class Animal extends Organism implements Actor
 
     protected static final Random rand = Randomizer.getRandom();
 
-    // An animal is either male or female 
+    // An animal is either male or female
     protected enum Gender {
         MALE,
         FEMALE
     }
-    // An animal's chance of contracting a disease at birth
-    private double RANDOM_CONTRACTION_RATE = 0.002;
+
+    protected final DiseaseManager diseaseManager = new DiseaseManager(this);
 
 
     // Declaring abstract methods to obtain fields used by subclasses
@@ -55,7 +55,7 @@ public abstract class Animal extends Organism implements Actor
             this.age = 0;
             foodLevel = MAX_FOOD_LEVEL();
         }
-        randomlyContractDisease();
+        diseaseManager.processRandomContraction();
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class Animal extends Organism implements Actor
      */
     public void act(List<Actor> newAnimals, Environment environment)
     {
-        randomlyContractDisease();
+        diseaseManager.processRandomContraction();
         incrementAge();
         incrementHunger();
         if(isAlive()) {
@@ -96,9 +96,7 @@ public abstract class Animal extends Organism implements Actor
                 setDead();
             }
 
-            if(isDiseased() && getDisease().getLethalityRate() <= rand.nextDouble()){
-                // every step, check if the Animal is diseased
-                // if it is Diseased, and a random double is less than the lethality rate, the Animal dies
+            if(diseaseManager.isLethalStep()) {
                 setDead();
             }
 
@@ -114,30 +112,17 @@ public abstract class Animal extends Organism implements Actor
     {
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
-        for(Location loc : adjacent){
-            if(field.getObjectAt(loc) != null && !(field.getObjectAt(loc) instanceof Hunter)){
-                Organism organism = (Organism) field.getObjectAt(loc);
-                if (organism.isDiseased() && organism.getDisease().getDiseaseType() != DiseaseType.CONTACT && organism.getDisease().getPropagationRate() <= rand.nextDouble()){
-                    // contracts the first contact disease it encounters amongst the adjacent animals
-                    this.setDisease(organism.getDisease());
-                    break;
-                }
-            }
-        }
+        diseaseManager.checkContactSpread(adjacent, field);
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
         while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if(animal != null && DIET().contains(animal.getClass())) 
+            if(animal != null && DIET().contains(animal.getClass()))
             {
                 Organism food = (Organism) animal;
-                if (food.isDiseased() &&  food.getDisease().getDiseaseType() == DiseaseType.FOODBORNE && food.getDisease().getPropagationRate() <= rand.nextDouble()) 
-                {
-                    // contracts disease from food if it has a disease and that disease is foodborne
-                    setDisease(food.getDisease());
-                }
-                if(food.isAlive()) 
+                diseaseManager.checkFoodborneSpread(food);
+                if(food.isAlive())
                 {
                     food.setDead();
                     int newFoodLevel = foodLevel + food.FOOD_VALUE();
@@ -151,17 +136,6 @@ public abstract class Animal extends Organism implements Actor
             }
         }
         return null;
-    }
-
-    /**
-     * Returns true if an animal contracts a disease at birth.
-     * Returns false if otherwise. 
-     */
-    protected void randomlyContractDisease()
-    {
-        if(rand.nextDouble() <= RANDOM_CONTRACTION_RATE) {
-            setDisease(new Disease());
-        }
     }
 
     /**
@@ -194,9 +168,7 @@ public abstract class Animal extends Organism implements Actor
         if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY()) {
             births = rand.nextInt(MAX_LITTER_SIZE()) + 1;
             Animal mate = (Animal) getPotentialMates().get(rand.nextInt(getPotentialMates().size()));
-            if(mate.isDiseased() && mate.getDisease().getDiseaseType() == DiseaseType.SEXUAL){
-                this.setDisease(mate.getDisease());
-            }
+            diseaseManager.checkSexualSpread(mate);
         }
         return births;
     }

@@ -12,7 +12,7 @@ public class NaivePatternSearch implements PatternSearcher {
     }
 
     @Override
-    public List<Integer> search(String text) {
+    public SearchResult search(String text) {
         if (text == null)
             throw new InvalidTextException();
 
@@ -25,7 +25,7 @@ public class NaivePatternSearch implements PatternSearcher {
                 matches.add(i);
         }
 
-        return matches;
+        return new SearchResult(pattern, matches);
     }
 
     private boolean matchesAt(String text, int startIndex) {

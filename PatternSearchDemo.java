@@ -1,5 +1,3 @@
-import java.util.List;
-
 public class PatternSearchDemo {
 
     public static void main(String[] args) {
@@ -7,10 +5,16 @@ public class PatternSearchDemo {
         String pat = "aaba";
 
         PatternSearcher searcher = PatternSearchFactory.create(pat);
-        List<Integer> res = searcher.search(txt);
+        SearchResult result = searcher.search(txt);
 
-        for (int it : res) {
-            System.out.print(it + " ");
+        if (result.hasMatches()) {
+            System.out.println("Found " + result.count() + " match(es) at positions:");
+            for (int pos : result.getMatches()) {
+                System.out.print(pos + " ");
+            }
+            System.out.println();
+        } else {
+            System.out.println("No matches found.");
         }
     }
 }

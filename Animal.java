@@ -284,24 +284,23 @@ public abstract class Animal extends LivingOrganism
     
     /**
      * Creates a new offspring and places it into the field at the first free location
-     * 
+     *
      * @param classOfAnimal The class type of the new animal
      * @param free A list of the free adjacent location
      * @param motherIsInfected If the mother has currently the disease, so will the child
-     * 
+     *
      * @return Returns the new animal
      */
     protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
     {
         Location loc = free.remove(0);
-        Animal offspring = null;
-        
+
         boolean offspringIsInfected = motherIsInfected;
         boolean offspringIsImmune = motherIsImmune;
-        
+
         // If the mother is immune and the mother is infected, then there is
         // a small of the child getting immunity
-        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15) 
+        if (!motherIsImmune && motherIsInfected && rand.nextDouble() < 0.15)
         {
             offspringIsImmune = true;
             offspringIsInfected = false;
@@ -311,29 +310,8 @@ public abstract class Animal extends LivingOrganism
         {
             offspringIsImmune = false;
         }
-        
-        if (classOfAnimal.equals(Lemur.class))
-        {
-            offspring = new Lemur(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Giraffe.class)) 
-        {
-            offspring = new Giraffe(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Zebra.class)) 
-        {
-            offspring = new Zebra(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Cheetah.class)) 
-        {
-            offspring = new Cheetah(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        else if (classOfAnimal.equals(Lion.class)) 
-        {
-            offspring = new Lion(false, field, loc, offspringIsInfected, offspringIsImmune);
-        }
-        
-        return offspring;
+
+        return AnimalFactory.createOffspring(classOfAnimal, field, loc, offspringIsInfected, offspringIsImmune);
     }
     
     /**

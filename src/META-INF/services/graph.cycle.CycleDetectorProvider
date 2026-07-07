@@ -1,2 +1,2 @@
-graph.cycle.KahnCycleDetectorProvider
-graph.cycle.DfsCycleDetectorProvider
+graph.cycle.CycleDetectorProvider$KahnProvider
+graph.cycle.CycleDetectorProvider$DfsProvider

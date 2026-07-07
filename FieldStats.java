@@ -120,33 +120,6 @@ public class FieldStats
     }
 
     /**
-     * Determine whether the simulation is still viable.
-     * I.e., should it continue to run.
-     * @return true If there is more than one species alive.
-     */
-    public boolean isViable(Field field)
-    {
-        // How many counts are non-zero.
-        Set<Class> aliveSpecies = new HashSet<>();
-        int nonZero = 0;
-        if(!countsValid) {
-            generateCounts(field);
-        }
-        for(Class key : counters.keySet()) {
-            Counter info = counters.get(key);
-            if(info.getCount() > 0) {
-                nonZero++;
-                aliveSpecies.add(key);
-            }
-        }
-
-        // if viability is to be defined based on the species in the field as well, use the aliveSpecies Set
-        // eg: return nonZero > 2 && aliveSpecies.contains(Deer.class)
-
-        return nonZero > 2;
-    }
-    
-    /**
      * Generate counts of the number of organisms.
      * These are not kept up to date as organisms.
      * are placed in the field, but only when a request

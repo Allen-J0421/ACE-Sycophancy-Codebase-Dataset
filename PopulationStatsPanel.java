@@ -13,6 +13,7 @@ class PopulationStatsPanel extends JPanel
 {
     private final FieldStats stats;
     private final FieldRenderer renderer;
+    private final SimulationViabilityEvaluator viabilityEvaluator;
     private final Map<Class<?>, JCheckBox> classToCheckBox;
     private final JLabel diseasedPopulation;
 
@@ -20,6 +21,7 @@ class PopulationStatsPanel extends JPanel
     {
         this.renderer = renderer;
         this.stats = new FieldStats();
+        this.viabilityEvaluator = new SimulationViabilityEvaluator();
 
         JCheckBox grassCheckBox  = new JCheckBox("Grass: 0",  true);
         JCheckBox mouseCheckBox  = new JCheckBox("Mouse: 0",  true);
@@ -86,6 +88,6 @@ class PopulationStatsPanel extends JPanel
         }
     }
 
-    public FieldStats getStats()           { return stats; }
-    public boolean isViable(Field field)   { return stats.isViable(field); }
+    public FieldStats getStats() { return stats; }
+    public boolean isViable()    { return viabilityEvaluator.isViable(stats); }
 }

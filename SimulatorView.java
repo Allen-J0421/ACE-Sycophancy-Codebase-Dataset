@@ -119,6 +119,6 @@ public class SimulatorView extends JFrame
      */
     public boolean isViable(Field field)
     {
-        return statsPanel.isViable(field);
+        return statsPanel.isViable();
     }
 }

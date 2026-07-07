@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of a rat.
@@ -10,21 +9,9 @@ import java.util.Random;
  */
 public class Rat extends Animal
 {
-    // Characteristics shared by all rats (class variables).
-
-    // The age at which a rat can start to breed.
-    private static final int BREEDING_AGE = 25;
-    // The age to which a rat can live.
-    private static final int MAX_AGE = 600;
-    // The likelihood of a rat breeding.
-    private static final double BREEDING_PROBABILITY = 0.31;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 15;
     // The food value of a single ant. In effect, this is the
     // number of steps a rat can go before it has to eat again.
     private static final int ANT_FOOD_VALUE = 100;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a rat. A rat can be created as a newborn (age zero
@@ -35,16 +22,8 @@ public class Rat extends Animal
      * @param location The location within the field.
      */
     public Rat(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ANT_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ANT_FOOD_VALUE);
-        }
+        super(field, location, SimulationConfig.RAT_CONFIG);
+        initialise(randomAge);
     }
 
     /**
@@ -55,7 +34,7 @@ public class Rat extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newRats, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(getMaxAge());
         incrementHunger();
 
         if(isAlive() && ((time >= 0)&&(time <= 18)))
@@ -68,9 +47,6 @@ public class Rat extends Animal
         }
     }
 
-    @Override protected int getBreedingAge() { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
     @Override protected Animal createOffspring(Field field, Location loc) { return new Rat(false, field, loc); }
 
     /**

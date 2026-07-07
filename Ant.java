@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of an ant.
@@ -10,24 +9,12 @@ import java.util.Random;
  */
 public class Ant extends Animal
 {
-    // Characteristics shared by all ants (class variables).
-
-    // The age at which an ant can start to breed.
-    private static final int BREEDING_AGE = 20;
-    // The age to which an ant can live.
-    private static final int MAX_AGE = 400;
-    // The likelihood of an ant breeding.
-    private static final double BREEDING_PROBABILITY = 0.32;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 14;
     // The food value of a single acacia. In effect, this is the
     // number of steps an ant can go before it has to eat again.
     private static final int ACACIA_FOOD_VALUE = 60;
     // The food value of a single grass. In effect, this is the
     // number of steps an ant can go before it has to eat again.
     private static final int GRASS_FOOD_VALUE = 60;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create an ant. An ant can be created as a newborn (age zero
@@ -38,16 +25,8 @@ public class Ant extends Animal
      * @param location The location within the field.
      */
     public Ant(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(ACACIA_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ACACIA_FOOD_VALUE);
-        }
+        super(field, location, SimulationConfig.ANT_CONFIG);
+        initialise(randomAge);
     }
 
     /**
@@ -58,7 +37,7 @@ public class Ant extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newAnts, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(getMaxAge());
         incrementHunger();
 
         if(isAlive() && ((time >= 4)&&(time <= 20)))
@@ -71,9 +50,6 @@ public class Ant extends Animal
         }
     }
 
-    @Override protected int getBreedingAge() { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
     @Override protected Animal createOffspring(Field field, Location loc) { return new Ant(false, field, loc); }
 
     /**

@@ -26,8 +26,10 @@ public abstract class Animal implements GridOccupant
     // The animal's age.
     private int age;
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    // Shared random number generator; protected so subclasses can use it in findFood().
+    protected static final Random rand = Randomizer.getRandom();
+    // Species-specific lifecycle parameters.
+    private final AnimalConfig animalConfig;
     
     /**
      * Create a new animal at location in field.
@@ -35,12 +37,28 @@ public abstract class Animal implements GridOccupant
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Animal(Field field, Location location) {
+    public Animal(Field field, Location location, AnimalConfig animalConfig) {
         alive = true;
         this.field = field;
         setLocation(location);
         fog = false;
         disease = false;
+        this.animalConfig = animalConfig;
+    }
+
+    /**
+     * Initialise age, food level, and gender for a newly created animal.
+     * @param randomAge If true, assign random age and hunger; otherwise start at zero.
+     */
+    protected void initialise(boolean randomAge) {
+        setGender();
+        if(randomAge) {
+            setAge(rand.nextInt(animalConfig.maxAge));
+            setFoodLevel(rand.nextInt(animalConfig.initialFoodLevel));
+        } else {
+            setAge(0);
+            setFoodLevel(animalConfig.initialFoodLevel);
+        }
     }
     
     /**
@@ -56,9 +74,10 @@ public abstract class Animal implements GridOccupant
      */
     abstract protected Location findFood();
 
-    abstract protected int getBreedingAge();
-    abstract protected double getBreedingProbability();
-    abstract protected int getMaxLitterSize();
+    protected int getBreedingAge() { return animalConfig.breedingAge; }
+    protected double getBreedingProbability() { return animalConfig.breedingProbability; }
+    protected int getMaxLitterSize() { return animalConfig.maxLitterSize; }
+    protected int getMaxAge() { return animalConfig.maxAge; }
     abstract protected Animal createOffspring(Field field, Location loc);
 
     /**

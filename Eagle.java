@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A simple model of an eagle.
@@ -11,24 +10,12 @@ import java.util.Random;
 
 public class Eagle extends Animal
 {
-    // Characteristics shared by all eagles (class variables).
-
-    // The age at which an eagle can start to breed.
-    private static final int BREEDING_AGE = 50;
-    // The age to which an eagle can live.
-    private static final int MAX_AGE = 700;
-    // The likelihood of an  eagle breeding.
-    private static final double BREEDING_PROBABILITY = 0.1;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 11;
     // The food value of a single rat. In effect, this is the
     // number of steps an eagle can go before it has to eat again.
     private static final int RAT_FOOD_VALUE = 40;
     // The food value of a single snake. In effect, this is the
     // number of steps an eagle can go before it has to eat again.
     private static final int SNAKE_FOOD_VALUE = 60;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create an eagle. An eagle can be created as a newborn (age zero
@@ -39,16 +26,8 @@ public class Eagle extends Animal
      * @param location The location within the field.
      */
     public Eagle(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(SNAKE_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(SNAKE_FOOD_VALUE);
-        }
+        super(field, location, SimulationConfig.EAGLE_CONFIG);
+        initialise(randomAge);
     }
 
     /**
@@ -59,7 +38,7 @@ public class Eagle extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newEagles, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(getMaxAge());
         incrementHunger();
         if(isAlive() && ((time >= 6)&&(time <= 22))) {
             if (getDisease()){
@@ -70,9 +49,6 @@ public class Eagle extends Animal
         }
     }
 
-    @Override protected int getBreedingAge() { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
     @Override protected Animal createOffspring(Field field, Location loc) { return new Eagle(false, field, loc); }
 
     /**

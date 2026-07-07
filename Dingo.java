@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A simple model of a dingo.
@@ -10,21 +9,9 @@ import java.util.Random;
  */
 public class Dingo extends Animal
 {
-    // Characteristics shared by all dingoes (class variables).
-    
-    // The age at which a dingo can start to breed.
-    private static final int BREEDING_AGE = 50;
-    // The age to which a dingo can live.
-    private static final int MAX_AGE = 700;
-    // The likelihood of a dingo breeding.
-    private static final double BREEDING_PROBABILITY = 0.04;
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 3;
     // The food value of a single snake. In effect, this is the
     // number of steps a dingo can go before it has to eat again.
     private static final int SNAKE_FOOD_VALUE = 100;
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
 
     /**
      * Create a dingo. A dingo can be created as a newborn (age zero
@@ -35,16 +22,8 @@ public class Dingo extends Animal
      * @param location The location within the field.
      */
     public Dingo(boolean randomAge, Field field, Location location) {
-        super(field, location);
-        this.setGender();
-        if(randomAge) {
-            setAge(rand.nextInt(MAX_AGE));
-            setFoodLevel(rand.nextInt(SNAKE_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(SNAKE_FOOD_VALUE);
-        }
+        super(field, location, SimulationConfig.DINGO_CONFIG);
+        initialise(randomAge);
     }
     
     /**
@@ -55,7 +34,7 @@ public class Dingo extends Animal
      * @param time the current time in the simulation
      */
     public void act(List<Animal> newDingoes, int time) {
-        incrementAge(MAX_AGE);
+        incrementAge(getMaxAge());
         incrementHunger();
         if(isAlive() && ((time>=8)&&(time <=24)))
         {
@@ -67,9 +46,6 @@ public class Dingo extends Animal
         }
     }
 
-    @Override protected int getBreedingAge() { return BREEDING_AGE; }
-    @Override protected double getBreedingProbability() { return BREEDING_PROBABILITY; }
-    @Override protected int getMaxLitterSize() { return MAX_LITTER_SIZE; }
     @Override protected Animal createOffspring(Field field, Location loc) { return new Dingo(false, field, loc); }
 
     /**

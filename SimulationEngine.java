@@ -19,7 +19,7 @@ public class SimulationEngine
     private Field field;
     private int step;
     private DiseaseManager diseaseManager;
-    private Weather weather;
+    private WeatherManager weatherManager;
     private double oxygenLevel;
 
     /**
@@ -31,7 +31,7 @@ public class SimulationEngine
         this.config = config;
         creatures = new ArrayList<>();
         field = new Field(config.depth, config.width);
-        weather = new Weather(field);
+        weatherManager = new WeatherManager(field, config.stormHappenProbability);
         diseaseManager = new DiseaseManager();
         oxygenLevel = 1;
         Animal.populationDieOfDisease = 0;
@@ -41,7 +41,7 @@ public class SimulationEngine
     public SimulationConfig getConfig() { return config; }
     public Field getField() { return field; }
     public int getStep() { return step; }
-    public Weather getWeather() { return weather; }
+    public Weather getWeather() { return weatherManager.getWeather(); }
     public double getOxygenLevel() { return oxygenLevel; }
 
     /**
@@ -74,12 +74,7 @@ public class SimulationEngine
             }
         }
 
-        if (Randomizer.getRandom().nextDouble() <= config.stormHappenProbability) {
-            weather.underwaterStorm(3);
-            weather.setStormStart(true);
-        } else {
-            weather.setStormStart(false);
-        }
+        weatherManager.tryStorm();
 
         oxygenLevel += totalOxygenInvolved;
 

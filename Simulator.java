@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 //import java.util.Arrays;
@@ -245,7 +244,7 @@ public class Simulator
      */
     private void populate()
     {
-        Random rand = Randomizer.getRandom();
+        SimRandom rand = Randomizer.getRandom();
         field.clear();
         for(int row = 0; row < field.getDepth(); row++) 
         {

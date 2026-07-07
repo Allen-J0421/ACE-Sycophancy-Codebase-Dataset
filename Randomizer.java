@@ -1,44 +1,33 @@
 import java.util.Random;
 
 /**
- * Provide control over the randomization of the simulation. By using the shared, fixed-seed 
- * randomizer, repeated runs will perform exactly the same (which helps with testing). Set 
- * 'useShared' to false to get different random behaviour every time.
- *
- * @version 2016.02.29
+ * Manages the single {@link SimRandom} instance used throughout the simulation.
+ * All classes obtain their random generator via {@link #getRandom()} so that
+ * the source of randomness is controlled from one place.
  */
 public class Randomizer
 {
-    // The default seed for control of randomization.
-    private static final int SEED = 1111;
-    // A shared Random object, if required.
-    private static final Random rand = new Random(SEED);
-    // Determine whether a shared random generator is to be provided.
-    private static final boolean useShared = false;
+    private static final long SEED = 1111;
+
+    // One shared instance for the entire simulation.
+    private static final SimRandom instance = new SimRandom(new Random());
 
     /**
-     * Provide a random generator.
-     * @return A random object.
+     * Returns the shared random generator.
+     *
+     * @return The simulation-wide {@link SimRandom} instance.
      */
-    public static Random getRandom()
+    public static SimRandom getRandom()
     {
-        if(useShared) {
-            return rand;
-        }
-        else {
-            return new Random();
-        }
+        return instance;
     }
-    
+
     /**
-     * Reset the randomization.
-     * This will have no effect if randomization is not through
-     * a shared Random generator.
+     * Re-seeds the shared generator to its default seed, producing a
+     * reproducible sequence from this point forward.
      */
     public static void reset()
     {
-        if(useShared) {
-            rand.setSeed(SEED);
-        }
+        instance.setSeed(SEED);
     }
 }

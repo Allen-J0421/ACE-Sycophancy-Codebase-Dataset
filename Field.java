@@ -2,7 +2,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Represent a rectangular grid of field positions.
@@ -13,7 +12,7 @@ import java.util.Random;
 public class Field
 {
     // A random number generator for providing random locations.
-    private static final Random rand = Randomizer.getRandom();
+    private static final SimRandom rand = Randomizer.getRandom();
     
     // The depth and width of the field.
     private int depth, width;
@@ -246,7 +245,7 @@ public class Field
             
             // Shuffle the list. Several other methods rely on the list
             // being in a random order.
-            Collections.shuffle(locations, rand);
+            Collections.shuffle(locations, rand.asRandom());
         }
         
         return locations;

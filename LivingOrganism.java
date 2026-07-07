@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ public abstract class LivingOrganism
     protected int foodValue;
     
     // A shared random number generator to control breeding.
-    protected static final Random rand = Randomizer.getRandom();
+    protected static final SimRandom rand = Randomizer.getRandom();
     
     /**
      * Creates a new Organism at the location.

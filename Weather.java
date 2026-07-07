@@ -1,4 +1,3 @@
-import java.util.Random;
 
 /**
  * A class which is used to access the weather and handle changing
@@ -16,7 +15,7 @@ public class Weather {
     private static final int MINIMUM_STEPS_WEATHER_LASTS_FOR = 27;
     
     // Stores a randomiser used for generating random weather.
-    private static final Random rand = Randomizer.getRandom();
+    private static final SimRandom rand = Randomizer.getRandom();
     
     /**
      * @return Returns the current weather.

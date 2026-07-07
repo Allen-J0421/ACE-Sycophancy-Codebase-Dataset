@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @version 01.03.22
  */
-public abstract class Animal
+public abstract class Animal implements GridOccupant
 {
     // Whether the animal is alive or not.
     private boolean alive;

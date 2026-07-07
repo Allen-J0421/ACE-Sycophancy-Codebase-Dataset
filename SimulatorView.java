@@ -1,12 +1,13 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.border.EmptyBorder;
 /**
  * A graphical view of the simulation grid.
- * The view displays a colored rectangle for each location 
+ * The view displays a colored rectangle for each location
  * representing its contents. It uses a default background color.
  * Colors for each type of species can be defined using the
  * setColor method.
@@ -28,101 +29,53 @@ public class SimulatorView extends JFrame
     private JLabel stepLabel, population, infoLabel, dayLabel, weatherLabel;
     private JToolBar sideBar;
     private FieldView fieldView;
-    
+
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
     // A statistics object computing and storing simulation information
     private FieldStats stats;
-    private Simulator simulator;
-    
+
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
-    
+
     /**
      * Create a view of the given width and height.
-     * 
+     *
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width, Simulator simulator)
+    public SimulatorView(int height, int width)
     {
-        // set instance variables
-        this.simulator = simulator;
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
         setTitle("Fox and Rabbit Simulation");
-        
+
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
         infoLabel = new JLabel("00 | 00", JLabel.CENTER);
         population = new JLabel(POPULATION_PREFIX, JLabel.CENTER);
-        // setup dashboard button
-        JButton dashboardButton = new JButton("Dashboard");
-        dashboardButton.setMargin(new Insets(4, 4, 4, 4));
-        dashboardButton.addActionListener(new ActionListener(){
-                            public void actionPerformed(ActionEvent e) {
-                            
-                                simulator.setDashboard(new Dashboard(stats.getCounters(), DiseaseHandler.count));
-                            }
-        
-                        });
+
         sideBar = new JToolBar(JToolBar.VERTICAL);
-        
-        dashboardButton.setAlignmentX(CENTER_ALIGNMENT);
-        //setup sidebar + styling + eventhandler
         sideBar.setFloatable(false);
         sideBar.setMargin(new Insets(10, 10, 10, 10));
         sideBar.setLayout(new BoxLayout(sideBar, BoxLayout.Y_AXIS));
-        //setup simulate step button + styling + evenhandler
-        JButton simulateButton = new JButton("Simulate (1)");
-        simulateButton.addActionListener(new ActionListener(){
-                            public void actionPerformed(ActionEvent e) {
-                                
-                                
-                                simulator.simulateOneStep();
-                            }
-        
-                        });
-        simulateButton.setAlignmentX(CENTER_ALIGNMENT);
-        simulateButton.setMargin(new Insets(4, 4, 4, 4));
-        
-        //setup simulate long simulation + eventhandler
-        JButton simulateLong = new JButton("Simulate(1000)");
-        simulateLong.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e) {
-                    new Thread(simulator::runLongSimulation).start();
-                }
-        });
-        simulateLong.setAlignmentX(CENTER_ALIGNMENT);
-        simulateLong.setMargin(new Insets(4, 4, 4, 4));
-        
+
         setLocation(100, 50);
-        //Append components to toolbar
-        sideBar.add(simulateButton);
-        sideBar.add(Box.createVerticalStrut(8));
-        sideBar.add(simulateLong);
-        sideBar.add(Box.createVerticalStrut(8));
-        sideBar.add(dashboardButton);
-        // set up labels
+
         dayLabel = new JLabel("");
-        weatherLabel= new JLabel("");
+        weatherLabel = new JLabel("");
         dayLabel.setAlignmentX(CENTER_ALIGNMENT);
-        
         weatherLabel.setAlignmentX(CENTER_ALIGNMENT);
-        
         dayLabel.setBorder(new EmptyBorder(4,0,4,0));
         weatherLabel.setBorder(new EmptyBorder(4,0,4,0));
-        sideBar.add(dayLabel);
-        sideBar.add(weatherLabel);
-        // create grid
+
         fieldView = new FieldView(height, width);
-        
+
         Container contents = getContentPane();
-        // append components to main frame
         JPanel infoPane = new JPanel(new BorderLayout());
             infoPane.add(stepLabel, BorderLayout.WEST);
             infoPane.add(infoLabel, BorderLayout.CENTER);
-        
+
         contents.add(infoPane, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
@@ -130,10 +83,49 @@ public class SimulatorView extends JFrame
         pack();
         setVisible(true);
     }
-    
+
+    /*///////////////////////////////////////////////////////////////
+                           CONTROL PANEL
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * Integrates the control buttons into the sidebar in the correct order,
+     * followed by the day and weather status labels. Called by SimulationController
+     * after event listeners have been wired.
+     *
+     * @param simulate1    The "Simulate (1)" button.
+     * @param simulate1000 The "Simulate(1000)" button.
+     * @param dashboardBtn The "Dashboard" button.
+     */
+    public void addControlButtons(JButton simulate1, JButton simulate1000, JButton dashboardBtn)
+    {
+        sideBar.add(simulate1);
+        sideBar.add(Box.createVerticalStrut(8));
+        sideBar.add(simulate1000);
+        sideBar.add(Box.createVerticalStrut(8));
+        sideBar.add(dashboardBtn);
+        sideBar.add(dayLabel);
+        sideBar.add(weatherLabel);
+        pack();
+    }
+
+    /**
+     * Returns the population counters map for use when opening the dashboard.
+     *
+     * @return the map of class to Counter.
+     */
+    public HashMap<Class, Counter> getCounters()
+    {
+        return stats.getCounters();
+    }
+
+    /*///////////////////////////////////////////////////////////////
+                              DISPLAY METHODS
+    //////////////////////////////////////////////////////////////*/
+
     /**
      * Define a color to be used for a given class of animal.
-     * 
+     *
      * @param animalClass The animal's Class object.
      * @param color The color to be used for the given class.
      */
@@ -149,7 +141,7 @@ public class SimulatorView extends JFrame
     {
         infoLabel.setText(text);
     }
-    
+
     /**
      * Displays colors associated with the animals in the side bar.
      */
@@ -162,12 +154,12 @@ public class SimulatorView extends JFrame
             tempLabel.setBorder(new EmptyBorder(4,0,4,0));
             sideBar.add(tempLabel);
         }
-        
+
     }
-    
+
     /**
      * Returns a color to be used for a given class of animal
-     * 
+     *
      * @return The color to be used for a given class of animal.
      */
     private Color getColor(Class animalClass)
@@ -184,7 +176,7 @@ public class SimulatorView extends JFrame
 
     /**
      * Show the current status of the field.
-     * 
+     *
      * @param step Which iteration step it is.
      * @param field The field whose status is to be displayed.
      */
@@ -193,13 +185,13 @@ public class SimulatorView extends JFrame
         if(!isVisible()) {
             setVisible(true);
         }
-            
+
         stepLabel.setText(STEP_PREFIX + step);
         infoLabel.setText(clock.getStringTime());
         weatherLabel.setText(WEATHER_PREFIX + weather.name().toLowerCase());
         dayLabel.setText(DAYSTATE_PREFIX + clock.getDayState().name().toLowerCase());
         stats.reset();
-        
+
         fieldView.preparePaint();
 
         for(int row = 0; row < field.getDepth(); row++) {
@@ -211,7 +203,7 @@ public class SimulatorView extends JFrame
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
                 }
                 else if(field.getPlantAt(row, col) != null) {
-                    // if the cell is not occupied by an animal, attempt to occupy with plant. 
+                    // if the cell is not occupied by an animal, attempt to occupy with plant.
                     Plant plant = field.getPlantAt(row, col);
                     stats.incrementCount(plant.getClass());
                     fieldView.drawMark(col, row, getColor(plant.getClass()));
@@ -235,13 +227,13 @@ public class SimulatorView extends JFrame
     {
         return stats.isViable(field);
     }
-    
+
     /**
-     * Provide a graphical view of a rectangular field. This is 
+     * Provide a graphical view of a rectangular field. This is
      * a nested class (a class defined inside a class) which
      * defines a custom component for the user interface. This
      * component displays the field.
-     * This is rather advanced GUI stuff - you can ignore this 
+     * This is rather advanced GUI stuff - you can ignore this
      * for your project if you like.
      */
     private class FieldView extends JPanel
@@ -294,7 +286,7 @@ public class SimulatorView extends JFrame
                 }
             }
         }
-        
+
         /**
          * Paint on grid location on this field in a given color.
          */

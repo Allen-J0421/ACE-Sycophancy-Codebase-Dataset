@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 import java.lang.Math;
 
 /**
@@ -11,6 +12,10 @@ public abstract class Animal extends Creature
 
     // sex of an animal, 0 = female and 1 = male
     private int sex;
+    // The animal's current age.
+    private int age;
+    // A shared random number generator.
+    protected static final Random rand = Randomizer.getRandom();
 
     // The amount of oxygen an animal need to survive
     protected static final double ANIMAL_OXYGEN_REQUIRED = 0.0000009;
@@ -40,6 +45,49 @@ public abstract class Animal extends Creature
         // Track the first step at which the animal is infected;
         infectionStartStep = 0;
 
+    }
+
+    protected void initAge(boolean randomAge) {
+        age = randomAge ? rand.nextInt(getMaxAge()) : 0;
+    }
+
+    protected int getAge() { return age; }
+
+    public abstract int getMaxAge();
+    public abstract int getBreedingAge();
+    public abstract double getBreedingProbability();
+    public abstract int getMaxLitterSize();
+    public abstract Animal createOffspring(Field field, Location location);
+
+    public boolean requiresMate() { return false; }
+
+    protected boolean canBreed() {
+        return age >= getBreedingAge() && (!requiresMate() || encounterWithDiffSex());
+    }
+
+    protected int breed() {
+        int births = 0;
+        if (canBreed() && rand.nextDouble() <= getBreedingProbability()) {
+            births = rand.nextInt(getMaxLitterSize()) + 1;
+        }
+        return births;
+    }
+
+    protected void incrementAge() {
+        age++;
+        if (age > getMaxAge()) {
+            setDead();
+        }
+    }
+
+    protected void giveBirth(List<Creature> newAnimals) {
+        Field field = getField();
+        List<Location> free = field.getFreeAdjacentLocations(getLocation());
+        int births = breed();
+        for (int b = 0; b < births && free.size() > 0; b++) {
+            Location loc = free.remove(0);
+            newAnimals.add(createOffspring(field, loc));
+        }
     }
 
     /**

@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
 
 /**
@@ -27,13 +26,7 @@ public class Salmon extends Animal
     // number of steps a fox can go before it has to eat again.
     private static final int SEAWEED_FOOD_VALUE = 13;
 
-    // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
-
     // Individual characteristics (instance fields).
-
-    // The salmon's age.
-    private int age;
 
     // The salmon's food level
     private int foodLevel;
@@ -50,12 +43,11 @@ public class Salmon extends Animal
     public Salmon(boolean randomAge, Field field, Location location)
     {
         super(field, location);
+        initAge(randomAge);
         if(randomAge) {
-            age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(SEAWEED_FOOD_VALUE);
         }
         else {
-            age = 0;
             foodLevel = SEAWEED_FOOD_VALUE;
         }
     }
@@ -115,18 +107,6 @@ public class Salmon extends Animal
     }
 
     /**
-     * Increase the age.
-     * This could result in the salmon's death.
-     */
-    private void incrementAge()
-    {
-        age++;
-        if(age > MAX_AGE) {
-            setDead();
-        }
-    }
-
-    /**
      * Make this salmon more hungry. This could result in the salmon's death.
      */
     private void incrementHunger()
@@ -174,49 +154,13 @@ public class Salmon extends Animal
 
         
     }
-    /**
-     * Check whether or not this salmon is to give birth at this step.
-     * New births will be made into free adjacent locations.
-     * @param newsalmons A list to return newly born salmons.
-     */
-    private void giveBirth(List<Creature> newSalmons)
-    {
-        // New salmons are born into adjacent locations.
-        // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for(int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            Salmon young = new Salmon(false, field, loc);
-            newSalmons.add(young);
-        }
-    }
+    public boolean requiresMate() { return true; }
+    public int getMaxAge() { return MAX_AGE; }
+    public int getBreedingAge() { return BREEDING_AGE; }
+    public double getBreedingProbability() { return BREEDING_PROBABILITY; }
+    public int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    public Animal createOffspring(Field field, Location location) { return new Salmon(false, field, location); }
 
-    /**
-     * Generate a number representing the number of births,
-     * if it can breed.
-     * @return The number of births (may be zero).
-     */
-    private int breed()
-    {
-        int births = 0;
-        if(canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
-        }
-        return births;
-    }
-
-    /**
-     * A salmon can breed if it has reached the breeding age and has countered the salmon of opposite sex.
-     * @return true if the salmon can breed, false otherwise.
-     */
-    private boolean canBreed()
-    {
-        return age >= BREEDING_AGE && encounterWithDiffSex();
-    }
-
-    
     /**
      * Decide if two salmons countered has different sex;
      */

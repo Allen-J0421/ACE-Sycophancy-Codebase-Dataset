@@ -7,7 +7,7 @@ public class PatternSearchFactory {
     public static PatternSearcher create(String pattern, Algorithm algorithm) {
         switch (algorithm) {
             case NAIVE: return new NaivePatternSearch(pattern);
-            default: throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
+            default: throw new PatternSearchException("Unknown algorithm: " + algorithm);
         }
     }
 

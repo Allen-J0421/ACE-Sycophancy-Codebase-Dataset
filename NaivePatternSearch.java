@@ -7,14 +7,14 @@ public class NaivePatternSearch implements PatternSearcher {
 
     public NaivePatternSearch(String pattern) {
         if (pattern == null || pattern.isEmpty())
-            throw new IllegalArgumentException("Pattern must be non-empty");
+            throw new InvalidPatternException(pattern);
         this.pattern = pattern;
     }
 
     @Override
     public List<Integer> search(String text) {
         if (text == null)
-            throw new IllegalArgumentException("Text must not be null");
+            throw new InvalidTextException();
 
         List<Integer> matches = new ArrayList<>();
         int patternLen = pattern.length();

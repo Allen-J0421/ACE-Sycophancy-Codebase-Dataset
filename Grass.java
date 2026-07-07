@@ -30,12 +30,8 @@ public class Grass extends Plant
     public Grass(Field field, Location location)
     {
         super(field, location);
-
-        NUMBER_OF_STAGES = 3;
-        STEPS_PER_STAGE = 2;
-        STAGE_OF_GROWTH = rand.nextInt(NUMBER_OF_STAGES);
-        FOOD_VALUE = STAGE_OF_GROWTH;
-
+        growth = new GrowthComponent(3, 2);
+        FOOD_VALUE = growth.getStage();
     }
 
 
@@ -97,7 +93,7 @@ public class Grass extends Plant
      */
     public boolean incrementGrowth()
     {
-        if(super.incrementGrowth()) {
+        if (growth.increment()) {
             FOOD_VALUE++;
             return true;
         }

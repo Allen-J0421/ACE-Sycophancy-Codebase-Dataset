@@ -8,10 +8,7 @@ import java.util.stream.Collectors;
  */
 public abstract class Animal extends Organism implements Actor
 {
-
-    protected int age;
     protected boolean isNocturnal;
-    protected int foodLevel;
     protected Gender sex;
 
     protected static final Random rand = Randomizer.getRandom();
@@ -23,6 +20,10 @@ public abstract class Animal extends Organism implements Actor
     }
 
     protected final DiseaseManager diseaseManager = new DiseaseManager(this);
+
+    // Behaviour components — constructed in the constructor using the species' constants.
+    protected final AgeingComponent ageing;
+    protected final HungerComponent hunger;
 
 
     // Declaring abstract methods to obtain fields used by subclasses
@@ -41,20 +42,14 @@ public abstract class Animal extends Organism implements Actor
      * @param field The field currently occupied.
      * @param location The location within the field.
      * @param randomAge The animal's random starting age.
-     * @param sex The animal's gender. 
+     * @param sex The animal's gender.
      */
     public Animal(Field field, Location location, boolean randomAge, Gender sex)
     {
         super(field, location);
         this.sex = sex;
-        if(randomAge) {
-            this.age = rand.nextInt(MAX_AGE());
-            foodLevel = rand.nextInt(MAX_FOOD_LEVEL());
-        }
-        else {
-            this.age = 0;
-            foodLevel = MAX_FOOD_LEVEL();
-        }
+        this.ageing = new AgeingComponent(MAX_AGE(), randomAge);
+        this.hunger = new HungerComponent(MAX_FOOD_LEVEL(), randomAge);
         diseaseManager.processRandomContraction();
     }
 
@@ -115,7 +110,7 @@ public abstract class Animal extends Organism implements Actor
         diseaseManager.checkContactSpread(adjacent, field);
         Iterator<Location> it = adjacent.iterator();
         // only eats if it's not full (food level less than max)
-        while(it.hasNext() && foodLevel <= MAX_FOOD_LEVEL()) {
+        while(it.hasNext() && hunger.isNotFull()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
             if(animal != null && DIET().contains(animal.getClass()))
@@ -125,11 +120,7 @@ public abstract class Animal extends Organism implements Actor
                 if(food.isAlive())
                 {
                     food.setDead();
-                    int newFoodLevel = foodLevel + food.FOOD_VALUE();
-
-                    // caps the food level at the maximum
-                    foodLevel = Math.min(newFoodLevel, MAX_FOOD_LEVEL());
-
+                    hunger.eat(food.FOOD_VALUE());
                     return where;
                 }
                 return where;
@@ -142,7 +133,7 @@ public abstract class Animal extends Organism implements Actor
      * Check whether this animal is to give birth at this step.
      * New births will be made into free adjacent locations.
      * @param newAnimals A list to return newly born animals.
-     * @param environment The environment that the animal resides in. 
+     * @param environment The environment that the animal resides in.
      */
     protected abstract void giveBirth(List<Actor> newAnimals, Environment environment);
 
@@ -175,16 +166,16 @@ public abstract class Animal extends Organism implements Actor
 
     /**
      * Returns true if the animal is able to breed.
-     * Returns false if otherwise. 
+     * Returns false if otherwise.
      */
     protected boolean canBreed()
     {
-        return (age >= BREEDING_AGE() && getPotentialMates().size() > 0);
+        return (ageing.isOldEnough(BREEDING_AGE()) && getPotentialMates().size() > 0);
     }
 
     /**
      * Returns a list of potential mates. Mates have to be
-     * of a opposite gender. 
+     * of a opposite gender.
      * @return List<Organism> A list of potential mates.
      */
     protected List<Organism> getPotentialMates()
@@ -209,8 +200,7 @@ public abstract class Animal extends Organism implements Actor
      */
     protected void incrementAge()
     {
-        this.age++;
-        if(this.age > MAX_AGE()) {
+        if(ageing.tick()) {
             setDead();
         }
     }
@@ -220,8 +210,7 @@ public abstract class Animal extends Organism implements Actor
      */
     protected void incrementHunger()
     {
-        foodLevel--;
-        if(foodLevel <= 0) {
+        if(hunger.tick()) {
             setDead();
         }
     }

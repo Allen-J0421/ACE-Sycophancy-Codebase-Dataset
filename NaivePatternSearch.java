@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class NaivePatternSearch implements PatternSearcher {
 
@@ -26,6 +28,17 @@ public class NaivePatternSearch implements PatternSearcher {
         }
 
         return new SearchResult(pattern, matches);
+    }
+
+    @Override
+    public Stream<Integer> stream(String text) {
+        if (text == null)
+            throw new InvalidTextException();
+
+        int limit = text.length() - pattern.length();
+        return IntStream.rangeClosed(0, limit)
+                        .filter(i -> matchesAt(text, i))
+                        .boxed();
     }
 
     private boolean matchesAt(String text, int startIndex) {

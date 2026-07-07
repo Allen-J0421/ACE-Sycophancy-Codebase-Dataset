@@ -1,5 +1,6 @@
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SearchResult {
 
@@ -13,6 +14,10 @@ public class SearchResult {
 
     public List<Integer> getMatches() {
         return matches;
+    }
+
+    public Stream<Integer> stream() {
+        return matches.stream();
     }
 
     public int count() {

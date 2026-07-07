@@ -62,19 +62,7 @@ public class Wolverine extends CarnivoreAnimal
         incrementHunger();
         if(isAlive()) {
             meet(newWolverines, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);          
-            Location newLocation = findFood(PREY_DIET);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            moveOrDie(findFood(PREY_DIET));
         }
     }
     

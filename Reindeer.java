@@ -55,19 +55,7 @@ public class Reindeer extends HerbivoreAnimal
             return;
         }
         meet(newReindeers, MAX_LITTER_SIZE, BREEDING_PROBABILITY, BREEDING_AGE);
-        Location newLocation = findFood(TARGET_PLANTS);
-        if(newLocation == null) { 
-            // No food found - try to move to a free location.
-            newLocation = getField().freeAdjacentLocation(getLocation());
-        }
-        // See if it was possible to move.
-        if(newLocation != null) {
-            setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
-            setDead();
-        }   
+        moveOrDie(findFood(TARGET_PLANTS));   
     }
     
     /**

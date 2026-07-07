@@ -70,18 +70,7 @@ public class CarnivoreFox extends CarnivoreAnimal
             if(newLocation != null) {
                 FOUND_FOOD++;
             }
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
+            moveOrDie(newLocation);
         }
     }
     

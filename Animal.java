@@ -23,6 +23,7 @@ public abstract class Animal implements Actor
     private static final Random rand = Randomizer.getRandom();
     private final BreedingHandler breedingHandler;
     protected final FeedingHandler feedingHandler;
+    private final MovementHandler movementHandler;
     
     /*///////////////////////////////////////////////////////////////
                                 CONSTRUCTOR
@@ -53,6 +54,7 @@ public abstract class Animal implements Actor
         this.infectionTimestamp = null;
         this.breedingHandler = new BreedingHandler(field);
         this.feedingHandler = new FeedingHandler(field);
+        this.movementHandler = new MovementHandler(field);
         setLocation(location);
     }
     
@@ -112,6 +114,17 @@ public abstract class Animal implements Actor
     protected void meet(List<Actor> newAnimals, int maxLitter, double breedingProbability, int breedingAge)
     {
         breedingHandler.meet(this, newAnimals, maxLitter, breedingProbability, breedingAge);
+    }
+
+    /**
+     * Moves this animal to foodLocation, or if null falls back to a free adjacent location.
+     * Kills the animal if no location is available (overcrowding).
+     *
+     * @param foodLocation The location of consumed food, or null if none was found.
+     */
+    protected void moveOrDie(Location foodLocation)
+    {
+        movementHandler.moveOrDie(this, foodLocation);
     }
     
     /*///////////////////////////////////////////////////////////////

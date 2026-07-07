@@ -10,33 +10,25 @@ import java.util.List;
  */
 public class Jaguar extends Predator
 {
-    // Characteristics shared by all Jaguars (class variables).
+    private static final AnimalConfig CONFIG = new AnimalConfig(
+        10,    // breedingAge
+        1000,  // maxAge
+        0.2,   // breedingProbability
+        5,     // maxLitterSize
+        6,     // maxTimeUntilBreedingAgain
+        39.0,  // maxFoodLevel
+        1.0, 0.7, 0.4, // sunny / rainy / foggy finding-food probability
+        0,     // initialFoodBase  (predator: no base offset)
+        35,    // initialFoodCap   (gazelle prey food value)
+        89.0   // growthDivisor
+    );
 
-    // The age at which a Jaguar can start to breed.
-    private static final int BREEDING_AGE = 10;
-    // The age to which a Jaguar can live.
-    private static final  int MAX_AGE  = 1000;
-    // The likelihood of a Jaguar breeding.
-    private static final double BREEDING_PROBABILITY = 0.2; 
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 5;
-    private static final int MAX_TIME_UNTIL_BREEDING_AGAIN = 6;
-    //The minimum food value of the gazelle. In effect, this is the
-    // number of steps a Jaguar can go before it has to eat again.
-    private static final int GAZELLE_FOOD_VALUE = 35; 
-    private static final double MAX_FOOD_LEVEL = 39; 
-    
-    // The likelihood of a Jaguar finding food depending on the weather.
-    private static final double SUNNY_FINDING_FOOD_PROBABILITY = 1;
-    private static final double RAINY_FINDING_FOOD_PROBABILITY = 0.7;
-    private static final double FOGGY_FINDING_FOOD_PROBABILITY = 0.4;
-
-    // Individual characteristics (instance fields).
     private HashMap<Actor, Integer> food;
+
     /**
      * Create a Jaguar. A Jaguar can be created as a new born (age zero
      * and not hungry) or with a random age and food level.
-     * 
+     *
      * @param randomAge If true, the Jaguar will have random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
@@ -45,7 +37,7 @@ public class Jaguar extends Predator
     {
         super(field, location);
         food = new HashMap<>();
-        initialise(randomAge, 0, GAZELLE_FOOD_VALUE, 89.0);
+        initialise(randomAge, CONFIG.initialFoodBase, CONFIG.initialFoodCap, CONFIG.growthDivisor);
         addFood(field);
     }
 
@@ -53,7 +45,7 @@ public class Jaguar extends Predator
      * This is what the Jaguar does most of the time: it finds
      * gazelle to eat. In the process, it might breed, die of hunger,
      * die of disease or die of old age.
-     * 
+     *
      * @param newJaguars A list to return newly born Jaguars.
      * @param simulator The simulator.
      */
@@ -64,7 +56,7 @@ public class Jaguar extends Predator
             incrementAge(simulator.getSteps());
             incrementHunger();
             if(isActive()) {
-                giveBirth(newJaguars);  
+                giveBirth(newJaguars);
                 super.act(newJaguars,simulator);
             }
         }else{
@@ -72,21 +64,8 @@ public class Jaguar extends Predator
         }
     }
 
-    /**
-     * Returns the maximum number of babies the jaguar can give birth to at once.
-     * @return max litter size of the jaguar.
-     */
-    protected int getMaxLitterSize(){
-        return MAX_LITTER_SIZE;
-    }
-
-    /**
-     * Returns the breeding probability of the jaguar
-     * @return breeding probability of the jaguar.
-     */
-    protected double getBreedingProbability(){
-        return BREEDING_PROBABILITY;
-    }
+    protected int getMaxLitterSize()             { return CONFIG.maxLitterSize; }
+    protected double getBreedingProbability()     { return CONFIG.breedingProbability; }
 
     /**
      * Creates a new Jaguar offspring at the given location.
@@ -96,21 +75,8 @@ public class Jaguar extends Predator
         return new Jaguar(false, field, loc);
     }
 
-    /**
-     * Get breeding age of a jaguar.
-     * @return Breeding age of the jaguar;
-     */
-    protected int getBreedingAge(){
-        return BREEDING_AGE;
-    }
-
-    /**
-     * Gets the max age of a jaguar.
-     * @return Max age of the jaguar.
-     */
-    protected int getMaxAge(){
-        return MAX_AGE;
-    }
+    protected int getBreedingAge()                { return CONFIG.breedingAge; }
+    protected int getMaxAge()                     { return CONFIG.maxAge; }
 
     /**
      * Adds the food the jaguar eats & the corresponding food value to a hashMap.
@@ -118,40 +84,20 @@ public class Jaguar extends Predator
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Gazelle gazelle = new Gazelle(true,field,tempLocation );
-        food.put(gazelle, GAZELLE_FOOD_VALUE);
+        Gazelle gazelle = new Gazelle(true,field,tempLocation);
+        food.put(gazelle, CONFIG.initialFoodCap);
         gazelle.setDead();
     }
 
-    /**
-     * Returns the HashMap which contains what food the jaguar eats and the amount of food each gazelle gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
-    }
+    protected HashMap<Actor, Integer> getFood()   { return food; }
+    protected double getMaxFoodLevel()             { return CONFIG.maxFoodLevel; }
+    protected int getMaxTimeUntilBreedingAgain()   { return CONFIG.maxTimeUntilBreedingAgain; }
 
-    /**
-     * Gets the maximum food level a jaguar can have.
-     * @return Max food level of the jaguar.
-     */
-    protected double getMaxFoodLevel(){
-        return MAX_FOOD_LEVEL;
-    }
-
-    /**
-     * Gets the maximum time a jaguar needs to wait until it can breed again
-     * @return Max time before the jaguar can breed again.
-     */
-    protected int getMaxTimeUntilBreedingAgain(){
-        return MAX_TIME_UNTIL_BREEDING_AGAIN;
-    }
-    
     protected double getFindingFoodProbability(Weather weather){
         switch(weather){
-            case SUNNY: return SUNNY_FINDING_FOOD_PROBABILITY;
-            case RAINY: return RAINY_FINDING_FOOD_PROBABILITY;
-            case FOGGY: return FOGGY_FINDING_FOOD_PROBABILITY;
+            case SUNNY: return CONFIG.sunnyFoodProbability;
+            case RAINY: return CONFIG.rainyFoodProbability;
+            case FOGGY: return CONFIG.foggyFoodProbability;
             default:    return getRandom().nextDouble();
         }
     }

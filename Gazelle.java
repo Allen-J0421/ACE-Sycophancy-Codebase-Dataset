@@ -10,34 +10,25 @@ import java.util.HashMap;
  */
 public class Gazelle extends Animal
 {
-    // Characteristics shared by all Gazelles (class variables).
+    private static final AnimalConfig CONFIG = new AnimalConfig(
+        2,           // breedingAge
+        80,          // maxAge
+        0.8900995,   // breedingProbability
+        7,           // maxLitterSize
+        2,           // maxTimeUntilBreedingAgain
+        28.0,        // maxFoodLevel
+        1.0, 1.0, 1.0, // sunny / rainy / foggy finding-food probability
+        14,          // initialFoodBase  (grass food value; always pre-set for prey)
+        14,          // initialFoodCap   (same value: grass food value)
+        75.0         // growthDivisor
+    );
 
-    // The age at which a Gazelle can start to breed.
-    private static final int BREEDING_AGE = 2;
-    // The age to which a Gazelle can live.
-    private static final  int MAX_AGE  = 80;
-    // The likelihood of a Gazelle breeding.
-    private static final double BREEDING_PROBABILITY = 0.8900995; 
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 7;
-    private static final int MAX_TIME_UNTIL_BREEDING_AGAIN = 2;
-    //The minimum food value of the grass. In effect, this is the
-    // number of steps a Gazelle can go before it has to eat again.
-    private static final int GRASS_FOOD_VALUE = 14; //8 //15
-    //maximum food a gazelle can eat.
-    private static final double MAX_FOOD_LEVEL = 28; //60 //160
-    
-    // The likelihood of a Gazelle finding food depending on the weather.
-    private static final double SUNNY_FINDING_FOOD_PROBABILITY = 1;
-    private static final double RAINY_FINDING_FOOD_PROBABILITY = 1;
-    private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
-
-    // Individual characteristics (instance fields).
     private HashMap<Actor, Integer> food;
+
     /**
      * Create a new Gazelle. A Gazelle may be created with age
      * zero (a new born) or with a random age.
-     * 
+     *
      * @param randomAge If true, the Gazelle will have a random age.
      * @param field The field currently occupied.
      * @param location The location within the field.
@@ -46,7 +37,7 @@ public class Gazelle extends Animal
     {
         super(field, location);
         food = new HashMap<>();
-        initialise(randomAge, GRASS_FOOD_VALUE, GRASS_FOOD_VALUE, 75.0);
+        initialise(randomAge, CONFIG.initialFoodBase, CONFIG.initialFoodCap, CONFIG.growthDivisor);
         addFood(field);
     }
 
@@ -54,7 +45,7 @@ public class Gazelle extends Animal
      * This is what the Gazelle does most of the time: it finds
      * grass to eat. In the process, it might breed, die of hunger,
      * die of disease or die of old age.
-     * 
+     *
      * @param newGazelles A list to return newly born Gazelles.
      * @param simulator The simulator.
      */
@@ -65,7 +56,7 @@ public class Gazelle extends Animal
             incrementAge(simulator.getSteps());
             incrementHunger();
             if(isActive()) {
-                giveBirth(newGazelles);  
+                giveBirth(newGazelles);
                 super.act(newGazelles,simulator);
             }
         }else{
@@ -73,37 +64,10 @@ public class Gazelle extends Animal
         }
     }
 
-    /**
-     * Returns the maximum number of babies the gazelle can give birth to at once.
-     * @return max litter size of the gazelle.
-     */
-    protected int getMaxLitterSize(){
-        return MAX_LITTER_SIZE;
-    }
-
-    /**
-     * Returns the breeding probability of the gazelle
-     * @return breeding probability of the gazelle.
-     */
-    protected double getBreedingProbability(){
-        return BREEDING_PROBABILITY;
-    }
-
-    /**
-     * Get breeding age of a gazelle.
-     * @return Breeding age of the gazelle;
-     */
-    protected int getBreedingAge(){
-        return BREEDING_AGE;
-    }
-
-    /**
-     * Gets the max age of a gazelle.
-     * @return Max age of the gazelle.
-     */
-    protected int getMaxAge(){
-        return MAX_AGE;
-    }
+    protected int getMaxLitterSize()             { return CONFIG.maxLitterSize; }
+    protected double getBreedingProbability()     { return CONFIG.breedingProbability; }
+    protected int getBreedingAge()                { return CONFIG.breedingAge; }
+    protected int getMaxAge()                     { return CONFIG.maxAge; }
 
     /**
      * Creates a new Gazelle offspring at the given location.
@@ -119,40 +83,20 @@ public class Gazelle extends Animal
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Plants grass = new Grass(true,field,tempLocation );
-        food.put(grass, GRASS_FOOD_VALUE);
+        Plants grass = new Grass(true,field,tempLocation);
+        food.put(grass, CONFIG.initialFoodCap);
         grass.setDead();
     }
 
-    /**
-     * Returns the HashMap which contains what food the gazelle eats and the amount of food each plant gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
-    }
+    protected HashMap<Actor, Integer> getFood()   { return food; }
+    protected double getMaxFoodLevel()             { return CONFIG.maxFoodLevel; }
+    protected int getMaxTimeUntilBreedingAgain()   { return CONFIG.maxTimeUntilBreedingAgain; }
 
-    /**
-     * Gets the maximum food level a gazelle can have.
-     * @return Max food level of the gazelle.
-     */
-    protected double getMaxFoodLevel(){
-        return MAX_FOOD_LEVEL;
-    }
-    
-    /**
-     * Gets the maximum time a gazelle needs to wait until it can breed again
-     * @return Max time before the gazelle can breed again.
-     */
-    protected int getMaxTimeUntilBreedingAgain(){
-        return MAX_TIME_UNTIL_BREEDING_AGAIN;
-    }
-    
     protected double getFindingFoodProbability(Weather weather){
         switch(weather){
-            case SUNNY: return SUNNY_FINDING_FOOD_PROBABILITY;
-            case RAINY: return RAINY_FINDING_FOOD_PROBABILITY;
-            case FOGGY: return FOGGY_FINDING_FOOD_PROBABILITY;
+            case SUNNY: return CONFIG.sunnyFoodProbability;
+            case RAINY: return CONFIG.rainyFoodProbability;
+            case FOGGY: return CONFIG.foggyFoodProbability;
             default:    return getRandom().nextDouble();
         }
     }

@@ -11,33 +11,25 @@ import java.util.HashMap;
  */
 public class Zebra extends Animal
 {
-    // Characteristics shared by all Zebra (class variables).
+    private static final AnimalConfig CONFIG = new AnimalConfig(
+        2,                      // breedingAge
+        160,                    // maxAge
+        0.27587999058995,       // breedingProbability
+        4,                      // maxLitterSize
+        15,                     // maxTimeUntilBreedingAgain
+        28.0,                   // maxFoodLevel
+        1.0, 1.0, 1.0,          // sunny / rainy / foggy finding-food probability
+        19,                     // initialFoodBase  (grass food value; always pre-set for prey)
+        19,                     // initialFoodCap   (same value: grass food value)
+        67.0                    // growthDivisor
+    );
 
-    // The age at which a Zebra can start to breed.
-    private static final int BREEDING_AGE = 2;
-    // The age to which a Zebra can live.
-    private static final  int MAX_AGE = 160;
-    // The likelihood of a Zebra breeding.
-    private static final double BREEDING_PROBABILITY =0.27587999058995; //0.2587998058995
-    // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 4;
-    private static final int MAX_TIME_UNTIL_BREEDING_AGAIN =15;
-    //The minimum food value of the grass. In effect, this is the
-    // number of steps a Zebra can go before it has to eat again.
-    private static final int GRASS_FOOD_VALUE = 19; 
-    private static final double MAX_FOOD_LEVEL = 28; 
-    
-    // The likelihood of a Zebra finding food depending on the weather.
-    private static final double SUNNY_FINDING_FOOD_PROBABILITY = 1;
-    private static final double RAINY_FINDING_FOOD_PROBABILITY = 1;
-    private static final double FOGGY_FINDING_FOOD_PROBABILITY = 1;
-
-    // Individual characteristics (instance fields).
     private HashMap<Actor, Integer> food;
+
     /**
      * Create a new Zebra. A Zebra may be created with age
      * zero (a new born) or with a random age.
-     * 
+     *
      * @param randomAge If true, the Zebra will have a random age and hunger level.
      * @param field The field currently occupied.
      * @param location The location within the field.
@@ -46,7 +38,7 @@ public class Zebra extends Animal
     {
         super(field, location);
         food = new HashMap<>();
-        initialise(randomAge, GRASS_FOOD_VALUE, GRASS_FOOD_VALUE, 67.0);
+        initialise(randomAge, CONFIG.initialFoodBase, CONFIG.initialFoodCap, CONFIG.growthDivisor);
         addFood(field);
     }
 
@@ -54,7 +46,7 @@ public class Zebra extends Animal
      * This is what the Zebra does most of the time: it finds
      * grass to eat. In the process, it might breed, die of hunger,
      * die of disease or die of old age.
-     * 
+     *
      * @param newZebras A list to return newly born Zebras.
      * @param simulator The simulator.
      */
@@ -65,7 +57,7 @@ public class Zebra extends Animal
             incrementAge(simulator.getSteps());
             incrementHunger();
             if(isActive()) {
-                giveBirth(newZebra); 
+                giveBirth(newZebra);
                 super.act(newZebra,simulator);
             }
         }else{
@@ -73,37 +65,10 @@ public class Zebra extends Animal
         }
     }
 
-    /**
-     * Returns the maximum number of babies the zebra can give birth to at once.
-     * @return The max litter size of the zebra.
-     */
-    protected int getMaxLitterSize(){
-        return MAX_LITTER_SIZE;
-    }
-
-    /**
-     * Returns the breeding probability of the zebra
-     * @return The breeding probability of the zebra.
-     */
-    protected double getBreedingProbability(){
-        return BREEDING_PROBABILITY;
-    }
-
-    /**
-     * Get breeding age of a zebra.
-     * @return The breeding age of the zebra.
-     */
-    protected int getBreedingAge(){
-        return BREEDING_AGE;
-    }
-
-    /**
-     * Gets the max age of a zebra.
-     * @return The max age of the zebra.
-     */
-    protected int getMaxAge(){
-        return MAX_AGE;
-    }
+    protected int getMaxLitterSize()             { return CONFIG.maxLitterSize; }
+    protected double getBreedingProbability()     { return CONFIG.breedingProbability; }
+    protected int getBreedingAge()                { return CONFIG.breedingAge; }
+    protected int getMaxAge()                     { return CONFIG.maxAge; }
 
     /**
      * Creates a new Zebra offspring at the given location.
@@ -119,40 +84,20 @@ public class Zebra extends Animal
      */
     private void addFood(Field field){
         Location tempLocation = new Location(0,0);
-        Plants grass = new Grass(true,field,tempLocation );
-        food.put(grass, GRASS_FOOD_VALUE);
+        Plants grass = new Grass(true,field,tempLocation);
+        food.put(grass, CONFIG.initialFoodCap);
         grass.setDead();
     }
 
-    /**
-     * Returns the HashMap which contains what food the zebra eats and the amount of food each plant gives.
-     * @return The HashMap which contains the Actor and an Integer.
-     */
-    protected HashMap<Actor, Integer> getFood(){
-        return food;
-    }
+    protected HashMap<Actor, Integer> getFood()   { return food; }
+    protected double getMaxFoodLevel()             { return CONFIG.maxFoodLevel; }
+    protected int getMaxTimeUntilBreedingAgain()   { return CONFIG.maxTimeUntilBreedingAgain; }
 
-    /**
-     * Gets the maximum food level a zebra can have.
-     * @return Max food level of the zebra.
-     */
-    protected double getMaxFoodLevel(){
-        return MAX_FOOD_LEVEL;
-    }
-    
-    /**
-     * Gets the maximum time a zebra needs to wait until it can breed again
-     * @return Max time before the zebra can breed again.
-     */
-    protected int getMaxTimeUntilBreedingAgain(){
-        return MAX_TIME_UNTIL_BREEDING_AGAIN;
-    }
-    
     protected double getFindingFoodProbability(Weather weather){
         switch(weather){
-            case SUNNY: return SUNNY_FINDING_FOOD_PROBABILITY;
-            case RAINY: return RAINY_FINDING_FOOD_PROBABILITY;
-            case FOGGY: return FOGGY_FINDING_FOOD_PROBABILITY;
+            case SUNNY: return CONFIG.sunnyFoodProbability;
+            case RAINY: return CONFIG.rainyFoodProbability;
+            case FOGGY: return CONFIG.foggyFoodProbability;
             default:    return getRandom().nextDouble();
         }
     }

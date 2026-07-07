@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
+interface PatternMatcher {
+    List<Integer> search(String text);
+}
+
 class LPSTable {
     private final int[] lps;
 
@@ -28,7 +32,7 @@ class LPSTable {
     }
 }
 
-class KMPSearch {
+class KMPSearch implements PatternMatcher {
     private final String pattern;
     private final LPSTable lpsTable;
 
@@ -37,7 +41,8 @@ class KMPSearch {
         this.lpsTable = new LPSTable(pattern);
     }
 
-    List<Integer> search(String text) {
+    @Override
+    public List<Integer> search(String text) {
         List<Integer> results = new ArrayList<>();
         int n = text.length();
         int m = pattern.length();
@@ -62,8 +67,8 @@ class KMPSearch {
     public static void main(String[] args) {
         String txt = "aabaacaadaabaaba";
         String pat = "aaba";
-        KMPSearch kmp = new KMPSearch(pat);
-        List<Integer> res = kmp.search(txt);
+        PatternMatcher matcher = new KMPSearch(pat);
+        List<Integer> res = matcher.search(txt);
         for (int i = 0; i < res.size(); i++)
             System.out.print(res.get(i) + " ");
     }

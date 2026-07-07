@@ -1,17 +1,23 @@
+import java.util.ArrayList;
+
 /**
  * This class reads from "animals.csv" the information about all the animals
  * that are available to be put in the simulation.
  *
  * @version 2022.02.28
  */
-
-public class AnimalCSVReader extends CSVReader
+public class AnimalCSVReader
 {
     // Path to the file holding the animal related data.
     private static final String FILE_NAME = "animals.csv";
     // String to be recognized as a boolean value of true.
     private static final String TRUE_SYMBOL = "true";
-    // tru if the animal is a predator.
+    // Centralised CSV file I/O.
+    private final ConfigurationLoader loader;
+    // Tool to alert user about any potential error.
+    private final ErrorThrower errorThrower;
+
+    // true if the animal is a predator.
     private boolean isPredator;
     // Animal's name.
     private String name;
@@ -35,36 +41,49 @@ public class AnimalCSVReader extends CSVReader
     private boolean hibernates;
     // Whether an animal is nocturnal.
     private boolean isNocturnal;
-    // Tool to alert user about any potential error.
-    private ErrorThrower errorThrower;
 
     /**
-     * Builds an AnimalCSVReader and initializes field.
+     * Builds an AnimalCSVReader and initializes its fields.
      */
-    public AnimalCSVReader() {
+    public AnimalCSVReader()
+    {
+        loader = new ConfigurationLoader();
         errorThrower = new ErrorThrower();
-        isPredator = false;
-        name = null;
-        maximumTemperature = 0;
-        minimumTemperature = 0;
-        maximumAge = 0;
-        breedingAge = 0;
-        breedingProbability = 0;
-        maxLitterSize = 0;
-        nutritionalValue = 0;
-        strength = 0;
-        hibernates = false;
-        isNocturnal = false;
-
+        resetParameters();
     }
 
     /**
-     * Populated fields with the data read from the files. This method overrides
-     * a method of the CSVReader parent class and is therefore called after reading the data.
+     * Load and parse the row for the named animal from the CSV file.
      *
-     * @param extractedData (String[]) The data read.
+     * @param animalName (String) The animal name to look up.
      */
-    protected void populateFields(String[] extractedData)
+    public void extractDataFor(String animalName)
+    {
+        resetParameters();
+        String[] data = loader.loadRow(FILE_NAME, animalName);
+        if (data != null) {
+            populateFields(data);
+        } else {
+            System.out.println("ERROR: no data could be read for " + animalName);
+        }
+    }
+
+    /**
+     * Return the list of animal names available in the CSV file.
+     *
+     * @return (ArrayList<String>) All animal names.
+     */
+    public ArrayList<String> getChoicesList()
+    {
+        return loader.loadNames(FILE_NAME);
+    }
+
+    /**
+     * Parse a raw CSV row into the typed fields of this reader.
+     *
+     * @param extractedData (String[]) The raw CSV row.
+     */
+    private void populateFields(String[] extractedData)
     {
         if (extractedData.length != 12) {
             errorThrower.throwMessage("Animal .csv issue, please restart.");
@@ -83,18 +102,16 @@ public class AnimalCSVReader extends CSVReader
         strength = Integer.valueOf(extractedData[9]);
         if (extractedData[10].equals(TRUE_SYMBOL)) {
             hibernates = true;
-            // By default, value is false
         }
         if (extractedData[11].equals(TRUE_SYMBOL)) {
             isNocturnal = true;
-            // By default, value is false
         }
     }
 
     /**
-     * Set all parameters back to their initial values before reading data for another animal.
+     * Reset all fields to their initial values before reading data for another animal.
      */
-    protected void resetParameters()
+    private void resetParameters()
     {
         isPredator = false;
         name = null;
@@ -108,98 +125,41 @@ public class AnimalCSVReader extends CSVReader
         strength = 0;
         hibernates = false;
         isNocturnal = false;
-
     }
 
-    /**
-     * @return (String) The name of the file containing habitat data.
-     */
-    protected String getFileName() {
-        return FILE_NAME;
-    }
+    /** @return (String) The animal's name. */
+    public String getName() { return name; }
 
-    /**
-     * @return (String) The animal's name.
-     */
-    public String getName() {
-        return name;
-    }
+    /** @return (double) Probability that the animal breeds at a given step. */
+    public double getBreedingProbability() { return breedingProbability; }
 
-    /**
-     * @return (double) Probability that the animal breeds at a given step.
-     */
-    public double getBreedingProbability() {
-        return breedingProbability;
-    }
+    /** @return (int) Maximum age animal can live for. */
+    public int getMaximumAge() { return maximumAge; }
 
-    /**
-     * @return (int) Maximum age animal can live for.
-     */
-    public int getMaximumAge() {
-        return maximumAge;
-    }
+    /** @return (int) Maximum temperature animal can survive to. */
+    public int getMaximumTemperature() { return maximumTemperature; }
 
-    /**
-     * @return (int) Maximum temperature animal can survive to.
-     */
-    public int getMaximumTemperature() {
-        return maximumTemperature;
-    }
+    /** @return (int) Minimum age for animal to start breeding. */
+    public int getBreedingAge() { return breedingAge; }
 
-    /**
-     * @return (int) Minimum age for animal to start breeding.
-     */
-    public int getBreedingAge() {
-        return breedingAge;
-    }
+    /** @return (int) Minimum temperature animal can survive to. */
+    public int getMinimumTemperature() { return minimumTemperature; }
 
-    /**
-     * @return (int) Minimum temperature animal can survive to.
-     */
-    public int getMinimumTemperature() {
-        return minimumTemperature;
-    }
+    /** @return (int) Maximum litter size brought by animal in one reproduction. */
+    public int getMaxLitterSize() { return maxLitterSize; }
 
-    /**
-     * @return (int) Maximum litter size brought by animal in one reproduction.
-     */
-    public int getMaxLitterSize() {
-        return maxLitterSize;
-    }
+    /** @return (int) Nutritional value brought when animal is eaten. */
+    public int getNutritionalValue() { return nutritionalValue; }
 
-    /**
-     * @return (int) Nutritional value brought when animal is eaten.
-     */
-    public int getNutritionalValue() {
-        return nutritionalValue;
-    }
+    /** @return (int) Animal's strength (0 if not a predator). */
+    public int getStrength() { return strength; }
 
-    /**
-     * @return (int) Animal's strength (0 if not a predator).
-     */
-    public int getStrength() {
-        return strength;
-    }
+    /** @return (boolean) If animal is a predator. */
+    public boolean isPredator() { return isPredator; }
 
-    /**
-     * @return (boolean) If animal is a predator.
-     */
-    public boolean isPredator() {
-        return isPredator;
-    }
+    /** @return (boolean) Whether or not animal can hibernate. */
+    public boolean canHibernate() { return hibernates; }
 
-    /**
-     * @return (boolean) Whether or not animal can hibernate.
-     */
-    public boolean canHibernate() {
-        return hibernates;
-    }
-
-    /**
-     * @return (boolean) Whether or not animal is nocturnal.
-     */
-    public boolean isNocturnal()
-    {
-        return isNocturnal;
-    }
+    /** @return (boolean) Whether or not animal is nocturnal. */
+    public boolean isNocturnal() { return isNocturnal; }
 }

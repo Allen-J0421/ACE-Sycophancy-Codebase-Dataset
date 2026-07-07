@@ -255,8 +255,7 @@ public abstract class Animal extends LivingOrganism
         int births = 0;
 
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
+        Iterator<Location> it = field.adjacentLocations(getLocation());
 
         while (it.hasNext())
         {
@@ -325,8 +324,7 @@ public abstract class Animal extends LivingOrganism
         boolean surroundingsAreInfected = false;
 
         Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
+        Iterator<Location> it = field.adjacentLocations(getLocation());
 
         while (it.hasNext() && !surroundingsAreInfected)
         {

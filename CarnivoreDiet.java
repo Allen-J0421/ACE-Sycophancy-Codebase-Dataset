@@ -1,5 +1,4 @@
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Dietary behaviour for carnivores: searches adjacent cells for prey,
@@ -17,8 +16,7 @@ public class CarnivoreDiet implements DietaryBehaviour
     @Override
     public Location findFood(Animal self, Field field, SimRandom rand)
     {
-        List<Location> adjacent = field.adjacentLocations(self.getLocation());
-        Iterator<Location> it = adjacent.iterator();
+        Iterator<Location> it = field.adjacentLocations(self.getLocation());
 
         while (it.hasNext())
         {

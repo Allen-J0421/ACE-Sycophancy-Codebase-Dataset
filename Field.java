@@ -1,5 +1,5 @@
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -102,45 +102,57 @@ public class Field
     }
 
     /**
-     * Return a shuffled list of locations adjacent to the given one.
-     * The list will not include the location itself.
-     * All locations will lie within the grid.
+     * Return a shuffled iterator over the locations adjacent to the given one.
+     * The location itself is excluded. All returned locations lie within the grid.
+     *
+     * <p>Positions are stored in paired {@code int[]} arrays and shuffled
+     * in-place with Fisher-Yates (same RNG call sequence as the prior
+     * {@code Collections.shuffle} implementation). {@link Location} objects
+     * are created lazily on each {@link Iterator#next()} call, so callers
+     * that short-circuit avoid allocating objects for unvisited cells.</p>
      *
      * @param location The location from which to generate adjacencies.
-     * @return A list of locations adjacent to that given.
+     * @return An iterator over adjacent locations in random order.
      */
-    public List<Location> adjacentLocations(Location location)
+    public Iterator<Location> adjacentLocations(Location location)
     {
         assert location != null : "Null location passed to adjacentLocations";
-        List<Location> locations = new LinkedList<>();
 
-        if (location != null)
+        int[] rows = new int[8];
+        int[] cols = new int[8];
+        int count  = 0;
+
+        int row = location.getRow();
+        int col = location.getCol();
+
+        for (int roffset = -1; roffset <= 1; roffset++)
         {
-            int row = location.getRow();
-            int col = location.getCol();
-
-            for (int roffset = -1; roffset <= 1; roffset++)
+            int nextRow = row + roffset;
+            if (nextRow >= 0 && nextRow < grid.getDepth())
             {
-                int nextRow = row + roffset;
-
-                if (nextRow >= 0 && nextRow < grid.getDepth())
+                for (int coffset = -1; coffset <= 1; coffset++)
                 {
-                    for (int coffset = -1; coffset <= 1; coffset++)
+                    int nextCol = col + coffset;
+                    if (nextCol >= 0 && nextCol < grid.getWidth() && (roffset != 0 || coffset != 0))
                     {
-                        int nextCol = col + coffset;
-
-                        if (nextCol >= 0 && nextCol < grid.getWidth() && (roffset != 0 || coffset != 0))
-                        {
-                            locations.add(new Location(nextRow, nextCol));
-                        }
+                        rows[count] = nextRow;
+                        cols[count] = nextCol;
+                        count++;
                     }
                 }
             }
-
-            Collections.shuffle(locations, rand.asRandom());
         }
 
-        return locations;
+        // Fisher-Yates in-place shuffle on the int arrays.
+        // Produces the same sequence of nextInt() calls as Collections.shuffle did.
+        for (int i = count - 1; i > 0; i--)
+        {
+            int j      = rand.nextInt(i + 1);
+            int tmpRow = rows[i]; rows[i] = rows[j]; rows[j] = tmpRow;
+            int tmpCol = cols[i]; cols[i] = cols[j]; cols[j] = tmpCol;
+        }
+
+        return new AdjacentIterator(rows, cols, count);
     }
 
     /**
@@ -152,10 +164,12 @@ public class Field
      */
     public List<Location> getFreeAdjacentLocations(Location location, Class objectType)
     {
-        List<Location> free = new LinkedList<>();
+        List<Location> free = new ArrayList<>(8);
+        Iterator<Location> it = adjacentLocations(location);
 
-        for (Location next : adjacentLocations(location))
+        while (it.hasNext())
         {
+            Location next = it.next();
             if (getObjectAt(next, objectType) == null)
             {
                 free.add(next);
@@ -186,7 +200,7 @@ public class Field
      */
     public Location randomAdjacentLocation(Location location)
     {
-        return adjacentLocations(location).get(0);
+        return adjacentLocations(location).next();
     }
 
     /** @return The depth of the field. */
@@ -194,4 +208,30 @@ public class Field
 
     /** @return The width of the field. */
     public int getWidth() { return grid.getWidth(); }
+
+    // -----------------------------------------------------------------------
+
+    /**
+     * Lazy iterator over a pre-shuffled sequence of adjacent cell positions.
+     * Creates {@link Location} objects on demand so callers that short-circuit
+     * avoid allocating objects for cells they never visit.
+     */
+    private static class AdjacentIterator implements Iterator<Location>
+    {
+        private final int[] rows;
+        private final int[] cols;
+        private final int   count;
+        private       int   index;
+
+        AdjacentIterator(int[] rows, int[] cols, int count)
+        {
+            this.rows  = rows;
+            this.cols  = cols;
+            this.count = count;
+            this.index = 0;
+        }
+
+        @Override public boolean  hasNext() { return index < count; }
+        @Override public Location next()    { return new Location(rows[index], cols[index++]); }
+    }
 }

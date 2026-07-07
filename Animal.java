@@ -8,18 +8,15 @@ import java.util.Iterator;
  *
  * @version 2022.02.28
  */
-
 public class Animal extends Species
 {
-    // Fields defining a special kind of animal, they can not be changed after initialization
-
     // The age at which an animal can start to breed.
     private final int breedingAge;
     // The age to which an animal can live.
     private final int maxAge;
     // The maximum number of births at once.
     private final int maxLitterSize;
-    // true if the animal's sex if female
+    // true if the animal's sex is female
     private final boolean isFemale;
     // true if the animal hibernates during cold temperatures
     private final boolean hibernates;
@@ -27,8 +24,6 @@ public class Animal extends Species
     private final boolean isNocturnal;
     // the number of steps that should pass until an animal in hibernation moves
     private static final int STAY_STEPS = 10;
-
-    // Fields prone to change during the animal's life
 
     // The animal's food level
     protected int foodLevel;
@@ -39,9 +34,13 @@ public class Animal extends Species
     // The animal's age.
     private int age;
 
+    // Strategy controlling how this animal finds and consumes food.
+    protected FoodStrategy foodStrategy;
+    // Strategy controlling how this animal reproduces.
+    protected ReproductionStrategy reproductionStrategy;
+
     /**
-     * Create a new animal with given specifications. An animal can be created with random age (or start at age 0) and
-     * with a random foodLevel.
+     * Create a new animal with given specifications.
      *
      * @param field (Field) the field where the simulation takes place
      * @param location (Location) the Location at which the animal should appear
@@ -49,17 +48,21 @@ public class Animal extends Species
      * @param maximumTemperature (int) the maximum temperature the animal can survive to
      * @param minimumTemperature (int) the minimum temperature an animal can survive to
      * @param nutritionalValue (int) the animal's nutritional value
-     * @param reproductionProbability (double) the probability that the animal reproduces at each step after a given minimum breeding age
+     * @param reproductionProbability (double) the probability that the animal reproduces each step
      * @param maxAge (int) the animal's life expectancy
      * @param breedingAge (int) the age at which animal can start to reproduce
-     * @param maxLitterSize (int) the maximum number of children the animal can have in one reproduction
+     * @param maxLitterSize (int) the maximum number of children at once
      * @param randomAge (boolean) whether an animal should be created with a random age
      * @param hibernates (boolean) whether an animal is able to hibernate
      * @param isNocturnal (boolean) whether an animal is more active at night
      */
-    public Animal(Field field, Location location, String name, int maximumTemperature, int minimumTemperature, int nutritionalValue, double reproductionProbability, int maxAge, int breedingAge, int maxLitterSize, boolean randomAge, boolean hibernates, boolean isNocturnal)
+    public Animal(Field field, Location location, String name, int maximumTemperature,
+                  int minimumTemperature, int nutritionalValue, double reproductionProbability,
+                  int maxAge, int breedingAge, int maxLitterSize, boolean randomAge,
+                  boolean hibernates, boolean isNocturnal)
     {
-        super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue, reproductionProbability);
+        super(field, location, name, maximumTemperature, minimumTemperature, nutritionalValue,
+                reproductionProbability);
 
         this.breedingAge = breedingAge;
         this.maxAge = maxAge;
@@ -67,7 +70,6 @@ public class Animal extends Species
         this.isFemale = randomSex();
         this.hibernates = hibernates;
         this.isNocturnal = isNocturnal;
-        // Default value is nutritionalValue to simulate the nutriment apart from the mother's milk/ other parental feeding.
         this.foodLevel = randomFoodLevel();
         inHibernation = false;
         hiberSteps = 0;
@@ -77,67 +79,46 @@ public class Animal extends Species
         } else {
             age = 0;
         }
+
+        foodStrategy = new PlantFoodStrategy();
+        reproductionStrategy = new AnimalReproductionStrategy();
     }
 
     /**
-     * Imitate an animal's step by doing the following:
-     * 1) increment the animal's age if a year has passed.
-     * 2) if the animal is alive, then:
-     *      i) check if the animal should hibernate.
-     *      ii) if the animal is in hibernation, then:
-     *          a) if it passed STAY_STEPS steps without moving, then move and increment hunger.
-     *          b) increment hiberSteps.
-     *      iii) if the animal can't withstand the current temperature, then it dies.
-     *      iv) if the animal is not in hibernation, then:
-     *          a) if it is night and the animal is nocturnal, then move.
-     *          b) if it is day, then all animals move and increment hunger.
+     * Imitate an animal's step:
+     * 1) increment age if a year has passed.
+     * 2) if alive: check hibernation, handle temperature death, gate movement
+     *    by day/night and nocturnal flag.
      *
      * @param newSpecies (List<Species>) A list to receive newly born animals.
      * @param isNight (boolean) true if it is night in the simulation
      * @param temperature (int) the current temperature of the simulation
-     * @param yearPassed true if a year has passed in the simulation
+     * @param yearPassed (boolean) true if a year has passed in the simulation
      */
     public void act(List<Species> newSpecies, boolean isNight, int temperature, boolean yearPassed)
     {
-        // 1)
         if (yearPassed) {
             incrementAge();
         }
 
-        // 2)
-        if(isAlive())
-        {
-            // i)
+        if (isAlive()) {
             checkHibernation(temperature);
-            
-            // ii)
-            if (inHibernation)
-            {
-                // a)
-                if (hiberSteps % STAY_STEPS == 0)   {
+
+            if (inHibernation) {
+                if (hiberSteps % STAY_STEPS == 0) {
                     makeMove(newSpecies);
                     incrementHunger();
                 }
-                // b)
                 incrementHiberSteps();
-            }
-            // iii)
-            else if (! survivesTemperature(temperature))
-            {
+            } else if (!survivesTemperature(temperature)) {
                 setDead();
-            }
-            // iv)
-            else
-            {
-                // a)
+            } else {
                 if (isNight && isNocturnal) {
                     makeMove(newSpecies);
-                }
-                // b)
-                else if (! isNight) {
+                } else if (!isNight) {
                     makeMove(newSpecies);
                 }
-                if  (! isNight) {
+                if (!isNight) {
                     incrementHunger();
                 }
             }
@@ -145,41 +126,54 @@ public class Animal extends Species
     }
 
     /**
-     * An animal's movement. It first tries to reproduce, then to eat if a plant is in one of the neighboring cells and finally to move
-     * if an adjacent cell is available. If no adjacent cell is available, it dies of overcrowding.
+     * Execute one movement cycle:
+     * 1) Call beforeMove() — a hook for subclass pre-move actions (e.g. attack check).
+     * 2) If still alive: reproduce if possible, find food via foodStrategy, move to
+     *    a free adjacent cell, or die of overcrowding.
      *
      * @param newSpecies (List<Species>) A list to receive newly born animals.
      */
     protected void makeMove(List<Species> newSpecies)
     {
-        ArrayList<Animal> neighboringAnimalsList = getNeighboringAnimalsList();
+        ArrayList<Animal> neighbors = getNeighboringAnimalsList();
+        beforeMove(neighbors);
 
-        if (canReproduce(neighboringAnimalsList)) {
+        if (!isAlive()) {
+            return;
+        }
+
+        if (canReproduce(neighbors)) {
             reproduce(newSpecies);
         }
 
-        // Eats if it is possible
+        Location newLocation = null;
         if (isNotFull()) {
-            findFoodAndEat();
+            newLocation = foodStrategy.findFoodAndEat(this, neighbors);
         }
 
-        // Find a free location in adjacent cells
-        Location newLocation = getField().freeAdjacentLocation(getLocation());
+        if (newLocation == null) {
+            newLocation = getField().freeAdjacentLocation(getLocation());
+        }
 
-        // See if it was possible to move.
-        if(newLocation != null) {
+        if (newLocation != null) {
             setLocation(newLocation);
-        }
-        else {
-            // Overcrowding.
+        } else {
             setDead();
         }
     }
 
     /**
+     * Hook called at the start of makeMove() before any reproduce/eat/move logic.
+     * No-op for base Animal; Predator overrides this to run its attack check.
+     *
+     * @param neighbors (ArrayList<Animal>) Live animals in adjacent cells.
+     */
+    protected void beforeMove(ArrayList<Animal> neighbors) { }
+
+    /**
      * Returns a list of animals located in neighboring cells.
      *
-     * @return (ArrayList) list of neighboring animals
+     * @return (ArrayList<Animal>) list of neighboring animals
      */
     protected ArrayList<Animal> getNeighboringAnimalsList()
     {
@@ -188,11 +182,9 @@ public class Animal extends Species
         Iterator<Location> locationIterator = adjacent.iterator();
 
         ArrayList<Animal> neighboringAnimals = new ArrayList<>();
-        while (locationIterator.hasNext())
-        {
+        while (locationIterator.hasNext()) {
             Location where = locationIterator.next();
             Object species = field.getObjectAt(where);
-
             if (species instanceof Animal) {
                 Animal neighboringAnimal = (Animal) species;
                 if (neighboringAnimal.isAlive()) {
@@ -204,12 +196,23 @@ public class Animal extends Species
     }
 
     /**
+     * Delegate reproduction to the reproductionStrategy, satisfying the abstract
+     * method declared in Species.
+     *
+     * @param newOfThisKind (List<Species>) List of Species for the newborns.
+     */
+    void reproduce(List<Species> newOfThisKind)
+    {
+        reproductionStrategy.reproduce(this, newOfThisKind);
+    }
+
+    /**
      * Increase the age. This could result in the animal's death.
      */
     protected void incrementAge()
     {
         age++;
-        if(age > maxAge) {
+        if (age > maxAge) {
             setDead();
         }
     }
@@ -220,21 +223,21 @@ public class Animal extends Species
     protected void incrementHunger()
     {
         foodLevel--;
-        if(foodLevel <= 0) {
+        if (foodLevel <= 0) {
             setDead();
         }
     }
-    
+
     /**
-     * @return (boolean) true if the animal is not full and therefore can eat and false if it is full.
+     * @return (boolean) true if the animal can still eat more.
      */
     protected boolean isNotFull()
     {
-        return foodLevel < getNutritionalValue()*1.5;
+        return foodLevel < getNutritionalValue() * 1.5;
     }
-    
+
     /**
-     * Increment hiberSteps by 1
+     * Increment hiberSteps by 1.
      */
     protected void incrementHiberSteps()
     {
@@ -242,48 +245,17 @@ public class Animal extends Species
     }
 
     /**
-     * Look for plants adjacent to the current location.
-     * Only the first plant is eaten.
-     */
-    private void findFoodAndEat()
-    {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-
-        while(it.hasNext())
-        {
-            Location where = it.next();
-            Object species = field.getObjectAt(where); // change in Field
-            if(species instanceof Plant)
-            {
-                Plant plantSquare = (Plant) species;
-                if(plantSquare.isAlive()) {
-                    plantSquare.isEaten();
-                    incrementFoodLevel(plantSquare.getNutritionalValue());
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * If the animal is a female, check if a male of the same species is in one of the neighboring cells. If it is the case, animal is able to reproduce
-     *  and should go to the cel where the male is.
-     *  Note: The task of reproducing is handled only by females so that the same reproduction can not happen twice in the same simulator step.
+     * If the animal is a female, check if a male of the same species is in one
+     * of the neighboring cells.
      *
-     * @param  neighboringAnimalsList (ArrayList<Animal>) Array List of the Animal objects located in neighboring cells.
-     * @return (boolean) if animal can reproduce.
-     *
+     * @param neighboringAnimalsList (ArrayList<Animal>) Neighboring live animals.
+     * @return (boolean) true if animal can reproduce.
      */
     protected boolean canReproduce(ArrayList<Animal> neighboringAnimalsList)
     {
-        // task to reproduce is handed to women only so that the same reproduction does not happen twice
-        if (this.isFemale)
-        {
+        if (this.isFemale) {
             for (Animal neighbor : neighboringAnimalsList) {
                 if (!neighbor.isFemale && neighbor.getName().equals(this.getName())) {
-                    // The neighbor is a male of the same species
                     return true;
                 }
             }
@@ -292,56 +264,31 @@ public class Animal extends Species
     }
 
     /**
-     * Creates the appropriate number of animals of the same species. These new animals of course share the same features as their "parent"
-     * except the sex which is randomized,  their age and foodLevel are not randomized.
-     *
-     * @param  speciesInSimulation (List<Species>) List of Species objects in the simulation for the newborns to be added to it.
-     */
-    protected void reproduce(List<Species> speciesInSimulation)
-    {
-        Field field = getField();
-        if (field != null)
-        {
-            List<Location> free = field.getFreeAdjacentLocations(getLocation());
-            int births = numberOfBirths();
-            for(int b = 0; b < births && free.size() > 0; b++) {
-                Location loc = free.remove(0);
-                Animal young = new Animal(field, loc, getName(), getMaximumTemperature(), getMinimumTemperature(), getNutritionalValue(), getReproductionProbability(), maxAge, breedingAge, maxLitterSize,false, hibernates, isNocturnal);
-                speciesInSimulation.add(young);
-            }
-        }
-    }
-
-    /**
      * Returns a random boolean to randomize the sex of newborns.
-     *
-     * @return true if female, otherwise false (male)
      */
     private boolean randomSex()
     {
         return Math.random() <= 0.5;
     }
-    
+
     /**
-     * Return a random foodLevel more than the animal's nutritional value divided by half.
-     *
-     * @return (int) the foodLevel.
+     * Return a random foodLevel above half the animal's nutritional value.
      */
     private int randomFoodLevel()
     {
-        int lowBound = getNutritionalValue()/2;
+        int lowBound = getNutritionalValue() / 2;
         return rand.nextInt(lowBound) + lowBound;
     }
 
     /**
-     * Generate a number representing the number of births, if it can breed.
+     * Generate the number of births for this reproduction event.
      *
      * @return (int) The number of births (can be zero).
      */
     protected int numberOfBirths()
     {
         int births = 0;
-        if(canGiveBirth() && rand.nextDouble() <= getReproductionProbability()) {
+        if (canGiveBirth() && rand.nextDouble() <= getReproductionProbability()) {
             births = rand.nextInt(maxLitterSize) + 1;
         }
         return births;
@@ -356,73 +303,43 @@ public class Animal extends Species
     }
 
     /**
-     * Check if the animal should be in hibernation.
+     * Update the hibernation state based on current temperature.
      *
-     * Change inHibernation to true if the animal can hibernate
-     * and the current temperature is less than or equal the
-     * minimum temperature of the animal + 5
-     *
-     * @param currentTemperature (int) the current temperature of the simulation
+     * @param currentTemperature (int) the current simulation temperature
      */
     protected void checkHibernation(int currentTemperature)
     {
-        if (hibernates && currentTemperature <= getMinimumTemperature() + 5)  {
+        if (hibernates && currentTemperature <= getMinimumTemperature() + 5) {
             inHibernation = true;
-        }
-        else {
+        } else {
             inHibernation = false;
             hiberSteps = 0;
         }
     }
 
-    /**
-     * @return (int) The maximum age to which an animal can live
-     */
-    protected int getMaxAge ()
-    {
-        return maxAge;
-    }
+    /** @return (int) The maximum age to which an animal can live */
+    protected int getMaxAge() { return maxAge; }
+
+    /** @return (int) The age at which an animal can start to breed */
+    protected int getBreedingAge() { return breedingAge; }
+
+    /** @return (int) The maximum number of births at once */
+    protected int getMaxLitterSize() { return maxLitterSize; }
+
+    /** @return (boolean) true if the animal hibernates */
+    protected boolean getHibernates() { return hibernates; }
+
+    /** @return (boolean) true if the animal is active at night */
+    protected boolean getIsNocturnal() { return isNocturnal; }
 
     /**
-     * @return (int) The age at which an animal can start to breed
-     */
-    protected int getBreedingAge ()
-    {
-        return breedingAge;
-    }
-
-    /**
-     * @return (int) The maximum number of births at once
-     */
-    protected int getMaxLitterSize ()
-    {
-        return maxLitterSize;
-    }
-
-    /**
-     * @return (boolean) true if the animal hibernates
-     */
-    protected boolean getHibernates()
-    {
-        return hibernates;
-    }
-
-    /**
-     * @return (boolean) true if the animal is active at night
-     */
-    protected boolean getIsNocturnal()
-    {
-        return isNocturnal;
-    }
-
-    /**
-     * Increments the animal's food level by a given number (the nutritional value of the food he just ate).
-     * It is public because a predator's food level can be incremented another predator in the case that it attacks it.
+     * Increment the animal's food level by the given value.
+     * Public so predators can share nutritional value after killing prey.
      *
-     * @param value (int) the number to increment foodLevel by.
+     * @param value (int) the amount to add to foodLevel.
      */
-    public void incrementFoodLevel(int value) {
+    public void incrementFoodLevel(int value)
+    {
         foodLevel += value;
     }
-
 }

@@ -1,7 +1,3 @@
-import java.util.Random;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.awt.Color;
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -24,9 +20,8 @@ public class Simulator
                                    STATE
     //////////////////////////////////////////////////////////////*/
     
-    // List of animals in the field.
-    private List<Actor> animals;
-    private List<Actor> plants;
+    // Manages the lifecycle of all actors (animals and plants).
+    private ActorManager actorManager;
     // The current state of the field.
     private Field field;
     
@@ -74,8 +69,7 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
-        animals = new ArrayList<>();
-        plants = new ArrayList<>();
+        actorManager = new ActorManager();
         field = new Field(depth, width);
         clock = new SimulatorClock();
         weatherHandler = new WeatherHandler(clock);
@@ -136,12 +130,8 @@ public class Simulator
         weatherHandler.updateWeather();
         diseaseHandler.simulateDiseaseStep();
         
-        List<Actor> newAnimals = new ArrayList<>();
-        List<Actor> newPlants = new ArrayList<>();
-        
-        actorsAct(plants, newPlants);
-        actorsAct(animals, newAnimals);        
-        
+        actorManager.stepAll(weatherHandler.getWeather(), clock.getDayState());
+
         view.showStatus(step, field, clock, weatherHandler.getWeather());
 
         if(dashboard != null) {
@@ -155,29 +145,11 @@ public class Simulator
     public void reset()
     {
         step = 0;
-        animals.clear();
-        plants.clear();
-        populationGenerator.populate(animals, plants);
+        actorManager.clear();
+        populationGenerator.populate(actorManager.getAnimals(), actorManager.getPlants());
         
         // Show the starting state in the view.
         view.showStatus(step, field, clock, weatherHandler.getWeather());
-    }
-    
-    /**
-     * Iterates through a set of actors and makes them act, die if they are dead and subsequently adds the newborns.
-     * 
-     * @param actors List of all actors in the field.
-     * @param newActors List of newborns after actors act.
-     */
-    private void actorsAct(List<Actor> actors, List<Actor> newActors) {
-        for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
-            Actor actor = it.next();
-            actor.act(newActors, weatherHandler.getWeather(), clock.getDayState());
-            if(! actor.isAlive()) {
-                it.remove();
-            }
-        }
-        actors.addAll(newActors);
     }
     
     /**

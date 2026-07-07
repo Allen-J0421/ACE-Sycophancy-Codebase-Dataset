@@ -40,8 +40,8 @@ public class SimulatorView extends JFrame
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
     
-    // A statistics object computing and storing simulation information
-    private FieldStats stats;
+    // Tracks population counts and health tallies across simulation steps.
+    private StatisticsTracker tracker;
 
     /**
      * Create a view of the given width and height.
@@ -51,8 +51,8 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width, JButton[] buttons)
     {
-        stats = new FieldStats();
-        colors = new LinkedHashMap<>();
+        tracker = new StatisticsTracker();
+        colors  = new LinkedHashMap<>();
 
         setTitle("Savannah Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -215,66 +215,42 @@ public class SimulatorView extends JFrame
         if(!isVisible()) {
             setVisible(true);
         }
-            
+
+        tracker.update(field);
+
         stepLabel.setText(STEP_PREFIX + Time.getStep());
         timeLabel.setText(TIME_PREFIX + getTimeString());
         weatherLabel.setText(WEATHER_PREFIX + Weather.getWeather() + "  ");
-        stats.reset();
-        
+
         fieldView.preparePaint();
-        
-        // Used to tally up the respective counts.
-        int numberOfInfected = 0;
-        int numberOfImmune = 0;
-        
-        for(int row = 0; row < field.getDepth(); row++) 
+
+        for(int row = 0; row < field.getDepth(); row++)
         {
-            for(int col = 0; col < field.getWidth(); col++) 
+            for(int col = 0; col < field.getWidth(); col++)
             {
                 Animal animal = (Animal) field.getObjectAt(row, col, Animal.class);
-                Plant plant = (Plant) field.getObjectAt(row, col, Plant.class);
-                
-                if(animal != null) 
+                Plant  plant  = (Plant)  field.getObjectAt(row, col, Plant.class);
+
+                if(animal != null)
                 {
-                    stats.incrementCount(animal.getClass());
                     fieldView.drawMark(col, row, getColor(animal.getClass()));
-                    
-                    // Update the infected and immune counts
-                    if (animal.getIsInfected())
-                    {
-                        numberOfInfected++;
-                    }
-                    
-                    if (animal.getIsImmune())
-                    {
-                        numberOfImmune++;
-                    }
                 }
-                // Only show the plant if an animal is not present
-                else if(plant != null) 
+                else if(plant != null)
                 {
                     fieldView.drawMark(col, row, getColor(plant.getClass()));
                 }
-                else 
+                else
                 {
                     Color emptyColor = EMPTY_COLOR;
                     fieldView.drawMark(col, row, emptyColor);
                     fieldView.setBackground(emptyColor);
                 }
-                
-                if (plant != null) 
-                {
-                   stats.incrementCount(plant.getClass()); 
-                }
             }
         }
-        
-        stats.countFinished();
-        
-        infectedLabel.setText(INFECTED_PREFIX + numberOfInfected);
-        immuneLabel.setText(IMMUNE_PREFIX + numberOfImmune);
 
-        population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
+        infectedLabel.setText(INFECTED_PREFIX + tracker.getInfectedCount());
+        immuneLabel.setText(IMMUNE_PREFIX + tracker.getImmuneCount());
+        population.setText(POPULATION_PREFIX + tracker.getPopulationDetails());
         fieldView.repaint();
     }
 
@@ -287,7 +263,7 @@ public class SimulatorView extends JFrame
      */
     public boolean isViable(Field field)
     {
-        return stats.isViable(field);
+        return tracker.isViable();
     }
     
     /**

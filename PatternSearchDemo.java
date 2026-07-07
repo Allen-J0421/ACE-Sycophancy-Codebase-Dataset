@@ -6,7 +6,7 @@ public class PatternSearchDemo {
         String txt = "aabaacaadaabaaba";
         String pat = "aaba";
 
-        PatternSearcher searcher = new NaivePatternSearch(pat);
+        PatternSearcher searcher = PatternSearchFactory.create(pat);
         List<Integer> res = searcher.search(txt);
 
         for (int it : res) {

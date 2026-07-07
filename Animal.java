@@ -291,7 +291,7 @@ public abstract class Animal extends LivingOrganism
      *
      * @return Returns the new animal
      */
-    protected Animal createNewOffspring(Class classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
+    protected Animal createNewOffspring(Class<?> classOfAnimal, List<Location> free, boolean motherIsInfected, boolean motherIsImmune, int motherFoodLevel)
     {
         Location loc = free.remove(0);
 

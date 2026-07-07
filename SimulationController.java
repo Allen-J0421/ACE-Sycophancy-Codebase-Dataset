@@ -35,13 +35,8 @@ public class SimulationController {
      */
     public void stepAnimals(int time) {
         List<Animal> newAnimals = new ArrayList<>();
-        for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
-            Animal animal = it.next();
-            animal.act(newAnimals, time);
-            if(!animal.isAlive()) {
-                it.remove();
-            }
-        }
+        animals.forEach(a -> a.act(newAnimals, time));
+        animals.removeIf(a -> !a.isAlive());
         animals.addAll(newAnimals);
     }
 
@@ -50,13 +45,8 @@ public class SimulationController {
      */
     public void stepPlants() {
         List<Plant> newPlants = new ArrayList<>();
-        for(Iterator<Plant> it = plants.iterator(); it.hasNext(); ) {
-            Plant plant = it.next();
-            plant.act(newPlants);
-            if(!plant.isAlive()) {
-                it.remove();
-            }
-        }
+        plants.forEach(p -> p.act(newPlants));
+        plants.removeIf(p -> !p.isAlive());
         plants.addAll(newPlants);
     }
 

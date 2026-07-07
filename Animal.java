@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -239,17 +238,11 @@ public abstract class Animal implements GridOccupant
      * in adjacent locations
      */
     protected void spreadDisease() {
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if(animal instanceof Animal) {
-                Animal diseaseAnimal = (Animal) animal;
-                diseaseAnimal.giveDisease();
-                diseaseAnimal.decrementHealth();
-            }
-        }
+        field.adjacentLocations(getLocation()).stream()
+            .map(field::getObjectAt)
+            .filter(Animal.class::isInstance)
+            .map(Animal.class::cast)
+            .forEach(a -> { a.giveDisease(); a.decrementHealth(); });
     }
 
     /**
@@ -279,24 +272,12 @@ public abstract class Animal implements GridOccupant
      * @retyrn true if the animal can breed, false if it can not
      */
     protected boolean giveBirth(int BREEDING_AGE) {
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location where = it.next();
-            Object animal = field.getObjectAt(where);
-            if (animal != null) {
-                if (animal.getClass() == this.getClass()) {
-                    Animal adjAnimal = (Animal) animal;
-                    if (this.getGender() != adjAnimal.getGender()) {
-                        if (age >= BREEDING_AGE) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return age >= BREEDING_AGE &&
+            getField().adjacentLocations(getLocation()).stream()
+                .map(field::getObjectAt)
+                .filter(o -> o != null && o.getClass() == this.getClass())
+                .map(o -> (Animal) o)
+                .anyMatch(a -> this.getGender() != a.getGender());
     }
 
 

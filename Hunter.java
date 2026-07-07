@@ -5,7 +5,7 @@ import java.util.*;
  * Hunters hunt all of the species in the simulation.
  * @version 2022.03.02
  */
-public class Hunter implements Actor
+public class Hunter implements Actor, Tickable
 {
     private static boolean alive;
     private Field field;
@@ -40,9 +40,18 @@ public class Hunter implements Actor
     }
 
     /**
-     * Makes the hunter hunt for nearby animals. 
-     * @param environment The environment that the hunter resides in. 
-     * @param newActors A list to receive new actors. 
+     * One lifecycle step: hunters have no sleep cycle or growth, so tick
+     * simply delegates to act().
+     */
+    public void tick(int step, List<Actor> newActors, Environment environment)
+    {
+        act(newActors, environment);
+    }
+
+    /**
+     * Makes the hunter hunt for nearby animals.
+     * @param environment The environment that the hunter resides in.
+     * @param newActors A list to receive new actors.
      */
     public void act(List<Actor> newActors, Environment environment)
     {

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
  *
  * @version 2022.03.02
  */
-public abstract class Animal extends Organism implements Actor
+public abstract class Animal extends Organism implements Actor, Tickable
 {
     protected boolean isNocturnal;
     protected Gender sex;
@@ -95,6 +95,21 @@ public abstract class Animal extends Organism implements Actor
                 setDead();
             }
 
+        }
+    }
+
+    /**
+     * One lifecycle step: skip if asleep, apply pre-act disease propagation death,
+     * then delegate to act(). Eagle and any other subclass that overrides act() are
+     * handled transparently via polymorphism.
+     */
+    public void tick(int step, List<Actor> newActors, Environment environment)
+    {
+        if(isAwake(environment)) {
+            if(isDiseased() && getDisease().getPropagationRate() <= rand.nextDouble()) {
+                setDead();
+            }
+            act(newActors, environment);
         }
     }
 

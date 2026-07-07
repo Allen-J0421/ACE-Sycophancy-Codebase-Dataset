@@ -70,24 +70,7 @@ public class SimulationEngine
         List<Actor> newActors = new ArrayList<>();
         for(Iterator<Actor> it = actors.iterator(); it.hasNext(); ) {
             Actor actor = it.next();
-            if(actor instanceof Animal) {
-                if(((Animal) actor).isAwake(environment)) {
-                    if(((Animal) actor).isDiseased() && ((Animal) actor).getDisease().getPropagationRate() <= rand.nextDouble()) {
-                        ((Animal) actor).setDead();
-                    }
-                    actor.act(newActors, environment);
-                }
-            }
-            else {
-                actor.act(newActors, environment);
-            }
-
-            if(actor instanceof Plant) {
-                if(step % ((Plant) actor).STEPS_PER_STAGE() == 0) {
-                    ((Plant) actor).incrementGrowth();
-                }
-            }
-
+            ((Tickable) actor).tick(step, newActors, environment);
             if(!actor.isAlive()) {
                 it.remove();
             }

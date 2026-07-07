@@ -37,6 +37,32 @@ public abstract class Animal extends Actor
     }
 
     /**
+     * Shared constructor helper: sets age, food level, and initial growth.
+     *
+     * baseFoodValue is added unconditionally first (0 for predators,
+     * initialFoodValue for prey that pre-set a default before randomising).
+     * foodCap is the upper bound for the random food roll and, combined with
+     * baseFoodValue, determines the non-random food level via (foodCap - baseFoodValue).
+     *
+     * @param randomAge      If true, assign random age and extra food; otherwise use defaults.
+     * @param baseFoodValue  Food added unconditionally before the if/else (0 for predators).
+     * @param foodCap        Upper bound for random food; non-random food = foodCap - baseFoodValue.
+     * @param growthDivisor  Divisor for the age-based initial growth level.
+     */
+    protected void initialise(boolean randomAge, int baseFoodValue, int foodCap, double growthDivisor)
+    {
+        setFoodLevel(baseFoodValue);
+        if (randomAge) {
+            setAge(getRandom().nextInt(getMaxAge()));
+            setFoodLevel(getRandom().nextInt(foodCap));
+        } else {
+            setAge(0);
+            setFoodLevel(foodCap - baseFoodValue);
+        }
+        setGrowthLevel(getAge() / growthDivisor);
+    }
+
+    /**
      * Make this animal act - that is: make it do
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.

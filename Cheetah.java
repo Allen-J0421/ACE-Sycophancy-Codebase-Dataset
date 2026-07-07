@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.HashMap;
 /**
  * A simple model of a Cheetah.
@@ -46,16 +45,8 @@ public class Cheetah extends Predator
     public Cheetah(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            setAge(getRandom().nextInt(MAX_AGE));
-            setFoodLevel(getRandom().nextInt(ZEBRA_FOOD_VALUE));
-        }
-        else {
-            setAge(0);
-            setFoodLevel(ZEBRA_FOOD_VALUE);
-        }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/102.0);
+        initialise(randomAge, 0, ZEBRA_FOOD_VALUE, 102.0);
         addFood(field);
     }
 

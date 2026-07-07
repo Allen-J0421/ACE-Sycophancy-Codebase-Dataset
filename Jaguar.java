@@ -1,5 +1,4 @@
 
-import java.util.Random;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,16 +44,8 @@ public class Jaguar extends Predator
     public Jaguar(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            setAge(getRandom().nextInt(MAX_AGE));
-            setFoodLevel(getRandom().nextInt(GAZELLE_FOOD_VALUE));
-        }
-        else {
-            setAge( 0);
-            setFoodLevel(GAZELLE_FOOD_VALUE);
-        }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/89.0);
+        initialise(randomAge, 0, GAZELLE_FOOD_VALUE, 89.0);
         addFood(field);
     }
 

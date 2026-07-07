@@ -1,6 +1,5 @@
 import java.util.List;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.HashMap;
 
 /**
@@ -49,16 +48,8 @@ public class Lion extends Predator
     public Lion(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        if(randomAge) {
-            setAge(getRandom().nextInt(MAX_AGE));
-            setFoodLevel(getRandom().nextInt(PREY_CHEETAH_FOOD_VALUE));
-        }
-        else {
-            setAge( 0);
-            setFoodLevel(PREY_CHEETAH_FOOD_VALUE);
-        }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/100.0);
+        initialise(randomAge, 0, PREY_CHEETAH_FOOD_VALUE, 100.0);
         addFood(field);
     }
 

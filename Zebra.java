@@ -1,6 +1,5 @@
 
 import java.util.List;
-import java.util.Random;
 import java.util.Iterator;
 import java.util.HashMap;
 
@@ -46,15 +45,9 @@ public class Zebra extends Animal
     public Zebra(boolean randomAge, Field field, Location location)
     {
         super(field, location);
-        setAge(0);
-        setFoodLevel(GRASS_FOOD_VALUE);
-        if(randomAge) {
-            setAge(getRandom().nextInt(MAX_AGE));
-            setFoodLevel(getRandom().nextInt(GRASS_FOOD_VALUE));
-        }
         food = new HashMap<>();
-        setGrowthLevel(getAge()/67.0);
-        addFood( field);
+        initialise(randomAge, GRASS_FOOD_VALUE, GRASS_FOOD_VALUE, 67.0);
+        addFood(field);
     }
 
     /**

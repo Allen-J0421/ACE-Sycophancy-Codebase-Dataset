@@ -102,11 +102,11 @@ public class Lion extends Predator
     }
 
     /**
-     * Returns the current lion occupying the location.
-     * @return the current lion.
+     * Creates a new Lion offspring at the given location.
+     * @return A new Lion.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location loc){
+        return new Lion(false, field, loc);
     }
 
     /**

@@ -103,25 +103,21 @@ public abstract class Animal extends Actor
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Animal young = getAnimal();
-            Animal baby = null;
-            if(young instanceof Gazelle){
-                baby = new Gazelle(false, field, loc);
-            }else if(young instanceof Jaguar){
-                baby = new Jaguar(false, field, loc);
-            }else if(young instanceof Cheetah){
-                baby = new Cheetah(false, field, loc);
-            }else if(young instanceof Lion){
-                baby = new Lion(false, field, loc);
-            }else if(young instanceof Zebra){
-                baby = new Zebra(false, field, loc);
-            }
+            Animal baby = reproduce(field, loc);
             if(!getHealth()){
-                baby.setUnhealthy(); //setting the baby to be unhealthy if the parent is unhealthy.
+                baby.setUnhealthy();
             }
             newAnimals.add(baby);
         }
     }
+
+    /**
+     * Create a new instance of the same species at the given location.
+     * @param field The field the offspring will inhabit.
+     * @param loc The location for the offspring.
+     * @return A new Animal of the same species.
+     */
+    abstract protected Animal reproduce(Field field, Location loc);
 
     /**
      * Generate a number representing the number of births,
@@ -148,15 +144,14 @@ public abstract class Animal extends Actor
         Field field = getField();
         List<Location> adjacent = field.adjacentLocations(getLocation());
         Iterator<Location> it = adjacent.iterator();
-        Animal currentAnimal = getAnimal();
         while(it.hasNext()) {
             Location where = it.next();
             Object animal = field.getObjectAt(where);
-            if (animal != null && animal.getClass() == currentAnimal.getClass()){
+            if (animal != null && animal.getClass() == this.getClass()){
                 Animal mate = (Animal) animal;
-                if(isActive() && currentAnimal.getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
-                    if(!currentAnimal.getHealth() || !mate.getHealth()){
-                        currentAnimal.setUnhealthy();
+                if(isActive() && getIsGirl() && !mate.getIsGirl() && mate.canBreed()){
+                    if(!getHealth() || !mate.getHealth()){
+                        setUnhealthy();
                         mate.setUnhealthy();
                     }
                     return true;
@@ -177,12 +172,6 @@ public abstract class Animal extends Actor
      * @return max litter size of the animal.
      */
     abstract protected int getMaxLitterSize();
-
-    /**
-     * Returns the current animal occupying the location.
-     * @return the current animal.
-     */
-    abstract protected Animal getAnimal();
 
     /**
      * Returns the animal's current food level.

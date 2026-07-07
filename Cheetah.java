@@ -99,11 +99,11 @@ public class Cheetah extends Predator
     }
 
     /**
-     * Returns the current cheetah occupying the location.
-     * @return the current cheetah.
+     * Creates a new Cheetah offspring at the given location.
+     * @return A new Cheetah.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location loc){
+        return new Cheetah(false, field, loc);
     }
 
     /**

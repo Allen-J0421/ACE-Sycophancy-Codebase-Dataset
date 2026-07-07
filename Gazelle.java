@@ -113,11 +113,11 @@ public class Gazelle extends Animal
     }
 
     /**
-     * Returns the current gazelle occupying the location.
-     * @return the current gazelle.
+     * Creates a new Gazelle offspring at the given location.
+     * @return A new Gazelle.
      */
-    protected Animal getAnimal(){
-        return this;
+    protected Animal reproduce(Field field, Location loc){
+        return new Gazelle(false, field, loc);
     }
 
     /**

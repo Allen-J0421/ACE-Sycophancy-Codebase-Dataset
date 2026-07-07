@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * A simple model of a whale.
@@ -21,14 +20,8 @@ public class Whale extends Animal
     private static final double BREEDING_PROBABILITY = 0.2;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 8;
-    // The food value of a single Cod. In effect, this is the
-    // number of steps a whale can go before it has to eat again.
-    private static final int COD_FOOD_VALUE = 8;
-    private static final int SALMON_FOOD_VALUE = 8;
-
-    // Individual characteristics (instance fields).
-    // The whale's food level, which is increased by eating Cods.
-    private int foodLevel;
+    // The food value of each prey animal.
+    private static final int FOOD_VALUE = 8;
 
     /**
      * Create a whale. A whale can be created as a new born (age zero
@@ -42,121 +35,26 @@ public class Whale extends Animal
     {
         super(field, location);
         initAge(randomAge);
-        if(randomAge) {
-            foodLevel = rand.nextInt(COD_FOOD_VALUE);
-        }
-        else {
-            foodLevel = COD_FOOD_VALUE;
-        }
-    }
-
-    /**
-     * This is what the cod does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * 
-     * @param newWhales A list to return newly born whales.
-     * @param atDayTime true if current step is daytime false otherwise.
-     * @param oxygenLevel The inital level of dissolved oxygen in the water.
-     * @param disease The disease may happened during simulation.  
-     * @param step current step.
-     * 
-     * @return the oxygen level the species produced or consumed after action.
-     * 
-     */
-    public double act(List<Creature> newWhales, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {   
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED){
-            setDead();
-            return 0;
-        }     
-
-        //if the whale dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
-            return 0;
-
-        // check if the whale is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
-
-        incrementAge();
-        incrementHunger();
-
-        if(isAlive() && !needSleep(atDayTime)) {
-            giveBirth(newWhales);            
-            // Move towards a source of food if found.
-            Location newLocation = search(disease, step);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-
-        }
-        return -ANIMAL_OXYGEN_REQUIRED;
-    }
-
-    /**
-     * Make this whale more hungry. This could result in the whale's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
-    }
-
-    /**
-     * Look for Cods and Salmon adjacent to the current location.
-     * Only the first live Cod or Salmon is eaten, if the nearby animal is 
-     * infected, then this animal also may be infected.
-     * @param disease disease.
-     * @param step int current step.
-     * @return Where food was found, or null if it wasn't.
-     */
-    public Location search(Disease disease, int step){
-        Field field = getField();
-        //trying to find food.
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location loc = it.next();
-            Object creature = field.getObjectAt(loc);
-            //If nearby animal is infected,then it has the probability to be infected as well
-            if(creature instanceof Animal){
-                Animal animal = (Animal)creature;
-                if(animal.getIsInfected()){
-                    makeInfected(disease, step);
-                }
-            }
-                // if food is found, set the food death.
-            if(creature instanceof Cod || creature instanceof Salmon) {
-                Animal animal = (Animal) creature;
-                if(animal.isAlive()) { 
-                    animal.setDead();
-                    if(animal instanceof Cod)
-                        foodLevel = COD_FOOD_VALUE;
-                    else
-                        foodLevel = SALMON_FOOD_VALUE;
-                    return loc;
-                }
-            }
-        }
-        return null;
-
+        initFoodLevel(randomAge);
     }
 
     public int getMaxAge() { return MAX_AGE; }
     public int getBreedingAge() { return BREEDING_AGE; }
     public double getBreedingProbability() { return BREEDING_PROBABILITY; }
     public int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    public int getMaxFoodValue() { return FOOD_VALUE; }
     public Animal createOffspring(Field field, Location location) { return new Whale(false, field, location); }
+
+    protected int tryEat(Object creature) {
+        if (creature instanceof Cod || creature instanceof Salmon) {
+            Animal prey = (Animal) creature;
+            if (prey.isAlive()) {
+                prey.setDead();
+                return FOOD_VALUE;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Decide whether two whales have different sex.

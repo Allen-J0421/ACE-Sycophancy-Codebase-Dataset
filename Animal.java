@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Iterator;
 import java.util.Random;
 import java.lang.Math;
 
@@ -14,6 +15,8 @@ public abstract class Animal extends Creature
     private int sex;
     // The animal's current age.
     private int age;
+    // The animal's current food level.
+    private int foodLevel;
     // A shared random number generator.
     protected static final Random rand = Randomizer.getRandom();
 
@@ -51,13 +54,19 @@ public abstract class Animal extends Creature
         age = randomAge ? rand.nextInt(getMaxAge()) : 0;
     }
 
+    protected void initFoodLevel(boolean randomAge) {
+        foodLevel = randomAge ? rand.nextInt(getMaxFoodValue()) : getMaxFoodValue();
+    }
+
     protected int getAge() { return age; }
 
     public abstract int getMaxAge();
     public abstract int getBreedingAge();
     public abstract double getBreedingProbability();
     public abstract int getMaxLitterSize();
+    public abstract int getMaxFoodValue();
     public abstract Animal createOffspring(Field field, Location location);
+    protected abstract int tryEat(Object creature);
 
     public boolean requiresMate() { return false; }
 
@@ -80,6 +89,13 @@ public abstract class Animal extends Creature
         }
     }
 
+    protected void incrementHunger() {
+        foodLevel--;
+        if (foodLevel <= 0) {
+            setDead();
+        }
+    }
+
     protected void giveBirth(List<Creature> newAnimals) {
         Field field = getField();
         List<Location> free = field.getFreeAdjacentLocations(getLocation());
@@ -88,6 +104,30 @@ public abstract class Animal extends Creature
             Location loc = free.remove(0);
             newAnimals.add(createOffspring(field, loc));
         }
+    }
+
+    public double act(List<Creature> newAnimals, boolean atDayTime, double oxygenLevel, Disease disease, int step) {
+        if (oxygenLevel < ANIMAL_OXYGEN_REQUIRED) {
+            setDead();
+            return 0;
+        }
+        if (dieOfInfection(disease)) return 0;
+        ifCanGrantImmunity(disease, step);
+        incrementAge();
+        incrementHunger();
+        if (isAlive() && !needSleep(atDayTime)) {
+            giveBirth(newAnimals);
+            Location newLocation = search(disease, step);
+            if (newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            if (newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                setDead();
+            }
+        }
+        return -ANIMAL_OXYGEN_REQUIRED;
     }
 
     /**
@@ -104,7 +144,24 @@ public abstract class Animal extends Creature
      */
     public abstract boolean encounterWithDiffSex();
 
-    public abstract Location search(Disease disease, int step);
+    public Location search(Disease disease, int step) {
+        List<Location> adjacent = getField().adjacentLocations(getLocation(), 1);
+        Iterator<Location> it = adjacent.iterator();
+        while (it.hasNext()) {
+            Location loc = it.next();
+            Object creature = getField().getObjectAt(loc);
+            if (creature instanceof Animal) {
+                Animal animal = (Animal) creature;
+                if (animal.getIsInfected()) makeInfected(disease, step);
+            }
+            int gained = tryEat(creature);
+            if (gained >= 0) {
+                foodLevel = gained;
+                return loc;
+            }
+        }
+        return null;
+    }
 
     /**
      * identify whether a creature need to sleep

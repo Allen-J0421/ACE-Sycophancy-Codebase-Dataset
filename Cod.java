@@ -28,9 +28,6 @@ public class Cod extends Animal
 
     // Individual characteristics (instance fields).
 
-    // THe cod's food level
-    private int foodLevel;
-
     // Track the first step at which the animal is infected;
     private int infectionStartStep;
 
@@ -47,74 +44,7 @@ public class Cod extends Animal
         super(field, location);
 
         initAge(randomAge);
-        if(randomAge) {
-            foodLevel = rand.nextInt(SEAWEED_FOOD_VALUE);
-        }
-        else {
-            foodLevel = SEAWEED_FOOD_VALUE;
-        }
-    }
-
-    /**
-     * This is what the cod does most of the time - it runs 
-     * around. Sometimes it will breed or die of old age.
-     * 
-     * @param newCods A list to return newly born cods.
-     * @param atDayTime true if current step is daytime false otherwise.
-     * @param oxygenLevel The inital level of dissolved oxygen in the water.
-     * @param disease The disease may happened during simulation.  
-     * @param step current step.
-     * 
-     * @return the oxygen level the species produced or consumed after action.
-     * 
-     */
-    public double act(List<Creature> newCods, boolean atDayTime, double oxygenLevel, Disease disease, int step)
-    {   
-        if(oxygenLevel < ANIMAL_OXYGEN_REQUIRED){
-            setDead();
-            return 0;
-        }     
-
-        //if the cod dies of disease, it will consume no oxygen.
-        if(dieOfInfection(disease))
-            return 0;
-
-        // check if the cod is qualified for immunity.
-        ifCanGrantImmunity(disease, step);
-
-        incrementAge();
-        incrementHunger();
-
-        if(isAlive() && !needSleep(atDayTime)) {
-            giveBirth(newCods);            
-            // Move towards a source of food if found.
-            Location newLocation = search(disease, step);
-            if(newLocation == null) { 
-                // No food found - try to move to a free location.
-                newLocation = getField().freeAdjacentLocation(getLocation());
-            }
-            // See if it was possible to move.
-            if(newLocation != null) {
-                setLocation(newLocation);
-            }
-            else {
-                // Overcrowding.
-                setDead();
-            }
-
-        }
-        return -ANIMAL_OXYGEN_REQUIRED;         
-    }
-
-    /**
-     * Make this cod more hungry. This could result in the cod's death.
-     */
-    private void incrementHunger()
-    {
-        foodLevel--;
-        if(foodLevel <= 0) {
-            setDead();
-        }
+        initFoodLevel(randomAge);
     }
 
     public boolean requiresMate() { return true; }
@@ -122,7 +52,19 @@ public class Cod extends Animal
     public int getBreedingAge() { return BREEDING_AGE; }
     public double getBreedingProbability() { return BREEDING_PROBABILITY; }
     public int getMaxLitterSize() { return MAX_LITTER_SIZE; }
+    public int getMaxFoodValue() { return SEAWEED_FOOD_VALUE; }
     public Animal createOffspring(Field field, Location location) { return new Cod(false, field, location); }
+
+    protected int tryEat(Object creature) {
+        if (creature instanceof Seaweed) {
+            Seaweed seaweed = (Seaweed) creature;
+            if (seaweed.isAlive()) {
+                seaweed.setDead();
+                return SEAWEED_FOOD_VALUE;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Decide whether two cods have different sex.
@@ -145,41 +87,5 @@ public class Cod extends Animal
         return false;
     }
 
-    /**
-     * Look for seaweed adjacent to the current location.
-     * Only the first live seaweed is eaten., if the nearby animal is 
-     * infected, then this animal also may be infected.
-     * @param disease disease.
-     * @param step int step.
-     * @return Where food was found, or null if it wasn't.
-     */
-    public Location search(Disease disease, int step){
-        Field field = getField();
-        //trying to find food.
-        List<Location> adjacent = field.adjacentLocations(getLocation(), 1);
-        Iterator<Location> it = adjacent.iterator();
-        while(it.hasNext()) {
-            Location loc = it.next();
-            Object creature = field.getObjectAt(loc);
-            //If nearby animal is infected,then it has the probability to be infected as well
-            if(creature instanceof Animal){
-                Animal animal = (Animal)creature;
-                if(animal.getIsInfected()){
-                    makeInfected(disease, step);
-                }
-            }
-            // if food is found, set the food death.
-            if(creature instanceof Seaweed) {
-                Seaweed seaweed = (Seaweed) creature;
-                if(seaweed.isAlive()) { 
-                    seaweed.setDead();
-                    foodLevel = SEAWEED_FOOD_VALUE;
-                    return loc;
-                }
-            }
-        }
-        return null;
-
-    }
 
 }

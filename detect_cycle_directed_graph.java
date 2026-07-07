@@ -1,71 +1,76 @@
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.List;
 
-public class DetectCycle {
+class DirectedGraph {
+    private final int vertices;
+    private final List<List<Integer>> adj;
 
-    static boolean isCyclic(ArrayList<ArrayList<Integer>> adj)
-    {
-        int V = adj.size();
+    DirectedGraph(int vertices) {
+        this.vertices = vertices;
+        adj = new ArrayList<>(vertices);
+        for (int i = 0; i < vertices; i++) {
+            adj.add(new ArrayList<>());
+        }
+    }
 
-        int[] inDegree = new int[V];
+    void addEdge(int u, int v) {
+        adj.get(u).add(v);
+    }
 
-        Queue<Integer> q = new LinkedList<>();
+    int size() { return vertices; }
 
-        int visited = 0;
+    Iterable<Integer> neighbors(int v) { return adj.get(v); }
+}
 
-        for (int u = 0; u < V; ++u)
-        {
-            for (int v : adj.get(u))
-            {
+interface CycleDetector {
+    boolean hasCycle(DirectedGraph graph);
+}
+
+class KahnCycleDetector implements CycleDetector {
+    @Override
+    public boolean hasCycle(DirectedGraph graph) {
+        int n = graph.size();
+        int[] inDegree = new int[n];
+
+        for (int u = 0; u < n; u++) {
+            for (int v : graph.neighbors(u)) {
                 inDegree[v]++;
             }
         }
 
-        for (int u = 0; u < V; ++u)
-        {
-            if (inDegree[u] == 0)
-            {
-                q.add(u);
+        Queue<Integer> queue = new LinkedList<>();
+        for (int u = 0; u < n; u++) {
+            if (inDegree[u] == 0) {
+                queue.add(u);
             }
         }
 
-        while (!q.isEmpty())
-        {
-            int u = q.poll();
+        int visited = 0;
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
             visited++;
-
-            for (int v : adj.get(u))
-            {
-                inDegree[v]--;
-                if (inDegree[v] == 0)
-                {
-
-                    q.add(v);
+            for (int v : graph.neighbors(u)) {
+                if (--inDegree[v] == 0) {
+                    queue.add(v);
                 }
             }
         }
 
-        return visited != V;
+        return visited != n;
     }
+}
 
-    static void addEdge(ArrayList<ArrayList<Integer>> adj, int u, int v) {
-        adj.get(u).add(v);
-     }
+class DetectCycle {
+    public static void main(String[] args) {
+        DirectedGraph graph = new DirectedGraph(4);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 0);
+        graph.addEdge(2, 3);
 
-     public static void main(String[] args)
-    {
-        int V = 4;
-        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();
-        for (int i = 0; i < V; i++) {
-            adj.add(new ArrayList<>());
-        }
-
-        addEdge(adj, 0, 1);
-        addEdge(adj, 1, 2);
-        addEdge(adj, 2, 0);
-        addEdge(adj, 2, 3);
-
-         System.out.println(isCyclic(adj) ? "true" : "false");
+        CycleDetector detector = new KahnCycleDetector();
+        System.out.println(detector.hasCycle(graph) ? "true" : "false");
     }
 }

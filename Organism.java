@@ -4,7 +4,7 @@
  *
  * @version 2022.03.2
  */
-public abstract class Organism {
+public abstract class Organism implements DiseaseAware {
     
 
     // Whether the organism is alive or not.
@@ -115,7 +115,7 @@ public abstract class Organism {
      * Sets the organism to be infected.
      * @param disease The disease that the organism is gonna be infected by. 
      */
-    protected void setDisease(Disease disease)
+    public void setDisease(Disease disease)
     {
         this.disease = disease;
         hasDisease = true;

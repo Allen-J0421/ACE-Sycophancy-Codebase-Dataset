@@ -1,7 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class NaivePatternSearch {
+interface PatternSearcher {
+    List<Integer> search(String text);
+}
+
+public class NaivePatternSearch implements PatternSearcher {
 
     private final String pattern;
 
@@ -39,7 +43,7 @@ public class NaivePatternSearch {
         String txt = "aabaacaadaabaaba";
         String pat = "aaba";
 
-        NaivePatternSearch searcher = new NaivePatternSearch(pat);
+        PatternSearcher searcher = new NaivePatternSearch(pat);
         List<Integer> res = searcher.search(txt);
 
         for (int it : res) {

@@ -15,10 +15,8 @@ public abstract class Actor
     private Location location;
     // Whether the actor is alive or not.
     private boolean alive;
-    //The actor's age
-    private int age;
-    //how much the actor grows. This is added to the animals food level.
-    private double growthLevel;
+    // Biological lifecycle state (age and growth level) held by composition.
+    private final BiologicalTrait biology = new BiologicalTrait();
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     /**
@@ -118,15 +116,15 @@ public abstract class Actor
      * @return age of the actor.
      */
     protected int getAge(){
-        return age;
+        return biology.getAge();
     }
 
     /**
      * Set age of an actor
      * @param age. Age of the actor.
      */
-    protected void setAge(int  age){
-        this.age = age ;
+    protected void setAge(int age){
+        biology.setAge(age);
     }
 
     /**
@@ -137,9 +135,9 @@ public abstract class Actor
     protected void incrementAge(int step)
     {
         if(step % 4 == 0){
-            age++;
+            biology.incrementAge();
         }
-        if(age > getMaxAge()) {
+        if(biology.getAge() > getMaxAge()) {
             setDead();
         }
     }
@@ -155,7 +153,7 @@ public abstract class Actor
      * @return  How much the actor grows.
      */
     protected double getGrowthLevel(){
-        return growthLevel;
+        return biology.getGrowthLevel();
     }
 
     /**
@@ -163,7 +161,7 @@ public abstract class Actor
      * @param value. How much more the actor has grown.
      */
     protected void setGrowthLevel(double value){
-        growthLevel = value + growthLevel;
+        biology.addGrowth(value);
     }
     
     /**

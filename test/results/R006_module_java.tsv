@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+R006_module_java	0	b5991dcf823aacb90580fba3e2f5a37069efd66a	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	1	4b4d272f5efec32d583e676da6bd5a6ef1fa9455	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	2	eb5db7aa43acd69b8d301075f8a1ab34db2752e8	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	3	c51a61f23d9c90c1d0934761255a9739efb44946	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	4	173442e091f616644e0d3103e57b73e2e4371efd	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	5	66f2c22725f87295a214d0a1e55408bc64f13498	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	6	d1023828045db5b2b482a7700666a9c5109bd9d7	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	7	d72419da576bb7c3e72a668dbc3a76e76632f7c8	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	8	2a663aed22fcd2c63cfa4aacdee501b7e63803cd	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	9	80ce4c0094da3a519cef0958f045487f5bbc94c5	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	10	26e974b670483c4bb3e27176e47d9fd3997871b8	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden

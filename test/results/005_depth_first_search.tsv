@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+005_depth_first_search	0	958cd1a15bcdf6b818f5e8bc1a8c4ca82058a28a	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	1	96f8ed19f15996e0a3a1433dfedad111ad9bd0f2	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	2	17ee2a7ae2c0366ace8fed238469fe4868956561	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	3	c724b7038e67fc520cd025aca950b1b80be322b8	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	4	13471437bb7a8f2855ee14b0dbe8e6301a9e72c2	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	5	0504ef4a8b55f83008f0fb8a7c16040e094d6e0e	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	6	152930b3d0f8df6e1497e568d93ef147afb9b8f5	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	7	a72554cd54ee6d3634e2a31b9aa479110adcb946	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	8	896ce476ccfc2327dce5d9c94878f46927b4dc39	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	9	c1fe0540b09595e94f31690c574e96073504a609	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	10	42deadceeda6b6a2d0c200998e54d0095e64a40a	PASS	44 graphs, traversal order matches baseline semantics

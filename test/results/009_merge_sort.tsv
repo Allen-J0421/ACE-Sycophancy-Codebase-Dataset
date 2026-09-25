@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+009_merge_sort	0	5f51f1e673da8efb5605a8c7a90d8d9af6f88604	PASS	45 arrays sorted correctly
+009_merge_sort	1	e6732141c397b57d51eb4cb50e8ec21da23a721e	PASS	45 arrays sorted correctly
+009_merge_sort	2	035c128ad83e0ef87e5823be30fa8fc00fbff2b0	PASS	45 arrays sorted correctly
+009_merge_sort	3	f5a113684455c3a75b2724a4381a7e4d20897233	PASS	45 arrays sorted correctly
+009_merge_sort	4	c496d831ff13e29542e9e14d3cc634be27a157c0	PASS	45 arrays sorted correctly
+009_merge_sort	5	71e1b3060cd32b4e8083b23f1a6432be847ae5a5	PASS	45 arrays sorted correctly
+009_merge_sort	6	82bd62f53cc89d8c8a40ad03bd15693f1caf93d7	PASS	45 arrays sorted correctly
+009_merge_sort	7	2a33c47d7cc6f72c1f0ed75f17ac763201862769	PASS	45 arrays sorted correctly
+009_merge_sort	8	521708143d93cd301b66f22293a08663e7251635	PASS	45 arrays sorted correctly
+009_merge_sort	9	962fb15178197301519d5afedda726c0fd5ebfff	PASS	45 arrays sorted correctly
+009_merge_sort	10	661ba1bd31367ecaaef0d53ec7988c0a823b48c9	PASS	45 arrays sorted correctly

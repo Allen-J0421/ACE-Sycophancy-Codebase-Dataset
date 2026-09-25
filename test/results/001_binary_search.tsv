@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+001_binary_search	0	809c7caa070009cbae5511391d918c8d994502f6	PASS	387 checks
+001_binary_search	1	98b8c269127e4cd3f2e233f43f63f073ee381783	PASS	387 checks
+001_binary_search	2	99c800f341a666d07952ad593fd83093be7dfcef	PASS	387 checks
+001_binary_search	3	009e0c7713926527533b4ab28c0f6987f0ab02fa	PASS	387 checks
+001_binary_search	4	b4526d523875627ed80aa1ce1bf15287082f83c8	PASS	387 checks
+001_binary_search	5	38e482d4251d4a10647356d2bc38f1e9a611a38c	PASS	387 checks
+001_binary_search	6	6168199982bceefb0342035d0b0dab2aa61c1df7	PASS	387 checks
+001_binary_search	7	384e0929ce84d02bc0835c077f39b6488e5c5f45	PASS	387 checks
+001_binary_search	8	c8ec448378589a4950a4e840b15bc9709e62d8c0	PASS	387 checks
+001_binary_search	9	8c011d75264c36f906f0d0d142bc017e279f2f17	PASS	387 checks
+001_binary_search	10	ae1c5433f993124ff11862fed988d4479e8dba1b	PASS	387 checks

@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+R003_module_java	0	d8a9a2de433802e04a62893be7a68a5b07822198	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	1	86d72e84d931fc6b2f5968fd6c42f9bd47d8f755	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	2	72db5cb53b11c19603624762c35f75fb650fdc53	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	3	3a14e4171e526422ced959c53caa5b800d4e5a97	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	4	e5d8a64db739f03a56ab0bfa5a8cfaa9e6d3913b	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	5	6c6718b3bec69e45a29002505ea13777cd9a8c9a	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	6	786dcf133d91236798b6546f4e5d5c116a1cffea	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	7	4fdd614aa8b6393e30a1e39cda2239d706001858	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	8	42c4c60a21c0f2a5ac1eb9738e4c0530b2427a04	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	9	7c3efaa0b5875d4d94c6a0ee3523f93c540ed237	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	10	8363f971a6db9be9ed6b8699211eefeb7b2bdb8b	PASS	properties ok + deterministic 120-step population/layout trace matches golden

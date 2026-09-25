@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+012_building_heap_from_array	0	4fffb39179975df52693947c75a6e952c222442f	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	1	f0a79d4a043d470b9d7642fbefe8e2694765a257	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	2	14bf5835be93a38b3fbdd869079d4e4804a4f652	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	3	fb496ba70e79b4022bfecd884061d7461251aa98	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	4	6d1be53df70009711791d98cdf3a1680fd6884b1	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	5	a2a87f61f278310fc17a8f6f8348396fe27282c8	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	6	5d816c38c817d30c4b4f5d4980116fdc31ded5d6	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	7	d353a378c21efb204ca6d7525a5bc5414dd786cf	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	8	18907ea143080d0c2239f6e54ad5a1e2a670e9e5	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	9	4e9071f5a7f30eb2ee58eae5349f0e39f5ae3f64	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	10	6d452ffedcc68bee40e172632e14ae69f06e9630	PASS	45 arrays heapified (max-heap + permutation)

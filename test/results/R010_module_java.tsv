@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+R010_module_java	0	8365bf8b9d8147d578a365d4a6624147ac7f594e	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	1	ca77354b94d2ee7a6a2d7e5ce1828d4f0179478c	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	2	e356cae3fcd787c72c5d66a8cefe9697ac2c1361	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	3	15cfcb234f0d0870cc1b7e0f70dc01ec679c8118	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	4	b65c722cb9e6243d23218298285cad455202fc63	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	5	31d55398cb60220d58c03026d25f761b5003fd83	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	6	7a44e1cce9d85f7c495e22016ac43410081dd772	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	7	e49f4a46fb9b1186d1179a579bd14c338599054e	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	8	d1505245074611f3507063bb8021d7df20275c51	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	9	224cbebad927750d82f9648826afc8c8b881fbc5	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	10	1a7bf0a6d4ea57879ea46ecafacdf40c3b9cafff	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses

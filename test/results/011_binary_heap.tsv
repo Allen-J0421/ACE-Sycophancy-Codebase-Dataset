@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+011_binary_heap	0	0eb7cd98d04fa2c1e58ba19693e4c263ef9234ad	PASS	2606 heap ops verified
+011_binary_heap	1	a259e0374aa3d8a0b96ac2dcd34dd0c30c82ea02	PASS	2606 heap ops verified
+011_binary_heap	2	02f75a9163058aabe0cfb31d5c797de45d99ca6c	PASS	2606 heap ops verified
+011_binary_heap	3	b731aabb2c93c6290ef5550345396c6217ccc9d2	PASS	2606 heap ops verified
+011_binary_heap	4	7f6176dc08dd63c98fe32721f3dca7b79e00b7fe	PASS	2606 heap ops verified
+011_binary_heap	5	a0cf840bd6d52d963ab15a0bce64b5d9ea325ec0	PASS	2606 heap ops verified
+011_binary_heap	6	7afd92b604eee067ca45f99089ade79680b26ffe	PASS	2606 heap ops verified
+011_binary_heap	7	c1a8cf8810c8d89256da1b38ea40ed959d51221e	PASS	2606 heap ops verified
+011_binary_heap	8	2ce46d234d76520e82bc37b605bf80d342649fb6	PASS	2606 heap ops verified
+011_binary_heap	9	7f387b458866704823da290ad80f5b9bce75a82d	PASS	2606 heap ops verified
+011_binary_heap	10	90ab27fa7f9ad326de2cb48df60e3163c304b904	PASS	2606 heap ops verified

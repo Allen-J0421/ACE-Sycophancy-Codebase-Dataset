@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+036_heap_sort	0	62a339e7221db868636f7b6da8c276d6f27aff6a	PASS	56 arrays sorted correctly
+036_heap_sort	1	03705c6ebac49a2bf9c3470e882f54e50874539c	PASS	56 arrays sorted correctly
+036_heap_sort	2	ecf7b0bfb280ab45574ead996e4dcb9c08e8dc60	PASS	56 arrays sorted correctly
+036_heap_sort	3	74cf2e4571a580e83b3c1b8f5614ef1d9c4282a2	PASS	112 arrays sorted correctly
+036_heap_sort	4	02a77ba6b8ccd4bf4096801ce37b736e1e3434da	PASS	112 arrays sorted correctly
+036_heap_sort	5	f7e5fe008cb06e5d37bdd6427161e91f7fd8e643	PASS	112 arrays sorted correctly
+036_heap_sort	6	8cfc41f8892a8d7e58191b0564312524fa7bf959	PASS	112 arrays sorted correctly
+036_heap_sort	7	4c41077f9ae23b4157b5809e7d54903321a3fbd1	PASS	112 arrays sorted correctly
+036_heap_sort	8	37778f9e5508e6cfcaa623089645887810e031b0	PASS	112 arrays sorted correctly
+036_heap_sort	9	96afeebb15aeed98e385edc2a313426074f64b75	PASS	112 arrays sorted correctly
+036_heap_sort	10	6dbff6132cf01972d388d3f842f8d5f64d103d42	PASS	112 arrays sorted correctly

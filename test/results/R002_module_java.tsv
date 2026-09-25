@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+R002_module_java	0	d638368b23105b6eb7bed6dabc0830bef20c62b7	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	1	e616b43a22aca1124ee2aea95e6bc39afc237bac	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	2	d9f4fe53e8dc061d89be264772e21b6bc4444c68	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	3	6e29bd14e0f7f28b47e46ef53ed3a83c5604bfbc	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	4	e8bfc053f8d922b7320ec218ce12b2d05b1480e9	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	5	e6ffe7c66a5413e42534ad08fd2b402f28346f40	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	6	001a7b0a17631ed8dfe2dc4cecd1ff0cd36f8e76	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	7	710575ef0b2566dde48c3fa6f7d4914eda1fb37d	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	8	b4639cbb7ecf4313a9fd921ad71747f164c8ad57	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	9	b17a3fb0e11b5eac256da6fe11846761670aaa94	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	10	24a7de78471b1f737fd28ac45e85cb848c1b2b89	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses

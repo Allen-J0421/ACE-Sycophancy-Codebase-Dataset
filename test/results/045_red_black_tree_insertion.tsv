@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+045_red_black_tree_insertion	0	46399608c1e8c8faaa55b8a9f465d8504e398545	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	1	fa4c1a15b2691bd40d05fc02a2846f043817956c	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	2	f8077de3bbf9f93be7d461d2af151a8e5710a5a5	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	3	fce96abd9f6a173e4495b7880cfab4b21c0c5b15	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	4	112c5532ea9c10b474d0f5210848d72ff1e1d511	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	5	c39ce74aff1586998c826cb41d25d9ae9062144e	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	6	e3333ade8e0c3ff668a776849785248aab0ea5ea	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	7	76e1ccfadb06b886ac6e068e393b14ce0bcadf68	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	8	1cb0e6efd2978ba88d471082f9eb37f56cd1fabb	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	9	c1d8d3c6bde02ae3e792dfdaa8388be00e1fe383	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	10	65501fdf15a45e4d85c4f753d390b0ed6f91a8fb	PASS	361 checks over 51 insert sequences

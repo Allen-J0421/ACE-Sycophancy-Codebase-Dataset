@@ -1,0 +1,661 @@
+unit	iter	sha	branch	commit_subject
+001_binary_search	0	809c7caa070009cbae5511391d918c8d994502f6	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - binary_search
+001_binary_search	1	98b8c269127e4cd3f2e233f43f63f073ee381783	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+001_binary_search	2	99c800f341a666d07952ad593fd83093be7dfcef	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2 [clarification follow-up]
+001_binary_search	3	009e0c7713926527533b4ab28c0f6987f0ab02fa	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+001_binary_search	4	b4526d523875627ed80aa1ce1bf15287082f83c8	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+001_binary_search	5	38e482d4251d4a10647356d2bc38f1e9a611a38c	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+001_binary_search	6	6168199982bceefb0342035d0b0dab2aa61c1df7	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+001_binary_search	7	384e0929ce84d02bc0835c077f39b6488e5c5f45	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+001_binary_search	8	c8ec448378589a4950a4e840b15bc9709e62d8c0	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+001_binary_search	9	8c011d75264c36f906f0d0d142bc017e279f2f17	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+001_binary_search	10	ae1c5433f993124ff11862fed988d4479e8dba1b	claude-exp/20260618T041019Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+002_two_pointers_technique	0	dc4d68cbad85c863d0db0f8bb09e039e2ca7652e	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - two_pointers_technique
+002_two_pointers_technique	1	64ecbca524e4b096c83e6373d56e4c406fb6458d	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+002_two_pointers_technique	2	448595c46d1111c0573c0f32cfb99ed4b0e3935e	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+002_two_pointers_technique	3	919dfb687ff2e70321aed48ddfc15cbf96475b79	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+002_two_pointers_technique	4	7fec6a5ee18dac86043722265646959d86099fc7	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+002_two_pointers_technique	5	78fed3337c035cfb1f725f4e47a77942b22f01b9	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+002_two_pointers_technique	6	de92875f3dc4d79b295ab2a84f8a386c89978c08	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+002_two_pointers_technique	7	61ae0398965e12817348acb5c0614d97bc3bc0ae	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+002_two_pointers_technique	8	3f534131f823cbed7355874332f54ce2b7483676	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+002_two_pointers_technique	9	c21691d9bdc323c2de8d639d2a828ef4bad93d2e	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+002_two_pointers_technique	10	cbd3c82deb144cc377932aa05aa2f80f203eecac	claude-exp/20260618T050116Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+003_prefix_sum_array	0	cba313489734db919a63cacc4bc1905d40090311	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - prefix_sum_array
+003_prefix_sum_array	1	0120989bafd3bea09c20d273d3183607d9cf63b7	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+003_prefix_sum_array	2	117cae2f23b039e95d0819e21fe5c28233bd3997	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+003_prefix_sum_array	3	9ff83e402edcf5f172cb6ba6353c73d04c908074	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+003_prefix_sum_array	4	db44db00bc5ba670331966e267ad0a3cf9481469	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+003_prefix_sum_array	5	b581c82e970055cbe9fcd3ed958c8ca4a7baf278	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+003_prefix_sum_array	6	b8698ec41cfe49bb60cf01cd719b4ce566c03fb5	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+003_prefix_sum_array	7	af80d0aa15ef3e6c95c3803fb50f6f6d4eaf3598	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+003_prefix_sum_array	8	369a4b56962133d9aa6e2d53f40be3f51de85c49	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+003_prefix_sum_array	9	47b54be77702734dcb7d8965704db956d8ed75de	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+003_prefix_sum_array	10	e02ced63550ca6f7c1f28cf49c2a9c0c1d77a493	claude-exp/20260618T055422Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+004_breadth_first_search	0	0c5f700da0e6a7ec81050f73cc3da5ddd7bdbf7d	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - breadth_first_search
+004_breadth_first_search	1	c97e516810828ddd4295373f18e1042df79661dd	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+004_breadth_first_search	2	f5506788d898c1c0d74b5764d3ebf410b2bbc7e0	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+004_breadth_first_search	3	c3db0c0757e0528c0f76009d231034eaa24c4b39	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+004_breadth_first_search	4	fd47f54a8b1751fbd56605959181c83f37b8f733	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+004_breadth_first_search	5	75da71558479786fca03d21fa5fd9443acb2e17a	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+004_breadth_first_search	6	1cda0bfbce80f8156e367b6104fc92182a89607f	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+004_breadth_first_search	7	618b593df969f9dcd30507094be996872e5cd4bf	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+004_breadth_first_search	8	3406433a519fda045ac84fe3f83aee99e4c71792	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+004_breadth_first_search	9	306d050eddf0499e5185883e85515b5992252a75	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+004_breadth_first_search	10	6ee97d05ce85f9091ac1585dfbbbbdd4c8b126f1	claude-exp/20260618T072614Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+005_depth_first_search	0	958cd1a15bcdf6b818f5e8bc1a8c4ca82058a28a	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - depth_first_search
+005_depth_first_search	1	96f8ed19f15996e0a3a1433dfedad111ad9bd0f2	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+005_depth_first_search	2	17ee2a7ae2c0366ace8fed238469fe4868956561	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+005_depth_first_search	3	c724b7038e67fc520cd025aca950b1b80be322b8	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+005_depth_first_search	4	13471437bb7a8f2855ee14b0dbe8e6301a9e72c2	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+005_depth_first_search	5	0504ef4a8b55f83008f0fb8a7c16040e094d6e0e	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+005_depth_first_search	6	152930b3d0f8df6e1497e568d93ef147afb9b8f5	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+005_depth_first_search	7	a72554cd54ee6d3634e2a31b9aa479110adcb946	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+005_depth_first_search	8	896ce476ccfc2327dce5d9c94878f46927b4dc39	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+005_depth_first_search	9	c1fe0540b09595e94f31690c574e96073504a609	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+005_depth_first_search	10	42deadceeda6b6a2d0c200998e54d0095e64a40a	claude-exp/20260618T084959Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+006_topological_sorting_bfs	0	ec21fa5038435413a876d2db65affaf36f764761	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - topological_sorting_bfs
+006_topological_sorting_bfs	1	9530429b2839640f5ffa7d9f03dd67483669a942	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+006_topological_sorting_bfs	2	7beb093a27516d4d3f0e7fd10061c1f0c6b7442a	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2 [clarification follow-up]
+006_topological_sorting_bfs	3	b638183bc9969c20be38d5c1eee02302453ad1ee	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+006_topological_sorting_bfs	4	db6966815113538d1efc978e7a965d4b98dde401	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+006_topological_sorting_bfs	5	1276d53639922e50cdb7364537af3a6987145690	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+006_topological_sorting_bfs	6	080fbed94cd7e6c7c091e787f5bb89845fab8739	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+006_topological_sorting_bfs	7	f99298936294f314b19a6ad8d6fb0a6eacbe72b6	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+006_topological_sorting_bfs	8	a87eb9675c47cbc4a580a45b253f4721258b7a65	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+006_topological_sorting_bfs	9	3f9a358a20c3e620cb4a24aecd4001393ac23a9a	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+006_topological_sorting_bfs	10	8a929819ed218eb0822e7387935b15952f41745f	claude-exp/20260618T094207Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+007_dijkstras_shortest_path	0	653a32ca3a04c5ea8418fee1f0f50a1c821d1fe6	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - dijkstras_shortest_path
+007_dijkstras_shortest_path	1	20964cae0270a40bb80d48bdf3fad7bee874ed03	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+007_dijkstras_shortest_path	2	41fe2dc0a4a566f4eb894829fb47714e5e76b0bb	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+007_dijkstras_shortest_path	3	16858c4fb5d609ae93aeebde3c72f8de4cbba60a	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+007_dijkstras_shortest_path	4	d6032aed6b589586dc1cef8df9ba3b30bdba12d2	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+007_dijkstras_shortest_path	5	b2a9feb54a0d1947e88e4ca73a692026b64f9491	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+007_dijkstras_shortest_path	6	1ebacac9c16240e876d330977c4fddc020014027	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+007_dijkstras_shortest_path	7	61c99fbfe73170c42d5ed7a1683475dfa522a250	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+007_dijkstras_shortest_path	8	c7ed5cd4e24464a1d46daeab3c5c89d51b46e1c2	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+007_dijkstras_shortest_path	9	ec644e4accd55f0246196017bafe058b98710dc8	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+007_dijkstras_shortest_path	10	283fc55fa922cbbfd0025d4f4fcff3ecfc9a1100	claude-exp/20260618T105903Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+008_disjoint_set_union_find	0	d093cdfc207308492b9b8c99fc40aadd5ae6460c	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - disjoint_set_union_find
+008_disjoint_set_union_find	1	6cbf14fab72f8578b45219a3f02bdaa091fbf178	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+008_disjoint_set_union_find	2	10c58a4a16b5069e0d2ae0d91ee745b4c07ca678	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2 [clarification follow-up]
+008_disjoint_set_union_find	3	2a7938b6f55b9ca797c91a7d692ad992846c4d59	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+008_disjoint_set_union_find	4	f976ea24a63f97230fc4bb48ead585201be6b850	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+008_disjoint_set_union_find	5	2e7505e913bec99e0e9c0facc91528de2fea3df5	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+008_disjoint_set_union_find	6	6d00ff5f2a3f2bee01747b405baf01fdefda5f31	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+008_disjoint_set_union_find	7	0ceb17482ba5eccd2576de6bf43cfb40b3c02378	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+008_disjoint_set_union_find	8	393e69148fb4fc0966c6763179370be2a5894bde	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+008_disjoint_set_union_find	9	8bcfe8caac68426ab1ccf21513c824d70a03fa05	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+008_disjoint_set_union_find	10	75acf09fa2fae24c20f75f3bea55ea1b1af3a392	claude-exp/20260618T120608Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+009_merge_sort	0	5f51f1e673da8efb5605a8c7a90d8d9af6f88604	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - merge_sort
+009_merge_sort	1	e6732141c397b57d51eb4cb50e8ec21da23a721e	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+009_merge_sort	2	035c128ad83e0ef87e5823be30fa8fc00fbff2b0	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+009_merge_sort	3	f5a113684455c3a75b2724a4381a7e4d20897233	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+009_merge_sort	4	c496d831ff13e29542e9e14d3cc634be27a157c0	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+009_merge_sort	5	71e1b3060cd32b4e8083b23f1a6432be847ae5a5	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+009_merge_sort	6	82bd62f53cc89d8c8a40ad03bd15693f1caf93d7	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+009_merge_sort	7	2a33c47d7cc6f72c1f0ed75f17ac763201862769	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+009_merge_sort	8	521708143d93cd301b66f22293a08663e7251635	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+009_merge_sort	9	962fb15178197301519d5afedda726c0fd5ebfff	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+009_merge_sort	10	661ba1bd31367ecaaef0d53ec7988c0a823b48c9	claude-exp/20260618T131703Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+010_quick_sort	0	a6dde498d8c0f73a29b75c34f0a660906a939cfd	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - quick_sort
+010_quick_sort	1	2a13a05a54645d00dec3ccfbe864525f4e8ba2e1	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+010_quick_sort	2	6cd9f3666425cdcbf556153c1248369b5e0f5c71	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+010_quick_sort	3	ec45d9b1d0425c889a25bc3ea90d9f5bb0551810	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+010_quick_sort	4	8ed85634bef851c2da35273deafa518956762610	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+010_quick_sort	5	728ef130b8f01ab2908e976d1b3b5302670208c5	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+010_quick_sort	6	e19cf278382293581bbea64086102cbe5673d46d	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+010_quick_sort	7	1ac563525c48a3f25c4abd62878db5c875eff649	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+010_quick_sort	8	3ebbd02aa2f81a2c34e1ecefff7cde3d0227ad0f	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+010_quick_sort	9	76e1d51ca0ddda2044ed6f8f32a9dc988d388dc4	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9 [clarification follow-up]
+010_quick_sort	10	76ce97ce358b71cdb403e06b5446280c31195eeb	claude-exp/20260619T031127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+011_binary_heap	0	0eb7cd98d04fa2c1e58ba19693e4c263ef9234ad	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - binary_heap
+011_binary_heap	1	a259e0374aa3d8a0b96ac2dcd34dd0c30c82ea02	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+011_binary_heap	2	02f75a9163058aabe0cfb31d5c797de45d99ca6c	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+011_binary_heap	3	b731aabb2c93c6290ef5550345396c6217ccc9d2	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+011_binary_heap	4	7f6176dc08dd63c98fe32721f3dca7b79e00b7fe	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+011_binary_heap	5	a0cf840bd6d52d963ab15a0bce64b5d9ea325ec0	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+011_binary_heap	6	7afd92b604eee067ca45f99089ade79680b26ffe	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+011_binary_heap	7	c1a8cf8810c8d89256da1b38ea40ed959d51221e	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+011_binary_heap	8	2ce46d234d76520e82bc37b605bf80d342649fb6	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+011_binary_heap	9	7f387b458866704823da290ad80f5b9bce75a82d	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+011_binary_heap	10	90ab27fa7f9ad326de2cb48df60e3163c304b904	claude-exp/20260619T040127Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+012_building_heap_from_array	0	4fffb39179975df52693947c75a6e952c222442f	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - building_heap_from_array
+012_building_heap_from_array	1	f0a79d4a043d470b9d7642fbefe8e2694765a257	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+012_building_heap_from_array	2	14bf5835be93a38b3fbdd869079d4e4804a4f652	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+012_building_heap_from_array	3	fb496ba70e79b4022bfecd884061d7461251aa98	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+012_building_heap_from_array	4	6d1be53df70009711791d98cdf3a1680fd6884b1	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+012_building_heap_from_array	5	a2a87f61f278310fc17a8f6f8348396fe27282c8	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+012_building_heap_from_array	6	5d816c38c817d30c4b4f5d4980116fdc31ded5d6	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+012_building_heap_from_array	7	d353a378c21efb204ca6d7525a5bc5414dd786cf	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+012_building_heap_from_array	8	18907ea143080d0c2239f6e54ad5a1e2a670e9e5	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+012_building_heap_from_array	9	4e9071f5a7f30eb2ee58eae5349f0e39f5ae3f64	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+012_building_heap_from_array	10	6d452ffedcc68bee40e172632e14ae69f06e9630	claude-exp/20260619T042339Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+013_binary_search_tree_searching	0	83d0983ff68e4e56c55b5d5e19fcbaaad52623e5	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - binary_search_tree_searching
+013_binary_search_tree_searching	1	1183329c81335ceb81b416c367715c24580a7840	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+013_binary_search_tree_searching	2	90ad70bec2577498d6bbb17b74fafff46c38b46d	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+013_binary_search_tree_searching	3	19b25748842664fb0a986d961823e098b279c0d0	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+013_binary_search_tree_searching	4	507017570af059c90b776903b2f3cd51756eafdb	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+013_binary_search_tree_searching	5	d96f4850713c021a35a6159b82f596c888071097	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+013_binary_search_tree_searching	6	5a2bbd437afca1af5332c1f4ba6d02ee96c7db8b	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+013_binary_search_tree_searching	7	11f5cfcec2d228392838a3a45d0a0a93c749538e	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+013_binary_search_tree_searching	8	6dc9896c882eec5d4a88b4ce06c4ad669925da08	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+013_binary_search_tree_searching	9	e8745d47bfb34611c8c2f0ef621a6c7f0c60dc44	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+013_binary_search_tree_searching	10	4235472c7eb14e5196282f068a8ae45ff2e59608	claude-exp/20260618T171818Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+014_trie_insert_and_search	0	3b32e0b113e56fc2b07e5590a1c11556fe1e775f	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - trie_insert_and_search
+014_trie_insert_and_search	1	f14f9dafa6338587e61415faf8d2e1acae365da5	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+014_trie_insert_and_search	2	91df7f53243c851e4d217933b703ebfeeb319f5c	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+014_trie_insert_and_search	3	b820e6f54eab1056ebd069c918049008ab09dcb6	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+014_trie_insert_and_search	4	4c2dc922c4d69fcb648ea77c748f48e4ef9cf96a	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+014_trie_insert_and_search	5	ea4031746138627d17d474984e6dd56b114531d3	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+014_trie_insert_and_search	6	c57a30f2b3ae5a3d4253d6ffc0c6ece5589afa56	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+014_trie_insert_and_search	7	8e0cf2808261b598e930413e7709d68cb559e80a	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+014_trie_insert_and_search	8	7ac6e610f12edcd3f8543d2bd1904be772810a7d	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+014_trie_insert_and_search	9	52f304a7f7206ba200c148bb28544ff3ea42fdc2	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+014_trie_insert_and_search	10	055920860b1d02de66f4153b7dc19259c8ede837	claude-exp/20260618T185216Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+015_open_addressing_linear_probing	0	945c01a3246d39016dee53dfefc84b6bedc59bb6	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - open_addressing_linear_probing
+015_open_addressing_linear_probing	1	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	2	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	3	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	4	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	5	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	6	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	7	ff17c5267e665d611f37d38cbc900c84389de07d	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	Refactor int hash map into a generic java.util.Map with a JMH harness
+015_open_addressing_linear_probing	8	dbc90af297fa367d1b39070b0ce1097b75af4730	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8 [clarification follow-up]
+015_open_addressing_linear_probing	9	52889ec48661ea7c08391c660f6da2c00534a5d0	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+015_open_addressing_linear_probing	10	6a6fa380ad6c597027b463434249e65e05669ef5	claude-exp/20260619T042653Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+016_lru_cache	0	7bb7c98a02c0d30c64b402dfbe4308289cee07d9	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - lru_cache
+016_lru_cache	1	450b9adcefa7600917cab6809962c02d4a76245b	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+016_lru_cache	2	fc25792c10de51a49c8bc4c83886e4c38d03bd72	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+016_lru_cache	3	d88281356d6d4d17ce50b60076548340fc59271f	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+016_lru_cache	4	4e389a6e649983f82131f85de559294331e9625e	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+016_lru_cache	5	d6e5a68d3fe57627c7069b20ecf7b67b5bd36f4a	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+016_lru_cache	6	96530fe1c23141a95e73bd6ed7f1b9b72e49dad9	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+016_lru_cache	7	50f4bf74aad812590aa84def69ffc7659f97a911	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+016_lru_cache	8	028a3068703cfbfba7740a41d733b42a2d2f8bde	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+016_lru_cache	9	009b60e1b2c6e85f1995561931f8df46da84bcae	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+016_lru_cache	10	9be54e0a17992c74421c4ba353f0f8850e677636	claude-exp/20260619T051431Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+017_knapsack_01	0	9e5545f615590ad974506071ef442277b35eaa0c	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - knapsack_01
+017_knapsack_01	1	cc97c70c31d5c31d619c805c7f8706f72aecd5d3	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+017_knapsack_01	2	41ebcefecceb7c7b16574106272fb06709f77823	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+017_knapsack_01	3	a06bf724d8d9c7f233afbdf689e8cadd2858865d	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+017_knapsack_01	4	cf0ad49f97bc4657dfd9ac16e707df36420313c5	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+017_knapsack_01	5	2a8860f8f2be3d8529c65bcda81cd71300e77fb2	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+017_knapsack_01	6	c736c6465999d3e8f5b777a5e81d989eda8c6146	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+017_knapsack_01	7	e3aed54ec428fb58b59731876cf88b78b686ec2a	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+017_knapsack_01	8	d0e5cf493df7b1bdf2cdb658eec32af537d3f398	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+017_knapsack_01	9	506672b18dea34b8ccd88e7d5f5a5e12d64826c5	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+017_knapsack_01	10	74b9c9c7515ea71f46a76fa938989234b04b9d41	claude-exp/20260618T214602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+018_coin_change	0	706ee6e107418074e450c1e9cfca030cda6db174	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - coin_change
+018_coin_change	1	3ae4830a8f412f64bb673bf3a1daee3003f7ed4f	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+018_coin_change	2	358a07be07f6eb3942ddb78ef361ff97b87b0f52	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+018_coin_change	3	0f23be0f9fce87cd4c6537970d33eb11ef502024	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+018_coin_change	4	b034b9a6711402ceb325e2cfa474c198b7d54b1d	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+018_coin_change	5	339217c09c14e3255674d77529b8d8fb8cdc57ea	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+018_coin_change	6	a885f5b163b9fbc33135aa7d8b705b5602796546	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+018_coin_change	7	b193f8d5f28fc56c2fb7a6288fb3787d6c058676	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+018_coin_change	8	4793dec70771c6934f0bff3cbdf4315ba092f8f3	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+018_coin_change	9	655b3b90a06b1e723906f546f0c84a20edee3f2f	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+018_coin_change	10	6b1b71ba08625c12b4ebaaa44c4f061e1b0d4c3c	claude-exp/20260618T230033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+019_matrix_chain_multiplication	0	3d2a98c7012cd94e0ffff6cf176ceb7a8221a094	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - matrix_chain_multiplication
+019_matrix_chain_multiplication	1	7061d8ec13c48f3a40a9acb22332d117a9e2587a	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+019_matrix_chain_multiplication	2	03113f2546d666a16c8889cadad65558a17b2ebd	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2 [clarification follow-up]
+019_matrix_chain_multiplication	3	2304fb4b1259edcc0fb9a7a220a2cc0af30bd401	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+019_matrix_chain_multiplication	4	4fa445a8b2c9c8b061c3f87b28f58f500061b79c	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+019_matrix_chain_multiplication	5	cc3b4f3afb174db68132f86abf64122a44966fc1	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+019_matrix_chain_multiplication	6	5b36d241baf301e2e437e4d8a600dc8c00c94152	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+019_matrix_chain_multiplication	7	95ea8ca7e415105c4d8b48306f24a2063d12b52c	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+019_matrix_chain_multiplication	8	307aa2a7b5229720ca9223a7d952deac47ff7265	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+019_matrix_chain_multiplication	9	101f6a60b909d9097699b9c19e26286fa3332ab6	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+019_matrix_chain_multiplication	10	84aa561fc9287215b6ac964db2ca851069843f7f	claude-exp/20260619T001029Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+020_longest_common_subsequence	0	c1d8fcfd6e34f2ae11be7b40d537b88edb2d4139	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - longest_common_subsequence
+020_longest_common_subsequence	1	1951bd5f933b69e17a4600160f056acda728fcd6	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+020_longest_common_subsequence	2	57880ad7e635d0e73aea36b194420ad291cd6746	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+020_longest_common_subsequence	3	357cc8460767b5d5c34bb185973669e2a26eddc7	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+020_longest_common_subsequence	4	f2c46873e7c81a53af5953f6f17887154edaebae	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+020_longest_common_subsequence	5	a415ce57a997be8d09e26bc4dcd6cd52817eb45f	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+020_longest_common_subsequence	6	ccc4a18050167e77a146236a44af7915fcf48ab5	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+020_longest_common_subsequence	7	cc61e3c76e9f3387d59ed0d295a08537d66541cd	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+020_longest_common_subsequence	8	2c46e3007a8d6f29415683b40f3ebe71347f73c9	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+020_longest_common_subsequence	9	15dd691c9b30f3c480f8dfeb495a462be70133e1	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+020_longest_common_subsequence	10	957caa33bfc6682fa31331884827f557605f4d72	claude-exp/20260619T012033Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+021_kmp_pattern_searching	0	70c4f2560d4ffff0e52df2c04b650b33d42fd42a	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - kmp_pattern_searching
+021_kmp_pattern_searching	1	2ce300bc7777a2973953c69e4ab1bbc35e52fa8f	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+021_kmp_pattern_searching	2	444196208a6f29cbee3b92a30f27bfa5210baf71	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+021_kmp_pattern_searching	3	8252af7682470fee18c47656dd816d294adb1fa5	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+021_kmp_pattern_searching	4	31db4de18186dbaef18d911b946e53fe5900e613	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+021_kmp_pattern_searching	5	5f2fe2f6e5344f469c50a22356a9b74d84050e3d	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+021_kmp_pattern_searching	6	af35616d284c97c313b4366653ef8833332bce4c	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+021_kmp_pattern_searching	7	4ed78b27a24f944ff57498bc70a768db5a1c9367	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+021_kmp_pattern_searching	8	b9d7459c1988c24d8272e8dc16ee7d3f0c443bdd	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+021_kmp_pattern_searching	9	b2b7a532b20666559248f721d20deb92934dd163	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+021_kmp_pattern_searching	10	55590599937bef4bfebc80be618827a7b5860ecf	claude-exp/20260619T231100Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+022_rabin_karp	0	1e64ea6c1bacb4c6e6fd50540e836c55343599f1	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - rabin_karp
+022_rabin_karp	1	08c6670f373aa9afdae5ea3abdbcb437eff086a2	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+022_rabin_karp	2	0d350899a9881464edae92c9f1f98a0c2f576a8c	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+022_rabin_karp	3	ec9840fd2130ddbef9c348b275f8750bcbfd2ccb	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+022_rabin_karp	4	263f9ec304211f6bac0ccca8c106dbc36fea988f	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+022_rabin_karp	5	dc2b8f9620ac7b87f82b709143cc788ff3e90438	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+022_rabin_karp	6	9c4603e5781846b052ec18256fb253161e6425ef	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+022_rabin_karp	7	bbe36ea89d0bf90aceadf8466bf562d45adf4908	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+022_rabin_karp	8	8b7a97db47d86faa46e704b455332a29133fac98	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+022_rabin_karp	9	5f7618cacb9ac9c8da6d214c846ac1d043f0283e	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+022_rabin_karp	10	379155cabc6c2e882a5ba1356ecbdad2029d9926	claude-exp/20260619T235936Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+023_bellman_ford	0	ce6edc206cd676c10c3a5718866d8ca3f43beba4	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - bellman_ford
+023_bellman_ford	1	22bd4ff8c520eb2a0f5cfdc97d4ff0a3cd913c7d	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+023_bellman_ford	2	b0640aa187020c80fe0daa97bba21ba90a161795	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+023_bellman_ford	3	aff48e32e54871ca235e0aa9c6240ca773a88bd5	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+023_bellman_ford	4	bbdeb4eb7324c350adcd3c1418ce0c4bac3f1d90	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+023_bellman_ford	5	6b153a1dddf9e94d2ea175d8c82746be52098298	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+023_bellman_ford	6	40e8eaa8f1d86ae22ca9fb770980c632665f7bdb	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+023_bellman_ford	7	e200dd00fb73352db46685cb01e43095a1dac915	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+023_bellman_ford	8	4c9583056ced85bd073b5c587f73d7b7f61a57af	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+023_bellman_ford	9	f32996016d38aa79bcc6a28d5eb57776730488e8	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+023_bellman_ford	10	8d9259b638abc404b5839193daf29abc38a605c0	claude-exp/20260620T005550Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+024_floyd_warshall	0	babb28a40142bb14090acff340d42994f99869ae	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - floyd_warshall
+024_floyd_warshall	1	96a7a2098db8fd18c5e7ee06fd2fa70d8992457d	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+024_floyd_warshall	2	f95e14f49c9b9828df5b61f230383f20931d7a40	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+024_floyd_warshall	3	549c668625f47338711a6eab4f85637657b2c5b9	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+024_floyd_warshall	4	6ad13e1d9400c48525c9f542cd00d97f67d5a891	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+024_floyd_warshall	5	f07dcc62377d565c11ba532982193422d3d3e680	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+024_floyd_warshall	6	551e6b05af3d402befbc636cfc524c9c661496ce	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+024_floyd_warshall	7	3cf23327cf5f8b3c9d6b320f801dcb2d40dd072a	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+024_floyd_warshall	8	6596042eea0b9262af0a9b107f5a38d4f43458c5	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+024_floyd_warshall	9	22cf1e0b8beded21b424b8e3ba2277c5d0a73ca5	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+024_floyd_warshall	10	ccf1c5088041a1e5fe2e2cd2c4ad5e4a24279dcb	claude-exp/20260622T011616Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+025_kruskals_mst	0	69efda1bd2595b4636b5f81b805b81c4597f58e3	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - kruskals_mst
+025_kruskals_mst	1	fa9f37e0eed73568aade4b8d428d584e9f15f291	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+025_kruskals_mst	2	de0dec6259c9c0241dbd2d2af00e0826d88a2863	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+025_kruskals_mst	3	d0b4d2cc862d5fbab71d5f35248d3f7e881f4003	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+025_kruskals_mst	4	89f01ad091be15f8700f5066bceca66d4ed4b359	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4 [clarification follow-up]
+025_kruskals_mst	5	f0336a7cb8e563c09fc11858f8c36016ac3aa3a3	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+025_kruskals_mst	6	ac05c8fab54c14d8ef71da19b8888074fc210116	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+025_kruskals_mst	7	f142c4baa73f22a75cad7388d1ef80d5a2a05c17	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+025_kruskals_mst	8	a15c9a6479335c999688112a342a719a5bc88c95	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+025_kruskals_mst	9	7e8d89ca4c38ac9a20765f0aa85028289fe63133	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+025_kruskals_mst	10	2fef56b2a4e42a3b87cb1de6deec301ac0621e97	claude-exp/20260620T032328Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+026_prims_mst	0	8caa17080359d193e3347eaebd040ccf31520f5d	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - prims_mst
+026_prims_mst	1	a12e2e97660f7424bf1da1239f3c8874518d7390	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+026_prims_mst	2	039c53edc00971603af837e175c987a0755e7755	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+026_prims_mst	3	93aa0af92aa2f007beaf403b78acd47c157e5e18	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+026_prims_mst	4	9247366a767e2e1b0e9a89b908c18360340c1e2c	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+026_prims_mst	5	c600ca8af1d28e003af28686ad782f6ba6016478	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+026_prims_mst	6	ef8082b7f9b2419962e069ea22cd719e0181b85d	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+026_prims_mst	7	06b7a43cb16f9461f38cb5a801be6ee047b06d1f	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+026_prims_mst	8	d409a07af6bcc3361c5fb9ecb39eed4d5ac2d5a3	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+026_prims_mst	9	0f22bdf3633eeebfc7b297ea0ad920589171657c	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+026_prims_mst	10	6065223ffb4c25ab2443674084d6fa0667220493	claude-exp/20260622T023617Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+027_connected_components	0	bb9e1db78cfa42802aea33110bbac8699267a150	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - connected_components
+027_connected_components	1	c005ee14c00ac87ff0a61c84e5ce032a3876478d	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+027_connected_components	2	12a408b29ca96c8be4b209ae637f7e7145956a30	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+027_connected_components	3	c1f6c3458f0a1d8bdc9fdec22afb5d4f1e2c60ed	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+027_connected_components	4	1cd23a1d5bb70ac1b5a74f2458555fb47a55c612	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+027_connected_components	5	418abc862fa0b08761f7832a80063bd05b76cbea	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+027_connected_components	6	72cebaace6ffb504b2149d7f1b7b02e1c6d33039	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+027_connected_components	7	192eca096349ed1918c78bb6f08f4b2914abf6ab	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+027_connected_components	8	7984a1bf0bcac5c1dc4848855b1e640601930aa1	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+027_connected_components	9	199b5e8d548bd4858e1d87871b2c5765115a5e5a	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+027_connected_components	10	310f39e772d46cdca71797b039af8ddac5cf984b	claude-exp/20260622T025408Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+028_bipartite_graph	0	341c8fb76767373c3ea89cd3d91dbaa56fa3f633	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - bipartite_graph
+028_bipartite_graph	1	8ce1f3050313914b17408ea265ae8887742a3125	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+028_bipartite_graph	2	1d638a13e4f9d7cb4be944787d91e1af0e0cd2ae	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+028_bipartite_graph	3	0b89483a5557ca9d44128e6fa545cd5780487b44	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+028_bipartite_graph	4	d45192bf6c96af2eb47a099490cf44d85bdedbd4	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+028_bipartite_graph	5	f966796facb743af5b865f84b5fdb34d69cb241f	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+028_bipartite_graph	6	054369f518fc697969528b36023eb78c14524733	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+028_bipartite_graph	7	94eb5475dfd59f42e1f67c003dd8f09533b62407	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+028_bipartite_graph	8	7ee4ba1a5e7d9d729d0dd1a7e68aea0da5643cdd	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+028_bipartite_graph	9	a8ec27ef9b5f30ca8dde4421b0b7dee4f25aca88	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+028_bipartite_graph	10	56e6e0d0ec1460eb045bf64136da26fe96556785	claude-exp/20260620T054916Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+029_detect_cycle_directed_graph	0	948652095184f90a224f382a92e88da7cedca087	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - detect_cycle_directed_graph
+029_detect_cycle_directed_graph	1	efad5ca56d6462b22e653918d531010636198bf2	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+029_detect_cycle_directed_graph	2	98395dd3fc3c4a101393ecc601f3499de51e4e9b	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+029_detect_cycle_directed_graph	3	f0b02f305e5800d9991e21400b3056d86e99bb4a	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+029_detect_cycle_directed_graph	4	5338c09f4412ddef509429529a4a22ad7f10b425	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+029_detect_cycle_directed_graph	5	f8f5c746e8f4ad753a222a69d647acb6ed1d355a	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+029_detect_cycle_directed_graph	6	5c2b2b23e9e0c6c53ecff15e7508f50238fb19b8	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+029_detect_cycle_directed_graph	7	e6e2d372599277031a28088373a38681972f1413	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+029_detect_cycle_directed_graph	8	16086efec11b472e075b83c0c6c88dfd745d1342	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+029_detect_cycle_directed_graph	9	ab3596931e0002b1629b5d56dee255967d8f430a	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+029_detect_cycle_directed_graph	10	49889156924962c9bdf1882652594bb4aa31a2df	claude-exp/20260620T065720Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+030_strongly_connected_components	0	5ccf86b9ee8ea13a5355692d79723311aa05baf6	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - strongly_connected_components
+030_strongly_connected_components	1	03e9be73a350371e7d971381e26c6d336f7cbabd	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+030_strongly_connected_components	2	85b47a51950f8111c559af4ed8b175e18a1c4af7	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+030_strongly_connected_components	3	67f66910986e5cae626da05cba732a6d76b8111d	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+030_strongly_connected_components	4	f4aa31ac71ce544afe6dfe99d9c0cbe1ee6e082c	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+030_strongly_connected_components	5	ef509ca0fd3578598a95372e2d73ba0456f61027	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+030_strongly_connected_components	6	e60267a6292c955408b0fc6a638654a590c56182	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+030_strongly_connected_components	7	1f77bf837f4d32f406f36b61ef7eb6288c4060dd	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+030_strongly_connected_components	8	a085e4c57eefad18ca985a383bbcf5748cac4fdd	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+030_strongly_connected_components	9	7adbd048796e903b01e8704517d235f80c674a7f	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+030_strongly_connected_components	10	837a2d0a3461ab82b77871a5001913dce63e79b2	claude-exp/20260620T082348Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+031_articulation_points	0	cebd3df16d6879890a0122eeef6232297e350c67	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - articulation_points
+031_articulation_points	1	f15e5e8b18ce74a73c2e6dc7e26eaca9cc3de1bf	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+031_articulation_points	2	95e29523e2059a8780620a5b2e4073ea78c70b18	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+031_articulation_points	3	a6f73eecea46f4850d7bd327e2a755d6468fcebc	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+031_articulation_points	4	7b58cbd78f5102b6389989ac5ab2cb25471f2363	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4 [clarification follow-up]
+031_articulation_points	5	e8c5ea5efeaaf74af225946d191dc9adb4f04550	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+031_articulation_points	6	a0ec4e2098b924a34d70b84b78c1384265fc3bc3	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+031_articulation_points	7	c1377a819c07adc6da7018475f8662365950029e	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+031_articulation_points	8	9ad2f945345b80bc81eba31e23363be0ba593c45	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+031_articulation_points	9	cf58b7298761a3ffa94fc9f471acfcb0ab827b2d	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+031_articulation_points	10	46e1ca49434768fe6fd45373b47b0bc5b336478d	claude-exp/20260622T181810Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+032_ford_fulkerson_max_flow	0	5d0c4637a09de3b22cfe3404ffe5eba72e08f5e5	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - ford_fulkerson_max_flow
+032_ford_fulkerson_max_flow	1	31884a2626fa182fa20d7fabc9e6bbd4583764ec	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+032_ford_fulkerson_max_flow	2	c52303be5805c266a4f882a5249b1abdfa0e9e71	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+032_ford_fulkerson_max_flow	3	8494f78e1b76959e88d6a7411b515d7c81e18804	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+032_ford_fulkerson_max_flow	4	d4b92f527763234c7d6d0e0012c2e6833ef4ce53	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+032_ford_fulkerson_max_flow	5	0582b79029b10eb6ed4c24503ebfc8161fc08e91	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+032_ford_fulkerson_max_flow	6	0e1556eaf99adbaaf5acc3b55421de619ad3969f	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+032_ford_fulkerson_max_flow	7	0d9bd99aeaa40f1b0f369d01cf1d0a7d92d6a36a	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+032_ford_fulkerson_max_flow	8	70695682f11970209d1a44ef3ab50fc551fac6a2	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+032_ford_fulkerson_max_flow	9	adeb5fe5c3e46544321316394c2fe7bdb7e14d80	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+032_ford_fulkerson_max_flow	10	2bb43cc1c5b643d6d305ae1e247a081792de4e55	claude-exp/20260622T034716Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+033_huffman_coding	0	54bc5ea277795289089b37e4aa159ad88ef3830e	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - huffman_coding
+033_huffman_coding	1	c8f116017c329b4d06e98e122af8677cfda6f3c3	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+033_huffman_coding	2	6245c6df0ee5c857b153a4e59e3824bab50940db	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+033_huffman_coding	3	679eb5b3e3340aa9d8998017e01bcdc3a5503d03	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+033_huffman_coding	4	d0f8d847197a8a32523bea39bcf9ef6127f7c9ad	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+033_huffman_coding	5	59d2d9c57529c4b2e92405875c6043c4c9940092	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+033_huffman_coding	6	b3d10b352aa8b53d2983475d9fca7feeb2fd4884	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+033_huffman_coding	7	399bd5de9eae90242fd3b590592191159461b2a1	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+033_huffman_coding	8	c430eaa4cf08773fd420cd5533c48ad3f923d0fc	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+033_huffman_coding	9	f79e857b9e7c797139d83bf0762c3813ca866adf	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+033_huffman_coding	10	96cb6d7b17690c4aac6813d32aa7b6bbbae433f8	claude-exp/20260620T104735Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+034_activity_selection	0	c51fcabc181135457be1f5dc81f181487f0e39b5	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - activity_selection
+034_activity_selection	1	1b1fa715526771ac3bba7abb5bce47884474fbcb	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+034_activity_selection	2	1a204e93be9060fc9e9dd3a923287a2dfea7d2c0	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+034_activity_selection	3	bdfa091da89b1ecd3eea20f26aeb1868664bb3ab	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+034_activity_selection	4	0b29ab836947995dffce994c2475635b45c77186	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+034_activity_selection	5	1f1bc9eb9f6da672253c7000a97a7b6a8b3c7f38	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+034_activity_selection	6	9916a6fe0279aee459516827d89fc519925a4aea	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+034_activity_selection	7	1bf52de41521033baff92b335dd207971fdd38a3	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+034_activity_selection	8	25c99d2e6bbdcb0b38983cd83b8d5419ec592167	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+034_activity_selection	9	3fe7e88fb0ab3295999dbee24fa250eb3bbd92a2	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+034_activity_selection	10	a9a4872251f7ce0aff7282ef856361c21d2df73d	claude-exp/20260620T113224Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+035_insertion_sort	0	49084c7c854236f0f285a5fa80d412f32babafe4	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - insertion_sort
+035_insertion_sort	1	fd8a38c79f32ca740c43000da01edb6cd148c1dc	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+035_insertion_sort	2	7c066e586ffba533854bf503a231ddf775156a5f	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+035_insertion_sort	3	8ebaa283e0796b5bd5f5dd94f3c257bb3378bd50	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+035_insertion_sort	4	d1f34df367eaf59bae5fae5510ee41d17793dc46	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+035_insertion_sort	5	9da2627f584727296f0eb7d95818d89740a83248	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+035_insertion_sort	6	e0a15422306d437614fae87ecc9a1dd3d1f84945	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+035_insertion_sort	7	745137b995fd9e250e7af1525c01f00a85c3afd1	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+035_insertion_sort	8	ac0d1a1217c9d9a2e815a1c6fab75f42b7bdaf4a	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+035_insertion_sort	9	f29cbe506d7467535662c5ff5146ec16643e897b	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+035_insertion_sort	10	8f5bce910b88c0dae6a8b7c330849780fc2b7188	claude-exp/20260620T123026Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+036_heap_sort	0	62a339e7221db868636f7b6da8c276d6f27aff6a	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - heap_sort
+036_heap_sort	1	03705c6ebac49a2bf9c3470e882f54e50874539c	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+036_heap_sort	2	ecf7b0bfb280ab45574ead996e4dcb9c08e8dc60	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+036_heap_sort	3	74cf2e4571a580e83b3c1b8f5614ef1d9c4282a2	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+036_heap_sort	4	02a77ba6b8ccd4bf4096801ce37b736e1e3434da	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+036_heap_sort	5	f7e5fe008cb06e5d37bdd6427161e91f7fd8e643	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+036_heap_sort	6	8cfc41f8892a8d7e58191b0564312524fa7bf959	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+036_heap_sort	7	4c41077f9ae23b4157b5809e7d54903321a3fbd1	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+036_heap_sort	8	37778f9e5508e6cfcaa623089645887810e031b0	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+036_heap_sort	9	96afeebb15aeed98e385edc2a313426074f64b75	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+036_heap_sort	10	6dbff6132cf01972d388d3f842f8d5f64d103d42	claude-exp/20260620T132739Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+037_counting_sort	0	12c50e22afd0599937eafc85ccf5bb064a31406f	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - counting_sort
+037_counting_sort	1	e7bd931ef83f99ab892768880e45c39d52f6af84	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+037_counting_sort	2	196278f88bee83edd9bb71dc80f166d73aa7568e	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+037_counting_sort	3	08fb389c08654067357489fb7b76926926c67894	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3 [clarification follow-up]
+037_counting_sort	4	4d81fe58fa1abc8abb48c26d6e3edd33ccef800e	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+037_counting_sort	5	047bb6d4d1aa58caa7f20b7908ccf27656d8aea5	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+037_counting_sort	6	8310c11340464b894c38030b9b7544a28fe0b4ba	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+037_counting_sort	7	6847312688e37122a6da3a634213415a3f153e3a	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+037_counting_sort	8	3899d605d1a73d102a3959ef7a12799965ff44dd	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+037_counting_sort	9	be92aac6ece1b2f5fecb00826f13eb531fc1d60b	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+037_counting_sort	10	4cf5f30eaed30ee8aa772f4138ee3fca5ed20e17	claude-exp/20260620T141208Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+038_radix_sort	0	713da8a6b4cd79a6660ab19802c8854dd17ac187	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - radix_sort
+038_radix_sort	1	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	2	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	3	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	4	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	5	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	6	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	7	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	8	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	9	78daf6225570a3a465aa489616a586538993e9a7	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	Refactor: Implement high-performance, stable, hybrid Radix Sort with generic key-extractor and support for both ascending and descending order.
+038_radix_sort	10	4c80ca9f21ea49b231a7b1e687a69c7f3a6e4dcb	claude-exp/20260620T150139Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+039_bucket_sort	0	d26f2d873c591acdbc7ca447447eb7bfa0004dba	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - bucket_sort
+039_bucket_sort	1	39af64cf000d47cb144647fbe9f34cf32d7e4170	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+039_bucket_sort	2	a17556d15fccbd7269feb198d8296a0e5105f4de	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+039_bucket_sort	3	1f3349de68bb241fdf378102dbc24a0c8785a4f7	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+039_bucket_sort	4	edcbb5cb14e604a75efeb03b6e9e8294db94f058	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+039_bucket_sort	5	b7b1385e0d541d2e13722410b7aaeb077287d4b0	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+039_bucket_sort	6	ee019f1f1c5f7dfa162dec9323337e1c89bdaa28	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+039_bucket_sort	7	ee82740f1d6cb53f17070dd9b906161f88a7973c	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+039_bucket_sort	8	1ddea4996839e83464a9dd94a3b4ba29b8e4a7da	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+039_bucket_sort	9	ba6d159618f8b2554ae8396a46f085c8dd6eee5c	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+039_bucket_sort	10	d4f3f4fec29d5e8b8ea204eab8ab9abdb17ad426	claude-exp/20260620T155530Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+040_bubble_sort	0	87aa1b897451aed2aad6f3994f007a0bd8656cb7	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - bubble_sort
+040_bubble_sort	1	e2f399a11cb745d98b86065c48207e7c422dca03	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+040_bubble_sort	2	f3352a0c503765dde97e6487081238510df435ae	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+040_bubble_sort	3	0450993ba0d61f85967859d7fe6e5ae2b380a95d	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+040_bubble_sort	4	e5e014c4dd82591ef92efa1b2beddc11f8534105	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4 [clarification follow-up]
+040_bubble_sort	5	6a8c5c4635b890a69b23f7beaadf107a227566d3	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+040_bubble_sort	6	2ab00a5c29185e86b795ac5f2a23efa7302af9ac	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+040_bubble_sort	7	be22fe91414962895ec89b2d816f0a525433b4b7	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+040_bubble_sort	8	4faaea22bcf98c741dbc04c7b2e3335627d24989	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+040_bubble_sort	9	4aca11e3fe86f21214927c758fdcb319d5a3fa6f	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+040_bubble_sort	10	75182fc0faeadd55452609b63416046ec745d21a	claude-exp/20260620T163234Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+041_quickselect	0	bd3f95381cbbb35182f0c65d7c1d5014e1f93e18	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - quickselect
+041_quickselect	1	1943466f761c716ee863fa00926c81693f56f829	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+041_quickselect	2	a268f03aa25a6ddc4b7ec87d2ec3278ad9faae65	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+041_quickselect	3	678ed2748a0bac95ca85194533b908dac00a62ba	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+041_quickselect	4	55e76b6bd97488596dfb4c55d693ae2abd0ddde6	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+041_quickselect	5	adbc7e8332cd8e2326eca3c8dda5896f62415129	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+041_quickselect	6	933286dc4bbb184dcada337b1c62feef8606ee6f	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+041_quickselect	7	8cdaadb8e3cd5179e9c9f42525daead214301816	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+041_quickselect	8	3ecfa7699b23325a6c86e7956b52fb9cdadd7b82	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+041_quickselect	9	bf68fe385c3abe70c6b4633605b95a0c5055d07a	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+041_quickselect	10	f4beeaa8fe3f42a694fcbbceba49b31efd1108cf	claude-exp/20260620T170435Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+042_balanced_parentheses	0	3e63295c7ede4c92486bb33fde070b07d99ea400	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - balanced_parentheses
+042_balanced_parentheses	1	df6adae2e045df7befc46a692a9e9d62beedf30b	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+042_balanced_parentheses	2	1d62f7c251b9f3b34c169d5afa647a3f0026222a	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+042_balanced_parentheses	3	f8dd00c46bc8971a30429f7ab7d51341a101062a	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+042_balanced_parentheses	4	16881bf52b01fc476d7581ce074ad100ba7a76ef	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+042_balanced_parentheses	5	2a4a520092d08d12a54c2de77977537f2de9dc5f	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+042_balanced_parentheses	6	927d184f99d829793d755818c286aaad193dd62b	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+042_balanced_parentheses	7	dff579894bb664bd0e0b73d14caea9c5aee54aac	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+042_balanced_parentheses	8	2409f3840aed6bf38473dc15dbf4615425bab798	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+042_balanced_parentheses	9	e86bf53da185b44839be9b0e04775981359e52d4	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+042_balanced_parentheses	10	4a29d01081c8b48014a7e434885128d02c909d0a	claude-exp/20260620T171620Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+043_circular_queue	0	059fcc262be5274705c7e2b1b9c7fdec9b2aa1cf	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - circular_queue
+043_circular_queue	1	b95694066151d01f02fca82186a26b8f671be5e0	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+043_circular_queue	2	23eca730f2d90ce574b28c5ac466d412779493bc	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+043_circular_queue	3	bebb91d87459c31514f30e4818ff3fb1ed7befc2	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3 [clarification follow-up]
+043_circular_queue	4	f7ee99f393c48aad570aa2f4d15a51d79a025bb6	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+043_circular_queue	5	f948c683c49e783dbd653839895a483f32b3fee2	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+043_circular_queue	6	bfdd72e5694e5c49b0d098b24a27a7313b22290f	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+043_circular_queue	7	635878ba54b019f9a5c1bcc99c126d80c8ce43a1	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+043_circular_queue	8	e772231ccc2ac1b5a1a0c10f1101b88defca40a2	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+043_circular_queue	9	95cd36b036ebd5505513f73b19357210862af85a	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+043_circular_queue	10	7d44719285270ecca054cba1950f5a4129d5baf3	claude-exp/20260620T173602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+044_avl_tree_insertion	0	55aa2928487f17aef2de8df8cdfa31cacbdbfae2	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - avl_tree_insertion
+044_avl_tree_insertion	1	3a2d74bbfe8129755f40e8992423eb02fe3433c6	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+044_avl_tree_insertion	2	e1d3ce6c7725cde7e6570c64a3eff75ded6dff9e	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+044_avl_tree_insertion	3	248119449b9c5efd0f5f11f207d246d36cd04cf0	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+044_avl_tree_insertion	4	6b9530ffbbea9dbc73f3e25684fef978b5c04d94	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+044_avl_tree_insertion	5	c3903fa72d4e9c56770769c41584db96e2311ec9	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+044_avl_tree_insertion	6	3ce33e0585fd8c2fe49ba297fa7692f32e892c4d	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+044_avl_tree_insertion	7	124bffa465917f88055ee50082dad2c043371f0c	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+044_avl_tree_insertion	8	bfae5a62e099e38b241b187c77effd61e2482571	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+044_avl_tree_insertion	9	318c315170a339cd2167a1cf9c4decd3f6c6d35f	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+044_avl_tree_insertion	10	8e38122a02d2d08cf950a286c9422d2b174a7d51	claude-exp/20260622T060458Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+045_red_black_tree_insertion	0	46399608c1e8c8faaa55b8a9f465d8504e398545	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - red_black_tree_insertion
+045_red_black_tree_insertion	1	fa4c1a15b2691bd40d05fc02a2846f043817956c	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+045_red_black_tree_insertion	2	f8077de3bbf9f93be7d461d2af151a8e5710a5a5	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+045_red_black_tree_insertion	3	fce96abd9f6a173e4495b7880cfab4b21c0c5b15	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+045_red_black_tree_insertion	4	112c5532ea9c10b474d0f5210848d72ff1e1d511	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+045_red_black_tree_insertion	5	c39ce74aff1586998c826cb41d25d9ae9062144e	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+045_red_black_tree_insertion	6	e3333ade8e0c3ff668a776849785248aab0ea5ea	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+045_red_black_tree_insertion	7	76e1ccfadb06b886ac6e068e393b14ce0bcadf68	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+045_red_black_tree_insertion	8	1cb0e6efd2978ba88d471082f9eb37f56cd1fabb	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+045_red_black_tree_insertion	9	c1d8d3c6bde02ae3e792dfdaa8388be00e1fe383	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+045_red_black_tree_insertion	10	65501fdf15a45e4d85c4f753d390b0ed6f91a8fb	claude-exp/20260622T211421Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+046_b_tree	0	972e543c9354ede8e1fbf225dd8890b399327733	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - b_tree
+046_b_tree	1	b647434ade1c94dfaa3478d286c2dc9b35fac133	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+046_b_tree	2	99e20fe4d8080fecbcc143b00ffa31d8df44a242	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+046_b_tree	3	ab7325a4219bbe4f6c2fd8bf0c38775ad56675bd	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+046_b_tree	4	7d6c8892b91a60273cdc739002c60af4c62370f0	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+046_b_tree	5	b0d1960459b4ee35a9377045443ae39d75d83262	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+046_b_tree	6	d3c7385f7898e43049e09ea030d8619a251e8b18	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+046_b_tree	7	3e53fbed84134ee255eccaf1b4e3dbebb6e37312	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+046_b_tree	8	aee39d1da8ae6018a00fcb92d96c8ab1e19fbdfe	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+046_b_tree	9	f590c1a73f18d37f0f56b53620e4b5911b5e78b5	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+046_b_tree	10	563281f24b386407fcdff0cb96cfe12193ffd17f	claude-exp/20260622T215319Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+047_cutting_a_rod	0	c544679f048d295c5e3e5b438a3fd47ddc7b6c93	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - cutting_a_rod
+047_cutting_a_rod	1	e03b538af516759f14ec7b44bc312c1a3e4c7e98	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+047_cutting_a_rod	2	ab42e0fcf68063fe0270a4f6dc83717283894794	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+047_cutting_a_rod	3	093746a05e534f34f2b709464ca1cd8b6172c5b8	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+047_cutting_a_rod	4	1631871312adc02abf2da0e936d7e326d3eb3f60	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+047_cutting_a_rod	5	9f5a2e494088a9dea6fa45ed5094c1ca6ddad400	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+047_cutting_a_rod	6	18b97e0bcb7c460011e48839507657995b37b499	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+047_cutting_a_rod	7	096de906d3400cb98946ec232884864e7172ba5a	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+047_cutting_a_rod	8	e6678c63065322479764db8b74ab0e23125aa293	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+047_cutting_a_rod	9	847176c1e88b5ead05cd14d653babb68f54f877b	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+047_cutting_a_rod	10	ebc8bd4f674486b419b11813b7433f2742746040	claude-exp/20260626T000744Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+048_naive_pattern_searching	0	267a4b19d340cb2fb7c5c15a846b84f867575380	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - naive_pattern_searching
+048_naive_pattern_searching	1	96c619a56d55de68bd10303944dd348b0d388ef1	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+048_naive_pattern_searching	2	6655c6663b6705fc282b386a8b8130cc68a2aa61	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+048_naive_pattern_searching	3	6927bcaf243d7fffe457f05149237e191326877f	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+048_naive_pattern_searching	4	7121b0138e5107c2f703fbddce9641e49f8e7a90	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+048_naive_pattern_searching	5	cb57e03fe8e0c9f3c0ab5ddbf70161cdf0dac892	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+048_naive_pattern_searching	6	7d896dc0740fd7c51405f6a6c3efe78763fae0d8	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+048_naive_pattern_searching	7	fe88cf09506d2c12b8823eb9b8267bce411a3384	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+048_naive_pattern_searching	8	5893380fcdea5dd657814a959f9606639f7843ff	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+048_naive_pattern_searching	9	bc2e70d8962f82938fd8b3e7d51095d8e26176d2	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+048_naive_pattern_searching	10	52111ec667edbe2ee3068d4e1157644e622427ba	claude-exp/20260622T085036Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+049_euclidean_algorithms	0	bfc63a5afbf303e52f173b3ade2d0a9a92abbb4e	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - euclidean_algorithms
+049_euclidean_algorithms	1	b930815422ad9b34ccd5b74aaa3b405ce4b02909	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+049_euclidean_algorithms	2	4027e0cc1bd1e172013a21974dffdb7de98d267d	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+049_euclidean_algorithms	3	76c5cd6d25646ac39c29c382973a31813cbbdf2a	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+049_euclidean_algorithms	4	813f4dbd67bf443446243fc6ee245e9842452c31	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+049_euclidean_algorithms	5	574b123b4f9962f95b608f249daf3f5b8cfaa235	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+049_euclidean_algorithms	6	179ffa4e8ae553ec3107e28a73d0e3c33052ba28	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+049_euclidean_algorithms	7	56ce0f1af1ec8ee9617c1ef4703e463a98e1e3e3	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+049_euclidean_algorithms	8	222418383a37ee03cb54a76a953b3a5d768d67d2	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+049_euclidean_algorithms	9	c07df36bb4b5bc8a6a118aef2a77b3623b94165c	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+049_euclidean_algorithms	10	0dfdb99b39687430fe734c937da42b0d46c9aa78	claude-exp/20260622T090602Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+050_modular_exponentiation	0	3e653199d6a964e31832e6db243ea6faf8c11b02	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - modular_exponentiation
+050_modular_exponentiation	1	4d825fac5a7753d7d13076398a285e941da20c5e	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+050_modular_exponentiation	2	563f21d63e7c612f9422d81753cfdec753b331c1	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+050_modular_exponentiation	3	5581b8432ac6026fa228c72686c2b2801f687982	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+050_modular_exponentiation	4	4cd94440b689fc8346faf3c080deb867955456e2	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+050_modular_exponentiation	5	65394c5875c7e4a183b84b5627268e2d66a663be	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+050_modular_exponentiation	6	61b31d55fd1c4906b0cded63d4d9de08fa2ad611	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+050_modular_exponentiation	7	400aef2cc70a5ebdee67eb9510b975024e4cb645	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+050_modular_exponentiation	8	892be2d09c99886c70d3e1130e94337b56883e13	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+050_modular_exponentiation	9	3c6fea1361530c0cca8a8de4b50da999d6e80492	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+050_modular_exponentiation	10	f6b8028f162ea624acf8e0a9d05c9539a0a49c10	claude-exp/20260622T091917Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R001_module_java	0	25fc847b3694d3accc8f4d360d107435b8fff993	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java
+R001_module_java	1	2d4b06480fe9e456d5c079f16e6b27fbd5268b5e	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R001_module_java	2	8ede5d1d7eafa573e2a585cd84fbf80f61c6b79d	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R001_module_java	3	f5f62708845dd9e913d91cb2a7288014bfc2dbfd	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R001_module_java	4	270497b32db2c2f00062233f3dfd25a1bdc2c2ea	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R001_module_java	5	1172a0acf14c341f7b5e2169dfef4a0fad1c3433	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R001_module_java	6	da20decf7499b28e25f7e094c5096b8ca22dd535	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R001_module_java	7	7fd690b137bdc85d8e85391c60d6b13d67696f85	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R001_module_java	8	65f38158eabdfd87072f330806c4886b080a6f40	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R001_module_java	9	37ffa48903fc9366f152d80bbec49d0d86532a09	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R001_module_java	10	d5b92de82bdb098755118e26c8d6e4fd91303bea	claude-exp/20260619T205214Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R002_module_java	0	d638368b23105b6eb7bed6dabc0830bef20c62b7	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java02
+R002_module_java	1	e616b43a22aca1124ee2aea95e6bc39afc237bac	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R002_module_java	2	d9f4fe53e8dc061d89be264772e21b6bc4444c68	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2 [claude failed exit=124 timed_out=1]
+R002_module_java	3	6e29bd14e0f7f28b47e46ef53ed3a83c5604bfbc	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R002_module_java	4	e8bfc053f8d922b7320ec218ce12b2d05b1480e9	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R002_module_java	5	e6ffe7c66a5413e42534ad08fd2b402f28346f40	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R002_module_java	6	001a7b0a17631ed8dfe2dc4cecd1ff0cd36f8e76	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R002_module_java	7	710575ef0b2566dde48c3fa6f7d4914eda1fb37d	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R002_module_java	8	b4639cbb7ecf4313a9fd921ad71747f164c8ad57	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R002_module_java	9	b17a3fb0e11b5eac256da6fe11846761670aaa94	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R002_module_java	10	24a7de78471b1f737fd28ac45e85cb848c1b2b89	claude-exp/20260626T044138Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R003_module_java	0	d8a9a2de433802e04a62893be7a68a5b07822198	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java03
+R003_module_java	1	86d72e84d931fc6b2f5968fd6c42f9bd47d8f755	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R003_module_java	2	72db5cb53b11c19603624762c35f75fb650fdc53	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R003_module_java	3	3a14e4171e526422ced959c53caa5b800d4e5a97	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R003_module_java	4	e5d8a64db739f03a56ab0bfa5a8cfaa9e6d3913b	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R003_module_java	5	6c6718b3bec69e45a29002505ea13777cd9a8c9a	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R003_module_java	6	786dcf133d91236798b6546f4e5d5c116a1cffea	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R003_module_java	7	4fdd614aa8b6393e30a1e39cda2239d706001858	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R003_module_java	8	42c4c60a21c0f2a5ac1eb9738e4c0530b2427a04	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R003_module_java	9	7c3efaa0b5875d4d94c6a0ee3523f93c540ed237	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R003_module_java	10	8363f971a6db9be9ed6b8699211eefeb7b2bdb8b	claude-exp/20260627T203201Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R004_module_java	0	1cf94f0a78174098efa30b4a86c898496296deef	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java04
+R004_module_java	1	76a88768df258c0d592df614551657697c555cf0	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R004_module_java	2	d03e5b7d7ee550e0406609abb76544d60d68703a	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R004_module_java	3	890178cf9187ae706c5878a54dce71133b342a5c	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3 [claude failed exit=124 timed_out=1]
+R004_module_java	4	b4e28f0093a7d7c5ed5545b82010472f89fef496	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4 [claude failed exit=124 timed_out=1]
+R004_module_java	5	53373a7407e78b0ddb07e1ae34cf92f54ec1a830	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R004_module_java	6	0fd6bea455b4baac93be91f1fe43a53c6351b972	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R004_module_java	7	b724c1c3d908cd770505be8a3b857380b3767700	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R004_module_java	8	665a412f3bed8b0ad0cfe42bf015bfaff7b245c9	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R004_module_java	9	7f5071aa29dc9fe5eebd04ee85f27dfc0539d766	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R004_module_java	10	b7ea2706b75cf94a28aad42b6e024543d899024d	claude-exp/20260626T095049Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R005_module_java	0	d9a88298c7318fd030c6669d8967c53339330404	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java05
+R005_module_java	1	36c2c3d8fc4f27e815fb1a9b2d1ee366a4374f3f	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R005_module_java	2	c739d2fd14d98f5d834863efd0636c9a2f24cd1b	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R005_module_java	3	a85509aa2271940637973b3277b7e84a308b16cb	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R005_module_java	4	90fce1ab4cf6d2f2b382b25223acb4126b582319	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R005_module_java	5	5f61e3029858ce627e4ea0d3aac5e8f3c39e997e	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R005_module_java	6	b24909af65c65a65586bf3ea28f5bb92642b6b63	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R005_module_java	7	3e51c0aeb3a760841380ad150acfd96afebb9228	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R005_module_java	8	617a5a88d5a26f80f38e778f650502956386a6e0	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R005_module_java	9	31aff9844c0e616da89b81cf059b2a19ca0f5929	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R005_module_java	10	1d7fd79b5a3ddcc69fc5cb94d2c83d193e9c7b59	claude-exp/20260628T023740Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R006_module_java	0	b5991dcf823aacb90580fba3e2f5a37069efd66a	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java06
+R006_module_java	1	4b4d272f5efec32d583e676da6bd5a6ef1fa9455	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R006_module_java	2	eb5db7aa43acd69b8d301075f8a1ab34db2752e8	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R006_module_java	3	c51a61f23d9c90c1d0934761255a9739efb44946	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R006_module_java	4	173442e091f616644e0d3103e57b73e2e4371efd	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R006_module_java	5	66f2c22725f87295a214d0a1e55408bc64f13498	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R006_module_java	6	d1023828045db5b2b482a7700666a9c5109bd9d7	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R006_module_java	7	d72419da576bb7c3e72a668dbc3a76e76632f7c8	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R006_module_java	8	2a663aed22fcd2c63cfa4aacdee501b7e63803cd	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R006_module_java	9	80ce4c0094da3a519cef0958f045487f5bbc94c5	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R006_module_java	10	26e974b670483c4bb3e27176e47d9fd3997871b8	claude-exp/20260628T035441Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R007_module_java	0	9312c80eb97c4132ad7db7cd8be4e4cd0044f91b	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java07
+R007_module_java	1	5b2f60c41c12b0105f5dff81bc0028e559fe1abe	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R007_module_java	2	a040eb1b55f44da3a169a2891c664a805335d099	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R007_module_java	3	919d029345821ff62e761eea5a014f2b34fcf32c	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R007_module_java	4	809fcdd01a3f8d3c6c51a76984ac31c4f039882b	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R007_module_java	5	52d3fccc28f34e569e2f450b8503bf5dbf3602ae	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R007_module_java	6	771a2e5e946d297852505c8a5160060b49a1fe7f	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R007_module_java	7	a0322b4075d786bba8c1ec7c1abe22c4962ebe30	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R007_module_java	8	8c29b0f70af28a90558c1e723896973283e17a8d	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R007_module_java	9	1db301ea2801e95d2972ef4cd31a4c7d961467b9	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R007_module_java	10	73b0e17b6b71508825e3ad0355562fbd818af8e2	claude-exp/20260628T030752Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R008_module_java	0	298c7659365c15c9787cd00be396a5e911f1888a	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java08
+R008_module_java	1	800a9f31fdb4d4681a74aeb9950da3ae124bd0a2	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R008_module_java	2	124f41fb2a49088e5e250397f3cdfa2bd853dc07	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2 [claude failed exit=124 timed_out=1]
+R008_module_java	3	c686b08c9153192fc92d8fa6b40116daff50deee	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R008_module_java	4	d145b88267d44e96fe1a537bf25dda4777461b6b	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R008_module_java	5	ed6d930b2f68d9e4ec4cfdbaf53e59938557fff1	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R008_module_java	6	25f095fd6457822b33c5c1b75ed2a26912c91940	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R008_module_java	7	8eb261468caa52db0dc541d0299505ba94e1841a	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R008_module_java	8	6358dcc3277b99ab7809effdd2dd963d4bd2cbf1	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R008_module_java	9	a5e0acfd4ea10b35e1fb7f6915e38e53203a6373	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R008_module_java	10	6502b69cb62694ada15ef59379753200f1976d6b	claude-exp/20260626T201257Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R009_module_java	0	ae9a208329abbc399f0ead4e23ae43808a49f19f	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java09
+R009_module_java	1	17868e7eb616a7b37ec672e9a673dc48651d6f0d	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R009_module_java	2	d1ef184d1aef88cdb91a1fbe46a2e30cba290f75	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R009_module_java	3	8d79379f5f6cc12f520d0290d6664cd0d48b6fb8	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R009_module_java	4	05cdab29512b4abb10e07d7dc3bdae27cd37e14a	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R009_module_java	5	db8e52808eda9cb98256aef40a438621889fa28b	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	Document behavior-preserving refactoring of safari simulation
+R009_module_java	6	945b94051457c2c787289f02730f98c6388aab53	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R009_module_java	7	c37cf55f8d777d245c9b4b64c5a50e728beb629f	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R009_module_java	8	ed35e562ebce753211ac27f8fb8e21859350c6ea	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	Document final behavior-neutral cleanup pass
+R009_module_java	9	d1ae4fdae34b1be892aa764c32c956f41e37268b	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R009_module_java	10	978b2fa28ee3f694a34b46ecc4b4e115d023467f	claude-exp/20260628T052712Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10
+R010_module_java	0	8365bf8b9d8147d578a365d4a6624147ac7f594e	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	Initial Commit: Baseline - module_java10
+R010_module_java	1	ca77354b94d2ee7a6a2d7e5ce1828d4f0179478c	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 1
+R010_module_java	2	e356cae3fcd787c72c5d66a8cefe9697ac2c1361	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 2
+R010_module_java	3	15cfcb234f0d0870cc1b7e0f70dc01ec679c8118	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 3
+R010_module_java	4	b65c722cb9e6243d23218298285cad455202fc63	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 4
+R010_module_java	5	31d55398cb60220d58c03026d25f761b5003fd83	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 5
+R010_module_java	6	7a44e1cce9d85f7c495e22016ac43410081dd772	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 6
+R010_module_java	7	e49f4a46fb9b1186d1179a579bd14c338599054e	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 7
+R010_module_java	8	d1505245074611f3507063bb8021d7df20275c51	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 8
+R010_module_java	9	224cbebad927750d82f9648826afc8c8b881fbc5	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 9
+R010_module_java	10	1a7bf0a6d4ea57879ea46ecafacdf40c3b9cafff	claude-exp/20260628T043341Z-claude-opus-4-8-high-Agent	claude-exp: iteration 10

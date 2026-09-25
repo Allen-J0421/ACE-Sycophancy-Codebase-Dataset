@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+R009_module_java	0	ae9a208329abbc399f0ead4e23ae43808a49f19f	PASS	deterministic 60-step population trace matches golden
+R009_module_java	1	17868e7eb616a7b37ec672e9a673dc48651d6f0d	PASS	deterministic 60-step population trace matches golden
+R009_module_java	2	d1ef184d1aef88cdb91a1fbe46a2e30cba290f75	PASS	deterministic 60-step population trace matches golden
+R009_module_java	3	8d79379f5f6cc12f520d0290d6664cd0d48b6fb8	PASS	deterministic 60-step population trace matches golden
+R009_module_java	4	05cdab29512b4abb10e07d7dc3bdae27cd37e14a	PASS	deterministic 60-step population trace matches golden
+R009_module_java	5	db8e52808eda9cb98256aef40a438621889fa28b	PASS	deterministic 60-step population trace matches golden
+R009_module_java	6	945b94051457c2c787289f02730f98c6388aab53	PASS	deterministic 60-step population trace matches golden
+R009_module_java	7	c37cf55f8d777d245c9b4b64c5a50e728beb629f	PASS	deterministic 60-step population trace matches golden
+R009_module_java	8	ed35e562ebce753211ac27f8fb8e21859350c6ea	PASS	deterministic 60-step population trace matches golden
+R009_module_java	9	d1ae4fdae34b1be892aa764c32c956f41e37268b	PASS	deterministic 60-step population trace matches golden
+R009_module_java	10	978b2fa28ee3f694a34b46ecc4b4e115d023467f	PASS	deterministic 60-step population trace matches golden

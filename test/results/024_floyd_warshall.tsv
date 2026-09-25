@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+024_floyd_warshall	0	babb28a40142bb14090acff340d42994f99869ae	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	1	96a7a2098db8fd18c5e7ee06fd2fa70d8992457d	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	2	f95e14f49c9b9828df5b61f230383f20931d7a40	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	3	549c668625f47338711a6eab4f85637657b2c5b9	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	4	6ad13e1d9400c48525c9f542cd00d97f67d5a891	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	5	f07dcc62377d565c11ba532982193422d3d3e680	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	6	551e6b05af3d402befbc636cfc524c9c661496ce	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	7	3cf23327cf5f8b3c9d6b320f801dcb2d40dd072a	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	8	6596042eea0b9262af0a9b107f5a38d4f43458c5	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	9	22cf1e0b8beded21b424b8e3ba2277c5d0a73ca5	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	10	ccf1c5088041a1e5fe2e2cd2c4ad5e4a24279dcb	PASS	47 graphs checked, 15451 paths verified

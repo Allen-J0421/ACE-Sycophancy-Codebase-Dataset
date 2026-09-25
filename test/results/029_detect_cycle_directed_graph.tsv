@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+029_detect_cycle_directed_graph	0	948652095184f90a224f382a92e88da7cedca087	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	1	efad5ca56d6462b22e653918d531010636198bf2	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	2	98395dd3fc3c4a101393ecc601f3499de51e4e9b	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	3	f0b02f305e5800d9991e21400b3056d86e99bb4a	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	4	5338c09f4412ddef509429529a4a22ad7f10b425	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	5	f8f5c746e8f4ad753a222a69d647acb6ed1d355a	PASS	4 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	6	5c2b2b23e9e0c6c53ecff15e7508f50238fb19b8	PASS	4 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	7	e6e2d372599277031a28088373a38681972f1413	PASS	8 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	8	16086efec11b472e075b83c0c6c88dfd745d1342	PASS	8 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	9	ab3596931e0002b1629b5d56dee255967d8f430a	PASS	8 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	10	49889156924962c9bdf1882652594bb4aa31a2df	PASS	8 detector(s) x 65 graphs

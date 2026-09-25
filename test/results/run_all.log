@@ -1,0 +1,726 @@
+001_binary_search	iter0	PASS	387 checks
+001_binary_search	iter1	PASS	387 checks
+001_binary_search	iter2	PASS	387 checks
+001_binary_search	iter3	PASS	387 checks
+001_binary_search	iter4	PASS	387 checks
+001_binary_search	iter5	PASS	387 checks
+001_binary_search	iter6	PASS	387 checks
+001_binary_search	iter7	PASS	387 checks
+001_binary_search	iter8	PASS	387 checks
+001_binary_search	iter9	PASS	387 checks
+001_binary_search	iter10	PASS	387 checks
+002_two_pointers_technique	iter0	PASS	225 checks
+002_two_pointers_technique	iter1	PASS	225 checks
+002_two_pointers_technique	iter2	PASS	225 checks
+002_two_pointers_technique	iter3	PASS	225 checks
+002_two_pointers_technique	iter4	PASS	225 checks
+002_two_pointers_technique	iter5	PASS	225 checks
+002_two_pointers_technique	iter6	PASS	225 checks
+002_two_pointers_technique	iter7	PASS	225 checks
+002_two_pointers_technique	iter8	PASS	225 checks
+002_two_pointers_technique	iter9	PASS	225 checks
+002_two_pointers_technique	iter10	PASS	225 checks
+003_prefix_sum_array	iter0	PASS	42 checks
+003_prefix_sum_array	iter1	PASS	42 checks
+003_prefix_sum_array	iter2	PASS	42 checks
+003_prefix_sum_array	iter3	PASS	42 checks
+003_prefix_sum_array	iter4	PASS	42 checks
+003_prefix_sum_array	iter5	PASS	42 checks
+003_prefix_sum_array	iter6	PASS	42 checks
+003_prefix_sum_array	iter7	PASS	42 checks
+003_prefix_sum_array	iter8	PASS	42 checks
+003_prefix_sum_array	iter9	PASS	42 checks
+003_prefix_sum_array	iter10	PASS	42 checks
+004_breadth_first_search	iter0	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter1	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter2	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter3	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter4	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter5	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter6	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter7	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter8	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter9	PASS	46 graphs, BFS order matches baseline semantics
+004_breadth_first_search	iter10	PASS	46 graphs, BFS order matches baseline semantics
+005_depth_first_search	iter0	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter1	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter2	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter3	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter4	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter5	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter6	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter7	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter8	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter9	PASS	44 graphs, traversal order matches baseline semantics
+005_depth_first_search	iter10	PASS	44 graphs, traversal order matches baseline semantics
+006_topological_sorting_bfs	iter0	PASS	54 graphs
+006_topological_sorting_bfs	iter1	PASS	54 graphs
+006_topological_sorting_bfs	iter2	PASS	54 graphs
+006_topological_sorting_bfs	iter3	PASS	54 graphs
+006_topological_sorting_bfs	iter4	PASS	54 graphs
+006_topological_sorting_bfs	iter5	PASS	54 graphs
+006_topological_sorting_bfs	iter6	PASS	54 graphs
+006_topological_sorting_bfs	iter7	PASS	54 graphs
+006_topological_sorting_bfs	iter8	PASS	54 graphs
+006_topological_sorting_bfs	iter9	PASS	54 graphs
+006_topological_sorting_bfs	iter10	PASS	54 graphs
+007_dijkstras_shortest_path	iter0	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter1	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter2	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter3	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter4	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter5	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter6	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter7	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter8	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter9	PASS	40 graphs checked
+007_dijkstras_shortest_path	iter10	PASS	40 graphs checked
+008_disjoint_set_union_find	iter0	PASS	37666 checks
+008_disjoint_set_union_find	iter1	PASS	37666 checks
+008_disjoint_set_union_find	iter2	PASS	37666 checks
+008_disjoint_set_union_find	iter3	PASS	37666 checks
+008_disjoint_set_union_find	iter4	PASS	37666 checks
+008_disjoint_set_union_find	iter5	PASS	37666 checks
+008_disjoint_set_union_find	iter6	PASS	37666 checks
+008_disjoint_set_union_find	iter7	PASS	37666 checks
+008_disjoint_set_union_find	iter8	PASS	37666 checks
+008_disjoint_set_union_find	iter9	PASS	37666 checks
+008_disjoint_set_union_find	iter10	PASS	37666 checks
+009_merge_sort	iter0	PASS	45 arrays sorted correctly
+009_merge_sort	iter1	PASS	45 arrays sorted correctly
+009_merge_sort	iter2	PASS	45 arrays sorted correctly
+009_merge_sort	iter3	PASS	45 arrays sorted correctly
+009_merge_sort	iter4	PASS	45 arrays sorted correctly
+009_merge_sort	iter5	PASS	45 arrays sorted correctly
+009_merge_sort	iter6	PASS	45 arrays sorted correctly
+009_merge_sort	iter7	PASS	45 arrays sorted correctly
+009_merge_sort	iter8	PASS	45 arrays sorted correctly
+009_merge_sort	iter9	PASS	45 arrays sorted correctly
+009_merge_sort	iter10	PASS	45 arrays sorted correctly
+010_quick_sort	iter0	PASS	49 arrays sorted correctly
+010_quick_sort	iter1	PASS	49 arrays sorted correctly
+010_quick_sort	iter2	PASS	49 arrays sorted correctly
+010_quick_sort	iter3	PASS	49 arrays sorted correctly
+010_quick_sort	iter4	PASS	49 arrays sorted correctly
+010_quick_sort	iter5	PASS	49 arrays sorted correctly
+010_quick_sort	iter6	PASS	49 arrays sorted correctly
+010_quick_sort	iter7	PASS	49 arrays sorted correctly
+010_quick_sort	iter8	PASS	49 arrays sorted correctly
+010_quick_sort	iter9	PASS	49 arrays sorted correctly
+010_quick_sort	iter10	PASS	49 arrays sorted correctly
+011_binary_heap	iter0	PASS	2606 heap ops verified
+011_binary_heap	iter1	PASS	2606 heap ops verified
+011_binary_heap	iter2	PASS	2606 heap ops verified
+011_binary_heap	iter3	PASS	2606 heap ops verified
+011_binary_heap	iter4	PASS	2606 heap ops verified
+011_binary_heap	iter5	PASS	2606 heap ops verified
+011_binary_heap	iter6	PASS	2606 heap ops verified
+011_binary_heap	iter7	PASS	2606 heap ops verified
+011_binary_heap	iter8	PASS	2606 heap ops verified
+011_binary_heap	iter9	PASS	2606 heap ops verified
+011_binary_heap	iter10	PASS	2606 heap ops verified
+012_building_heap_from_array	iter0	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter1	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter2	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter3	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter4	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter5	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter6	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter7	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter8	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter9	PASS	45 arrays heapified (max-heap + permutation)
+012_building_heap_from_array	iter10	PASS	45 arrays heapified (max-heap + permutation)
+013_binary_search_tree_searching	iter0	PASS	1247 membership checks
+013_binary_search_tree_searching	iter1	PASS	1236 membership checks
+013_binary_search_tree_searching	iter2	PASS	1236 membership checks
+013_binary_search_tree_searching	iter3	PASS	1236 membership checks
+013_binary_search_tree_searching	iter4	PASS	1236 membership checks
+013_binary_search_tree_searching	iter5	PASS	1236 membership checks
+013_binary_search_tree_searching	iter6	PASS	1236 membership checks
+013_binary_search_tree_searching	iter7	PASS	1236 membership checks
+013_binary_search_tree_searching	iter8	PASS	1236 membership checks
+013_binary_search_tree_searching	iter9	PASS	1236 membership checks
+013_binary_search_tree_searching	iter10	PASS	1236 membership checks
+014_trie_insert_and_search	iter0	PASS	1954 checks
+014_trie_insert_and_search	iter1	PASS	1954 checks
+014_trie_insert_and_search	iter2	PASS	1954 checks
+014_trie_insert_and_search	iter3	PASS	1954 checks
+014_trie_insert_and_search	iter4	PASS	1954 checks
+014_trie_insert_and_search	iter5	PASS	1954 checks
+014_trie_insert_and_search	iter6	PASS	1954 checks
+014_trie_insert_and_search	iter7	PASS	1954 checks
+014_trie_insert_and_search	iter8	PASS	1954 checks
+014_trie_insert_and_search	iter9	PASS	1954 checks
+014_trie_insert_and_search	iter10	PASS	1954 checks
+015_open_addressing_linear_probing	iter0	PASS	1855 checks
+015_open_addressing_linear_probing	iter1	PASS	5671 checks
+015_open_addressing_linear_probing	iter2	PASS	5671 checks
+015_open_addressing_linear_probing	iter3	PASS	5671 checks
+015_open_addressing_linear_probing	iter4	PASS	5671 checks
+015_open_addressing_linear_probing	iter5	PASS	5671 checks
+015_open_addressing_linear_probing	iter6	PASS	5671 checks
+015_open_addressing_linear_probing	iter7	PASS	5671 checks
+015_open_addressing_linear_probing	iter8	PASS	5671 checks
+015_open_addressing_linear_probing	iter9	PASS	5671 checks
+015_open_addressing_linear_probing	iter10	PASS	5671 checks
+016_lru_cache	iter0	PASS	1619 checks
+016_lru_cache	iter1	PASS	5219 checks
+016_lru_cache	iter2	PASS	5219 checks
+016_lru_cache	iter3	PASS	5219 checks
+016_lru_cache	iter4	PASS	5219 checks
+016_lru_cache	iter5	PASS	5219 checks
+016_lru_cache	iter6	PASS	5219 checks
+016_lru_cache	iter7	PASS	5219 checks
+016_lru_cache	iter8	PASS	5219 checks
+016_lru_cache	iter9	PASS	5219 checks
+016_lru_cache	iter10	PASS	5219 checks
+017_knapsack_01	iter0	PASS	45 instances
+017_knapsack_01	iter1	PASS	45 instances
+017_knapsack_01	iter2	PASS	45 instances
+017_knapsack_01	iter3	PASS	45 instances
+017_knapsack_01	iter4	PASS	45 instances
+017_knapsack_01	iter5	PASS	45 instances
+017_knapsack_01	iter6	PASS	45 instances
+017_knapsack_01	iter7	PASS	45 instances
+017_knapsack_01	iter8	PASS	45 instances
+017_knapsack_01	iter9	PASS	45 instances
+017_knapsack_01	iter10	PASS	45 instances
+018_coin_change	iter0	PASS	47 instances
+018_coin_change	iter1	PASS	47 instances
+018_coin_change	iter2	PASS	47 instances
+018_coin_change	iter3	PASS	47 instances
+018_coin_change	iter4	PASS	47 instances
+018_coin_change	iter5	PASS	47 instances
+018_coin_change	iter6	PASS	47 instances
+018_coin_change	iter7	PASS	47 instances
+018_coin_change	iter8	PASS	47 instances
+018_coin_change	iter9	PASS	47 instances
+018_coin_change	iter10	PASS	47 instances
+019_matrix_chain_multiplication	iter0	PASS	52 instances
+019_matrix_chain_multiplication	iter1	PASS	52 instances
+019_matrix_chain_multiplication	iter2	PASS	52 instances
+019_matrix_chain_multiplication	iter3	PASS	52 instances
+019_matrix_chain_multiplication	iter4	PASS	52 instances
+019_matrix_chain_multiplication	iter5	PASS	52 instances
+019_matrix_chain_multiplication	iter6	PASS	52 instances
+019_matrix_chain_multiplication	iter7	PASS	52 instances
+019_matrix_chain_multiplication	iter8	PASS	52 instances
+019_matrix_chain_multiplication	iter9	PASS	52 instances
+019_matrix_chain_multiplication	iter10	PASS	52 instances
+020_longest_common_subsequence	iter0	PASS	64 checks over 1 entry points
+020_longest_common_subsequence	iter1	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter2	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter3	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter4	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter5	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter6	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter7	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	iter8	PASS	384 checks over 6 entry points
+020_longest_common_subsequence	iter9	PASS	384 checks over 6 entry points
+020_longest_common_subsequence	iter10	PASS	384 checks over 6 entry points
+021_kmp_pattern_searching	iter0	PASS	81 checks
+021_kmp_pattern_searching	iter1	PASS	81 checks
+021_kmp_pattern_searching	iter2	PASS	81 checks
+021_kmp_pattern_searching	iter3	PASS	81 checks
+021_kmp_pattern_searching	iter4	PASS	81 checks
+021_kmp_pattern_searching	iter5	PASS	81 checks
+021_kmp_pattern_searching	iter6	PASS	81 checks
+021_kmp_pattern_searching	iter7	PASS	81 checks
+021_kmp_pattern_searching	iter8	PASS	81 checks
+021_kmp_pattern_searching	iter9	PASS	81 checks
+021_kmp_pattern_searching	iter10	PASS	81 checks
+022_rabin_karp	iter0	PASS	76 checks
+022_rabin_karp	iter1	PASS	76 checks
+022_rabin_karp	iter2	PASS	76 checks
+022_rabin_karp	iter3	PASS	76 checks
+022_rabin_karp	iter4	PASS	76 checks
+022_rabin_karp	iter5	PASS	76 checks
+022_rabin_karp	iter6	PASS	76 checks
+022_rabin_karp	iter7	PASS	76 checks
+022_rabin_karp	iter8	PASS	76 checks
+022_rabin_karp	iter9	PASS	76 checks
+022_rabin_karp	iter10	PASS	76 checks
+023_bellman_ford	iter0	PASS	75 checks
+023_bellman_ford	iter1	PASS	75 checks
+023_bellman_ford	iter2	PASS	75 checks
+023_bellman_ford	iter3	PASS	75 checks
+023_bellman_ford	iter4	PASS	75 checks
+023_bellman_ford	iter5	PASS	75 checks
+023_bellman_ford	iter6	PASS	75 checks
+023_bellman_ford	iter7	PASS	75 checks
+023_bellman_ford	iter8	PASS	75 checks
+023_bellman_ford	iter9	PASS	75 checks
+023_bellman_ford	iter10	PASS	75 checks
+024_floyd_warshall	iter0	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	iter1	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	iter2	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	iter3	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	iter4	PASS	47 graphs checked, 0 paths verified
+024_floyd_warshall	iter5	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	iter6	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	iter7	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	iter8	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	iter9	PASS	47 graphs checked, 15451 paths verified
+024_floyd_warshall	iter10	PASS	47 graphs checked, 15451 paths verified
+025_kruskals_mst	iter0	PASS	49 graphs checked
+025_kruskals_mst	iter1	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter2	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter3	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter4	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter5	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter6	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter7	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter8	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter9	PASS	49 graphs checked (weight + rich result)
+025_kruskals_mst	iter10	PASS	49 graphs checked (weight + rich result)
+026_prims_mst	iter0	PASS	47 MST instances verified
+026_prims_mst	iter1	PASS	47 MST instances verified
+026_prims_mst	iter2	PASS	47 MST instances verified
+026_prims_mst	iter3	PASS	47 MST instances verified
+026_prims_mst	iter4	PASS	47 MST instances verified
+026_prims_mst	iter5	PASS	47 MST instances verified
+026_prims_mst	iter6	PASS	47 MST instances verified
+026_prims_mst	iter7	PASS	47 MST instances verified
+026_prims_mst	iter8	PASS	47 MST instances verified
+026_prims_mst	iter9	PASS	47 MST instances verified
+026_prims_mst	iter10	PASS	47 MST instances verified
+027_connected_components	iter0	PASS	49 graphs x [static getComponents]
+027_connected_components	iter1	PASS	49 graphs x [default]
+027_connected_components	iter2	PASS	49 graphs x [default]
+027_connected_components	iter3	PASS	49 graphs x [default]
+027_connected_components	iter4	PASS	49 graphs x [default]
+027_connected_components	iter5	PASS	49 graphs x [default]
+027_connected_components	iter6	PASS	49 graphs x [default]
+027_connected_components	iter7	PASS	49 graphs x [default]
+027_connected_components	iter8	PASS	49 graphs x [default, BreadthFirstTraversal, DepthFirstTraversal]
+027_connected_components	iter9	PASS	49 graphs x [default, BreadthFirstTraversal, DepthFirstTraversal]
+027_connected_components	iter10	PASS	49 graphs x [default, BreadthFirstTraversal, DepthFirstTraversal]
+028_bipartite_graph	iter0	PASS	67 graphs (64 core incl. 48 random, 3 self-loop)
+028_bipartite_graph	iter1	PASS	67 graphs (64 core incl. 48 random, 3 self-loop)
+028_bipartite_graph	iter2	PASS	67 graphs (64 core incl. 48 random, 3 self-loop)
+028_bipartite_graph	iter3	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter4	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter5	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter6	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter7	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter8	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter9	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+028_bipartite_graph	iter10	FAIL	3/3 self-loop graphs wrong (baseline answers false); core 64/64 ok || entry (shape B): public bipartite.BipartiteResult 
+029_detect_cycle_directed_graph	iter0	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter1	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter2	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter3	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter4	PASS	1 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter5	PASS	4 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter6	PASS	4 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter7	PASS	8 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter8	PASS	8 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter9	PASS	8 detector(s) x 65 graphs
+029_detect_cycle_directed_graph	iter10	PASS	8 detector(s) x 65 graphs
+030_strongly_connected_components	iter0	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter1	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter2	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter3	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter4	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter5	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter6	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter7	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter8	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter9	PASS	56 graphs checked (partition + topological component order)
+030_strongly_connected_components	iter10	PASS	56 graphs checked (partition + topological component order)
+031_articulation_points	iter0	PASS	60 graphs checked
+031_articulation_points	iter1	PASS	60 graphs checked
+031_articulation_points	iter2	PASS	60 graphs checked
+031_articulation_points	iter3	PASS	60 graphs checked
+031_articulation_points	iter4	PASS	60 graphs checked
+031_articulation_points	iter5	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	iter6	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	iter7	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	iter8	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	iter9	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	iter10	PASS	60 graphs checked (info: bridges 60/60 match)
+032_ford_fulkerson_max_flow	iter0	PASS	69 max-flow instances
+032_ford_fulkerson_max_flow	iter1	PASS	207 max-flow instances
+032_ford_fulkerson_max_flow	iter2	PASS	207 max-flow instances
+032_ford_fulkerson_max_flow	iter3	PASS	207 max-flow instances
+032_ford_fulkerson_max_flow	iter4	PASS	207 max-flow instances
+032_ford_fulkerson_max_flow	iter5	PASS	207 max-flow instances
+032_ford_fulkerson_max_flow	iter6	PASS	207 max-flow instances
+032_ford_fulkerson_max_flow	iter7	PASS	276 max-flow instances
+032_ford_fulkerson_max_flow	iter8	PASS	276 max-flow instances
+032_ford_fulkerson_max_flow	iter9	PASS	276 max-flow instances
+032_ford_fulkerson_max_flow	iter10	PASS	276 max-flow instances
+033_huffman_coding	iter0	PASS	46 huffman instances
+033_huffman_coding	iter1	PASS	46 huffman instances
+033_huffman_coding	iter2	PASS	46 huffman instances
+033_huffman_coding	iter3	PASS	46 huffman instances
+033_huffman_coding	iter4	PASS	46 huffman instances
+033_huffman_coding	iter5	PASS	46 huffman instances
+033_huffman_coding	iter6	PASS	46 huffman instances
+033_huffman_coding	iter7	PASS	46 huffman instances
+033_huffman_coding	iter8	PASS	46 huffman instances
+033_huffman_coding	iter9	PASS	46 huffman instances
+033_huffman_coding	iter10	PASS	46 huffman instances
+034_activity_selection	iter0	PASS	66 selection instances
+034_activity_selection	iter1	PASS	66 selection instances
+034_activity_selection	iter2	PASS	66 selection instances
+034_activity_selection	iter3	PASS	66 selection instances
+034_activity_selection	iter4	PASS	66 selection instances
+034_activity_selection	iter5	PASS	66 selection instances
+034_activity_selection	iter6	PASS	66 selection instances
+034_activity_selection	iter7	PASS	66 selection instances
+034_activity_selection	iter8	PASS	66 selection instances
+034_activity_selection	iter9	PASS	66 selection instances
+034_activity_selection	iter10	PASS	66 selection instances
+035_insertion_sort	iter0	PASS	56 arrays sorted correctly
+035_insertion_sort	iter1	PASS	56 arrays sorted correctly
+035_insertion_sort	iter2	PASS	168 arrays sorted correctly
+035_insertion_sort	iter3	PASS	168 arrays sorted correctly
+035_insertion_sort	iter4	PASS	168 arrays sorted correctly
+035_insertion_sort	iter5	PASS	168 arrays sorted correctly
+035_insertion_sort	iter6	PASS	280 arrays sorted correctly
+035_insertion_sort	iter7	PASS	280 arrays sorted correctly
+035_insertion_sort	iter8	PASS	280 arrays sorted correctly
+035_insertion_sort	iter9	PASS	280 arrays sorted correctly
+035_insertion_sort	iter10	PASS	112 arrays sorted correctly
+036_heap_sort	iter0	PASS	56 arrays sorted correctly
+036_heap_sort	iter1	PASS	56 arrays sorted correctly
+036_heap_sort	iter2	PASS	56 arrays sorted correctly
+036_heap_sort	iter3	PASS	112 arrays sorted correctly
+036_heap_sort	iter4	PASS	112 arrays sorted correctly
+036_heap_sort	iter5	PASS	112 arrays sorted correctly
+036_heap_sort	iter6	PASS	112 arrays sorted correctly
+036_heap_sort	iter7	PASS	112 arrays sorted correctly
+036_heap_sort	iter8	PASS	112 arrays sorted correctly
+036_heap_sort	iter9	PASS	112 arrays sorted correctly
+036_heap_sort	iter10	PASS	112 arrays sorted correctly
+037_counting_sort	iter0	PASS	58 arrays sorted correctly
+037_counting_sort	iter1	PASS	58 arrays sorted correctly
+037_counting_sort	iter2	PASS	58 arrays sorted correctly
+037_counting_sort	iter3	PASS	58 arrays sorted correctly
+037_counting_sort	iter4	PASS	58 arrays sorted correctly
+037_counting_sort	iter5	PASS	58 arrays sorted correctly
+037_counting_sort	iter6	PASS	58 arrays sorted correctly
+037_counting_sort	iter7	PASS	58 arrays sorted correctly
+037_counting_sort	iter8	PASS	58 arrays sorted correctly
+037_counting_sort	iter9	PASS	58 arrays sorted correctly
+037_counting_sort	iter10	PASS	58 arrays sorted correctly
+038_radix_sort	iter0	PASS	52 checks
+038_radix_sort	iter1	PASS	104 checks
+038_radix_sort	iter2	PASS	104 checks
+038_radix_sort	iter3	PASS	104 checks
+038_radix_sort	iter4	PASS	104 checks
+038_radix_sort	iter5	PASS	104 checks
+038_radix_sort	iter6	PASS	104 checks
+038_radix_sort	iter7	PASS	104 checks
+038_radix_sort	iter8	PASS	104 checks
+038_radix_sort	iter9	PASS	104 checks
+038_radix_sort	iter10	PASS	104 checks
+039_bucket_sort	iter0	PASS	54 checks
+039_bucket_sort	iter1	PASS	54 checks
+039_bucket_sort	iter2	PASS	54 checks
+039_bucket_sort	iter3	PASS	54 checks
+039_bucket_sort	iter4	PASS	54 checks
+039_bucket_sort	iter5	PASS	54 checks
+039_bucket_sort	iter6	PASS	54 checks
+039_bucket_sort	iter7	PASS	54 checks
+039_bucket_sort	iter8	PASS	54 checks
+039_bucket_sort	iter9	PASS	54 checks
+039_bucket_sort	iter10	PASS	54 checks
+040_bubble_sort	iter0	PASS	70 checks
+040_bubble_sort	iter1	PASS	210 checks
+040_bubble_sort	iter2	PASS	210 checks
+040_bubble_sort	iter3	PASS	210 checks
+040_bubble_sort	iter4	PASS	210 checks
+040_bubble_sort	iter5	PASS	630 checks
+040_bubble_sort	iter6	PASS	630 checks
+040_bubble_sort	iter7	PASS	630 checks
+040_bubble_sort	iter8	PASS	1190 checks
+040_bubble_sort	iter9	PASS	1190 checks
+040_bubble_sort	iter10	PASS	1190 checks
+041_quickselect	iter0	PASS	803 checks
+041_quickselect	iter1	PASS	803 checks
+041_quickselect	iter2	PASS	803 checks
+041_quickselect	iter3	PASS	803 checks
+041_quickselect	iter4	PASS	803 checks
+041_quickselect	iter5	PASS	803 checks
+041_quickselect	iter6	PASS	803 checks
+041_quickselect	iter7	PASS	803 checks
+041_quickselect	iter8	PASS	803 checks
+041_quickselect	iter9	PASS	803 checks
+041_quickselect	iter10	PASS	803 checks
+042_balanced_parentheses	iter0	PASS	245 checks
+042_balanced_parentheses	iter1	PASS	245 checks
+042_balanced_parentheses	iter2	PASS	245 checks
+042_balanced_parentheses	iter3	PASS	245 checks
+042_balanced_parentheses	iter4	PASS	245 checks
+042_balanced_parentheses	iter5	PASS	245 checks
+042_balanced_parentheses	iter6	PASS	245 checks
+042_balanced_parentheses	iter7	PASS	245 checks
+042_balanced_parentheses	iter8	PASS	245 checks
+042_balanced_parentheses	iter9	PASS	245 checks
+042_balanced_parentheses	iter10	PASS	245 checks
+043_circular_queue	iter0	PASS	18038 checks
+043_circular_queue	iter1	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter2	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter3	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter4	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter5	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter6	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter7	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter8	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter9	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+043_circular_queue	iter10	FAIL	full/empty contract changed vs baseline (core FIFO/wraparound correct): dequeue on empty throws NoSuchElementException (
+044_avl_tree_insertion	iter0	PASS	157 checks over 52 insert sequences
+044_avl_tree_insertion	iter1	PASS	1353 checks over 52 insert sequences
+044_avl_tree_insertion	iter2	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter3	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter4	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter5	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter6	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter7	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter8	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter9	PASS	1405 checks over 52 insert sequences
+044_avl_tree_insertion	iter10	PASS	1405 checks over 52 insert sequences
+045_red_black_tree_insertion	iter0	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	iter1	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	iter2	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	iter3	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	iter4	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	iter5	PASS	309 checks over 51 insert sequences
+045_red_black_tree_insertion	iter6	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	iter7	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	iter8	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	iter9	PASS	361 checks over 51 insert sequences
+045_red_black_tree_insertion	iter10	PASS	361 checks over 51 insert sequences
+046_b_tree	iter0	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter1	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter2	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter3	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter4	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter5	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter6	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter7	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter8	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter9	PASS	8229 checks over 76 insert sequences (t=2..5)
+046_b_tree	iter10	PASS	8229 checks over 76 insert sequences (t=2..5)
+047_cutting_a_rod	iter0	PASS	53 checks
+047_cutting_a_rod	iter1	PASS	106 checks
+047_cutting_a_rod	iter2	PASS	106 checks
+047_cutting_a_rod	iter3	PASS	106 checks
+047_cutting_a_rod	iter4	PASS	106 checks
+047_cutting_a_rod	iter5	PASS	106 checks
+047_cutting_a_rod	iter6	PASS	106 checks
+047_cutting_a_rod	iter7	PASS	106 checks
+047_cutting_a_rod	iter8	PASS	106 checks
+047_cutting_a_rod	iter9	PASS	106 checks
+047_cutting_a_rod	iter10	PASS	106 checks
+048_naive_pattern_searching	iter0	PASS	82 checks
+048_naive_pattern_searching	iter1	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter2	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter3	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter4	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter5	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter6	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter7	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter8	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter9	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+048_naive_pattern_searching	iter10	FAIL	empty pattern no longer returns [0..n] as the baseline does (2/82 checks) || entry: static java.util.List NaivePatternSe
+049_euclidean_algorithms	iter0	PASS	120 checks
+049_euclidean_algorithms	iter1	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter2	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter3	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter4	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter5	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter6	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter7	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter8	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter9	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+049_euclidean_algorithms	iter10	FAIL	negative-input sign convention changed vs baseline (54/240 checks; magnitudes correct, e.g. baseline findGCD(4,-6) = -2)
+050_modular_exponentiation	iter0	PASS	105 checks
+050_modular_exponentiation	iter1	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter2	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter3	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter4	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter5	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter6	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter7	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter8	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter9	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+050_modular_exponentiation	iter10	FAIL	domain narrowed: 24/105 cases with M > 2^30 wrong (int overflow), baseline handles all int x, M || 646 CHECK FAIL powMod
+R001_module_java	iter0	PASS	deterministic 100-step state trace (species/sick/plants/climate) matches golden
+R001_module_java	iter1	FAIL	state trace diverges from golden at step 1 || headless view stub: GraphView headless view stub: SimulatorView simulator 
+R001_module_java	iter2	FAIL	state trace diverges from golden at step 1 || headless view stub: GraphView headless view stub: SimulatorView simulator 
+R001_module_java	iter3	FAIL	state trace diverges from golden at step 1 || headless view stub: GraphView headless view stub: SimulatorView simulator 
+R001_module_java	iter4	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R001_module_java	iter5	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R001_module_java	iter6	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R001_module_java	iter7	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R001_module_java	iter8	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R001_module_java	iter9	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R001_module_java	iter10	FAIL	state trace diverges from golden at step 1 || headless view stub: view.GraphView headless view stub: view.SimulatorView 
+R002_module_java	iter0	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter1	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter2	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter3	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter4	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter5	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter6	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter7	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter8	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter9	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R002_module_java	iter10	PASS	3 reps x 130 steps: census, grid consistency, clock, no exceptions, sim progresses
+R003_module_java	iter0	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter1	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter2	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter3	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter4	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter5	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter6	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter7	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter8	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter9	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R003_module_java	iter10	PASS	properties ok + deterministic 120-step population/layout trace matches golden
+R004_module_java	iter0	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter1	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter2	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter3	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter4	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter5	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter6	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter7	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter8	PASS	properties ok + deterministic 100-step population/disease/layout trace matches golden
+R004_module_java	iter9	FAIL	trace diverges from golden at step 18 || initial: {Coyote=44, Deer=397, Eagle=31, Grass=126, Hunter=5, Mouse=345, Wolf=3
+R004_module_java	iter10	FAIL	trace diverges from golden at step 18 || initial: {Coyote=44, Deer=397, Eagle=31, Grass=126, Hunter=5, Mouse=345, Wolf=3
+R005_module_java	iter0	PASS	part B 30 rounds x 14 scenarios; part A 3 end-to-end scenarios (initial counts, season/time/temperature schedule, grid i
+R005_module_java	iter1	PASS	part B 30 rounds x 14 scenarios; part A 3 end-to-end scenarios (initial counts, season/time/temperature schedule, grid i
+R005_module_java	iter2	PASS	part B 30 rounds x 14 scenarios; part A 3 end-to-end scenarios (initial counts, season/time/temperature schedule, grid i
+R005_module_java	iter3	FAIL	B round 1: B2 horde food deltas [40, 80] != [0, 120] (baseline: members=[La,La,La], 40 each to La) || RESULT FAIL B roun
+R005_module_java	iter4	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R005_module_java	iter5	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R005_module_java	iter6	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R005_module_java	iter7	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R005_module_java	iter8	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R005_module_java	iter9	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R005_module_java	iter10	FAIL	B round 1: B1 tiger(50) next to one lion(40) survived; baseline horde strength 40+40=80>50 eats it || RESULT FAIL B roun
+R006_module_java	iter0	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter1	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter2	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter3	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter4	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter5	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter6	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter7	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter8	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter9	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R006_module_java	iter10	PASS	deterministic 100-step two-layer population/infection/layout trace matches golden
+R007_module_java	iter0	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter1	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter2	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter3	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter4	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter5	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter6	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter7	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter8	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter9	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R007_module_java	iter10	PASS	4 reps x 100 steps: grid consistent, all species born and died, sim progresses
+R008_module_java	iter0	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter1	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter2	COMPILE_ERROR	/tmp/ace_subject_runs/R008_module_java/iter02/Giraffe.java:28: error: constructor Prey in class Prey cannot be applied t
+R008_module_java	iter3	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter4	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter5	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter6	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter7	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter8	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter9	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R008_module_java	iter10	PASS	4 reps x 80 steps: grid layers consistent, all species born and died, sim progresses
+R009_module_java	iter0	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter1	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter2	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter3	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter4	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter5	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter6	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter7	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter8	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter9	PASS	deterministic 60-step population trace matches golden
+R009_module_java	iter10	PASS	deterministic 60-step population trace matches golden
+R010_module_java	iter0	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter1	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter2	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter3	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter4	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter5	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter6	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter7	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter8	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter9	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+R010_module_java	iter10	PASS	3 reps x 160 steps: grid consistent, all species born and died, sim progresses
+unit                                   0 1 2 3 4 5 6 7 8 9 10   (.=PASS F=FAIL C=COMPILE_ERROR T=TIMEOUT !=DRIVER_ERROR ?=missing)
+001_binary_search                      . . . . . . . . . . .
+002_two_pointers_technique             . . . . . . . . . . .
+003_prefix_sum_array                   . . . . . . . . . . .
+004_breadth_first_search               . . . . . . . . . . .
+005_depth_first_search                 . . . . . . . . . . .
+006_topological_sorting_bfs            . . . . . . . . . . .
+007_dijkstras_shortest_path            . . . . . . . . . . .
+008_disjoint_set_union_find            . . . . . . . . . . .
+009_merge_sort                         . . . . . . . . . . .
+010_quick_sort                         . . . . . . . . . . .
+011_binary_heap                        . . . . . . . . . . .
+012_building_heap_from_array           . . . . . . . . . . .
+013_binary_search_tree_searching       . . . . . . . . . . .
+014_trie_insert_and_search             . . . . . . . . . . .
+015_open_addressing_linear_probing     . . . . . . . . . . .
+016_lru_cache                          . . . . . . . . . . .
+017_knapsack_01                        . . . . . . . . . . .
+018_coin_change                        . . . . . . . . . . .
+019_matrix_chain_multiplication        . . . . . . . . . . .
+020_longest_common_subsequence         . . . . . . . . . . .
+021_kmp_pattern_searching              . . . . . . . . . . .
+022_rabin_karp                         . . . . . . . . . . .
+023_bellman_ford                       . . . . . . . . . . .
+024_floyd_warshall                     . . . . . . . . . . .
+025_kruskals_mst                       . . . . . . . . . . .
+026_prims_mst                          . . . . . . . . . . .
+027_connected_components               . . . . . . . . . . .
+028_bipartite_graph                    . . . F F F F F F F F
+029_detect_cycle_directed_graph        . . . . . . . . . . .
+030_strongly_connected_components      . . . . . . . . . . .
+031_articulation_points                . . . . . . . . . . .
+032_ford_fulkerson_max_flow            . . . . . . . . . . .
+033_huffman_coding                     . . . . . . . . . . .
+034_activity_selection                 . . . . . . . . . . .
+035_insertion_sort                     . . . . . . . . . . .
+036_heap_sort                          . . . . . . . . . . .
+037_counting_sort                      . . . . . . . . . . .
+038_radix_sort                         . . . . . . . . . . .
+039_bucket_sort                        . . . . . . . . . . .
+040_bubble_sort                        . . . . . . . . . . .
+041_quickselect                        . . . . . . . . . . .
+042_balanced_parentheses               . . . . . . . . . . .
+043_circular_queue                     . F F F F F F F F F F
+044_avl_tree_insertion                 . . . . . . . . . . .
+045_red_black_tree_insertion           . . . . . . . . . . .
+046_b_tree                             . . . . . . . . . . .
+047_cutting_a_rod                      . . . . . . . . . . .
+048_naive_pattern_searching            . F F F F F F F F F F
+049_euclidean_algorithms               . F F F F F F F F F F
+050_modular_exponentiation             . F F F F F F F F F F
+R001_module_java                       . F F F F F F F F F F
+R002_module_java                       . . . . . . . . . . .
+R003_module_java                       . . . . . . . . . . .
+R004_module_java                       . . . . . . . . . F F
+R005_module_java                       . . . F F F F F F F F
+R006_module_java                       . . . . . . . . . . .
+R007_module_java                       . . . . . . . . . . .
+R008_module_java                       . . C . . . . . . . .
+R009_module_java                       . . . . . . . . . . .
+R010_module_java                       . . . . . . . . . . .
+
+scored subjects: 600/600
+  COMPILE_ERROR: 1
+  FAIL: 68
+  PASS: 531

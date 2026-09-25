@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+020_longest_common_subsequence	0	c1d8fcfd6e34f2ae11be7b40d537b88edb2d4139	PASS	64 checks over 1 entry points
+020_longest_common_subsequence	1	1951bd5f933b69e17a4600160f056acda728fcd6	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	2	57880ad7e635d0e73aea36b194420ad291cd6746	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	3	357cc8460767b5d5c34bb185973669e2a26eddc7	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	4	f2c46873e7c81a53af5953f6f17887154edaebae	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	5	a415ce57a997be8d09e26bc4dcd6cd52817eb45f	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	6	ccc4a18050167e77a146236a44af7915fcf48ab5	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	7	cc61e3c76e9f3387d59ed0d295a08537d66541cd	PASS	128 checks over 2 entry points
+020_longest_common_subsequence	8	2c46e3007a8d6f29415683b40f3ebe71347f73c9	PASS	384 checks over 6 entry points
+020_longest_common_subsequence	9	15dd691c9b30f3c480f8dfeb495a462be70133e1	PASS	384 checks over 6 entry points
+020_longest_common_subsequence	10	957caa33bfc6682fa31331884827f557605f4d72	PASS	384 checks over 6 entry points

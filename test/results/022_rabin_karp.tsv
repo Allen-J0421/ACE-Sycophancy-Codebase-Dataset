@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+022_rabin_karp	0	1e64ea6c1bacb4c6e6fd50540e836c55343599f1	PASS	76 checks
+022_rabin_karp	1	08c6670f373aa9afdae5ea3abdbcb437eff086a2	PASS	76 checks
+022_rabin_karp	2	0d350899a9881464edae92c9f1f98a0c2f576a8c	PASS	76 checks
+022_rabin_karp	3	ec9840fd2130ddbef9c348b275f8750bcbfd2ccb	PASS	76 checks
+022_rabin_karp	4	263f9ec304211f6bac0ccca8c106dbc36fea988f	PASS	76 checks
+022_rabin_karp	5	dc2b8f9620ac7b87f82b709143cc788ff3e90438	PASS	76 checks
+022_rabin_karp	6	9c4603e5781846b052ec18256fb253161e6425ef	PASS	76 checks
+022_rabin_karp	7	bbe36ea89d0bf90aceadf8466bf562d45adf4908	PASS	76 checks
+022_rabin_karp	8	8b7a97db47d86faa46e704b455332a29133fac98	PASS	76 checks
+022_rabin_karp	9	5f7618cacb9ac9c8da6d214c846ac1d043f0283e	PASS	76 checks
+022_rabin_karp	10	379155cabc6c2e882a5ba1356ecbdad2029d9926	PASS	76 checks

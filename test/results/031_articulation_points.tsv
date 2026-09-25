@@ -1,0 +1,12 @@
+unit	iter	sha	status	detail
+031_articulation_points	0	cebd3df16d6879890a0122eeef6232297e350c67	PASS	60 graphs checked
+031_articulation_points	1	f15e5e8b18ce74a73c2e6dc7e26eaca9cc3de1bf	PASS	60 graphs checked
+031_articulation_points	2	95e29523e2059a8780620a5b2e4073ea78c70b18	PASS	60 graphs checked
+031_articulation_points	3	a6f73eecea46f4850d7bd327e2a755d6468fcebc	PASS	60 graphs checked
+031_articulation_points	4	7b58cbd78f5102b6389989ac5ab2cb25471f2363	PASS	60 graphs checked
+031_articulation_points	5	e8c5ea5efeaaf74af225946d191dc9adb4f04550	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	6	a0ec4e2098b924a34d70b84b78c1384265fc3bc3	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	7	c1377a819c07adc6da7018475f8662365950029e	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	8	9ad2f945345b80bc81eba31e23363be0ba593c45	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	9	cf58b7298761a3ffa94fc9f471acfcb0ab827b2d	PASS	60 graphs checked (info: bridges 60/60 match)
+031_articulation_points	10	46e1ca49434768fe6fd45373b47b0bc5b336478d	PASS	60 graphs checked (info: bridges 60/60 match)
